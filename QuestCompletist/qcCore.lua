@@ -25,9 +25,9 @@ local qcMutuallyExclusiveAlertTooltip = nil
 
 
 --[[ Constants ]]--
-local QCADDON_VERSION = 109.5
+local QCADDON_VERSION = 109.6
 local QCADDON_PURGE = true
-local QCDEBUG_MODE = false
+local QCDEBUG_MODE = true
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
@@ -95,18 +95,18 @@ qcProfessionBits = {
 	[356]=16384,	-- Fishing
 }
 local qcHolidayDates = {
-	[1]={"110920","111005"},		-- Brewfest 2011
-	[2]={"120429","120505"},		-- Children's Week 2012
-	[4]={"111101","111102"},		-- Day of the Dead 2011
-	[8]={"111215","120102"},		-- Feast of Winter Veil 2011-2012
-	[16]={"111018","111031"},		-- Hallow's End 2011
-	[32]={"110906","110912"},		-- Harvest Festival TODO FOR 2012
-	[64]={"120205","120218"},		-- Love is in the Air 2012
-	[128]={"120122","120211"},		-- Lunar Festival 2012
-	[256]={"120621","120704"},		-- Midsummer Fire Festival 2012
-	[512]={"120408","120414"},		-- Noblegarden 2012
-	[1024]={"111120","111126"},		-- Pilgrim's Bounty 2011
-	[2048]={"120919","120919"},		-- Pirates' Day 2012
+	[1]={"180920","111006"},		-- Brewfest 2018
+	[2]={"180425","180502"},		-- Children's Week 2018
+	[4]={"181101","181103"},		-- Day of the Dead 2018
+	[8]={"181216","190102"},		-- Feast of Winter Veil 2018-2019
+	[16]={"181018","181101"},		-- Hallow's End 2018
+	[32]={"180918","180925"},		-- Harvest Festival 2018
+	[64]={"190205","190219"},		-- Love is in the Air 2019
+	[128]={"190128","190211"},		-- Lunar Festival 2019
+	[256]={"180621","180705"},		-- Midsummer Fire Festival 2018
+	[512]={"180402","180409"},		-- Noblegarden 2018
+	[1024]={"181119","181126"},		-- Pilgrim's Bounty 2018
+	[2048]={"180919","180920"},		-- Pirates' Day 2018
 }
 
 --[[ Constants for the Key Bindings & Slash Commands ]]--

@@ -400,6 +400,11 @@ THEBROKENISLES = "The Broken Isles",
 	HELHEIM = "Helheim",
 	THESEATOFTHETRIUMVIRATE = "The Seat Of The Triumvirate",
 	EMERALDDREAMWAY = "Emerald Dreamway",
+	BFA = "Battle For Azeroth",
+	BFAUNCATEQUEST = "BFA Uncategorized Quests",
+	ZANDALAR = "Zandalar",
+	KULTIRAS = "Kul Tiras",
+	THUNDERTOTEM = "Thunder Totem",
 }
 
 end
