@@ -72,14 +72,14 @@ qcQuestCategories={
 {311,"Upper Blackrock Spire"},{259,"Utgarde Keep"},{260,"Utgarde Pinnacle"},{261,"Vale of Eternal Blossoms"},{262,"Valley of the Four Winds"},{263,"Valley of Trials"},
 {264,"Vashj'ir"},{265,"Wailing Caverns"},{266,"Warlock"},{267,"Warrior"},{268,"Warsong Gulch"},{312,"Warspear"},
 {313,"Warspear Outpost"},{269,"Well of Eternity"},{270,"Western Plaguelands"},{271,"Westfall"},{272,"Wetlands"},{273,"Wintergrasp"},
-{274,"Winterspring"},{275,"Zangarmarsh"},{276,"Zul'Aman"},{277,"Zul'Drak"},{278,"Zul'Farrak"},{279,"Zul'Gurub"},{400,"Mining"},{401,"Skinning"},{402,"Enchanting"},{403,"The Battle Of Gilneas"},{404,"Twin Peaks"},{405,"Silvershard Mines "},{406,"Temple of Kotmogu "},{407,"Hellfire Citadel"},{408,"Old Hillsbrad Foothills"},{409,"The Black Morass"},{410,"The Culling of Stratholme"},
+{274,"Winterspring"},{275,"Zangarmarsh"},{276,"Zul'Aman"},{277,"Zul'Drak"},{278,"Zul'Farrak"},{279,"Zul'Gurub"},{400,"Mining"},{401,"Skinning"},{402,"Enchanting"},{403,"The Battle of Gilneas"},{404,"Twin Peaks"},{405,"Silvershard Mines "},{406,"Temple of Kotmogu "},{407,"Hellfire Citadel"},{408,"Old Hillsbrad Foothills"},{409,"The Black Morass"},{410,"The Culling of Stratholme"},
 {1001,"Azsuna"},{1002,"Broken Shore"},{1003,"Dalaran"},{1004,"Eye of Azshara"},{1005,"High Mountain"},{1006,"StormHeim"},{1007,"Suramar"},{1008,"Val'sharah"},
 {1009,"Hall of the Guardian (Mage)"},{1010,"Mardum, the Shattered Abyss (Demon Hunter)"},{1011,"Netherlight Temple (Priest)"},{1012,"Skyhold (Warrior)"},
 {1013,"The Dreamgrove (Druid)"},{1014,"The Heart of Azeroth (Shaman)"},{1015,"The Wandering Isle (Monk)"},{1016,"Trueshot Lodge (Hunter)"},{1017,"Dreadscar Rift"},{1020,"Demon Hunter"},
 {1021,"Acherus: The Ebon Hold (Death Knight)"},{1025,"Black Rook Hold"},{1026,"Cathedral of Eternal Night"},{1027,"Court of Stars"},{1028,"Darkheart Thicket"},
 {1029,"Eye of Azshara"},{1030,"Halls of Valor"},{1031,"Maw of Souls"},{1032,"Neltharion's Lair"},{1033,"Return to Karazhan"},{1034,"The Arcway"},
 {1035,"Vault of the Wardens"},{1036,"Violet Hold"},{1037,"The Emerald Nightmare"},{1038,"Trial of Valor"},{1039,"The Nighthold"},{1040,"Tomb of Sargeras"},
-{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"The Seat Of The Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
+{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"The Seat of the Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
 }
 
 qcFactions = {
