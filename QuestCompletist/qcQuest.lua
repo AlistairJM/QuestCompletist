@@ -76,7 +76,7 @@ qcQuestCategories={
 {1001,"Azsuna"},{1002,"Broken Shore"},{1003,"Dalaran"},{1004,"Eye of Azshara"},{1005,"High Mountain"},{1006,"StormHeim"},{1007,"Suramar"},{1008,"Val'sharah"},
 {1009,"Hall of the Guardian (Mage)"},{1010,"Mardum, the Shattered Abyss (Demon Hunter)"},{1011,"Netherlight Temple (Priest)"},{1012,"Skyhold (Warrior)"},
 {1013,"The Dreamgrove (Druid)"},{1014,"The Heart of Azeroth (Shaman)"},{1015,"The Wandering Isle (Monk)"},{1016,"Trueshot Lodge (Hunter)"},{1017,"Dreadscar Rift"},{1020,"Demon Hunter"},
-{1021,"Acherus: The Ebon Hold (Death Knigth"},{1025,"Black Rook Hold"},{1026,"Cathedral of Eternal Night"},{1027,"Court of Stars"},{1028,"Darkheart Thicket"},
+{1021,"Acherus: The Ebon Hold (Death Knight)"},{1025,"Black Rook Hold"},{1026,"Cathedral of Eternal Night"},{1027,"Court of Stars"},{1028,"Darkheart Thicket"},
 {1029,"Eye of Azshara"},{1030,"Halls of Valor"},{1031,"Maw of Souls"},{1032,"Neltharion's Lair"},{1033,"Return to Karazhan"},{1034,"The Arcway"},
 {1035,"Vault of the Wardens"},{1036,"Violet Hold"},{1037,"The Emerald Nightmare"},{1038,"Trial of Valor"},{1039,"The Nighthold"},{1040,"Tomb of Sargeras"},
 {1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"The Seat Of The Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
