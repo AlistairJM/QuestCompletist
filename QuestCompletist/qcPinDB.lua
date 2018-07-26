@@ -47,7 +47,7 @@ qcPinDB = {
 		{0,1,113547,"Stone Guard Mukar",55.6,11.0,{40518}},
 		{0,1,122065,"Lady Liadrin",58.2,12.0,{47867}},
 		},
-	[9] = { --[[ Mulgore ]]--
+	[7] = { --[[ Mulgore ]]--
 		{0,1,2981,"Chief Hawkwind",45.2,75.4,{14449,24861,23733}},
 		{0,1,2980,"Grull Hawkwind",48.9,78.4,{14452,24852,14458}},
 		{0,1,36694,"Adana Thunderhorn",46.2,82.7,{14456,14455,14459,14461,14460}},
@@ -66,7 +66,7 @@ qcPinDB = {
 		{0,3,32798,"Spring Gatherer",47.0,59.4,{13479}},
 		{0,1,32837,"Noblegarden Merchant",47.0,59.8,{13503}},
 	},
-	[11] = { --[[ Northern Barrens ]]--
+	[10] = { --[[ Northern Barrens ]]--
 		{0,1,0,nil,59.1,67.4,{869}},
 		{0,1,0,nil,27.3,33.6,{876}},
 		{0,1,0,nil,72.5,85.3,{14042}},
@@ -115,11 +115,11 @@ qcPinDB = {
 		{0,1,3439,"Wizzlecrank's Shredder",57.5,18.3,{858,863}},
 		{1,1,52382,"Ziradormi",48.8,70.1,{30094}},
 	},
-	[13] = { --[[ Lunar Festival ]]--
+	[12] = { --[[ Lunar Festival ]]--
 		{0,5,15892,"Lunar Festival Emissary",39.6,11.7,{8872}},
 		{0,5,15895,"Lunar Festival Harbinger",39.3,10.8,{8867,8883}},
 	},
-	[16] = { --[[ Arathi Highlands ]]--
+	[14] = { --[[ Arathi Highlands ]]--
 		--{0,1,14983,"Field Marshal Oslight",39.9,46.7,{8105,8114}},
 		{0,1,2700,"Captain Nials",40.0,48.9,{26093,26095,26542}},
 		--{0,1,2700,"Captain Nials",40.0,48.9,{26982}},
@@ -147,7 +147,7 @@ qcPinDB = {
 		{0,1,12920,"Doctor Gregory Victor",68.5,37.8,{26986}},
 		--{0,1,15021,"Deathmaster Dwire",68.4,30.4,{8170,8122,8121,8120}},
 	},
-	[17] = { --[[ Badlands ]]--
+	[15] = { --[[ Badlands ]]--
 		{0,1,1068,"Gorn",17.7,43.9,{27880}},
 		{0,1,46660,"Aidan Summerwind",18.5,41.5,{27879,27927}},
 		{0,1,2785,"Theldurin the Lost",26.2,62.4,{27713}},
@@ -156,7 +156,7 @@ qcPinDB = {
 		{0,1,46758,"Aoren Sunglow",52.1,51.6,{27878}},
 		{0,1,46759,"Lidia Sunglow",52.2,51.7,{27877}},
 	},
-	[19] = { --[[ Blasted Lands ]]--
+	[17] = { --[[ Blasted Lands ]]--
 		{0,1,5393,"Quartermaster Lungertz",60.1,13.5,{25710,25711}},
 		{0,1,42262,"Leyan Steelson",60.2,13.4,{25712}},
 		{0,1,42264,"Buttonwillow McKittrick",60.5,13.8,{25713}},
@@ -176,7 +176,7 @@ qcPinDB = {
 		{0,1,19254,"Warlord Dar'toon",54.4,50.5,{25694,25695,25696}},
 		{0,1,0,nil,60.3,65.6,{25707}},
 	},
-	[20] = { --[[ Tirisfal Glades ]]--
+	[18] = { --[[ Tirisfal Glades ]]--
 		{0,1,1519,"Deathguard Simmer",44.7,53.7,{24978,24980}},
 		{0,1,1518,"Apothecary Johaan",44.6,53.8,{24975,24976,24977}},
 		{0,1,38925,"Sedrick Calston",44.7,53.6,{24974}},
@@ -331,7 +331,7 @@ qcPinDB = {
 		{0,1,119545,"Nerus Moonfang",77.6,46.0,{46045,45149,45148}},
 		{0,1,111772,"Terric the Illuminator",79.2,46.0,{44220}},
 	},
-	[24] = { --[[ Hillsbrad Foothills ]]--
+	[25] = { --[[ Hillsbrad Foothills ]]--
 		{0,1,18165,"Archmage Cedric",30.9,30.9,{9829}},
 		{0,1,49687,"Brazie the Botanist",33.5,49.3,{28733,28617,28744,28748,28747,28751}},
 		{0,1,13777,"Sergeant Durgen Stormpike",43.1,43.9,{7102,7081,7122}},
@@ -442,7 +442,7 @@ qcPinDB = {
 		{0,3,32799,"Spring Gatherer",54.0,50.8,{13480}},
 		{0,1,32836,"Noblegarden Vendor",54.0,50.8,{13502}},
 	},
-	[28] = { --{{ Searing Gorge ]] --
+	[32] = { --{{ Searing Gorge ]] --
 		{0,1,47269,"Lunk",68.9,53.3,{27956,27957}},
 		{0,1,47266,"Jack Rockleg",68.6,53.4,{27963,27964,27965}},
 		{0,1,47267,"Burrian Coalpart",68.5,53.3,{27960,27961,27962}},
@@ -464,7 +464,7 @@ qcPinDB = {
 		{0,1,0,nil,42.9,29.5,{28064},"Inside The Slag Pit."},
 		{0,1,47429,"Lunk",39.0,26.0,{28053}},
 	},
-	[29] = { --[[ Burning Steppes ]]--
+	[36] = { --[[ Burning Steppes ]]--
 		{0,1,47779,"Mouton Flamestar",17.0,51.3,{28172}},
 		{0,1,47811,"John J. Keeshan",17.3,52.1,{28416,28174,28177,28178,28179,28180,28184}},
 		{0,1,14437,"Gorzeeki Wildeyes",8.4,35.8,{28181,28182,28183}},
@@ -488,7 +488,7 @@ qcPinDB = {
 		{0,1,0,"Adventure Board",72.9,65.1,{28068}},
 		{0,1,115805,"Hoddruc Bladebender",46.8,44.6,{44927}},
 	},
-	[30] = { --[[ Elwyyn Forest ]]--
+	[37] = { --[[ Elwyyn Forest ]]--
 		{0,1,0,"Marshal Dughan",42.1,65.9,{62,76,35,26378,239}},
 		{0,1,0,"Remy \"Two Times\"",42.1,67.3,{47,40}},
 		{0,1,0,"William Pestle",43.3,65.7,{60,26150,112,114}},
@@ -523,7 +523,7 @@ qcPinDB = {
 		{0,3,32799,"Spring Gatherer",42.8,65.4,{13480}},
 		{0,1,32836,"Noblegarden Vendor",43.0,65.2,{13502}},
 	},
-	[32] = { --[[ Deadwind Pass ]]--
+	[42] = { --[[ Deadwind Pass ]]--
 		---	{0,1,17613,"Archmage Alturus",46.9,75.6,{9631,9844,9824,9840,9826,9680,9630,9825,9860}}, Removed
 		{0,1,114631,"Archmage Karlain",47.0,75.5,{44684,44764,44686}},
 		{0,1,101547,"Archmage Khadgar",47.0,75.0,{40755}},
@@ -535,7 +535,7 @@ qcPinDB = {
 		{0,1,101282,"Revil Kost",68.4,26.4,{40900,40935,40987,40712,41156}},
 		{0,1,0,"Battered Journal",52.4,33.9,{40606}},
 	},
-	[34] = { --[[ Duskwood ]]-- 
+	[47] = { --[[ Duskwood ]]-- 
 		{0,1,0,"Calor",75.3,48.0,{26688,26689,26690,26691}},
 		{0,1,0,"Commander Althea Ebonlocke",73.5,46.9,{26618,26627,26645,26686,26795,26796}},
 		{0,1,0,"Chef Grual",73.8,43.5,{26620,26623}},
@@ -567,7 +567,7 @@ qcPinDB = {
 		{0,1,100323,"Revil Kost",77.4,36.2,{40588,40834,40931}},
 		{0,1,101656,"Valorn Stillbough",48.8,34.4,{40784}},
 	},
-	[35] = { --[[ Loch Modan ]]--
+	[48] = { --[[ Loch Modan ]]--
 		{0,1,1960,"Pilot Hammerfoot",14.0,56.5,{26854,13635}},
 		{0,1,1092,"Captain Rugelfuss",23.4,75.0,{26146,26148,26176}},
 		{0,1,1089,"Mountaineer Cobbleflint",23.3,74.9,{26145}},
@@ -599,7 +599,7 @@ qcPinDB = {
 		{0,1,63316,"Stolen Explorers' League Document",61.7,73.2,{13657}},
 		{0,1,1153,"Torren Squarejaw",37.3,47.8,{13661}},
 	},
-	[36] = { --[[ Redridge Mountains ]]-- COMPLETED
+	[49] = { --[[ Redridge Mountains ]]-- COMPLETED
 		{0,1,0,"Wanted!",16.3,65.3,{26504}},
 		{0,1,0,"Wanted!",16.0,64.6,{26504}},
 		{0,1,0,"Darcy Parker",15.6,65.3,{26506}},
@@ -631,7 +631,7 @@ qcPinDB = {
 		--[[ Pet Battle ]]--
 		{0,1,115,"Lindsay",33.3,52.6,{31726}},
 	},
-	[37] = { --[[ Northern Stranglethorn ]]--
+	[50] = { --[[ Northern Stranglethorn ]]--
 		{0,1,0,"Lieutenant Doren",47.6,10.3,{26735,26736,26737}},
 		{0,1,0,"Corporal Kaleb",47.1,10.7,{26740}},
 		{0,1,0,"Brother Nimetz",47.2,11.1,{26732,26733,26734}},
@@ -667,7 +667,7 @@ qcPinDB = {
 		{0,1,52753,"James Stillair",47.9,11.9,{29133}},
 		{0,1,2464,"Commander Aggro'gosh",38.4,50.5,{26278}}, --[[ Grom'gol Base Camp ]]--
 	},
-	[38] = { --[[ Swamp of Sorrows ]]--
+	[51] = { --[[ Swamp of Sorrows ]]--
 		{0,1,45786,"Trade Baron Silversnap",73.2,14.9,{27587,27536,27656,27597}},
 		{0,1,46010,"Brono Goodgroove",73.6,9.2,{27592}},
 		{0,1,46182,"Pierre Fishflay",74.2,12.2,{27663}},
@@ -682,7 +682,7 @@ qcPinDB = {
 		{0,1,18221,"Holaaru",69.9,36.5,{27860,27840,27918}},
 		{0,1,17127,"Anchorite Avuun",26.9,33.6,{27875,27876,27902,27904,24913}},
 	},
-	[39] = { --[[ Westfall ]]-- COMPLETED
+	[52] = { --[[ Westfall ]]-- COMPLETED
 		{0,1,0,"Lieutenant Horatio Laine",60.0,19.3,{26209,26213,26214,26215}},
 		{0,7,0,"Captain Sanders' Treasure Map",49.0,10.5,{26353},"This quest is started by using Captain Sanders' Treasure Map. The Treasure Map drops off Murlocs."},
 		{0,1,0,"Two-Shoed Lou",49.7,19.4,{26228,26232}},
@@ -711,7 +711,7 @@ qcPinDB = {
 		{0,1,112,"Old MacDonald",60.9,18.5,{31725}},
 		{0,1,119390,"Marcus Bagman Brown",41.4,71.2,{46292}},
 	},
-	[40] = { --[[ Wetlands ]]--
+	[56] = { --[[ Wetlands ]]--
 		{0,1,41074,"Mountaineer Grugelm",49.6,79.2,{25211}},
 		{0,1,41075,"Mountaineer Rharen",50.2,79.2,{25770,25395}},
 		{0,1,41086,"Forba Slabchisel",57.5,71.8,{25721,25727,25733,25777}},
@@ -740,7 +740,7 @@ qcPinDB = {
 		{0,1,42160,"Thargas Anvilmar",49.4,17.2,{26127,26128}},
 		{0,1,42160,"Thargas Anvilmar",51.1,9.2,{26139}},
 	},
-	[41] = { --[[ Teldrassil ]]--
+	[57] = { --[[ Teldrassil ]]--
 		{2,1,49480,"Tarindrella",45.3,91.4,{28726,28727,28728},"Tarindrella appears as you enter Shadowthread Cave."},
 		{0,1,2150,"Zenn Foulhoof",59.6,49.2,{488}},
 		{0,6,3567,"Tallonkai Swiftroot",55.6,50.0,{2438,2459,932}},
@@ -770,7 +770,7 @@ qcPinDB = {
 		{0,3,32799,"Spring Gatherer",55.6,51.2,{13480}},
 		{0,1,32836,"Noblegarden Vendor",55.6,51.2,{13502}},
 	},
-	[42] = { --[[ Darkshore ]]--
+	[62] = { --[[ Darkshore ]]--
 		{0,1,32973,"Dentaria Silverglade",51.8,18.0,{13518}},
 		{0,1,32971,"Ranger Glynda Nal'Shea",50.2,19.8,{13522,13562,13589},"Ranger Glynda Nal'Shea patrols the town of Lor'danel"},
 		{0,1,32972,"Serendia Oakwhisper",51.8,18.1,{13520}},
@@ -830,7 +830,7 @@ qcPinDB = {
 		{0,7,0,"Writings of the Dark Herald",52.3,31.0,{28529}},
 
 	},
-	[43] = { --[[ Ashenvale ]]--
+	[63] = { --[[ Ashenvale ]]--
 		{0,1,0,nil,53.8,46.0,{13921}},
 		{0,7,0,"Befouled Water Globe",48.2,69.8,{1918},"Drops from Tideress."},
 		{0,7,0,"Diabolical Plans",83.1,69.2,{26443,26447},"Diabolical Plans drop off Searing Infernal's, Roaming Felguard and Mannoroc Lashers."},
@@ -918,7 +918,7 @@ qcPinDB = {
 		{0,1,17106,"Vindicator Palanaar",35.0,49.9,{26453}},
 		{0,1,17303,"Vindicator Vedaar",84.1,62.7,{26444,26445}},
 	},
-	[61] = { --[[ Thousand Needles ]]--
+	[64] = { --[[ Thousand Needles ]]--
 		{0,1,39895,"Kanati Greycloud",11.2,11.2,{27062}},
 		{0,1,39963,"Motega Firemane",10.5,8.5,{25489}},
 		{0,1,40028,"Pozzik",75.9,74.7,{25505,27447}},
@@ -951,7 +951,7 @@ qcPinDB = {
 		{0,1,41184,"Riznek",88.6,54.8,{24799,25826,25797,25779,25775,25757,25814}},
 		{0,1,120244,"Magatha Grimtotem",37.2,32.2,{44800,45725,45724,45723}},
 	},
-	[81] = { --[[ Stonetalon Mountains ]]--
+	[65] = { --[[ Stonetalon Mountains ]]--
 		{0,1,39256,"Kalen Trueshot",71.8,45.7,{25614,25615}},
 		{0,1,40879,"Boog the \"Gear Whisperer\"",72.5,61.5,{25642,25649,25652}},
 		{0,1,40973,"Sentinel Heliana",72.5,61.5,{25646}},
@@ -999,7 +999,7 @@ qcPinDB = {
 		{0,1,41664,"Salsbury the \"Help\"",33.1,59.6,{25934}},
 		{0,1,41638,"Houndmaster Jonathan",32.5,60.0,{25935},"Houndmaster Jonathan patrols Farwatch's Glen."},
 	},
-	[101] = { --[[ Desolace ]]--
+	[66] = { --[[ Desolace ]]--
 		{0,1,36410,"Officer Jankie",54.2,9.3,{14384}},
 		{0,1,5396,"Captain Pentigast",66.7,10.9,{14387,14361,14363,14364}},
 		{0,1,5642,"Vahlarriel Demonslayer",66.4,11.8,{14354}},
@@ -1057,7 +1057,7 @@ qcPinDB = {
 		{0,1,12277,"Melizza Brimbuzzle",33.9,53.5,{6132}},
 		{0,1,5638,"Kreldig Ungor",66.2,9.6,{1454,1456}},
 	},
-	[121] = { --[[ Feralas ]]--
+	[69] = { --[[ Feralas ]]--
 		{0,1,7776,"Talo Thornhoof",41.6,15.2,{25339,25340}},
 		{0,1,39377,"Konu Runetotem",41.3,15.4,{25210,25230,25237,25241,25250,25386}},
 		{0,1,14637,"Zorbin Fandazzle",48.7,44.8,{25465,25466}},
@@ -1093,7 +1093,7 @@ qcPinDB = {
 		{0,1,40052,"Estulan",57.0,55.4,{25403,25208}},
 		{0,1,40913,"Handler Jesana",77.0,56.6,{25468,25469}},
 	},
-	[141] = { --[[ Dustwallow Marsh ]]--
+	[70] = { --[[ Dustwallow Marsh ]]--
 		{0,1,23566,"Calia Hastings",68.4,51.0,{27210,27211,27212,27213}},
 		{0,1,23835,"Sergeant Amelyn",68.3,51.8,{27216,27215}},
 		{0,1,4921,"Guard Byron",66.2,46.1,{11212,27251}},
@@ -1140,7 +1140,7 @@ qcPinDB = {
 		{0,1,4502,"Tharg",37.4,31.4,{1168}},
 		{0,1,0,"Wanted Poster",37.5,31.5,{27229}},
 	},
-	[161] = { --[[ Tanaris ]]--
+	[71] = { --[[ Tanaris ]]--
 		{0,1,38535,"Kelsey Steelspark",51.2,29.9,{25048,25049,25050,25121}},
 		{0,1,39178,"Driz Plunkbow",52.3,28.1,{25112,25111,25115,25091}},
 		{0,1,39034,"Dr. Dealwell",51.8,28.1,{25067,25094,25095,25513}},
@@ -1162,7 +1162,7 @@ qcPinDB = {
 		{0,1,20130,"Andormu",58.1,54.1,{10277,10296}},
 		{0,1,38703,"Megs Dreadshredder",71.8,45.4,{24927,24928,24949,24950,25103,25534,25541}},
 	},
-	[181] = { --[[ Azshara ]]--
+	[76] = { --[[ Azshara ]]--
 		{0,1,117252,"Archmage Xylem",25.5,38.0,{45570}},
 		{0,1,97903,"Jarod Shadowsong",31.2,52.4,{39992}},
 		{0,1,115791,"Joanna",25.0,38.6,{44920,44915,44924}},
@@ -1231,7 +1231,7 @@ qcPinDB = {
 		{0,1,36903,"Jr. Bombardier Hackel",14.5,65.7,{24430}},
 		{0,1,55054,"General Nazgrim",37.9,95.7,{29690}}, --[[ Panda intro ]]--
 	},
-	[182] = { --[[ Felwood ]]--
+	[77] = { --[[ Felwood ]]--
 		 {0,1,10923,"Tenell Leafrunner",51.1,80.5,{27997,28150}},
 		 {0,1,10920,"Kelek Skykeeper",51.3,80.3,{28479}},
 		 {0,2,11554,"Grazle",51.4,80.4,{28100,28396}},
@@ -1261,11 +1261,11 @@ qcPinDB = {
 		 {0,1,48492,"Lyros Swiftwind",61.9,26.7,{28383}},
 		 {0,1,48493,"Alton Redding",56.8,18.5,{28337,28385,28386,28387,28388,28389}},
 		 {0,2,15395,"Nafien",64.0,10.3,{28338,28366,28521,28395}},
-		 {0,1,48461,"Ferli",64.1,10.3,{28362}},
+		 {0,1,48461,"Ferli",64.1,10.3,{28362,}},
 		 {0,1,47556,"Drizle",60.6,9.5,{28364}},
 		 {0,1,0,"Deadwood Cauldron",59.7,8.1,{28467}},
 	},
-	[201] = { --[[ Un'Goro Crater ]]--
+	[78] = { --[[ Un'Goro Crater ]]--
 		{0,1,9619,"Torwa Pathfinder",71.2,76.6,{24731,24732,24733}},
 		{0,1,38274,"Garl Stormclaw",71.0,76.6,{24719,24686,24689}},
 		{0,1,38263,"Ithis Moonwarden",76.4,48.3,{24687,24855,24721}},
@@ -1296,13 +1296,13 @@ qcPinDB = {
 		{0,1,115923,"Ko'Zan",43.6,41.4,{45055,45051,45057}},
 
 	},
-	[241] = { --[[ Moonglade ]]--
+	[80] = { --[[ Moonglade ]]--
 		{0,1,39865,"Emissary Windsong",45.5,44.9,{25316}},
 		{0,9,12042,"Loganaar",52.5,40.6,{27356,28343}},
 		--[[ Lunar Festival ]]--
 		{0,5,15864,"Valadar Starsong",53.7,35.3,{8868}},
 	},
-	[261] = { --[[ Silithus ]]--
+	[81] = { --[[ Silithus ]]--
 		{0,1,15191,"Windcaller Proudhorn",54.9,36.0,{8280,8281}},
 		{0,1,0,"Wanted Poster: Deathclasp",55.0,36.0,{8283}},
 		{0,1,15189,"Beetix Ficklespragg",55.3,36.3,{8277,8278}},
@@ -1335,7 +1335,7 @@ qcPinDB = {
 		{0,1,132045,"Gizmax Greasebolt",66.2,55.6,{50052}},
 				
 	},
-	[281] = { --[[ Winterspring ]]--
+	[83] = { --[[ Winterspring ]]--
 		{0,2,11556,"Salfa",21.0,46.2,{28524,28522,28523}},
 		{0,1,9298,"Donova Snowden",25.1,58.5,{28460,28469,28530,28470,28472}},
 		{0,1,10307,"Witch Doctor Mau'ari",25.2,58.5,{28540}},
@@ -1370,7 +1370,7 @@ qcPinDB = {
 		{0,1,48723,"Tanrir",65.4,46.2,{28615}},
 	
 	},
-	[301] = { --[[ Stormwind City ]]--
+	[84] = { --[[ Stormwind City ]]--
 		{0,3,42288,"Robby Flay",50.6,71.9,{26190,26177,26192,26153,26183}},
 		{0,3,50480,"Isabel Jones",63.8,61.5,{25105,25157,25156,25155,25154}},
 		{0,3,5494,"Catherine Leland",55.0,69.7,{26442,26536,26488,26420,26414}},
@@ -1392,11 +1392,11 @@ qcPinDB = {
 		{0,1,0,"Count Remington Ridgewell",81.6,34.1,{543}},
 		{0,1,24729,"Alicia",81.8,28.3,{11451}},
 		{0,1,332,"Master Mathias Shaw",81.3,63.5,{27072}},
---		{0,6,5518,"Lilliam Sparkspindle",62.8,32.0,{3630,3629}},
+        --{0,6,5518,"Lilliam Sparkspindle",62.8,32.0,{3630,3629}},
 		{0,1,0,nil,65.8,76.3,{28825,29547},"Upon becoming eligible for this quest, it will be offered remotely as soon as you enter the city by land or air."},
 		{0,1,44238,"Harrison Jones",85.8,26.0,{28295}},
-		{0,1,2439,"Major Samuelson",85.1,31.0,{26997}},
-		{0,1,44749,"Supply Sergeant Graves",33.1,39.5,{27038}},
+		--{0,1,2439,"Major Samuelson",85.1,31.0,{26997}},
+		--{0,1,44749,"Supply Sergeant Graves",33.1,39.5,{27038}},
 		--{0,1,50049,"Jack Bauden",37.2,56.2,{27092}},
 		{0,1,8590,"Pile of Explosives",50.2,42.6,{27106}},
 		{0,9,928,"Lord Grayson Shadowbreaker",52.8,44.9,{27343,28405}}, --[[ Paladin Chains ]]--
@@ -1429,7 +1429,7 @@ qcPinDB = {
 		{0,1,54334,"Darkmoon Faire Mystic Mage",62.3,73.0,{7905}},
 		{0,1,54334,"Darkmoon Faire Mystic Mage",62.1,32.2,{7905}},
 	},
-	[321] = { --[[ Orgrimmar ]]--
+	[85] = { --[[ Orgrimmar ]]--
 		{1,3,42506,"Marogg",56.5,62.5,{26227,26226,26235,26220,26233,26234}},
 		{1,3,43239,"Razgar",65.7,41.1,{26588,26572,26557,26543,26556}},
 		{1,3,50482,"Marith Lazuria",72.6,34.4,{25160,25162,25158,25161,25159}},
@@ -1464,7 +1464,7 @@ qcPinDB = {
 		-- Legion
 		{0,1,132254,"Nathanos Blightcaller",49.8,75.6,{50341,49982}},
 },
-	[341] = { --[[ City of Ironforge ]]--
+	[87] = { --[[ City of Ironforge ]]--
 		{0,3,5159,"Daryl Riknussun",60.1,36.4,{6612,29356,29355,29353,29352,29351}},
 		{0,3,5161,"Crimnur Stonebrand",48.1,7.6,{6609,29350,29347,29342,29344,29343}},
 		{0,2,15119,"Barrus",28.2,74.9,{8229}},
@@ -1499,7 +1499,7 @@ qcPinDB = {
 		--[[ Darkmoon Faire ]]--
 		{0,1,54334,"Darkmoon Faire Mystic Mage",27.5,73.4,{	}},
 	},
-	[362] = { --[[ Thunder Bluff ]]--
+	[88] = { --[[ Thunder Bluff ]]--
 		{0,3,3026,"Aska Mistrunner",50.7,53.1,{29362,29364,29363,29365,29358}},
 		{0,3,3028,"Kah Mistrunner",56.1,46.4,{29349,29345,29354,29348,29346}},
 		{0,5,34714,"Mahara Goldwheat",31.0,69.8,{14060}},
@@ -1518,7 +1518,7 @@ qcPinDB = {
 		{0,1,3042,"Sark Ragetotem",57.6,88.4,{27281,28290}},
 		{0,1,3039,"Holt Thunderhorn",57.6,88.4,{28297,27278}},
 	},
-	[381] = { --[[ Darnassus ]]--
+	[89] = { --[[ Darnassus ]]--
 		{0,3,4156,"Astaia",49.1,61.0,{29325,29359,29321,29323,29324}},
 		{0,3,4210,"Alegorn",49.9,36.6,{29316,29314,29318,29357,29313}},
 		{0,9,35281,"Rukua",43.8,78.6,{27265,28268}},
@@ -1540,7 +1540,7 @@ qcPinDB = {
 		{0,5,15895,"Lunar Festival Harbinger",38.6,30.3,{8867,8883}},
 		{0,9,4217,"Mathrengyl Bearwalker",40.5,27.8,{27273,28289}},
 	},
-	[382] = { --[[ Undercity ]]--
+	[90] = { --[[ Undercity ]]--
 		{0,3,4573,"Armand Cromwell",80.7,31.3,{29317,29320,29361,29319,29322}},
 		{0,3,4552,"Eunice Burch",62.1,44.9,{29333,29315,29332,29334,29360}},
 		{0,1,4556,"Gordon Wendham",61.5,41.8,{6322}},
@@ -1555,7 +1555,7 @@ qcPinDB = {
 		{0,1,39116,"Apolos",49.6,29.0,{28297,27278}},
 		{0,5,37675,"Public Relations Agent",66.0,38.6,{24629,24635,24636}},
 	},
-	[462] = { --[[ Eversong Woods ]]--
+	[94] = { --[[ Eversong Woods ]]--
 		{0,1,15278,"Magistrix Erona",38.0,21.0,{8325,8326,8327}},
 		--{0,1,15278,"Magistrix Erona",38.0,21.0,{8328,8329,8563,8564,9392,9393,9676}},
 		{0,1,15295,"Well Watcher Solanian",39.0,20.3,{8330,8345}},
@@ -1563,7 +1563,7 @@ qcPinDB = {
 		{0,1,15297,"Arcanist Helion",37.2,18.9,{8346}},
 		--{0,9,15279,"Julia Sunstriker",39.2,21.5,{10068}}, --[[ Mage Trainer ]]--
 		--{0,9,15284,"Matron Arena",39.4,20.4,{10072}}, --[[ Priest Trainer ]]--
-		{0,9,43010,"Delios Silverblade",39.3,20.1,{27091}}, --[[ Warrior Trainer ]]--
+		--{0,9,43010,"Delios Silverblade",39.3,20.1,{27091}}, --[[ Warrior Trainer ]]--
 		--{0,9,15280,"Jesthenis Sunstriker",39.5,20.6,{10069}}, --[[ Paladin Trainer ]]--
 		--{0,9,15285,"Pathstalker Kariel",38.9,20.0,{10071}}, --[[ Rogue Trainer ]]--
 		--{0,9,15283,"Summoner Teli'Larien",38.9,21.4,{10073}}, --[[ Warlock Trainer ]]--
@@ -1615,7 +1615,7 @@ qcPinDB = {
 		{0,3,32798,"Spring Gatherer",47.6,47.0,{13479}},
 		{0,1,32837,"Noblegarden Merchant",47.6,47.2,{13503}},
 	},
-	[463] = { --[[ Ghostlands ]]--
+	[95] = { --[[ Ghostlands ]]--
 		{0,1,0,"Dusty Journal",79.6,17.6,{9162}},
 		{0,7,0,"The Lady's Necklace",14.1,56.6,{9175}},
 		{0,1,0,"Wanted Poster",48.3,31.7,{9156}},
@@ -1649,7 +1649,7 @@ qcPinDB = {
 		{0,1,16203,"Ranger Vynna",72.0,32.6,{9161,9172}},		
 		{0,1,50081,"Wanted Poster: Kel'gash the Wicked",72.2,31.2,{9215}},
 	},
-	[464] = { --[[ Azuremyst Isle ]]--
+	[97] = { --[[ Azuremyst Isle ]]--
 		{0,1,16554,"Aeun",64.5,54.0,{9314}},
 		{0,1,17101,"Diktynna",61.1,54.2,{9452,9453}},
 		{0,1,17110,"Acteon",49.8,51.9,{9454,10324}},
@@ -1687,7 +1687,7 @@ qcPinDB = {
 		{0,3,32799,"Spring Gatherer",49.0,51.2,{13480}},
 		{0,1,32836,"Noblegarden Vendor",49.0,51.2,{13502}},
 	},
-	[465] = { --[[ Hellfire Peninsula ]] --
+	[100] = { --[[ Hellfire Peninsula ]] --
 		{0,1,0,"Amaan the Wise",23.4,36.6,{9426,9427,9430,9545,10443}},
 		{0,1,0,"Scout Vanura",23.4,40.2,{9398}},
 		{0,1,0,"Ikan",23,40.2,{9399,9490}},
@@ -1773,7 +1773,7 @@ qcPinDB = {
 		{0,1,0,"Bountiful Feast Hostess",56.2,38.2,{14065}},
 		{0,1,0,"Wanted Poster",28,60.3,{10809}},
 	},
-	[467] = { --[[ Zangarmarsh ]] --
+	[102] = { --[[ Zangarmarsh ]] --
 		{0,1,0,"K. Lee Smallfry",68.6,50.2,{9636}},
 		{0,1,0,"Watcher Leesa\'oh",23.2,66.2,{9701,9702,9708,9709}},
 		{0,1,0,"Lethyn Moonfire",78.6,63,{9697,9895,9957}},
@@ -1814,7 +1814,7 @@ qcPinDB = {
 		{0,1,0,"Messenger Gazgrigg",32,50.4,{9797}},
 		{0,1,0,"Wanted Poster",79.1,64.8,{9820,10117}},
 	},
-	[471] = { --[[ The Exodar ]]--
+	[103] = { --[[ The Exodar ]]--
 		{0,9,16761,"Baatun",38.9,84.8,{27265,28268}},
 		{0,1,16768,"Nurguni",57.0,50.1,{9605}},
 		{0,1,17555,"Stephanos",54.5,36.3,{9606}},
@@ -1826,7 +1826,7 @@ qcPinDB = {
 		{0,5,38040,"Kwee Q. Peddlefeet",73.8,56.8,{24611}},
 		{0,5,37675,"Public Relations Agent",74.0,56.2,{24629,24635,24636}},
 	},
-	[473] = { --[[ Shadowmoon Valley ]] -- Outlands
+	[104] = { --[[ Shadowmoon Valley ]] -- Outlands
 		{0,1,0,"Xi\'ri",65.2,44,{10958,10985,13429}},
 		{0,1,0,"Ordinn Thunderfist",36.8,54.8,{10626,10662}},
 		{0,1,0,"Earthmender Torlok",42.2,45,{10458,10480,10481,10513}},
@@ -1891,7 +1891,7 @@ qcPinDB = {
 		{0,1,23346,"Wing Commander Mulverick",65.2,85.0,{11070}},
 		{0,1,23348,"Captain Skyshatter",65.4,85.4,{11071}},
 	},
-	[475] = { --[[ Blade's Edge Mountains ]] --
+	[105] = { --[[ Blade's Edge Mountains ]] --
 		{0,1,0,"Rina Moonspring",36.2,67.2,{10455,10456,10457,10506}},
 		{0,1,0,"Rip Pedalslam",61,70.4,{11043}},
 		{0,1,0,"Fizit \"Doc\" Clocktock",60.8,68.2,{10609}},
@@ -1950,7 +1950,7 @@ qcPinDB = {
 		{0,1,0,"Agadai",52,54.4,{11047}},
 		{0,1,0,"Wanted Poster",51.9,57.8,{10820,10821}},	
 		},
-	[476] = { --[[Bloodmyst Isle]]
+	[106] = { --[[Bloodmyst Isle]]
 		{0,1,17676,"Achelus",53.2,57.0,{9669}},
 		{0,1,17424,"Anchorite Paetheus",54.6,54.0,{9632,9561}},
 		{0,1,17599,"Aonar",63.4,88.6,{9624}},
@@ -1984,7 +1984,7 @@ qcPinDB = {
 		{0,1,17843,"Vindicator Kuros",55.6,55.6,{9711,9703}},
 		{0,1,17586,"Vorkhan the Elekk Herder",63.0,87.8,{9634}},
 		},
-	[477] = { --[[ Nagrand ]] -- Outlands
+	[107] = { --[[ Nagrand ]] -- Outlands
 		{0,1,0,"Elementalist Untrag",60.6,22.6,{9818}},
 		{0,1,0,"Elementalist Lo\'ap",60.8,22.4,{9800,9804,9805,9810,9815}},
 		{0,1,0,"Elementalist Morgh",60.4,22.4,{9862,29571}},
@@ -2042,7 +2042,7 @@ qcPinDB = {
 		{0,1,0,"Karrtog",52.8,36,{11503}},
 		{0,1,0,"Murkblood Invasion Plans",33.0,58.0,{9872}},
 	},
-	[478] = { --[[ Terokkar Forest ]] --
+	[108] = { --[[ Terokkar Forest ]] --
 		{0,1,0,"Lady Dena Kennedy",57.6,56,{10863}},
 		{0,1,0,"Andarl",58.4,53.6,{10026}},
 		{0,1,0,"Bertelm",58.2,54.8,{9998,10016,10022}},
@@ -2103,7 +2103,7 @@ qcPinDB = {
 		{0,1,0,"Exorcist Vaisha",49.8,46.6,{11506}},
 		{0,1,0,"Fel Orc Plans",67.9,53.5,{10034}},
 	},
-	[479] = { --[[ Netherstorm ]] --
+	[109] = { --[[ Netherstorm ]] --
 		{0,1,0,"Kalynna Lathred",32.2,63.6,{9637,9644}},
 		{0,1,0,"Adyen the Lightwarden",30.6,17.4,{10325,10326,10327,10653,10654,10655,11481}},
 		{0,1,0,"Ravandwyr",31.4,66.2,{10173,10174,10300}},
@@ -2168,7 +2168,7 @@ qcPinDB = {
 		{0,1,0,"Vial of Void Horror Ooze",54.6,44.0,{10413},"Drop from killing Congealed Void Horror"},
 		
 	},
-	[480] = { --[[ Silvermoon City ]]--
+	[110] = { --[[ Silvermoon City ]]--
 		{0,1,16191,"Sathren Azuredawn",53.9,71.0,{9134}},
 		{0,1,0,"Warchief's Command Board",62.2,60.4,{28560,28571,28572,28688,28704,28574,28575,28577,28580,28667,28677,27721}},
 		{0,9,16658,"Aldrae",53.1,26.7,{27335}},
@@ -2179,7 +2179,7 @@ qcPinDB = {
 		{0,1,43009,"Alsudar the Bastion",81.0,37.8,{27281,28290}},
 		{0,5,37675,"Public Relations Agent",64.2,67.6,{24629,24635,24636}},
 	},
-	[481] = { --[[ Shattrath City ]]--
+	[111] = { --[[ Shattrath City ]]--
 		{0,1,19684,"Haggard War Veteran",73.5,54.5,{10210}},
 		{0,1,19684,"Haggard War Veteran",77.3,43.4,{10210}},
 		{0,1,19684,"Haggard War Veteran",58.9,22.7,{10210}},
@@ -2228,7 +2228,7 @@ qcPinDB = {
 		{0,1,23465,"Zoya",66.0,18.8,{11114},"Drake quest for mounts are mutually exclusive, You can buy the other for 200g each"},
 		
 	},
-	[486] = { --[[ Borean Tundra ]] --
+	[114] = { --[[ Borean Tundra ]] --
 		{0,1,0,"Surristrasz",45.2,34.4,{11680,11733}},
 		{0,1,0,"King Mrgl-Mrgl",43.4,13.8,{11559,11560,11562,11566,11571}},
 		{0,1,0,"Brglmurgl",42.8,13.6,{11561}},
@@ -2355,7 +2355,7 @@ qcPinDB = {
 		{0,1,0,"Magistrix Kaelana",41.4,53.6,{12791}},
 		{0,1,0,"Elder Atkanok",54.6,35.9,{11724}},
 	},
-	[488] = { --[[ Dragonblight ]] --
+	[115] = { --[[ Dragonblight ]] --
 		{0,1,0,"Ambo Cash",86,50.8,{12455,12457,12463,12466}},
 		{0,1,0,"Elder Ko\'nani",48,74.8,{11958,11959}},
 		{0,1,0,"Trapper Mau\'i",48.2,74.2,{11960}},
@@ -2452,7 +2452,7 @@ qcPinDB = {
 		{0,1,110683,"Mariella the Heretic",71.4,71.8,{43388,43387}},
 
 	},
-	[490] = { --[[ Grizzly Hills ]] --
+	[116] = { --[[ Grizzly Hills ]] --
 		{0,1,0,"Fire Eater",33.8,60.2,{11882}},
 		{0,1,0,"Captain Gryan Stoutmantle",59.4,26,{11998,12158,12770}},
 		{0,1,0,"Brugar Stoneshear",59.8,27.6,{12002,12003,12010,12128}},
@@ -2530,7 +2530,7 @@ qcPinDB = {
 		--Legion
 		{0,1,104535,"Lea Stonepaw",51.2,36.8,{41783,41918,40647}},
 	},
-	[491] = { --[[ Howling Fjord ]] --
+	[117] = { --[[ Howling Fjord ]] --
 		{0,1,0,"Chicken",30.6,42.2,{3861}},
 		{0,1,0,"Vice Admiral Keller",60.4,61,{11243,11244,11255,11290,11291}},
 		{0,1,0,"Macalroy",61,62.6,{11228}},
@@ -2632,7 +2632,7 @@ qcPinDB = {
 		{0,1,105724,"Orik Trueheart",56.8,78.6,{42005}},
 		{0,1,16674,"Zandine",57.6,88.4,{28297,27278}},
 	},
-	[492] = { --[[ Icecrown ]] --
+	[118] = { --[[ Icecrown ]] --
 		{0,1,0,"Highlord Tirion Fordring",87.4,75.8,{13036,13070}},
 		{0,1,0,"Baron Sliver",42.8,25,{12806,12938,12995,13085,13106}},
 		{0,1,0,"Lord-Commander Arete",19.6,48,{12807,12810,12814,12840,12847}},
@@ -2752,7 +2752,7 @@ qcPinDB = {
 		{0,1,0,"Myralion Sunblaze",74.4,31.2,{24555,24559,24560,24561,24562,24799,24800,24801}},
 		{0,7,0,"Note from the Grand Admiral",8.4,42.4,{12839},"Drops from Scarlet Onslaught Trunk in the area while your on the Intelligence Gathering daily."},
 	},
-	[493] = { --[[ Sholazar Basin]] --
+	[119] = { --[[ Sholazar Basin]] --
 		{0,1,0,"Fire Eater",47.4,66.4,{11882}},
 		{0,1,0,"Avatar of Freya",64.4,48.6,{12546,12548,12559,12561,12611,12612,12613,12617,12620,12621,12660,12805}},
 		{0,1,0,"Hemet Nesingwary",27,58.6,{12520,12526,12556,12595,12651}},
@@ -2787,7 +2787,7 @@ qcPinDB = {
 		{0,1,0,"Grimbooze Thunderbrew",26.8,60,{12634,12644,12645}},
 		{0,1,0,"Flame Eater",47.2,61.2,{11915}},
 	},
-	[495] = { --[[ The Storm Peaks ]] --
+	[120] = { --[[ The Storm Peaks ]] --
 		{0,1,0,"Goblin Commoner",40.6,84.4,{11356,11357,11446,11970,11971,13483,13484,14022,14036,29074,29400}},
 		{0,1,0,"Fire Eater",41.6,86.8,{11882}},
 		{0,1,0,"Ricket",40.8,85.4,{12820,12821,12822,12827,12828,12833,12836,12862,13060}},
@@ -2840,7 +2840,7 @@ qcPinDB = {
 		{0,1,0,"Tracker Val\'zij",48.4,54.2,{13055,13056}},
 		{0,1,0,"Olut Alegut",37,49.6,{12882}},
 	},
-	[496] = { --[[ Zul'Drak ]] --
+	[121] = { --[[ Zul'Drak ]] --
 		{0,1,0,"Fire Eater",40.4,61.6,{11882}},
 		{0,1,0,"Quetz\'lun\'s Spirit",75.2,58.6,{12668,12672,12674,12675}},
 		{0,1,0,"Commander Kunz",40.2,66.6,{12505,12587,12596,12604,12792}},
@@ -2881,7 +2881,7 @@ qcPinDB = {
 		{0,1,0,"Gutretch",13.2,66.8,{31934}},
 		{0,1,0,"Wanted!",32.2,75.7,{12883}},
 	},
-	[499] = { --[[ Isle of Quel'Danas ]] --
+	[122] = { --[[ Isle of Quel'Danas ]] --
 		{0,3,24967,"Captain Theris Dawnhearth",47.4,30.5,{29682,11523}},
 		{0,3,24965,"Vindicator Xayann",47.1,30.7,{11525}},
 		{0,3,24975,"Mar'nah",51.5,32.5,{11521,11546}},
@@ -2893,12 +2893,12 @@ qcPinDB = {
 		{0,3,25057,"Battlemage Arynna",47.5,35.1,{11533}},
 		{0,3,25061,"Harbinger Inuuro",47.6,35.1,{11537}},
 	},
-	[501] = { --[[ Wintergrasp ]] --
+	[123] = { --[[ Wintergrasp ]] --
 		{0,1,31107,"Lieutenant Murp",22.5,35.9,{13223}},
 		{0,1,31091,"Commander Dardosh",22.2,35.1,{13180}},
 		{0,1,31151,"Tactical Officer Kilrath",21.7,34.4,{13183}},
 	},
-	[502] = { --[[ Plaguelands: The Scarlet Enclave ]]--
+	[124] = { --[[ Plaguelands: The Scarlet Enclave ]]--
 		{0,1,0,"The Lich King",51.3,35.2,{12593,12641,12657}},
 		{0,1,0,"Instructor Razuvious",48.5,28.1,{12619,12842,12848,12636}},
 		{0,1,0,"Highlord Darion Mograine",48.9,29.7,{12850,12714,12778}},
@@ -2924,7 +2924,7 @@ qcPinDB = {
 		{0,1,0,"Scourge Commander Thalanor",33.9,30.4,{12801}}, --[[ Phased ]]--
 		{0,1,0,"Highlord Darion Mograine",39.2,39.1,{13165}}, --[[ Phased ]]--
 	},
-	[504] = { --[[ Dalaran ]]-- Northrend
+	[125] = { --[[ Dalaran ]]-- Northrend
 		{1,3,20735,"Archmage Lan'dalock",57.6,67.0,{24580,24585,24587,24582,24589,24590,24584,24581,24583,24586,24579,24588}},
 		{1,3,29631,"Awilo Lon'gomba",69.9,39.0,{13115,13113,13112,13116,13114}},
 		{1,3,28705,"Katherine Lee",40.7,65.5,{13103,13101,13100,13107,13102}},
@@ -2945,45 +2945,45 @@ qcPinDB = {
 		{1,1,130654,"Vormu",50.0,45.8,{50316},"Timewalking Event for WOLK"},
 		{1,1,36670,"Magister Hathorel",69.8,31.4,{24556,24451,24558,24557}},
 	},
-	[510] = { --[[ Crystalsong Forest ]] --
+	[127] = { --[[ Crystalsong Forest ]] --
 		{0,1,0,"Nearly Headless Jacob",50.2,59,{31932}},
 	},
-	[520] = { --[[ The Nexus ]]--
+	[129] = { --[[ The Nexus ]]--
 		{1,1,55537,"Image of Warmage Kaitlyn",36.2,83.0,{13094,13095}},
 		{1,1,55535,"Image of Warmage Kaitlyn",35.1,81.4,{11905}},
 		{1,1,55536,"Image of Warmage Kaitlyn",37.3,81.4,{11911}},
 		{1,1,55531,"Warmage Kaitlyn",36.2,81.4,{11973}},
 	},
-	[521] = { --[[ The Culling of Stratholme ]] --
+	[130] = { --[[ The Culling of Stratholme ]] --
 		{0,1,26527,"Chromie",86.4,61.6,{13149}},
 		{0,1,27915,"Chromie",47.6,39.8,{13151}},
 	},
-	[522] = { --[[ Ahn'kahet: The Old Kingdom ]] --
+	[132] = { --[[ Ahn'kahet: The Old Kingdom ]] --
 		{1,1,55658,"Seer Ixit",87.1,72.6,{29825,29826,13187}},
 	},
-	[523] = { --[[ Utgarde Keep ]]--
+	[133] = { --[[ Utgarde Keep ]]--
 		{1,1,24137,"Dark Ranger Marrah",68.1,67.7,{11262,13206}},
 		{1,1,24111,"Defender Mordun",67.6,71.0,{29763,29764,29803}},
 	},
-	[524] = { --[[ Utgarde Pinnacle ]]--
+	[136] = { --[[ Utgarde Pinnacle ]]--
 		{2,1,30871,"Brigg Smallshanks",43.9,18.2,{13131,13132}},
 		{2,1,56072,"Image of Argent Confessor Paletress",45.1,18.1,{29864}},
 	},
-	[528] = { --[[ The Oculus ]]--
+	[142] = { --[[ The Oculus ]]--
 		{1,1,0,nil,62.6,44.8,{13124}},
 		{1,1,27658,"Belgaristrasz",50.1,81.2,{13126}},
 	},
-	[530] = { --[[ Gundrak ]] --
+	[153] = { --[[ Gundrak ]] --
 		{1,1,55738,"Tol'mar",57.3,34.6,{29834,29844,29839}},
 		{1,1,55737,"Chronicler Bah'Kini",36.6,35.1,{29835,29838,29840}},
 	},
-	[533] = { --[[ Azjol-Nerub]] --
+	[157] = { --[[ Azjol-Nerub]] --
 		{3,1,55564,"Reclaimer A'zak",15.0,83.7,{29807,29808,29811}},
 	},
-	[536] = { --[[ The Violet Hold ]] --
+	[168] = { --[[ The Violet Hold ]] --
 		{1,1,30658,"Lieutenant Sinclari",47.7,89.7,{29830}},
 	},
-	[544] = { --[[ The Lost Isles ]]--
+	[174] = { --[[ The Lost Isles ]]--
 		{0,1,0,"Platform Control Panel",51.4,13.1,{25207}},
 		{0,1,38441,"Ace",54.2,17.2,{25203}},
 		{0,1,35875,"Aggra",37.6,78.0,{14235,14237}},
@@ -3029,7 +3029,7 @@ qcPinDB = {
 		{0,1,38935,"Thrall",36.8,43.1,{25024,25099}},
 		{0,1,38935,"Thrall",42.2,17.4,{25266}},
 	},
-	[545] = { --[[ Gilneas ]] --
+	[179] = { --[[ Gilneas ]] --
 		{0,1,36332,"King Genn Greymane",36.4,61.3,{14375}},
 		{0,1,36170,"Lord Godfrey",36.5,62.3,{14313}},
 		{0,1,36132,"Krennan Aranas",37.4,63.2,{14320}},
@@ -3063,10 +3063,10 @@ qcPinDB = {
 		{0,1,43727,"Lorna Crowley",41.7,36.5,{26706}},
 		{0,1,36616,"Admiral Nightwind",42.6,36.0,{14434}},
 	},
-	[604] = { --[[ Icecrown Citadel  ]]--
+	[186] = { --[[ Icecrown Citadel  ]]--
 		{0,1,37120,"Highlord Darion Mograine",42.8,22.8,{24547,24756,24912,24757,24915,24549,24743,24748,24545,24548,24749}},
 	},
-	[605] = { --[[ Kezan ]]--
+	[194] = { --[[ Kezan ]]--
 		{0,1,0,nil,48.6,57.8,{24503}},
 		{0,1,35053,"Candy Cane",56.3,77.1,{14113,26712}},
 		{0,1,35054,"Chip Endale",56.3,76.8,{26711,14153}},
@@ -3088,7 +3088,7 @@ qcPinDB = {
 		{0,1,35120,"FBoK Bank Teller",29.7,71.9,{14109}},
 		{0,1,35120,"FBoK Bank Teller",30.1,71.9,{14109}},
 	},
-	[606] = { --[[ Mount Hyjal ]]--
+	[198] = { --[[ Mount Hyjal ]]--
 		{0,3,53073,"Captain Soren Moonfall",27.6,61.6,{29128}},
 		{0,3,52986,"Dorda'en Nightweaver",27.5,62.5,{29248,29246,29247}},
 		{0,3,52669,"Matoclaw",27.2,62.6,{29123,29126,29145,29163,29197,29202,29147,29148}},
@@ -3165,7 +3165,7 @@ qcPinDB = {
 		{0,1,52845,"Malfurion Stormrage",27.4,55.2,{29196}},
 		{0,1,52845,"Malfurion Stormrage",27.0,62.7,{29201}},
 	},
-	[607] = { --[[ Southern Barrens ]]--
+	[199] = { --[[ Southern Barrens ]]--
 		{0,1,38378,"Commander Walpole",29.9,9.0,{24862,24863}},
 		{0,1,38380,"Janice Mattingly",35.0,9.5,{25186}},
 		{0,1,38383,"Nibb Spindlegear",39.1,11.4,{25191}},
@@ -3226,7 +3226,7 @@ qcPinDB = {
 		{1,1,0,"Roadway Plans",52.6,75.8,{24518}}, --[[ drop from the southern Barrens ]]--
 		{0,1,0,"Carved Boar Idol",43.5,82.3,{24606}},
 	},
-	[610] = { --[[ Kelp'thar Forest ]] --
+	[201] = { --[[ Kelp'thar Forest ]] --
 		{0,1,36915,"Erunak Stonespeaker",45.2,23.4,{24432,25281,25405}},
 		{0,1,39887,"Captain Taylor",44.7,22.6,{25357,25546,25545,25564,25547}},
 		{0,10,0,nil,48.8,21.1,{27729}},
@@ -3260,7 +3260,7 @@ qcPinDB = {
 		{0,1,0,nil,58.3,74.4,{27708},"Provided remotely after completing Come Hell or High Water."},
 		{0,7,0,"Gnash's Head",53.5,47.7,{27687},"Drops from Gnash."},
 	},
-	[611] = { --[[ Gilneas City ]] --
+	[202] = { --[[ Gilneas City ]] --
 		{0,1,34850,"Prince Liam Greymane",59.1,23.9,{14078,14093,14098,14099}},
 		{0,1,34863,"Lieutenant Walden",54.6,16.7,{14091}},
 		{0,1,34936,"Gwen Armstead",59.6,26.8,{14094}},
@@ -3287,11 +3287,11 @@ qcPinDB = {
 		{0,1,38539,"King Genn Greymane",32.4,57.0,{24920,24678}},
 		
 	},
-	[613] = { --[[ Vashj'ir ]] --
+	[203] = { --[[ Vashj'ir ]] --
 		{0,1,42411,"Captain Taylor",69.6,75.3,{26219},"At the surface of the ocean, aboard Voldin's Hold"},
 		{0,1,45462,"Toshe Chaosrender",69.8,75.1,{27443},"At the surface of the ocean, aboard Voldin's Hold"},
 	},
-	[614] = { --[[ Abyssal Depths ]]--
+	[204] = { --[[ Abyssal Depths ]]--
 		{0,1,53652,"Aggra",69.8,34.2,{29328,29337}},
 		{0,1,41666,"Engineer Hexascrub",55.5,72.9,{26103,26106,25981,25987,25983}},
 		{0,10,0,nil,55.2,72.0,{26105},"Starts when you kill a Hellscream Seadog."},
@@ -3309,7 +3309,7 @@ qcPinDB = {
 		{0,1,0,nil,34.0,54.0,{26143}},
 		{0,1,41600,"Erunak Stonespeaker",55.7,73.0,{26193}},
 	},
-	[615] = { --[[ Shimmering Expanse ]]--
+	[205] = { --[[ Shimmering Expanse ]]--
 		{0,1,39226,"Farseer Gadra",56.0,13.7,{25334,25164},"Inside Damplight Chamber."},
 		{0,1,39877,"Toshe Chaosrender",55.5,12.5,{25221},"Inside Damplight Chamber."},
 		{0,1,39877,"Toshe Chaosrender",53.3,33.1,{25222}},
@@ -3357,9 +3357,9 @@ qcPinDB = {
 		{0,1,42411,"Captain Taylor",56.9,75.9,{26219},"At the surface of the ocean, aboard Voldin's Hold"},
 		{0,1,45462,"Toshe Chaosrender",57.3,75.6,{27443},"At the surface of the ocean, aboard Voldin's Hold"},
 	},
-	[626] = { --[[ Twin Peaks ]]--
+	[206] = { --[[ Twin Peaks ]]--
 	},
-	[640] = { --[[ Deepholm ]]--
+	[207] = { --[[ Deepholm ]]--
 		{0,1,42573,"Earthcaller Yevaa",49.5,53.3,{26409,26484,27952}},
 		{0,1,44799,"Explorer Mowi",47.3,51.4,{27004,27040,27058,28292}},
 		{0,1,42574,"Initiate Goldmine",46.5,57.3,{26410,26411,26413,27135}},
@@ -3426,7 +3426,7 @@ qcPinDB = {
 		--[[ Midsummer Fire Festival ]]--
 		{0,1,51697,"Vashj'ir Flame Guardian",49.3,42.0,{29031}},
 	},
-	[673] = { --[[ The Cape of Stranglethorn ]]--
+	[210] = { --[[ The Cape of Stranglethorn ]]--
 		{0,1,44100,"Goris",55.0,41.8,{26822}},
 		{0,1,44082,"Bronwyn Hewstrike",55.2,42.5,{26825,26821}},
 		{0,1,44099,"Dask \"The Flask\" Gobfizzle",55.3,41.9,{26823,26817,26815,26824,26816}},
@@ -3468,7 +3468,7 @@ qcPinDB = {
 		{0,1,2546,"Fleet Master Firallon",46.6,95.2,{4621,9272,26650}},
 		{0,5,17538,"O'ros",57.6,41.2,{10968}},
 	},
-	[678] = { 
+	[678] = {  --[[ ??? ]]--
 		{0,1,36332,"King Genn Greymane",36.4,61.3,{14375}},
 		{0,1,36170,"Lord Godfrey",36.5,62.3,{14313}},
 		{0,1,36132,"Krennan Aranas",37.4,63.2,{14320}},
@@ -3498,12 +3498,12 @@ qcPinDB = {
 		{0,1,38149,"Lord Darius Crowley",41.9,37.6,{24681}},
 		{0,1,43727,"Lorna Crowley",41.6,36.5,{26706}},
 	},
-	[680] = { --[[ Ragefire Chasm ]]--
+	[213] = { --[[ Ragefire Chasm ]]--
 		{1,1,61716,"Invoker Xorenth",67.7,11.5,{30969,30983}},
 		{1,1,61724,"Commander Bagran",68.2,12.2,{30982,30984}},
 		
 	},
-	[684] = { --[[ Ruins of Gilneas ]]--
+	[217] = { --[[ Ruins of Gilneas ]]--
 		{0,1,45312,"Deathstalker Commander Belmont",57.5,18.9,{27342}},
 		{0,1,45315,"Forward Commander Onslaught",57.5,18.2,{27333,27345,27349,27350,27364,27401,27405}},
 		{0,1,45389,"Captain Rutsak",65.6,34.1,{27360}},
@@ -3512,15 +3512,15 @@ qcPinDB = {
 		{0,1,45312,"Deathstalker Commander Belmont",79.7,75.8,{27438}},
 		{0,7,0,"Korok's Second Head",50.6,20.3,{27322},"Drops from Korok the Colossus."},
 	},
-	[686] = { --[[ Zul'Farrak ]]--
+	[219] = { --[[ Zul'Farrak ]]--
 		{0,1,40712,"Mazoga's Spirit",56.7,89.2,{27068,27071}},
 		{0,1,7407,"Chief Engineer Bilgewhizzle",58.2,89.1,{27070}},
 		{0,1,44929,"Tran'rek",58.3,88.7,{27076}},
 	},
-	[687] = { --[[ The Temple of Atal'Hakkar ]] --
+	[220] = { --[[ The Temple of Atal'Hakkar ]] --
 		{1,1,46077,"Lord Itharius",50.0,17.2,{27604,27605,27633}},
 	},
-	[688] = { --[[ Blackfathom Deeps ]]--
+	[221] = { --[[ Blackfathom Deeps ]]--
 		{1,1,33261,"Sentinel-trainee Issara",49.1,11.7,{26885}},
 		{1,1,33260,"Sentinel Aluwyn",48.5,12.0,{26883}},
 		{1,1,33258,"Relwyn Shadestar",47.3,13.1,{26884}},
@@ -3531,12 +3531,12 @@ qcPinDB = {
 		{2,1,44387,"Flaming Eradicator",31.9,67.0,{26899}},
 		{2,7,0,"Strange Water Globe",43.5,75.2,{6922},"Drops from Baron Aquanis, who spawns after extracting the Fathom Core."},
 	},
-	[690] = { --[[ The Stockade ]]--
+	[225] = { --[[ The Stockade ]]--
 		{1,1,46417,"Rifle Commander Coe",50.0,58.3,{27733}},
 		{1,1,46409,"Warden Thelwater",42.4,54.0,{27739}},
 		{1,1,46410,"Nurse Lillian",57.3,54.0,{27737}},
 	},
-	[691] = { --[[ Gnomeregan ]]--
+	[226] = { --[[ Gnomeregan ]]--
 		{1,1,44556,"Murd Doc",63.1,33.33,{26939,50338}},
 		{2,1,0,"The Sparklematic 5200",63.2,67.9,{4601,4605,4603}},
 		{2,1,11415,"The Sparklematic 5200",68.6,62.2,{2953}},
@@ -3544,13 +3544,13 @@ qcPinDB = {
 		{2,1,44560,"B.E Barechus",65.1,47.0,{26941,50337}},
 		{3,1,44561,"Face",23.9,39.1,{26942,50336}},
 	},
-	[692] = { --[[ Uldaman]]
+	[230] = { --[[ Uldaman]]
 		{2,1,0,"The Discs of Norgannon",49.9,33.4,{2278,2280}},
 		{1,1,46247,"Kand Sandseeker",64.0,72.1,{27673}},
 		{1,1,46233,"Olga Runesworn",64.0,73.0,{27676}},
 		{1,1,46234,"Lead Prospector Durdin",63.7,72.6,{27672}},
 	},
-	[699] = { --[[ Dire Maul ]]--
+	[234] = { --[[ Dire Maul ]]--
 		{5,1,44971,"\"Ambassador\" Dagg'thol",7.0,36.1,{27107,27108}},
 		{5,1,44969,"Furgus Warpwood",11.2,38.9,{27103,27104,27105}},
 		{2,1,44999,"Shen'dralar Watcher",87.4,52.4,{27109}},
@@ -3560,7 +3560,7 @@ qcPinDB = {
 		{1,1,14338,"Knot Thimblejack",28.6,55.2,{27119,27120}},
 		{1,1,48413,"Broken Trap",26.5,57.8,{27118}},
 	},
-	[700] = { --[[ Twilight Highlands ]]--
+	[241] = { --[[ Twilight Highlands ]]--
 		{0,1,49022,"Lieutenant Fawkes",81.0,79.4,{28596}},
 		{0,1,49252,"Fargo Flintlocke",81.0,79.3,{28597}},
 		{0,1,49020,"Fargo Flintlocke",78.8,76.8,{28598,28599}},
@@ -3630,35 +3630,35 @@ qcPinDB = {
 		{0,1,0,"Twilight Rune of Earth",37.4,93.2,{27744}},
 		{0,1,0,"The Hammer of Twilight",45.4,87.9,{27787}},
 	},
-	[704] = { --[[ Blackrock Depths ]]--
+	[242] = { --[[ Blackrock Depths ]]--
 		{2,5,0,"Direbrew's Dire Brew",46.7,60.4,{12491}},
 		{1,1,45839,"Galamav the Marksman",36.8,74.6,{27582}},
 		{1,1,45850,"Maxwort Uberglint",36.0,81.0,{27596}},
 		{1,1,45821,"Thal'trak Proudtusk",36.2,77.3,{27579}},
 		{1,1,45849,"Tinkee Steamboil",37.4,80.1,{27603}},
 	},
-	[708] = { --[[ Tol Barad ]]--
+	[244] = { --[[ Tol Barad ]]--
 		{0,3,48039,"Commander Stevens",51.4,49.6,{28117,28118,28120}},
 		{0,3,48066,"Sergeant Parker",50.9,49.7,{28122,28162,28163}},
 	},
-	[709] = { --[[ Tol Barad Peninsula ]]--
+	[245] = { --[[ Tol Barad Peninsula ]]--
 		{0,3,47240,"Commander Marcus Johnson",73.4,59.2,{28059,28063,28130,28137,28065}},
 		{0,3,48255,"Camp Coordinator Brack",73.7,57.6,{27948,27972,27970,27971,28050,27944}},
 		{0,3,48250,"Lieutenant Farnsworth",74.8,59.6,{28046,27967,27992,27966,27949}},
 		{0,5,51288,"Major Marsden",74.6,61.0,{28882}},
 		{0,3,48254,"Sergeant Gray",72.9,60.9,{28275,27987,27978,27991,27975,27973}},
 	},
-	[710] = { --[[ The Shattered Halls ]]--
+	[246] = { --[[ The Shattered Halls ]]--
 		{1,1,54933,"Advance Scout Chadwick",58.6,88.4,{29649,29656,29654}},
 		{1,1,54934,"Gunny",58.6,88.6,{29652}},
 	},
-	[717] = { --[[ Ruins of Ahn'Qiraj ]]--
+	[247] = { --[[ Ruins of Ahn'Qiraj ]]--
 		{0,7,0,"Head of Ossirian the Unscarred",40.6,73.9,{8791}},
 	},
-	[718] = { --[[ Onyxia's Lair]] --
+	[248] = { --[[ Onyxia's Lair]] --
 		{1,7,0,"Head of Onyxia",67.3,27.0,{24428}},
 	},
-	[720] = { --[[ Uldum ]]--
+	[249] = { --[[ Uldum ]]--
 		{0,1,0,"Antediluvean Chest",84.5,43.2,{25070,25421}},
 		{0,1,53524,"Cyclonas",47.7,88.9,{29327}},
 		{0,1,53519,"Aggra",34.3,77.6,{29336}},
@@ -3727,65 +3727,65 @@ qcPinDB = {
 		{0,7,48428,"Myzerian",39.0,21.4,{28376}},
 		{0,7,48428,"Myzerian",40.0,25.0,{28376}},
 	},
-	[721] = { --[[  Blackrock Spire ]] --
+	[250] = { --[[  Blackrock Spire ]] --
 	
 	},
-	[722] = { --[[  Auchenai Crypts ]] --
+	[256] = { --[[  Auchenai Crypts ]] --
 		{2,1,54725,"Draenei Spirit",44.0,72.4,{29590},29596},
 		{1,1,54698,"Tormented Soulpriest",46.2,23.6,{29591}},
 	},
-	[723] = { --[[  Sethekk Halls  ]] --
+	[258] = { --[[  Sethekk Halls  ]] --
 		{1,1,54840,"Isfar",72.6,35.8,{29605,29606}},
 		{1,1,54847,"Dealer Vijaad",44.2,67.6,{29607}},
 	},
-	[724] = { --[[ Shadow Labyrinth ]] --
+	[260] = { --[[ Shadow Labyrinth ]] --
 		{1,1,54891,"Spy Grik'tha",22.6,12.5,{29640}},
 		{1,1,54890,"Field Commander Mahfuun",21.3,13.1,{29643,29645}},
 		{1,1,18891,"Spy To'gun",17.1,22.1,{29641}},
 		{1,1,0,"The Codex of Blood",53.3,58.8,{29644}},
 	},
-	[725] = { --[[ Blood Furnace ]]--
+	[261] = { --[[ Blood Furnace ]]--
 		{1,1,54629,"Gunny",50.9,90.2,{29538,29540,29539}},
 	},
-	[726] = { --[[ The Underbog ]]--
+	[262] = { --[[ The Underbog ]]--
 		{1,1,54674,"T'shu",31.2,65.6,{29691,29692,29567}},
 		{1,1,54675,"Watcher Jhang",30.6,65.6,{29570}},
 		{1,1,54678,"Naturalist Bite",29.8,64.6,{29568}},
 	},
-	[727] = { --[[ The Steamvault ]]--
+	[263] = { --[[ The Steamvault ]]--
 		{1,1,54848,"Watcher Jhang",17.8,27.6,{29613}},
 		{1,1,54849,"Naturalist Bite",17.8,27.6,{29614}},
 		{1,1,54851,"Windcaller Claw",18.6,27.2,{29615}},
 	},
-	[728] = { --[[ The Slave Pens ]]--
+	[265] = { --[[ The Slave Pens ]]--
 		{1,1,54667,"Watcher Jhang",18.8,11.6,{29563,29565}},
 		{1,1,54668,"Nahuud",18.2,12.0,{29564}},
 		{1,1,22421,"Skar'this the Heretic",57.2,83.4,{13431}},
 	},
-	[729] = { --[[ The Botanica ]] --
+	[266] = { --[[ The Botanica ]] --
 		{1,1,0,nil,86.2,46.1,{29660}},
 		{1,1,0,nil,12.2,50.1,{29667}},
 		{1,1,0,nil,34.2,81.1,{29669}},
 	},
-	[730] = { --[[ The Mechanar ]] --
+	[267] = { --[[ The Mechanar ]] --
 		{1,1,0,nil,49.4,80.4,{29657}},
 		{1,10,0,nil,60.3,45.6,{29659},"Killing a Gatewatcher Iron Hand starts this quest."},
 		{1,10,0,nil,46.5,59.3,{29659},"Killing a Gatewatcher Iron Hand starts this quest."},
 		{1,1,0,nil,48.1,31.1,{29658}},
 	},
-	[732] = { --[[ Mana-Tombs ]]--
+	[272] = { --[[ Mana-Tombs ]]--
 		{1,1,54629,"Artificer Morphalius",34.0,19.2,{29573,29575}},
 		{1,1,54694,"Mamdy the Ologist",33.0,19.0,{29573,29575}},
 	},
-	[733] = { --[[ The Black Morass ]] --
+	[273] = { --[[ The Black Morass ]] --
 	},
-	[734] = { --[[ Old Hillsbrad Foothills ]] --
+	[274] = { --[[ Old Hillsbrad Foothills ]] --
 		{0,1,18723,"Erozion",28.8,48.2,{29598}},
 		{0,1,17876,"Thrall",74.4,57.6,{29599}},
 	},
-	[736] = { --[[ The Battle for Gilneas ]] --
+	[275] = { --[[ The Battle for Gilneas ]] --
 	},
-	[737] = { --[[ The Maelstrom ]]--
+	[276] = { --[[ The Maelstrom ]]--
 		{0,1,45042,"Thrall",33.4,50.2,{27123,27378}},
 		{0,1,106519,"Farseer Nobundo",34.6,78.2,{44406,41743,45763,46258}},
 		{0,1,110495,"Farseer Nobundo",35.2,45.0,{43418}},
@@ -3803,22 +3803,22 @@ qcPinDB = {
 
 
 	},
-	[749] = { --[[ The Wailing Caverns ]]--
+	[279] = { --[[ The Wailing Caverns ]]--
 		{1,1,5768,"Ebru",46.7,59.2,{26870}},
 		{1,1,5767,"Nalpak",46.6,58.4,{26872,26873}},
 	},
-	[750] = { --[[ Maraudon ]]--
+	[280] = { --[[ Maraudon ]]--
 		{2,1,0,nil,28.5,43.2,{27692}},
 		{1,1,0,nil,76.7,65.8,{27697}},
 		{1,1,0,nil,62.3,21.2,{27698}},
 	},
-	[753] = { --[[ Blackrock Caverns ]] --
+	[283] = { --[[ Blackrock Caverns ]] --
 		{1,1,49476,"Finkle Einhorn",33.1,66.0,{28735}},
 	},
-	[755] = { --[[ Blackwing Lair ]] --
+	[290] = { --[[ Blackwing Lair ]] --
 		{4,7,0,"Head of Nefarian",75.8,88.7,{7781}},
 	},
-	[756] = { --[[ The Deadmines ]]--
+	[291] = { --[[ The Deadmines ]]--
 		{1,1,0,"CHANGE_TO_NIL",36.5,61.3,{27848},"Available after defeating Glubtokd."},
 		{2,1,0,"CHANGE_TO_NIL",63.4,39.2,{27850},"Available after defeating Admiral Ripsnarl."},
 		{1,1,46889,"Kagtha",29.3,27.2,{27842}},
@@ -3827,35 +3827,35 @@ qcPinDB = {
 		{1,1,46902,"Miss Mayhem",29.6,24.7,{27847}},
 		{1,1,46906,"Slinky Sharpshiv",28.8,27.3,{27844}},
 	},
-	[757] = { --[[ Grim Batol ]]--
+	[293] = { --[[ Grim Batol ]]--
 		{1,1,50387,"Baleflame",19.8,52.6,{28854}},
 		{1,1,50390,"Velastrasza",19.2,55.5,{28852}},
 		{1,1,50385,"Farseer Tooranu",18.8,55.7,{28853}},
 	},
-	[760] = { --[[ Razorfen Downs ]]--
-		{1,1,44837,"Koristrasza",24.5,23.7,{27009,27024,27029}},
-		{1,1,8516,"Belnistrasz",77.5,15.2,{27019,27022}},
+	[300] = { --[[ Razorfen Downs ]]--
+		--{1,1,44837,"Koristrasza",24.5,23.7,{27009,27024,27029}},
+		--{1,1,8516,"Belnistrasz",77.5,15.2,{27019,27022}},
 	},
-	[762] = { --[[ Scarlet Monastery ]]--
-		{3,1,44741,"Joseph the Crazed",63.4,94.1,{26974}},
-		{3,1,44804,"Dominic",66.9,83.7,{26994}},
-		{2,1,44738,"Joseph the Awakened",20.5,15.1,{26973}},
-		{2,1,44800,"Dominic",45.1,68.2,{26993}},
-		{1,1,44728,"Joseph the Awakened",75.8,81.1,{26972}},
-		{4,1,44746,"Joseph the Insane",49.0,74.1,{26976}},
-		{4,1,44805,"Dominic",49.0,66.0,{26996}},
-		{2,1,44660,"Dark Ranger Velonara",20.5,13.8,{26959}},
-		{3,1,44690,"Dark Ranger Velonara",59.7,94.1,{26962}},
-		{1,1,44637,"Dark Ranger Velonara",75.8,81.1,{26950}},
-		{4,1,44706,"Dark Ranger Velonara",48.9,87.6,{26967}},
+	[302] = { --[[ Scarlet Monastery ]]--
+		--{3,1,44741,"Joseph the Crazed",63.4,94.1,{26974}},
+		--{3,1,44804,"Dominic",66.9,83.7,{26994}},
+		--{2,1,44738,"Joseph the Awakened",20.5,15.1,{26973}},
+		--{2,1,44800,"Dominic",45.1,68.2,{26993}},
+		--{1,1,44728,"Joseph the Awakened",75.8,81.1,{26972}},
+		--{4,1,44746,"Joseph the Insane",49.0,74.1,{26976}},
+		--{4,1,44805,"Dominic",49.0,66.0,{26996}},
+		--{2,1,44660,"Dark Ranger Velonara",20.5,13.8,{26959}},
+		--{3,1,44690,"Dark Ranger Velonara",59.7,94.1,{26962}},
+		--{1,1,44637,"Dark Ranger Velonara",75.8,81.1,{26950}},
+		--{4,1,44706,"Dark Ranger Velonara",48.9,87.6,{26967}},
 	},
-	[763] = { --[[ Scholomance ]]--
-		{1,1,45107,"Eva Sarkhoff",46.2,51.7,{27146,27147}},
-		{1,1,45108,"Lucien Sarkhoff",47.4,51.7,{27148}},
-		{1,1,45109,"Weldon Barov",46.0,58.5,{27143,27145}},
-		{1,1,45110,"Alexi Barov",47.3,58.4,{27140,27142}},
+	[306] = { --[[ Scholomance ]]--
+		--{1,1,45107,"Eva Sarkhoff",46.2,51.7,{27146,27147}},
+		--{1,1,45108,"Lucien Sarkhoff",47.4,51.7,{27148}},
+		--{1,1,45109,"Weldon Barov",46.0,58.5,{27143,27145}},
+		--{1,1,45110,"Alexi Barov",47.3,58.4,{27140,27142}},
 	},
-	[764] = { --[[ Shadowfang Keep ]]--
+	[310] = { --[[ Shadowfang Keep ]]--
 		{1,1,47293,"Deathstalker Commander Belmont",64.3,57.9,{27974}},
 		{1,1,47293,"Deathstalker Commander Belmont",67.8,73.1,{27988}},
 		{1,1,47293,"Deathstalker Commander Belmont",60.4,57.3,{27988}},
@@ -3864,7 +3864,7 @@ qcPinDB = {
 		--[[ Love is in the Air ]]--
 		{1,5,0,"Faded Lovely Greeting Card",39.3,52.2,{24745,14483}},
 	},
-	[765] = { --[[ Stratholme ]] --
+	[317] = { --[[ Stratholme ]] --
 		{1,1,45323,"Packmaster Stonebruiser",67.0,89.4,{27192}},
 		{1,1,45201,"Master Craftsman Wilhelm",65.2,87.1,{27185}},
 		{1,1,45200,"Crusade Commander Eligor Dawnbringer",66.3,86.6,{27208,27305,27223}},
@@ -3874,7 +3874,7 @@ qcPinDB = {
 		{2,1,45329,"Crusade Commander Eligor",67.8,72.6,{27227}},
 		{2,1,45331,"Master Craftsman Wilhelm",69.2,73.0,{27230}},		
 	},
-	[766] = { --[[ Temple of Ahn'Qiraj ]]--
+	[319] = { --[[ Temple of Ahn'Qiraj ]]--
 		{2,1,15502,"Andorgos <Brood of Malygos>",58.8,68.4,{8544,8561,8592,8594,8602,8623,8628,8630,8625,8632,8639,8641,8657,8659,8662,8664,8667,8669}},			
 		{2,1,15503,"Kandrostrasz <Brood of Alexstrasza>",59.4,68.4,{8559,8560,8593,8596,8621,8624,8655,8629,8631,8634,8637,8640,8626,8658,8660,8663,8665,8668}},			
 		{2,1,15504,"Vethsera <Brood of Ysera>",60.0,68.4,{8562,8603,8622,8627,8633,8638,8656,8661,8666}},
@@ -3884,42 +3884,42 @@ qcPinDB = {
 		{3,2,15378,"Merithra of the Dream",51.8,84.6,{8790}},
 		{2,8,0,"Ancient Qiraji Artifact",42.5,36.0,{8784}},
 	},
-	[767] = { --[[ Throne of the Tides ]] --
+	[322] = { --[[ Throne of the Tides ]] --
 		{1,1,50270,"Captain Taylor",49.9,90.5,{28834,28836}},
 	},
-	[768] = { --[[ The Stonecore ]]--
+	[324] = { --[[ The Stonecore ]]--
 		{1,1,50048,"Earthwarden Yrsa",53.6,95.0,{28815}},
 	},
-	[769] = { --[[ The Vortex Pinnacle ]] --
+	[325] = { --[[ The Vortex Pinnacle ]] --
 		{1,1,49943,"Itesh",54.5,15.9,{28760,28779}},
 	},
-	[772] = { --[[ Ahn'Qiraj: The Fallen Kingdom ]]--
+	[327] = { --[[ Ahn'Qiraj: The Fallen Kingdom ]]--
 		{0,1,15498,"Windcaller Yessendra",59.0,14.0,{8700,8699,8701,8703,8697,8702,8698,8556,8704}},
 		{0,1,15499,"Warden Haro",59.6,14.0,{8711,8707,8709,8705,8706,8710,8708,8712,8558}},
 		{0,1,15500,"Keyl Swiftclaw",60.2,14.0,{8695,8692,8693,8690,8696,8557,8691,8689,8694}},
 	},
-	[779] = { --[[ Magtheridon's Lair ]] --	
+	[331] = { --[[ Magtheridon's Lair ]] --	
 		{1,7,0,"Magtheridon's Head",69.0,73.1,{11002}},
 	},
-	[780] = { --[[ Serpentshrine Cavern ]] --
+	[332] = { --[[ Serpentshrine Cavern ]] --
 		{1,1,22820,"Seer Olum",48.1,18.5,{10944}},
 	},
-	[781] = { --[[ Zul'Aman ]] --
+	[333] = { --[[ Zul'Aman ]] --
 		{0,1,52924,"Vol'jin",14.2,52.9,{11196}},
 		{0,1,52925,"Witch Doctor T'wansi",13.7,51.8,{29186}},
 		{0,1,52933,"Blood Guard Hakkuz",13.7,54.1,{29217}},
 	},
-	[782] = { --[[ The Eye ]] --
+	[334] = { --[[ The Eye ]] --
 		{1,7,0,"Verdant Sphere",50.0,14.8,{11007}},
 	},
-	[793] = { --[[ Zul'Gurub ]] --
+	[337] = { --[[ Zul'Gurub ]] --
 		{0,1,53024,"Bloodslayer Zala",30.6,47.3,{29241}},
 		{0,1,53151,"Overseer Blingbang",30.6,47.5,{29154,29155}},
 		{0,1,53023,"Bloodslayer T'ara",31.0,47.6,{29172,29173,29175}},
 		{0,1,53043,"Briney Boltcutter",30.5,51.0,{29242}},
 		
 	},
-	[795] = { --[[ Molten Front ]] --
+	[338] = { --[[ Molten Front ]] --
 		{0,1,0,"Malfurion Stormrage",47,91,{29181,29203,29214}},
 		{0,1,0,"Thisalee Crow",42.4,59.8,{29264,29265}},
 		{0,1,0,"Rayne Feathersong",48.6,86,{29139,29143}},
@@ -3948,15 +3948,15 @@ qcPinDB = {
 		{0,1,0,"Aggra",51.2,25.8,{29330}},
 		{0,1,0,"Ricket",66.2,65.4,{29297}},
 	},
-	[796] = { --[[ Black Temple ]] --
+	[339] = { --[[ Black Temple ]] --
 	},
-	[797] = { --[[ Hellfire Ramparts ]]--
+	[347] = { --[[ Hellfire Ramparts ]]--
 		{1,1,54603,"Advance Scout Chadwick",48.5,68.1,{29528,29529,29594}},
 	},
-	[800] = { --[[ Firelands ]]--
+	[367] = { --[[ Firelands ]]--
 		{0,1,105461,"Stormcaller Mylra",26.2,61.8,{42931}},
 	},
-	[806] = { --[[ The Jade Forest ]]--
+	[371] = { --[[ The Jade Forest ]]--
 		{0,1,756,"Sky Admiral Rogers",42.0,92.8,{31732,31733},"On-board the Skyfire."},
 		{0,1,54616,"Sully \"The Pickle\" McLeary",43.6,90.7,{30069,31734}},
 		{0,1,54617,"Rell Nightwind",46.5,96.4,{31737,31736}},
@@ -4090,7 +4090,7 @@ qcPinDB = {
 		{0,3,58511,"Qua-Ro Whitebrow",57.3,43.5,{31714}},
 		{0,1,59569,"Brewmaster Blanche",36.9,30.1,{30567}},
 	},
-	[807] = { --[[ Valley of the Four Winds ]]--
+	[376] = { --[[ Valley of the Four Winds ]]--
 		{0,1,56133,"Chen Stormstout",85.9,22.1,{29907}},
 		{0,1,56204,"Pang Thunderfoot",83.7,21.0,{29908,29909,29912}},
 		{0,1,56440,"Muno the Farmhand",82.7,21.2,{29877}},
@@ -4193,7 +4193,7 @@ qcPinDB = {
 		{0,3,58709,"Chee Chee",53.1,52.1,{30324}},
 		{0,1,0,"\"Jinyu Princess\" Irrigation System",53.0,50.7,{31936}},
 	},
-	[808] = { --[[ The Wandering Isle ]]--
+	[378] = { --[[ The Wandering Isle ]]--
 		{0,9,0,nil,56.6,17.5,{30045,30041,30043,30042,30044,30040,30039}},
 		{0,9,0,"Master Shang Xi",56.7,18.2,{30038,30034,30036,30035,30037,30033,30027,29406,29524}},
 		{0,1,0,"Master Shang Xi",59.7,19.1,{29408,29409}},
@@ -4236,7 +4236,7 @@ qcPinDB = {
 		{0,1,56013,"Spirit of Master Shang Xi",51.4,48.3,{31450}},
 		{0,1,57739,"Ji Firepaw",38.8,86.3,{29800}},
 	},
-	[809] = { --[[ Kun-Lai Summit ]]--
+	[379] = { --[[ Kun-Lai Summit ]]--
 		{0,1,64521,"Wanderer Chu",72.0,94.3,{31392}},
 		{0,1,59073,"Mayor Bramblestaff",72.3,91.9,{30457,30507}},
 		{0,1,59077,"Apothecary Cheng",71.6,92.8,{30460,30508}},
@@ -4327,7 +4327,7 @@ qcPinDB = {
 		{0,1,2180,"Hilda Hornswaggle",59.8,76.0,{32243},"Pandaren Campaign."},
 		
 	},
-	[810] = { --[[ Townlong Steppes ]]--
+	[388] = { --[[ Townlong Steppes ]]--
 		{0,1,60688,"Taran Zhu",71.2,56.7,{30814,30769,30770,30771}},
 		{0,1,60684,"Suna Silentstrike",67.3,52.2,{30772,30774,30776}},
 		{0,1,60687,"Ban Bearheart",67.2,52.3,{30773}},
@@ -4377,7 +4377,7 @@ qcPinDB = {
 		{0,1,4822,"Scout Captain Elsia",50.8,73.4,{32680}}, -- H
 		{0,1,4824,"Vereesa Windrunner",49.9,69.0,{32681}}, -- A
 	},
-	[811] = { --[[ Vale of Eternal Blossoms ]] --
+	[390] = { --[[ Vale of Eternal Blossoms ]] --
 		{0,1,64030,"Lao Lang",84.2,61.4,{31386,31387}},
 		{0,1,64508,"Scrollmaker Resshi",85.5,60.2,{31367}},
 		{0,1,64031,"Xari the Kind",84.2,62.5,{31384}},
@@ -4419,23 +4419,23 @@ qcPinDB = {
 		{0,3,64582,"Gentle San",60.8,23.6,{32603,32604,32868,32869,32428,32863}},
 		{0,3,64572,"Sara Finkleswitch",86.4,60.0,{32603,32604,32868,32869,32428,32863}},
 	},
-	[816] = { --[[ Well of Eternity ]] --
+	[398] = { --[[ Well of Eternity ]] --
 		{0,1,57864,"Alurmi",26.0,63.0,{30104}},
 		{0,1,57913,"Chromie",87.3,49.3,{30102}},
 		{0,1,55624,"Image of Nozdormu",71.6,80.6,{30101}},
 		{0,1,55624,"Nozdormu",27.2,64.2,{30099}},
 		{0,1,55624,"Nozdormu",29.3,40.0,{30100}},
 	},
-	[819] = { --[[ Hour of Twilight ]] --
+	[400] = { --[[ Hour of Twilight ]] --
 		{1,1,54548,"Thrall",48.7,19.7,{30103}},
 		{1,1,0,"Urgent Twilight Missive",56.8,27.6,{30105},"Drops from Arcurion and/or Asira Dawnslayer."},
 	},
-	[820] = { --[[ End Time ]] --
+	[402] = { --[[ End Time ]] --
 		{1,1,54476,"Nozdormu",79.6,45.0,{30096}},
 		{1,1,57864,"Alurmi",79.6,45.1,{30097}},
 		{6,1,54751,"Nozdormu",52.1,44.5,{30098}},
 	},
-	[823] = { --[[ Darkmoon Island ]] --
+	[407] = { --[[ Darkmoon Island ]] --
 		{0,1,14832,"Kerri Hicks",47.9,67.1,{29433}},
 		{0,6,14845,"Stamp Thunderhorn",52.9,67.9,{29509,29513}},
 		{0,6,14833,"Chronos",55.0,70.8,{29512,29516,29514,29519}},
@@ -4456,9 +4456,9 @@ qcPinDB = {
 		{0,1,67370,"Jeremy Feasel",47.2,62.6,{32175}},
 		{0,7,0,"Moonfang's Pelt",39.7,43.9,{33354}},
 	},
-	[856] = { --[[ Temple of Kotmogu ]] --
+	[417] = { --[[ Temple of Kotmogu ]] --
 	},
-	[857] = { --[[ Krasarang Wilds ]] --
+	[418] = { --[[ Krasarang Wilds ]] --
 		{0,1,56115,"Ken-Ken",76.2,7.1,{30079,30081,30088,30089,30090}},
 		{0,1,57744,"Mei Barrelbottom",75.8,7.6,{30080,30091,30083,30084,30133,30178}},
 		{0,1,58376,"Yi-Mo Longbrow",81.3,6.8,{30082}},
@@ -4533,7 +4533,7 @@ qcPinDB = {
 		{0,3,2231,"Brolic",10.6,53.8,{32126,32127}},
 		{0,3,2082,"Shokia",10.3,55.7,{32123}},
 	},
-	[858] = { --[[ The Dread Wastes ]] --
+	[422] = { --[[ The Dread Wastes ]] --
 		{0,1,62112,"Bowmistress Li",75.0,21.5,{31001,31002},"Atop the Serpent's Spine."},
 		{0,1,62166,"Marksman Lann",72.6,28.7,{31003}},
 		{0,1,62203,"Klaxxi'va Tik",73.7,27.6,{31004}},
@@ -4582,9 +4582,9 @@ qcPinDB = {
 		{0,1,62767,"Gokk'lok",24.4,16.2,{31083},"Kill Gokk'lok to start quest"},
 		
 	},
-	[860] = { --[[ Silvershard Mines  ]] --
+	[423] = { --[[ Silvershard Mines  ]] --
 	},
-	[864] = { --[[ Northshire Abbey ]] --
+	[425] = { --[[ Northshire Abbey ]] --
 		{0,1,197,"Marshal McBride",33.5,53.0,{28765,28773,26389,29078,29079,29080,26390,54,28766,28774,28767,28759,28763,28771,31139,31140,28757,28769,28762,28770,28764,28772}},
 		--{0,1,197,"Marshal McBride",33.5,53.0,{31141,26910,3100,3101,3103,3104,3105}},
 		{0,9,459,"Drusilla La Salle",39.5,55.1,{28788}},
@@ -4607,19 +4607,19 @@ qcPinDB = {
 		{0,9,915,"Jorik Kerridan",41.1,45.3,{28787}},
 		--{0,9,915,"Jorik Kerridan",41.1,45.3,{26915}},
 	},
-	[867] = { --[[ Temple of the Jade Serpent ]] --
+	[429] = { --[[ Temple of the Jade Serpent ]] --
 		{1,1,64399,"Master Windstrong",36.0,44.2,{31356}},
 		{1,1,60578,"Priestess Summerpetal",35.9,44.6,{31355}},
 	},
-	[873] = { --[[ The Veiled Stair ]] --
+	[433] = { --[[ The Veiled Stair ]] --
 		{0,1,63484,"Len the Whisperer",53.5,65.8,{31286,31287}},
 		{0,1,63367,"Brewmaster Boof",51.9,43.7,{31285,31611}},
 		{0,1,64616,"Wrathion",54.4,72.6,{31454,31473,31468,31481,31482,31483,32373,32374,32474}},
 		--{0,1,64822,"Wrathion",75.3,76.3,{31483}},
 	},
-	[880] = { --[[ Greenstone Village ]] --
+	[448] = { --[[ Greenstone Village ]] --
 	},
-	[888] = { --[[ Shadowglen ]] --
+	[460] = { --[[ Shadowglen ]] --
 		{0,1,2079,"Ilthalaine",45.6,74.6,{28713,28714,28734}},
 		{0,1,2077,"Melithar Staghelm",46.0,72.9,{28715,3118,26841,31168}},
 		{0,1,2079,"Ilthalaine",46.3,73.5,{3118,26841,31168}},
@@ -4641,7 +4641,7 @@ qcPinDB = {
 		{0,1,3514,"Tenaron Stormgrip",47.2,55.9,{28731},"Highest room atop Aldrassil."},
 		{0,1,6780,"Porthannius",54.6,84.7,{2159}},
 	},
-	[889] = { --[[ Valley of Trials]] --
+	[461] = { --[[ Valley of Trials]] --
 		{0,1,10176,"Kaltunk",45.2,68.4,{25152}},
 		{0,1,3143,"Gornek",44.9,66.4,{25126,25172,25127}},
 		--{0,1,3143,"Gornek",44.9,66.4,{3087,2383}},
@@ -4653,13 +4653,13 @@ qcPinDB = {
 		{0,1,3287,"Hana'zua",34.6,44.2,{25129,25130}},
 		{0,9,3153,"Frang",43.6,71.1,{25147}},
 	},
-	[890] = { --[[ Camp Narache]] --
+	[462] = { --[[ Camp Narache]] --
 		{0,1,2981,"Chief Hawkwind",27.7,28.3,{14449,24861,23733}},
 		{0,1,2980,"Grull Hawkwind",39.5,37.2,{14452,24852,14458}},
 		{0,1,36694,"Adana Thunderhorn",30.9,50.6,{14456,14455,14459,14461,14460}},
 		{0,1,36803,"Dyami Windsoar",15.6,30.3,{24215}},
 	},
-	[892] = { --[[ Deathknell ]] --
+	[465] = { --[[ Deathknell ]] --
 		{0,1,49044,"Agatha",40.5,78.5,{24959}},
 		{0,1,1568,"Undertaker Mordo",43.4,79.9,{28608,26799,28652}},
 		{0,1,2307,"Caretaker Caice",45.9,80.5,{24960,25089}},
@@ -4682,7 +4682,7 @@ qcPinDB = {
 		--{0,9,2126,"Maximillion",46.9,59.4,{24968}},
 		--{0,9,63272,"Ting, Strong of Stomach",53.2,56.9,{31147,31148}},
 	},
-	[894] = { --[[ Ammen Vale ]] --
+	[468] = { --[[ Ammen Vale ]] --
 		{0,1,16475,"Megelon",61.2,29.5,{9279}},
 		{0,1,16477,"Proenitus",52.7,35.9,{9280,9409,9371,9369}},
 		{0,1,16502,"Zalduun",52.0,42.3,{9283,26970}},
@@ -4699,7 +4699,7 @@ qcPinDB = {
 		--{0,9,16500,"Valaatu",50.9,42.3,{26968}},
 		--{0,9,63335,"Mojo Stormstout",50.5,48.7,{31173}},
 	},
-	[895] = { --[[ New Tinkertown ]] --
+	[469] = { --[[ New Tinkertown ]] --
 		{0,1,42396,"Nevin Twistwrench",39.5,38.4,{26202,31135,26203,26206,26199,26197}},
 		{0,9,460,"Alamar Grimm",37.7,38.0,{26201,26424}},
 		{0,1,42317,"High Tinker Mekkatorque",38.8,32.8,{26208,26566,26331}},
@@ -4717,18 +4717,18 @@ qcPinDB = {
 		{0,9,42323,"\"Doc\" Cogspin",39.4,28.4,{26422,26200}},
 		{0,9,42331,"Bipsi Frostflinger",41.1,29.1,{26421,26198}},
 	},
-	[898] = { --[[ Scholomance ]] --
+	[476] = { --[[ Scholomance ]] --
 		{1,1,64562,"Talking Skull",26.9,58.7,{31440,31447}},
 	},
-	[903] = { --[[ Shrine of Two Moons ]] --
+	[903] = { --[[ Shrine of Two Moons?? ]] --
 		{2,1,2304,"Garrosh Hellscream",32.2,84.7,{32242}},
 		{2,1,64047,"Kurong Caskhead",57.3,77.3,{31488}},
 		{1,1,64041,"Mifan",67.2,38.8,{31279}},
 	},
-	[922] = { --[[ ]]
+	[500] = { --[[ ]]
 		{2,1,2990,"Barkeep Townsley",70.0,47.0,{32381,32426}},
 	},
-	[928] = { --[[ Isle of Thunder ]] --
+	[504] = { --[[ Isle of Thunder ]] --
 	
 		--[[ Alliance ]]--
 		{0,1,2456,"Lady Jaina Proudmoore",34.6,89.4,{32706,32644}},
@@ -4770,13 +4770,13 @@ qcPinDB = {
 		
 		
 	},
-	[929] = { --[[ Isle of Giants ]] --
+	[507] = { --[[ Isle of Giants ]] --
 		{0,3,4486,"Ku'ma",32.9,54.1,{32613,32614,32615,32616,32617},"Inside his cave."},
 	},
-	[930] = { --[[ Throne of Thunder ]] --
+	[508] = { --[[ Throne of Thunder ]] --
 		{1,1,0,"Monara",59.2,53.2,{32715}},
 	},
-	[933] = {
+	[516] = {
 		{0,1,0,"Dwarf Commoner",64.8,73,{11356,11441,11970,13484,14022,29074}},
 		{0,1,0,"Gnome Commoner",64,74,{11356,11441,11970,13484,14022,29074}},
 		{0,1,0,"Apprentice Nelphi",63.2,72,{24510}},
@@ -4830,7 +4830,7 @@ qcPinDB = {
 		{0,1,0,"Lor\'themar Theron",28.4,52.2,{32212,32709,32729}},
 		{0,1,0,"Halduron Brightwing",36.8,64.8,{32200,32252,32275,32293,32520,32521,32522,32523,32524,32561,32562}},
 	},
-	[941] = { --[[ Frostfire Ridge ]] --
+	[525] = { --[[ Frostfire Ridge ]] --
 		{0,1,0,"Hansel Heavyhands",86.4,48.8,{34029,34030}},
 		{0,1,0,"Molthron",43.6,15.4,{34321,34325}},
 		{0,1,0,"Owynn Graddock",48.8,14.6,{34281,34285}},
@@ -4916,7 +4916,7 @@ qcPinDB = {
 		{0,1,0,"Mysterious Boots",68,19,{34960}},
 		{0,1,0,"Tattered Journal Page",46.4,15.9,{35737}},
 	},
-	[945] = { --[[ Tanaan Jungle ]] --
+	[534] = { --[[ Tanaan Jungle ]] --
 		{0,1,0,"Exarch Yrel",58.4,60.2,{38421,38560,38561,38581,39422}},
 		{0,1,0,"Goi\'orsh",44.2,41.6,{38578}},
 		{0,1,0,"Angar Steelbellow",58,58.6,{39313}},
@@ -4950,7 +4950,7 @@ qcPinDB = {
 		-- 39510 does not exist below.
 		{0,1,0,"Shadow Hunter Denjai",61.6,45.6,{39509,39511,39512,39513,39514,39526}},
 	},
-	[946] = { --[[ Talador ]] --
+	[535] = { --[[ Talador ]] --
 		{0,1,0,"Exarch Maladaar",49.8,48.6,{35683,35685}},
 		{0,1,0,"Exarch Maladaar",55.6,67.6,{34407,34452}},
 		{0,1,0,"Exarch Maladaar",57.2,77,{34240}},
@@ -5052,7 +5052,7 @@ qcPinDB = {
 		{0,1,0,"Magister Krelas",71.2,29.6,{34878}},
 		{0,1,0,"Hastily Written Note",49.2,88,{34163}},
 	},
-	[947] = { --[[ Shadowmoon Valley ]] -- Draenor
+	[539] = { --[[ Shadowmoon Valley ]] -- Draenor
 		{0,1,0,"Roona",23,32.8,{33419}},
 		{0,1,0,"Ariaana",52,32.6,{33813}},
 		{0,1,0,"Old Loola",41.2,55,{33077,34876}},
@@ -5137,7 +5137,7 @@ qcPinDB = {
 		{0,1,0,"Goblin Mind Control Device",59.8,94.5,{35195}},
 		{0,1,0,"Wanted Poster",57.5,57.3,{33836}},
 	},
-	[948] = { --[[ Spires of Arak ]] --
+	[542] = { --[[ Spires of Arak ]] --
 		{0,1,0,"Reshad",43.6,13,{34656,34657,34658,34659,34805}},
 		{0,1,0,"Azik",37.8,18,{34655}},
 		{0,1,0,"Percy",40,60.2,{35611}},
@@ -5219,7 +5219,7 @@ qcPinDB = {
 		{5,1,114488,"Spires of Arak Flame Guardian",48.0,44.6,{44570}},
 
 	},
-	[949] = { --[[ Gorgrond ]] --
+	[543] = { --[[ Gorgrond ]] --
 		{0,1,0,"Aren Mistshade",54.2,56,{34340}},
 		{0,1,0,"Prowler Sasha",41.4,66,{34012}},
 		{0,1,0,"Vindicator Maraad",52.8,59.6,{35686,36495,36575,36576}},
@@ -5305,7 +5305,7 @@ qcPinDB = {
 		{0,5,114491,"Gorgrond Flame Guardian",43.8,93.8,{44573}},
 
 	},
-	[950] = { --[[ Nagrand ]] -- Draenor
+	[550] = { --[[ Nagrand ]] -- Draenor
 		{0,1,0,"Dizzy Sparkshift",40.6,13,{35973,37516,37517}},
 		{0,1,0,"Dexyl Deadblade",79.4,50.2,{34662,34663,34664,34665,34666}},
 		{0,2,0,"Gazmolf Futzwangler",71.2,52.4,{34809,35632,35663}},
@@ -5349,7 +5349,7 @@ qcPinDB = {
 		{0,1,0,"Gurgthock",63,36,{36220}},
 		{0,1,0,"Archmage Khadgar",77.2,36.8,{35995,36004,36206}},
 		{0,1,0,"Kroggol the Wall",56.8,19.2,{36221}},
-		{0,3,0,"Gurgthock",56.8,13,{36670,36705}},
+		--{0,3,0,"Gurgthock",56.8,13,{36670,36705}},
 		{0,1,0,"Wodin the Troll-Servant",56.8,13,{36222,36289,36290}},
 		{0,1,0,"Dr. Hadley Ricard",86.6,28.4,{36275,36284,36285}},
 		{0,1,0,"Tarr the Terrible",56.2,9.8,{37206}},
@@ -5385,7 +5385,7 @@ qcPinDB = {
 		{0,2,87393,"Sallee Silverclamp",50.2,41.2,{37125,35147}},
 		{0,2,87706,"Gazmolf Futzwangler",50.2,41.2,{37210,37211,37221,37222,37223,37224,37225,37520,37226}},
 	},
-	[951] = { --[[ Timeless Isle ]] --
+	[554] = { --[[ Timeless Isle ]] --
 	    {0,1,7812,"Watcher Lara",23.1,71.6,{33160}},
 		-- {0,1,7334,"Kairoz",34.6,53.6,{33161,33228,33332,33336,33335,33338,33333,33334,33337}},
 		-- {0,1,7546,"Master Li",34.7,59.7,{33137}},
@@ -5454,7 +5454,7 @@ qcPinDB = {
 		{0,1,0,"Little Tommy Newcomer",34.6,60.4,{33222}},
 		{0,1,0,"Watcher Alundra",22,40.8,{33156}},
 	},
-	[970] = { --[[ Tanaan Jungle - Assault on the Dark Portal ]] --
+	[577] = { --[[ Tanaan Jungle - Assault on the Dark Portal ]] --
 		{0,1,0,"Archmage Khadgar",54.8,48.3,{35933,34392,34393,34420}},
 		{0,1,0,"Archmage Khadgar",60.3,56.3,{34422}},
 		{0,1,0,"Rephuura",62.2,52.9,{35242}},
@@ -5484,7 +5484,7 @@ qcPinDB = {
 		{0,1,0,"Archmage Khadgar",43.1,28.7,{35747}},
 		{0,1,0,"Thaelin Darkanvil",40.1,48.4,{34445,35884}},
 	},
-	[971] = { --[[ Lunarfall ]]--
+	[582] = { --[[ Lunarfall ]]--
 		-- {0,1,77209,"Baros Alexston",32.0,31.4,{34026,34587,35166,35176,36100,36160,36592,36615,37288}},
 		-- {0,1,0,"Jr. Surveyor Dorn",64,69.6,{34027,34028}},
 		-- {0,1,0,"Ayada the White",46.8,59.4,{36645}},
@@ -5577,7 +5577,7 @@ qcPinDB = {
 		-- {0,1,0,"Bulletin Board",42.8,45.2,{36219,36280,36281,36282}},
 		{0,1,92219,"King Varian Wrynn ",32.0,32.0,{38257,38259}}
 	},
-	[976] = { --[[ Frostwall ]]-- 
+	[582] = { --[[ Frostwall ]]-- 
 		-- {0,1,0,"Griftah",40.6,53.4,{37284}},
 		-- {0,1,0,"Khadgar\'s Servant",47.4,47,{35185,35186,35679,35680,35988}},
 		-- {0,1,0,"Phylarch the Evergreen",48.6,56.6,{36813}},
@@ -5673,7 +5673,7 @@ qcPinDB = {
 		-- {0,1,0,"Bloody Blade",63.1,44.8,{36219,36280,36281,36282}},
 		-- {0,1,0,"Command Board",49.3,41.3,{37811,37885,37916,37945,37992,37996}},
 	},
-	[978] = { --[[ Ashran ]]--
+	[588] = { --[[ Ashran ]]--
 		{0,1,0,"Farseer Kylanda",44.8,75,{36127}},
 		{0,1,0,"Chris Clarkie",43.4,76.8,{35927,35937,35938,35939,35940,35941,35942,36123,36125}},
 		{0,1,0,"Commander Anne Dunworthy",44.6,74,{36130,37483}},
@@ -5683,16 +5683,16 @@ qcPinDB = {
 		{0,1,0,"Mare Wildrunner",47,26.8,{36226}},
 		{0,1,0,"Belloc Brightblade",45.8,29,{36198}},
 	},
-	[988] = { --[[ Blackrock Foundry ]]--
+	[596] = { --[[ Blackrock Foundry ]]--
 	},
-	[994] = { --[[ Highmaul ]]--
+	[610] = { --[[ Highmaul ]]--
 	},
-	[1009] = { --[[Stormshield ]]--
+	[622] = { --[[Stormshield ]]--
 		{0,1,0,"Private Tristan",32.0,50.0,{36626}},
 		{0,1,0,"Lieutenant Howell",35.5,75.9,{36629,36630}},
 		{0,1,0,"Delvar Ironfist",48.0,30.6,{36633}},
 	},
-	[1015] = {--[[ Azsuna ]]--
+	[630] = {--[[ Azsuna ]]--
 		{0,1,89398,"Allari the Souleater",43.2,43.2,{40058,37653,39936,39939,45175,39935,40057,37660,45176}},
 		{0,1,101927,"Altruis the Sufferer",43.6,43.4,{40815}},		
 		{0,1,89849,"Andellis",53.0,37.0,{37678}},
@@ -5762,7 +5762,7 @@ qcPinDB = {
 		{0,1,103484,"Brann Bronzebeard",39.0,38.6,{41162,41157,41166,41169,41165,41159,41163,41802,41168,41170}},
 		{0,1,93735,"Rethu Ironhorn",40.4,52.0,{38792}},
 	},
-	[1021] = {--[[ Broken Shore ]]--
+	[646] = {--[[ Broken Shore ]]--
 		{0,1,117331,"Aethas Sunreaver",49.2,18.6,{45614,45586}},
 		{0,1,105684,"Alora",34.0,33.8,{41993}},
 		{0,1,121226,"Anduin Wrynn",52.6,48.4,{47112}},
@@ -5813,10 +5813,10 @@ qcPinDB = {
 		{0,1,93774,"Rin'thissa",82.2,29.2,{38803}},
 		{0,1,93735,"Rethu Ironhorn",50.4,54.4,{38792}},
 	},	
-	[1026] = {--[[ Hellfire Citadel ]]--	
+	[661] = {--[[ Hellfire Citadel ]]--	
 		{6,1,95659,"Archmage Khadgar",61.8,63.4,{39499,39500,39501,39502,39504,39505}},
 	},
-	[1014] = {--[[ Dalaran ]]--
+	[627] = {--[[ Dalaran ]]--
 		{11,3,110642,"Fizzi Liverzapper ",76.2,83.4,{43473,43474,43475,43475,43476,43477,43478}},
 		{10,3,111243,"Archmage Lan'dalock",57.6,66.8,{47864,43894,43895,43897,47851,43892,43896,47865,43893}},
 		{10,1,93525,"Ainderu Summerleaf",36.2,33.8,{38958}},
@@ -5920,9 +5920,9 @@ qcPinDB = {
 		{11,1,102700,"Meryl Felstorm",53.8,47.2,{42001}},
 		{11,1,101097,"Calydus",36.6,31.6,{40684,40495}},
 	},
-	[1046] = {--[[ Eye of Azshara ]]--
+	[713] = {--[[ Eye of Azshara ]]--
 	},
-	[1024] = {--[[ Highmountain ]]--
+	[650] = {--[[ Highmountain ]]--
 		{0,1,94434,"Addie Fizzlebog",40.0,52.2,{39859}},
 		{0,1,95186,"Angler Creel",41.2,61.6,{39614,39316}},
 		{0,1,110986,"Apata Highmountain",60.8,80.8,{40385}},
@@ -5986,7 +5986,7 @@ qcPinDB = {
 		{0,1,94561,"Warbrave Nava",49.0,55.2,{39133,39134}},
 		{0,1,97553,"Warbrave Oro",42.2,72.6,{39043,39027}},
 	},
-	[1017] = {--[[ StormHeim ]]--
+	[634] = {--[[ StormHeim ]]--
 		{0,1,102843,"Aegira",63.2,21.6,{41038}},
 		{0,1,105045,"Angus Ironfist",63.0,59.4,{41850}},
 		{0,1,91590,"Apothecary Withers",36.0,27.4,{38358,38357}},
@@ -6035,7 +6035,7 @@ qcPinDB = {
 		{0,1,100738,"Ashildir",62.6,68.0,{40614,40615,40613,40672,40608}},
 		{0,1,93774,"Rin'thissa",60.8,26.6,{38803}},
 	},
-	[1033] = {--[[ Suramar ]]--
+	[680] = {--[[ Suramar ]]--
 		{0,1,101848,"Absolon",36.6,48.8,{40798,40796,45056}},
 		{0,1,108101,"Ancient Seed",21.2,34.0,{42230}},
 		{0,1,103204,"Angus Stormbrew",28.4,82.6,{41140,41139}},
@@ -6169,7 +6169,7 @@ qcPinDB = {
 		{0,1,93776,"Lyrelle",62.6,52.4,{38804}},
 		{0,1,131478,"Lady Liadrin",65.8,63.6,{49613}},
 	},
-	[1018] = {--[[ Val'sharah ]]--
+	[641] = {--[[ Val'sharah ]]--
 		{0,1,92738,"Grumpy",38.6,65.6,{39015}},
 		{0,1,95117,"Aldos Duskwing",69.4,49.4,{41707}},
 		{0,1,94179,"Aranelle",54.4,73.6,{38381,44106,38142,38382}},
@@ -6236,11 +6236,11 @@ qcPinDB = {
 		{0,1,98584,"Ysera",52.4,63.6,{38641}},
 		{0,1,93774,"Rin'thissa",31.8,40.8,{38803}},
 	},
-	[1022] = {--[[Helheim ]]--
+	[649] = {--[[Helheim ]]--
 		{0,1,116193,"Aerylia",34.6,28.8,{45128,44850,45118,45834}},
 		{0,1,91531,"Colborn the Unworthy",64.4,43.8,{38339,38324,38347}},
 	},
-	[1068] = {--[[ Hall of the Guardian Mage ]]--
+	[734] = {--[[ Hall of the Guardian Mage ]]--
 		{2,1,102846,"Alodi",61.4,43.4,{42455}},
 		{2,1,108247,"Archmage Kalec",58.8,40.4,{46338,45845,42662,45846,45847,45354,43503,43505,46335}},
 		{2,1,107351,"Archmage Khadgar",70.4,57.8,{42954,42707,42734,42416,44689,42959,42940}},
@@ -6256,7 +6256,7 @@ qcPinDB = {
 		{2,1,118242,"Aethas Sunreaver",72.0,62.0,{44766,45251,46290,45207}},
 		{1,1,103092,"The Great Akazamzarak",53.2,55.8,{41141,46723,45615,46722,45630,41113}},
 	}, 
-	[1028] = {--[[ Mardum, the Shattered Abyss Demon Hunter ]]-- 
+	[672] = {--[[ Mardum, the Shattered Abyss Demon Hunter ]]-- 
 		{2,1,110768,"Image of Kalec",59.8,29.0,{43496,43501}},
 		{2,1,95238,"Allari the Souleater",58.8,51.6,{41066,41067,41096}},
 		{0,1,96655,"Allari the Souleater",60.4,44.8,{39516,39515}},
@@ -6294,7 +6294,7 @@ qcPinDB = {
 		{1,1,110433,"Slitesh",60.2,44.2,{44223}},
 		{2,1,103732,"Tylos Darksight",53.8,46.8,{46780,44058}},
 	},
-	[1040] = {--[[ Netherlight Temple Priest ]]-- 
+	[702] = {--[[ Netherlight Temple Priest ]]-- 
 		{1,1,110564,"Alonsus Faol",51.2,48.4,{45343,43401,43935,40710,43398,43832,43390,43399,43377,43402,43385,43924,43386,43275,43371,43270,43925,43273,43923,43277,41625,44407,41957,45349,43276,43397,44058,43372}},
 		{1,1,102655,"Alonsus Faol",48.6,47.6,{41019,41015}},
 		{1,1,110498,"Alonsus Faol",49.6,18.8,{43420}},
@@ -6306,7 +6306,7 @@ qcPinDB = {
 		{1,1,111773,"Sister Oriel",62.2,45.4,{44306}},
 		{1,1,110819,"Truth",58.8,29.4,{44230}},
 	},
-	[1035] = {--[[ Skyhold Warrior ]]-- 
+	[695] = {--[[ Skyhold Warrior ]]-- 
 		{1,1,100622,"Danica the Reclaimer",43.6,35.0,{39214}},
 		{1,1,93823,"Danica the Reclaimer",59.0,29.4,{39654}},
 		{1,1,110437,"Haklang Ulfsson",62.0,26.4,{44221}},
@@ -6319,11 +6319,11 @@ qcPinDB = {
 		{1,1,100635,"Skyseer Ghrent",51.2,48.4,{42607,42611,46778,45987,43975,42609,43750,40585,42610,44058}},
 		{0,1,110768,"Image of Kalec",26.8,40.4,{43496,43501}},
 	},
-	[1077] = {--[[ The Dreamgrove ]]-- 
+	[747] = {--[[ The Dreamgrove ]]-- 
 		{0,1,0,"Lights Heart",60.2,52.1,{45177}},
 		{0,1,110768,"Image of Kalec",26.8,40.4,{43496,43501}},
 	},
-	[1057] = {--[[ The Heart of Azeroth Shaman ]]--
+	[726] = {--[[ The Heart of Azeroth Shaman ]]--
 	}, 
 		[1044] = {--[[ The Wandering Isle Monk ]]--
 		{0,1,119664,"Brewer Almai",51.4,48.6,{45404}},
@@ -6343,7 +6343,7 @@ qcPinDB = {
 		{0,1,104744,"High Elder Cloudfall",52.6,58.0,{41907,43062,41733,41909}},
 		{0,1,110768,"Image of Kalec",26.8,40.4,{43496,43501}},
 	}, 
-	[1072] = {--[[ Trueshot Lodge Hunter ]]-- 
+	[739] = {--[[ Trueshot Lodge Hunter ]]-- 
 		{0,1,102940,"Altar Keeper Biehn",47.8,52.8,{41047,42519,40958}},
 		{0,1,110412,"Berger the Steadfast",58.6,49.6,{44211}},
 		{0,1,103415,"Courier Larkspur",47.6,44.8,{40392}},
@@ -6362,29 +6362,29 @@ qcPinDB = {
 		{0,1,107966,"Archmage Khadgar",43.6,26.4,{43182,42401}},
 		{0,1,110768,"Image of Kalec",26.8,40.4,{43496,43501}},
 	},
-	[1081] = {--[[ Black Rook Hold ]]--
+	[751] = {--[[ Black Rook Hold ]]--
 	},
-	[1087] = {--[[ Court of Stars ]]--
+	[761] = {--[[ Court of Stars ]]--
 	},
-	[1067] = {--[[ Darkheart Thicket ]]--
+	[733] = {--[[ Darkheart Thicket ]]--
 	}, 
-	[1041] = {--[[ Halls of Valor ]]--
+	[704] = {--[[ Halls of Valor ]]--
 	{1,1,103049,"Melba",48.8,10.6,{41059}},
 	},
-	[1042] = {--[[ Maw of Souls ]]--
+	[708] = {--[[ Maw of Souls ]]--
 	},
-	[1065] = {--[[ Neltharion's Lair ]]--
+	[731] = {--[[ Neltharion's Lair ]]--
 	},
-	[1079] = {--[[ The Arcway ]]--
+	[749] = {--[[ The Arcway ]]--
 	},
-	[1045] = {--[[ Vault of the Wardens ]]--
+	[710] = {--[[ Vault of the Wardens ]]--
 	},
-	[1048] = {--[[ Emerald Dreamway ]]--
+	[715] = {--[[ Emerald Dreamway ]]--
 		{5,1,106204,"Archdruid Hamuul Runetotem",44.4,29.4,{42044,42045,42041}},
 		{2,1,106135,"Bashana Runetotem",43.0,30.8,{42043}},
 		{2,1,106136,"Mylune",45.0,32.6,{42042}},
 	},
-	[1051] = {--[[ Dreadscar Rift ]]--
+	[718] = {--[[ Dreadscar Rift ]]--
 		{0,1,113371,"Demonia Pickerin",50.0,24.4,{44227}},
 		{0,1,106199,"Gakin the Darkbinder",66.6,46.6,{46784,42603,45990,41798,41797,42601,42602,44682,44058}},
 		{0,1,112434,"Gigi Gigavoid",58.6,33.6,{44254}},
@@ -6402,12 +6402,12 @@ qcPinDB = {
 		{0,1,105926,"Shinfel Blightsworn",57.2,37.8,{45021,45027}},
 		{0,1,101097,"Calydus",36.6,31.6,{40684}},
 	},
-	[1066] = {--[[ Violet Hold ]]--
+	[732] = {--[[ Violet Hold ]]--
 	},
-	[1094] = {--[[ The Emerald Nightmare ]]--
+	[778] = {--[[ The Emerald Nightmare ]]--
 	{2,1,101097,"Malfurion Stormrage",57.7,48.3,{44283,44284,44285}},
 	},
-	[1080] = {--[[ Thunder Totem ]]--
+	[750] = {--[[ Thunder Totem ]]--
 		{0,1,107660,"Bolas Skyfeather",43.2,38.4,{42630}},
 		{0,1,98948,"Hrul Sharphoof",36.8,78.2,{40192,40186,40204,40205,40185,40191,40203,40415}},
 		{0,1,103485,"Lessah Moonwater",45.4,45.2,{41190,41191,41193,41188,41187}},
@@ -6419,15 +6419,15 @@ qcPinDB = {
 		{0,1,108017,"Torv Dubstomp",44.8,55.4,{42622}},
 		{0,5,37675,"Public Relations Agent",43.6,53.2,{24629,24635,24636}},
 	},
-	[1114] = {--[[ Trial of Valor ]]--
+	[806] = {--[[ Trial of Valor ]]--
 	},
-	[1088] = {--[[ The Nighthold ]]--
+	[764] = {--[[ The Nighthold ]]--
 		{0,1,110791,"First Arcanist Thalyssra",24.4,90.8,{45381,45382,45383}},
 	},
-	[1147] = {--[[ Tomb of Sargeras ]]--
+	[850] = {--[[ Tomb of Sargeras ]]--
 		{0,1,119723,"Image of Aegwynn",50.2,26.5,{47725,47726,47727}},
 	},
-	[1135] = {--[[ Krokuun ]]--
+	[830] = {--[[ Krokuun ]]--
 		{0,1,109255,"High Exarch Turalyon",63.83,47.24,{47992}},
 		{1,1,124312,"High Exarch Turalyon",39.08,24.83,{48344,48799,48277,48273}},
 		{1,1,130810,"High Exarch Turalyon",48.4,40.2,{50071}},
@@ -6444,7 +6444,7 @@ qcPinDB = {
 		{0,1,124595,"Magni Bronzebeard",57.0,65.6,{47891,48280,48272,47890}},
 		{1,0,123668,"Captain Fareeya",51.6,74.1,{47995,48864}},
 	},
-	[1170] = {--[[ Mac'Aree ]]--	
+	[882] = {--[[ Mac'Aree ]]--	
 		{0,1,123413,"Archmage Y'mera",59.7,50.48,{47882,47883,47688}},
 		{0,1,123413,"Archmage Y'mera",63.3,39.73,{48107}},
 		{0,1,124070,"Vigilant Quoram",59.99,50.43,{47689,47687,47685,47690}},
@@ -6471,14 +6471,26 @@ qcPinDB = {
 		{0,2,127037,"Nabiru",44.00,60.72,{48635,48911,48654}},
 		{0,1,0,nil,46.73,69.10,{47101}},
 	},	
-	[1171] = {--[[ Antoran Wastes ]]--
+	[886] = {--[[ Antoran Wastes ]]--
 		{5,1,127057,"Illidan Stormrage",30.13,59.19,{48605,49293,48513,48929}},
 		{5,1,109254,"High Exarch Turalyon",33.52,58.33,{48799,48448,48200,48201,48202,48600,47889,48344,48912,48636}},
 	},
-	[1178] = {--[[ The Seat Of The Triumvirate ]]--
+	[903] = {--[[ The Seat Of The Triumvirate ]]--
 	},
-	[1184] = {--[[ Argus ]]--
+	[905] = {--[[ Argus ]]--
 	},
-	[1188] = {--[[ Antorus, the Burning Throne ]]--
+	[909] = {--[[ Antorus, the Burning Throne ]]--
+	},
+	[896] = {--[[ Drustvar ]]--
+	},
+	[942] = {--[[ Stormsong Valley ]]--
+	},
+	[895] = {--[[ Tiragarde Sound ]]--
+	},
+	[863] = {--[[ Nazmir ]]--
+	},
+	[864] = {--[[ Vol`dun ]]--
+	},
+	[862] = {--[[ zuldazar ]]--
 	},
 	}

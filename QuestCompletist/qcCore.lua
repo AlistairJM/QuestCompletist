@@ -25,9 +25,9 @@ local qcMutuallyExclusiveAlertTooltip = nil
 
 
 --[[ Constants ]]--
-local QCADDON_VERSION = 109.8
+local QCADDON_VERSION = 109.15
 local QCADDON_PURGE = true
-local QCDEBUG_MODE = true
+local QCDEBUG_MODE = false
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
@@ -70,7 +70,9 @@ qcRaceBits = {
 	["SCOURGE"]=16,["TAUREN"]=32,["GNOME"]=64,["TROLL"]=128,
 	["GOBLIN"]=256,["BLOODELF"]=512,["DRAENEI"]=1024,["WORGEN"]=2048,
 	["PANDAREN"]=4096,["VOIDELF"]=8192,["NIGHTBORNE"]=16384,
-	["HIGHMOUNTAINTAUREN"]=32768,["LIGHTFORGEDDRAENEI"]=65536
+	["HIGHMOUNTAINTAUREN"]=32768,["LIGHTFORGEDDRAENEI"]=65536,
+	["DARKIRONDWARF"]=131072,["MAGHARORC"]=262144,
+	["ZANDALARITROLL"]=524288,["KULTIRAN"]=1048576
 }
 qcClassBits = {
 	["WARRIOR"]=1,["PALADIN"]=2,["HUNTER"]=4,["ROGUE"]=8,["PRIEST"]=16,
@@ -559,8 +561,8 @@ function qcCategoryDropdown_OnLoad(self) -- TODO: Is this even needed anymore?
 end
 
 local function qcZoneChangedNewArea() -- *
-	SetMapToCurrentZone()
-	local id = GetCurrentMapAreaID()
+--	SetMapToCurrentZone()
+	local id = C_Map.GetBestMapForUnit("player")
 	if (qcAreaIDToCategoryID[id]) then
 		qcCurrentCategoryID = qcAreaIDToCategoryID[id]
 		qcUpdateQuestList(qcCurrentCategoryID,1)
@@ -747,7 +749,7 @@ function qcNewDataAlert_OnEnter(self) -- *
 	qcNewDataAlertTooltip:SetOwner(qcNewDataAlert, "ANCHOR_CURSOR")
 	qcNewDataAlertTooltip:ClearLines()
 	qcNewDataAlertTooltip:AddLine("Quest Completist")
-	qcNewDataAlertTooltip:AddLine(COLOUR_HUNTER .. "Quest Completist was not aware of the following information. Please help improve the accuracy of the addon by contributing with the Community Editor! (Link on Curse)", nil, nil, nil, true)
+	qcNewDataAlertTooltip:AddLine(COLOUR_HUNTER .. "Quest Completist was not aware of the following information. Please help improve the accuracy of the addon by submiting a post ore new issue over at curse", nil, nil, nil, true)
 	if (qcNewDataAlert.New) then
 		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. " - Quest does not exist in the database.", nil, nil, nil, true)
 		qcNewDataAlertTooltip:Show()
@@ -1253,7 +1255,7 @@ end
 
 function qcInterfaceOptions_Okay(self) -- *
 	qcUpdateQuestList(qcCurrentCategoryID, 1)
-	qcRefreshPins(GetCurrentMapAreaID(), GetCurrentMapDungeonLevel())
+	qcRefreshPins(C_Map.GetBestMapForUnit("player"))
 end
 
 function qcInterfaceOptions_Cancel(self) -- *
@@ -1585,8 +1587,8 @@ local function qcApplySettings()
 end
 
 local function qcEventHandler(self, event, ...)
-	if (event == "WORLD_MAP_UPDATE") then
-		qcRefreshPins(GetCurrentMapAreaID(), GetCurrentMapDungeonLevel())
+	if (event == "ADVENTURE_MAP_OPEN") then
+		qcRefreshPins(C_Map.GetBestMapForUnit("player"))
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
 		if (... == "player") then qcUpdateQuestList(nil, qcMenuSlider:GetValue()) end
 	elseif (event == "ZONE_CHANGED_NEW_AREA") then
@@ -1662,7 +1664,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("ADDON_LOADED")
-	self:RegisterEvent("WORLD_MAP_UPDATE")
+	self:RegisterEvent("ADVENTURE_MAP_OPEN")
 	self:SetScript("OnEvent", qcEventHandler)
 	qcQuestInformationTooltipSetup()
 	qcQuestReputationTooltipSetup()

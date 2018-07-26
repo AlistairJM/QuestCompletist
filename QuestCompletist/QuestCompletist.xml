@@ -205,15 +205,7 @@
     </Scripts>
   </Frame>
 
-  <Button name="qcQuestLogButton" toplevel="true" parent="QuestLogFrame" parentKey="qcQuestLogButton" text="Open QC" inherits="UIPanelButtonTemplate">
-    <Size x="75" y="19"/>
-    <Anchors>
-      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="QuestLogFrame" x="55" y="-1"/>
-    </Anchors>
-    <Scripts>
-      <OnClick>ShowUIPanel(qcQuestCompletistUI)</OnClick>
-    </Scripts>
-  </Button>
+  
 
   <Frame name="qcNewDataAlert" toplevel="true" parent="QuestFrame" enableMouse="true" movable="false" hidden="true" frameStrata="MEDIUM">
     <Size x="250" y="16"/>

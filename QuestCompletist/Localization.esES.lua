@@ -356,7 +356,7 @@ qcLocalize = {
 	ZULDRAK = "Zul'Drak",
 	ZULFARRAK = "Zul'Farrak",
 	ZULGURUB = "Zul'Gurub",
-THEBROKENISLES = "The Broken Isles",
+	THEBROKENISLES = "The Broken Isles",
 	THEDREAMGROVE = "The Dreamgrove",
 	AZSUNA = "Azsuna",
 	HIGHMOUNTAIN = "Highmountain",
@@ -405,6 +405,12 @@ THEBROKENISLES = "The Broken Isles",
 	ZANDALAR = "Zandalar",
 	KULTIRAS = "Kul Tiras",
 	THUNDERTOTEM = "Thunder Totem",
+	DRUSTVAR = "Drustvar",
+	STORMSONGVALLEY = "Stormsong Valley",
+	TIRAGARDESOUND = "Tiragarde Sound",
+	NAZMIR = "Nazmir",
+	VOLDUN = "Vol`dun",
+	ZULDAZAR = "Zuldazar",
 }
 
 end

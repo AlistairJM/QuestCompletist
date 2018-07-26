@@ -406,6 +406,12 @@ qcLocalize = {
 	ZANDALAR = "Zandalar",
 	KULTIRAS = "Kul Tiras",
 	THUNDERTOTEM = "Thunder Totem",
+	DRUSTVAR = "Drustvar",
+	STORMSONGVALLEY = "Stormsong Valley",
+	TIRAGARDESOUND = "Tiragarde Sound",
+	NAZMIR = "Nazmir",
+	VOLDUN = "Vol`dun",
+	ZULDAZAR = "Zuldazar",
 }
 
 end
