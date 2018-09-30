@@ -23,9 +23,8 @@ local qcToastTooltip = nil
 local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
 
-
 --[[ Constants ]]--
-local QCADDON_VERSION = 109.15
+local QCADDON_VERSION = 109.18
 local QCADDON_PURGE = true
 local QCDEBUG_MODE = false
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
@@ -1385,20 +1384,20 @@ function qcInterfaceOptions_OnShow(self)
 		end
 	end)
 	
----		qcIO_L_HIDE_WORLDQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_WORLDQUEST", self, "InterfaceOptionsCheckButtonTemplate")
----   qcIO_L_HIDE_WORLDQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_WORLDQUEST, "BOTTOMLEFT", 0, 0)
----	_G[qcIO_L_HIDE_WORLDQUEST:GetName().."Text"]:SetText(qcL.HIDEWORLDQUEST .. COLOUR_DEATHKNIGHT .. " (Not Yet Implemented)")
----	qcIO_L_HIDE_WORLDQUEST:SetScript("OnClick", function(self)
----	if (qcIO_L_HIDE_WORLDQUEST:GetChecked() == false) then
----			qcSettings.QC_L_HIDE_WORLDQUEST = 0
----		else
----			qcSettings.QC_L_HIDE_WORLDQUEST = 1
----		end
----	end)
+	--qcIO_L_HIDE_WORLDQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_WORLDQUEST", self, "InterfaceOptionsCheckButtonTemplate")
+    --qcIO_L_HIDE_WORLDQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_WORLDQUEST, "BOTTOMLEFT", 0, 0)
+	--  _G[qcIO_L_HIDE_WORLDQUEST:GetName().."Text"]:SetText(qcL.HIDEWORLDQUEST .. COLOUR_DEATHKNIGHT .. " (Not Yet Implemented)")
+	--  qcIO_L_HIDE_WORLDQUEST:SetScript("OnClick", function(self)
+    --  if (qcIO_L_HIDE_WORLDQUEST:GetChecked() == false) then
+	--	qcSettings.QC_L_HIDE_WORLDQUEST = 0
+	--	else
+	--	qcSettings.QC_L_HIDE_WORLDQUEST = 1
+	--	end
+	--end)
 
 --- Combined Map and Quest FILTERS
     qcCombinedFiltersTitle = self:CreateFontString("qcCombinedFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -290)
+    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -350)
     qcCombinedFiltersTitle:SetText(qcL.COMBINEDMAPANDQUESTFILTERS)
 
 	qcIO_ML_HIDE_FACTION = CreateFrame("CheckButton", "qcIO_ML_HIDE_FACTION", self, "InterfaceOptionsCheckButtonTemplate")
@@ -1446,6 +1445,7 @@ end
 
 local function qcWelcomeMessage()
 	print(string.format("%sThanks for using Quest Completist. Spot a quest innaccuracy? Please report it on curse",QCADDON_CHAT_TITLE))
+	print(string.format("%sWarning!!! Map Pins are missing, we are working on a solution no eta",QCADDON_CHAT_TITLE))
 end
 
 local function qcCheckSettings()
