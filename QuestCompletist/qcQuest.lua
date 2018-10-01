@@ -56,7 +56,7 @@ qcAreaIDToCategoryID={
 --BFa
 [896]=1060,[942]=1061,[895]=1062,[863]=1080,[864]=1081,[862]=1082,[1161]=1062,[1165]=1082,
 [934]=1100,[935]=1100,[936]=1002,[1039]=1004,[1040]=1004,[1162]=1005,[1038]=1007,[1043]=1007,[1041]=1008,[1042]=1008,[974]=1009,[975]=1009,[976]=1009,[977]=1009,[978]=1009,[979]=1009,[980]=1009,
-[1148]=1010,[1149]=1010,[1150]=1010,[1151]=1010,[1152]=1010,[1153]=1010,[1154]=1010,[1155]=1010,[1017]=1011,[1018]=1011,[1029]=1011,
+[1148]=1010,[1149]=1010,[1150]=1010,[1151]=1010,[1152]=1010,[1153]=1010,[1154]=1010,[1155]=1010,
 }	
 
 qcQuestCategories={
@@ -122,7 +122,7 @@ qcQuestCategories={
 {1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"The Seat of The Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
 --Bfa
 {1060,"Drustvar"},{1061,"Stormsong Valley"},{1062,"Tiragarde Sound"},{1080,"Nazmir"},{1081,"Vol`dun"},{1082,"Zuldazar"},
-{1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Frehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"}{1105,"Siege Of Boralus"},{1106,"Siege of Zuldazar"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1110,"Uldir"},{1111,"Waycrest Manor"},{1150,"Bfa Unknown"},
+{1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Frehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"},{1105,"Siege Of Boralus"},{1106,"Siege of Zuldazar"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1110,"Uldir"},{1111,"Waycrest Manor"},{1150,"Bfa Unknown"},
 }
 
 qcFactions = {
