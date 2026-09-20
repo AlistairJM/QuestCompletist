@@ -1661,7 +1661,7 @@ local function qcGetPin()
 
                             local mapScale = qcGetMapScale()
                             local baseSize = 16
-                            local scaledSize = baseSize * math.max(1, math.min(mapScale, 3))
+                            local scaledSize = baseSize / math.max(1, math.min(mapScale, 3))
 
                             local texture = qcMapTooltip:CreateTexture(nil, "OVERLAY")
                             texture:SetParent(qcMapTooltip)
@@ -1704,17 +1704,19 @@ local function qcGetPin()
                 end
             end
 
-            -- Adjust font size scaling
+            -- Adjust font size scaling (counter-scale so text stays a constant
+            -- size on screen as the map canvas grows/shrinks with zoom)
             local mapScale = qcGetMapScale()
+            local fontScale = math.max(1, math.min(mapScale, 3))
             local font, size, flags = GameFontNormal:GetFont()
             for i = 1, qcMapTooltip:NumLines() do
                 local leftLine = _G["qcMapTooltipTextLeft" .. i]
                 local rightLine = _G["qcMapTooltipTextRight" .. i]
                 if leftLine then
-                    leftLine:SetFont(font, 12 * mapScale, flags)
+                    leftLine:SetFont(font, 12 / fontScale, flags)
                 end
                 if rightLine then
-                    rightLine:SetFont(font, 12 * mapScale, flags)
+                    rightLine:SetFont(font, 12 / fontScale, flags)
                 end
             end
 
@@ -1805,9 +1807,12 @@ local function qcShowPin(index, icon)
         print("Error: iconCoords is nil for icon type " .. tostring(icon))
     end
 
+    -- Counter-scale so the pin stays a constant size on screen as the map
+    -- canvas grows/shrinks with zoom, instead of growing with it
     local mapScale = qcGetMapScale()
-    pin:SetSize(16 * mapScale, 16 * mapScale)
-    pin.Texture:SetSize(16 * mapScale, 16 * mapScale)
+    local pinScale = math.max(1, math.min(mapScale, 3))
+    pin:SetSize(16 / pinScale, 16 / pinScale)
+    pin.Texture:SetSize(16 / pinScale, 16 / pinScale)
 
     -- Recolor the icon based on the prerequisite quest completion status and level requirement
     if isGrey then
