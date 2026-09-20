@@ -1,6 +1,6 @@
 if GetLocale() == "itIT" then
 qcLocalize = {
-	ABYSSALDEPTHS = "Profondit‡ Abissali", -- Needs review
+	ABYSSALDEPTHS = "Profondit√† Abissali", -- Needs review
 	AHNKAHETTHEOLDKINGDOM = "Ahn'kahet: The Old Kingdom", -- Requires localization
 	AHNQIRAJ = "Ahn'Qiraj", -- Requires localization
 	AHNQIRAJTHEFALLENKINGDOM = "Ahn'Qiraj: Il Regno Perduto", -- Needs review
@@ -206,7 +206,7 @@ qcLocalize = {
 	PRIEST = "Priest", -- Requires localization
 	PROFESSIONS = "Professions", -- Requires localization
 	PROVINGGROUNDS = "Proving Grounds", -- Requires localization
-	QUERYREQUESTED = "Un'interrogazione al server Ë stata richiesta", -- Needs review
+	QUERYREQUESTED = "Un'interrogazione al server √® stata richiesta", -- Needs review
 	QUESTLISTFILTERS = "Quest List Filters", -- Requires localization
 	QUESTSFOUND = "%d Quests Found", -- Requires localization
 	RAGEFIRECHASM = "Ragefire Chasm", -- Requires localization
@@ -219,7 +219,7 @@ qcLocalize = {
 	ROGUE = "Rogue", -- Requires localization
 	RUINSOFAHNQIRAJ = "Ruins of Ahn'Qiraj", -- Requires localization
 	RUINSOFGILNEAS = "Rovine di Gilneas", -- Needs review
-	RUINSOFGILNEASCITY = "Rovine della citt‡ di Gilneas", -- Needs review
+	RUINSOFGILNEASCITY = "Rovine della citt√† di Gilneas", -- Needs review
 	SCARLETHALLS = "Scarlet Halls", -- Requires localization
 	SCARLETMONASTERY = "Scarlet Monastery", -- Requires localization
 	SCENARIO = "Scenario", -- Requires localization

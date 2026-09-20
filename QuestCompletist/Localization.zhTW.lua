@@ -1,4 +1,4 @@
-﻿if GetLocale() == "zhTW" then
+if GetLocale() == "zhTW" then
 qcLocalize = {
 	ABYSSALDEPTHS = "地獄深淵",
 	AHNKAHETTHEOLDKINGDOM = "安卡罕特:古王國", -- Needs review

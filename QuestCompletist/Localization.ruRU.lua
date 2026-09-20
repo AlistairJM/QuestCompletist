@@ -1,4 +1,4 @@
-﻿if GetLocale() == "ruRU" then
+if GetLocale() == "ruRU" then
 qcLocalize = {
 	ABYSSALDEPTHS = "Бездонные глубины",
 	AHNKAHETTHEOLDKINGDOM = "Ан'кахет: Старое Королевство",

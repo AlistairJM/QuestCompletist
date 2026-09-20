@@ -1,4 +1,4 @@
-﻿if GetLocale() == "zhCN" then
+if GetLocale() == "zhCN" then
 qcLocalize = {
 	ABYSSALDEPTHS = "Abyssal Depths", -- Requires localization
 	AHNKAHETTHEOLDKINGDOM = "Ahn'kahet: The Old Kingdom", -- Requires localization

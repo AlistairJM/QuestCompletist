@@ -1,4 +1,4 @@
-﻿if GetLocale() == "koKR" then
+if GetLocale() == "koKR" then
 qcLocalize = {
 	ABYSSALDEPTHS = "심연의 나락", -- Needs review
 	AHNKAHETTHEOLDKINGDOM = "안카헤트: 고대 왕국",
