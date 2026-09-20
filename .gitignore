@@ -10,3 +10,14 @@ Thumbs.db
 *~
 *.tmp
 *.bak
+
+# Local secrets / API credentials - never commit these
+.env
+*.secrets.*
+tools/**/.env
+tools/**/.token_cache
+
+# tools/ holds the data pipeline scripts (kept) plus large downloaded/derived
+# data files the scripts regenerate on demand (not kept - keep the repo small)
+tools/*
+!tools/*.ps1
