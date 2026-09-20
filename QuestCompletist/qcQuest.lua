@@ -2813,6 +2813,40 @@ qcUnavailableWhenLearnedProfDF = {
 }
 
 qcOverrideWeeklyQuestTypesBasedOnStorylineId = { -- Quest that is member of an weekly storyline will be given the correct pin icon, even if they are marked as normal in qcQuestDatabase={
+
+--[5767]
+--[5711]
+}
+
+qcOverrideDailyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible daily quests, once the number is accepted/done  
+{ max = 1, quests = {26442,26536,26488,26420,26414,29342,29344,6609,29347,29343,29350} }, --If/Sw Daily Fishing
+{ max = 1, quests = {26190,26177,26192,26153,26183,29356,29355,29353,29352,29351} },--If/Sw Daily Cocking
+{ max = 1, quests = {25105,25157,25156,25155,25154} } -- Sw Daily Jewelcrafting
+}
+
+qcOverrideWeeklyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible weekly quests, once the number is accepted/done 
+{ max = 1, quests = {82916, 82958, 82962, 82965, 82970} }, -- Herbalism
+{ max = 1, quests = {84084,84085,84086} },                 -- Enchanting
+{ max = 1, quests = {83102,83103,83104,83105,83106} },     -- Mining
+{ max = 1, quests = {82992,82993,83097,83098,83100} },     -- Skinning
+{ max = 2, quests = {80184,80185,80186,80187,80188,80189} }, -- Pvp Dornogal
+{ max = 1, quests = {83432,83436,83443,83457,83458,83459,83465,83469,86203} }, -- Dornogal Weekly Dungeons
+{ max = 2, quests = {83363,83345,84776,83360,83365,83364,88805,83359,83362,86731,83347,83358,83357,83366,86853} }, -- Dornogal Weekly Events
+{ max = 1, quests = {81793,81794,81795,81796,86853,90781} }, -- Pvp Dornogal
+{ max = 1, quests = {72175,72173,72172,72155}}, -- Valdrakken weekly  Enchanting
+{ max = 1, quests = {70587,70586,70572,70582}}, -- Valdrakken weekly  Tailoring
+{ max = 1, quests = {70614,70613,70616,70615}}, -- Valdrakken weekly  Herbalism
+{ max = 1, quests = {70532,70533,70530,70531}}, -- Valdrakken weekly  Alchemy
+{ max = 1, quests = {70561,70558,70559,70560}}, -- Valdrakken weekly  Inscription
+{ max = 1, quests = {70565,70564,70563,70562}}, -- Valdrakken weekly  Jewelcrafting
+{ max = 1, quests = {70234,70233,70235,70211}}, -- Valdrakken weekly  Blacksmithing
+{ max = 1, quests = {72156,70617,70618,72157}}, -- Valdrakken weekly  Mining
+{ max = 1, quests = {70540,70539,70545,70557}}, -- Valdrakken weekly  Enginering
+{ max = 1, quests = {72158,70619,72159,70620}}, -- Valdrakken weekly  Skinning
+{ max = 1, quests = {70571,70569,70568,70567}}, -- Valdrakken weekly  Leatherworking
+}
+
+qcQuestDatabase={
 -- Entries below added from Blizzard's Data API to backfill quests found in
 -- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).
 -- areaid is unmapped (0) - these won't appear correctly in the zone checklist yet.
@@ -3232,39 +3266,6 @@ qcOverrideWeeklyQuestTypesBasedOnStorylineId = { -- Quest that is member of an w
 [98515]={98515,"Vaults of Atal'Utek: A Toxic Tour",90,"Vaults of Atal'Utek",0,1,3,67108863,8191,0,0,0,0,0,0,0,0},
 [88769]={88769,"The Battle of the Bridge",90,"",0,1,3,67108863,8191,0,0,0,0,0,0,0,0},
 
---[5767]
---[5711]
-}
-
-qcOverrideDailyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible daily quests, once the number is accepted/done  
-{ max = 1, quests = {26442,26536,26488,26420,26414,29342,29344,6609,29347,29343,29350} }, --If/Sw Daily Fishing
-{ max = 1, quests = {26190,26177,26192,26153,26183,29356,29355,29353,29352,29351} },--If/Sw Daily Cocking
-{ max = 1, quests = {25105,25157,25156,25155,25154} } -- Sw Daily Jewelcrafting
-}
-
-qcOverrideWeeklyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible weekly quests, once the number is accepted/done 
-{ max = 1, quests = {82916, 82958, 82962, 82965, 82970} }, -- Herbalism
-{ max = 1, quests = {84084,84085,84086} },                 -- Enchanting
-{ max = 1, quests = {83102,83103,83104,83105,83106} },     -- Mining
-{ max = 1, quests = {82992,82993,83097,83098,83100} },     -- Skinning
-{ max = 2, quests = {80184,80185,80186,80187,80188,80189} }, -- Pvp Dornogal
-{ max = 1, quests = {83432,83436,83443,83457,83458,83459,83465,83469,86203} }, -- Dornogal Weekly Dungeons
-{ max = 2, quests = {83363,83345,84776,83360,83365,83364,88805,83359,83362,86731,83347,83358,83357,83366,86853} }, -- Dornogal Weekly Events
-{ max = 1, quests = {81793,81794,81795,81796,86853,90781} }, -- Pvp Dornogal
-{ max = 1, quests = {72175,72173,72172,72155}}, -- Valdrakken weekly  Enchanting
-{ max = 1, quests = {70587,70586,70572,70582}}, -- Valdrakken weekly  Tailoring
-{ max = 1, quests = {70614,70613,70616,70615}}, -- Valdrakken weekly  Herbalism
-{ max = 1, quests = {70532,70533,70530,70531}}, -- Valdrakken weekly  Alchemy
-{ max = 1, quests = {70561,70558,70559,70560}}, -- Valdrakken weekly  Inscription
-{ max = 1, quests = {70565,70564,70563,70562}}, -- Valdrakken weekly  Jewelcrafting
-{ max = 1, quests = {70234,70233,70235,70211}}, -- Valdrakken weekly  Blacksmithing
-{ max = 1, quests = {72156,70617,70618,72157}}, -- Valdrakken weekly  Mining
-{ max = 1, quests = {70540,70539,70545,70557}}, -- Valdrakken weekly  Enginering
-{ max = 1, quests = {72158,70619,72159,70620}}, -- Valdrakken weekly  Skinning
-{ max = 1, quests = {70571,70569,70568,70567}}, -- Valdrakken weekly  Leatherworking
-}
-
-qcQuestDatabase={
 [2]={2,"Sharptalon's Claw",7,"Ashenvale",12,1,2,5454925,4095,0,0,0,0,11,0,76,250},
 [11]={11,"Riverpaw Gnoll Bounty",1,"Elwynn Forest",70,1,1,64175181,8191,0,0,0,2,76,72},
 [16]={16,"Give Gerard a Drink",7,"Elwynn Forest",70,128,1,64175181,8191,0,0,0,0,0},
@@ -10555,7 +10556,7 @@ qcQuestDatabase={
 [27520]={27520,"Minions of Al'Akir",30,"Uldum",255,1,3,67108863,8191,0,0,0,0,0},
 [27521]={27521,"Wretched Hive of Scum and Villainy",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
 [27522]={27522,"Beat it Out of Them",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
-[27523]={27523,"Duskwing Oh How I Hate TheeÃ¢â‚¬Â¦",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
+[27523]={27523,"Duskwing Oh How I Hate TheeÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
 [27524]={27524,"Blind Fury",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
 [27525]={27525,"Guardians of Stratholme",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
 [27526]={27526,"Gidwin's Fate Revealed",15,"Eastern Plaguelands",67,1,3,67108863,8191,0,0,0,0,0},
@@ -11898,7 +11899,7 @@ qcQuestDatabase={
 [29034]={29034,"They Grow Up So Fast",15,"Winterspring",274,1,1,64175181,8191,0,0,0,0,0},
 [29035]={29035,"A Cub's Cravings",15,"Winterspring",274,4,1,64175181,8191,0,0,0,0,0},
 [29036]={29036,"Honor the Flame",1,"Midsummer",133,1,3,67108863,8191,0,256,0,0,0},
-[29037]={29037,"Ã‚Â 'Borrowing' From the Winterfall",15,"Winterspring",274,4,1,64175181,8191,0,0,0,0,0},
+[29037]={29037,"Ãƒâ€šÃ‚Â 'Borrowing' From the Winterfall",15,"Winterspring",274,4,1,64175181,8191,0,0,0,0,0},
 [29038]={29038,"Hunting Practice",15,"Winterspring",274,4,1,64175181,8191,0,0,0,0,0},
 [29040]={29040,"Cub's First Toy",15,"Winterspring",274,4,1,64175181,8191,0,0,0,0,0},
 [29054]={29054,"Stink Bombs Away!",10,"Hallow's End",90,4,1,64175181,8191,0,16,0,0,0},
@@ -16373,7 +16374,7 @@ qcQuestDatabase={
 [38036]={38036,"Supplies From the Skies",10,"Stormheim",1006,1,1,64175181,8191,0,0,0,0,0},
 [38040]={38040,"Bleeding the Bleeding Hollow",40,"Garrison Support",290,4,2,61658034,8191,0,0,0,0,0},
 [38043]={38043,"Bleeding the Bleeding Hollow",40,"Garrison Support",290,4,1,64175181,8191,0,0,0,0,0},
-[38044]={38044,"Ã‚Â Bleeding the Bleeding Hollow",40,"Tanaan Jungle",306,4,2,61658034,8191,0,0,0,0,0},
+[38044]={38044,"Ãƒâ€šÃ‚Â Bleeding the Bleeding Hollow",40,"Tanaan Jungle",306,4,2,61658034,8191,0,0,0,0,0},
 [38045]={38045,"Bleeding the Bleeding Hollow",40,"Tanaan Jungle",306,4,1,64175181,8191,0,0,0,0,0},
 [38046]={38046,"Battle At The Iron Front",40,"Tanaan Jungle",306,4,1,64175181,8191,0,0,0,0,0},
 [38047]={38047,"Battle At The Iron Front",40,"Tanaan Jungle",306,4,2,61658034,8191,0,0,0,0,0},
@@ -24438,7 +24439,7 @@ qcQuestDatabase={
 [54414]={54414,"Gale's Unrest",10,"Stormsong Valley",1061,128,3,67108863,8191,0,0,0,0,0},
 [54415]={54415,"Vulpera for a Day",10,"Vol'dun",1081,128,3,67108863,8191,0,0,0,0,0},
 [54416]={54416,"Warfront Preparations",50,"Darkshore",47,1,2,61658034,8191,0,0,0,0,0},
-[54417]={54417,"Showing Our MightÃ¯â‚¬â€ ",50,"Alliance War Campaign",1090,1,1,64175181,8191,0,0,0,0,0},
+[54417]={54417,"Showing Our MightÃƒÂ¯Ã¢â€šÂ¬Ã¢â‚¬Â ",50,"Alliance War Campaign",1090,1,1,64175181,8191,0,0,0,0,0},
 [54418]={54418,"The Mech of Death",50,"Alliance War Campaign",1090,1,1,64175181,8191,0,0,0,0,0},
 [54419]={54419,"Quelling the Masses",50,"undefined",1150,0,2,61658034,8191,0,0,0,0,0},
 [54421]={54421,"Taming their Beasts",50,"Alliance War Campaign",1090,1,1,64175181,8191,0,0,0,0,0},
