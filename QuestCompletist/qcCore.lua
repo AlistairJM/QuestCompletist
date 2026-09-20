@@ -1840,7 +1840,21 @@ local function qcRefreshPins(UiMapID, mapLevel)
             table.remove(qcPins, i)
         end
     end
-		--[[ Map Low Level ]]--	
+		--[[ Map No Data ]]--
+	if qcSettings.QC_M_HIDE_NODATA == 1 then
+		for i = #qcPins, 1, -1 do
+			for questIndex = #qcPins[i][7], 1, -1 do
+				local questId = qcPins[i][7][questIndex]
+				if not qcQuestDatabase[questId] then
+					table.remove(qcPins[i][7], questIndex)
+				end
+			end
+			if #qcPins[i][7] == 0 then
+				table.remove(qcPins, i)
+			end
+		end
+	end
+		--[[ Map Low Level ]]--
     if qcSettings.QC_M_HIDE_LOWLEVEL == 1 then
         for i = #qcPins, 1, -1 do
             for questIndex = #qcPins[i][7], 1, -1 do
@@ -2189,6 +2203,9 @@ function qcCheckSettings()
     if (qcSettings.QC_M_HIDE_INPROGRESS == nil) then
         qcSettings.QC_M_HIDE_INPROGRESS = 0
     end
+    if (qcSettings.QC_M_HIDE_NODATA == nil) then
+        qcSettings.QC_M_HIDE_NODATA = 1
+    end
     if (qcSettings.QC_L_HIDE_COMPLETED == nil) then
         qcSettings.QC_L_HIDE_COMPLETED = 0
     end
@@ -2260,6 +2277,11 @@ function qcApplySettings()
         qcIO_M_HIDE_INPROGRESS:SetChecked(false)
     else
         qcIO_M_HIDE_INPROGRESS:SetChecked(true)
+    end
+    if (qcSettings.QC_M_HIDE_NODATA == 0) then
+        qcIO_M_HIDE_NODATA:SetChecked(false)
+    else
+        qcIO_M_HIDE_NODATA:SetChecked(true)
     end
     if (qcSettings.QC_L_HIDE_COMPLETED == 0) then
         qcIO_L_HIDE_COMPLETED:SetChecked(false)
@@ -2446,9 +2468,20 @@ function qcInterfaceOptions_OnShow(self)
             qcSettings.QC_M_HIDE_INPROGRESS = 1
         end
     end)
-	
+
+    qcIO_M_HIDE_NODATA = CreateFrame("CheckButton", "qcIO_M_HIDE_NODATA", self, "InterfaceOptionsCheckButtonTemplate")
+    qcIO_M_HIDE_NODATA:SetPoint("TOPLEFT", qcIO_M_HIDE_INPROGRESS, "BOTTOMLEFT", 0, 0)
+    _G[qcIO_M_HIDE_NODATA:GetName().."Text"]:SetText(qcL.HIDENODATA)
+    qcIO_M_HIDE_NODATA:SetScript("OnClick", function(self)
+        if (qcIO_M_HIDE_NODATA:GetChecked() == false) then
+            qcSettings.QC_M_HIDE_NODATA = 0
+        else
+            qcSettings.QC_M_HIDE_NODATA = 1
+        end
+    end)
+
     qcIO_M_HIDE_REQUIREMENTSNOTMET = CreateFrame("CheckButton", "qcIO_M_HIDE_REQUIREMENTSNOTMET", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_REQUIREMENTSNOTMET:SetPoint("TOPLEFT", qcIO_M_HIDE_INPROGRESS, "BOTTOMLEFT", 0, 0)
+    qcIO_M_HIDE_REQUIREMENTSNOTMET:SetPoint("TOPLEFT", qcIO_M_HIDE_NODATA, "BOTTOMLEFT", 0, 0)
     _G[qcIO_M_HIDE_REQUIREMENTSNOTMET:GetName().."Text"]:SetText(qcL.HIDEREQUIREMENTSNOTMET)
     qcIO_M_HIDE_REQUIREMENTSNOTMET:SetScript("OnClick", function(self)
         if (qcIO_M_HIDE_REQUIREMENTSNOTMET:GetChecked() == false) then
