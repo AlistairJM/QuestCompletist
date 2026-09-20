@@ -482,6 +482,36 @@ end
 --Beta Reset Daily and Weekly End
 
 
+-- Returns completed, total quest counts for a zone (area id), restricted to quests
+-- this character is actually eligible for (faction/race/class), so the percentage
+-- reflects quests they could ever complete rather than every quest in the zone.
+function qcGetZoneCompletionStats(areaId)
+	local playerFaction, _ = UnitFactionGroup("player")
+	local factionFlag = qcFactionBits[string.upper(playerFaction)]
+	local _, playerRace = UnitRace("player")
+	local raceFlag = qcRaceBits[string.upper(playerRace)]
+	local _, playerClass = UnitClass("player")
+	local classFlag = qcClassBits[string.upper(playerClass)]
+
+	local total = 0
+	local completed = 0
+
+	for questId, questEntry in pairs(qcQuestDatabase) do
+		if questEntry[5] == areaId
+			and bit.band(questEntry[7], factionFlag) ~= 0
+			and bit.band(questEntry[8], raceFlag) ~= 0
+			and bit.band(questEntry[9], classFlag) ~= 0 then
+			total = total + 1
+			local flaggedComplete = qcCompletedQuests[questId] and (qcCompletedQuests[questId]["C"] == 1 or qcCompletedQuests[questId]["C"] == 2)
+			if flaggedComplete or C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId) then
+				completed = completed + 1
+			end
+		end
+	end
+
+	return completed, total
+end
+
 function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 	if not (qcQuestCompletistUI:IsVisible()) then return nil end
 	local stringFormat = string.format
@@ -497,6 +527,10 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			qcMenuSlider:SetMinMaxValues(1, qcCurrentCategoryQuestCount - 15)
 		end
 		qcMenuSlider:SetValue(startIndex)
+
+		local completedInZone, totalInZone = qcGetZoneCompletionStats(categoryId)
+		local completionPercent = (totalInZone > 0) and math.floor((completedInZone / totalInZone) * 100) or 0
+		qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d/%d Complete (%d%%)", completedInZone, totalInZone, completionPercent))
 	else
 		if (searchText) then
 			qcGetCategoryQuests(nil, searchText)
@@ -508,9 +542,9 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 				qcMenuSlider:SetMinMaxValues(1, qcCurrentCategoryQuestCount - 15)
 			end
 			qcMenuSlider:SetValue(startIndex)
+			qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d Quests Found", qcCurrentCategoryQuestCount))
 		end
 	end
-	qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d Quests Found",qcCurrentCategoryQuestCount))
 	for i = 1, 16 do
 		local offset = ((i + startIndex) - 1)
 		local questRecord = _G["qcMenuButton" .. i]
