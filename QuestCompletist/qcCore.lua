@@ -1731,18 +1731,13 @@ function qcPinMixin:OnMouseEnter()
         qcMapTooltip:AddLine(string.format("|cffabd473%s|r", pinData[8]), nil, nil, nil, true)
     end
 
-    local font, size, flags = GameFontNormal:GetFont()
-    for i = 1, qcMapTooltip:NumLines() do
-        local leftLine = _G["qcMapTooltipTextLeft" .. i]
-        local rightLine = _G["qcMapTooltipTextRight" .. i]
-        if leftLine then
-            leftLine:SetFont(font, 12, flags)
-        end
-        if rightLine then
-            rightLine:SetFont(font, 12, flags)
-        end
-    end
-
+    -- No manual font override here - GameTooltipTemplate already provides
+    -- Blizzard's own tooltip styling (bold title, plain body text) by
+    -- default. An earlier fix forced every line to a flat 12pt font to
+    -- counteract a zoom-scaling bug that's since been fixed properly at its
+    -- actual source (the pin now uses MapCanvasPinMixin's own scaling
+    -- limits), so that override is gone - it was making tooltips look
+    -- noticeably different from Blizzard's native ones, not fixing anything.
     qcMapTooltip:Show()
 end
 
