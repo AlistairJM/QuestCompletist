@@ -1558,14 +1558,6 @@ local function qcHideAllPins()
     end
 end
 
--- Function to get the map scale
-local function qcGetMapScale()
-    local canvas = WorldMapFrame:GetCanvas()
-    local scaleWidth = canvas:GetWidth() / 1002 -- Reference width of the map canvas in default state
-    local scaleHeight = canvas:GetHeight() / 668 -- Reference height of the map canvas in default state
-    return math.min(scaleWidth, scaleHeight)
-end
-
 -- Coloured quest name function
 local function qcColouredQuestName(questId)
     if not questId or not qcQuestDatabase[questId] then return nil end
@@ -1659,13 +1651,11 @@ local function qcGetPin()
                         if #initiatorData[7] <= 10 and qcQuestDatabase[qcEntry] then
                             local questData = qcQuestDatabase[qcEntry]
 
-                            local mapScale = qcGetMapScale()
                             local baseSize = 16
-                            local scaledSize = baseSize / math.max(1, math.min(mapScale, 3))
 
                             local texture = qcMapTooltip:CreateTexture(nil, "OVERLAY")
                             texture:SetParent(qcMapTooltip)
-                            texture:SetSize(scaledSize, scaledSize)
+                            texture:SetSize(baseSize, baseSize)
 
                             if questData[6] == 4 then
                                 texture:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\DailyQuestIcon")
@@ -1704,19 +1694,16 @@ local function qcGetPin()
                 end
             end
 
-            -- Adjust font size scaling (counter-scale so text stays a constant
-            -- size on screen as the map canvas grows/shrinks with zoom)
-            local mapScale = qcGetMapScale()
-            local fontScale = math.max(1, math.min(mapScale, 3))
+            -- Keep tooltip text at a constant size regardless of map zoom
             local font, size, flags = GameFontNormal:GetFont()
             for i = 1, qcMapTooltip:NumLines() do
                 local leftLine = _G["qcMapTooltipTextLeft" .. i]
                 local rightLine = _G["qcMapTooltipTextRight" .. i]
                 if leftLine then
-                    leftLine:SetFont(font, 12 / fontScale, flags)
+                    leftLine:SetFont(font, 12, flags)
                 end
                 if rightLine then
-                    rightLine:SetFont(font, 12 / fontScale, flags)
+                    rightLine:SetFont(font, 12, flags)
                 end
             end
 
@@ -1807,12 +1794,9 @@ local function qcShowPin(index, icon)
         print("Error: iconCoords is nil for icon type " .. tostring(icon))
     end
 
-    -- Counter-scale so the pin stays a constant size on screen as the map
-    -- canvas grows/shrinks with zoom, instead of growing with it
-    local mapScale = qcGetMapScale()
-    local pinScale = math.max(1, math.min(mapScale, 3))
-    pin:SetSize(16 / pinScale, 16 / pinScale)
-    pin.Texture:SetSize(16 / pinScale, 16 / pinScale)
+    -- Keep the pin at a constant size regardless of map zoom
+    pin:SetSize(16, 16)
+    pin.Texture:SetSize(16, 16)
 
     -- Recolor the icon based on the prerequisite quest completion status and level requirement
     if isGrey then
