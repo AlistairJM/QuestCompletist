@@ -1682,11 +1682,10 @@ function qcPinMixin:OnMouseEnter()
             -- quest obtained via an action, not a named NPC (e.g. "Provided
             -- when you assist an Injured Razer Hill Grunt")
             qcMapTooltip:AddLine(string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"))
-        else
-            -- NpcId 0 with no note and no name is genuinely unknown NPC
-            -- data, not a self-triggered quest - don't mislabel it
-            qcMapTooltip:AddLine("|cff808080Unknown Quest Giver|r")
         end
+        -- NpcId 0 with no note and no name is genuinely unknown NPC data -
+        -- omit the line entirely rather than show a placeholder, matching
+        -- Blizzard's own quest tooltips, which don't name the giver either
     else
         qcMapTooltip:AddDoubleLine(pinData[4] or string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"), string.format("|cffff7d0a[%d]|r", pinData[3]))
     end
