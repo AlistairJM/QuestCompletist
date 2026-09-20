@@ -1,7 +1,7 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ http://wowprogramming.com/FrameXML/UI.xsd">
 
   <Frame name="qcPinTemplate" hidden="true" enableMouse="true" mixin="qcPinMixin" virtual="true">
-    <Size x="16" y="16"/>
+    <Size x="24" y="24"/>
     <Layers>
       <Layer level="OVERLAY">
         <Texture parentKey="Texture" setAllPoints="true" file="Interface\Addons\QuestCompletist\Images\QCIcons"/>

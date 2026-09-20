@@ -1583,6 +1583,9 @@ end
 function qcPinMixin:OnAcquired(pinData)
     self.PinData = pinData
     self:SetPosition(pinData[5] / 100, pinData[6] / 100)
+    -- 16px looked noticeably smaller than Blizzard's own map icons; the
+    -- pre-rewrite code's original (later-overridden) default was 24
+    self:SetSize(24, 24)
 
     local icon = pinData[2]
     local iconCoords
