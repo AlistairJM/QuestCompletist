@@ -1065,8 +1065,8 @@ function qcUpdateTooltip(index)
             qcQuestInformationTooltip:AddLine(" ")
         end
 		-- Renown and Faction requirements Start
-        -- Check for game version 8.x and above before handling renown
-        if tonumber(GetBuildInfo():match("^(%d+)")) >= 8 then
+        -- Only handle renown/major faction requirements where the Major Factions API exists
+        if C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel then
             local renownInfo = qcRenownLevelRequirements[questId]
 
             if renownInfo then
@@ -1940,10 +1940,7 @@ end
 	end
 
 		--[[ Map Covenants ]]--
-	local version, build, date, tocVersion = GetBuildInfo()
-	local majorVersion = tonumber(version:match("^%d+"))
-
-	if majorVersion and majorVersion >= 9 then -- Only run Shadowlands+
+	if C_Covenants and C_Covenants.GetActiveCovenantID then -- Only run where the Covenants API exists
 		if (qcSettings["QC_ML_HIDE_COVENANTS"] == 1) then
 			local playerCovenantID = C_Covenants.GetActiveCovenantID()
 			local playerCovenantBit = qcCovenantsBits[playerCovenantID] or 0
@@ -1965,10 +1962,7 @@ end
 		end
 	end
 		--[[ Map Warbands ]]--
-	local version, build, date, tocVersion = GetBuildInfo()
-	local majorVersion = tonumber(version:match("^%d+"))
-
-	if majorVersion and majorVersion >= 11 then -- Only run TWW
+	if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then -- Only run where account-wide (Warband) quest tracking exists
 		if (qcSettings["QC_ML_HIDE_WARBANDS"] == 1) then 
 			for i = #qcPins, 1, -1 do
 				for qcQuestIndex = #qcPins[i][7], 1, -1 do
@@ -1984,9 +1978,6 @@ end
 		end
 	end
 		--[[ Map Prerequisites Not Met ]] --
-	local version, build, date, tocVersion = GetBuildInfo()
-	local majorVersion = tonumber(version:match("^%d+"))
-
 	if (qcSettings["QC_M_HIDE_REQUIREMENTSNOTMET"] == 1) then
 		local playerLevel = UnitLevel("player")
 		local playerFaction, _ = UnitFactionGroup("player")
@@ -2008,7 +1999,7 @@ end
 
 					-- Check faction standing from qcRenownLevelRequirements (Retail only)
 					local factionStandingTooLow = false
-					if majorVersion and majorVersion >= 11 then -- Retail check
+					if C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel then -- Only check faction/renown requirements where the API exists
 						local renownRequirement = qcRenownLevelRequirements[qcQuestID]
 						if renownRequirement then
 							local factionID = renownRequirement[1]  -- First value is faction ID
@@ -2105,11 +2096,8 @@ qcEventFrame:RegisterEvent("ZONE_CHANGED_INDOORS")
 qcEventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 qcEventFrame:RegisterEvent("PLAYER_LOGIN")
 
--- Check game version and conditionally register WORLD_MAP_OPEN for Retail
-local version, build, date, tocVersion = GetBuildInfo()
-local majorVersion = tonumber(version:match("^%d+"))
-
-if majorVersion and majorVersion >= 11 then -- Only in Retail
+-- Only register WORLD_MAP_OPEN where this client flavor actually fires it
+if C_EventUtils and C_EventUtils.IsEventValid and C_EventUtils.IsEventValid("WORLD_MAP_OPEN") then
     qcEventFrame:RegisterEvent("WORLD_MAP_OPEN")
 end
 
@@ -2265,10 +2253,8 @@ function qcApplySettings()
         qcIO_L_HIDE_REPEATABLEQUEST:SetChecked(true)
     end
 
-    -- Only handle qcIO_L_HIDE_WORLDQUEST for Legion and later
-    local version, build, date, tocVersion = GetBuildInfo()
-    local majorVersion = tonumber(version:match("^%d+"))
-    if majorVersion and majorVersion >= 7 then
+    -- Only handle qcIO_L_HIDE_WORLDQUEST where the checkbox exists (created only where the Task Quest API exists)
+    if qcIO_L_HIDE_WORLDQUEST then
         if (qcSettings.QC_L_HIDE_WORLDQUEST == 0) then
             qcIO_L_HIDE_WORLDQUEST:SetChecked(false)
         else
@@ -2276,8 +2262,8 @@ function qcApplySettings()
         end
     end
 
-    -- Only handle qcIO_ML_HIDE_COVENANTS for Battle for Azeroth (8.x) and later
-    if majorVersion and majorVersion >= 8 then
+    -- Only handle qcIO_ML_HIDE_COVENANTS where the checkbox exists (created only where the Covenants API exists)
+    if qcIO_ML_HIDE_COVENANTS then
         if (qcSettings.QC_ML_HIDE_COVENANTS == 0) then
             qcIO_ML_HIDE_COVENANTS:SetChecked(false)
         else
@@ -2285,8 +2271,8 @@ function qcApplySettings()
         end
     end
 
-    -- Only handle qcIO_ML_HIDE_WARBANDS for Dragonflight (11.x) and later
-    if majorVersion and majorVersion >= 11 then
+    -- Only handle qcIO_ML_HIDE_WARBANDS where the checkbox exists (created only where account-wide quest tracking exists)
+    if qcIO_ML_HIDE_WARBANDS then
         if (qcSettings.QC_ML_HIDE_WARBANDS == 0) then
             qcIO_ML_HIDE_WARBANDS:SetChecked(false)
         else
@@ -2498,8 +2484,8 @@ function qcInterfaceOptions_OnShow(self)
         end
     end)
 
-	-- Only create the checkbox if the expansion is Legion or later
-	if majorVersion and majorVersion >= 7 then
+	-- Only create the checkbox where the Task Quest (World Quest) API exists
+	if C_TaskQuest and C_TaskQuest.GetQuestsForPlayerByMapID then
 		qcIO_L_HIDE_WORLDQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_WORLDQUEST", self, "InterfaceOptionsCheckButtonTemplate")
 		qcIO_L_HIDE_WORLDQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, -75)
 		_G[qcIO_L_HIDE_WORLDQUEST:GetName().."Text"]:SetText(qcL.HIDEWORLDQUEST .. COLOUR_DEATHKNIGHT .. " ")
@@ -2538,11 +2524,8 @@ function qcInterfaceOptions_OnShow(self)
         end
     end)
 
-	local version, build, date, tocVersion = GetBuildInfo()
-	local majorVersion = tonumber(version:match("^%d+"))
-
-	-- Create Covenant Checkbox (for Shadowlands (9.x) and later)
-	if majorVersion and majorVersion >= 9 then
+	-- Create Covenant Checkbox where the Covenants API exists
+	if C_Covenants and C_Covenants.GetActiveCovenantID then
 		qcIO_ML_HIDE_COVENANTS = CreateFrame("CheckButton", "qcIO_ML_HIDE_COVENANTS", self, "InterfaceOptionsCheckButtonTemplate")
 		qcIO_ML_HIDE_COVENANTS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -25)
 		_G[qcIO_ML_HIDE_COVENANTS:GetName().."Text"]:SetText(qcL.HIDEOTHERCOVENANTQUESTS)
@@ -2555,8 +2538,8 @@ function qcInterfaceOptions_OnShow(self)
 		end)
 	end
 
-	-- Create Warband Checkbox (for Dragonflight (11.x) and later)
-	if majorVersion and majorVersion >= 11 then
+	-- Create Warband Checkbox where account-wide (Warband) quest tracking exists
+	if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
 		qcIO_ML_HIDE_WARBANDS = CreateFrame("CheckButton", "qcIO_ML_HIDE_WARBANDS", self, "InterfaceOptionsCheckButtonTemplate")
 		qcIO_ML_HIDE_WARBANDS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -50)
 		_G[qcIO_ML_HIDE_WARBANDS:GetName().."Text"]:SetText(qcL.HIDEWARBANDS)
