@@ -1675,7 +1675,18 @@ function qcPinMixin:OnMouseEnter()
     qcMapTooltip.qcIcons = {}
 
     if pinData[3] == 0 then
-        qcMapTooltip:AddLine(pinData[4] or string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"))
+        if pinData[4] then
+            qcMapTooltip:AddLine(pinData[4])
+        elseif pinData[8] then
+            -- NpcId 0 with an explanatory note is the original special case:
+            -- quest obtained via an action, not a named NPC (e.g. "Provided
+            -- when you assist an Injured Razer Hill Grunt")
+            qcMapTooltip:AddLine(string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"))
+        else
+            -- NpcId 0 with no note and no name is genuinely unknown NPC
+            -- data, not a self-triggered quest - don't mislabel it
+            qcMapTooltip:AddLine("|cff808080Unknown Quest Giver|r")
+        end
     else
         qcMapTooltip:AddDoubleLine(pinData[4] or string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"), string.format("|cffff7d0a[%d]|r", pinData[3]))
     end
