@@ -1568,6 +1568,11 @@ qcPinMixin = CreateFromMixins(MapCanvasPinMixin)
 
 function qcPinMixin:OnLoad()
     self:SetFrameLevel(2500)
+    -- Without calling this, Blizzard's pin system appears to apply its own
+    -- default zoom-based scaling rather than a flat constant size (matching
+    -- what HandyNotes explicitly opts into a mild version of via this same
+    -- call) - force a flat 1.0-to-1.0 range so the pin stays constant-sized.
+    self:SetScalingLimits(1, 1.0, 1.0)
 end
 
 -- Called by Blizzard's pin pool each time a pin is placed on the map. Stores
