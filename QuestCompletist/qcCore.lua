@@ -1794,9 +1794,14 @@ local function qcShowPin(index, icon)
         print("Error: iconCoords is nil for icon type " .. tostring(icon))
     end
 
-    -- Keep the pin at a constant size regardless of map zoom
+    -- The pin is parented directly to the map canvas, so it inherits the
+    -- canvas's effective scale - which changes with zoom, independently of
+    -- canvas width/height. Counter that on the pin's own scale (not its size)
+    -- so its on-screen size stays constant, the same technique already used
+    -- for qcMapTooltip's scale elsewhere in this file.
     pin:SetSize(16, 16)
     pin.Texture:SetSize(16, 16)
+    pin:SetScale(1 / canvas:GetEffectiveScale())
 
     -- Recolor the icon based on the prerequisite quest completion status and level requirement
     if isGrey then
