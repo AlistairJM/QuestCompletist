@@ -20,6 +20,5 @@ Localization.zhTW.lua
 qcMenu.lua
 qcPinDB.lua
 qcQuest.lua
-qcCollect.lua
 qcCore.lua
 QuestCompletist.xml
