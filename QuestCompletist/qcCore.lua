@@ -1557,7 +1557,6 @@ end
 qcPinMixin = CreateFromMixins(MapCanvasPinMixin)
 
 function qcPinMixin:OnLoad()
-    self:SetFrameLevel(2500)
     self:SetScalingLimits(1, 1.0, 1.0)
 end
 

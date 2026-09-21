@@ -128,12 +128,37 @@ Write-Output "Old (quest, NPC) pairs preserved as-is (no replacement data exists
 foreach ($k in $keptOld) { $enriched.Add($k) }
 Write-Output "Total quest-giver location rows after merge: $($enriched.Count)"
 
-Write-Output "Grouping into pins (same UiMapID + NPC ID share one pin when NPC ID is known and nonzero)..."
-# Group key: known-NPC pins group by (UiMapID, MapLevel, NpcId); unknown-NPC (id=0) pins stay individual per quest
+Write-Output "Grouping into pins (same UiMapID + NPC ID share one pin when NPC ID is known and nonzero;"
+Write-Output "unknown-NPC (id=0) pins with the same name within 1.5 map points on the same map are merged too -"
+Write-Output "otherwise the same physical NPC ends up as many fully-overlapping pins, which breaks rendering"
+Write-Output "when enough of them stack on the same spot)..."
+$proximityMergeThreshold = 1.5
 $pinGroups = @{}
+$namedGroupKeysByMapAndName = @{}   # "$UiMapID|$MapLevel|$Name" -> List[pinGroups key], for proximity lookup
 foreach ($row in $enriched) {
+    $key = $null
     if ($row.NpcId -ne "0") {
         $key = "$($row.UiMapID)|$($row.MapLevel)|npc-$($row.NpcId)"
+    } elseif ($row.NpcName) {
+        $nameLookupKey = "$($row.UiMapID)|$($row.MapLevel)|$($row.NpcName)"
+        $rowX = [double]$row.MapX; $rowY = [double]$row.MapY
+        if ($namedGroupKeysByMapAndName.ContainsKey($nameLookupKey)) {
+            $bestKey = $null; $bestDist = [double]::MaxValue
+            foreach ($candidateKey in $namedGroupKeysByMapAndName[$nameLookupKey]) {
+                $c = $pinGroups[$candidateKey]
+                $dx = $rowX - [double]$c.MapX; $dy = $rowY - [double]$c.MapY
+                $dist = [math]::Sqrt($dx*$dx + $dy*$dy)
+                if ($dist -le $proximityMergeThreshold -and $dist -lt $bestDist) { $bestKey = $candidateKey; $bestDist = $dist }
+            }
+            if ($bestKey) { $key = $bestKey }
+        }
+        if (-not $key) {
+            $key = "$($row.UiMapID)|$($row.MapLevel)|quest-$($row.QuestID)"
+            if (-not $namedGroupKeysByMapAndName.ContainsKey($nameLookupKey)) {
+                $namedGroupKeysByMapAndName[$nameLookupKey] = New-Object System.Collections.Generic.List[string]
+            }
+            $namedGroupKeysByMapAndName[$nameLookupKey].Add($key)
+        }
     } else {
         $key = "$($row.UiMapID)|$($row.MapLevel)|quest-$($row.QuestID)"
     }
