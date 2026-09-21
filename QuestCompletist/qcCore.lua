@@ -1625,8 +1625,6 @@ function qcPinMixin:OnMouseEnter()
     local pinData = self.PinData
     if not pinData then return end
 
-    qcMapTooltip:SetParent(self)
-
     local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
     local x, y = self:GetCenter()
     local anchorPoint = "ANCHOR_RIGHT"
