@@ -284,11 +284,20 @@
     <Layers>
       <Layer level="BACKGROUND">
         <Texture name="$parent_qcPortrait" parentKey="qcPortrait" file="Interface\ICONS\TRADE_ARCHAEOLOGY_DRAENEI_TOME">
-          <Size x ="64" y ="64"/>
+          <Size x ="66" y ="66"/>
           <Anchors>
-            <Anchor point="TOPLEFT" x ="7" y ="-4"/>
+            <Anchor point="TOPLEFT" x ="6" y ="-3"/>
           </Anchors>
         </Texture>
+        <MaskTexture parentKey="qcPortraitMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeKey="$parent.qcPortrait"/>
+            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.qcPortrait"/>
+          </Anchors>
+          <MaskedTextures>
+            <MaskedTexture childKey="qcPortrait"/>
+          </MaskedTextures>
+        </MaskTexture>
       </Layer>
       <Layer level="OVERLAY">
         <FontString name="$parent_qcTitleText" parentKey="qcTitleText" inherits="GameFontNormal" text="Quest Completist v#.##">
@@ -327,7 +336,7 @@
     <Frames>
       <Button name="qcXButton" inherits="UIPanelCloseButton">
         <Anchors>
-          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent" x ="323" y ="-9"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent" x ="323" y ="-15"/>
         </Anchors>
       </Button>
       <Button name="qcMenuButton1" inherits="qcQuestMenuTemplate" id ="1">
