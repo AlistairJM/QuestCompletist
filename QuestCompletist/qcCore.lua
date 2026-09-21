@@ -1227,6 +1227,18 @@ end
 -- End Tooltip when mouse over quest name
 
 
+local function qcFindPinDataForQuest(qcQuestID)
+    for qcMapIndex, npcList in pairs(qcPinDB) do
+        for _, qcInitiatorEntry in pairs(npcList) do
+            for _, qcInitiatorQuestEntry in pairs(qcInitiatorEntry[7] or {}) do
+                if (qcInitiatorQuestEntry == qcQuestID) then
+                    return qcMapIndex, qcInitiatorEntry[5] / 100, qcInitiatorEntry[6] / 100, qcInitiatorEntry[4]
+                end
+            end
+        end
+    end
+end
+
 function qcQuestClick(qcButtonIndex)
 	local qcQuestID = _G["qcMenuButton" .. qcButtonIndex].QuestID
 	if (IsLeftShiftKeyDown()) then --[[ User wants to toggle the completed status of a quest ]]--
@@ -1266,26 +1278,9 @@ function qcQuestClick(qcButtonIndex)
   else
 		-- print(string.format("%sLooking for Tom Tom.",QCADDON_CHAT_TITLE))
     if (C_AddOns.IsAddOnLoaded('TomTom')) then
-        local addedWayPoint;
-        -- print(string.format("%sLooking for quest in db.", QCADDON_CHAT_TITLE))
-        for qcMapIndex, npcList in pairs(qcPinDB) do
-            for _, qcInitiatorEntry in pairs(npcList) do
-                for _, qcInitiatorQuestEntry in pairs(qcInitiatorEntry[7] or {}) do
-                    if (qcInitiatorQuestEntry == qcQuestID) then
-                        local zoneID = qcMapIndex
-                        local x, y = qcInitiatorEntry[5] / 100, qcInitiatorEntry[6] / 100
-                        local title = qcInitiatorEntry[4]
-
-                        --print(string.format("%sFound quest. Zone: %s, Initiator: %s, Coordinates: %s, %s", QCADDON_CHAT_TITLE, zoneID, title, x, y)) -- Used for debuging
-                        
-                        TomTom:AddWaypoint(zoneID, x, y, {title = title})
-                        addedWayPoint = true
-                        break
-                    end
-                end
-            end
-        end
-        if (addedWayPoint) then
+        local zoneID, x, y, title = qcFindPinDataForQuest(qcQuestID)
+        if (zoneID) then
+            TomTom:AddWaypoint(zoneID, x, y, {title = title})
             TomTom:SetClosestWaypoint()
         end
     end
