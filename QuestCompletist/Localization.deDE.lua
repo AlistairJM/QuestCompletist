@@ -126,6 +126,7 @@ qcLocalize = {
 	HIDEOTHERCOVENANTQUESTS = "Verstecke Quests anderer Covenant",
 	HIDEWARBANDS = "Hide quests done by other warband's characters",
 	HIDEREQUIREMENTSNOTMET = "Hide quests with unfinished requirements",
+	HIDENODATA = "Hide pins with no quest data available",
 	HIDEREPEATABLEQUEST = "Hide Repeatable Quests",
 	HIDEWEEKLYQUEST = "Hide Weekly Quests",
 	HIDEWORLDQUEST = "Verstecke Weltquest",
