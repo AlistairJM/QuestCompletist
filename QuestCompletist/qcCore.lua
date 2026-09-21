@@ -1625,8 +1625,6 @@ function qcPinMixin:OnMouseEnter()
     local pinData = self.PinData
     if not pinData then return end
 
-    qcMapTooltip:SetParent(self)
-
     local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
     local x, y = self:GetCenter()
     local anchorPoint = "ANCHOR_RIGHT"
@@ -2347,7 +2345,7 @@ function qcInterfaceOptions_OnShow(self)
 
     --- Quest List Filters Start ---
     qcListFiltersTitle = self:CreateFontString("qcListFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcListFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -210)
+    qcListFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -235)
     qcListFiltersTitle:SetText(qcL.QUESTLISTFILTERS)
 
     qcIO_L_HIDE_COMPLETED = CreateFrame("CheckButton", "qcIO_L_HIDE_COMPLETED", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2420,7 +2418,7 @@ function qcInterfaceOptions_OnShow(self)
 	end
 
     qcCombinedFiltersTitle = self:CreateFontString("qcCombinedFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -400)
+    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -425)
     qcCombinedFiltersTitle:SetText(qcL.COMBINEDMAPANDQUESTFILTERS)
 
     qcIO_ML_HIDE_FACTION = CreateFrame("CheckButton", "qcIO_ML_HIDE_FACTION", self, "InterfaceOptionsCheckButtonTemplate")

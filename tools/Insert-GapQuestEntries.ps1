@@ -35,14 +35,14 @@ foreach ($row in $data) {
     $lines.Add("[$($row.QuestID)]={$($row.QuestID),`"$title`",$level,`"$zone`",0,1,$factionBits,67108863,8191,0,0,0,0,0,0,0,0},")
 }
 
-$content = Get-Content $questFile -Raw
+$content = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($questFile))
 $marker = "qcQuestDatabase={"
-$idx = $content.IndexOf($marker)
-if ($idx -lt 0) { throw "Could not find qcQuestDatabase={ marker" }
-$insertAt = $idx + $marker.Length
+$anchorMatch = [regex]::Match($content, '(?m)^qcQuestDatabase=\{')
+if (-not $anchorMatch.Success) { throw "Could not find qcQuestDatabase={ marker" }
+$insertAt = $anchorMatch.Index + $marker.Length
 
-$header = "`n-- Entries below added from Blizzard's Data API to backfill quests found in`n-- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).`n-- areaid is unmapped (0) - these won't appear correctly in the zone checklist yet.`n"
-$block = $header + ($lines -join "`n") + "`n"
+$header = "`r`n-- Entries below added from Blizzard's Data API to backfill quests found in`r`n-- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).`r`n-- areaid is unmapped (0) - these won't appear correctly in the zone checklist yet.`r`n"
+$block = $header + ($lines -join "`r`n") + "`r`n"
 
 $newContent = $content.Substring(0, $insertAt) + $block + $content.Substring($insertAt)
 
