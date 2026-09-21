@@ -211,17 +211,36 @@ local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
 	end
 end
 
+local qcCategoryIndex = nil
+local qcQuestNameUpperCache = nil
+
+local function qcBuildQuestIndexes()
+    qcCategoryIndex = {}
+    qcQuestNameUpperCache = {}
+    for questId, e in pairs(qcQuestDatabase) do
+        local categoryId = e[5]
+        if not qcCategoryIndex[categoryId] then
+            qcCategoryIndex[categoryId] = {}
+        end
+        table.insert(qcCategoryIndex[categoryId], e)
+        qcQuestNameUpperCache[questId] = string.upper(e[2])
+    end
+end
+
 local function qcGetCategoryQuests(categoryId, searchText)
     local tableInsert = table.insert
-    local stringUpper = string.upper
     local tableSort = table.sort
     local holdingTable = {}
     wipe(qcCategoryQuests)
 
+    if not qcCategoryIndex then
+        qcBuildQuestIndexes()
+    end
+
     if (searchText) then
         local stringfind = string.find
         for i, e in pairs(qcQuestDatabase) do
-            if (stringfind(stringUpper(e[2]), searchText, 1, true)) then
+            if (stringfind(qcQuestNameUpperCache[e[1]], searchText, 1, true)) then
                 tableInsert(holdingTable, e)
             end
         end
@@ -231,12 +250,7 @@ local function qcGetCategoryQuests(categoryId, searchText)
 
     local tableRemove = table.remove
     local BitBand = bit.band
-    for i, e in pairs(qcQuestDatabase) do
-        if (e[5] == categoryId) then
-            tableInsert(holdingTable, e)
-        end
-    end
-    qcCategoryQuests = qcCopyTable(holdingTable)
+    qcCategoryQuests = qcCopyTable(qcCategoryIndex[categoryId] or {})
 	
 	-- Quest Completed
 	if (qcSettings.QC_L_HIDE_COMPLETED == 1) then
@@ -476,11 +490,15 @@ function qcGetZoneCompletionStats(areaId)
 	local total = 0
 	local completed = 0
 
-	for questId, questEntry in pairs(qcQuestDatabase) do
-		if questEntry[5] == areaId
-			and bit.band(questEntry[7], factionFlag) ~= 0
+	if not qcCategoryIndex then
+		qcBuildQuestIndexes()
+	end
+
+	for _, questEntry in ipairs(qcCategoryIndex[areaId] or {}) do
+		if bit.band(questEntry[7], factionFlag) ~= 0
 			and bit.band(questEntry[8], raceFlag) ~= 0
 			and bit.band(questEntry[9], classFlag) ~= 0 then
+			local questId = questEntry[1]
 			total = total + 1
 			local flaggedComplete = qcCompletedQuests[questId] and (qcCompletedQuests[questId]["C"] == 1 or qcCompletedQuests[questId]["C"] == 2)
 			if flaggedComplete or C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId) then
