@@ -2226,9 +2226,13 @@ function qcInterfaceOptions_OnLoad(self)
     end
 end
 
-function qcInterfaceOptions_Okay(self)
+function qcApplyFilterChange()
     qcUpdateQuestList(qcCurrentCategoryID, 1)
     qcMapDataProvider:RefreshAllData()
+end
+
+function qcInterfaceOptions_Okay(self)
+    qcApplyFilterChange()
 end
 
 function qcInterfaceOptions_Cancel(self)
@@ -2264,6 +2268,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_SHOW_ICONS = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_COMPLETED = CreateFrame("CheckButton", "qcIO_M_HIDE_COMPLETED", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2275,6 +2280,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_COMPLETED = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_LOWLEVEL = CreateFrame("CheckButton", "qcIO_M_HIDE_LOWLEVEL", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2286,6 +2292,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_LOWLEVEL = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_PROFESSION = CreateFrame("CheckButton", "qcIO_M_HIDE_PROFESSION", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2297,6 +2304,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_PROFESSION = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_SEASONAL = CreateFrame("CheckButton", "qcIO_M_HIDE_SEASONAL", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2308,6 +2316,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_SEASONAL = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_INPROGRESS = CreateFrame("CheckButton", "qcIO_M_HIDE_INPROGRESS", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2319,6 +2328,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_INPROGRESS = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_NODATA = CreateFrame("CheckButton", "qcIO_M_HIDE_NODATA", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2330,6 +2340,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_NODATA = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_M_HIDE_REQUIREMENTSNOTMET = CreateFrame("CheckButton", "qcIO_M_HIDE_REQUIREMENTSNOTMET", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2341,6 +2352,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 1
         end
+    qcApplyFilterChange()
     end)	
 
     --- Quest List Filters Start ---
@@ -2357,6 +2369,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_L_HIDE_COMPLETED = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_L_HIDE_LOWLEVEL = CreateFrame("CheckButton", "qcIO_L_HIDE_LOWLEVEL", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2368,6 +2381,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_L_HIDE_LOWLEVEL = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_L_HIDE_PROFESSION = CreateFrame("CheckButton", "qcIO_L_HIDE_PROFESSION", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2379,6 +2393,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_L_HIDE_PROFESSION = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_L_HIDE_DAILYQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_DAILYQUEST", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2390,6 +2405,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_L_HIDE_DAILYQUEST = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_L_HIDE_REPEATABLEQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_REPEATABLEQUEST", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2401,6 +2417,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_L_HIDE_REPEATABLEQUEST = 1
         end
+    qcApplyFilterChange()
     end)
 
 	-- Only create the checkbox where the Task Quest (World Quest) API exists
@@ -2414,6 +2431,7 @@ function qcInterfaceOptions_OnShow(self)
 			else
 				qcSettings.QC_L_HIDE_WORLDQUEST = 1
 			end
+		qcApplyFilterChange()
 		end)
 	end
 
@@ -2430,6 +2448,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_ML_HIDE_FACTION = 1
         end
+    qcApplyFilterChange()
     end)
 
     qcIO_ML_HIDE_RACECLASS = CreateFrame("CheckButton", "qcIO_ML_HIDE_RACECLASS", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2441,6 +2460,7 @@ function qcInterfaceOptions_OnShow(self)
         else
             qcSettings.QC_ML_HIDE_RACECLASS = 1
         end
+    qcApplyFilterChange()
     end)
 
 	-- Create Covenant Checkbox where the Covenants API exists
@@ -2454,6 +2474,7 @@ function qcInterfaceOptions_OnShow(self)
 			else
 				qcSettings.QC_ML_HIDE_COVENANTS = 1
 			end
+		qcApplyFilterChange()
 		end)
 	end
 
@@ -2468,6 +2489,7 @@ function qcInterfaceOptions_OnShow(self)
 			else
 				qcSettings.QC_ML_HIDE_WARBANDS = 1
 			end
+		qcApplyFilterChange()
 		end)
 	end
 	
