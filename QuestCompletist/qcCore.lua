@@ -22,9 +22,8 @@ local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
 
 --[[ Constants ]]--
-local QCADDON_VERSION = 109.97
+local QCADDON_VERSION = 110.0
 local QCADDON_PURGE = true
-local QCDEBUG_MODE = false
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
@@ -210,20 +209,6 @@ local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
 			end
 		end
 	end
-end
-
-local function qcGetSearchQuests(searchText)
-	local tableInsert = table.insert
-	local stringUpper = string.upper
-	local stringFind = string.find
-	wipe(qcSearchQuests) -- TODO: Where is this table, and we dont seem to be returning it correctly.
-	local holdingTable = {}
-	for qcIndex, qcEntry in pairs(qcQuestDatabase) do
-		if (stringFind(stringUpper(qcEntry[2]),searchText,1,true)) then
-			tableInsert(holdingTable,qcEntry)
-		end
-	end
-	qcSearchQuests = qcCopyTable(holdingTable)
 end
 
 local function qcGetCategoryQuests(categoryId, searchText)
@@ -1815,23 +1800,6 @@ end
 		end
 	end
 
-		--[[ Map and Quest Covenant ]]--
-	if (qcSettings["QC_ML_HIDE_COVENANT"] == 1) then
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][7], 1, -1 do
-				local qcQuestID = qcPins[i][7][qcQuestIndex]
-				local qcCurrentPlayerFaction, _S = UnitFactionGroup("player")
-				local qcCurrentFaction = qcFactionBits[string.upper(qcCurrentPlayerFaction)]
-				if (qcQuestDatabase[qcQuestID]) and (BitBand(qcQuestDatabase[qcQuestID][7], qcCurrentFaction) == 0) then
-					TableRemove(qcPins[i][7], qcQuestIndex)
-				end
-			end
-			if (#qcPins[i][7] == 0) then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-
 		--[[  Map and Quest Race\Class ]]--
 	if (qcSettings["QC_ML_HIDE_RACECLASS"] == 1) then
 		for i = #qcPins, 1, -1 do
@@ -2527,7 +2495,6 @@ local function qcEventHandler(self, event, ...)
 		qcBreadcrumbChecks(qcQuestID)
 		qcNewDataChecks(qcQuestID)
 		qcMutuallyExclusiveChecks(qcQuestID)
-		if (QCDEBUG_MODE) then qcVerifyMapDataExists() end
 	elseif (event == "QUEST_ACCEPTED") then
 		qcUpdateQuestList(nil, qcMenuSlider:GetValue())
 	elseif (event == "QUEST_PROGRESS") then
