@@ -144,7 +144,9 @@ foreach ($row in $enriched) {
             QuestIDs = New-Object System.Collections.Generic.List[string]
         }
     }
-    $pinGroups[$key].QuestIDs.Add($row.QuestID)
+    if (-not $pinGroups[$key].QuestIDs.Contains($row.QuestID)) {
+        $pinGroups[$key].QuestIDs.Add($row.QuestID)
+    }
 }
 
 Write-Output "Total pins after grouping: $($pinGroups.Count) (from $($enriched.Count) quest-giver locations)"
