@@ -229,6 +229,7 @@ end
 
 local function qcGetCategoryQuests(categoryId, searchText)
     local tableInsert = table.insert
+    local stringUpper = string.upper
     local tableSort = table.sort
     local holdingTable = {}
     wipe(qcCategoryQuests)
