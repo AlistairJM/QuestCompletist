@@ -2847,9 +2847,7 @@ qcOverrideWeeklyExclusiveQuest = { -- This will hide pins if an questgiver only 
 }
 
 qcQuestDatabase={
--- Entries below added from Blizzard's Data API to backfill quests found in
--- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).
--- areaid is unmapped (0) - these won't appear correctly in the zone checklist yet.
+-- Backfilled from Blizzard's API; areaid unmapped (0)
 [9751]={9751,"The Bloodcurse Legacy",1,"Bloodmyst Isle",0,1,1,67108863,8191,0,0,0,0,0,0,0,0},
 [10871]={10871,"Ally of the Netherwing",25,"Shadowmoon Valley",0,1,3,67108863,8191,0,0,0,0,0,0,0,0},
 [10872]={10872,"Zuluhed the Whacked",25,"Shadowmoon Valley",0,1,3,67108863,8191,0,0,0,0,0,0,0,0},

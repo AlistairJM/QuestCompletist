@@ -480,9 +480,6 @@ end
 --Beta Reset Daily and Weekly End
 
 
--- Returns completed, total quest counts for a zone (area id), restricted to quests
--- this character is actually eligible for (faction/race/class), so the percentage
--- reflects quests they could ever complete rather than every quest in the zone.
 function qcGetZoneCompletionStats(areaId)
 	local playerFaction, _ = UnitFactionGroup("player")
 	local factionFlag = qcFactionBits[string.upper(playerFaction)]
@@ -1541,13 +1538,6 @@ function qcMutuallyExclusiveAlert_OnLeave(self)
 end
 
 --[[ ##### MAP PINS START ##### ]]--
--- Rebuilt on Blizzard's official MapCanvasPinMixin / MapCanvasDataProviderMixin
--- system (matching how HandyNotes and other modern pin addons work) instead of
--- a hand-rolled frame parented directly to the map canvas. That old approach
--- fought against the canvas's own zoom/scale handling, which is what caused
--- the pin scaling bugs - this system handles zoom, pan, and refresh timing
--- (including scroll-wheel zoom) automatically and correctly, for free.
-
 -- Coloured quest name function
 local function qcColouredQuestName(questId)
     if not questId or not qcQuestDatabase[questId] then return nil end
@@ -1568,23 +1558,12 @@ qcPinMixin = CreateFromMixins(MapCanvasPinMixin)
 
 function qcPinMixin:OnLoad()
     self:SetFrameLevel(2500)
-    -- Without calling this, Blizzard's pin system appears to apply its own
-    -- default zoom-based scaling rather than a flat constant size (matching
-    -- what HandyNotes explicitly opts into a mild version of via this same
-    -- call) - force a flat 1.0-to-1.0 range so the pin stays constant-sized.
     self:SetScalingLimits(1, 1.0, 1.0)
 end
 
--- Called by Blizzard's pin pool each time a pin is placed on the map. Stores
--- the full pin data (from qcPinDB) directly on the pin itself, rather than an
--- index into the shared qcPins working list - that list gets wiped and
--- rebuilt on every refresh, so an index could point at the wrong data if a
--- refresh happened while a tooltip was still open.
 function qcPinMixin:OnAcquired(pinData)
     self.PinData = pinData
     self:SetPosition(pinData[5] / 100, pinData[6] / 100)
-    -- 16px looked noticeably smaller than Blizzard's own map icons; the
-    -- pre-rewrite code's original (later-overridden) default was 24
     self:SetSize(24, 24)
 
     local icon = pinData[2]
@@ -1642,10 +1621,6 @@ function qcPinMixin:OnAcquired(pinData)
     end
 end
 
--- Note: unlike the old implementation, this shows one pin's info per hover
--- rather than merging tooltips for multiple pins whose icons happen to
--- visually overlap at the same screen position. That merge behaviour doesn't
--- have a direct equivalent in Blizzard's pin system and isn't replicated here.
 function qcPinMixin:OnMouseEnter()
     local pinData = self.PinData
     if not pinData then return end
@@ -1678,14 +1653,8 @@ function qcPinMixin:OnMouseEnter()
         if pinData[4] then
             qcMapTooltip:AddLine(pinData[4])
         elseif pinData[8] then
-            -- NpcId 0 with an explanatory note is the original special case:
-            -- quest obtained via an action, not a named NPC (e.g. "Provided
-            -- when you assist an Injured Razer Hill Grunt")
             qcMapTooltip:AddLine(string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"))
         end
-        -- NpcId 0 with no note and no name is genuinely unknown NPC data -
-        -- omit the line entirely rather than show a placeholder, matching
-        -- Blizzard's own quest tooltips, which don't name the giver either
     else
         qcMapTooltip:AddDoubleLine(pinData[4] or string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"), string.format("|cffff7d0a[%d]|r", pinData[3]))
     end
@@ -1731,13 +1700,6 @@ function qcPinMixin:OnMouseEnter()
         qcMapTooltip:AddLine(string.format("|cffabd473%s|r", pinData[8]), nil, nil, nil, true)
     end
 
-    -- No manual font override here - GameTooltipTemplate already provides
-    -- Blizzard's own tooltip styling (bold title, plain body text) by
-    -- default. An earlier fix forced every line to a flat 12pt font to
-    -- counteract a zoom-scaling bug that's since been fixed properly at its
-    -- actual source (the pin now uses MapCanvasPinMixin's own scaling
-    -- limits), so that override is gone - it was making tooltips look
-    -- noticeably different from Blizzard's native ones, not fixing anything.
     qcMapTooltip:Show()
 end
 
@@ -1760,10 +1722,6 @@ function qcMapDataProvider:RemoveAllData()
     end
 end
 
--- Called automatically by Blizzard's WorldMapFrame whenever the map is shown,
--- changes zone, or the view otherwise needs refreshing (including zoom) - all
--- the filter logic below is unchanged from the previous implementation, only
--- how pins get created/shown at the end has changed.
 function qcMapDataProvider:RefreshAllData()
     if not self:GetMap() then return end
     self:RemoveAllData()
