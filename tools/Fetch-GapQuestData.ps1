@@ -1,7 +1,8 @@
 <#
-Fetches basic quest data (title, level, area, faction) from Blizzard's Data API
-for the quest IDs found in wago.tools' location data but missing from our own
-qcQuestDatabase, so map pins for them show real info instead of "Quest Missing in DB".
+Fetches basic quest data (title, level, area, faction, class/race requirements)
+from Blizzard's Data API for the quest IDs found in wago.tools' location data but
+missing from our own qcQuestDatabase, so map pins for them show real info instead
+of "Quest Missing in DB".
 #>
 
 $toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
@@ -28,12 +29,16 @@ foreach ($qid in $questIds) {
     try {
         $q = Invoke-RestMethod -Uri "https://us.api.blizzard.com/data/wow/quest/$qid`?namespace=static-us&locale=en_US" -Headers $headers -ErrorAction Stop
         $factionType = if ($q.requirements -and $q.requirements.faction) { $q.requirements.faction.type } else { "" }
+        $classNames = if ($q.requirements -and $q.requirements.classes) { ($q.requirements.classes | ForEach-Object { $_.name }) -join ";" } else { "" }
+        $raceNames = if ($q.requirements -and $q.requirements.races) { ($q.requirements.races | ForEach-Object { $_.name }) -join ";" } else { "" }
         $results.Add([PSCustomObject]@{
-            QuestID  = $qid
-            Title    = $q.title
-            Level    = if ($q.requirements -and $q.requirements.min_character_level) { $q.requirements.min_character_level } else { 0 }
-            AreaName = if ($q.area) { $q.area.name } else { "" }
-            Faction  = $factionType
+            QuestID    = $qid
+            Title      = $q.title
+            Level      = if ($q.requirements -and $q.requirements.min_character_level) { $q.requirements.min_character_level } else { 0 }
+            AreaName   = if ($q.area) { $q.area.name } else { "" }
+            Faction    = $factionType
+            ClassNames = $classNames
+            RaceNames  = $raceNames
         })
     } catch {
         $notFound++
