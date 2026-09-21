@@ -1557,11 +1557,13 @@ end
 qcPinMixin = CreateFromMixins(MapCanvasPinMixin)
 
 function qcPinMixin:OnLoad()
+    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
     self:SetScalingLimits(1, 1.0, 1.0)
 end
 
 function qcPinMixin:OnAcquired(pinData)
     self.PinData = pinData
+    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
     self:SetPosition(pinData[5] / 100, pinData[6] / 100)
     self:SetSize(24, 24)
 
