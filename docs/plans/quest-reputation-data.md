@@ -119,7 +119,13 @@ column at the same logic as the compare script, so there's one definition.
 
 ## Phases
 
-### Phase 0: tooling (no data changes)
+### Phase 0: tooling (no data changes) — done
+
+Result: the field 16/17 reading now lives in `tools/QuestReputation.ps1`, which both the audit and
+the compare script use. After re-running the audit from cache, the categorizer shows 10,915
+"API has, we don't" and 0 the other way. That set is exactly the compare script's `api-only`
+rows. Faction, race and class rows are unchanged (11,820 rows, all identical).
+
 - Fix the audit's reputation detection (above), re-run the audit from cache, and confirm the
   categorizer's reputation section now shows ~10,915 "API has, we don't" and ~0 the other way.
 - Keep `Compare-QuestReputation.ps1` as the single source of truth for reputation comparisons.
