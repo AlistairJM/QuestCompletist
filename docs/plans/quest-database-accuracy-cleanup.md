@@ -1,6 +1,25 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
-## Status (2026-09-22): Phase 0 + Phase 1 done — awaiting decision on Phase 2 batches
+## Status (2026-09-22): Phase 0–2 done; manual review, reputation and Phase 3 remain
+
+**Phase 2 shipped as three stacked PRs, merged in order #15 → #16 → #17** (744 quests changed):
+- [#15](https://github.com/AlistairJM/QuestCompletist/pull/15): 321 class fixes
+- [#16](https://github.com/AlistairJM/QuestCompletist/pull/16): 284 race fixes
+- [#17](https://github.com/AlistairJM/QuestCompletist/pull/17): 158 faction fixes
+
+All three were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>` from
+`quest_accuracy_candidates.csv`, and each was verified the same way (see the PR checklists).
+
+**Still open:**
+- **Manual review:** 90 fields across 83 quests (`Decision = MANUAL` in the candidates CSV,
+  with the reason in the `Reason` column).
+- **Reputation:** see below.
+- **Phase 3:** a Wowhead spot-check of a sample of the not-found list.
+
+After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
+listed mean something didn't apply.
+
+Findings that led here:
 
 **Baseline against `master` post-PR #12:** 20,024 discrepancy rows against the API (20,038 with
 14 wago-only rows added), 4,955 not-found (all genuine
@@ -55,14 +74,22 @@ decision per field:
 
 | Decision | Field-level rows |
 |---|---|
-| FIX, API-only narrowing | class 335, race 236, faction 147 |
-| FIX, API and wago agree | faction 11 (+ matching race) |
-| FIX, wago-only narrowing | race 36 (e.g. "Aid the Horde" → Horde races, Earthen Dwarf intro → Earthen only) |
-| MANUAL | 76 (API-only or wago-only conflicting, or a combined fix that would contradict faction vs race — e.g. 11732) |
+| FIX | class 321, race 284 (36 of them wago-only), faction 158 (11 where API and wago agree) |
+| MANUAL | class 35, race 27, faction 28 |
 
-That's **746 distinct quests** with a FIX field and **69** needing manual review. Phase 2 fix
-scripts should read `quest_accuracy_candidates.csv` (Decision = FIX, Target column) rather than
-re-deriving anything.
+Two rules added along the way:
+- **Pre-Evoker class lists go to manual review.** A class list covering 9 or more classes but not
+  Evoker most likely predates Evoker, so it doesn't show whether Evokers are really excluded (14
+  quests).
+- **Race-name aliases.** The API spells three races differently from the client race file names
+  the bit tables use: `Undead`/Scourge, `Earthen`/EarthenDwarf, `Haranir`/Harronir. Before they
+  were mapped, any race list containing one of them resolved to "all races". That only ever hid
+  fixes, never caused wrong ones; mapping them added 12 race fixes. `Insert-GapQuestEntries.ps1`
+  had the same gap, so earlier backfilled entries may carry "all races" where the API has a
+  restriction. The corrected audit surfaces those.
+
+Every change to a quest line must come from `quest_accuracy_candidates.csv` via
+`Apply-AccuracyFixes.ps1`, never re-derived by hand.
 
 **Reputation (14,314 rows)** doesn't match the PR #10 signature: none are in
 `backfilled_quest_ids.txt`. Fixing it needs the actual faction IDs/values, not just a flag, so it
