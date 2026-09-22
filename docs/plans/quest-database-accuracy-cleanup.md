@@ -1,25 +1,23 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
-## Status (2026-09-22): Phase 0–3 and manual review done; reputation and Phase 3 follow-ups remain
+## Status (2026-09-22): Phase 0–3, manual review and world-quest batch done; reputation and a few follow-ups remain
 
-**Phase 2 and the manual review shipped as four stacked PRs, merged in order #15 → #16 → #17 → #18** (805 quests changed):
+**Phase 2, the manual review and the world-quest batch shipped as five stacked PRs, merged in order #15 → #16 → #17 → #18 → #19** (1,130 quests changed):
 - [#15](https://github.com/AlistairJM/QuestCompletist/pull/15): 321 class fixes
 - [#16](https://github.com/AlistairJM/QuestCompletist/pull/16): 284 race fixes
 - [#17](https://github.com/AlistairJM/QuestCompletist/pull/17): 158 faction fixes
 - [#18](https://github.com/AlistairJM/QuestCompletist/pull/18): manual review, 62 of the 83 held-back quests fixed. Each decision and its reason is in `docs/plans/quest-accuracy-manual-decisions.csv`; the other 21 keep our values on purpose (listed in the PR)
+- [#19](https://github.com/AlistairJM/QuestCompletist/pull/19): world-quest batch, 325 task quests fixed from the game client's own filters (wago only, since the API 404s on task quests)
 
-All four were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>`, reading
-`quest_accuracy_candidates.csv` (#15–#17) or the manual decisions CSV via `-CandidatesCsv` (#18).
+All five were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>`, reading
+`quest_accuracy_candidates.csv` (#15–#17) or, via `-CandidatesCsv`, the manual decisions CSV (#18) and a copy filtered to `ApiFound=False` quests (#19).
 Each was verified the same way (see the PR checklists).
 
 **Still open:**
 - **Possible in-game checks:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877 were kept as-is only because the evidence was contradictory.
 - **Reputation:** see below.
-- **World-quest batch (candidates ready, not applied):** the audit now runs the wago comparison
-  for quests the API 404s on (`ApiFound=False` rows). That adds 673 candidate fields across 365
-  world quests and bonus objectives: FIX faction 297 / race 295 / class 24 (e.g. Draenor bonus
-  objectives to their zone's faction, Legion class world quests to their class), MANUAL 57 (mostly
-  broad pre-Evoker class lists, plus 10 where wago's races contradict our faction).
+- **World-quest leftovers:** 57 fields held back from #19 (mostly broad pre-Evoker class lists, plus 10
+  where the client's races contradict our faction, e.g. 50633).
 - **Decide** whether obsolete and hidden-tracking quests stay in the DB (Phase 3, below).
 
 After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
