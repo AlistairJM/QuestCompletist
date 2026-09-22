@@ -101,11 +101,12 @@ belongs in its own follow-up plan.
 **Phase 3 (done 2026-09-22): the not-found list is mostly *not* removed content.** Only 2 IDs in
 the original list (32636, 83240) were transient failures; the other 4,955 are real 404s. But most
 of them are recent (over 700 have IDs of 80,000+), and cross-referencing against the client's own
-tables (wago `QuestV2`/`QuestV2CliTask`) splits them into three groups:
+tables (wago `QuestV2`/`QuestV2CliTask`) splits them into three groups. (Separately, 3,382 of the
+4,955 carry the addon's own world-quest type flag, `128`.)
 
 | Bucket | Quests | Wowhead spot-check (11 checked; Wowhead's bot protection then blocked further requests) |
 |---|---|---|
-| Task quests (world quests, bonus objectives; 3,382 are addon type 128) | 4,031 | 3/3 **live** (81670, 85398, 91792). The API's quest endpoint just doesn't serve task quests |
+| Task quests (world quests, bonus objectives) | 4,031 | 3/3 **live** (81670, 85398, 91792). The API's quest endpoint just doesn't serve task quests |
 | Non-task, still in the client | 733 | Mixed: 3/5 **obsolete** (8346, 24760, 54079), 2/5 live (74431, 91023) |
 | Not in the client's `QuestV2` | 191 | 3/3 exist but have no quest giver: hidden tracking quests (e.g. 42467 "Legion 110 A") |
 
