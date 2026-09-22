@@ -1,18 +1,19 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
-## Status (2026-09-22): Phase 0–2 done; manual review, reputation and Phase 3 remain
+## Status (2026-09-22): Phase 0–2 and manual review done; reputation and Phase 3 remain
 
-**Phase 2 shipped as three stacked PRs, merged in order #15 → #16 → #17** (744 quests changed):
+**Phase 2 and the manual review shipped as four stacked PRs, merged in order #15 → #16 → #17 → #18** (805 quests changed):
 - [#15](https://github.com/AlistairJM/QuestCompletist/pull/15): 321 class fixes
 - [#16](https://github.com/AlistairJM/QuestCompletist/pull/16): 284 race fixes
 - [#17](https://github.com/AlistairJM/QuestCompletist/pull/17): 158 faction fixes
+- [#18](https://github.com/AlistairJM/QuestCompletist/pull/18): manual review, 62 of the 83 held-back quests fixed. Each decision and its reason is in `docs/plans/quest-accuracy-manual-decisions.csv`; the other 21 keep our values on purpose (listed in the PR)
 
-All three were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>` from
-`quest_accuracy_candidates.csv`, and each was verified the same way (see the PR checklists).
+All four were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>`, reading
+`quest_accuracy_candidates.csv` (#15–#17) or the manual decisions CSV via `-CandidatesCsv` (#18).
+Each was verified the same way (see the PR checklists).
 
 **Still open:**
-- **Manual review:** 90 fields across 83 quests (`Decision = MANUAL` in the candidates CSV,
-  with the reason in the `Reason` column).
+- **Possible in-game checks:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877 were kept as-is only because the evidence was contradictory.
 - **Reputation:** see below.
 - **Phase 3:** a Wowhead spot-check of a sample of the not-found list.
 
