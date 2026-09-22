@@ -1,6 +1,6 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
-## Status (2026-09-22): Phase 0–2 and manual review done; reputation and Phase 3 remain
+## Status (2026-09-22): Phase 0–3 and manual review done; reputation and Phase 3 follow-ups remain
 
 **Phase 2 and the manual review shipped as four stacked PRs, merged in order #15 → #16 → #17 → #18** (805 quests changed):
 - [#15](https://github.com/AlistairJM/QuestCompletist/pull/15): 321 class fixes
@@ -15,7 +15,9 @@ Each was verified the same way (see the PR checklists).
 **Still open:**
 - **Possible in-game checks:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877 were kept as-is only because the evidence was contradictory.
 - **Reputation:** see below.
-- **Phase 3:** a Wowhead spot-check of a sample of the not-found list.
+- **Phase 3 follow-ups** (spot-check done, see below): run the wago comparison for the 4,031
+  task quests the API doesn't serve, and decide whether obsolete/hidden-tracking quests stay in the
+  DB.
 
 After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
 listed mean something didn't apply.
@@ -96,8 +98,25 @@ Every change to a quest line must come from `quest_accuracy_candidates.csv` via
 `backfilled_quest_ids.txt`. Fixing it needs the actual faction IDs/values, not just a flag, so it
 belongs in its own follow-up plan.
 
-**Phase 3:** only 2 IDs (32636, 83240) in the original not-found list were transient failures;
-the other 4,955 are confirmed 404s. The Wowhead spot-check is still worth doing on a sample.
+**Phase 3 (done 2026-09-22): the not-found list is mostly *not* removed content.** Only 2 IDs in
+the original list (32636, 83240) were transient failures; the other 4,955 are real 404s. But most
+of them are recent (over 700 have IDs of 80,000+), and cross-referencing against the client's own
+tables (wago `QuestV2`/`QuestV2CliTask`) splits them into three groups:
+
+| Bucket | Quests | Wowhead spot-check (11 checked; Wowhead's bot protection then blocked further requests) |
+|---|---|---|
+| Task quests (world quests, bonus objectives; 3,382 are addon type 128) | 4,031 | 3/3 **live** (81670, 85398, 91792). The API's quest endpoint just doesn't serve task quests |
+| Non-task, still in the client | 733 | Mixed: 3/5 **obsolete** (8346, 24760, 54079), 2/5 live (74431, 91023) |
+| Not in the client's `QuestV2` | 191 | 3/3 exist but have no quest giver: hidden tracking quests (e.g. 42467 "Legion 110 A") |
+
+Consequences:
+- **The audit can't see task quests, but wago can.** `Audit-QuestAccuracy.ps1` skips a 404 quest
+  before the wago comparison, so wago's race/class filters for these 4,031 are never checked.
+  Running the wago comparison for 404 quests too is a cheap follow-up that would cover world
+  quests.
+- **Possible DB cleanup, needs a decision:** obsolete quests (part of the 733) and hidden
+  tracking quests (the 191) may not belong in a completion tracker. That depends on whether the
+  addon should keep removed quests for historical completion. Not decided; no DB change made.
 
 ## Context
 
