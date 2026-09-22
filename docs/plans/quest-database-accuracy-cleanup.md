@@ -19,7 +19,7 @@ There was no practical way to check them in-game, so our values stand.
 
 **Still open:**
 - **Reputation:** separate plan, `docs/plans/quest-reputation-data.md` ([#21](https://github.com/AlistairJM/QuestCompletist/pull/21)).
-- **Decide** whether obsolete and hidden-tracking quests stay in the DB (Phase 3, below).
+- **Obsolete and hidden-tracking quests:** decided to flag, not delete. See `docs/plans/unavailable-quests.md` ([#22](https://github.com/AlistairJM/QuestCompletist/pull/22)).
 
 After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
 listed mean something didn't apply.
