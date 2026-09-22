@@ -204,6 +204,12 @@ if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "WagoRace
                 if (($f.Cur -band $val) -eq $val) { $decision = "FIX"; $reason = "$src-only narrowing"; $target = $val }
                 else { $decision = "MANUAL"; $reason = "$src-only conflicting" }
             }
+            # A broad class list without Evoker most likely predates Evoker, so whether
+            # Evokers are really excluded is unknown - don't hide quests from them on that basis.
+            if ($decision -eq "FIX" -and $f.N -eq "class" -and -not ($target -band 4096)) {
+                $n = 0; for ($b = 0; $b -lt 13; $b++) { if ($target -band ([long]1 -shl $b)) { $n++ } }
+                if ($n -ge 9) { $decision = "MANUAL"; $reason += "; broad pre-Evoker class list"; $target = $null }
+            }
             $questRows += [PSCustomObject]@{
                 QuestID = $r.QuestID; Name = $r.Name; Field = $f.N; Cur = $f.Cur
                 Api = if ($apiSays) { $f.Api } else { "" }; Wago = $f.Wago
