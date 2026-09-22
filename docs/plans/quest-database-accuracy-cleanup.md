@@ -1,5 +1,54 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
+## Status (2026-09-22): Phase 0 + Phase 1 done — awaiting decision on Phase 2 batches
+
+**Baseline against `master` post-PR #12:** 20,024 discrepancy rows, 4,955 not-found (all genuine
+404s — the audit now retries 429/5xx/timeouts and reports them separately; this run had 0).
+Raw API responses are cached in `tools/quest_api_cache/`, so re-audits after a fix take minutes,
+not hours. Categorised output: `tools/quest_accuracy_categories.txt`
+(`tools/Categorize-AuditDiscrepancies.ps1`).
+
+**The "stale all-races sentinel" premise below is wrong — do not bulk-fix it.** `64175181` and
+`61658034` are the addon's *current* "all Alliance races" / "all Horde races" masks (each includes
+the neutral races through Harronir). Across the whole DB, 5,768/5,798 of the `64175181` entries have
+`faction=1` and 5,696/5,700 of the `61658034` entries have `faction=2`. The API simply doesn't
+list races for faction-gated quests, so these show up as field mismatches without being wrong.
+
+**Most field mismatches don't change who sees the quest.** Simulating the addon's actual
+`BitBand` filter over every playable faction/race/class combination:
+
+| Effect on visibility | Rows |
+|---|---|
+| Equivalent (no player sees anything different) | 17,064 (12,784 of these differ only on reputation) |
+| Over-restricted (we hide from players the API allows) | 2,148 |
+| Under-restricted (we show to players the API excludes) | 639 |
+| Both | 173 |
+
+**The API omits requirements far more often than it gets them wrong.** Most "over-restricted"
+rows are quests gated by zone/phase/NPC rather than a hard requirement, which the API reports as
+unrestricted. Examples: Goldshire quest 16 (no faction in the API, Alliance-only in practice), DK
+start-zone quests like 12636 (no class requirement in the API), and Monk/class-hall quests. So an
+API *absence* is weak evidence and must not be applied. An API *assertion* (an explicit
+faction/race/class requirement) is strong evidence:
+
+| API asserts a restriction our data lacks | Field-level rows |
+|---|---|
+| class, narrowing (ours is a superset) | 335 — e.g. AQ "Conqueror's" set 8544+: all classes → Warrior |
+| race, narrowing | 236 — e.g. 6341 "To Darnassus": Alliance → Night Elf |
+| faction, narrowing | 157 — e.g. Hellfire 10455+: both → Alliance |
+| conflicting (API's value isn't a subset of ours) | 75 rows / 70 quests — manual review |
+
+That comes to **720 distinct quests** where a fix narrows a field to exactly what the API asserts,
+leaving the fields the API is silent on alone. These are the proposed Phase 2 batches, one PR per
+field.
+
+**Reputation (14,314 rows)** doesn't match the PR #10 signature: none are in
+`backfilled_quest_ids.txt`. Fixing it needs the actual faction IDs/values, not just a flag, so it
+belongs in its own follow-up plan.
+
+**Phase 3:** only 2 IDs (32636, 83240) in the original not-found list were transient failures;
+the other 4,955 are confirmed 404s. The Wowhead spot-check is still worth doing on a sample.
+
 ## Context
 
 `tools/Audit-QuestAccuracy.ps1` (built 2026-09-21/22, see git history) scanned the entire

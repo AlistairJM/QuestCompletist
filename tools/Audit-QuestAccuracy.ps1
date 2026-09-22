@@ -19,6 +19,7 @@ Reuses the exact same bitmask-resolution rules already used and verified
 in Insert-GapQuestEntries.ps1.
 #>
 
+$ProgressPreference = "SilentlyContinue"
 $toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
 $questFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
 
@@ -99,17 +100,78 @@ if (Test-Path $outFile) { Remove-Item $outFile }
 if (Test-Path $notFoundFile) { Remove-Item $notFoundFile }
 $wroteHeader = $false
 
+# Only a real 404 counts as "not found"; 429/5xx/timeouts are retried, then reported separately.
+$cacheDir = "$toolsDir\quest_api_cache"
+if (-not (Test-Path $cacheDir)) { New-Item -ItemType Directory $cacheDir | Out-Null }
+$errors = New-Object System.Collections.Generic.List[string]
+$errorsFile = "$toolsDir\quest_accuracy_errors.txt"
+if (Test-Path $errorsFile) { Remove-Item $errorsFile }
+
+function Get-QuestJson($questId) {
+    $jsonPath = "$cacheDir\$questId.json"
+    if (Test-Path "$cacheDir\$questId.404") { return "404" }
+    if (Test-Path $jsonPath) { return [System.IO.File]::ReadAllText($jsonPath, [System.Text.Encoding]::UTF8) }
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        try {
+            $resp = Invoke-WebRequest -UseBasicParsing -Uri "https://us.api.blizzard.com/data/wow/quest/$questId`?namespace=static-us&locale=en_US" -Headers $headers -ErrorAction Stop
+            $body = [System.Text.Encoding]::UTF8.GetString($resp.RawContentStream.ToArray())
+            [System.IO.File]::WriteAllText($jsonPath, $body, (New-Object System.Text.UTF8Encoding $false))
+            return $body
+        } catch {
+            $status = if ($_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 0 }
+            if ($status -eq 404) {
+                [System.IO.File]::WriteAllText("$cacheDir\$questId.404", "")
+                return "404"
+            }
+            Start-Sleep -Milliseconds (500 * [math]::Pow(2, $attempt - 1))
+        }
+    }
+    return $null
+}
+
+$uncached = @($entries | Where-Object { -not (Test-Path "$cacheDir\$($_.QuestID).json") -and -not (Test-Path "$cacheDir\$($_.QuestID).404") } | ForEach-Object { $_.QuestID })
+if ($uncached.Count -gt 0) {
+    $threads = 8
+    Write-Output "Prefetching $($uncached.Count) uncached quests with $threads parallel workers..."
+    $worker = {
+        param($ids, $cacheDir, $token)
+        $ProgressPreference = "SilentlyContinue"
+        $utf8 = New-Object System.Text.UTF8Encoding $false
+        foreach ($id in $ids) {
+            try {
+                $resp = Invoke-WebRequest -UseBasicParsing -Uri "https://us.api.blizzard.com/data/wow/quest/$id`?namespace=static-us&locale=en_US" -Headers @{ Authorization = "Bearer $token" } -ErrorAction Stop
+                [System.IO.File]::WriteAllText("$cacheDir\$id.json", [System.Text.Encoding]::UTF8.GetString($resp.RawContentStream.ToArray()), $utf8)
+            } catch {
+                if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 404) { [System.IO.File]::WriteAllText("$cacheDir\$id.404", "") }
+            }
+        }
+    }
+    $pool = [RunspaceFactory]::CreateRunspacePool(1, $threads)
+    $pool.Open()
+    $jobs = for ($t = 0; $t -lt $threads; $t++) {
+        $chunk = @(for ($k = $t; $k -lt $uncached.Count; $k += $threads) { $uncached[$k] })
+        $ps = [PowerShell]::Create().AddScript($worker).AddArgument($chunk).AddArgument($cacheDir).AddArgument($token)
+        $ps.RunspacePool = $pool
+        [PSCustomObject]@{ PS = $ps; Handle = $ps.BeginInvoke() }
+    }
+    while (@($jobs | Where-Object { -not $_.Handle.IsCompleted }).Count -gt 0) {
+        Start-Sleep -Seconds 30
+        Write-Output "  ...cache now holds $((Get-ChildItem $cacheDir).Count) responses"
+    }
+    foreach ($j in $jobs) { $j.PS.EndInvoke($j.Handle); $j.PS.Dispose() }
+    $pool.Close()
+}
+
 foreach ($e in $entries) {
     $i++
-    try {
-        $q = Invoke-RestMethod -Uri "https://us.api.blizzard.com/data/wow/quest/$($e.QuestID)`?namespace=static-us&locale=en_US" -Headers $headers -ErrorAction Stop
-    } catch {
-        $notFound.Add($e.QuestID)
+    $raw = Get-QuestJson $e.QuestID
+    if ($raw -eq "404" -or $null -eq $raw) {
+        if ($raw -eq "404") { $notFound.Add($e.QuestID) } else { $errors.Add($e.QuestID) }
         if ($i % 1000 -eq 0) { $notFound | Out-File $notFoundFile -Encoding utf8 }
-        if ($i % 500 -eq 0) { Write-Output "  ...$i / $($entries.Count) (found=$($results.Count) notfound=$($notFound.Count))" }
-        Start-Sleep -Milliseconds 30
+        if ($i % 500 -eq 0) { Write-Output "  ...$i / $($entries.Count) (found=$($results.Count) notfound=$($notFound.Count) errors=$($errors.Count))" }
         continue
     }
+    $q = $raw | ConvertFrom-Json
 
     $expFactionType = if ($q.requirements -and $q.requirements.faction) { $q.requirements.faction.type } else { "" }
     $expFaction = switch ($expFactionType) { "ALLIANCE" { 1 }; "HORDE" { 2 }; default { 3 } }
@@ -126,18 +188,23 @@ foreach ($e in $entries) {
     if ($expHasRep -ne $e.HasRepCur) { $mismatches.Add("reputation: cur_has=$($e.HasRepCur) exp_has=$expHasRep") }
 
     if ($mismatches.Count -gt 0) {
-        $row = [PSCustomObject]@{ QuestID = $e.QuestID; Name = $e.Name; Mismatches = ($mismatches -join " | ") }
+        $row = [PSCustomObject]@{
+            QuestID = $e.QuestID; Name = $e.Name; Mismatches = ($mismatches -join " | ")
+            CurFaction = $e.Faction; ExpFaction = $expFaction; CurRace = $e.Race; ExpRace = $expRace
+            CurClass = $e.Class; ExpClass = $expClass; CurHasRep = $e.HasRepCur; ExpHasRep = $expHasRep
+        }
         $results.Add($row)
         $row | Export-Csv -Path $outFile -NoTypeInformation -Encoding utf8 -Append:$wroteHeader
         $wroteHeader = $true
     }
 
-    if ($i % 500 -eq 0) { Write-Output "  ...$i / $($entries.Count) (found=$($results.Count) notfound=$($notFound.Count))" }
-    Start-Sleep -Milliseconds 30
+    if ($i % 500 -eq 0) { Write-Output "  ...$i / $($entries.Count) (found=$($results.Count) notfound=$($notFound.Count) errors=$($errors.Count))" }
 }
 
 $notFound | Out-File $notFoundFile -Encoding utf8
+$errors | Out-File $errorsFile -Encoding utf8
 Write-Output ""
 Write-Output "Done. Scanned $($entries.Count) quests."
 Write-Output "Discrepancies found: $($results.Count) -> $outFile"
-Write-Output "Not found in API (likely old/removed content): $($notFound.Count) -> $notFoundFile"
+Write-Output "Not found in API (404, likely old/removed content): $($notFound.Count) -> $notFoundFile"
+Write-Output "Failed after retries (NOT counted as not-found - re-run to retry): $($errors.Count) -> $errorsFile"
