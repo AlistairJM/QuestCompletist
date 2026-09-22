@@ -14,9 +14,11 @@ All six were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|facti
 `quest_accuracy_candidates.csv` (#15–#17) or, via `-CandidatesCsv`, the reviewed decisions CSVs (#18, #20) and a copy filtered to `ApiFound=False` quests (#19).
 Each was verified the same way (see the PR checklists).
 
+**Closed, kept as-is:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877.
+There was no practical way to check them in-game, so our values stand.
+
 **Still open:**
-- **Possible in-game checks:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877 were kept as-is only because the evidence was contradictory.
-- **Reputation:** see below.
+- **Reputation:** separate plan, `docs/plans/quest-reputation-data.md` ([#21](https://github.com/AlistairJM/QuestCompletist/pull/21)).
 - **Decide** whether obsolete and hidden-tracking quests stay in the DB (Phase 3, below).
 
 After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
@@ -94,9 +96,7 @@ Two rules added along the way:
 Every change to a quest line must come from `quest_accuracy_candidates.csv` via
 `Apply-AccuracyFixes.ps1`, never re-derived by hand.
 
-**Reputation (14,314 rows)** doesn't match the PR #10 signature: none are in
-`backfilled_quest_ids.txt`. Fixing it needs the actual faction IDs/values, not just a flag, so it
-belongs in its own follow-up plan.
+**Reputation:** moved to `docs/plans/quest-reputation-data.md`. The 14,314 "reputation" rows above overstate the problem: the audit's reputation check reads storyline + prereq as a reward on 4,849 entries. The real gap is 10,915 quests missing a reward the API lists, with the 120 existing rewards all matching.
 
 **Phase 3 (done 2026-09-22): the not-found list is mostly *not* removed content.** Only 2 IDs in
 the original list (32636, 83240) were transient failures; the other 4,955 are real 404s. But most
