@@ -1,5 +1,122 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
+## Status (2026-09-22): Phase 0–3, manual review and world-quest batch done; reputation and a few follow-ups remain
+
+**Phase 2, the manual review and the world-quest batch shipped as six stacked PRs, merged in order #15 → #16 → #17 → #18 → #19 → #20** (1,170 quests changed):
+- [#15](https://github.com/AlistairJM/QuestCompletist/pull/15): 321 class fixes
+- [#16](https://github.com/AlistairJM/QuestCompletist/pull/16): 284 race fixes
+- [#17](https://github.com/AlistairJM/QuestCompletist/pull/17): 158 faction fixes
+- [#18](https://github.com/AlistairJM/QuestCompletist/pull/18): manual review, 62 of the 83 held-back quests fixed. Each decision and its reason is in `docs/plans/quest-accuracy-manual-decisions.csv`; the other 21 keep our values on purpose (listed in the PR)
+- [#19](https://github.com/AlistairJM/QuestCompletist/pull/19): world-quest batch, 325 task quests fixed from the game client's own filters (wago only, since the API 404s on task quests)
+- [#20](https://github.com/AlistairJM/QuestCompletist/pull/20): the 40 world quests #19 held back, all reviewed and fixed. Decisions and reasons are in `docs/plans/quest-accuracy-worldquest-decisions.csv`
+
+All six were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>`, reading
+`quest_accuracy_candidates.csv` (#15–#17) or, via `-CandidatesCsv`, the reviewed decisions CSVs (#18, #20) and a copy filtered to `ApiFound=False` quests (#19).
+Each was verified the same way (see the PR checklists).
+
+**Closed, kept as-is:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877.
+There was no practical way to check them in-game, so our values stand.
+
+**Still open:**
+- **Reputation:** separate plan, `docs/plans/quest-reputation-data.md` ([#21](https://github.com/AlistairJM/QuestCompletist/pull/21)).
+- **Obsolete and hidden-tracking quests:** decided to flag, not delete. See `docs/plans/unavailable-quests.md` ([#22](https://github.com/AlistairJM/QuestCompletist/pull/22)).
+
+After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
+listed mean something didn't apply.
+
+Findings that led here:
+
+**Baseline against `master` post-PR #12:** 20,024 discrepancy rows against the API (20,038 with
+14 wago-only rows added), 4,955 not-found (all genuine
+404s — the audit now retries 429/5xx/timeouts and reports them separately; this run had 0).
+Raw API responses are cached in `tools/quest_api_cache/`, so re-audits after a fix take minutes,
+not hours. Categorised output: `tools/quest_accuracy_categories.txt`
+(`tools/Categorize-AuditDiscrepancies.ps1`).
+
+**The "stale all-races sentinel" premise below is wrong — do not bulk-fix it.** `64175181` and
+`61658034` are the addon's *current* "all Alliance races" / "all Horde races" masks (each includes
+the neutral races through Harronir). Across the whole DB, 5,768/5,798 of the `64175181` entries have
+`faction=1` and 5,696/5,700 of the `61658034` entries have `faction=2`. The API simply doesn't
+list races for faction-gated quests, so these show up as field mismatches without being wrong.
+
+**Most field mismatches don't change who sees the quest.** Simulating the addon's actual
+`BitBand` filter over every playable faction/race/class combination:
+
+| Effect on visibility | Rows |
+|---|---|
+| Equivalent (no player sees anything different) | 17,064 (12,784 of these differ only on reputation) |
+| Over-restricted (we hide from players the API allows) | 2,148 |
+| Under-restricted (we show to players the API excludes) | 639 |
+| Both | 173 |
+
+**The API omits requirements far more often than it gets them wrong.** Most "over-restricted"
+rows are quests gated by zone/phase/NPC rather than a hard requirement, which the API reports as
+unrestricted. Examples: Goldshire quest 16 (no faction in the API, Alliance-only in practice), DK
+start-zone quests like 12636 (no class requirement in the API), and Monk/class-hall quests. So an
+API *absence* is weak evidence and must not be applied. An API *assertion* (an explicit
+faction/race/class requirement) is strong evidence:
+
+| API asserts a restriction our data lacks | Field-level rows |
+|---|---|
+| class, narrowing (ours is a superset) | 335 — e.g. AQ "Conqueror's" set 8544+: all classes → Warrior |
+| race, narrowing | 236 — e.g. 6341 "To Darnassus": Alliance → Night Elf |
+| faction, narrowing | 157 — e.g. Hellfire 10455+: both → Alliance |
+| conflicting (API's value isn't a subset of ours) | 75 rows / 70 quests — manual review |
+
+That comes to 720 distinct quests where a fix narrows a field to exactly what the API asserts,
+leaving the fields the API is silent on alone. Adding wago (below) refines this to 746.
+
+**wago.tools as a second source (`tools/Get-WagoQuestRequirements.ps1`).** Most quest requirements
+are server-side (there's no quest-template table in the client DB2 exports), so wago only covers
+~1,405 quests: task quests via `QuestV2CliTask.FiltRaceMasks/FiltClasses`, plus a few via
+quest-giver POI `PlayerCondition`s. Turn-in POIs carry per-class-hall conditions and are ignored.
+Blizzard's own "all classes/races at the time" masks (e.g. class `4095`) count as unrestricted.
+Where it does cover, it's decisive. On 284 of the 302 task quests with a race mismatch, the client
+filter decodes to exactly our `64175181`/`61658034`, which independently confirms those masks.
+The audit now records wago values per row, and the categorizer runs a three-way vote per field
+(ours / API / wago), writing `tools/quest_accuracy_candidates.csv` with a FIX/SKIP/MANUAL
+decision per field:
+
+| Decision | Field-level rows |
+|---|---|
+| FIX | class 321, race 284 (36 of them wago-only), faction 158 (11 where API and wago agree) |
+| MANUAL | class 35, race 27, faction 28 |
+
+Two rules added along the way:
+- **Pre-Evoker class lists go to manual review.** A class list covering 9 or more classes but not
+  Evoker most likely predates Evoker, so it doesn't show whether Evokers are really excluded (14
+  quests).
+- **Race-name aliases.** The API spells three races differently from the client race file names
+  the bit tables use: `Undead`/Scourge, `Earthen`/EarthenDwarf, `Haranir`/Harronir. Before they
+  were mapped, any race list containing one of them resolved to "all races". That only ever hid
+  fixes, never caused wrong ones; mapping them added 12 race fixes. `Insert-GapQuestEntries.ps1`
+  had the same gap, so earlier backfilled entries may carry "all races" where the API has a
+  restriction. The corrected audit surfaces those.
+
+Every change to a quest line must come from `quest_accuracy_candidates.csv` via
+`Apply-AccuracyFixes.ps1`, never re-derived by hand.
+
+**Reputation:** moved to `docs/plans/quest-reputation-data.md`. The 14,314 "reputation" rows above overstate the problem: the audit's reputation check reads storyline + prereq as a reward on 4,849 entries. The real gap is 10,915 quests missing a reward the API lists, with the 120 existing rewards all matching.
+
+**Phase 3 (done 2026-09-22): the not-found list is mostly *not* removed content.** Only 2 IDs in
+the original list (32636, 83240) were transient failures; the other 4,955 are real 404s. But most
+of them are recent (over 700 have IDs of 80,000+), and cross-referencing against the client's own
+tables (wago `QuestV2`/`QuestV2CliTask`) splits them into three groups. (Separately, 3,382 of the
+4,955 carry the addon's own world-quest type flag, `128`.)
+
+| Bucket | Quests | Wowhead spot-check (11 checked; Wowhead's bot protection then blocked further requests) |
+|---|---|---|
+| Task quests (world quests, bonus objectives) | 4,031 | 3/3 **live** (81670, 85398, 91792). The API's quest endpoint just doesn't serve task quests |
+| Non-task, still in the client | 733 | Mixed: 3/5 **obsolete** (8346, 24760, 54079), 2/5 live (74431, 91023) |
+| Not in the client's `QuestV2` | 191 | 3/3 exist but have no quest giver: hidden tracking quests (e.g. 42467 "Legion 110 A") |
+
+Consequences:
+- **The audit couldn't see task quests, but wago can.** Fixed: the audit now runs the wago
+  comparison for 404 quests too (see "World-quest batch" at the top).
+- **Possible DB cleanup, needs a decision:** obsolete quests (part of the 733) and hidden
+  tracking quests (the 191) may not belong in a completion tracker. That depends on whether the
+  addon should keep removed quests for historical completion. Not decided; no DB change made.
+
 ## Context
 
 `tools/Audit-QuestAccuracy.ps1` (built 2026-09-21/22, see git history) scanned the entire
