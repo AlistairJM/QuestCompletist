@@ -91,6 +91,11 @@ foreach ($line in $allIdLines) {
 }
 Write-Output "Parsed $($entries.Count) / $($allIdLines.Count) quest entries."
 
+$wago = @{}
+$wagoFile = "$toolsDir\quest_wago_requirements.csv"
+if (Test-Path $wagoFile) { Import-Csv $wagoFile | ForEach-Object { $wago[$_.QuestID] = $_ } }
+else { Write-Output "No $wagoFile - run Get-WagoQuestRequirements.ps1 to include client-side data." }
+
 $results = New-Object System.Collections.Generic.List[object]
 $notFound = New-Object System.Collections.Generic.List[string]
 $i = 0
@@ -187,11 +192,19 @@ foreach ($e in $entries) {
     if ($e.Class -ne $expClass) { $mismatches.Add("class: cur=$($e.Class) exp=$expClass ($classNames)") }
     if ($expHasRep -ne $e.HasRepCur) { $mismatches.Add("reputation: cur_has=$($e.HasRepCur) exp_has=$expHasRep") }
 
+    $w = $wago[$e.QuestID]
+    if ($w) {
+        if ($w.WagoFaction -and [int]$w.WagoFaction -ne $e.Faction) { $mismatches.Add("wago-faction: cur=$($e.Faction) wago=$($w.WagoFaction)") }
+        if ($w.WagoRace -and [int]$w.WagoRace -ne $e.Race) { $mismatches.Add("wago-race: cur=$($e.Race) wago=$($w.WagoRace)") }
+        if ($w.WagoClass -and [int]$w.WagoClass -ne $e.Class) { $mismatches.Add("wago-class: cur=$($e.Class) wago=$($w.WagoClass)") }
+    }
+
     if ($mismatches.Count -gt 0) {
         $row = [PSCustomObject]@{
             QuestID = $e.QuestID; Name = $e.Name; Mismatches = ($mismatches -join " | ")
             CurFaction = $e.Faction; ExpFaction = $expFaction; CurRace = $e.Race; ExpRace = $expRace
             CurClass = $e.Class; ExpClass = $expClass; CurHasRep = $e.HasRepCur; ExpHasRep = $expHasRep
+            WagoFaction = $w.WagoFaction; WagoRace = $w.WagoRace; WagoClass = $w.WagoClass
         }
         $results.Add($row)
         $row | Export-Csv -Path $outFile -NoTypeInformation -Encoding utf8 -Append:$wroteHeader

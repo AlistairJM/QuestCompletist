@@ -2,7 +2,8 @@
 
 ## Status (2026-09-22): Phase 0 + Phase 1 done — awaiting decision on Phase 2 batches
 
-**Baseline against `master` post-PR #12:** 20,024 discrepancy rows, 4,955 not-found (all genuine
+**Baseline against `master` post-PR #12:** 20,024 discrepancy rows against the API (20,038 with
+14 wago-only rows added), 4,955 not-found (all genuine
 404s — the audit now retries 429/5xx/timeouts and reports them separately; this run had 0).
 Raw API responses are cached in `tools/quest_api_cache/`, so re-audits after a fix take minutes,
 not hours. Categorised output: `tools/quest_accuracy_categories.txt`
@@ -38,9 +39,30 @@ faction/race/class requirement) is strong evidence:
 | faction, narrowing | 157 — e.g. Hellfire 10455+: both → Alliance |
 | conflicting (API's value isn't a subset of ours) | 75 rows / 70 quests — manual review |
 
-That comes to **720 distinct quests** where a fix narrows a field to exactly what the API asserts,
-leaving the fields the API is silent on alone. These are the proposed Phase 2 batches, one PR per
-field.
+That comes to 720 distinct quests where a fix narrows a field to exactly what the API asserts,
+leaving the fields the API is silent on alone. Adding wago (below) refines this to 746.
+
+**wago.tools as a second source (`tools/Get-WagoQuestRequirements.ps1`).** Most quest requirements
+are server-side (there's no quest-template table in the client DB2 exports), so wago only covers
+~1,405 quests: task quests via `QuestV2CliTask.FiltRaceMasks/FiltClasses`, plus a few via
+quest-giver POI `PlayerCondition`s. Turn-in POIs carry per-class-hall conditions and are ignored.
+Blizzard's own "all classes/races at the time" masks (e.g. class `4095`) count as unrestricted.
+Where it does cover, it's decisive. On 284 of the 302 task quests with a race mismatch, the client
+filter decodes to exactly our `64175181`/`61658034`, which independently confirms those masks.
+The audit now records wago values per row, and the categorizer runs a three-way vote per field
+(ours / API / wago), writing `tools/quest_accuracy_candidates.csv` with a FIX/SKIP/MANUAL
+decision per field:
+
+| Decision | Field-level rows |
+|---|---|
+| FIX, API-only narrowing | class 335, race 236, faction 147 |
+| FIX, API and wago agree | faction 11 (+ matching race) |
+| FIX, wago-only narrowing | race 36 (e.g. "Aid the Horde" → Horde races, Earthen Dwarf intro → Earthen only) |
+| MANUAL | 76 (API-only or wago-only conflicting, or a combined fix that would contradict faction vs race — e.g. 11732) |
+
+That's **746 distinct quests** with a FIX field and **69** needing manual review. Phase 2 fix
+scripts should read `quest_accuracy_candidates.csv` (Decision = FIX, Target column) rather than
+re-deriving anything.
 
 **Reputation (14,314 rows)** doesn't match the PR #10 signature: none are in
 `backfilled_quest_ids.txt`. Fixing it needs the actual faction IDs/values, not just a flag, so it

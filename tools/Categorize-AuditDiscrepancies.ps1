@@ -59,6 +59,8 @@ foreach ($r in $rows) {
             $key = "cur_has=$($matches[1]) exp_has=$($matches[2]) [$src]"
             if (-not $rep.ContainsKey($key)) { $rep[$key] = 0 }
             $rep[$key]++
+        } elseif ($part -match '^wago-') {
+            if ($types -notcontains "wago") { $types += "wago" }
         }
     }
     $k = ($types | Sort-Object) -join "+"
@@ -161,6 +163,82 @@ if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "CurRace"
     }
     $smallEff = @($effClusters.Values | Where-Object { $_.Count -lt $MinClusterSize })
     Say ("  (+ {0} smaller clusters covering {1} rows)" -f $smallEff.Count, [int](($smallEff | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum))
+}
+
+# Three-way vote per field: ours vs Blizzard API vs wago.tools client data. Both sources
+# routinely omit restrictions enforced by zone/phase/NPC, so "no restriction" from either
+# is never evidence; only an explicit restriction counts.
+#   FIX    - both sources assert the same value, or one asserts a subset of ours and the
+#            other is silent (narrowing only)
+#   SKIP   - the sources disagree and one of them matches ours
+#   MANUAL - anything else (conflicting single source, sources disagree with each other,
+#            or the combined fix would leave faction and race contradicting each other)
+if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "WagoRace") {
+    $allFor = @{ faction = 3; race = 67108863; class = 8191 }
+    $allianceOnly = 64175181 -band -bnot (64175181 -band 61658034)
+    $hordeOnly = 61658034 -band -bnot (64175181 -band 61658034)
+    $candidates = New-Object System.Collections.Generic.List[object]
+
+    foreach ($r in $rows) {
+        $fields = @(
+            @{ N = "faction"; Cur = [long]$r.CurFaction; Api = [long]$r.ExpFaction; Wago = $r.WagoFaction },
+            @{ N = "race"; Cur = [long]$r.CurRace; Api = [long]$r.ExpRace; Wago = $r.WagoRace },
+            @{ N = "class"; Cur = [long]$r.CurClass; Api = [long]$r.ExpClass; Wago = $r.WagoClass }
+        )
+        $questRows = @()
+        foreach ($f in $fields) {
+            $apiSays = $f.Api -ne $allFor[$f.N]
+            $wagoSays = [bool]$f.Wago
+            $wagoVal = if ($wagoSays) { [long]$f.Wago } else { $null }
+            if ((-not $apiSays -or $f.Api -eq $f.Cur) -and (-not $wagoSays -or $wagoVal -eq $f.Cur)) { continue }
+
+            $target = $null
+            if ($apiSays -and $wagoSays) {
+                if ($f.Api -eq $wagoVal) { $decision = "FIX"; $reason = "api+wago agree"; $target = $wagoVal }
+                elseif ($f.Api -eq $f.Cur) { $decision = "SKIP"; $reason = "api supports ours, wago differs" }
+                elseif ($wagoVal -eq $f.Cur) { $decision = "SKIP"; $reason = "wago supports ours, api differs" }
+                else { $decision = "MANUAL"; $reason = "api and wago disagree with each other and ours" }
+            } else {
+                $src = if ($apiSays) { "api" } else { "wago" }
+                $val = if ($apiSays) { $f.Api } else { $wagoVal }
+                if (($f.Cur -band $val) -eq $val) { $decision = "FIX"; $reason = "$src-only narrowing"; $target = $val }
+                else { $decision = "MANUAL"; $reason = "$src-only conflicting" }
+            }
+            $questRows += [PSCustomObject]@{
+                QuestID = $r.QuestID; Name = $r.Name; Field = $f.N; Cur = $f.Cur
+                Api = if ($apiSays) { $f.Api } else { "" }; Wago = $f.Wago
+                Target = $target; Decision = $decision; Reason = $reason
+            }
+        }
+        if (-not $questRows) { continue }
+
+        $pf = [long]$r.CurFaction; $pr = [long]$r.CurRace; $pc = [long]$r.CurClass
+        foreach ($q in $questRows | Where-Object Decision -eq "FIX") {
+            switch ($q.Field) { "faction" { $pf = $q.Target } "race" { $pr = $q.Target } "class" { $pc = $q.Target } }
+        }
+        $own = switch ($pf) { 1 { $allianceOnly } 2 { $hordeOnly } default { $null } }
+        $other = switch ($pf) { 1 { $hordeOnly } 2 { $allianceOnly } default { $null } }
+        $incoherent = ($null -ne $own) -and (($pr -band $own) -eq 0) -and (($pr -band $other) -ne 0)
+        $empty = (Get-VisibleCached $pf $pr $pc).Count -eq 0
+        if ($incoherent -or $empty) {
+            foreach ($q in $questRows | Where-Object Decision -eq "FIX") {
+                $q.Decision = "MANUAL"; $q.Target = $null
+                $q.Reason += $(if ($empty) { "; combined fix hides quest from everyone" } else { "; combined fix leaves faction/race contradictory" })
+            }
+        }
+        foreach ($q in $questRows) { $candidates.Add($q) }
+    }
+
+    $candFile = "$toolsDir\quest_accuracy_candidates.csv"
+    $candidates | Export-Csv $candFile -NoTypeInformation -Encoding utf8
+    Say ""
+    Say "== Three-way vote (ours / API / wago), per field -> $candFile =="
+    $candidates | Group-Object Field, Decision, Reason | Sort-Object Name | ForEach-Object { Say ("{0,7}  {1}" -f $_.Count, $_.Name) }
+    Say ""
+    foreach ($d in "FIX", "SKIP", "MANUAL") {
+        $n = @($candidates | Where-Object Decision -eq $d | ForEach-Object QuestID | Sort-Object -Unique).Count
+        Say ("{0,7}  distinct quests with a {1} field" -f $n, $d)
+    }
 }
 
 $report | Out-File $OutFile -Encoding utf8
