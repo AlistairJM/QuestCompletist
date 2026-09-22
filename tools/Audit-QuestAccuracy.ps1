@@ -172,29 +172,35 @@ if ($uncached.Count -gt 0) {
 foreach ($e in $entries) {
     $i++
     $raw = Get-QuestJson $e.QuestID
+    $w = $wago[$e.QuestID]
+    $mismatches = New-Object System.Collections.Generic.List[string]
     if ($raw -eq "404" -or $null -eq $raw) {
         if ($raw -eq "404") { $notFound.Add($e.QuestID) } else { $errors.Add($e.QuestID) }
         if ($i % 1000 -eq 0) { $notFound | Out-File $notFoundFile -Encoding utf8 }
         if ($i % 500 -eq 0) { Write-Output "  ...$i / $($entries.Count) (found=$($results.Count) notfound=$($notFound.Count) errors=$($errors.Count))" }
-        continue
+        # The API's quest endpoint doesn't serve task quests (world quests, bonus objectives),
+        # but wago often has their client-side filters - compare those with the API treated as silent.
+        if ($raw -ne "404" -or -not $w) { continue }
+        $apiFound = $false
+        $expFaction = 3; $expRace = $ALL_RACES; $expClass = $ALL_CLASSES; $expHasRep = $e.HasRepCur
+    } else {
+        $q = $raw | ConvertFrom-Json
+        $apiFound = $true
+
+        $expFactionType = if ($q.requirements -and $q.requirements.faction) { $q.requirements.faction.type } else { "" }
+        $expFaction = switch ($expFactionType) { "ALLIANCE" { 1 }; "HORDE" { 2 }; default { 3 } }
+        $classNames = if ($q.requirements -and $q.requirements.classes) { ($q.requirements.classes | ForEach-Object { $_.name }) -join ";" } else { "" }
+        $raceNames = if ($q.requirements -and $q.requirements.races) { ($q.requirements.races | ForEach-Object { $_.name }) -join ";" } else { "" }
+        $expRace = Resolve-Bitmask $raceNames $raceBits $ALL_RACES 8
+        $expClass = Resolve-Bitmask $classNames $classBits $ALL_CLASSES 12
+        $expHasRep = [bool]($q.rewards -and $q.rewards.reputations -and $q.rewards.reputations.Count -gt 0)
+
+        if ($e.Faction -ne $expFaction) { $mismatches.Add("faction: cur=$($e.Faction) exp=$expFaction") }
+        if ($e.Race -ne $expRace) { $mismatches.Add("race: cur=$($e.Race) exp=$expRace ($raceNames)") }
+        if ($e.Class -ne $expClass) { $mismatches.Add("class: cur=$($e.Class) exp=$expClass ($classNames)") }
+        if ($expHasRep -ne $e.HasRepCur) { $mismatches.Add("reputation: cur_has=$($e.HasRepCur) exp_has=$expHasRep") }
     }
-    $q = $raw | ConvertFrom-Json
 
-    $expFactionType = if ($q.requirements -and $q.requirements.faction) { $q.requirements.faction.type } else { "" }
-    $expFaction = switch ($expFactionType) { "ALLIANCE" { 1 }; "HORDE" { 2 }; default { 3 } }
-    $classNames = if ($q.requirements -and $q.requirements.classes) { ($q.requirements.classes | ForEach-Object { $_.name }) -join ";" } else { "" }
-    $raceNames = if ($q.requirements -and $q.requirements.races) { ($q.requirements.races | ForEach-Object { $_.name }) -join ";" } else { "" }
-    $expRace = Resolve-Bitmask $raceNames $raceBits $ALL_RACES 8
-    $expClass = Resolve-Bitmask $classNames $classBits $ALL_CLASSES 12
-    $expHasRep = [bool]($q.rewards -and $q.rewards.reputations -and $q.rewards.reputations.Count -gt 0)
-
-    $mismatches = New-Object System.Collections.Generic.List[string]
-    if ($e.Faction -ne $expFaction) { $mismatches.Add("faction: cur=$($e.Faction) exp=$expFaction") }
-    if ($e.Race -ne $expRace) { $mismatches.Add("race: cur=$($e.Race) exp=$expRace ($raceNames)") }
-    if ($e.Class -ne $expClass) { $mismatches.Add("class: cur=$($e.Class) exp=$expClass ($classNames)") }
-    if ($expHasRep -ne $e.HasRepCur) { $mismatches.Add("reputation: cur_has=$($e.HasRepCur) exp_has=$expHasRep") }
-
-    $w = $wago[$e.QuestID]
     if ($w) {
         if ($w.WagoFaction -and [int]$w.WagoFaction -ne $e.Faction) { $mismatches.Add("wago-faction: cur=$($e.Faction) wago=$($w.WagoFaction)") }
         if ($w.WagoRace -and [int]$w.WagoRace -ne $e.Race) { $mismatches.Add("wago-race: cur=$($e.Race) wago=$($w.WagoRace)") }
@@ -206,7 +212,7 @@ foreach ($e in $entries) {
             QuestID = $e.QuestID; Name = $e.Name; Mismatches = ($mismatches -join " | ")
             CurFaction = $e.Faction; ExpFaction = $expFaction; CurRace = $e.Race; ExpRace = $expRace
             CurClass = $e.Class; ExpClass = $expClass; CurHasRep = $e.HasRepCur; ExpHasRep = $expHasRep
-            WagoFaction = $w.WagoFaction; WagoRace = $w.WagoRace; WagoClass = $w.WagoClass
+            WagoFaction = $w.WagoFaction; WagoRace = $w.WagoRace; WagoClass = $w.WagoClass; ApiFound = $apiFound
         }
         $results.Add($row)
         $row | Export-Csv -Path $outFile -NoTypeInformation -Encoding utf8 -Append:$wroteHeader
@@ -221,5 +227,5 @@ $errors | Out-File $errorsFile -Encoding utf8
 Write-Output ""
 Write-Output "Done. Scanned $($entries.Count) quests."
 Write-Output "Discrepancies found: $($results.Count) -> $outFile"
-Write-Output "Not found in API (404, likely old/removed content): $($notFound.Count) -> $notFoundFile"
+Write-Output "Not found in API (404 - mostly task quests the endpoint doesn't serve; compared against wago only): $($notFound.Count) -> $notFoundFile"
 Write-Output "Failed after retries (NOT counted as not-found - re-run to retry): $($errors.Count) -> $errorsFile"

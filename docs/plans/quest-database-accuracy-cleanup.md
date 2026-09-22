@@ -15,9 +15,12 @@ Each was verified the same way (see the PR checklists).
 **Still open:**
 - **Possible in-game checks:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877 were kept as-is only because the evidence was contradictory.
 - **Reputation:** see below.
-- **Phase 3 follow-ups** (spot-check done, see below): run the wago comparison for the 4,031
-  task quests the API doesn't serve, and decide whether obsolete/hidden-tracking quests stay in the
-  DB.
+- **World-quest batch (candidates ready, not applied):** the audit now runs the wago comparison
+  for quests the API 404s on (`ApiFound=False` rows). That adds 673 candidate fields across 365
+  world quests and bonus objectives: FIX faction 297 / race 295 / class 24 (e.g. Draenor bonus
+  objectives to their zone's faction, Legion class world quests to their class), MANUAL 57 (mostly
+  broad pre-Evoker class lists, plus 10 where wago's races contradict our faction).
+- **Decide** whether obsolete and hidden-tracking quests stay in the DB (Phase 3, below).
 
 After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still
 listed mean something didn't apply.
@@ -111,10 +114,8 @@ tables (wago `QuestV2`/`QuestV2CliTask`) splits them into three groups. (Separat
 | Not in the client's `QuestV2` | 191 | 3/3 exist but have no quest giver: hidden tracking quests (e.g. 42467 "Legion 110 A") |
 
 Consequences:
-- **The audit can't see task quests, but wago can.** `Audit-QuestAccuracy.ps1` skips a 404 quest
-  before the wago comparison, so wago's race/class filters for these 4,031 are never checked.
-  Running the wago comparison for 404 quests too is a cheap follow-up that would cover world
-  quests.
+- **The audit couldn't see task quests, but wago can.** Fixed: the audit now runs the wago
+  comparison for 404 quests too (see "World-quest batch" at the top).
 - **Possible DB cleanup, needs a decision:** obsolete quests (part of the 733) and hidden
   tracking quests (the 191) may not belong in a completion tracker. That depends on whether the
   addon should keep removed quests for historical completion. Not decided; no DB change made.

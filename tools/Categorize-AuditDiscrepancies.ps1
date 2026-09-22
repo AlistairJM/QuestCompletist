@@ -136,6 +136,7 @@ if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "CurRace"
     $effect = @{}
     $effClusters = @{}
     foreach ($r in $rows) {
+        if ($r.ApiFound -eq "False") { continue }
         $cur = Get-VisibleCached ([long]$r.CurFaction) ([long]$r.CurRace) ([long]$r.CurClass)
         $exp = Get-VisibleCached ([long]$r.ExpFaction) ([long]$r.ExpRace) ([long]$r.ExpClass)
         $h = New-Object System.Collections.Generic.HashSet[string] (,$exp); $h.ExceptWith($cur); $hidden = $h.Count
