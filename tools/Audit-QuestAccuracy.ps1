@@ -6,14 +6,10 @@ separate list of quest IDs Blizzard's API no longer knows about (old/
 removed content - expected, not itself a bug), for manual review before
 any fix gets applied.
 
-Field layout is NOT uniform across the database: older hand-curated
-entries can be as short as 14 fields (id, name, level, zone, areaid,
-type, faction, race, class, profession, holiday, covenant, storyline,
-prereq), missing field15/factionid/repvalue entirely (Lua just returns
-nil for the missing trailing fields, which the tooltip code already
-guards against). Only id/name/level/areaid/type/faction/race/class
-(the first 9 fields) are reliably present in every entry; everything
-after class is parsed as a flexible tail.
+Every entry is 14 fields (id, name, level, zone, areaid, type, faction,
+race, class, profession, holiday, covenant, storyline, prereq). Reputation
+rewards are not part of the entry - they live in the qcQuestReputation
+side table, read here via QuestReputation.ps1.
 
 Reuses the exact same bitmask-resolution rules already used and verified
 in Insert-GapQuestEntries.ps1.
@@ -75,12 +71,13 @@ $lines = $dbBlock -split "`r`n"
 $allIdLines = $lines | Where-Object { $_ -match '^\[\d+\]=\{' }
 $entryPattern = '^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",(\d+|Unknown),"(?:[^"\\]|\\.)*",(-?\d+),(\d+),(\d+),(\d+),(\d+),(.*)\},?$'
 
+$questReputation = Get-QuestReputation $content
+
 $entries = New-Object System.Collections.Generic.List[object]
 foreach ($line in $allIdLines) {
     $m = [regex]::Match($line, $entryPattern)
     if (-not $m.Success) { Write-Output "PARSE FAILURE (skipped): $line"; continue }
-    $body = [regex]::Match($line, '^\[\d+\]=\{(.*)\},?$').Groups[1].Value
-    $hasRepCurrently = (Get-OurReputation (Split-Top $body)).Count -gt 0
+    $hasRepCurrently = $questReputation.ContainsKey($m.Groups[1].Value)
     $entries.Add([PSCustomObject]@{
         QuestID   = $m.Groups[1].Value
         Name      = $m.Groups[2].Value
