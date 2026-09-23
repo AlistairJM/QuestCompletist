@@ -13887,6 +13887,10 @@ qcOverrideWeeklyExclusiveQuest = { -- This will hide pins if an questgiver only 
 }
 
 qcQuestDatabase={
+-- 14 fields, all present on every entry: id, name, level, zone, areaid, type, faction, race,
+-- class, profession, holiday, covenant, storyline, prereq. Reputation rewards are not stored
+-- here - they live in qcQuestReputation, keyed by quest ID. Sparse data belongs in its own
+-- keyed table rather than in new positional fields.
 -- Entries below added from Blizzard's Data API to backfill quests found in
 -- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).
 -- areaid is unmapped (0) - these won't appear correctly in the zone checklist yet.

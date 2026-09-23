@@ -198,7 +198,20 @@ new place.
   - in-game: quest 12008 (Warsong Offensive 150), multi-faction 51515 (Zandalari Empire +
     Darkspear Trolls, 350 each), and quest 11 (Stormwind 250, the off-by-one fix).
 
-### Phase 3: wrap-up
+### Phase 3: wrap-up — done
+
+Final state, with #23 → #25 → #26 and #24 merged:
+
+| | |
+|---|---|
+| `qcQuestDatabase` entries | 35,023, all exactly 14 fields |
+| `qcQuestReputation` rows | 11,035 (120 migrated + 10,915 backfilled) |
+| Quests matching the API exactly | 11,035 of 11,035 |
+| Quests where the API has a reward and we don't | 0 (was 10,915) |
+| `qcFactions` entries | 272 (was 218) — every reward faction is named |
+| Task quests with no reputation source | 4,955, unchanged and unfixable from the API |
+| `qcQuest.lua` | 3.30 MB → 3.44 MB |
+
 - Record the final numbers in this doc and in the accuracy cleanup plan's status section.
 - Document the field layout (1–14, all present) next to the tooltip code and in this doc, with the
   rule that new sparse attributes get their own keyed table.
