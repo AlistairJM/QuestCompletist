@@ -17,7 +17,7 @@ already accurate and should be left alone.
 - **Re-run `tools/Compare-QuestReputation.ps1`** and check the numbers below still hold before
   changing anything.
 
-## How reputation is stored and shown today
+## How reputation is stored and shown today (the layout Phase 2a replaces)
 
 Each `qcQuestDatabase` entry is a positional table. Reputation lives in the last three fields, and
 **only entries with 17 fields have them**:
@@ -96,20 +96,30 @@ only read fields 16/17 when the entry has 17 fields. Then the audit and the cate
 "Reputation mismatches" section report real numbers. Better still, point the audit's reputation
 column at the same logic as the compare script, so there's one definition.
 
-## Design decisions (recommendations; confirm at the start of the session)
+## Design decisions (agreed 2026-09-23)
 
-1. **Storage form, following the existing convention:**
-   - **Single faction** → field 16 = faction ID, field 17 = number. That's how 4/5 of the existing
-     reputation entries are stored, and the tooltip shows the faction name via field 16.
-   - **Several factions** (840) → field 16 = the first faction the API lists, field 17 = the
-     `{[id]=value,...}` table, matching the existing table-form entries (e.g. 7168).
-   - Field 15 = `0`.
-2. **Extend 14-field entries to 17 fields** by inserting `,0,<factionID>,<value|table>` just before
-   the closing `}`. Leave everything before that byte-for-byte, and keep the trailing `,` after
-   `}` if present.
-3. **17-field entries that are all zeros** (536): nothing to do. The API has no reputation for
-   them either.
-4. **Don't touch the 120 matching entries.**
+Reputation moves **out of the positional entry and into a side table keyed by quest ID**, the
+pattern `qcRenownLevelRequirements` (`qcQuest.lua:436`) and `qcPinDB` already use:
+
+```lua
+qcQuestReputation = {
+	[12008]={[72]=150},
+	[51515]={[2103]=350,[1133]=350},
+}
+```
+
+1. **One shape for every reward**, `{[factionID]=value,...}`, single or multi. That retires the
+   number-vs-table duality the tooltip currently branches on, and the faction name comes from the
+   key, so nothing needs a separate "primary faction" field.
+2. **Quests with no reputation aren't listed at all.** No padding, and adding a future sparse
+   attribute means another keyed table rather than new positional slots on 35,023 lines.
+3. **Every quest entry ends up 14 fields.** Fields 15/16/17 are removed from the 656 entries that
+   have them, and quest 11's stray 15th field goes too. Field 15 was never read for its value
+   (`qcCore.lua:555` assigns it to an unused local), and fields 16/17 are read only by the
+   reputation tooltip, which moves to the side table in the same change.
+4. **Backfilling is then purely additive:** new rows in `qcQuestReputation`, no existing quest line
+   touched. That removes the line-re-rendering risk that caused the PR #12 regression, and
+   verification becomes "every pre-existing line is byte-identical".
 5. **Add the 54 missing factions to `qcFactions`** using the API's English `reward.name`. The
    existing table is English-only, so this matches it.
 6. **Task quests (4,955 API 404s):** leave as-is. There's no per-quest reputation source: it's
@@ -117,9 +127,30 @@ column at the same logic as the compare script, so there's one definition.
    (`QuestFactionReward` is a generic amount table, not per quest; worth a 5-minute confirmation
    in the session). Document the gap rather than invent values.
 
+Final state: 35,023 entries of exactly 14 fields, and `qcQuestReputation` with 11,035 rows
+(120 migrated + 10,915 backfilled, quest 11 among them).
+
+### Quest 11 and the off-by-one it shares with the gap inserter
+
+Quest 11 has 15 fields, and the stray 15th is `72` — Stormwind's faction ID, with no value after
+it. The API says quest 11 rewards Stormwind 250. So the faction ID was written one slot early and
+the tooltip has silently shown nothing ever since.
+
+`tools/Insert-GapQuestEntries.ps1:99` has the same fault: its template emits only five zeros
+between class and the faction ID, producing **16**-field entries with the faction in slot 15. No
+16-field entries exist in the file, so its output was corrected after the fact at some point, but
+the script would reintroduce the bug on its next run. Phase 2a stops it writing reputation fields
+at all.
+
 ## Phases
 
-### Phase 0: tooling (no data changes)
+### Phase 0: tooling (no data changes) — done
+
+Result: the field 16/17 reading now lives in `tools/QuestReputation.ps1`, which both the audit and
+the compare script use. After re-running the audit from cache, the categorizer shows 10,915
+"API has, we don't" and 0 the other way. That set is exactly the compare script's `api-only`
+rows. Faction, race and class rows are unchanged (11,820 rows, all identical).
+
 - Fix the audit's reputation detection (above), re-run the audit from cache, and confirm the
   categorizer's reputation section now shows ~10,915 "API has, we don't" and ~0 the other way.
 - Keep `Compare-QuestReputation.ps1` as the single source of truth for reputation comparisons.
@@ -129,44 +160,57 @@ column at the same logic as the compare script, so there's one definition.
 - Add the 54 IDs in ID order, in the existing format (`[id] = "Name",`).
 - Verify: `luac -p` clean, no duplicate keys, and the compare script reports 0 missing factions.
 
-### Phase 2: backfill (the main work)
-- **Write `tools/Apply-ReputationBackfill.ps1`.** `Apply-AccuracyFixes.ps1` only rewrites fields
-  7–9, so this needs its own applier. It should:
-  - read `quest_reputation_compare.csv` rows with `Kind = api-only`;
-  - match each quest line and require it to have exactly 14 fields (refuse anything else, and list
-    the refusals);
-  - insert the three fields before the final `}` without re-rendering any other part of the line;
-  - refuse to write at all if any row fails, the same all-or-nothing approach as
-    `Apply-AccuracyFixes.ps1`.
-- **Batching**, one PR each:
-  - **2a:** single-faction rewards (~10,075 quests). Consider splitting by quest ID range or
-    expansion if the diff is too big to review comfortably.
-  - **2b:** multi-faction rewards (840 quests, table form).
-- **Verification**, all must pass (same standard as PRs #15–#20):
-  - `luac -p` clean on `qcQuest.lua`;
-  - zero lone-LF line endings (the file is CRLF throughout);
-  - quest ID set unchanged (35,023);
-  - exactly the expected number of lines changed, and each changed line differs from the original
-    **only** by the inserted `,0,<id>,<value>` before the closing brace (write a diff-based checker,
-    like the scratch `verify_multi.ps1` pattern used for #18–#20);
-  - re-run `Compare-QuestReputation.ps1`: the batch's quests move from `api-only` to `match`;
-  - load-test in the Lua 5.1 harness that the table still loads and `#` sizes are sane (the file
-    grows by roughly 10,900 × ~10 bytes ≈ 110 KB, which is fine);
-  - in-game: open the tooltip on a backfilled quest (e.g. 12008 → Warsong Offensive 150) and on a
-    multi-faction one (e.g. 51515 → Zandalari Empire + Darkspear Trolls, 350 each).
+### Phase 2a: move reputation to `qcQuestReputation` (behaviour-preserving)
+
+No reward value changes in this phase; the same 120 quests show the same reputation, read from a
+new place.
+
+- Add `qcQuestReputation` to `qcQuest.lua` with the 120 migrated rewards, converting the
+  single-number form to `{[factionID]=value}`.
+- Strip fields 15/16/17 from all 656 17-field entries, and quest 11's stray field 15, by truncating
+  at the last `,` before `}`. Never rebuild the rest of the line.
+- Rewrite the tooltip (`qcCore.lua:1170-1217`) to read `qcQuestReputation[questId]` and loop the
+  table once; the `Faction:` line comes from the reward's own keys. Delete the dead `e[15]` read at
+  `qcCore.lua:555`.
+- Stop `tools/Insert-GapQuestEntries.ps1` writing reputation fields (it emits 14 fields now), which
+  also retires its off-by-one.
+- Teach `tools/QuestReputation.ps1` to read the side table, so the compare script keeps working.
+- **Verification:** `luac -p` clean; CRLF throughout; quest ID set unchanged (35,023); entry shapes
+  become 14 fields for all 35,023; each of the 657 changed lines differs only by the removed tail;
+  the compare script still reports match=120, api-only=10,915; in-game the tooltip on quest 26863
+  (Filthy Paws → Thorium Brotherhood 350) and 8249 (Junkboxes Needed → Ravenholdt +75, Syndicate
+  −75) is unchanged.
+
+### Phase 2b: backfill the 10,915 (additive only)
+
+- **Write `tools/Apply-ReputationBackfill.ps1`.** It reads `quest_reputation_compare.csv` rows with
+  `Kind = api-only`, renders one `[questID]={[factionID]=value,...}` row each, and inserts them into
+  `qcQuestReputation` in quest ID order. It must refuse to write at all if any row fails to render
+  or if a quest ID is already present, the same all-or-nothing approach as `Apply-AccuracyFixes.ps1`.
+- **Verification:**
+  - `luac -p` clean on `qcQuest.lua`; CRLF throughout;
+  - **every pre-existing line byte-identical** — the diff is inserted lines only;
+  - `qcQuestDatabase` untouched: quest ID set and all 35,023 entry lines unchanged;
+  - `qcQuestReputation` holds 11,035 rows, no duplicate keys, and every value matches the API;
+  - re-run `Compare-QuestReputation.ps1`: api-only drops to 0, match rises to 11,035;
+  - load-test in the Lua 5.1 harness (the file grows by roughly 11,000 × ~20 bytes ≈ 220 KB);
+  - in-game: quest 12008 (Warsong Offensive 150), multi-faction 51515 (Zandalari Empire +
+    Darkspear Trolls, 350 each), and quest 11 (Stormwind 250, the off-by-one fix).
 
 ### Phase 3: wrap-up
 - Record the final numbers in this doc and in the accuracy cleanup plan's status section.
+- Document the field layout (1–14, all present) next to the tooltip code and in this doc, with the
+  rule that new sparse attributes get their own keyed table.
 - Note the task-quest gap (no source) as a known limitation.
 
 ## Risks and how to handle them
 
 - **Line re-rendering bugs:** these caused a syntax-breaking regression once before (the PR #12
-  history). Never rebuild a line; only insert. Keep the all-or-nothing applier and the diff-based
-  checker.
+  history). Phase 2b touches no existing line at all. Phase 2a only truncates 657 lines at a known
+  comma; keep the all-or-nothing applier and the diff-based checker for it.
 - **Merge conflicts with the accuracy PRs:** avoided by starting after they're merged.
-- **Very large diff:** split Phase 2a if needed. Every line is the same kind of change, so review
-  is mostly by the checker plus sampling.
+- **Tooltip regression in Phase 2a:** the read path changes, so the in-game check on a
+  single-faction and a multi-faction quest is required before Phase 2b builds on it.
 - **API value drift:** the cache records the API's state on 2026-09-22 (namespace
   `static-12.1.0_68914-us`). If the cache is rebuilt later, re-run the compare script and
   re-check the 120-match baseline before applying.
@@ -174,7 +218,10 @@ column at the same logic as the compare script, so there's one definition.
 ## Files
 
 - `tools/Compare-QuestReputation.ps1`: report-only comparison (added with this plan).
-- `tools/Audit-QuestAccuracy.ps1`: builds/refreshes `tools/quest_api_cache/`; its reputation check
-  needs the Phase 0 fix.
-- `QuestCompletist/qcQuest.lua`: `qcFactions` (around line 215) and `qcQuestDatabase`.
-- `QuestCompletist/qcCore.lua:1170-1217`: tooltip code that reads fields 16/17.
+- `tools/QuestReputation.ps1`: shared reading of our reputation data (added in Phase 0).
+- `tools/Audit-QuestAccuracy.ps1`: builds/refreshes `tools/quest_api_cache/`.
+- `tools/Insert-GapQuestEntries.ps1`: writes new quest entries; stops emitting fields 15–17 in 2a.
+- `QuestCompletist/qcQuest.lua`: `qcFactions` (around line 215), `qcQuestDatabase`, and
+  `qcQuestReputation` (new in 2a).
+- `QuestCompletist/qcCore.lua:1170-1217`: reputation tooltip, rewritten in 2a; the dead field 15
+  read is at `qcCore.lua:555`.
