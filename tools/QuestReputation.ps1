@@ -1,10 +1,11 @@
 <#
-Shared definition of "our" reputation reward for a qcQuestDatabase entry, dot-sourced by
-Compare-QuestReputation.ps1 and Audit-QuestAccuracy.ps1.
+Shared reading of our reputation data, dot-sourced by Compare-QuestReputation.ps1 and
+Audit-QuestAccuracy.ps1.
 
-Only entries with 17 fields carry reputation; 14-field entries stop at the prereq field.
-Field 16 is the primary faction ID; field 17 is either a number (paired with field 16) or a
-{[factionID]=value} table.
+Rewards live in the qcQuestReputation side table, keyed by quest ID:
+	[12008]={[72]=150},
+	[51515]={[2103]=350,[1133]=350},
+Quests with no reward aren't listed. qcQuestDatabase entries are 14 fields and carry none.
 #>
 
 # Splits on top-level commas only, so quoted names and {..} tables stay intact.
@@ -21,13 +22,17 @@ function Split-Top($s) {
     return ,$out
 }
 
-# Takes the fields from Split-Top; returns @{ factionID = value } for non-zero rewards.
-function Get-OurReputation($f) {
-    $set = @{}
-    if ($f.Count -ge 17) {
-        $fid = $f[15]; $rep = $f[16]
-        if ($rep -match '^\{') { foreach ($p in [regex]::Matches($rep, '\[(\d+)\]=(-?\d+)')) { if ($p.Groups[2].Value -ne "0") { $set[$p.Groups[1].Value] = [int]$p.Groups[2].Value } } }
-        elseif ($rep -match '^-?\d+$' -and $rep -ne "0" -and $fid -match '^\d+$' -and $fid -ne "0") { $set[$fid] = [int]$rep }
+# Takes the whole qcQuest.lua text; returns @{ questID = @{ factionID = value } } for non-zero rewards.
+function Get-QuestReputation($content) {
+    $out = @{}
+    $block = [regex]::Match($content, '(?s)^qcQuestReputation = \{(.*?)^\}', "Multiline")
+    if (-not $block.Success) { throw "qcQuestReputation table not found" }
+    foreach ($m in [regex]::Matches($block.Groups[1].Value, '(?m)^\s*\[(\d+)\]=\{(.*?)\},?\s*$')) {
+        $set = @{}
+        foreach ($p in [regex]::Matches($m.Groups[2].Value, '\[(\d+)\]=(-?\d+)')) {
+            if ($p.Groups[2].Value -ne "0") { $set[$p.Groups[1].Value] = [int]$p.Groups[2].Value }
+        }
+        if ($set.Count) { $out[$m.Groups[1].Value] = $set }
     }
-    return $set
+    return $out
 }
