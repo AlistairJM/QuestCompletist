@@ -14,6 +14,12 @@ local qcCategoryQuests = {}
 
 --[[ Vars ]]--
 local qcCurrentScrollPosition = 1
+local qcTooltipIndex = nil
+local qcTooltipQuestId = nil
+local qcQuestDataRequested = {}
+-- Quests the server has already answered for. Without this the refresh below would request
+-- again, get another QUEST_DATA_LOAD_RESULT, and refresh forever.
+local qcQuestDataLoaded = {}
 local qcMapTooltip = nil
 local qcQuestInformationTooltip = nil
 local qcToastTooltip = nil
@@ -1027,6 +1033,15 @@ function qcUpdateTooltip(index)
     local att_HookBackup
 
     if questId then
+        -- SetHyperlink below renders nothing until the server has sent the quest's data, so ask
+        -- for it and redraw when it lands (see QUEST_DATA_LOAD_RESULT in qcEventHandler).
+        qcTooltipIndex = index
+        qcTooltipQuestId = questId
+        if (C_QuestLog and C_QuestLog.RequestLoadQuestByID and not qcQuestDataLoaded[questId] and not qcQuestDataRequested[questId]) then
+            qcQuestDataRequested[questId] = true
+            C_QuestLog.RequestLoadQuestByID(questId)
+        end
+
         -- Temporarily disable ATT's quest tooltip hook so it can't add its own ID
         if C_AddOns.IsAddOnLoaded("AllTheThings") and GameTooltip.OnTooltipSetQuest then
             att_HookBackup = GameTooltip.OnTooltipSetQuest
@@ -1276,6 +1291,8 @@ end
 
 
 function qcCloseTooltip()
+	qcTooltipIndex = nil
+	qcTooltipQuestId = nil
 	qcQuestInformationTooltip:Hide()
 end
 
@@ -2461,7 +2478,17 @@ end
 qcCheckSettings()
 
 local function qcEventHandler(self, event, ...)
-	if (event == "ADVENTURE_MAP_OPEN") then
+	if (event == "QUEST_DATA_LOAD_RESULT") then
+		local questId, success = ...
+		qcQuestDataRequested[questId] = nil
+		if (success) then
+			qcQuestDataLoaded[questId] = true
+			-- Only redraw if this is still the quest being hovered; the list may have scrolled.
+			if (questId == qcTooltipQuestId and qcTooltipIndex and _G["qcMenuButton" .. qcTooltipIndex].QuestID == questId) then
+				qcUpdateTooltip(qcTooltipIndex)
+			end
+		end
+	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
 		if (... == "player") then qcUpdateQuestList(nil, qcMenuSlider:GetValue()) end
@@ -2553,6 +2580,10 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED")
 	self:RegisterEvent("ADDON_LOADED")
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
+	-- Retail only; the event doesn't exist on the Classic interface the TOC also lists.
+	if (C_QuestLog and C_QuestLog.RequestLoadQuestByID) then
+		pcall(self.RegisterEvent, self, "QUEST_DATA_LOAD_RESULT")
+	end
 	self:SetScript("OnEvent", qcEventHandler)
 	qcQuestInformationTooltipSetup()
 	qcMapTooltipSetup()
