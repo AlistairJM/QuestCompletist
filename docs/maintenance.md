@@ -1,0 +1,196 @@
+# Maintaining the quest data
+
+How to refresh and re-check the addon's data after a WoW patch: quests, quest types, reputation
+rewards, storylines, category names and map pins. Everything here is run from the repository root
+in PowerShell, using the scripts in `tools/`.
+
+If you're working with Claude Code in this repository, **"do a full sweep"** runs all of this for
+you. It will tell you up front which steps need you in the game.
+
+## One-time setup
+
+- **Lua 5.1** at `C:\Program Files (x86)\Lua\5.1\` – for `luac -p`, the syntax check every change
+  gets before it's committed.
+- **GitHub CLI** (`gh`) – every change goes in through a branch and a pull request, never straight
+  to `master`.
+- **Blizzard API credentials** in `tools\.env`:
+  ```
+  BLIZZARD_CLIENT_ID=...
+  BLIZZARD_CLIENT_SECRET=...
+  ```
+  Create a client at <https://develop.battle.net/access/clients>. The file is gitignored; never
+  commit it or paste it anywhere.
+- **Let the game run the repository's copy of the addon.** Replace the installed folder with a link
+  to the repo, so a `/reload` in game picks up whatever branch is checked out:
+  ```powershell
+  Rename-Item "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\QuestCompletist" "QuestCompletist.installed"
+  New-Item -ItemType Junction -Path "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\QuestCompletist" -Target "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist"
+  ```
+  Then move `QuestCompletist.installed` out of the `AddOns` folder. **Don't let CurseForge update,
+  reinstall or uninstall Quest Completist while the link is in place.** Reinstalling through it is
+  what broke the link last time, and depending on how it clears the folder, it could delete files
+  in the repository.
+
+`tools\` only tracks its `*.ps1` scripts. Everything the scripts download or write there (CSV
+exports, the API cache, reports) is gitignored and can be regenerated.
+
+## Before a sweep
+
+1. **Find the current game builds** at <https://wago.tools/api/builds/latest>. Retail is product
+   `wow`. The TOC's second interface number (`16001`) is Classic 1.60, product `wow_classic_beta`.
+2. **Pin the build.** Scripts that take `-Build` should be given the current retail build.
+   Downloading a table from wago.tools without a build number does *not* reliably return the latest
+   retail build.
+3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
+   ```powershell
+   Rename-Item tools\quest_api_cache "quest_api_cache.$(Get-Date -Format yyyyMMdd)"
+   ```
+   The audit reuses whatever is cached, forever. A cached `.json` or `.404` for a quest is never
+   fetched again.
+
+Run a script with:
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\<Script>.ps1 [parameters]
+```
+
+## The sweep
+
+Run the report-only steps first, then make one branch and pull request per kind of change.
+
+| # | Area | Scripts, in order | Edits the addon? |
+|---|---|---|---|
+| 1 | Faction, race and class | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
+| 1b | Second source for race and class | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
+| 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
+| 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
+| 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
+| 5 | Category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
+| 6 | Map pins | see [the pin pipeline](plans/quest-location-data-pipeline.md) | Writes a candidate file only |
+| 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1` | No |
+
+### 1. Faction, race and class
+
+`Audit-QuestAccuracy.ps1` checks every quest against Blizzard's API, filling `tools\quest_api_cache`
+as it goes. That takes about 17 minutes with an empty cache. It writes
+`quest_accuracy_audit.csv`, plus a list of quests the API doesn't know (old or removed content,
+expected). `Categorize-AuditDiscrepancies.ps1` groups the disagreements.
+
+Review before applying anything. Two lessons from the last cleanup:
+- A faction's race mask is not a stale placeholder.
+- Only restrictions the API actually asserts can be trusted.
+
+The decisions from that cleanup are in
+[plans/quest-database-accuracy-cleanup.md](plans/quest-database-accuracy-cleanup.md).
+`Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time.
+
+### 2. Reputation rewards
+
+`Compare-QuestReputation.ps1` compares `qcQuestReputation` against the API cache from step 1 and
+writes `quest_reputation_compare.csv`. `Apply-ReputationBackfill.ps1` only adds rewards the API
+lists and we don't have. It never changes existing ones.
+
+### 3. Quest types
+
+Types are a bitmask. The ones that matter here:
+
+| Type | Meaning |
+|---|---|
+| 1 | normal, one-time |
+| 2 | repeatable |
+| 4 | daily |
+| 128 | world quest **or** weekly. The weekly reset clears both. |
+
+- `Retype-FlaggedWorldQuests.ps1` moves 128 to daily or repeatable when the API flags the quest that
+  way and it isn't a world quest.
+- `Retype-ProbeRecurring.ps1` moves 1 to daily or 128 when the in-game probe (below) says the quest
+  recurs **and** the API flags it daily or weekly.
+
+Both only pick up new cases, so they're safe to rerun. Before changing any type by hand, know that
+neither source proves a quest is one-time:
+- The API leaves many weeklies unflagged, such as Shadowlands' "Trading Favors" and Dragonflight's
+  profession weeklies.
+- The game calls paragon caches, emissary bounties, Special Assignments and "Conquest's Reward"
+  *Normal*, even though they recur.
+
+### 4. Storylines
+
+`Build-QuestLines.ps1` regenerates each quest's storyline (field 13) and the `qcQuestLines` table
+from Blizzard's own questline tables. It skips internal questlines ("8.0 Professions - … - SCS",
+"[DNT] …"). It stores each storyline's quests in Blizzard's order.
+
+### 5. Category names from the client
+
+`Build-CategoryUiMapIDs.ps1` maps quest categories to game maps, so the client supplies their names
+in every language. `Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became
+redundant. Run it with `-WhatIf` first.
+
+### 6. Map pins
+
+The pipeline builds `tools\qcPinDB_candidate.lua` for review. It never overwrites
+`QuestCompletist\qcPinDB.lua`, and existing pins shouldn't move without a reason. The steps are in
+[plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md).
+
+Quests that appear in the pin data but are missing from the database are fetched with
+`Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`.
+
+### 7. Quests that may no longer be obtainable
+
+`Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables
+and our pins. It's a report only; see [plans/unavailable-quests.md](plans/unavailable-quests.md).
+
+## In the game
+
+Some answers only the game client has.
+
+**Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It lives on
+the draft pull request #42, branch `tools/quest-type-probe`.
+
+1. Check out that branch, then **restart the game fully**. The probe adds a file to the TOC, and a
+   `/reload` doesn't pick that up.
+2. Type `/qc typecheck`. It loads every quest from the server a few at a time, which takes about two
+   hours. `/qc typecheck stop` pauses it, and running it again resumes. Its progress is kept across
+   `/reload`s and logouts.
+3. When it says it has finished, `/reload`.
+4. **Before switching branches**, copy
+   `C:\Program Files (x86)\World of Warcraft\_retail_\WTF\Account\<ACCOUNT>\SavedVariables\QuestCompletist.lua`
+   to `tools\quest_type_probe_results.lua`. Once the probe isn't in the TOC any more, WoW drops its
+   results from that file the next time it saves.
+
+`Retype-ProbeRecurring.ps1` reads that copy.
+
+## Checking a change before its pull request
+
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p QuestCompletist\qcQuest.lua QuestCompletist\qcCore.lua
+(Select-String -Path QuestCompletist\qcQuest.lua -Pattern '^\[\d+\]=\{').Count
+git diff --stat
+```
+
+- The syntax check must be silent.
+- The quest count should only change when quests were meant to be added or removed. It's 35,023 as
+  of September 2026.
+- The diff should touch only what the change is about. For data changes, check that only the
+  intended field moved on each line.
+- The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
+
+## Never rerun these
+
+These were one-off fixes or migrations. Running them again would fail, or worse, apply their change
+twice:
+
+- `Migrate-ReputationToSideTable.ps1`
+- `Fix-MenuDeadEntries.ps1`
+- `Fix-MisfiledUiMapCategories.ps1`
+- `Fix-QuestDatabaseIssues.ps1`
+- `Relocate-GapQuestEntries.ps1`
+- `Add-DungeonCategories.ps1`
+- `Retype-OneTimeFamilies.ps1`, a hand-judged list of quests
+- `Derive-IconTypeMapping.ps1`, analysis only
+
+## Where the data comes from
+
+| Source | Used for | How |
+|---|---|---|
+| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game itself | recurring or one-time, world quest or not | in-game probes and runtime API calls |
