@@ -17,8 +17,16 @@ Each was verified the same way (see the PR checklists).
 **Closed, kept as-is:** 43488/43535 (API says Paladin for Priest order hall quests) and 58877.
 There was no practical way to check them in-game, so our values stand.
 
+**Reputation: done**, via `docs/plans/quest-reputation-data.md` ([#21](https://github.com/AlistairJM/QuestCompletist/pull/21)).
+[#23](https://github.com/AlistairJM/QuestCompletist/pull/23) fixed the audit's reputation check (the
+4,849 false positives noted below), [#24](https://github.com/AlistairJM/QuestCompletist/pull/24)
+added the 54 missing faction names,
+[#25](https://github.com/AlistairJM/QuestCompletist/pull/25) moved rewards out of the positional
+entry into `qcQuestReputation`, and
+[#26](https://github.com/AlistairJM/QuestCompletist/pull/26) backfilled 10,915 quests. All 11,035
+rewards now match the API; the 4,955 task quests have no reputation source and stay empty.
+
 **Still open:**
-- **Reputation:** separate plan, `docs/plans/quest-reputation-data.md` ([#21](https://github.com/AlistairJM/QuestCompletist/pull/21)).
 - **Obsolete and hidden-tracking quests:** decided to flag, not delete. See `docs/plans/unavailable-quests.md` ([#22](https://github.com/AlistairJM/QuestCompletist/pull/22)).
 
 After the PRs merge, a re-audit from cache should show the FIX rows gone. Any FIX rows still

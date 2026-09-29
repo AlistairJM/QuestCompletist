@@ -122,13 +122,35 @@ qcQuestReputation = {
    verification becomes "every pre-existing line is byte-identical".
 5. **Add the 54 missing factions to `qcFactions`** using the API's English `reward.name`. The
    existing table is English-only, so this matches it.
-6. **Task quests (4,955 API 404s):** leave as-is. There's no per-quest reputation source: it's
-   server-side data, and wago.tools' client tables don't carry per-quest reputation amounts
-   (`QuestFactionReward` is a generic amount table, not per quest; worth a 5-minute confirmation
-   in the session). Document the gap rather than invent values.
+6. **Task quests (4,955 API 404s):** leave as-is. There's no per-quest reputation source, confirmed
+   against the client tables on 2026-09-29 — see below. Document the gap rather than invent values.
 
 Final state: 35,023 entries of exactly 14 fields, and `qcQuestReputation` with 11,035 rows
 (120 migrated + 10,915 backfilled, quest 11 among them).
+
+### The task-quest gap is real (checked 2026-09-29)
+
+`QuestFactionReward` holds **two rows**: `[1]` with 0, 10, 25, 75, 150, 250, 350, 500, 1000, 0 and
+`[2]` with the same values negated. It has no quest column. `QuestMoneyReward` and `QuestXP` have
+exactly the same shape (`ID` + `Difficulty_0..9`), which is the giveaway: these are reward *tier*
+tables, and the per-quest index into them lives in server-side `quest_template`, alongside the
+faction ID itself. The client never sees either.
+
+Checks made across all 1,105 wago.tools DB2 tables:
+- Of the 26 `Quest*` tables, only `QuestFactionReward` mentions factions at all, and it isn't
+  per-quest. The tables that *are* keyed by quest (`QuestObjective`, `QuestLabel`, `QuestHub`,
+  `QuestPOIBlob`, `QuestLineXQuest`) have no faction or reputation column.
+- `QuestV2CliTask`, the task-quest table, has `FiltMinFactionID`/`FiltMinFactionValue` and their
+  Max counterparts — standing *requirements* for the task to appear, not rewards.
+- `ParagonReputation` and `RenownRewards` do link quests to factions, but in the other direction:
+  faction progress grants the quest. 59 of the 61 quests in `ParagonReputation` are task quests,
+  and they're the paragon reward chests (e.g. faction 2085 → quest 46743 "Supplies From
+  Highmountain"), which give a chest, not reputation.
+
+Even with the faction and the difficulty index in hand, the tier table couldn't reproduce our data:
+of the 11,965 reward values now stored, 10,374 (86.7%) are exactly a tier value, and the remaining
+1,591 are amounts the tier table cannot express (100 ×347, 50 ×219, 200 ×184, 125 ×111, 1500 ×108…),
+i.e. server-side per-quest overrides.
 
 ### Quest 11 and the off-by-one it shares with the gap inserter
 
@@ -198,11 +220,25 @@ new place.
   - in-game: quest 12008 (Warsong Offensive 150), multi-faction 51515 (Zandalari Empire +
     Darkspear Trolls, 350 each), and quest 11 (Stormwind 250, the off-by-one fix).
 
-### Phase 3: wrap-up
+### Phase 3: wrap-up — done
+
+Final state, with #23 → #25 → #26 and #24 merged:
+
+| | |
+|---|---|
+| `qcQuestDatabase` entries | 35,023, all exactly 14 fields |
+| `qcQuestReputation` rows | 11,035 (120 migrated + 10,915 backfilled) |
+| Quests matching the API exactly | 11,035 of 11,035 |
+| Quests where the API has a reward and we don't | 0 (was 10,915) |
+| `qcFactions` entries | 272 (was 218) — every reward faction is named |
+| Task quests with no reputation source | 4,955, unchanged and unfixable from the API |
+| `qcQuest.lua` | 3.30 MB → 3.44 MB |
+
 - Record the final numbers in this doc and in the accuracy cleanup plan's status section.
 - Document the field layout (1–14, all present) next to the tooltip code and in this doc, with the
   rule that new sparse attributes get their own keyed table.
-- Note the task-quest gap (no source) as a known limitation.
+- Note the task-quest gap as a known limitation: confirmed above against the client tables, no
+  source exists for it.
 
 ## Risks and how to handle them
 
