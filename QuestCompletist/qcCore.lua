@@ -226,9 +226,78 @@ local function qcBuildQuestIndexes()
     end
 end
 
+local function qcIsQuestCompleted(questId)
+	local record = qcCompletedQuests[questId]
+	return record ~= nil and (record["C"] == 1 or record["C"] == 2)
+end
+
+local function qcIsQuestCompletedOnAccount(questId)
+	return C_QuestLog.IsQuestFlaggedCompletedOnAccount ~= nil and C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId)
+end
+
+-- Every quest list filter except the two that hide a quest for being done. The completion counter
+-- shares it, so the counter's total is always the quests the list can show.
+local function qcBuildQuestFilter()
+	local BitBand = bit.band
+	local stringUpper = string.upper
+
+	local hiddenTypes = 0
+	if (qcSettings.QC_L_HIDE_DAILYQUEST == 1) then hiddenTypes = hiddenTypes + 4 end
+	if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == 1) then hiddenTypes = hiddenTypes + 2 end
+	if (qcSettings.QC_L_HIDE_WORLDQUEST == 1) then hiddenTypes = hiddenTypes + 128 end
+
+	local greenCutoff
+	if (qcSettings.QC_L_HIDE_LOWLEVEL == 1) then
+		greenCutoff = UnitLevel("player") - UnitQuestTrivialLevelRange("player")
+	end
+
+	local professionBitmask
+	if (qcSettings.QC_L_HIDE_PROFESSION == 1) then
+		professionBitmask = 0
+		local prof1, prof2 = GetProfessions()
+		if prof1 then
+			local _, _, _, _, _, _, skillLine1 = GetProfessionInfo(prof1)
+			professionBitmask = professionBitmask + (qcProfessionBits[skillLine1] or 0)
+		end
+		if prof2 then
+			local _, _, _, _, _, _, skillLine2 = GetProfessionInfo(prof2)
+			professionBitmask = professionBitmask + (qcProfessionBits[skillLine2] or 0)
+		end
+	end
+
+	local factionFlag
+	if (qcSettings.QC_ML_HIDE_FACTION == 1) then
+		local playerFaction = UnitFactionGroup("player")
+		factionFlag = qcFactionBits[stringUpper(playerFaction)]
+	end
+
+	local raceFlag, classFlag
+	if (qcSettings.QC_ML_HIDE_RACECLASS == 1) then
+		local _, playerRace = UnitRace("player")
+		local _, playerClass = UnitClass("player")
+		raceFlag = qcRaceBits[stringUpper(playerRace)]
+		classFlag = qcClassBits[stringUpper(playerClass)]
+	end
+
+	local covenantBit
+	if (qcSettings.QC_ML_HIDE_COVENANTS == 1) and C_Covenants and C_Covenants.GetActiveCovenantID then
+		covenantBit = qcCovenantsBits[C_Covenants.GetActiveCovenantID()] or 0
+	end
+
+	return function(e)
+		if (BitBand(e[6], hiddenTypes) ~= 0) then return false end
+		if greenCutoff and (e[3] or 0) < greenCutoff then return false end
+		if professionBitmask and e[10] ~= 0 and BitBand(e[10], professionBitmask) == 0 then return false end
+		if factionFlag and BitBand(e[7], factionFlag) == 0 then return false end
+		if raceFlag and BitBand(e[8], raceFlag) == 0 then return false end
+		if classFlag and BitBand(e[9], classFlag) == 0 then return false end
+		if covenantBit and e[12] ~= 0 and BitBand(e[12], covenantBit) == 0 then return false end
+		return true
+	end
+end
+
 local function qcGetCategoryQuests(categoryId, searchText)
     local tableInsert = table.insert
-    local stringUpper = string.upper
     local tableSort = table.sort
     local holdingTable = {}
     wipe(qcCategoryQuests)
@@ -248,132 +317,19 @@ local function qcGetCategoryQuests(categoryId, searchText)
         return nil
     end
 
-    local tableRemove = table.remove
-    local BitBand = bit.band
-    qcCategoryQuests = qcCopyTable(qcCategoryIndex[categoryId] or {})
-	
-	-- Quest Completed
-	if (qcSettings.QC_L_HIDE_COMPLETED == 1) then
-		for i = #qcCategoryQuests, 1, -1 do
-			if (qcCompletedQuests[qcCategoryQuests[i][1]]) then
-				if (qcCompletedQuests[qcCategoryQuests[i][1]]["C"] == 1) or (qcCompletedQuests[qcCategoryQuests[i][1]]["C"] == 2) then
-					tableRemove(qcCategoryQuests,i)
-				end
-			end
-		end
-	end
-	-- Quest Hide low level
-		if (qcSettings.QC_L_HIDE_LOWLEVEL == 1) then
-			local playerLevel = UnitLevel("player")
-			local trivialLevelRange = UnitQuestTrivialLevelRange("player")
-			local greenCutoff = playerLevel - trivialLevelRange
-			
-			for i = #qcCategoryQuests, 1, -1 do
-				local questId = qcCategoryQuests[i][1]
-				
-				if qcQuestDatabase[questId] then
-					local questLevel = qcQuestDatabase[questId][3] or 0
-					
-					if questLevel < greenCutoff then
-						table.remove(qcCategoryQuests, i)
-					end
-				end
-			end
-		end
-	--  Bitband Code for Hideing Daily quest
-		if (qcSettings.QC_L_HIDE_DAILYQUEST == 1) then
-			local questType = 4
-			for i = #qcCategoryQuests, 1, -1 do
-				if (BitBand(qcCategoryQuests[i][6], questType) == 4) then
-					tableRemove(qcCategoryQuests,i)
-			end
-		end
-	end
-	--  Bitband Code for Hideing Repeatable quest	
-		if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == 1) then
-			local questType = 2
-			for i = #qcCategoryQuests, 1, -1 do
-				if (BitBand(qcCategoryQuests[i][6], questType) == 2) then
-					tableRemove(qcCategoryQuests,i)
-			end
-		end
-	end
-	--  Bitband Code for Hideing World quest	
-		if (qcSettings.QC_L_HIDE_WORLDQUEST == 1) then
-			local questType = 128
-			for i = #qcCategoryQuests, 1, -1 do
-				if (BitBand(qcCategoryQuests[i][6], questType) == 128) then
-					tableRemove(qcCategoryQuests,i)
-			end
-		end
-	end
-	-- Hide Other Professions quests
-	if (qcSettings.QC_L_HIDE_PROFESSION == 1) then
-		local prof1, prof2 = GetProfessions()
-		local professionBitmask = 0
-		if prof1 then
-			local _, _, _, _, _, _, skillLine1 = GetProfessionInfo(prof1)
-			professionBitmask = professionBitmask + (qcProfessionBits[skillLine1] or 0)
-		end
-		if prof2 then
-			local _, _, _, _, _, _, skillLine2 = GetProfessionInfo(prof2)
-			professionBitmask = professionBitmask + (qcProfessionBits[skillLine2] or 0)
-		end
-		
-		for i = #qcCategoryQuests, 1, -1 do
-			local professionValue = qcCategoryQuests[i][10]
-			if professionValue ~= 0 and BitBand(professionValue, professionBitmask) == 0 then
-				tableRemove(qcCategoryQuests, i)
-			end
-		end
-	end
-	-- Hide other Faction Quest
-		if (qcSettings.QC_ML_HIDE_FACTION == 1) then
-		local playerFaction, _ = UnitFactionGroup("player")
-		local factionFlag = qcFactionBits[stringUpper(playerFaction)]
-		for i = #qcCategoryQuests, 1, -1 do
-			if (BitBand(qcCategoryQuests[i][7], factionFlag) == 0) then
-				tableRemove(qcCategoryQuests,i)
-			end
-		end
-	end
-	-- Hide other Race`s and Class Quest
-		if (qcSettings.QC_ML_HIDE_RACECLASS == 1) then
-		local _, playerRace = UnitRace("player")
-		local raceFlag = qcRaceBits[stringUpper(playerRace)]
-		local _, playerClass = UnitClass("player")
-		local classFlag = qcClassBits[stringUpper(playerClass)]
-		for i = #qcCategoryQuests, 1, -1 do
-			if ((BitBand(qcCategoryQuests[i][8], raceFlag) == 0) or (BitBand(qcCategoryQuests[i][9], classFlag) == 0)) then
-				tableRemove(qcCategoryQuests,i)
-			end
-		end
-	end
-	-- Hide other Covenant Quest
-if (qcSettings.QC_ML_HIDE_COVENANTS == 1) then
-    local playerCovenantID = C_Covenants.GetActiveCovenantID()
-    local playerCovenantBit = qcCovenantsBits[playerCovenantID] or 0
-
-    for i = #qcCategoryQuests, 1, -1 do
-        local questId = qcCategoryQuests[i][1]  -- Get the quest ID
-        local questCovenant = qcQuestDatabase[questId] and qcQuestDatabase[questId][12]  -- Retrieve covenant bit from the database (index 12)
-
-        -- Ensure questCovenant is not nil before proceeding
-        if questCovenant and questCovenant ~= 0 and BitBand(questCovenant, playerCovenantBit) == 0 then
-            table.remove(qcCategoryQuests, i)
+    local passesFilters = qcBuildQuestFilter()
+    local hideCompleted = (qcSettings.QC_L_HIDE_COMPLETED == 1)
+    local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+    for _, e in ipairs(qcCategoryIndex[categoryId] or {}) do
+        local questId = e[1]
+        if passesFilters(e)
+            and not (hideCompleted and qcIsQuestCompleted(questId))
+            and not (hideWarband and qcIsQuestCompletedOnAccount(questId)) then
+            tableInsert(holdingTable, e)
         end
     end
-end
-	-- Hide Warband Quest
-	if (qcSettings["QC_ML_HIDE_WARBANDS"] == 1) then
-		for i = #qcCategoryQuests, 1, -1 do
-			local questId = qcCategoryQuests[i][1]
-			if C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId) then
-				table.remove(qcCategoryQuests, i)
-			end
-		end
-	end
-	
+    qcCategoryQuests = qcCopyTable(holdingTable)
+
     -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
 	-- leaving the list empty.
 	local function byLevel(a,b)
@@ -484,14 +440,9 @@ end
 --Beta Reset Daily and Weekly End
 
 
+-- Completed quests still count towards both numbers when the list is hiding them; otherwise
+-- turning on "hide completed" would pin the counter at 0/N.
 function qcGetZoneCompletionStats(areaId)
-	local playerFaction, _ = UnitFactionGroup("player")
-	local factionFlag = qcFactionBits[string.upper(playerFaction)]
-	local _, playerRace = UnitRace("player")
-	local raceFlag = qcRaceBits[string.upper(playerRace)]
-	local _, playerClass = UnitClass("player")
-	local classFlag = qcClassBits[string.upper(playerClass)]
-
 	local total = 0
 	local completed = 0
 
@@ -499,14 +450,12 @@ function qcGetZoneCompletionStats(areaId)
 		qcBuildQuestIndexes()
 	end
 
+	local passesFilters = qcBuildQuestFilter()
 	for _, questEntry in ipairs(qcCategoryIndex[areaId] or {}) do
-		if bit.band(questEntry[7], factionFlag) ~= 0
-			and bit.band(questEntry[8], raceFlag) ~= 0
-			and bit.band(questEntry[9], classFlag) ~= 0 then
+		if passesFilters(questEntry) then
 			local questId = questEntry[1]
 			total = total + 1
-			local flaggedComplete = qcCompletedQuests[questId] and (qcCompletedQuests[questId]["C"] == 1 or qcCompletedQuests[questId]["C"] == 2)
-			if flaggedComplete or C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId) then
+			if qcIsQuestCompleted(questId) or qcIsQuestCompletedOnAccount(questId) then
 				completed = completed + 1
 			end
 		end
