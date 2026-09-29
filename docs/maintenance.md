@@ -133,9 +133,15 @@ The pipeline builds `tools\qcPinDB_candidate.lua` for review. It never overwrite
 Then run `Build-QuestLocationData.ps1`, `Parse-ExistingPinDB.ps1`, `Join-LocationsWithExisting.ps1`
 and `Assemble-PinDB.ps1`, in that order.
 
-`qcPinDB.lua` was last rebuilt from this pipeline on 20–21 September 2026. There's no automatic
-merge of a new candidate into it. `Join-LocationsWithExisting.ps1` reports how many existing pins
-the fresh data would move; treat those numbers as findings to review, not changes to apply.
+`Join-LocationsWithExisting.ps1` reports how far each quest's start in the fresh data is from its
+nearest existing pin. Treat that as a finding to review. When you're ready to take the new data,
+run `Assemble-PinDB.ps1 -Apply`, which also writes `QuestCompletist\qcPinDB.lua`.
+
+- An NPC's quests share a pin only where they start within 3 map points of each other.
+- A pin that lands within 1.5 points of an existing one keeps the existing coordinates.
+- Pins are written in a fixed order.
+
+With no real changes, a rerun leaves `qcPinDB.lua` byte-identical.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. The inserter refuses any
