@@ -94,7 +94,9 @@ if ($noMap.Count) { "  without a UiMap (keep our own name): $(($noMap.Name) -joi
 # Which quests should move: in the catch-all, zone "Dungeon", title naming an instance.
 function Get-MatchKey($s) { return (($s -replace "^[Tt]he ", "") -replace "[^A-Za-z0-9]", "").ToLower() }
 $moves = @{}
-$questLines = [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)",(\d+),')
+$questLines = [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)",(\d+),(\d+),')
+$currentType = @{}
+foreach ($m in $questLines) { $currentType[$m.Groups[1].Value] = $m.Groups[5].Value }
 foreach ($m in $questLines) {
     if ($m.Groups[4].Value -ne "1150") { continue }
     $zone = $m.Groups[3].Value
@@ -137,6 +139,34 @@ $content = [regex]::Replace($content, '(?m)^(\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[
     return $m.Value
 })
 if ($moved -ne $moves.Count) { throw "Expected to move $($moves.Count) quests, moved $moved" }
+
+# 3b. Most of those quests are typed 128, "world quest", which hides them whenever the world-quest
+# filter is on - so a dungeon category would look empty while its counter showed a total. They are
+# not world quests: Blizzard's API calls them Dungeon or Raid and the client's task-quest table
+# (QuestV2CliTask) has no row for them. Retype those to 1, an ordinary quest.
+$taskQuests = @{}
+if (Test-Path "$ToolsDir\QuestV2CliTask.csv") {
+    Get-Content "$ToolsDir\QuestV2CliTask.csv" | Select-Object -Skip 1 | ForEach-Object { $taskQuests[$_.Split(",")[0]] = $true }
+} else { throw "QuestV2CliTask.csv missing - needed to tell a real world quest from a mistyped one" }
+
+$retype = @{}
+foreach ($questId in $moves.Keys) {
+    if ($currentType[$questId] -ne "128") { continue }
+    if ($taskQuests.ContainsKey($questId)) { continue }
+    $cached = "$ToolsDir\quest_api_cache\$questId.json"
+    if (-not (Test-Path $cached)) { continue }
+    $apiType = [regex]::Match([System.IO.File]::ReadAllText($cached), '"type":\{.*?"name":"([^"]+)"')
+    if ($apiType.Success -and $apiType.Groups[1].Value -match '^(Dungeon|Raid|Group)') { $retype[$questId] = $apiType.Groups[1].Value }
+}
+$retyped = 0
+$content = [regex]::Replace($content, '(?m)^(\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",\d+,)128,', {
+    param($m)
+    if ($retype.ContainsKey($m.Groups[2].Value)) { $script:retyped++; return $m.Groups[1].Value + "1," }
+    return $m.Value
+})
+if ($retyped -ne $retype.Count) { throw "Expected to retype $($retype.Count) quests, retyped $retyped" }
+"Quests retyped from world quest to normal: $retyped"
+$retype.Values | Group-Object | ForEach-Object { "  API says $($_.Name): $($_.Count)" }
 
 [System.IO.File]::WriteAllText($questFile, $content, (New-Object System.Text.UTF8Encoding $false))
 
