@@ -7,8 +7,16 @@ out from genuine one-off disagreements. Makes no edits to qcQuest.lua.
 param(
     [string]$AuditCsv = "C:\Users\alist\RiderProjects\QuestCompletist\tools\quest_accuracy_audit.csv",
     [string]$OutFile = "C:\Users\alist\RiderProjects\QuestCompletist\tools\quest_accuracy_categories.txt",
+    [string]$DecisionsCsv = "C:\Users\alist\RiderProjects\QuestCompletist\docs\plans\quest-accuracy-manual-decisions.csv",
     [int]$MinClusterSize = 10
 )
+
+# MANUAL rows already reviewed and left as they are (Decision KEEP) are reported as KEPT, so a
+# sweep doesn't raise them again - but only while our value is still the one that was reviewed.
+$kept = @{}
+if (Test-Path $DecisionsCsv) {
+    foreach ($d in Import-Csv $DecisionsCsv | Where-Object Decision -eq "KEEP") { $kept["$($d.QuestID)|$($d.Field)"] = $d }
+}
 
 $toolsDir = Split-Path $AuditCsv
 $classNames = "Warrior","Paladin","Hunter","Rogue","Priest","DeathKnight","Shaman","Mage","Warlock","Druid","Monk","DemonHunter","Evoker"
@@ -233,7 +241,13 @@ if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "WagoRace
                 $q.Reason += $(if ($empty) { "; combined fix hides quest from everyone" } else { "; combined fix leaves faction/race contradictory" })
             }
         }
-        foreach ($q in $questRows) { $candidates.Add($q) }
+        foreach ($q in $questRows) {
+            $review = $kept["$($q.QuestID)|$($q.Field)"]
+            if ($q.Decision -eq "MANUAL" -and $review -and "$($review.Cur)" -eq "$($q.Cur)") {
+                $q.Decision = "KEPT"; $q.Reason = "reviewed, left as is: $($review.Reason)"
+            }
+            $candidates.Add($q)
+        }
     }
 
     $candFile = "$toolsDir\quest_accuracy_candidates.csv"
@@ -242,7 +256,7 @@ if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "WagoRace
     Say "== Three-way vote (ours / API / wago), per field -> $candFile =="
     $candidates | Group-Object Field, Decision, Reason | Sort-Object Name | ForEach-Object { Say ("{0,7}  {1}" -f $_.Count, $_.Name) }
     Say ""
-    foreach ($d in "FIX", "SKIP", "MANUAL") {
+    foreach ($d in "FIX", "SKIP", "MANUAL", "KEPT") {
         $n = @($candidates | Where-Object Decision -eq $d | ForEach-Object QuestID | Sort-Object -Unique).Count
         Say ("{0,7}  distinct quests with a {1} field" -f $n, $d)
     }
