@@ -21,14 +21,16 @@ Output: quest_availability_signals.csv (every quest) plus a summary on stdout.
 param(
     [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
     [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
-    [string[]]$SampleIds = @()
+    [string[]]$SampleIds = @(),
+    [string]$Build = "12.1.0.69933",
+    [switch]$Refresh
 )
 $ProgressPreference = "SilentlyContinue"
 $SampleIds = @($SampleIds | ForEach-Object { $_ -split "," } | Where-Object { $_ })
 foreach ($t in "QuestV2", "QuestV2CliTask", "QuestPOIBlob", "QuestLineXQuest", "Criteria") {
-    if (-not (Test-Path "$ToolsDir\$t.csv")) {
+    if ($Refresh -or -not (Test-Path "$ToolsDir\$t.csv")) {
         Write-Output "Downloading $t..."
-        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$t/csv" -OutFile "$ToolsDir\$t.csv"
+        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$t/csv?build=$Build" -OutFile "$ToolsDir\$t.csv"
         Start-Sleep -Seconds 1
     }
 }
