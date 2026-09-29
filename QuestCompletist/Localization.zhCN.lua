@@ -264,7 +264,7 @@ qcLocalize = {
 	LITTLESCALESDAYCARE = "Little Scales Daycare",
 	TIMERIFT = "Time Rift",
 	AMIRDRASIL = "Amirdrasil",
-	AMIRDRASILTHEDREAMSHOPE = "阿梅达希尔，梦境之愿",
+	AMIRDRASSILTHEDREAMSHOPE = "阿梅达希尔，梦境之愿",
 	THEOASIS = "绿洲",
 	--MID
 	MIDNIGHT = "至暗之夜",

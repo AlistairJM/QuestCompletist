@@ -245,7 +245,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1306,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1307,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=qcL.OTHERCATEGORIES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{text=qcL.AMIRDRASILTHEDREAMSHOPE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1344,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text=qcL.AMIRDRASSILTHEDREAMSHOPE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1344,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.AZEROTHIANARCHIVES,isTitle=false,notCheckable=false,hasArrow=false,arg1=1343,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.AZMERLOTH,isTitle=false,notCheckable=false,hasArrow=false,arg1=1320,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.DRAGONISLE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1322,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -257,7 +257,7 @@ qcMenu={
 {text=qcL.MARUUKCENTAUR,isTitle=false,notCheckable=false,hasArrow=false,arg1=1330,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.OBSIDIANCITADEL,isTitle=false,notCheckable=false,hasArrow=false,arg1=1331,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.PROFESSIONS,isTitle=false,notCheckable=false,hasArrow=false,arg1=1335,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{text=qcL.THEHARBINGER,isTitle=false,notCheckable=false,hasArrow=false,arg1=1344,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text=qcL.THEHARBINGER,isTitle=false,notCheckable=false,hasArrow=false,arg1=1348,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.TIMERIFT,isTitle=false,notCheckable=false,hasArrow=false,arg1=1347,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.VALDRAKKENACCORD,isTitle=false,notCheckable=false,hasArrow=false,arg1=1342,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.WHALLERSNOOK,isTitle=false,notCheckable=false,hasArrow=false,arg1=1343,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
