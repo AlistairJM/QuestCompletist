@@ -20,6 +20,7 @@ in Insert-GapQuestEntries.ps1.
 #>
 
 $ProgressPreference = "SilentlyContinue"
+. "$PSScriptRoot\QuestReputation.ps1"
 $toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
 $questFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
 
@@ -78,10 +79,8 @@ $entries = New-Object System.Collections.Generic.List[object]
 foreach ($line in $allIdLines) {
     $m = [regex]::Match($line, $entryPattern)
     if (-not $m.Success) { Write-Output "PARSE FAILURE (skipped): $line"; continue }
-    $tail = $m.Groups[9].Value
-    $hasRepCurrently = $false
-    if ($tail -match ',[1-9]\d*,\{') { $hasRepCurrently = $true }
-    elseif ($tail -match ',[1-9]\d*,[1-9]\d*\s*$') { $hasRepCurrently = $true }
+    $body = [regex]::Match($line, '^\[\d+\]=\{(.*)\},?$').Groups[1].Value
+    $hasRepCurrently = (Get-OurReputation (Split-Top $body)).Count -gt 0
     $entries.Add([PSCustomObject]@{
         QuestID   = $m.Groups[1].Value
         Name      = $m.Groups[2].Value

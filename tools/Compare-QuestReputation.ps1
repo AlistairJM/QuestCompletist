@@ -3,9 +3,8 @@ Report-only. Compares every quest's reputation reward in qcQuest.lua (fields 16/
 against Blizzard's API (rewards.reputations), using the response cache written by
 Audit-QuestAccuracy.ps1 (tools/quest_api_cache). Makes no edits.
 
-Only entries with 17 fields carry reputation; 14-field entries stop at the prereq
-field and have none. Field 17 is either a number (paired with the faction ID in
-field 16) or a {[factionID]=value} table.
+How our fields 16/17 are read is defined once in QuestReputation.ps1, which
+Audit-QuestAccuracy.ps1 shares.
 
 Output: quest_reputation_compare.csv (one row per quest where ours and the API differ)
 plus a summary on stdout.
@@ -21,19 +20,7 @@ $qcFactions = @{}
 $fm = [regex]::Match($content, '(?s)qcFactions = \{(.*?)\n\}')
 foreach ($m in [regex]::Matches($fm.Groups[1].Value, '\[(\d+)\]\s*=\s*"((?:[^"\\]|\\.)*)"')) { $qcFactions[$m.Groups[1].Value] = $m.Groups[2].Value }
 
-# Splits on top-level commas only, so quoted names and {..} tables stay intact.
-function Split-Top($s) {
-    $out = New-Object System.Collections.Generic.List[string]
-    $depth = 0; $inStr = $false; $cur = New-Object System.Text.StringBuilder
-    for ($i = 0; $i -lt $s.Length; $i++) {
-        $ch = $s[$i]
-        if ($inStr) { [void]$cur.Append($ch); if ($ch -eq '\') { $i++; [void]$cur.Append($s[$i]) } elseif ($ch -eq '"') { $inStr = $false }; continue }
-        if ($ch -eq '"') { $inStr = $true } elseif ($ch -eq '{') { $depth++ } elseif ($ch -eq '}') { $depth-- }
-        if ($ch -eq ',' -and $depth -eq 0) { $out.Add($cur.ToString()); [void]$cur.Clear() } else { [void]$cur.Append($ch) }
-    }
-    $out.Add($cur.ToString())
-    return ,$out
-}
+. "$PSScriptRoot\QuestReputation.ps1"
 
 $ours = @{}; $shapes = @{}
 $start = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
@@ -41,12 +28,7 @@ foreach ($l in ($content.Substring($start) -split "`r`n")) {
     $m = [regex]::Match($l, '^\[(\d+)\]=\{(.*)\},?$'); if (-not $m.Success) { continue }
     $f = Split-Top $m.Groups[2].Value
     $shapes[$f.Count]++
-    $set = @{}
-    if ($f.Count -ge 17) {
-        $fid = $f[15]; $rep = $f[16]
-        if ($rep -match '^\{') { foreach ($p in [regex]::Matches($rep, '\[(\d+)\]=(-?\d+)')) { if ($p.Groups[2].Value -ne "0") { $set[$p.Groups[1].Value] = [int]$p.Groups[2].Value } } }
-        elseif ($rep -match '^-?\d+$' -and $rep -ne "0" -and $fid -match '^\d+$' -and $fid -ne "0") { $set[$fid] = [int]$rep }
-    }
+    $set = Get-OurReputation $f
     $ours[$m.Groups[1].Value] = @{ Rep = $set; Fields = $f.Count }
 }
 
