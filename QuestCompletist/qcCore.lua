@@ -1010,12 +1010,60 @@ for _, categoryData in ipairs(qcQuestCategories) do
 	qcCategoryLocaleKey[categoryData[1]] = (categoryData[2]:gsub("[^%a%d]", "")):upper()
 end
 
-function qcCategoryName(categoryId)
-	local uiMapId = qcCategoryUiMapID and qcCategoryUiMapID[categoryId]
-	if (uiMapId and C_Map and C_Map.GetMapInfo) then
-		local info = C_Map.GetMapInfo(uiMapId)
-		if (info and info.name and info.name ~= "") then return info.name end
+local function qcClientName(source)
+	local kind, id = source[1], source[2]
+	local name
+	if (kind == "map") then
+		local info = C_Map.GetMapInfo(id)
+		name = info and info.name
+	elseif (kind == "area") then
+		name = C_Map.GetAreaInfo(id)
+	elseif (kind == "instance") then
+		name = EJ_GetInstanceInfo(id)
+	elseif (kind == "class") then
+		local info = C_CreatureInfo.GetClassInfo(id)
+		name = info and info.className
+	elseif (kind == "covenant") then
+		local data = C_Covenants.GetCovenantData(id)
+		name = data and data.name
+	elseif (kind == "skill") then
+		name = C_TradeSkillUI.GetTradeSkillDisplayName(id)
+	elseif (kind == "achievementcategory") then
+		name = GetCategoryInfo(id)
+	elseif (kind == "faction") then
+		local data = C_Reputation.GetFactionDataByID(id)
+		name = data and data.name
+	elseif (kind == "string") then
+		name = _G[id]
+	elseif (kind == "format") then
+		local parts = {}
+		for i = 3, #source do
+			parts[#parts + 1] = qcClientName(source[i])
+			if (not parts[#parts]) then return nil end
+		end
+		name = string.format(id, unpack(parts))
 	end
+	if (type(name) == "string" and name ~= "") then return name end
+end
+
+-- The category's name as the client has it, in the player's language, or nil. Classic lacks some
+-- of these APIs, and the pcall lets those categories fall back to our own strings.
+function qcClientCategoryName(categoryId)
+	local uiMapId = qcCategoryUiMapID and qcCategoryUiMapID[categoryId]
+	if (uiMapId) then
+		local ok, name = pcall(qcClientName, {"map", uiMapId})
+		if (ok and name) then return name end
+	end
+	local source = qcCategoryClientName and qcCategoryClientName[categoryId]
+	if (source) then
+		local ok, name = pcall(qcClientName, source)
+		if (ok and name) then return name end
+	end
+end
+
+function qcCategoryName(categoryId)
+	local clientName = qcClientCategoryName(categoryId)
+	if (clientName) then return clientName end
 
 	local key = qcCategoryLocaleKey[categoryId]
 	if (key and qcL[key]) then return qcL[key] end

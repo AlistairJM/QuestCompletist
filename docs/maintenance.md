@@ -64,7 +64,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
+| 5 | Category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
 | 6 | Map pins | see [the pin pipeline](plans/quest-location-data-pipeline.md) | Writes a candidate file only |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 
@@ -127,6 +127,12 @@ from Blizzard's own questline tables. It skips internal questlines ("8.0 Profess
 `Build-CategoryUiMapIDs.ps1` maps quest categories to game maps, so the client supplies their names
 in every language. `Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became
 redundant. Run it with `-WhatIf` first.
+
+Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
+other client tables: classes, professions, covenants, dungeons, achievement categories (the world
+events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
+`qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
+Classic lacks some of these game functions, so those categories fall back to our translations.
 
 ### 6. Map pins
 
