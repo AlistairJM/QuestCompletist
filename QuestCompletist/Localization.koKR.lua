@@ -265,7 +265,7 @@ qcLocalize = {
 	LITTLESCALESDAYCARE = "Little Scales Daycare",
 	TIMERIFT = "Time Rift",
 	AMIRDRASIL = "Amirdrasil",
-	AMIRDRASILTHEDREAMSHOPE = "꿈의 희망 아미드랏실",
+	AMIRDRASSILTHEDREAMSHOPE = "꿈의 희망 아미드랏실",
 	THEOASIS = "오아시스",
 	--MID
 	MIDNIGHT = "한밤",
