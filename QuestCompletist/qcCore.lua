@@ -374,13 +374,18 @@ end
 		end
 	end
 	
-    -- Sorting quests
+    -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
+	-- leaving the list empty.
+	local function byLevel(a,b)
+		local levelA, levelB = a[3] or 0, b[3] or 0
+		return (levelA<levelB or (levelA == levelB and a[2]<b[2]))
+	end
 	if (qcSettings.SORT == 1) then
-		tableSort(qcCategoryQuests,function(a,b) return (a[3]<b[3] or (a[3] == b[3] and a[2]<b[2])) end)
+		tableSort(qcCategoryQuests,byLevel)
 	elseif (qcSettings.SORT == 2) then
 		tableSort(qcCategoryQuests,function(a,b) return a[2]<b[2] end)
 	else
-		tableSort(qcCategoryQuests,function(a,b) return (a[3]<b[3] or (a[3] == b[3] and a[2]<b[2])) end)
+		tableSort(qcCategoryQuests,byLevel)
 	end
 end
 
