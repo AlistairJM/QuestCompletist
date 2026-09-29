@@ -5,8 +5,8 @@ frequency is only exposed for quests in the log.
 
 Every quest is asked once as it stands ("cold"). A cold "Recurring" or "WorldQuest" can be trusted,
 but a cold "Normal" can't: for a quest whose data isn't cached, Normal is what the client answers
-by default. So quests typed 2, 4 or 128 that are uncached and didn't answer Recurring or WorldQuest
-are loaded with C_QuestLog.RequestLoadQuestByID and asked again ("warm").
+by default. So every quest is then loaded with C_QuestLog.RequestLoadQuestByID and asked again
+("warm"), the ones that matter most first - see loadPriority.
 
 The server stops answering load requests sent in a burst, so only a few are in flight at a time;
 one that gets no answer is retried once, then marked timed out. Every answer is written as it
@@ -24,7 +24,7 @@ local REQUEST_TIMEOUT = 10
 local MAX_ATTEMPTS = 2
 local TICK_SECONDS = 0.1
 local COLD_PER_FRAME = 1500
-local PROGRESS_EVERY = 100
+local PROGRESS_EVERY = 500
 
 local running, stopRequested = false, false
 
@@ -76,15 +76,19 @@ local function clientVersion()
 	return string.format("%s.%s", tostring(version), tostring(build))
 end
 
--- A quest needs loading when it is typed 2, 4 or 128, isn't cached, didn't already answer
--- Recurring (5) or WorldQuest (10), and hasn't loaded or definitively failed in an earlier run.
-local function needsLoading(row)
+-- Every quest that hasn't loaded or definitively failed in an earlier run is loaded, most useful
+-- first, so a run stopped early still holds the answers that matter:
+--   1. typed 2, 4 or 128, uncached, and not already answering Recurring (5) or WorldQuest (10)
+--   2. the rest typed 2, 4 or 128
+--   3. everything else
+local function loadPriority(row)
 	local ourType, cold, warm = row:match("^(%d+)|([^|]*)|([^|]*)$")
-	if bit.band(tonumber(ourType), 2 + 4 + 128) == 0 then return false end
-	local classification, haveData = cold:match("^([^,]+)"), cold:sub(-1)
-	if classification == "5" or classification == "10" or haveData == "1" then return false end
 	local loadResult = warm:sub(-1)
-	return loadResult ~= "1" and loadResult ~= "0"
+	if loadResult == "1" or loadResult == "0" then return nil end
+	if bit.band(tonumber(ourType), 2 + 4 + 128) == 0 then return 3 end
+	local classification, haveData = cold:match("^([^,]+)"), cold:sub(-1)
+	if classification == "5" or classification == "10" or haveData == "1" then return 2 end
+	return 1
 end
 
 local function loadPass(results)
@@ -94,11 +98,15 @@ local function loadPass(results)
 		return
 	end
 
-	local queue = {}
+	local queue, priority = {}, {}
 	for questId, row in pairs(results.quests) do
-		if needsLoading(row) then table.insert(queue, questId) end
+		priority[questId] = loadPriority(row)
+		if priority[questId] then table.insert(queue, questId) end
 	end
-	table.sort(queue)
+	table.sort(queue, function(a, b)
+		if priority[a] ~= priority[b] then return priority[a] < priority[b] end
+		return a < b
+	end)
 	local total = #queue
 	if total == 0 then
 		say("type check finished - nothing left to load. /reload to save the results.")
@@ -131,8 +139,8 @@ local function loadPass(results)
 		inFlightCount = inFlightCount - 1
 		record(questId, success and "1" or "0")
 		if success then answered = answered + 1 else failed = failed + 1 end
-		if (answered + failed + timedOut) % PROGRESS_EVERY == 0 then progress() end
 	end)
+	local lastReported = 0
 
 	say(string.format("type check loading %d quests, %d at a time. /qc typecheck stop pauses it; running it again resumes.", total, MAX_IN_FLIGHT))
 
@@ -164,6 +172,12 @@ local function loadPass(results)
 				inFlightCount = inFlightCount + 1
 				C_QuestLog.RequestLoadQuestByID(questId)
 			end
+		end
+
+		local done = answered + failed + timedOut
+		if done - lastReported >= PROGRESS_EVERY then
+			lastReported = done
+			progress()
 		end
 
 		if stopRequested or (nextIndex > #queue and inFlightCount == 0) then
