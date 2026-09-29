@@ -552,7 +552,6 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			local questId = e[1]
 			local questType = e[6]
 			local questFaction = e[7]
-			local questRequired = e[15] -- Beta Code
 			questRecord.QuestName:SetText(stringFormat("[%d] %s",e[3],e[2]))
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
@@ -1168,47 +1167,37 @@ function qcUpdateTooltip(index)
         end
 
         -- Faction and reputation information
-        local factionValue = qcQuestDatabase[questId][16]
-        if not (factionValue == nil) then
-            local factionName = qcFactions[factionValue]
-            if not (factionName == nil) then
-                qcQuestInformationTooltip:AddDoubleLine("Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
-            end
-        end
-
-        -- Reputation tooltip logic, handle both single numbers and tables
-        local reputationEntries = qcQuestDatabase[questId][17]
+        local reputationEntries = qcQuestReputation[questId]
         local hasReputation = false
+        local factionIds = {}
 
-        if type(reputationEntries) == "table" then
-            -- If it's a table, check for any non-zero values
-            for _, repValue in pairs(reputationEntries) do
+        if reputationEntries then
+            for factionId, repValue in pairs(reputationEntries) do
                 if repValue ~= 0 then
                     hasReputation = true
-                    break
                 end
+                factionIds[#factionIds + 1] = factionId
             end
-        elseif type(reputationEntries) == "number" and reputationEntries ~= 0 then
-            -- If it's a single number, ensure it's non-zero
-            hasReputation = true
+            table.sort(factionIds)
         end
 
         if hasReputation then
+            local factionNames = {}
+            for _, factionId in ipairs(factionIds) do
+                factionNames[#factionNames + 1] = qcFactions[factionId] or tostring(factionId)
+            end
+            qcQuestInformationTooltip:AddDoubleLine("Faction:", stringFormat("%s%s", COLOUR_DRUID, table.concat(factionNames, ", ")))
+
             qcQuestReputationTooltip:SetOwner(qcQuestInformationTooltip, "ANCHOR_BOTTOMRIGHT", -qcQuestInformationTooltip:GetWidth())
             qcQuestReputationTooltip:ClearLines()
             qcQuestReputationTooltip:AddLine(GetText("COMBAT_TEXT_SHOW_REPUTATION_TEXT"))
             qcQuestReputationTooltip:AddLine(" ")
 
-            if type(reputationEntries) == "table" then
-                for qcReputationIndex, qcReputationEntry in pairs(reputationEntries) do
-                    qcQuestReputationTooltip:AddDoubleLine(
-                        tostring(qcFactions[qcReputationIndex] or qcReputationIndex),
-                        stringFormat("%s%d rep", COLOUR_DRUID, qcReputationEntry)
-                    )
-                end
-            elseif type(reputationEntries) == "number" then
-                -- Assuming there's only one reputation entry
-                qcQuestReputationTooltip:AddDoubleLine("Reputation", stringFormat("%s%d rep", COLOUR_DRUID, reputationEntries))
+            for i, factionId in ipairs(factionIds) do
+                qcQuestReputationTooltip:AddDoubleLine(
+                    factionNames[i],
+                    stringFormat("%s%d rep", COLOUR_DRUID, reputationEntries[factionId])
+                )
             end
 
             qcQuestReputationTooltip:Show()

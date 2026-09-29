@@ -178,8 +178,9 @@ new place.
 - **Verification:** `luac -p` clean; CRLF throughout; quest ID set unchanged (35,023); entry shapes
   become 14 fields for all 35,023; each of the 657 changed lines differs only by the removed tail;
   the compare script still reports match=120, api-only=10,915; in-game the tooltip on quest 26863
-  (Filthy Paws → Thorium Brotherhood 350) and 8249 (Junkboxes Needed → Ravenholdt +75, Syndicate
-  −75) is unchanged.
+  (Filthy Paws → Ironforge 350) and 8249 (Junkboxes Needed → Ravenholdt +75, Syndicate
+  −75) is unchanged apart from the `Faction:` line, which now names every faction in the reward
+  rather than only the first.
 
 ### Phase 2b: backfill the 10,915 (additive only)
 

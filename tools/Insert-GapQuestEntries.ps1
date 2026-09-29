@@ -2,9 +2,9 @@
 Generates qcQuestDatabase entries for the gap-list quests fetched from Blizzard's
 API and inserts them into qcQuest.lua, right after the qcQuestDatabase={ line.
 
-Field layout matches the existing schema (verified against real rows this session):
+Field layout matches the existing schema, 14 fields exactly:
 id, name, level, zone, areaid, type, faction, race, class, profession, holiday,
-covenant, storyline, prereq, field15(unused), factionid, repvalue.
+covenant, storyline, prereq.
 
 Safe defaults for fields the API can't tell us: areaid=0 (not mapped into our
 own zone-category scheme - a known limitation), type=1 (normal quest - the
@@ -14,10 +14,11 @@ a real restriction in requirements.classes/requirements.races - see git history
 for why this matters: an earlier version of this script always defaulted to
 "all", silently dropping real class-specific quest restrictions (e.g.
 Druid-only Order Hall quests) for 87 quests before that got caught and fixed.
-factionid/repvalue (fields 16-17) come from rewards.reputations - a single
-reward is field17=plain number, multiple rewards become a
-{[factionId]=value,...} table (both forms already supported by the addon's
-tooltip code); no reward leaves both fields at 0.
+Reputation rewards are NOT part of the entry: they live in qcQuestReputation,
+keyed by quest ID. This script emitted them inline until that moved, and did it
+one slot early (five zeros instead of six between class and the faction id), so
+any entry it wrote needed correcting afterwards. Rows for new quests go through
+Apply-ReputationBackfill.ps1 instead.
 #>
 
 $toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
@@ -69,20 +70,6 @@ function Resolve-Bitmask($namesJoined, $bitTable, $allValue, $maxNarrow) {
     return $mask
 }
 
-# Resolves rewards.reputations into (field16, field17): a single reward is a
-# plain faction id + value; multiple rewards become a {[factionId]=value,...}
-# table (the tooltip code already supports both shapes). No reward -> (0, 0).
-function Resolve-Reputation($factionIdsJoined, $valuesJoined) {
-    if (-not $factionIdsJoined) { return @{ Field16 = 0; Field17 = 0 } }
-    $factionIds = $factionIdsJoined -split ";"
-    $values = $valuesJoined -split ";"
-    if ($factionIds.Count -eq 1) {
-        return @{ Field16 = $factionIds[0]; Field17 = $values[0] }
-    }
-    $pairs = for ($i = 0; $i -lt $factionIds.Count; $i++) { "[$($factionIds[$i])]=$($values[$i])" }
-    return @{ Field16 = $factionIds[0]; Field17 = "{" + ($pairs -join ",") + "}" }
-}
-
 $lines = New-Object System.Collections.Generic.List[string]
 foreach ($row in $data) {
     $factionBits = switch ($row.Faction) {
@@ -95,8 +82,7 @@ foreach ($row in $data) {
     $level = if ($row.Level) { $row.Level } else { 0 }
     $raceMask = Resolve-Bitmask $row.RaceNames $raceBits $ALL_RACES 8
     $classMask = Resolve-Bitmask $row.ClassNames $classBits $ALL_CLASSES 12
-    $rep = Resolve-Reputation $row.RepFactionIds $row.RepValues
-    $lines.Add("[$($row.QuestID)]={$($row.QuestID),`"$title`",$level,`"$zone`",0,1,$factionBits,$raceMask,$classMask,0,0,0,0,0,$($rep.Field16),$($rep.Field17)},")
+    $lines.Add("[$($row.QuestID)]={$($row.QuestID),`"$title`",$level,`"$zone`",0,1,$factionBits,$raceMask,$classMask,0,0,0,0,0},")
 }
 
 $content = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($questFile))
