@@ -3,24 +3,34 @@ to settle which quests typed daily (4), repeatable (2) or 128 (world quest or we
 The client can tell a recurring quest from a one-time one by quest ID, but not daily from weekly:
 frequency is only exposed for quests in the log.
 
-Every quest is asked once as it stands ("cold"). Quests typed 2, 4 or 128, plus every 20th other
-quest as a control, are then loaded with C_QuestLog.RequestLoadQuestByID and asked again ("warm"),
-in case an answer depends on the quest's data being cached.
+Every quest is asked once as it stands ("cold"). A cold "Recurring" or "WorldQuest" can be trusted,
+but a cold "Normal" can't: for a quest whose data isn't cached, Normal is what the client answers
+by default. So quests typed 2, 4 or 128 that are uncached and didn't answer Recurring or WorldQuest
+are loaded with C_QuestLog.RequestLoadQuestByID and asked again ("warm").
 
-Writes qcQuestTypeProbeResults; /reload afterwards to flush it to disk. Each quest is one string:
+The server stops answering load requests sent in a burst, so only a few are in flight at a time;
+one that gets no answer is retried once, then marked timed out. Every answer is written as it
+arrives: /qc typecheck again resumes, /qc typecheck stop pauses, and /reload saves the results.
+
+qcQuestTypeProbeResults holds one string per quest:
   ourType | classification,repeatable,worldQuest,task,tagID,haveData | classification,repeatable,load
 with 1/0 for booleans, "-" for no answer, and load 1 (loaded), 0 (failed) or t (timed out). The
-warm part is empty for quests outside the second pass.
+warm part is empty for quests that haven't been through the loading pass.
 
 Delete this file once the answer has been acted on. ]]--
 
-local REQUESTS_PER_TICK = 20
+local MAX_IN_FLIGHT = 4
+local REQUEST_TIMEOUT = 10
+local MAX_ATTEMPTS = 2
 local TICK_SECONDS = 0.1
 local COLD_PER_FRAME = 1500
-local TIMEOUT_SECONDS = 20
-local CONTROL_EVERY = 20
+local PROGRESS_EVERY = 100
 
-local running = false
+local running, stopRequested = false, false
+
+local function say(message)
+	print("|cFFFFD100Quest Completist:|r " .. message)
+end
 
 local function flag(value)
 	if value == nil then return "-" end
@@ -61,34 +71,142 @@ local function warmAnswer(questId, loadResult)
 	}, ",")
 end
 
-local function isRecurringType(questType)
-	return bit.band(questType, 2 + 4 + 128) ~= 0
+local function clientVersion()
+	local version, build = GetBuildInfo()
+	return string.format("%s.%s", tostring(version), tostring(build))
 end
 
-function qcQuestTypeProbe()
+-- A quest needs loading when it is typed 2, 4 or 128, isn't cached, didn't already answer
+-- Recurring (5) or WorldQuest (10), and hasn't loaded or definitively failed in an earlier run.
+local function needsLoading(row)
+	local ourType, cold, warm = row:match("^(%d+)|([^|]*)|([^|]*)$")
+	if bit.band(tonumber(ourType), 2 + 4 + 128) == 0 then return false end
+	local classification, haveData = cold:match("^([^,]+)"), cold:sub(-1)
+	if classification == "5" or classification == "10" or haveData == "1" then return false end
+	local loadResult = warm:sub(-1)
+	return loadResult ~= "1" and loadResult ~= "0"
+end
+
+local function loadPass(results)
+	if not C_QuestLog.RequestLoadQuestByID then
+		say("this client has no C_QuestLog.RequestLoadQuestByID, so only the quick pass ran.")
+		running = false
+		return
+	end
+
+	local queue = {}
+	for questId, row in pairs(results.quests) do
+		if needsLoading(row) then table.insert(queue, questId) end
+	end
+	table.sort(queue)
+	local total = #queue
+	if total == 0 then
+		say("type check finished - nothing left to load. /reload to save the results.")
+		running = false
+		return
+	end
+
+	local function record(questId, loadResult)
+		local ourType, cold = results.quests[questId]:match("^(%d+)|([^|]*)|")
+		results.quests[questId] = string.format("%s|%s|%s", ourType, cold, warmAnswer(questId, loadResult))
+	end
+
+	local inFlight, inFlightCount, attempts = {}, 0, {}
+	local answered, failed, timedOut, nextIndex = 0, 0, 0, 1
+	local started = GetTime()
+
+	local function progress()
+		local done = answered + failed + timedOut
+		local elapsed = GetTime() - started
+		local perMinute = (elapsed > 0) and (done / elapsed * 60) or 0
+		local left = (perMinute > 0) and math.ceil((total - done) / perMinute) or 0
+		say(string.format("type check %d / %d (%d loaded, %d failed, %d timed out) - about %d min left.", done, total, answered, failed, timedOut, left))
+	end
+
+	local listener = CreateFrame("Frame")
+	listener:RegisterEvent("QUEST_DATA_LOAD_RESULT")
+	listener:SetScript("OnEvent", function(self, event, questId, success)
+		if not inFlight[questId] then return end
+		inFlight[questId] = nil
+		inFlightCount = inFlightCount - 1
+		record(questId, success and "1" or "0")
+		if success then answered = answered + 1 else failed = failed + 1 end
+		if (answered + failed + timedOut) % PROGRESS_EVERY == 0 then progress() end
+	end)
+
+	say(string.format("type check loading %d quests, %d at a time. /qc typecheck stop pauses it; running it again resumes.", total, MAX_IN_FLIGHT))
+
+	local ticker
+	ticker = C_Timer.NewTicker(TICK_SECONDS, function()
+		local now = GetTime()
+		for questId, sentAt in pairs(inFlight) do
+			if now - sentAt > REQUEST_TIMEOUT then
+				inFlight[questId] = nil
+				inFlightCount = inFlightCount - 1
+				if attempts[questId] < MAX_ATTEMPTS then
+					table.insert(queue, questId)
+				else
+					record(questId, "t")
+					timedOut = timedOut + 1
+				end
+			end
+		end
+
+		while not stopRequested and inFlightCount < MAX_IN_FLIGHT and nextIndex <= #queue do
+			local questId = queue[nextIndex]
+			nextIndex = nextIndex + 1
+			if HaveQuestData(questId) then
+				record(questId, "1")
+				answered = answered + 1
+			else
+				attempts[questId] = (attempts[questId] or 0) + 1
+				inFlight[questId] = now
+				inFlightCount = inFlightCount + 1
+				C_QuestLog.RequestLoadQuestByID(questId)
+			end
+		end
+
+		if stopRequested or (nextIndex > #queue and inFlightCount == 0) then
+			ticker:Cancel()
+			listener:UnregisterEvent("QUEST_DATA_LOAD_RESULT")
+			running, stopRequested = false, false
+			progress()
+			say("type check " .. ((nextIndex > #queue and inFlightCount == 0) and "finished." or "paused.") .. " /reload to save the results.")
+		end
+	end)
+end
+
+function qcQuestTypeProbe(command)
+	if command == "stop" then
+		if running then
+			stopRequested = true
+			say("type check pausing...")
+		else
+			say("the type check isn't running.")
+		end
+		return
+	end
 	if running then
-		print("|cFFFFD100Quest Completist:|r the type check is already running.")
+		say("the type check is already running.")
 		return
 	end
 	if not classify then
-		print("|cFFFF0000Quest Completist:|r this client has no C_QuestInfoSystem.GetQuestClassification, so the type check can't run.")
+		say("this client has no C_QuestInfoSystem.GetQuestClassification, so the type check can't run.")
 		return
 	end
 	running = true
 
-	local version, build = GetBuildInfo()
-	local results = {
-		client = string.format("%s.%s", tostring(version), tostring(build)),
+	local results = qcQuestTypeProbeResults
+	if results and results.client == clientVersion() and results.quests then
+		say("type check resuming from the saved results.")
+		loadPass(results)
+		return
+	end
+
+	results = {
+		client = clientVersion(),
 		locale = GetLocale(),
 		generated = date("%Y-%m-%d %H:%M:%S"),
-		api = {
-			GetQuestClassification = classify ~= nil,
-			IsRepeatableQuest = C_QuestLog.IsRepeatableQuest ~= nil,
-			IsWorldQuest = C_QuestLog.IsWorldQuest ~= nil,
-			IsQuestTask = C_QuestLog.IsQuestTask ~= nil,
-			GetQuestTagInfo = C_QuestLog.GetQuestTagInfo ~= nil,
-			RequestLoadQuestByID = C_QuestLog.RequestLoadQuestByID ~= nil,
-		},
 		quests = {},
 	}
 	qcQuestTypeProbeResults = results
@@ -99,85 +217,22 @@ function qcQuestTypeProbe()
 	end
 	table.sort(ids)
 
-	local cold, warm = {}, {}
-	local toLoad, pending = {}, {}
-	local loaded, failed, timedOut = 0, 0, 0
-
-	local function finish()
-		for questId in pairs(pending) do
-			warm[questId] = warmAnswer(questId, "t")
-			timedOut = timedOut + 1
-		end
-		for _, questId in ipairs(ids) do
-			results.quests[questId] = string.format("%d|%s|%s", qcQuestDatabase[questId][6], cold[questId], warm[questId] or "")
-		end
-		results.counts = { quests = #ids, warm = #toLoad, loaded = loaded, failed = failed, timedOut = timedOut }
-		running = false
-		print(string.format("|cFFFFD100Quest Completist:|r type check done - %d quests asked, %d loaded, %d failed, %d timed out. /reload to save the results.", #ids, loaded, failed, timedOut))
-	end
-
-	local listener = CreateFrame("Frame")
-	listener:SetScript("OnEvent", function(self, event, questId, success)
-		if pending[questId] then
-			pending[questId] = nil
-			warm[questId] = warmAnswer(questId, success and "1" or "0")
-			if success then loaded = loaded + 1 else failed = failed + 1 end
-		end
-	end)
-
-	local function loadPass()
-		if not C_QuestLog.RequestLoadQuestByID then
-			finish()
-			return
-		end
-		listener:RegisterEvent("QUEST_DATA_LOAD_RESULT")
-		local nextIndex, lastSent = 1, GetTime()
-		local ticker
-		ticker = C_Timer.NewTicker(TICK_SECONDS, function()
-			local sent = 0
-			while nextIndex <= #toLoad and sent < REQUESTS_PER_TICK do
-				local questId = toLoad[nextIndex]
-				nextIndex = nextIndex + 1
-				if HaveQuestData(questId) then
-					warm[questId] = warmAnswer(questId, "1")
-					loaded = loaded + 1
-				else
-					pending[questId] = true
-					C_QuestLog.RequestLoadQuestByID(questId)
-					sent = sent + 1
-					lastSent = GetTime()
-				end
-				if nextIndex % 1000 == 0 then
-					print(string.format("|cFFFFD100Quest Completist:|r type check loading %d / %d...", nextIndex, #toLoad))
-				end
-			end
-			if nextIndex > #toLoad and (next(pending) == nil or GetTime() - lastSent > TIMEOUT_SECONDS) then
-				ticker:Cancel()
-				listener:UnregisterEvent("QUEST_DATA_LOAD_RESULT")
-				finish()
-			end
-		end)
-	end
-
 	local coldIndex = 1
 	local function coldPass()
 		local stop = math.min(coldIndex + COLD_PER_FRAME - 1, #ids)
 		for i = coldIndex, stop do
 			local questId = ids[i]
-			cold[questId] = coldAnswer(questId)
-			if isRecurringType(qcQuestDatabase[questId][6]) or i % CONTROL_EVERY == 0 then
-				table.insert(toLoad, questId)
-			end
+			results.quests[questId] = string.format("%d|%s|", qcQuestDatabase[questId][6], coldAnswer(questId))
 		end
 		coldIndex = stop + 1
 		if coldIndex <= #ids then
 			C_Timer.After(0, coldPass)
 		else
-			print(string.format("|cFFFFD100Quest Completist:|r type check asked all %d quests; now loading %d of them to ask again (about %d seconds).", #ids, #toLoad, math.ceil(#toLoad / (REQUESTS_PER_TICK / TICK_SECONDS))))
-			loadPass()
+			say(string.format("type check asked all %d quests.", #ids))
+			loadPass(results)
 		end
 	end
 
-	print("|cFFFFD100Quest Completist:|r type check started.")
+	say("type check started.")
 	coldPass()
 end
