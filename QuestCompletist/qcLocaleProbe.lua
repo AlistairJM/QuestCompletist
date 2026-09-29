@@ -1,7 +1,10 @@
 --[[ Diagnostic, run with /qc localecheck. Measures how much of qcLocalize the game client could
 supply instead of our own locale files, and which candidate global strings exist for the tooltip
 labels that are currently hardcoded English. Writes the full result to the qcLocaleProbeResults
-saved variable; delete this file once the answer has been acted on. ]]--
+saved variable; delete this file once the answer has been acted on.
+
+The keys of qcAreaIDToCategoryID are UiMap ids, so names come from C_Map.GetMapInfo. They are not
+AreaTable ids: C_Map.GetAreaInfo answers for every one of them, with the wrong zone. ]]--
 
 local candidateGlobals = {
 	"FACTION", "REPUTATION", "SEARCH", "ID", "ZONE", "LEVEL", "CLASS", "RACE", "CONTINENT",
@@ -17,8 +20,8 @@ local function qcNormalizeLocaleKey(name)
 end
 
 function qcLocaleProbe()
-	if not (C_Map and C_Map.GetAreaInfo) then
-		print("|cFFFF0000Quest Completist:|r C_Map.GetAreaInfo is unavailable on this client.")
+	if not (C_Map and C_Map.GetMapInfo) then
+		print("|cFFFF0000Quest Completist:|r C_Map.GetMapInfo is unavailable on this client.")
 		return
 	end
 
@@ -53,7 +56,8 @@ function qcLocaleProbe()
 	local areasByCat = {}
 	for areaId, catId in pairs(qcAreaIDToCategoryID) do
 		areasByCat[catId] = areasByCat[catId] or {}
-		table.insert(areasByCat[catId], { id = areaId, name = C_Map.GetAreaInfo(areaId) or false })
+		local info = C_Map.GetMapInfo(areaId)
+		table.insert(areasByCat[catId], { id = areaId, name = (info and info.name) or false })
 	end
 
 	local counts = {
