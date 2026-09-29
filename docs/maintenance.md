@@ -159,9 +159,17 @@ the first of these that gives an answer:
 3. the map its pin is on
 4. its own zone text
 
-A quest in a category that no menu entry reaches can still be found by search, but not by
-browsing. After adding categories, check every category that holds quests has an entry in
-`qcMenu.lua`.
+It never files a quest in a category that no menu entry reaches. A quest in such a category can
+still be found by search, but not by browsing. After adding categories, check every category that
+holds quests has an entry in `qcMenu.lua`.
+
+`-Refile 1150,1050` also files the quests in the catch-all categories "Bfa Unknown" and "Legion
+Uncategorized". For those it adds two rules: a quest named "<category>: …" goes to that category,
+and a hand-written list in the script maps the catch-all's zone text ("Death Knight Campaign",
+"Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
+
+After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf`, then without
+`-WhatIf`. It removes menu entries whose category no longer holds any quests.
 
 ### 7. Quests that may no longer be obtainable
 
@@ -217,6 +225,7 @@ twice:
 - `Add-MissingMenuEntries.ps1`
 - `Fix-CategoryNameTypos.ps1`
 - `Fix-DuplicateCategory1344.ps1`
+- `Fix-MenuStructure.ps1`
 - `Retype-OneTimeFamilies.ps1`, a hand-judged list of quests
 - `Derive-IconTypeMapping.ps1`, analysis only
 
