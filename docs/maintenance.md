@@ -215,6 +215,7 @@ twice:
 - `Relocate-GapQuestEntries.ps1`
 - `Add-DungeonCategories.ps1`
 - `Add-MissingMenuEntries.ps1`
+- `Fix-CategoryNameTypos.ps1`
 - `Retype-OneTimeFamilies.ps1`, a hand-judged list of quests
 - `Derive-IconTypeMapping.ps1`, analysis only
 
