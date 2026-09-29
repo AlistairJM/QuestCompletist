@@ -15,7 +15,10 @@ A zero or all-bits mask means "no filter", which is treated as no information.
 Output: quest_wago_requirements.csv (QuestID, WagoFaction, WagoRace, WagoClass, Source),
 empty value = wago says nothing about that field.
 #>
-param([switch]$Refresh)
+param(
+    [string]$Build = "12.1.0.69933",
+    [switch]$Refresh
+)
 
 $toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
 $ProgressPreference = "SilentlyContinue"
@@ -24,7 +27,7 @@ foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "ChrClasses", "Q
     $path = "$toolsDir\$t.csv"
     if ($Refresh -or -not (Test-Path $path)) {
         Write-Output "Downloading $t..."
-        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$t/csv" -OutFile $path
+        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$t/csv?build=$Build" -OutFile $path
         Start-Sleep -Seconds 1
     }
 }
