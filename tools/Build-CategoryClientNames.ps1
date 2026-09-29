@@ -15,6 +15,8 @@ listed in $expectedDifferences are allowed. Only categories holding quests are c
 param(
     [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
     [string]$QuestFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua",
+    [string]$MenuFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcMenu.lua",
+    [string]$LocaleFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\Localization.enUS.lua",
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
 )
@@ -54,6 +56,27 @@ $expectedDifferences = @{
 }
 # Categories whose only match is a placeholder, not a name a player would recognise.
 $skip = @("1240")   # "9.1 Campaign" matches an area of that name
+
+# Menu headings, by their qcL key, chosen by hand: a heading's word can mean something else in
+# another language ("Midnight" the expansion, not the time of day). Headings not listed ("Main
+# Zones", "Northern Kalimdor") are our own and keep their translations.
+$headings = [ordered]@{
+    "KALIMDOR" = @("map", 12); "EASTERNKINGDOMS" = @("map", 13); "AZEROTH" = @("map", 947)
+    "VASHJIR" = @("map", 203); "OUTLAND" = @("map", 101); "NORTHREND" = @("map", 113)
+    "THEMAELSTROM" = @("map", 948); "PANDARIA" = @("map", 424); "DRAENOR" = @("map", 572)
+    "THEBROKENISLES" = @("map", 619); "KULTIRAS" = @("map", 876); "ZANDALAR" = @("map", 875)
+    "BFA" = @("string", "EXPANSION_NAME7"); "SHADOWLANDS" = @("string", "EXPANSION_NAME8")
+    "DRAGONFLIGHT" = @("string", "EXPANSION_NAME9"); "TWW" = @("string", "EXPANSION_NAME10")
+    "MIDNIGHT" = @("string", "EXPANSION_NAME11"); "MISCELLANEOUS" = @("string", "MISCELLANEOUS")
+    "DUNGEONSANDRAIDS" = @("achievementcategory", 168); "PLAYERVSPLAYER" = @("string", "PLAYER_V_PLAYER")
+    "BATTLEGROUNDS" = @("string", "BATTLEGROUNDS"); "PROFESSIONS" = @("string", "TRADE_SKILLS")
+    "WORLDEVENTS" = @("achievementcategory", 155)
+}
+$headingDifferences = @{
+    "THEBROKENISLES" = "Broken Isles"
+    "BFA" = "Battle for Azeroth"
+    "PLAYERVSPLAYER" = "Player vs. Player"
+}
 
 $ProgressPreference = "SilentlyContinue"
 $names = @{}
@@ -143,3 +166,26 @@ $content = $content.Substring(0, $insertAt) + (($lines -join "`r`n") + "`r`n") +
 $chosen.Values | Group-Object { $_[0] } | Sort-Object Count -Descending | ForEach-Object { "  $($_.Name): $($_.Count)" }
 "Categories with quests still named by our own strings: $($left.Count)"
 $left | ForEach-Object { "  $_" }
+
+$english = @{}
+foreach ($m in [regex]::Matches([System.IO.File]::ReadAllText($LocaleFile, [System.Text.Encoding]::UTF8), '(?m)^\s*([A-Z0-9]+)\s*=\s*"((?:[^"\\]|\\.)*)"')) { $english[$m.Groups[1].Value] = $m.Groups[2].Value }
+foreach ($key in $headings.Keys) {
+    $client = Format-English $headings[$key]
+    $expected = if ($headingDifferences.ContainsKey($key)) { $headingDifferences[$key] } else { $english[$key] }
+    if ($client -cne $expected) { throw "Heading $key '$($english[$key])': the client would call it '$client'" }
+}
+
+$lines = [System.Collections.Generic.List[string]]([System.IO.File]::ReadAllText($MenuFile, [System.Text.Encoding]::UTF8) -split "`r`n")
+$named = @{}
+for ($i = 0; $i -lt $lines.Count; $i++) {
+    $m = [regex]::Match($lines[$i], '^(\{text=(?:stringformat\("   %s",)?qcL\.([A-Z0-9]+)\)?,)(clientName=\{[^}]*(?:\{[^}]*\}[^}]*)*\},)?')
+    if (-not $m.Success -or -not $headings.Contains($m.Groups[2].Value)) { continue }
+    if (($lines[$i] -split 'menuList=\{', 2)[0] -match 'arg1=') { continue }   # a category entry; qcCategoryName names it
+    $field = "clientName=$(Format-Lua $headings[$m.Groups[2].Value]),"
+    $lines[$i] = $m.Groups[1].Value + $field + $lines[$i].Substring($m.Length)
+    $named[$m.Groups[2].Value] = 1 + $named[$m.Groups[2].Value]
+}
+$unused = @($headings.Keys | Where-Object { -not $named.ContainsKey($_) })
+if ($unused.Count) { throw "No menu heading found for: $($unused -join ', ')" }
+[System.IO.File]::WriteAllText($MenuFile, ($lines -join "`r`n"), (New-Object System.Text.UTF8Encoding $false))
+"Menu headings the client names: $($headings.Count) ($(($named.Values | Measure-Object -Sum).Sum) lines)"

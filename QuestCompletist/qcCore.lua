@@ -936,8 +936,8 @@ local function InitializeCategoryDropDownMenu(self, level, menuList)
     
     for _, item in ipairs(menu) do
         -- A numeric arg1 is a category id; its name comes from qcCategoryName rather than the
-        -- qcL string baked into qcMenu. Other entries (titles, sort actions) keep their own text.
-        info.text = (type(item.arg1) == "number" and qcCategoryName(item.arg1)) or item.text
+        -- qcL string baked into qcMenu. Headings may be named by the client too.
+        info.text = (type(item.arg1) == "number" and qcCategoryName(item.arg1)) or qcMenuHeadingText(item)
         info.arg1 = item.arg1
         info.func = item.func
         info.notCheckable = true
@@ -1059,6 +1059,15 @@ function qcClientCategoryName(categoryId)
 		local ok, name = pcall(qcClientName, source)
 		if (ok and name) then return name end
 	end
+end
+
+-- A menu heading's text, from the client where qcMenu says how (clientName), keeping its indent.
+function qcMenuHeadingText(item)
+	if (item.clientName and item.text) then
+		local ok, name = pcall(qcClientName, item.clientName)
+		if (ok and name) then return item.text:match("^%s*") .. name end
+	end
+	return item.text
 end
 
 function qcCategoryName(categoryId)

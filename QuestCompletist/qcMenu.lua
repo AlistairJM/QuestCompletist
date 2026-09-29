@@ -2,7 +2,7 @@ local qcL = qcLocalize
 local stringformat = string.format
 qcMenu={
 {text=qcL.CONTINENTS,isTitle=true,notCheckable=true,hasArrow=false},
-{text=stringformat("   %s",qcL.KALIMDOR),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.KALIMDOR),clientName={"map",12},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=stringformat("   %s",qcL.NORTHERNKALIMDOR),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=12,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=16,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -35,7 +35,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=255,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=258,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=3,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
-{text=stringformat("   %s",qcL.EASTERNKINGDOMS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.EASTERNKINGDOMS),clientName={"map",13},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.LORDAERON,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=10,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=67,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -66,7 +66,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=252,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=272,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=110,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=qcL.AZEROTH,isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=qcL.AZEROTH,clientName={"map",947},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=27,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=33,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=51,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -80,12 +80,12 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=271,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=195,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=194,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=qcL.VASHJIR,isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=qcL.VASHJIR,clientName={"map",203},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=117,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=182,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=264,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
-{text=stringformat("   %s",qcL.OUTLAND),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.OUTLAND),clientName={"map",101},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=26,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=96,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=141,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -94,7 +94,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=181,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=207,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=275,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.NORTHREND),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.NORTHREND),clientName={"map",113},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=40,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=29,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=417,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -110,12 +110,12 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=273,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=277,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.TOURNAMENT,isTitle=false,notCheckable=false,hasArrow=false,arg1=248,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.THEMAELSTROM),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.THEMAELSTROM),clientName={"map",948},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=54,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=118,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=222,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 
-{text=stringformat("   %s",qcL.PANDARIA),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.PANDARIA),clientName={"map",424},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.MAINZONES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=61,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=113,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -141,7 +141,7 @@ qcMenu={
 {text=qcL.TIMERUNNING,isTitle=false,notCheckable=false,hasArrow=false,arg1=427,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=257,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
-{text=stringformat("   %s",qcL.DRAENOR),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.DRAENOR),clientName={"map",572},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=288,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=291,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=306,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -155,7 +155,7 @@ qcMenu={
 {text=qcL.ASSAULTONTHEDARKPORTAL,isTitle=false,notCheckable=false,hasArrow=false,arg1=281,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=302,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=312,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.THEBROKENISLES),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.THEBROKENISLES),clientName={"map",619},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.THEDREAMGROVE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1013,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1004,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1001,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -180,13 +180,13 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1017,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1021,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.LEGIONUNCATEQUEST,isTitle=false,notCheckable=false,hasArrow=false,arg1=1050,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.BFA),isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{text=stringformat("   %s",qcL.KULTIRAS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.BFA),clientName={"string","EXPANSION_NAME7"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.KULTIRAS),clientName={"map",876},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1060,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1063,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1061,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1062,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.ZANDALAR),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.ZANDALAR),clientName={"map",875},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1080,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1081,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1082,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
@@ -194,7 +194,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1202,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1065,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 
-{text=stringformat("   %s",qcL.SHADOWLANDS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.SHADOWLANDS),clientName={"string","EXPANSION_NAME8"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.COVENANTCALLINGS,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.KYRIAN,isTitle=false,notCheckable=false,hasArrow=false,arg1=1220,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.NECROLORD,isTitle=false,notCheckable=false,hasArrow=false,arg1=1221,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -224,7 +224,7 @@ qcMenu={
 {text=qcL.THEARCHIVISTSCODEX,isTitle=false,notCheckable=false,hasArrow=false,arg1=1245,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.TORGHASTTOWEROFTHEDAMNED,isTitle=false,notCheckable=false,hasArrow=false,arg1=1246,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
-{text=stringformat("   %s",qcL.DRAGONFLIGHT),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.DRAGONFLIGHT),clientName={"string","EXPANSION_NAME9"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.MAINZONES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.AMIRDRASIL,isTitle=false,notCheckable=false,hasArrow=false,arg1=1309,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1308,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -252,7 +252,7 @@ qcMenu={
 {text=qcL.TIMERIFT,isTitle=false,notCheckable=false,hasArrow=false,arg1=1347,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.VALDRAKKENACCORD,isTitle=false,notCheckable=false,hasArrow=false,arg1=1342,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
-{text=stringformat("   %s",qcL.TWW),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.TWW),clientName={"string","EXPANSION_NAME10"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.MAINZONES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1409,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1401,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -276,7 +276,7 @@ qcMenu={
 {text=qcL.UPGRADESYSTEM,isTitle=false,notCheckable=false,hasArrow=false,arg1=1428,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.WARBANDS,isTitle=false,notCheckable=false,hasArrow=false,arg1=1429,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
-{text=stringformat("   %s",qcL.MIDNIGHT),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.MIDNIGHT),clientName={"string","EXPANSION_NAME11"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.MAINZONES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1511,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.FOUNDERSPOINT,isTitle=false,notCheckable=false,hasArrow=false,arg1=1501,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -292,7 +292,7 @@ qcMenu={
 {text=qcL.OTHERCATEGORIES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1514,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
-{text=stringformat("   %s",qcL.MISCELLANEOUS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.MISCELLANEOUS),clientName={"string","MISCELLANEOUS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.ALLIANCEWARCAMPAIGN,isTitle=false,notCheckable=false,hasArrow=false,arg1=1090,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.BATTLEPETS,isTitle=false,notCheckable=false,hasArrow=false,arg1=19,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.BLACKEMPIRECAMPAIGN,isTitle=false,notCheckable=false,hasArrow=false,arg1=1132,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -307,7 +307,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1134,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.VISIONSOFNZOTH,isTitle=false,notCheckable=false,hasArrow=false,arg1=1133,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.WARFRONTCONTRIBUTION,isTitle=false,notCheckable=false,hasArrow=false,arg1=1092,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=qcL.DUNGEONSANDRAIDS,isTitle=true,notCheckable=true,hasArrow=false},
+{text=qcL.DUNGEONSANDRAIDS,clientName={"achievementcategory",168},isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s",GetText("EXPANSION_NAME0")),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=21,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=23,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -494,16 +494,16 @@ qcMenu={
 {text=stringformat("%s%s|r","|cFF9482C9",qcL.WARLOCK),isTitle=false,notCheckable=false,hasArrow=false,arg1=266,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=stringformat("%s%s|r","|cFFC79C6E",qcL.WARRIOR),isTitle=false,notCheckable=false,hasArrow=false,arg1=267,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=stringformat("%s%s|r","|cFF558A84",qcL.MONK),isTitle=false,notCheckable=false,hasArrow=false,arg1=137,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=qcL.MISCELLANEOUS,isTitle=true,notCheckable=true,hasArrow=false},
-{text=stringformat("   %s",qcL.PLAYERVSPLAYER),isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{text=stringformat("   %s",qcL.BATTLEGROUNDS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=qcL.MISCELLANEOUS,clientName={"string","MISCELLANEOUS"},isTitle=true,notCheckable=true,hasArrow=false},
+{text=stringformat("   %s",qcL.PLAYERVSPLAYER),clientName={"string","PLAYER_V_PLAYER"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.BATTLEGROUNDS),clientName={"string","BATTLEGROUNDS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=20,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=7,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=9,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=qcL.HERITAGE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1093,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.RATEDPVP,isTitle=false,notCheckable=false,hasArrow=false,arg1=1094,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.WORLDPVP,isTitle=false,notCheckable=false,hasArrow=false,arg1=1095,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.PROFESSIONS),isTitle=false,notCheckable=true,hasArrow=true,menuList={{text=qcL.ALCHEMY,isTitle=false,notCheckable=false,hasArrow=false,arg1=5,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text=stringformat("   %s",qcL.PROFESSIONS),clientName={"string","TRADE_SKILLS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={{text=qcL.ALCHEMY,isTitle=false,notCheckable=false,hasArrow=false,arg1=5,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.ARCHAEOLOGY,isTitle=false,notCheckable=false,hasArrow=false,arg1=11,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.BLACKSMITHING,isTitle=false,notCheckable=false,hasArrow=false,arg1=25,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.COOKING,isTitle=false,notCheckable=false,hasArrow=false,arg1=42,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -524,7 +524,7 @@ qcMenu={
 {text=qcL.FIRELANDSINVASION,isTitle=false,notCheckable=false,hasArrow=false,arg1=78,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.THEZANDALARI,isTitle=false,notCheckable=false,hasArrow=false,arg1=239,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.SPECIAL,isTitle=false,notCheckable=false,hasArrow=false,arg1=191,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.WORLDEVENTS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.WORLDEVENTS),clientName={"achievementcategory",155},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.BREWFEST,isTitle=false,notCheckable=false,hasArrow=false,arg1=31,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.CHILDRENSWEEK,isTitle=false,notCheckable=false,hasArrow=false,arg1=37,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=316,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
