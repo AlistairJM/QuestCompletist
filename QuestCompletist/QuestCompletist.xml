@@ -37,123 +37,6 @@
     <HighlightTexture alphaMode="ADD" file="Interface\BUTTONS\UI-Listbox-Highlight"/>
   </Button>
 
-  <Button name="qcMenuButtonTemplate" virtual="true">
-    <Size x ="266" y ="16"/>
-    <Layers>
-      <Layer level ="BORDER">
-        <Texture name="$parent_AvailableIcon" parentKey="AvailableIcon" file="Interface\Addons\QuestCompletist\Images\AvailableQuestIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_DailyIcon" parentKey="DailyIcon" file="Interface\Addons\QuestCompletist\Images\DailyQuestIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_RepeatableIcon" parentKey="RepeatableIcon" file="Interface\Addons\QuestCompletist\Images\DailyActiveQuestIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_SpecialIcon" parentKey="SpecialIcon" file="Interface\Addons\QuestCompletist\Images\SpecialQuestIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_CompleteIcon" parentKey="CompleteIcon" file="Interface\Addons\QuestCompletist\Images\QuestCompleteIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_IncompleteIcon" parentKey="IncompleteIcon" file="Interface\Addons\QuestCompletist\Images\IncompleteQuestIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_ActiveIcon" parentKey="ActiveIcon" file="Interface\Addons\QuestCompletist\Images\ActiveQuestIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_UnattainableIcon" parentKey="UnattainableIcon" file="Interface\Addons\QuestCompletist\Images\UnattainableIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="2" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_AllianceIcon" parentKey="AllianceIcon" file="Interface\Addons\QuestCompletist\Images\AllianceIcon"  hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="248" y ="0"/>
-          </Anchors>
-        </Texture>
-        <Texture name="$parent_HordeIcon" parentKey="HordeIcon" file="Interface\Addons\QuestCompletist\Images\HordeIcon" hidden="true">
-          <Size x ="16" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="248" y ="0"/>
-          </Anchors>
-        </Texture>
-        <FontString name="$parent_QuestName" parentKey="QuestName" inherits="GameFontHighlightSmall" justifyH="LEFT">
-          <Size x ="226" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="20" y ="0"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestTag" parentKey="QuestTag" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="45" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" x ="325" y ="0"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestProviderID" parentKey="QuestProviderID" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="45" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_QuestTag"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestProviderName" parentKey="QuestProviderName" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="50" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_QuestProviderID"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestProviderZone" parentKey="QuestProviderZone" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="50" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_QuestProviderName"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestProviderX" parentKey="QuestProviderX" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="30" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_QuestProviderZone"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestProviderY" parentKey="QuestProviderY" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="30" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_QuestProviderX"/>
-          </Anchors>
-        </FontString>
-        <FontString name="$parent_QuestProviderComments" parentKey="QuestProviderComments" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-          <Size x ="30" y ="16"/>
-          <Anchors>
-            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_QuestProviderY"/>
-          </Anchors>
-        </FontString>
-      </Layer>
-    </Layers>
-    <HighlightTexture alphaMode="ADD" file="Interface\BUTTONS\UI-Listbox-Highlight"/>
-  </Button>
-
 	<Frame name="qcInterfaceOptions">
         <Scripts>
             <OnLoad function="qcInterfaceOptions_OnLoad"/>
@@ -219,7 +102,7 @@
     </Anchors>
     <Layers>
       <Layer level="ARTWORK">
-        <Texture name="$parentIcon" parentKey="qcNewDataAlertIcon" file="Interface\Addons\QuestCompletist\Images\AvailableQuestIcon">
+        <Texture name="$parentIcon" parentKey="qcNewDataAlertIcon" atlas="QuestNormal">
           <Size x="16" y="16"/>
           <Anchors>
             <Anchor point="LEFT"/>
