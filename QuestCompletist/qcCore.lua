@@ -187,13 +187,7 @@ function qcCopyTable(qcTable)
 end
 
 function qcUpdateCurrentCategoryText(categoryId)
-	qcQuestCompletistUI.qcSelectedCategory:SetText("#")
-	for i, e in pairs(qcQuestCategories) do
-		if (e[1] == categoryId) then
-			qcQuestCompletistUI.qcSelectedCategory:SetText(e[2])
-			break
-		end
-	end
+	qcQuestCompletistUI.qcSelectedCategory:SetText(qcCategoryName(categoryId) or "#")
 end
 
 local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
@@ -896,7 +890,9 @@ local function InitializeCategoryDropDownMenu(self, level, menuList)
     local menu = menuList or qcMenu
     
     for _, item in ipairs(menu) do
-        info.text = item.text
+        -- A numeric arg1 is a category id; its name comes from qcCategoryName rather than the
+        -- qcL string baked into qcMenu. Other entries (titles, sort actions) keep their own text.
+        info.text = (type(item.arg1) == "number" and qcCategoryName(item.arg1)) or item.text
         info.arg1 = item.arg1
         info.func = item.func
         info.notCheckable = true
@@ -961,6 +957,31 @@ end
 local qcAreaIDToCategoryID = qcAreaIDToCategoryID or {} -- Maps zone ID to internal category ID
 local qcQuestCategories = qcQuestCategories or {} -- Maps internal category ID to zone name
 
+-- Category names come from the client where qcCategoryUiMapID knows a map for them, so they need
+-- no translation of ours. Everything else falls back to qcLocalize, then to the English name in
+-- qcQuestCategories.
+local qcCategoryLocaleKey = {}
+for _, categoryData in ipairs(qcQuestCategories) do
+	qcCategoryLocaleKey[categoryData[1]] = (categoryData[2]:gsub("[^%a%d]", "")):upper()
+end
+
+function qcCategoryName(categoryId)
+	local uiMapId = qcCategoryUiMapID and qcCategoryUiMapID[categoryId]
+	if (uiMapId and C_Map and C_Map.GetMapInfo) then
+		local info = C_Map.GetMapInfo(uiMapId)
+		if (info and info.name and info.name ~= "") then return info.name end
+	end
+
+	local key = qcCategoryLocaleKey[categoryId]
+	if (key and qcL[key]) then return qcL[key] end
+
+	for _, categoryData in ipairs(qcQuestCategories) do
+		if (categoryData[1] == categoryId) then return categoryData[2] end
+	end
+
+	return nil
+end
+
 -- Function to get the zone name from a zone ID with enhanced handling for array-style lookup
 function GetZoneNameFromZoneID(zoneId)
     -- First, check if the zoneId is present in qcAreaIDToCategoryID
@@ -970,14 +991,7 @@ function GetZoneNameFromZoneID(zoneId)
         return "Unknown Zone (Invalid Area ID)"
     end
 
-    -- Now, search through qcQuestCategories for the categoryID
-    local zoneName = nil
-    for _, categoryData in ipairs(qcQuestCategories) do
-        if categoryData[1] == categoryID then
-            zoneName = categoryData[2] -- Retrieve the zone name
-            break
-        end
-    end
+    local zoneName = qcCategoryName(categoryID)
 
     if not zoneName or zoneName == "" then
         -- Handle cases where the zone name is missing or empty
