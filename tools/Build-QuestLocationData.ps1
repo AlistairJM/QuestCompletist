@@ -63,9 +63,11 @@ function Get-BestConversion($worldX, $worldY, $candidateRegions) {
 
 Write-Output "Loading our own qcQuestDatabase quest IDs and zone names..."
 $content = Get-Content $questFile -Raw
-$startIdx = $content.IndexOf("qcQuestDatabase={")
+$startIdx = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
 $dbBlock = $content.Substring($startIdx)
-$ourQuestMatches = [regex]::Matches($dbBlock, '\[(\d+)\]=\{\d+,"([^"]*)",\d+,"([^"]*)"')
+# Names can hold escaped quotes (Grillok \"Darkeye\"); a plain [^"]* missed 29 quests, which then
+# looked missing and were queued to be inserted again.
+$ourQuestMatches = [regex]::Matches($dbBlock, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)"')
 $ourQuests = @{}
 foreach ($m in $ourQuestMatches) {
     $ourQuests[$m.Groups[1].Value] = @{ Name = $m.Groups[2].Value; Zone = $m.Groups[3].Value }

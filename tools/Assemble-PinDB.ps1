@@ -11,9 +11,9 @@ $questFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQue
 
 Write-Output "Loading profession flag (field 10) per quest for the default-icon fallback rule..."
 $content = Get-Content $questFile -Raw
-$startIdx = $content.IndexOf("qcQuestDatabase={")
+$startIdx = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
 $dbBlock = $content.Substring($startIdx)
-$profMatches = [regex]::Matches($dbBlock, '\[(\d+)\]=\{\d+,"[^"]*",\d+,"[^"]*",\d+,\d+,\d+,\d+,\d+,(\d+),')
+$profMatches = [regex]::Matches($dbBlock, '(?m)^\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",-?\d+,\d+,\d+,\d+,\d+,(\d+),')
 $questProfession = @{}
 foreach ($m in $profMatches) {
     $questProfession[$m.Groups[1].Value] = [int]$m.Groups[2].Value

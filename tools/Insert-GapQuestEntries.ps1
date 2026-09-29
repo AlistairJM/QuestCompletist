@@ -86,6 +86,10 @@ foreach ($row in $data) {
 }
 
 $content = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($questFile))
+# A second entry for a quest ID silently replaces the first when Lua loads the table.
+$present = @([regex]::Matches($content, '(?m)^\[(\d+)\]=\{') | ForEach-Object { $_.Groups[1].Value })
+$duplicates = @($data | Where-Object { $present -contains "$($_.QuestID)" } | ForEach-Object { $_.QuestID })
+if ($duplicates.Count) { throw "Already in qcQuestDatabase, refusing to insert again: $($duplicates -join ', ')" }
 $marker = "qcQuestDatabase={"
 $anchorMatch = [regex]::Match($content, '(?m)^qcQuestDatabase=\{')
 if (-not $anchorMatch.Success) { throw "Could not find qcQuestDatabase={ marker" }
