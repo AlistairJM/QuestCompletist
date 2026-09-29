@@ -1759,19 +1759,27 @@ function qcPinMixin:OnMouseLeave()
     end
 end
 
--- Pins at the same spot draw on top of each other, and only the top one can be hovered. After the
--- filters have run, each spot still showing more than one pin gets a single pin standing in for
--- them all; qcPinDB itself keeps one pin per quest giver.
+-- Pins drawn within half a map point of each other overlap at any zoom, and only the top one can be
+-- hovered. After the filters have run, pins within that distance of a group's first pin join it,
+-- and each group gets a single pin standing in for them all. Measuring from the first pin, not any
+-- member, stops a row of pins chaining into one group. qcPinDB itself keeps one pin per quest giver.
+local QC_PIN_MERGE_DISTANCE = 0.5
 local function qcMergeStackedPins(pins)
-    local merged, bySpot = {}, {}
+    local merged = {}
+    local limit = QC_PIN_MERGE_DISTANCE * QC_PIN_MERGE_DISTANCE
     for _, pinData in ipairs(pins) do
-        local spot = pinData[1] .. ":" .. pinData[5] .. ":" .. pinData[6]
-        local stack = bySpot[spot]
+        local stack
+        for _, candidate in ipairs(merged) do
+            local first = candidate[1]
+            if first[1] == pinData[1] and (first[5] - pinData[5]) ^ 2 + (first[6] - pinData[6]) ^ 2 <= limit then
+                stack = candidate
+                break
+            end
+        end
         if stack then
             table.insert(stack, pinData)
         else
-            bySpot[spot] = {pinData}
-            table.insert(merged, bySpot[spot])
+            table.insert(merged, {pinData})
         end
     end
     for i, stack in ipairs(merged) do
