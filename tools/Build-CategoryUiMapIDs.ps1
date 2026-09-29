@@ -38,6 +38,13 @@ foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcAreaIDToCatego
     if (-not $byCategory.ContainsKey($cat)) { $byCategory[$cat] = New-Object System.Collections.Generic.List[string] }
     $byCategory[$cat].Add($m.Groups[1].Value)
 }
+# Entries added directly (the dungeon and raid categories from Add-DungeonCategories.ps1) have no
+# zone mapping, so the current table is a candidate source too; the name check below still applies.
+foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcCategoryUiMapID = \{(.*?)^\}').Groups[1].Value, '\[(\d+)\]=(\d+)')) {
+    $cat = [int]$m.Groups[1].Value
+    if (-not $byCategory.ContainsKey($cat)) { $byCategory[$cat] = New-Object System.Collections.Generic.List[string] }
+    if (-not $byCategory[$cat].Contains($m.Groups[2].Value)) { $byCategory[$cat].Add($m.Groups[2].Value) }
+}
 
 $chosen = @{}
 $skipped = New-Object System.Collections.Generic.List[string]

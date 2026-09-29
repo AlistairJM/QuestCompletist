@@ -66,7 +66,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins | see [the pin pipeline](plans/quest-location-data-pipeline.md) | Writes a candidate file only |
-| 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1` | No |
+| 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 
 ### 1. Faction, race and class
 
@@ -128,10 +128,18 @@ redundant. Run it with `-WhatIf` first.
 
 The pipeline builds `tools\qcPinDB_candidate.lua` for review. It never overwrites
 `QuestCompletist\qcPinDB.lua`, and existing pins shouldn't move without a reason. The steps are in
-[plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md).
+[plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md). Download
+`QuestPOIPoint` and `UiMapAssignment` for the pinned build first; `QuestPOIBlob` comes with step 1b.
+Then run `Build-QuestLocationData.ps1`, `Parse-ExistingPinDB.ps1`, `Join-LocationsWithExisting.ps1`
+and `Assemble-PinDB.ps1`, in that order.
+
+`qcPinDB.lua` was last rebuilt from this pipeline on 20–21 September 2026. There's no automatic
+merge of a new candidate into it. `Join-LocationsWithExisting.ps1` reports how many existing pins
+the fresh data would move; treat those numbers as findings to review, not changes to apply.
 
 Quests that appear in the pin data but are missing from the database are fetched with
-`Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`.
+`Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. The inserter refuses any
+quest that's already in the database.
 
 ### 7. Quests that may no longer be obtainable
 
