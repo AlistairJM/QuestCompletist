@@ -104,6 +104,35 @@ local function qcType128Icon(questId)
 	return QC_ICON_WEEKLY
 end
 
+-- The icon a recurring quest type draws with, or nil for a type a normal pin already fits.
+local function qcRecurringQuestIcon(questId, questType)
+	if questType == 4 then
+		return QC_ICON_DAILY
+	elseif questType == 2 then
+		return QC_ICON_REPEATABLE
+	elseif questType == 128 then
+		return qcType128Icon(questId)
+	end
+	return nil
+end
+
+-- A pin stored as a plain quest takes a recurring icon when every quest on it agrees on one, so
+-- it matches the tooltip; the pin types were often recorded as normal for dailies and weeklies.
+local function qcNormalPinIcon(questIds)
+	local shared
+	for _, questId in ipairs(questIds) do
+		local quest = qcQuestDatabase[questId]
+		if quest then
+			local icon = qcRecurringQuestIcon(questId, quest[6])
+			if not icon or (shared and icon ~= shared) then
+				return QC_ICON_NORMAL
+			end
+			shared = icon
+		end
+	end
+	return shared or QC_ICON_NORMAL
+end
+
 -- Textures are reused between quests and keep their texcoords. An atlas drawn over leftover
 -- texcoords shows only a corner of the icon - usually transparent - so both paths reset them.
 local function qcSetIcon(texture, icon)
@@ -1587,6 +1616,8 @@ function qcPinMixin:OnAcquired(pinData)
             end
         end
         pinIcon = qcProfessionIcon(professionMask)
+    elseif icon == 1 then
+        pinIcon = qcNormalPinIcon(pinData[7])
     else
         pinIcon = QC_PIN_ICONS[icon] or QC_ICON_NORMAL
     end
@@ -1659,17 +1690,15 @@ function qcPinMixin:OnMouseEnter()
             texture:SetParent(qcMapTooltip)
             texture:SetSize(baseSize, baseSize)
 
-            if questData[6] == 4 then
-                qcSetIcon(texture, QC_ICON_DAILY)
-            elseif questData[6] == 128 then
-                qcSetIcon(texture, qcType128Icon(qcEntry))
-            elseif questData[6] == 2 then
-                qcSetIcon(texture, QC_ICON_REPEATABLE)
-            elseif qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
-                qcSetIcon(texture, QC_ICON_COMPLETE)
-            else
-                qcSetIcon(texture, QC_ICON_NORMAL)
+            local lineIcon = qcRecurringQuestIcon(qcEntry, questData[6])
+            if not lineIcon then
+                if qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
+                    lineIcon = QC_ICON_COMPLETE
+                else
+                    lineIcon = QC_ICON_NORMAL
+                end
             end
+            qcSetIcon(texture, lineIcon)
 
             qcMapTooltip:AddDoubleLine("    " .. qcColouredQuestName(qcEntry), string.format("|cffff7d0a[%d]|r", qcEntry))
 
