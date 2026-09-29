@@ -151,6 +151,18 @@ Quests that appear in the pin data but are missing from the database are fetched
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. The inserter refuses any
 quest that's already in the database.
 
+It inserts them without a category (category 0), and no menu entry reaches those. Run
+`Place-UncategorisedQuests.ps1 -WhatIf` afterwards, then without `-WhatIf`. It files each quest by
+the first of these that gives an answer:
+1. its Blizzard API area
+2. the zone that contains that area on Blizzard's map
+3. the map its pin is on
+4. its own zone text
+
+A quest in a category that no menu entry reaches can still be found by search, but not by
+browsing. After adding categories, check every category that holds quests has an entry in
+`qcMenu.lua`.
+
 ### 7. Quests that may no longer be obtainable
 
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables
