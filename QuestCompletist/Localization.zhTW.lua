@@ -183,7 +183,6 @@ qcLocalize = {
 	THEDRAGONSSPINE = "The Dragon`s Spine",
 	WARFRONTCONTRIBUTION = "Warfront Contribution",
 	ISLANDEXPEDITIONS = "Island Expeditions",
-	CLASSCAMPAINS = "Class Campains",
 	TERRACEOFENLESSSPRINGS = "豐泉台",
 	PLAYERVSPLAYER = "Player Vs Player",
 	HERITAGE = "Heritage",
@@ -241,7 +240,6 @@ qcLocalize = {
 	THEPRIMAISTFUTURE = "The Primalist Future",
 	THERONSWATCH = "Theron`s Watch",
 	VALDRAKKENACCORD = "Valdrakken Accord",
-	WHALLERSNOOK = "Whaler`s Nook",
 	KORRAKSREVENGE = "Korrak`s Revenge",
 	--TWW
 	TWW = "地心之戰",

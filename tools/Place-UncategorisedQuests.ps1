@@ -19,14 +19,37 @@ The category comes from, in order:
 Anything else stays where it is: hidden tracking entries with no zone at all, and the odd area
 with neither a category nor a map.
 
+-Refile takes catch-all categories whose quests should be filed properly too (1150 "Bfa Unknown"
+and 1050 "Legion Uncategorized" in October 2026). For those quests two more rules apply:
+  - Before the rest, a quest named "<category>: ..." ("Siege of Boralus: Crushing the Horde") goes
+    to that category.
+  - Between rules 2 and 3, a hand-written list maps the catch-all's own zone text to a category
+    ("Death Knight Campaign" -> the Death Knight class hall), below in $zoneTextRules.
+A quest is never filed in a category no menu entry reaches, nor back into the catch-all.
+
 Only field 5 changes. All-or-nothing: if any chosen quest isn't found exactly once, nothing is
 written.
 #>
 param(
     [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
     [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string[]]$Refile = @(),
     [switch]$WhatIf
 )
+
+$Refile = @($Refile | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+
+$zoneTextRules = @{
+    "1050" = @{
+        "Death Knight Campaign" = "1021"; "Demon Hunter Campaign" = "1010"; "Mardum, the Shattered Abyss" = "1010"
+        "Warlock Campaign" = "1017"; "Shaman Campaign" = "1014"; "Druid Campaign" = "1013"; "Monk Campaign" = "1015"
+        "Mage Campaign" = "1009"; "Legionfall Campaign" = "1002"; "Dalaran" = "1003"
+    }
+    "1150" = @{
+        "Time Rifts" = "1347"; "Zskera Vaults" = "1304"; "Vision of Orgrimmar" = "1133"; "Primalist Storms" = "1322"
+        "Death Knight Campaign" = "1021"; "Prey" = "1514"
+    }
+}
 
 $questFile = "$AddonDir\qcQuest.lua"
 $content = [System.IO.File]::ReadAllText($questFile, [System.Text.Encoding]::UTF8)
@@ -41,6 +64,12 @@ foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcQuestCategorie
     $key = Get-NameKey $m.Groups[2].Value
     if (-not $categoriesByName.ContainsKey($key)) { $categoriesByName[$key] = New-Object System.Collections.Generic.HashSet[string] }
     [void]$categoriesByName[$key].Add($id)
+}
+
+$inMenu = New-Object System.Collections.Generic.HashSet[string]
+foreach ($line in [System.IO.File]::ReadAllLines("$AddonDir\qcMenu.lua")) {
+    if ($line -match '^\s*--') { continue }
+    foreach ($m in [regex]::Matches($line, 'arg1=(\d+),')) { [void]$inMenu.Add($m.Groups[1].Value) }
 }
 
 $categoryOfMap = @{}
@@ -87,18 +116,21 @@ function Get-ContainingCategory($areaName) {
     return $null
 }
 
-$entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"((?:[^"\\]|\\.)*)",)(-?\d+),'
+$entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?<name>(?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)",)(-?\d+),'
 $place = @{}
 $rules = @{}
 foreach ($m in [regex]::Matches($content, $entryPattern)) {
     $questId = $m.Groups[2].Value
     $zoneText = $m.Groups[3].Value
     $current = $m.Groups[4].Value
-    if ($current -ne "0" -and $categoryName.ContainsKey($current)) { continue }
+    $refiling = $Refile -contains $current
+    if (-not $refiling -and $current -ne "0" -and $categoryName.ContainsKey($current)) { continue }
+    $usable = { param($c) $inMenu.Contains($c) -and $c -ne $current }
 
     # Wrapped outside the if: an if that yields one item unwraps it to a bare string, and [0] then
     # picks its first character (category 67 became 6).
     $pins = @(if ($pinCategories.ContainsKey($questId)) { $pinCategories[$questId] })
+    $pins = @($pins | Where-Object { & $usable $_ })
     $target = $null; $rule = $null
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     $candidates = $null
@@ -108,19 +140,39 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
         if ($area.Success) { $areaName = $area.Groups[1].Value; $candidates = $categoriesByName[(Get-NameKey $areaName)] }
     }
     $containing = if ($areaName -and -not $candidates) { Get-ContainingCategory $areaName }
-    $zoneMatches = if ($zoneText) { $categoriesByName[(Get-NameKey $zoneText)] }
-    if ($candidates) {
-        if ($candidates.Count -eq 1) { $target = @($candidates)[0]; $rule = "API area" }
-        else {
-            $picked = @($pins | Where-Object { $candidates.Contains($_) })
-            if ($picked.Count -eq 1) { $target = $picked[0]; $rule = "API area, pin picks between same-named categories" }
+    $zoneMatches = @(if ($zoneText -and $categoriesByName.ContainsKey((Get-NameKey $zoneText))) { $categoriesByName[(Get-NameKey $zoneText)] })
+    $zoneMatches = @($zoneMatches | Where-Object { & $usable $_ })
+    $ambiguous = $false
+
+    if ($refiling) {
+        $prefix = [regex]::Match($m.Groups["name"].Value, '^(.+?):\s')
+        if ($prefix.Success) {
+            $named = @(if ($categoriesByName.ContainsKey((Get-NameKey $prefix.Groups[1].Value))) { $categoriesByName[(Get-NameKey $prefix.Groups[1].Value)] })
+            $named = @($named | Where-Object { & $usable $_ })
+            if ($named.Count -eq 1) { $target = $named[0]; $rule = "quest named after the category" }
         }
-    } elseif ($containing) {
-        $target = $containing; $rule = "zone containing the API area"
-    } elseif ($pins.Count -eq 1) {
-        $target = $pins[0]; $rule = "pin's map"
-    } elseif ($zoneMatches -and $zoneMatches.Count -eq 1) {
-        $target = @($zoneMatches)[0]; $rule = "our zone text"
+    }
+    if (-not $target) {
+        if ($candidates) {
+            $usableCandidates = @($candidates | Where-Object { & $usable $_ })
+            if ($usableCandidates.Count -eq 1) { $target = $usableCandidates[0]; $rule = "API area" }
+            elseif ($usableCandidates.Count -gt 1) {
+                $picked = @($pins | Where-Object { $usableCandidates -contains $_ })
+                if ($picked.Count -eq 1) { $target = $picked[0]; $rule = "API area, pin picks between same-named categories" }
+                else { $ambiguous = $true }
+            }
+        } elseif ($containing -and (& $usable $containing)) {
+            $target = $containing; $rule = "zone containing the API area"
+        }
+    }
+    if (-not $target -and $refiling -and $zoneTextRules.ContainsKey($current) -and $zoneTextRules[$current].ContainsKey($zoneText)) {
+        $handTarget = $zoneTextRules[$current][$zoneText]
+        if (-not (& $usable $handTarget)) { throw "Zone text rule '$zoneText' points at category $handTarget, which no menu entry reaches" }
+        $target = $handTarget; $rule = "catch-all zone text, by hand"
+    }
+    if (-not $target -and -not $ambiguous) {
+        if ($pins.Count -eq 1) { $target = $pins[0]; $rule = "pin's map" }
+        elseif ($zoneMatches.Count -eq 1) { $target = $zoneMatches[0]; $rule = "our zone text" }
     }
     if ($target) {
         $place[$questId] = $target
