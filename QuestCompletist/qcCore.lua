@@ -90,6 +90,15 @@ local QC_PIN_ICONS = {
 	[6]=QC_ICON_SPECIAL, [7]=QC_ICON_WEEKLY, [8]=QC_ICON_MONTHLY, [9]=QC_ICON_CLASS,
 	[10]=QC_ICON_KILL, [11]=QC_ICON_SPECIAL,
 }
+-- Which icon a merged pin shows: a specific one-time quest, then a plain one, then a recurring one
+-- (unranked). A completionist is after the one-time quests, and Blizzard's NPC markers agree.
+local QC_PIN_ICON_RANK = {
+	[QC_ICON_SPECIAL]=3, [QC_ICON_CLASS]=3, [QC_ICON_KILL]=3, [QC_ICON_SEASONAL]=3,
+	[QC_ICON_PROFESSION]=3, [QC_ICON_NORMAL]=2,
+}
+for _, icon in pairs(QC_ICON_BY_PROFESSION_BIT) do
+	QC_PIN_ICON_RANK[icon] = 3
+end
 
 local function qcProfessionIcon(professionMask)
 	return QC_ICON_BY_PROFESSION_BIT[professionMask] or QC_ICON_PROFESSION
@@ -1599,14 +1608,8 @@ function qcPinMixin:OnLoad()
     self:SetScalingLimits(1, 1.0, 1.0)
 end
 
-function qcPinMixin:OnAcquired(pinData)
-    self.PinData = pinData
-    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
-    self:SetPosition(pinData[5] / 100, pinData[6] / 100)
-    self:SetSize(24, 24)
-
+local function qcSinglePinIcon(pinData)
     local icon = pinData[2]
-    local pinIcon
     if icon == 3 then
         local professionMask = 0
         for _, questId in ipairs(pinData[7]) do
@@ -1615,13 +1618,35 @@ function qcPinMixin:OnAcquired(pinData)
                 professionMask = bit.bor(professionMask, quest[10])
             end
         end
-        pinIcon = qcProfessionIcon(professionMask)
+        return qcProfessionIcon(professionMask)
     elseif icon == 1 then
-        pinIcon = qcNormalPinIcon(pinData[7])
-    else
-        pinIcon = QC_PIN_ICONS[icon] or QC_ICON_NORMAL
+        return qcNormalPinIcon(pinData[7])
     end
-    qcSetIcon(self.Texture, pinIcon)
+    return QC_PIN_ICONS[icon] or QC_ICON_NORMAL
+end
+
+local function qcPinIcon(pinData)
+    if not pinData.stack then
+        return qcSinglePinIcon(pinData)
+    end
+    local best, bestRank
+    for _, member in ipairs(pinData.stack) do
+        local icon = qcSinglePinIcon(member)
+        local rank = QC_PIN_ICON_RANK[icon] or 1
+        if not best or rank > bestRank then
+            best, bestRank = icon, rank
+        end
+    end
+    return best
+end
+
+function qcPinMixin:OnAcquired(pinData)
+    self.PinData = pinData
+    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
+    self:SetPosition(pinData[5] / 100, pinData[6] / 100)
+    self:SetSize(24, 24)
+
+    qcSetIcon(self.Texture, qcPinIcon(pinData))
 
     -- Initialize isGrey as true, and turn it to false if ANY quest is available
     local isGrey = true
@@ -1645,32 +1670,7 @@ function qcPinMixin:OnAcquired(pinData)
     end
 end
 
-function qcPinMixin:OnMouseEnter()
-    local pinData = self.PinData
-    if not pinData then return end
-
-    local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
-    local x, y = self:GetCenter()
-    local anchorPoint = "ANCHOR_RIGHT"
-    if x and mapWidth and x > mapWidth * 0.75 then
-        anchorPoint = "ANCHOR_LEFT"
-    end
-    if y and mapHeight and y > mapHeight * 0.75 then
-        anchorPoint = "ANCHOR_BOTTOM"
-    end
-
-    qcMapTooltip:SetOwner(self, anchorPoint)
-    qcMapTooltip:ClearLines()
-
-    if qcMapTooltip.qcIcons then
-        for _, icon in ipairs(qcMapTooltip.qcIcons) do
-            icon:Hide()
-            icon:SetParent(nil)
-        end
-        wipe(qcMapTooltip.qcIcons)
-    end
-    qcMapTooltip.qcIcons = {}
-
+local function qcAddPinToTooltip(pinData)
     if pinData[3] == 0 then
         if pinData[4] then
             qcMapTooltip:AddLine(pinData[4])
@@ -1719,6 +1719,40 @@ function qcPinMixin:OnMouseEnter()
     if pinData[8] then
         qcMapTooltip:AddLine(string.format("|cffabd473%s|r", pinData[8]), nil, nil, nil, true)
     end
+end
+
+function qcPinMixin:OnMouseEnter()
+    local pinData = self.PinData
+    if not pinData then return end
+
+    local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
+    local x, y = self:GetCenter()
+    local anchorPoint = "ANCHOR_RIGHT"
+    if x and mapWidth and x > mapWidth * 0.75 then
+        anchorPoint = "ANCHOR_LEFT"
+    end
+    if y and mapHeight and y > mapHeight * 0.75 then
+        anchorPoint = "ANCHOR_BOTTOM"
+    end
+
+    qcMapTooltip:SetOwner(self, anchorPoint)
+    qcMapTooltip:ClearLines()
+
+    if qcMapTooltip.qcIcons then
+        for _, icon in ipairs(qcMapTooltip.qcIcons) do
+            icon:Hide()
+            icon:SetParent(nil)
+        end
+        wipe(qcMapTooltip.qcIcons)
+    end
+    qcMapTooltip.qcIcons = {}
+
+    for index, member in ipairs(pinData.stack or {pinData}) do
+        if index > 1 then
+            qcMapTooltip:AddLine(" ")
+        end
+        qcAddPinToTooltip(member)
+    end
 
     qcMapTooltip:Show()
 end
@@ -1732,6 +1766,37 @@ function qcPinMixin:OnMouseLeave()
         end
         wipe(qcMapTooltip.qcIcons)
     end
+end
+
+-- Pins at the same spot draw on top of each other, and only the top one can be hovered. After the
+-- filters have run, each spot still showing more than one pin gets a single pin standing in for
+-- them all; qcPinDB itself keeps one pin per quest giver.
+local function qcMergeStackedPins(pins)
+    local merged, bySpot = {}, {}
+    for _, pinData in ipairs(pins) do
+        local spot = pinData[1] .. ":" .. pinData[5] .. ":" .. pinData[6]
+        local stack = bySpot[spot]
+        if stack then
+            table.insert(stack, pinData)
+        else
+            bySpot[spot] = {pinData}
+            table.insert(merged, bySpot[spot])
+        end
+    end
+    for i, stack in ipairs(merged) do
+        if #stack == 1 then
+            merged[i] = stack[1]
+        else
+            local first, quests = stack[1], {}
+            for _, member in ipairs(stack) do
+                for _, questId in ipairs(member[7]) do
+                    table.insert(quests, questId)
+                end
+            end
+            merged[i] = {first[1], first[2], first[3], first[4], first[5], first[6], quests, stack = stack}
+        end
+    end
+    return merged
 end
 
 qcMapDataProvider = CreateFromMixins(MapCanvasDataProviderMixin)
@@ -2011,7 +2076,7 @@ end
     end
 end
 
-    for pinIndex, pinData in pairs(qcPins) do
+    for _, pinData in ipairs(qcMergeStackedPins(qcPins)) do
         self:GetMap():AcquirePin("qcPinTemplate", pinData)
     end
 end
