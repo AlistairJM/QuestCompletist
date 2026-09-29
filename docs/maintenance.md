@@ -133,6 +133,8 @@ other client tables: classes, professions, covenants, dungeons, achievement cate
 events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
 `qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
 Classic lacks some of these game functions, so those categories fall back to our translations.
+The same tool writes `clientName` into `qcMenu.lua` for the menu headings it lists (continents,
+expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
 
 ### 6. Map pins
 
