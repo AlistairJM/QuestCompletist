@@ -95,6 +95,15 @@ local function qcProfessionIcon(professionMask)
 	return QC_ICON_BY_PROFESSION_BIT[professionMask] or QC_ICON_PROFESSION
 end
 
+-- Type 128 holds both world quests and weeklies, since both reset weekly; the client knows which.
+-- Classic has no IsWorldQuest, and no world quests either.
+local function qcType128Icon(questId)
+	if C_QuestLog.IsWorldQuest and C_QuestLog.IsWorldQuest(questId) then
+		return QC_ICON_WORLD
+	end
+	return QC_ICON_WEEKLY
+end
+
 -- Textures are reused between quests and keep their texcoords. An atlas drawn over leftover
 -- texcoords shows only a corner of the icon - usually transparent - so both paths reset them.
 local function qcSetIcon(texture, icon)
@@ -574,7 +583,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 				qcSetIcon(questRecord.QuestIcon, QC_ICON_SEASONAL)
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 128) then
-				qcSetIcon(questRecord.QuestIcon, QC_ICON_WORLD)
+				qcSetIcon(questRecord.QuestIcon, qcType128Icon(questId))
 				questRecord.QuestName:SetTextColor(0.0941176470588235, 0.6274509803921569, 0.9411764705882353, 1.0)
 			else
 				qcSetIcon(questRecord.QuestIcon, QC_ICON_NORMAL)
@@ -1653,7 +1662,7 @@ function qcPinMixin:OnMouseEnter()
             if questData[6] == 4 then
                 qcSetIcon(texture, QC_ICON_DAILY)
             elseif questData[6] == 128 then
-                qcSetIcon(texture, QC_ICON_WEEKLY)
+                qcSetIcon(texture, qcType128Icon(qcEntry))
             elseif questData[6] == 2 then
                 qcSetIcon(texture, QC_ICON_REPEATABLE)
             elseif qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
