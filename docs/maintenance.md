@@ -83,6 +83,10 @@ The decisions from that cleanup are in
 [plans/quest-database-accuracy-cleanup.md](plans/quest-database-accuracy-cleanup.md).
 `Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time.
 
+To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-decisions.csv` with
+`Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
+KEPT rather than raising it again, unless our value changes.
+
 ### 2. Reputation rewards
 
 `Compare-QuestReputation.ps1` compares `qcQuestReputation` against the API cache from step 1 and
