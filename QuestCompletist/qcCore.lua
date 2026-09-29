@@ -1075,7 +1075,14 @@ function qcUpdateTooltip(index)
         -- Setup tooltip
         qcQuestInformationTooltip:SetOwner(qcQuestCompletistUI, "ANCHOR_BOTTOMRIGHT", -30, 500)
         qcQuestInformationTooltip:ClearLines()
-        qcQuestInformationTooltip:SetHyperlink(stringFormat("quest:%d", questId))
+        -- Without the quest's data, SetHyperlink leaves the tooltip unable to show at all, even the
+        -- lines added after it, so name the quest ourselves until the data arrives.
+        if HaveQuestData(questId) then
+            qcQuestInformationTooltip:SetHyperlink(stringFormat("quest:%d", questId))
+        else
+            qcQuestInformationTooltip:AddLine(qcQuestDatabase[questId][2], 1, 1, 1)
+            qcQuestInformationTooltip:AddLine("Quest details not available from the game", 0.5, 0.5, 0.5)
+        end
         qcQuestInformationTooltip:AddLine(" ")
         qcQuestInformationTooltip:AddDoubleLine("Quest ID:", stringFormat("|cFF69CCF0%d|r", questId))
         qcQuestInformationTooltip:AddLine(" ")
