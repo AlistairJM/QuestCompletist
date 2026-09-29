@@ -169,6 +169,10 @@ SLASH_QUESTCOMPLETIST1 = "/qc"
 SLASH_QUESTCOMPLETIST2 = "/questc"
 
 SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
+	if (msg and string.lower(msg):match("^%s*localecheck") and qcLocaleProbe) then
+		qcLocaleProbe()
+		return
+	end
 	ShowUIPanel(qcQuestCompletistUI)
 end
 

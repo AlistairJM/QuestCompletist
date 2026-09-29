@@ -2,7 +2,7 @@
 ## Version: 110.0
 ## Title: Quest Completist
 ## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
-## SavedVariables: qcSettings qcWorkingDB qcWorkingLog
+## SavedVariables: qcSettings qcWorkingDB qcWorkingLog qcLocaleProbeResults
 ## SavedVariablesPerCharacter: qcCompletedQuests
 
 Localization.enUS.lua
@@ -21,4 +21,5 @@ qcMenu.lua
 qcPinDB.lua
 qcQuest.lua
 qcCore.lua
+qcLocaleProbe.lua
 QuestCompletist.xml
