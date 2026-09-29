@@ -214,6 +214,7 @@ twice:
 - `Fix-QuestDatabaseIssues.ps1`
 - `Relocate-GapQuestEntries.ps1`
 - `Add-DungeonCategories.ps1`
+- `Add-MissingMenuEntries.ps1`
 - `Retype-OneTimeFamilies.ps1`, a hand-judged list of quests
 - `Derive-IconTypeMapping.ps1`, analysis only
 
