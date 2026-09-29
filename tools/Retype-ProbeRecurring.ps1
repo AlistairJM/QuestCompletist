@@ -30,8 +30,17 @@ foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "(\d+)\|[^|]*\|(\d+),[
 }
 if (-not $recurring.Count) { throw "No loaded Recurring answers for type-1 quests in $ProbeResults" }
 
+$questFile = "$AddonDir\qcQuest.lua"
+$content = [System.IO.File]::ReadAllText($questFile, [System.Text.Encoding]::UTF8)
+$entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",-?\d+,)1,'
+# The probe recorded each quest's type as it was then; only quests still typed 1 are candidates,
+# so a rerun after an earlier retype finds only new cases.
+$stillNormal = @{}
+foreach ($m in [regex]::Matches($content, $entryPattern)) { $stillNormal[$m.Groups[2].Value] = $true }
+
 $retype = @{}
 foreach ($questId in $recurring.Keys) {
+    if (-not $stillNormal.ContainsKey($questId)) { continue }
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     if (-not (Test-Path $cached)) { continue }
     $json = [System.IO.File]::ReadAllText($cached)
@@ -42,9 +51,6 @@ foreach ($questId in $recurring.Keys) {
     elseif ($isWeekly) { $retype[$questId] = 128 }
 }
 
-$questFile = "$AddonDir\qcQuest.lua"
-$content = [System.IO.File]::ReadAllText($questFile, [System.Text.Encoding]::UTF8)
-$entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",-?\d+,)1,'
 $retyped = 0
 $content = [regex]::Replace($content, $entryPattern, {
     param($m)
