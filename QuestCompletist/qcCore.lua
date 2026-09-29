@@ -15,7 +15,6 @@ local qcCategoryQuests = {}
 --[[ Vars ]]--
 local qcCurrentScrollPosition = 1
 local qcMapTooltip = nil
-local qcQuestReputationTooltip = nil
 local qcQuestInformationTooltip = nil
 local qcToastTooltip = nil
 local qcNewDataAlertTooltip = nil
@@ -1182,34 +1181,19 @@ function qcUpdateTooltip(index)
         end
 
         if hasReputation then
-            local factionNames = {}
+            qcQuestInformationTooltip:AddLine(" ")
+            qcQuestInformationTooltip:AddLine(GetText("COMBAT_TEXT_SHOW_REPUTATION_TEXT"))
+
             for _, factionId in ipairs(factionIds) do
-                factionNames[#factionNames + 1] = qcFactions[factionId] or tostring(factionId)
-            end
-            qcQuestInformationTooltip:AddDoubleLine("Faction:", stringFormat("%s%s", COLOUR_DRUID, table.concat(factionNames, ", ")))
-
-            qcQuestReputationTooltip:SetOwner(qcQuestInformationTooltip, "ANCHOR_BOTTOMRIGHT", -qcQuestInformationTooltip:GetWidth())
-            qcQuestReputationTooltip:ClearLines()
-            qcQuestReputationTooltip:AddLine(GetText("COMBAT_TEXT_SHOW_REPUTATION_TEXT"))
-            qcQuestReputationTooltip:AddLine(" ")
-
-            for i, factionId in ipairs(factionIds) do
-                qcQuestReputationTooltip:AddDoubleLine(
-                    factionNames[i],
+                qcQuestInformationTooltip:AddDoubleLine(
+                    "  " .. (qcFactions[factionId] or tostring(factionId)),
                     stringFormat("%s%d rep", COLOUR_DRUID, reputationEntries[factionId])
                 )
             end
-
-            qcQuestReputationTooltip:Show()
-        else
-            qcQuestReputationTooltip:Hide()
         end
 
         -- Make sure the main tooltip is shown
         qcQuestInformationTooltip:Show()
-
-    else
-        qcQuestReputationTooltip:Hide()
     end
 end
 
@@ -1293,7 +1277,6 @@ end
 
 function qcCloseTooltip()
 	qcQuestInformationTooltip:Hide()
-	qcQuestReputationTooltip:Hide()
 end
 
 local function qcUpdateCompletedQuest(questId) -- *
@@ -1427,11 +1410,6 @@ function qcMapTooltipSetup() -- *
 			qcMapTooltip:SetScale(1/self:GetScale())
 		end
 	)
-end
-
-function qcQuestReputationTooltipSetup() -- *
-	qcQuestReputationTooltip = CreateFrame("GameTooltip", "qcQuestReputationTooltip", qcQuestCompletistUI, "GameTooltipTemplate")
-	qcQuestReputationTooltip:SetFrameStrata("TOOLTIP")
 end
 
 function qcQuestInformationTooltipSetup() -- *
@@ -2577,7 +2555,6 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
 	self:SetScript("OnEvent", qcEventHandler)
 	qcQuestInformationTooltipSetup()
-	qcQuestReputationTooltipSetup()
 	qcMapTooltipSetup()
 	qcToastTooltipSetup()
 	qcNewDataAlertTooltipSetup()
