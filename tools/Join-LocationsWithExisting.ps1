@@ -37,17 +37,23 @@ foreach ($loc in $newLocations) {
         continue
     }
 
-    # A quest can have multiple old pins (rare) - just use the first for this pass
+    # A quest offered in several places has a pin in each (1,800+ of them); compare against the
+    # nearest pin on the same map, or comparing against another zone's pin reports false drift.
+    $sameMap = @($existingByQuest[$qid] | Where-Object { $_.OldUiMapID -eq $loc.UiMapID })
     $old = $existingByQuest[$qid][0]
+    $dist = $null
+    foreach ($candidate in $sameMap) {
+        $dx = [double]$loc.MapX - [double]$candidate.OldMapX
+        $dy = [double]$loc.MapY - [double]$candidate.OldMapY
+        $d = [math]::Sqrt($dx * $dx + $dy * $dy)
+        if ($null -eq $dist -or $d -lt $dist) { $dist = $d; $old = $candidate }
+    }
     $driftStatus = ""
 
-    if ($old.OldUiMapID -ne $loc.UiMapID) {
+    if (-not $sameMap.Count) {
         $mapIdDrift++
         $driftStatus = "MAP_ID_DRIFT"
     } else {
-        $dx = [double]$loc.MapX - [double]$old.OldMapX
-        $dy = [double]$loc.MapY - [double]$old.OldMapY
-        $dist = [math]::Sqrt($dx * $dx + $dy * $dy)
         if ($dist -gt 5) {
             $sameMapPositionDrift++
             $driftStatus = "POSITION_DRIFT ($([math]::Round($dist,1)) pts)"
