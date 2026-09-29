@@ -1047,42 +1047,7 @@ function GetZoneNameFromZoneID(zoneId)
     return zoneName
 end
 
--- Function to perform a topological sort on storyline quests
-local function topologicalSortStorylineQuests(storylineQuests)
-    local sortedQuests = {}
-    local visited = {}
-    local tempMarked = {}
-
-    -- Function to visit each node (quest) recursively
-    local function visit(questId)
-        if tempMarked[questId] then
-            return -- Detect cycles, but we assume there's no cycle in quest prerequisites
-        end
-        if not visited[questId] then
-            tempMarked[questId] = true
-
-            local questData = qcQuestDatabase[questId]
-            if questData then
-                local prereqQuestId = questData[14] -- Get the prerequisite quest ID
-                if prereqQuestId and prereqQuestId ~= 0 then
-                    visit(prereqQuestId) -- Recursively visit the prerequisite quest
-                end
-            end
-
-            tempMarked[questId] = false
-            visited[questId] = true
-            table.insert(sortedQuests, questId) -- Add to sorted list (even if missing)
-        end
-    end
-
-    -- Visit all quests in the storyline
-    for _, questData in ipairs(storylineQuests) do
-        local questId = type(questData) == "table" and questData[1] or questData
-        visit(questId)
-    end
-
-    return sortedQuests
-end
+local QC_STORYLINE_WINDOW = 15
 
 
 -- Function to update the quest tooltip
@@ -1121,40 +1086,51 @@ function qcUpdateTooltip(index)
             att_HookBackup = nil
         end
 
-        -- Storyline information
+        -- Storyline information. qcQuestLines holds each storyline's quests in Blizzard's order;
+        -- a whole-zone storyline runs to 200+ quests, so only a window around this one is shown.
         local storylineId = qcQuestDatabase[questId][13]
-        if storylineId and qcQuestLines[storylineId] then
-            local storylineName = qcQuestLines[storylineId]
-            qcQuestInformationTooltip:AddDoubleLine("Storyline:", string.format("%s%s", COLOUR_HUNTER, storylineName))
-            qcQuestInformationTooltip:AddLine(" ")
-
-            -- Collect all quests in this storyline
-            local storylineQuests = {}
-            for id, questData in pairs(qcQuestDatabase) do
-                if questData[13] == storylineId then
-                    table.insert(storylineQuests, questData)
+        local storyline = storylineId and qcQuestLines[storylineId]
+        if storyline then
+            -- Older zones share one storyline between both factions; follow the list's faction filter.
+            local factionFlag = (qcSettings.QC_ML_HIDE_FACTION == 1) and qcFactionBits[string.upper(UnitFactionGroup("player") or "")]
+            local lineQuests = {}
+            for _, lineQuestId in ipairs(storyline.quests) do
+                local lineQuest = qcQuestDatabase[lineQuestId]
+                if lineQuest and (lineQuestId == questId or not factionFlag or bit.band(lineQuest[7], factionFlag) ~= 0) then
+                    table.insert(lineQuests, lineQuestId)
                 end
             end
+            local position = 1
+            for i, lineQuestId in ipairs(lineQuests) do
+                if lineQuestId == questId then
+                    position = i
+                    break
+                end
+            end
+            qcQuestInformationTooltip:AddDoubleLine("Storyline:", stringFormat("%s%s|r |cFF808080(%d of %d)|r", COLOUR_HUNTER, storyline.name, position, #lineQuests))
+            qcQuestInformationTooltip:AddLine(" ")
 
-            -- Sort the quests by prerequisite dependencies
-            local sortedQuestIds = topologicalSortStorylineQuests(storylineQuests)
-
-            -- Display each quest in the storyline with its completion status
-            for _, sortedQuestId in ipairs(sortedQuestIds) do
-                local questData = qcQuestDatabase[sortedQuestId]
+            local first = math.max(1, position - math.floor(QC_STORYLINE_WINDOW / 2))
+            local last = math.min(#lineQuests, first + QC_STORYLINE_WINDOW - 1)
+            first = math.max(1, last - QC_STORYLINE_WINDOW + 1)
+            if first > 1 then
+                qcQuestInformationTooltip:AddLine(stringFormat("|cFF808080   ... %d earlier|r", first - 1))
+            end
+            for i = first, last do
+                local lineQuestId = lineQuests[i]
+                local questData = qcQuestDatabase[lineQuestId]
                 if questData then
-                    local questName = questData[2]
                     local questStatus
-                    if C_QuestLog.IsOnQuest(sortedQuestId) then
+                    if C_QuestLog.IsOnQuest(lineQuestId) then
                         questStatus = "|cFFFFFF00You are on this quest|r"
                     else
-                        questStatus = C_QuestLog.IsQuestFlaggedCompleted(sortedQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
+                        questStatus = C_QuestLog.IsQuestFlaggedCompleted(lineQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
                     end
-                    qcQuestInformationTooltip:AddDoubleLine(" - " .. questName, questStatus)
-                else
-                    -- Handle missing quest gracefully
-                    qcQuestInformationTooltip:AddDoubleLine(" - Missing quest (" .. tostring(sortedQuestId) .. ")", "|cFFFF0000Missing|r")
+                    qcQuestInformationTooltip:AddDoubleLine(((lineQuestId == questId) and " > " or " - ") .. questData[2], questStatus)
                 end
+            end
+            if last < #lineQuests then
+                qcQuestInformationTooltip:AddLine(stringFormat("|cFF808080   ... %d more|r", #lineQuests - last))
             end
 
             qcQuestInformationTooltip:AddLine(" ")
