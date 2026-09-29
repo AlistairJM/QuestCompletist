@@ -13,12 +13,11 @@
     <Size x="266" y="16"/>
     <Layers>
       <Layer level="ARTWORK">
-        <Texture name="$parentQuestIcon" parentKey="QuestIcon" file="Interface\Addons\QuestCompletist\Images\QCIcons" hidden="true">
+        <Texture name="$parentQuestIcon" parentKey="QuestIcon" atlas="QuestNormal" hidden="true">
           <Size x="16" y="16"/>
           <Anchors>
             <Anchor point="TOPLEFT" x="2" y="0"/>
           </Anchors>
-          <TexCoords left="0" right="0.125" top="0" bottom="0.25"/>
         </Texture>
         <Texture name="$parentFactionIcon" parentKey="FactionIcon" file="Interface\MINIMAP\ObjectIcons" hidden="true">
           <Size x="16" y="16"/>

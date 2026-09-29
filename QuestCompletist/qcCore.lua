@@ -95,10 +95,12 @@ local function qcProfessionIcon(professionMask)
 	return QC_ICON_BY_PROFESSION_BIT[professionMask] or QC_ICON_PROFESSION
 end
 
--- Textures are reused between quests, so a file icon resets the texcoords an atlas may have left.
+-- Textures are reused between quests and keep their texcoords. An atlas drawn over leftover
+-- texcoords shows only a corner of the icon - usually transparent - so both paths reset them.
 local function qcSetIcon(texture, icon)
 	if icon.atlas then
-		texture:SetAtlas(icon.atlas)
+		texture:SetTexCoord(unpack(QC_FULL_TEXCOORDS))
+		texture:SetAtlas(icon.atlas, false, nil, true)
 	else
 		texture:SetTexture(icon.file)
 		texture:SetTexCoord(unpack(icon.coords or QC_FULL_TEXCOORDS))
