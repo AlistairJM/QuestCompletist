@@ -44,24 +44,68 @@ local COLOUR_SHAMAN = "|cFF0070DE"
 local COLOUR_WARLOCK = "|cFF9482C9"
 local COLOUR_WARRIOR = "|cFFC79C6E"
 
-local QC_ICON_COORDS_NORMAL = {0,0.125,0,0.25}
-local QC_ICON_COORDS_REPEATABLE = {0.125,0.25,0.25,0.50}
-local QC_ICON_COORDS_DAILY = {0,0.125,0.25,0.50}
-local QC_ICON_COORDS_WORLD = {0,0.125,0.25,0.50}
-local QC_ICON_COORDS_SPECIAL = {0,0.125,0,0.25}
-local QC_ICON_COORDS_WEEKLY = {0,0.125,0,0.25}
-local QC_ICON_COORDS_SEASONAL = {0,0.125,0.5,0.75}
-local QC_ICON_COORDS_PROFESSION = {0.625,0.75,0,0.25}
-local QC_ICON_COORDS_PROGRESS = {0.25,0.375,0.25,0.5}
-local QC_ICON_COORDS_READY = {0.125,0.25,0,0.25}
-local QC_ICON_COORDS_COMPLETE = {0.125,0.25,0.5,0.75}
-local QC_ICON_COORDS_UNATTAINABLE = {0.25,0.375,0.5,0.75}
-local QC_ICON_COORDS_ITEMDROPSTANDARD = {0.375,0.5,0,0.25}
-local QC_ICON_COORDS_ITEMDROPREPEATABLE = {0.375,0.5,0.25,0.5}
-local QC_ICON_COORDS_CLASS = {0.5,0.625,0,0.25}
-local QC_ICON_COORDS_KILL = {0.25,0.375,0,0.25}
---
-local QC_ICON_COORDS_UNAVAILABLE = {0.25,0.375,0,0.25}
+local QC_ICON_NORMAL = {atlas="QuestNormal"}
+local QC_ICON_READY = {atlas="QuestTurnin"}
+local QC_ICON_PROGRESS = {file="Interface\\GossipFrame\\IncompleteQuestIcon"}
+local QC_ICON_DAILY = {atlas="QuestDaily"}
+local QC_ICON_REPEATABLE = {atlas="QuestRepeatableTurnin"}
+local QC_ICON_WORLD = {atlas="worldquest-icon"}
+local QC_ICON_WEEKLY = {atlas="questlog-questtypeicon-weekly"}
+local QC_ICON_MONTHLY = {atlas="questlog-questtypeicon-monthly"}
+local QC_ICON_SPECIAL = {atlas="QuestLegendary"}
+local QC_ICON_CLASS = {atlas="questlog-questtypeicon-class"}
+local QC_ICON_COMPLETE = {atlas="common-icon-checkmark"}
+local QC_ICON_UNATTAINABLE = {atlas="common-icon-redx"}
+local QC_ICON_ALLIANCE = {atlas="poi-alliance"}
+local QC_ICON_HORDE = {atlas="poi-horde"}
+-- The client has no green or skull quest marker, so these still come from our own sheet, as does
+-- the profession icon for quests that don't name exactly one profession.
+local QC_ICON_SHEET = "Interface\\Addons\\QuestCompletist\\Images\\QCIcons"
+local QC_ICON_SEASONAL = {file=QC_ICON_SHEET, coords={0,0.125,0.5,0.75}}
+local QC_ICON_KILL = {file=QC_ICON_SHEET, coords={0.25,0.375,0,0.25}}
+local QC_ICON_PROFESSION = {file=QC_ICON_SHEET, coords={0.625,0.75,0,0.25}}
+-- Keyed by the qcProfessionBits value, so a quest's profession field indexes it directly.
+local QC_ICON_BY_PROFESSION_BIT = {
+	[1]={atlas="worldquest-icon-alchemy"},
+	[2]={atlas="worldquest-icon-blacksmithing"},
+	[4]={atlas="worldquest-icon-enchanting"},
+	[8]={atlas="worldquest-icon-engineering"},
+	[16]={atlas="worldquest-icon-inscription"},
+	[32]={atlas="worldquest-icon-jewelcrafting"},
+	[64]={atlas="worldquest-icon-leatherworking"},
+	[128]={atlas="worldquest-icon-tailoring"},
+	[256]={atlas="worldquest-icon-herbalism"},
+	[512]={atlas="worldquest-icon-mining"},
+	[1024]={atlas="worldquest-icon-skinning"},
+	[2048]={atlas="worldquest-icon-archaeology"},
+	[4096]={atlas="worldquest-icon-firstaid"},
+	[8192]={atlas="worldquest-icon-cooking"},
+	[16384]={atlas="worldquest-icon-fishing"},
+	[32768]={atlas="worldquest-icon-engineering"},
+}
+local QC_FULL_TEXCOORDS = {0,1,0,1}
+-- Map pin icon types from qcPinDB. Type 3 (profession) is resolved per pin from its quests.
+local QC_PIN_ICONS = {
+	[1]=QC_ICON_NORMAL, [2]=QC_ICON_REPEATABLE, [4]=QC_ICON_DAILY, [5]=QC_ICON_SEASONAL,
+	[6]=QC_ICON_SPECIAL, [7]=QC_ICON_WEEKLY, [8]=QC_ICON_MONTHLY, [9]=QC_ICON_CLASS,
+	[10]=QC_ICON_KILL, [11]=QC_ICON_SPECIAL,
+}
+
+local function qcProfessionIcon(professionMask)
+	return QC_ICON_BY_PROFESSION_BIT[professionMask] or QC_ICON_PROFESSION
+end
+
+-- Textures are reused between quests and keep their texcoords. An atlas drawn over leftover
+-- texcoords shows only a corner of the icon - usually transparent - so both paths reset them.
+local function qcSetIcon(texture, icon)
+	if icon.atlas then
+		texture:SetTexCoord(unpack(QC_FULL_TEXCOORDS))
+		texture:SetAtlas(icon.atlas, false, nil, true)
+	else
+		texture:SetTexture(icon.file)
+		texture:SetTexCoord(unpack(icon.coords or QC_FULL_TEXCOORDS))
+	end
+end
 
 local qcCategoryDropDownMenu = CreateFrame("Frame", "qcCategoryDropDownMenu")
 
@@ -509,41 +553,41 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_NORMAL))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_NORMAL)
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 2) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_REPEATABLE))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_REPEATABLE)
 				questRecord.QuestName:SetTextColor(0.0941176470588235, 0.6274509803921569, 0.9411764705882353, 1.0)
 			elseif (questType == 4) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_DAILY))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_DAILY)
 				questRecord.QuestName:SetTextColor(0.0941176470588235, 0.6274509803921569, 0.9411764705882353, 1.0)
 			elseif (questType == 8) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_SPECIAL))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_SPECIAL)
 				questRecord.QuestName:SetTextColor(1.0, 0.6156862745098039, 0.0862745098039216, 1.0)
 			elseif (questType == 16) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_NORMAL))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_NORMAL)
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 32) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_PROFESSION))
+				qcSetIcon(questRecord.QuestIcon, qcProfessionIcon(e[10]))
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 64) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_SEASONAL))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_SEASONAL)
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 128) then
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_WORLD))-- Todo?? Maybe make own worldquest icon
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_WORLD)
 				questRecord.QuestName:SetTextColor(0.0941176470588235, 0.6274509803921569, 0.9411764705882353, 1.0)
 			else
-				questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_NORMAL))
+				qcSetIcon(questRecord.QuestIcon, QC_ICON_NORMAL)
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			end
 			questRecord.QuestIcon:Show()
 			if ((questFaction == 0) or (questFaction == 3)) then
 				questRecord.FactionIcon:Hide()
 			elseif (questFaction == 1) then
-				questRecord.FactionIcon:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\AllianceIcon")
+				qcSetIcon(questRecord.FactionIcon, QC_ICON_ALLIANCE)
 				questRecord.FactionIcon:Show()
 			elseif(questFaction == 2) then
-				questRecord.FactionIcon:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\HordeIcon")
+				qcSetIcon(questRecord.FactionIcon, QC_ICON_HORDE)
 				questRecord.FactionIcon:Show()
 			else
 				questRecord.FactionIcon:Hide()
@@ -551,23 +595,23 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
             if not (C_QuestLog.GetLogIndexForQuestID(questId) == nil) then
                 local isComplete = C_QuestLog.IsComplete(questId)
                 if (isComplete) then
-                    questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_READY))
+                    qcSetIcon(questRecord.QuestIcon, QC_ICON_READY)
                     questRecord.QuestName:SetTextColor(1.0, 0.8196078431372549, 0.0, 1.0)
                 elseif (isComplete == false) then
-                    questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_PROGRESS))
+                    qcSetIcon(questRecord.QuestIcon, QC_ICON_PROGRESS)
                     questRecord.QuestName:SetTextColor(0.5803921568627451, 0.5882352941176471, 0.5803921568627451, 1.0)
                 else
-                    questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_NORMAL))
+                    qcSetIcon(questRecord.QuestIcon, QC_ICON_NORMAL)
                     questRecord.QuestName:SetTextColor(0.9372549019607843, 0.1490196078431373, 0.0627450980392157, 1.0)
                 end
             end	
 			if (qcCompletedQuests[questId]) then
 				if not ((questType == 2) or (questType == 4) or (questType == 128)) then
 					if (qcCompletedQuests[questId]["C"] == 1) then
-						questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_COMPLETE))
+						qcSetIcon(questRecord.QuestIcon, QC_ICON_COMPLETE)
 						questRecord.QuestName:SetTextColor(0.0, 1.0, 0.0, 1.0)
 					elseif (qcCompletedQuests[questId]["C"] == 2) then
-						questRecord.QuestIcon:SetTexCoord(unpack(QC_ICON_COORDS_UNATTAINABLE))
+						qcSetIcon(questRecord.QuestIcon, QC_ICON_UNATTAINABLE)
 						questRecord.QuestName:SetTextColor(0.77, 0.12, 0.23, 1.0)
 					end
 				end
@@ -1524,37 +1568,20 @@ function qcPinMixin:OnAcquired(pinData)
     self:SetSize(24, 24)
 
     local icon = pinData[2]
-    local iconCoords
-    if icon == 1 then
-        iconCoords = QC_ICON_COORDS_NORMAL
-    elseif icon == 2 then
-        iconCoords = QC_ICON_COORDS_REPEATABLE
-    elseif icon == 3 then
-        iconCoords = QC_ICON_COORDS_PROFESSION
-    elseif icon == 4 then
-        iconCoords = QC_ICON_COORDS_DAILY
-    elseif icon == 5 then
-        iconCoords = QC_ICON_COORDS_SEASONAL
-    elseif icon == 6 then
-        iconCoords = QC_ICON_COORDS_SPECIAL
-    elseif icon == 7 then
-        iconCoords = QC_ICON_COORDS_WEEKLY
-    elseif icon == 8 then
-        iconCoords = QC_ICON_COORDS_MONTHLY
-    elseif icon == 9 then
-        iconCoords = QC_ICON_COORDS_CLASS
-    elseif icon == 10 then
-        iconCoords = QC_ICON_COORDS_KILL
-    elseif icon == 11 then
-        iconCoords = QC_ICON_COORDS_LEGENDARY
+    local pinIcon
+    if icon == 3 then
+        local professionMask = 0
+        for _, questId in ipairs(pinData[7]) do
+            local quest = qcQuestDatabase[questId]
+            if quest then
+                professionMask = bit.bor(professionMask, quest[10])
+            end
+        end
+        pinIcon = qcProfessionIcon(professionMask)
     else
-        iconCoords = QC_ICON_COORDS_NORMAL or {0, 0, 1, 1}
+        pinIcon = QC_PIN_ICONS[icon] or QC_ICON_NORMAL
     end
-    if iconCoords then
-        self.Texture:SetTexCoord(unpack(iconCoords))
-    else
-        print("Error: iconCoords is nil for icon type " .. tostring(icon))
-    end
+    qcSetIcon(self.Texture, pinIcon)
 
     -- Initialize isGrey as true, and turn it to false if ANY quest is available
     local isGrey = true
@@ -1624,15 +1651,15 @@ function qcPinMixin:OnMouseEnter()
             texture:SetSize(baseSize, baseSize)
 
             if questData[6] == 4 then
-                texture:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\DailyQuestIcon")
+                qcSetIcon(texture, QC_ICON_DAILY)
             elseif questData[6] == 128 then
-                texture:SetAtlas("questlog-questtypeicon-weekly")
+                qcSetIcon(texture, QC_ICON_WEEKLY)
             elseif questData[6] == 2 then
-                texture:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\DailyActiveQuestIcon")
+                qcSetIcon(texture, QC_ICON_REPEATABLE)
             elseif qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
-                texture:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\QuestCompleteIcon")
+                qcSetIcon(texture, QC_ICON_COMPLETE)
             else
-                texture:SetTexture("Interface\\Addons\\QuestCompletist\\Images\\AvailableQuestIcon")
+                qcSetIcon(texture, QC_ICON_NORMAL)
             end
 
             qcMapTooltip:AddDoubleLine("    " .. qcColouredQuestName(qcEntry), string.format("|cffff7d0a[%d]|r", qcEntry))
