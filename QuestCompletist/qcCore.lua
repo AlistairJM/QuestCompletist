@@ -1661,49 +1661,64 @@ function qcPinMixin:OnAcquired(pinData)
     end
 end
 
-local function qcAddPinToTooltip(pinData)
-    if pinData[3] == 0 then
-        if pinData[4] then
-            qcMapTooltip:AddLine(pinData[4])
-        elseif pinData[8] then
-            qcMapTooltip:AddLine(string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"))
-        end
-    else
-        qcMapTooltip:AddDoubleLine(pinData[4] or string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r"), string.format("|cffff7d0a[%d]|r", pinData[3]))
+local function qcPinGiverName(pinData)
+    if pinData[4] then
+        return pinData[4]
+    elseif pinData[3] ~= 0 or pinData[8] then
+        return string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r")
     end
+end
 
-    for qcIndex, qcEntry in ipairs(pinData[7]) do
-        if #pinData[7] <= 10 and qcQuestDatabase[qcEntry] then
-            local questData = qcQuestDatabase[qcEntry]
-            local baseSize = 16
+local function qcHideTooltipIcons()
+    qcMapTooltip.qcIcons = qcMapTooltip.qcIcons or {}
+    for _, icon in ipairs(qcMapTooltip.qcIcons) do
+        icon:Hide()
+    end
+    qcMapTooltip.qcIconsUsed = 0
+end
 
-            local texture = qcMapTooltip:CreateTexture(nil, "OVERLAY")
-            texture:SetParent(qcMapTooltip)
-            texture:SetSize(baseSize, baseSize)
+local function qcAcquireTooltipIcon()
+    qcMapTooltip.qcIconsUsed = qcMapTooltip.qcIconsUsed + 1
+    local icon = qcMapTooltip.qcIcons[qcMapTooltip.qcIconsUsed]
+    if not icon then
+        icon = qcMapTooltip:CreateTexture(nil, "OVERLAY")
+        icon:SetSize(16, 16)
+        qcMapTooltip.qcIcons[qcMapTooltip.qcIconsUsed] = icon
+    end
+    return icon
+end
 
-            local lineIcon = qcRecurringQuestIcon(qcEntry, questData[6])
-            if not lineIcon then
-                if qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
-                    lineIcon = QC_ICON_COMPLETE
-                else
-                    lineIcon = QC_ICON_NORMAL
-                end
-            end
-            qcSetIcon(texture, lineIcon)
+local function qcAddGiverToTooltip(pinData, name)
+    if pinData[3] == 0 then
+        qcMapTooltip:AddLine(name)
+    else
+        qcMapTooltip:AddDoubleLine(name, string.format("|cffff7d0a[%d]|r", pinData[3]))
+    end
+end
 
+local function qcAddPinQuestsToTooltip(pinData)
+    for _, qcEntry in ipairs(pinData[7]) do
+        local questData = qcQuestDatabase[qcEntry]
+        if questData then
             qcMapTooltip:AddDoubleLine("    " .. qcColouredQuestName(qcEntry), string.format("|cffff7d0a[%d]|r", qcEntry))
-
             local line = _G["qcMapTooltipTextLeft" .. qcMapTooltip:NumLines()]
             if line then
-                texture:SetPoint("LEFT", line, "LEFT", -6, 0)
-                texture:Show()
-                table.insert(qcMapTooltip.qcIcons, texture)
-            else
-                texture:Hide()
+                local lineIcon = qcRecurringQuestIcon(qcEntry, questData[6])
+                if not lineIcon then
+                    if qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
+                        lineIcon = QC_ICON_COMPLETE
+                    else
+                        lineIcon = QC_ICON_NORMAL
+                    end
+                end
+                local icon = qcAcquireTooltipIcon()
+                qcSetIcon(icon, lineIcon)
+                icon:ClearAllPoints()
+                icon:SetPoint("LEFT", line, "LEFT", -6, 0)
+                icon:Show()
             end
         else
-            local questName = qcColouredQuestName(qcEntry) or "|cff808080Quest Missing in DB|r"
-            qcMapTooltip:AddDoubleLine("    " .. questName, string.format("|cffff7d0a[%d]|r", qcEntry))
+            qcMapTooltip:AddDoubleLine("    |cff808080Quest Missing in DB|r", string.format("|cffff7d0a[%d]|r", qcEntry))
         end
     end
 
@@ -1728,21 +1743,38 @@ function qcPinMixin:OnMouseEnter()
 
     qcMapTooltip:SetOwner(self, anchorPoint)
     qcMapTooltip:ClearLines()
+    qcHideTooltipIcons()
 
-    if qcMapTooltip.qcIcons then
-        for _, icon in ipairs(qcMapTooltip.qcIcons) do
-            icon:Hide()
-            icon:SetParent(nil)
+    -- Pins with no quest giver name are listed last under one heading, as their quests needn't
+    -- belong to the giver above them; pins sharing a name are listed as one giver.
+    local givers, giverByName, others = {}, {}, {}
+    for _, member in ipairs(pinData.stack or {pinData}) do
+        local name = qcPinGiverName(member)
+        if not name then
+            table.insert(others, member)
+        elseif giverByName[name] then
+            table.insert(giverByName[name].pins, member)
+        else
+            giverByName[name] = {name = name, pins = {member}}
+            table.insert(givers, giverByName[name])
         end
-        wipe(qcMapTooltip.qcIcons)
     end
-    qcMapTooltip.qcIcons = {}
 
-    for index, member in ipairs(pinData.stack or {pinData}) do
+    for index, giver in ipairs(givers) do
         if index > 1 then
             qcMapTooltip:AddLine(" ")
         end
-        qcAddPinToTooltip(member)
+        qcAddGiverToTooltip(giver.pins[1], giver.name)
+        for _, member in ipairs(giver.pins) do
+            qcAddPinQuestsToTooltip(member)
+        end
+    end
+    if #others > 0 and #givers > 0 then
+        qcMapTooltip:AddLine(" ")
+        qcMapTooltip:AddLine("|cff808080Other quests|r")
+    end
+    for _, member in ipairs(others) do
+        qcAddPinQuestsToTooltip(member)
     end
 
     qcMapTooltip:Show()
@@ -1750,13 +1782,7 @@ end
 
 function qcPinMixin:OnMouseLeave()
     qcMapTooltip:Hide()
-    if qcMapTooltip.qcIcons then
-        for _, icon in ipairs(qcMapTooltip.qcIcons) do
-            icon:Hide()
-            icon:SetParent(nil)
-        end
-        wipe(qcMapTooltip.qcIcons)
-    end
+    qcHideTooltipIcons()
 end
 
 -- Pins drawn within half a map point of each other overlap at any zoom, and only the top one can be
