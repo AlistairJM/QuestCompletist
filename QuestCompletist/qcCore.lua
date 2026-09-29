@@ -1250,6 +1250,37 @@ end
 -- End Tooltip when mouse over quest name
 
 
+-- A quest can have several pins (offered in more than one place, or by an NPC who moves around a
+-- map). Pick one: the nearest on the player's current map, otherwise the one on the lowest map ID.
+local function qcFindPinForQuest(questId)
+	local playerMap = C_Map.GetBestMapForUnit("player")
+	local playerPos = playerMap and C_Map.GetPlayerMapPosition(playerMap, "player")
+	local px, py
+	if playerPos then
+		px, py = playerPos:GetXY()
+		px, py = px * 100, py * 100
+	end
+	local bestMap, bestPin, bestDist, bestOnPlayerMap
+	for mapId, pins in pairs(qcPinDB) do
+		for _, pin in ipairs(pins) do
+			for _, pinQuestId in ipairs(pin[7] or {}) do
+				if pinQuestId == questId then
+					if mapId == playerMap and px then
+						local dist = (pin[5] - px) ^ 2 + (pin[6] - py) ^ 2
+						if not bestOnPlayerMap or dist < bestDist then
+							bestMap, bestPin, bestDist, bestOnPlayerMap = mapId, pin, dist, true
+						end
+					elseif not bestOnPlayerMap and (not bestMap or mapId < bestMap) then
+						bestMap, bestPin = mapId, pin
+					end
+					break
+				end
+			end
+		end
+	end
+	return bestMap, bestPin
+end
+
 function qcQuestClick(qcButtonIndex)
 	local qcQuestID = _G["qcMenuButton" .. qcButtonIndex].QuestID
 	if (IsLeftShiftKeyDown()) then --[[ User wants to toggle the completed status of a quest ]]--
@@ -1289,26 +1320,10 @@ function qcQuestClick(qcButtonIndex)
   else
 		-- print(string.format("%sLooking for Tom Tom.",QCADDON_CHAT_TITLE))
     if (C_AddOns.IsAddOnLoaded('TomTom')) then
-        local addedWayPoint;
-        -- print(string.format("%sLooking for quest in db.", QCADDON_CHAT_TITLE))
-        for qcMapIndex, npcList in pairs(qcPinDB) do
-            for _, qcInitiatorEntry in pairs(npcList) do
-                for _, qcInitiatorQuestEntry in pairs(qcInitiatorEntry[7] or {}) do
-                    if (qcInitiatorQuestEntry == qcQuestID) then
-                        local zoneID = qcMapIndex
-                        local x, y = qcInitiatorEntry[5] / 100, qcInitiatorEntry[6] / 100
-                        local title = qcInitiatorEntry[4]
-
-                        --print(string.format("%sFound quest. Zone: %s, Initiator: %s, Coordinates: %s, %s", QCADDON_CHAT_TITLE, zoneID, title, x, y)) -- Used for debuging
-                        
-                        TomTom:AddWaypoint(zoneID, x, y, {title = title})
-                        addedWayPoint = true
-                        break
-                    end
-                end
-            end
-        end
-        if (addedWayPoint) then
+        local mapId, pin = qcFindPinForQuest(qcQuestID)
+        if (mapId) then
+            local quest = qcQuestDatabase[qcQuestID]
+            TomTom:AddWaypoint(mapId, pin[5] / 100, pin[6] / 100, {title = pin[4] or (quest and quest[2])})
             TomTom:SetClosestWaypoint()
         end
     end
