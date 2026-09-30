@@ -67,7 +67,8 @@ It answers three things:
    C_QuestLog.GetTitleForQuestID(questId)`. If neither answers, it queues a load request and falls
    back to `e[2]`; nil for a quest that's in neither the game nor the database.
 2. **Load queue:** `qcRequestQuestData(questId)`, shared with the existing tooltip request:
-   - at most 4 in flight, first in first out;
+   - at most 4 in flight, newest first (as built: first in first out would load rows scrolled past
+     before the ones on screen), sent on the next frame so a whole redraw is queued before any is sent;
    - each request is freed after `QUEST_DATA_LOAD_RESULT` or after a 5 s timeout;
    - a quest that fails or times out is retried once, 30 s later, then left on its English name
      for the session (see the German results: some failures may be transient);
@@ -187,3 +188,12 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
 ## Status
 
 - 2026-09-30: plan written, decisions agreed. Phase 1 probe on `tools/quest-title-probe` (#99), run on enUS; results above. German cold-cache run done (results above; raw data kept in `tools/quest_title_probe_results.lua`, gitignored). Next: phase 2.
+- Phase 2 on `feat/localized-quest-names`. A scratch simulation (a fake clock, and a fake server
+  giving German names, failures, no answers, late answers and one-off failures) passes 27 checks:
+  rows, scrolling, the queue limit, timeouts and retries, task quests, sorting, search, the quest
+  tooltip and pin tooltips. Nine deliberate breakages were each caught. It found one real problem,
+  now fixed: opening a category while scrolled down elsewhere briefly draws the old scroll position,
+  and sending requests immediately let those invisible rows take the first slots. #96's list
+  simulations give identical output on master and the branch, and the reachability report is
+  unchanged. Not yet tested in game. Still to measure there: any pause on the first search of a
+  session, which checks all ~35k quests once.
