@@ -215,21 +215,143 @@ qcQuestFactionLevelBits = {
 	["Revered"]=16,
 	["Exalted"]=32,
 }
-local qcHolidayDates = {
-	[1]={"250923","251009"},		-- Brewfest 2025
-	[2]={"260427","260504"},		-- Children's Week 2026
-	[4]={"251101","251103"},		-- Day of the Dead 2025
-	[8]={"251216","260102"},		-- Feast of Winter Veil 2025-2026
-	[16]={"251025","251108"},		-- Hallow's End 2025
-	[32]={"251002","251009"},		-- Harvest Festival 2025
-	[64]={"260209","260223"},		-- Love is in the Air 2026
-	[128]={"260216","260302"},		-- Lunar Festival 2026
-	[256]={"250621","250705"},		-- Midsummer Fire Festival 2025
-	[512]={"260406","260413"},		-- Noblegarden 2026
-	[1024]={"251123","251130"},		-- Pilgrim's Bounty 2025
-	[2048]={"250919","250920"},		-- Pirates' Day 2025
-	[4096]={"250801","250808"},		-- Trial of Styles 2025 august
+--[[ Holidays, as the game's calendar reports them ]]--
+-- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
+-- calendar event can carry.
+local qcHolidays = {
+	{flag=1, name="Brewfest", eventIDs={372}},
+	{flag=2, name="Children's Week", eventIDs={201}},
+	{flag=4, name="Day of the Dead", eventIDs={409}},
+	{flag=8, name="Feast of Winter Veil", eventIDs={141}},
+	{flag=16, name="Hallow's End", eventIDs={324, 1405}},
+	{flag=32, name="Harvest Festival", eventIDs={321}},
+	{flag=64, name="Love is in the Air", eventIDs={423, 335}},
+	{flag=128, name="Lunar Festival", eventIDs={327}},
+	{flag=256, name="Midsummer Fire Festival", eventIDs={341}},
+	{flag=512, name="Noblegarden", eventIDs={181}},
+	{flag=1024, name="Pilgrim's Bounty", eventIDs={404}},
+	{flag=2048, name="Pirates' Day", eventIDs={398}},
+	{flag=4096, name="Trial of Style", eventIDs={691}},
 }
+local qcHolidayFlagByEventID = {}
+local qcKnownHolidayFlags = {}
+for _, holiday in ipairs(qcHolidays) do
+	qcKnownHolidayFlags[holiday.flag] = true
+	for _, eventID in ipairs(holiday.eventIDs) do qcHolidayFlagByEventID[eventID] = holiday.flag end
+end
+
+-- The holiday flags running now; nil until the calendar has answered, which restricts nothing.
+local qcActiveHolidays = nil
+
+local function qcCalendarTimeValue(t)
+	return (((t.year * 100 + t.month) * 100 + t.monthDay) * 100 + t.hour) * 100 + t.minute
+end
+
+local function qcFormatCalendarTime(t)
+	return string.format("%04d-%02d-%02d %02d:%02d", t.year, t.month, t.monthDay, t.hour, t.minute)
+end
+
+local function qcCalendarFrameOpen()
+	return CalendarFrame ~= nil and CalendarFrame:IsShown()
+end
+
+-- The calendar only has events around the month it's set to, and at login that's November 2004.
+-- Blizzard's calendar sets the current month whenever it opens, so doing the same is safe while
+-- it's closed. While it's open the player may be looking at another month, so that's left alone.
+local function qcSetCalendarMonth(month, year)
+	local shown = C_Calendar.GetMonthInfo(0)
+	if (shown.month == month and shown.year == year) then return true end
+	if qcCalendarFrameOpen() then return false end
+	C_Calendar.SetAbsMonth(month, year)
+	return true
+end
+
+-- nil when the calendar can't answer. A day with no events at all means it isn't ready, not that
+-- no holiday is running.
+local function qcReadActiveHolidays()
+	local now = C_DateAndTime.GetCurrentCalendarTime()
+	if not qcSetCalendarMonth(now.month, now.year) then return nil end
+	local numEvents = C_Calendar.GetNumDayEvents(0, now.monthDay)
+	if (numEvents == 0) then return nil end
+	local nowValue = qcCalendarTimeValue(now)
+	local active = 0
+	for index = 1, numEvents do
+		local event = C_Calendar.GetDayEvent(0, now.monthDay, index)
+		local flag = event and event.calendarType == "HOLIDAY" and qcHolidayFlagByEventID[event.eventID]
+		if flag and qcCalendarTimeValue(event.startTime) <= nowValue and nowValue < qcCalendarTimeValue(event.endTime) then
+			active = bit.bor(active, flag)
+		end
+	end
+	return active
+end
+
+-- Keeps the last answer when the calendar can't be read, e.g. during chat lockdown.
+local function qcUpdateActiveHolidays()
+	local ok, active = pcall(qcReadActiveHolidays)
+	if (ok and active) then qcActiveHolidays = active end
+	return qcActiveHolidays
+end
+
+-- /qc holidays: what the seasonal filter sees, and when each holiday next runs. Reading ahead
+-- steps the calendar through the months, then sets it back to the current one.
+local function qcScanCalendarHolidays()
+	local now = C_DateAndTime.GetCurrentCalendarTime()
+	local nextByFlag, untracked = {}, {}
+	for step = 0, 12 do
+		local monthIndex = now.month - 1 + step
+		C_Calendar.SetAbsMonth(monthIndex % 12 + 1, now.year + math.floor(monthIndex / 12))
+		local firstDay = (step == 0) and now.monthDay or 1
+		for monthDay = firstDay, C_Calendar.GetMonthInfo(0).numDays do
+			for index = 1, C_Calendar.GetNumDayEvents(0, monthDay) do
+				local event = C_Calendar.GetDayEvent(0, monthDay, index)
+				if event and event.calendarType == "HOLIDAY" then
+					local flag = qcHolidayFlagByEventID[event.eventID]
+					if flag then
+						nextByFlag[flag] = nextByFlag[flag] or event
+					elseif not untracked[event.eventID] then
+						untracked[event.eventID] = event.title
+					end
+				end
+			end
+		end
+	end
+	C_Calendar.SetAbsMonth(now.month, now.year)
+	return nextByFlag, untracked
+end
+
+local function qcPrintHolidays()
+	if qcCalendarFrameOpen() then
+		print(QCADDON_CHAT_TITLE .. "Close the calendar first. Reading ahead moves it through the months.")
+		return
+	end
+	local active = qcUpdateActiveHolidays()
+	local ok, nextByFlag, untracked = pcall(qcScanCalendarHolidays)
+	if not ok then
+		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(nextByFlag))
+		return
+	end
+	if not active then
+		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet, so seasonal quests are all shown.")
+	end
+	print(QCADDON_CHAT_TITLE .. "Seasonal quests follow these calendar holidays:")
+	for _, holiday in ipairs(qcHolidays) do
+		local event = nextByFlag[holiday.flag]
+		local running = active and bit.band(active, holiday.flag) ~= 0
+		if event then
+			print(string.format("  %s%s (%d): %s to %s", running and "|cff00ff00Running|r " or "", event.title,
+				event.eventID, qcFormatCalendarTime(event.startTime), qcFormatCalendarTime(event.endTime)))
+		else
+			print(string.format("  %s: not on the calendar in the next 12 months", holiday.name))
+		end
+	end
+	local ids = {}
+	for eventID in pairs(untracked) do ids[#ids + 1] = eventID end
+	table.sort(ids)
+	if #ids > 0 then
+		print("  Other calendar holidays, not tied to any quest:")
+		for _, eventID in ipairs(ids) do print(string.format("    %s (%d)", untracked[eventID], eventID)) end
+	end
+end
 
 --[[ Constants for the Key Bindings & Slash Commands ]]--
 BINDING_HEADER_QCQUESTCOMPLETIST = "Quest Completist";
@@ -238,6 +360,10 @@ SLASH_QUESTCOMPLETIST1 = "/qc"
 SLASH_QUESTCOMPLETIST2 = "/questc"
 
 SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
+	if (strtrim(msg or ""):lower() == "holidays") then
+		qcPrintHolidays()
+		return
+	end
 	ShowUIPanel(qcQuestCompletistUI)
 end
 
@@ -1974,14 +2100,14 @@ end
 		end
 	end
 		--[[ Map Seasonal ]]--
-	if (qcSettings["QC_M_HIDE_SEASONAL"] == 1) then
-		local qcToday = date("%y%m%d")
+	local qcActive = (qcSettings["QC_M_HIDE_SEASONAL"] == 1) and qcUpdateActiveHolidays()
+	if qcActive then
 		for i = #qcPins, 1, -1 do
 			for qcQuestIndex = #qcPins[i][7], 1, -1 do
 				local qcQuestID = qcPins[i][7][qcQuestIndex]
-				-- A holiday with no dates restricts nothing, like any other field with no data.
-				local qcWindow = qcQuestDatabase[qcQuestID] and qcHolidayDates[qcQuestDatabase[qcQuestID][11]]
-				if qcWindow and not ((qcToday >= qcWindow[1]) and (qcToday <= qcWindow[2])) then
+				-- A holiday value we don't know restricts nothing, like any other field with no data.
+				local qcHoliday = qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][11]
+				if qcKnownHolidayFlags[qcHoliday] and BitBand(qcActive, qcHoliday) == 0 then
 					TableRemove(qcPins[i][7], qcQuestIndex)
 				end
 			end

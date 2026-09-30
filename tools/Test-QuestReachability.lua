@@ -13,9 +13,11 @@ Two settings tiers are checked:
 Progress is best case: max level, every prerequisite done, max renown, nothing completed, and the
 character has every profession.
 
-Trying every race, class, covenant and date together is ~28k combinations per map, far too slow.
+The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn.
+
+Trying every race, class, covenant and holiday together is ~28k combinations per map, far too slow.
 Each filter group only reads its own part of the character (faction and race/class read race,
-faction and class; covenant reads the covenant; seasonal reads the date), so each group is swept on
+faction and class; covenant reads the covenant; seasonal reads the calendar), so each group is swept on
 its own, and anything every group lets through is confirmed with all of them on at once.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
@@ -62,6 +64,20 @@ local P = {}
 local PROFESSION_SKILLS = {}
 local PROFESSION_INDEXES = {}
 
+-- Today's calendar: an event no quest follows, plus the profile's holiday if it has one.
+local NOW = {year = 2026, month = 6, monthDay = 15, weekday = 2, hour = 12, minute = 0}
+local function todayEvent(eventID)
+	return {calendarType = "HOLIDAY", eventID = eventID, title = "event " .. eventID,
+		startTime = {year = NOW.year, month = NOW.month, monthDay = 1, hour = 0, minute = 0},
+		endTime = {year = NOW.year, month = NOW.month, monthDay = 30, hour = 0, minute = 0}}
+end
+local calendar = stubTable({
+	SetAbsMonth = function() end,
+	GetMonthInfo = function() return {year = NOW.year, month = NOW.month, numDays = 30, firstWeekday = 1} end,
+	GetNumDayEvents = function() return (P.holiday or 0) ~= 0 and 2 or 1 end,
+	GetDayEvent = function(_, _, index) return todayEvent(index == 1 and 0 or P.holiday) end,
+})
+
 local env = {
 	bit = bit,
 	print = function() end,
@@ -70,14 +86,13 @@ local env = {
 	wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
 	tinsert = table.insert, tremove = table.remove,
 	strupper = string.upper, strlower = string.lower, strfind = string.find, strsub = string.sub,
-	strlen = string.len, format = string.format,
+	strlen = string.len, format = string.format, strtrim = function(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end,
 	floor = math.floor, ceil = math.ceil, max = math.max, min = math.min, abs = math.abs,
-	date = function(fmt, ...)
-		if fmt == "%y%m%d" then return P.date end
-		return os.date(fmt, ...)
-	end,
+	date = os.date,
 	time = os.time,
 	CreateFromMixins = function() return {} end,
+	C_Calendar = calendar,
+	C_DateAndTime = stubTable({GetCurrentCalendarTime = function() return NOW end}),
 	UnitFactionGroup = function() return P.faction, P.faction end,
 	UnitRace = function() return P.race, P.race end,
 	UnitClass = function() return P.class, P.class end,
@@ -118,7 +133,7 @@ for line in readFile(ADDON_DIR .. "/QuestCompletist.toc"):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file and file ~= "qcCore.lua" then runFile(file) end
 end
-local core = runFile("qcCore.lua", "\nreturn {BuildQuestFilter = qcBuildQuestFilter, HolidayDates = qcHolidayDates}")
+local core = runFile("qcCore.lua", "\nreturn {BuildQuestFilter = qcBuildQuestFilter, Holidays = qcHolidays}")
 assert(type(core.BuildQuestFilter) == "function", "qcBuildQuestFilter not found in qcCore.lua")
 
 local QUESTS = env.qcQuestDatabase
@@ -163,11 +178,11 @@ end
 local classes = sortedKeys(env.qcClassBits)
 local covenants = sortedKeys(env.qcCovenantsBits)
 
-local today = os.date("%y%m%d")
-local dates = {today}
-for _, window in pairs(core.HolidayDates) do dates[#dates + 1] = window[1] end
+-- No holiday running, then each holiday's calendar event in turn.
+local holidayEvents = {0}
+for _, holiday in ipairs(core.Holidays) do holidayEvents[#holidayEvents + 1] = holiday.eventIDs[1] end
 
-local DEFAULT_PROFILE = {date = today, race = identities[1].race, faction = identities[1].faction,
+local DEFAULT_PROFILE = {holiday = 0, race = identities[1].race, faction = identities[1].faction,
 	class = classes[1], covenant = covenants[1]}
 local function profile(fields)
 	local p = {}
@@ -176,20 +191,20 @@ local function profile(fields)
 	return p
 end
 
-local identityProfiles, covenantProfiles, dateProfiles = {}, {}, {}
+local identityProfiles, covenantProfiles, holidayProfiles = {}, {}, {}
 for _, identity in ipairs(identities) do
 	for _, class in ipairs(classes) do
 		identityProfiles[#identityProfiles + 1] = profile({race = identity.race, faction = identity.faction, class = class})
 	end
 end
 for _, covenant in ipairs(covenants) do covenantProfiles[#covenantProfiles + 1] = profile({covenant = covenant}) end
-for _, day in ipairs(dates) do dateProfiles[#dateProfiles + 1] = profile({date = day}) end
+for _, eventID in ipairs(holidayEvents) do holidayProfiles[#holidayProfiles + 1] = profile({holiday = eventID}) end
 
 local FILTER_GROUPS = {
 	{name = "faction/race/class", filters = {"QC_ML_HIDE_FACTION", "QC_ML_HIDE_RACECLASS"},
 		profiles = identityProfiles, reads = {"race", "faction", "class"}},
 	{name = "covenant", filters = {"QC_ML_HIDE_COVENANTS"}, profiles = covenantProfiles, reads = {"covenant"}},
-	{name = "seasonal", filters = {"QC_M_HIDE_SEASONAL"}, profiles = dateProfiles, reads = {"date"}},
+	{name = "seasonal", filters = {"QC_M_HIDE_SEASONAL"}, profiles = holidayProfiles, reads = {"holiday"}},
 	{name = "profession", filters = {"QC_L_HIDE_PROFESSION", "QC_M_HIDE_PROFESSION"}, profiles = {profile()}, reads = {}},
 	{name = "no data", filters = {"QC_M_HIDE_NODATA"}, profiles = {profile()}, reads = {}},
 	{name = "requirements not met", filters = {"QC_M_HIDE_REQUIREMENTSNOTMET"}, profiles = {profile()}, reads = {}},
@@ -222,7 +237,8 @@ local function recordError(message, context)
 	end
 end
 local function profileText()
-	return string.format("%s %s %s covenant %s date %s", P.faction, P.race, P.class, tostring(P.covenant), P.date)
+	return string.format("%s %s %s covenant %s holiday %s", P.faction, P.race, P.class, tostring(P.covenant),
+		tostring(P.holiday))
 end
 
 --[[ Pin identity survives the copies RefreshAllData makes ]]--
@@ -408,7 +424,7 @@ for _, kind in ipairs(KINDS) do
 				for _, field in ipairs(group.reads) do fields[field] = passedBy[group][kind][key][field] end
 			end
 			local p = profile(fields)
-			local batchKey = string.format("%s|%s|%s|%s|%s", p.date, p.race, p.faction, p.class, tostring(p.covenant))
+			local batchKey = string.format("%s|%s|%s|%s|%s", p.holiday, p.race, p.faction, p.class, tostring(p.covenant))
 			local batch = confirmBatches[batchKey]
 			if not batch then
 				batch = {profile = p, candidates = {listQuests = {}, pinQuests = {}}}
@@ -471,17 +487,13 @@ do
 	end
 end
 
-local staleHolidays, unknownHolidays = {}, {}
+local knownHolidays, unknownHolidays = {}, {}
+for _, holiday in ipairs(core.Holidays) do knownHolidays[holiday.flag] = true end
 for id, entry in pairs(QUESTS) do
 	local holiday = entry[11]
-	if holiday and holiday ~= 0 then
-		local window = core.HolidayDates[holiday]
-		if not window then
-			unknownHolidays[holiday] = unknownHolidays[holiday] or {}
-			table.insert(unknownHolidays[holiday], id)
-		elseif window[2] < today then
-			staleHolidays[holiday] = (staleHolidays[holiday] or 0) + 1
-		end
+	if holiday and holiday ~= 0 and not knownHolidays[holiday] then
+		unknownHolidays[holiday] = unknownHolidays[holiday] or {}
+		table.insert(unknownHolidays[holiday], id)
 	end
 end
 
@@ -530,8 +542,8 @@ local rawPins = 0
 for _, pins in pairs(PIN_DB) do rawPins = rawPins + #pins end
 out(string.format("%d quests, %d pins (%d once identical pins at the same spot, which the map stacks, count as one)",
 	count(allQuests), rawPins, count(allPins)))
-out(string.format("%d race/faction/class combinations, %d covenants, %d dates",
-	#identityProfiles, #covenantProfiles, #dateProfiles))
+out(string.format("%d race/faction/class combinations, %d covenants, %d holiday states",
+	#identityProfiles, #covenantProfiles, #holidayProfiles))
 out("Search finds every quest in the database by name; 'shown' below means browsing the list or the map.")
 out()
 
@@ -590,24 +602,14 @@ else
 	out()
 end
 
-out("== Holiday values the seasonal filter has no dates for")
+out("== Holiday values with no calendar holiday in qcHolidays")
 for _, holiday in ipairs(sortedNumbers(unknownHolidays)) do
 	local ids = {}
 	for _, id in ipairs(unknownHolidays[holiday]) do ids[#ids + 1] = tostring(id) end
 	out(string.format("  holiday %d: quests %s", holiday, table.concat(ids, ", ")))
 end
 out()
-note(string.format("%d holiday values with no dates in qcHolidayDates", count(unknownHolidays)))
-
-out("== Holidays whose qcHolidayDates window has already ended (their quests stay hidden until it's updated)")
-local staleTotal = 0
-for _, holiday in ipairs(sortedNumbers(staleHolidays)) do
-	local window = core.HolidayDates[holiday]
-	out(string.format("  holiday %d (%s-%s): %d quests", holiday, window[1], window[2], staleHolidays[holiday]))
-	staleTotal = staleTotal + staleHolidays[holiday]
-end
-out()
-note(string.format("%d holidays with an ended date window (%d quests)", count(staleHolidays), staleTotal))
+note(string.format("%d holiday values with no calendar holiday in qcHolidays", count(unknownHolidays)))
 
 local handle = assert(io.open(REPORT_FILE, "wb"))
 handle:write(table.concat(lines, "\n"), "\n")

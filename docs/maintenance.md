@@ -247,7 +247,7 @@ the API calls Karazhan, and lead-in quests handed out in a city or zone.
 
 `Test-QuestReachability.lua` is the one Lua tool. It loads the addon with stand-ins for the WoW API
 and runs the real quest list filter and map pin code for every race, faction, class, covenant and
-holiday date, so it can't drift from the addon's own logic. It takes about 25 seconds:
+holiday, so it can't drift from the addon's own logic. It takes about 25 seconds:
 
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua
@@ -260,13 +260,30 @@ It writes `tools\reachability-report.txt`, a report only, listing:
   race/class, profession, covenant, seasonal, no-data, requirements-not-met), and which filter
   hides each one. This is where contradictory data turns up, such as an Alliance quest whose race
   mask only holds Horde races.
-- Quests in categories the list can't browse to, pin maps missing from `tools\UiMap.csv`, holiday
-  values with no dates, and holidays whose date window has ended.
+- Quests in categories the list can't browse to, pin maps missing from `tools\UiMap.csv`, and
+  holiday values that aren't in `qcHolidays`.
 
 It assumes best-case progress: max level, prerequisites done, max renown, every profession. The
 quest search finds every quest by name whatever this reports. Some results are expected. Pins whose
 quests aren't in the database stay hidden while "hide quests with no data" is on. Classic's map IDs,
 such as 1411–1459, aren't in retail's `UiMap.csv`.
+
+## Holidays
+
+Seasonal quests need no yearly upkeep. The map's seasonal filter asks the game's calendar which
+holidays are running, and `qcHolidays` in `qcCore.lua` ties each holiday value in the quest
+database to the IDs of the game's Holidays table that its calendar event carries.
+
+`/qc holidays` in game lists what the filter sees: which holidays are running, each one's next dates,
+and any calendar holiday that isn't tied to a quest. A holiday there that should match one of ours,
+under a new ID, means an entry in `qcHolidays` needs that ID adding. A new holiday with quests
+needs a new flag, an entry, and its quests' field 11 set.
+
+The calendar only serves events around the month it's set to, and at login it's set to November
+2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
+opens, but leaves it alone while that window is open. If the calendar can't answer, including a day
+with no events at all, the last answer stands, and until there is one every seasonal quest is shown.
+`/qc holidays` steps the calendar through the next 12 months, then sets it back to the current one.
 
 ## In the game
 
