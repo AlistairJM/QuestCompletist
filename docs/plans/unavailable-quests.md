@@ -78,7 +78,10 @@ A flagged quest is hidden **unless** any of these is true:
   visible and keep counting;
 - it's in the character's quest log (`C_QuestLog.GetLogIndexForQuestID`), because if the player
   has it, it's obtainable by definition;
-- the new option **"Show unavailable quests"** is on (default off).
+- the new option **"Show unavailable quests"** is on (default off). As built (2026-09-30), it's a
+  "hide" checkbox like the other 18 filters, "Hide quests that are no longer available", on by
+  default, setting `QC_ML_HIDE_UNAVAILABLE`, so the reachability check's "every filter off" pass
+  covers it.
 
 Where to apply it (all in `qcCore.lua`; updated 2026-09-30 for the code after #95–#103):
 - **Quest list and completion counter:** both use `qcBuildQuestFilter(QC_LIST_FILTER)`. The
@@ -130,6 +133,17 @@ it catches mistakes that no offline data can.
 - Look over the list by zone before merging: Torghast, Visions, "Legion Uncategorized" and
   similar are expected. Anything that looks like a normal story quest gets pulled out for Phase 2.
 - The other 8 not-in-client quests *with* a signal go to Phase 2 review.
+
+**Phases 0 and 1 done together (2026-09-30, `feat/unavailable-quests`; item 5 phase 4 in
+`data-cleanup.md`).** None of the 183 are in the 12.1.5 PTR's `QuestV2` or quest location data.
+By name they're tracking and reward quests: 29 paragon "Supplies from…" caches, Vision and Torghast
+trackers, 14 "Legion ### A"-style entries, Broken Shore contributions, and test entries. Decisions
+are in `docs/plans/unavailable-quest-decisions.csv`, and `tools/Build-UnavailableQuests.ps1`
+generates the Lua file. Offline checks:
+- with the option off, every list, counter and search result matches master;
+- with it on, only flagged quests leave lists and counter totals;
+- 18 targeted checks (exceptions, map, option, log), each shown able to fail by a deliberate
+  breakage.
 
 ### Phase 2: human review of the 375 in-client, no-signal quests (reason 1), in groups
 - Review by zone/category rather than one by one. For example, all 126 Warfront quests (mostly

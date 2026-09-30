@@ -225,6 +225,14 @@ After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables
 and our pins. It's a report only; see [plans/unavailable-quests.md](plans/unavailable-quests.md).
 
+The quests the addon hides as unavailable are the FLAG rows of
+`docs/plans/unavailable-quest-decisions.csv`. After changing that file, run
+`Build-UnavailableQuests.ps1` to regenerate `qcUnavailableQuests.lua`; don't edit the Lua file by
+hand. Before flagging a quest as gone from the client, check the latest PTR build's `QuestV2` as
+well as retail's: a quest missing from retail may be upcoming content. Players who accept or turn in
+a flagged quest get a chat message, and the quest is recorded in their `qcFlaggedButSeen` saved
+variable. Unflag anything reported that way.
+
 ### 8. Dungeons and raids against the Dungeon Journal
 
 `Audit-DungeonCategories.ps1 -Refresh` checks every dungeon and raid in the game's Dungeon Journal,

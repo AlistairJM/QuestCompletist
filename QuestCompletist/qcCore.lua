@@ -539,6 +539,14 @@ local function qcIsQuestCompletedOnAccount(questId)
 	return C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId)
 end
 
+-- A quest flagged in qcUnavailableQuests.lua that this character hasn't completed and doesn't have.
+-- A character who has it is proof the flag is wrong, so the quest shows for them as normal.
+local function qcIsUnavailable(questId)
+	if not qcUnavailableQuests[questId] or qcIsQuestCompleted(questId) then return false end
+	local logIndex = C_QuestLog.GetLogIndexForQuestID(questId)
+	return not (logIndex and logIndex > 0)
+end
+
 -- 0 means the database has no data for the field, so it restricts nothing.
 local function qcMaskAllows(mask, flag)
 	return mask == 0 or bit.band(mask, flag) ~= 0
@@ -641,11 +649,13 @@ local function qcGetCategoryQuests(categoryId, searchText)
     local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
     local hideCompleted = (qcSettings.QC_L_HIDE_COMPLETED == 1)
     local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+    local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
     for _, e in ipairs(qcCategoryIndex[categoryId] or {}) do
         local questId = e[1]
         if passesFilters(e)
             and not (hideCompleted and qcIsQuestCompleted(questId))
-            and not (hideWarband and qcIsQuestCompletedOnAccount(questId)) then
+            and not (hideWarband and qcIsQuestCompletedOnAccount(questId))
+            and not (hideUnavailable and qcIsUnavailable(questId)) then
             tableInsert(holdingTable, e)
         end
     end
@@ -774,8 +784,10 @@ function qcGetZoneCompletionStats(areaId)
 
 	local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
 	local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+	-- A quest nobody can get would hold the percentage below 100 for ever.
+	local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
 	for _, questEntry in ipairs(qcCategoryIndex[areaId] or {}) do
-		if passesFilters(questEntry) then
+		if passesFilters(questEntry) and not (hideUnavailable and qcIsUnavailable(questEntry[1])) then
 			local questId = questEntry[1]
 			total = total + 1
 			if qcIsQuestCompleted(questId) or (countWarband and qcIsQuestCompletedOnAccount(questId)) then
@@ -2176,6 +2188,7 @@ local function qcBuildMapQuestFilter()
     local hideCompleted = (qcSettings.QC_M_HIDE_COMPLETED == 1)
     local hideInProgress = (qcSettings.QC_M_HIDE_INPROGRESS == 1)
     local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+    local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
     local activeHolidays = (qcSettings.QC_M_HIDE_SEASONAL == 1) and qcUpdateActiveHolidays()
     local playerLevel = (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == 1) and UnitLevel("player")
 
@@ -2202,6 +2215,7 @@ local function qcBuildMapQuestFilter()
         if hideCompleted and (qcIsQuestCompleted(questId) or overrideCompleted[questId]) then return false end
         if hideInProgress and (qcIsQuestInLog(questId) or overrideCompleted[questId]) then return false end
         if hideWarband and qcIsQuestCompletedOnAccount(questId) then return false end
+        if hideUnavailable and qcIsUnavailable(questId) then return false end
         if not e then return true end
         if not passesFilters(e) then return false end
         -- A holiday value we don't know restricts nothing, like any other field with no data.
@@ -2324,7 +2338,10 @@ function qcCheckSettings()
     end
 	if (qcSettings.QC_ML_HIDE_WARBANDS == nil) then
         qcSettings.QC_ML_HIDE_WARBANDS = 1
-    end    
+    end
+    if (qcSettings.QC_ML_HIDE_UNAVAILABLE == nil) then
+        qcSettings.QC_ML_HIDE_UNAVAILABLE = 1
+    end
 	if (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == nil) then
         qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 1
     end
@@ -2415,6 +2432,8 @@ function qcApplySettings()
     else
         qcIO_ML_HIDE_WARBANDS:SetChecked(true)
     end
+
+    qcIO_ML_HIDE_UNAVAILABLE:SetChecked(qcSettings.QC_ML_HIDE_UNAVAILABLE ~= 0)
 
     if (qcSettings.QC_ML_HIDE_FACTION == 0) then
         qcIO_ML_HIDE_FACTION:SetChecked(false)
@@ -2704,7 +2723,15 @@ function qcInterfaceOptions_OnShow(self)
 		end
 		qcApplyFilterChange()
 	end)
-	
+
+	qcIO_ML_HIDE_UNAVAILABLE = CreateFrame("CheckButton", "qcIO_ML_HIDE_UNAVAILABLE", self, "InterfaceOptionsCheckButtonTemplate")
+	qcIO_ML_HIDE_UNAVAILABLE:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -75)
+	_G[qcIO_ML_HIDE_UNAVAILABLE:GetName().."Text"]:SetText(qcL.HIDEUNAVAILABLE)
+	qcIO_ML_HIDE_UNAVAILABLE:SetScript("OnClick", function(self)
+		qcSettings.QC_ML_HIDE_UNAVAILABLE = self:GetChecked() and 1 or 0
+		qcApplyFilterChange()
+	end)
+
     self:SetScript("OnShow", qcConfigRefresh)
     qcConfigRefresh(self)
 end
@@ -2716,6 +2743,16 @@ function qcConfigRefresh(self)
 end
 -- Initialize settings when the addon is loaded
 qcCheckSettings()
+
+-- Accepting or turning in a quest flagged in qcUnavailableQuests.lua proves the flag wrong. It's kept
+-- in qcFlaggedButSeen (account-wide) for the flag list's review, and mentioned in chat once.
+local QC_SEEN_WORDING = {accepted = "just accepted it", ["turned in"] = "just turned it in"}
+local function qcNoteUnavailableQuestSeen(questId, how)
+	if not qcUnavailableQuests[questId] or qcFlaggedButSeen[questId] then return end
+	qcFlaggedButSeen[questId] = {how = how, time = time(), build = select(4, GetBuildInfo())}
+	print(string.format("%sQuest %d \"%s\" is listed as no longer available, but you've %s. It shows as normal for you; please report it so the list can be corrected.",
+		QCADDON_CHAT_TITLE, questId, qcQuestName(questId) or "?", QC_SEEN_WORDING[how]))
+end
 
 -- Blizzard writes the quest giver's name into the quest frame's title each time it shows a quest
 -- page; the quest's ID goes after it. The greeting page lists several quests and has no ID. A
@@ -2746,6 +2783,7 @@ local function qcEventHandler(self, event, ...)
 		qcNewDataChecks(qcQuestID)
 		qcMutuallyExclusiveChecks(qcQuestID)
 	elseif (event == "QUEST_ACCEPTED") or (event == "QUEST_REMOVED") then
+		if (event == "QUEST_ACCEPTED") then qcNoteUnavailableQuestSeen(..., "accepted") end
 		qcRequestRefresh(QC_REDRAW_ROWS, true)
 	elseif (event == "QUEST_PROGRESS") or (event == "QUEST_COMPLETE") then
 		local qcQuestID = GetQuestID()
@@ -2756,6 +2794,7 @@ local function qcEventHandler(self, event, ...)
 		end
 	elseif (event == "QUEST_TURNED_IN") then
 		local qcQuestID = ...
+		qcNoteUnavailableQuestSeen(qcQuestID, "turned in")
 		qcUpdateCompletedQuest(qcQuestID)
 		qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 		qcUpdateSkippedBreadcrumbQuest(qcQuestID)
@@ -2772,6 +2811,7 @@ local function qcEventHandler(self, event, ...)
 			qcMigrateCompletions()
 			if not (qcWorkingDB) then qcWorkingDB = {} end
 			if not (qcWorkingLog) then qcWorkingLog = {} end
+			if not (qcFlaggedButSeen) then qcFlaggedButSeen = {} end
 			qcCheckSettings()
 			qcApplySettings()
 			qcWelcomeMessage()
