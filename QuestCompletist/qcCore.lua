@@ -2435,7 +2435,6 @@ end
 
 function qcWelcomeMessage()
     print(string.format("%sThanks for using Quest Completist. Spot a quest inaccuracy? Please report it on Curse.", QCADDON_CHAT_TITLE))
-    print(string.format("%sMap Pins are back. There are some hickups still, see bug list on CF", QCADDON_CHAT_TITLE))
 end
 
 function qcInterfaceOptions_OnLoad(self)
