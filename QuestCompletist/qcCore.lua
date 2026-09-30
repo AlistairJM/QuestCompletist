@@ -2573,6 +2573,18 @@ end
 -- Initialize settings when the addon is loaded
 qcCheckSettings()
 
+-- Blizzard writes the quest giver's name into the quest frame's title each time it shows a quest
+-- page; the quest's ID goes after it. The greeting page lists several quests and has no ID. A
+-- missing function (renamed in a patch) costs only the ID, not the whole addon.
+if QuestFrame_SetPortrait then
+	hooksecurefunc("QuestFrame_SetPortrait", function()
+		local questId = GetQuestID()
+		if questId and questId ~= 0 then
+			QuestFrame:SetTitle(string.format("%s [%d]", UnitName("questnpc") or "", questId))
+		end
+	end)
+end
+
 local function qcEventHandler(self, event, ...)
 	if (event == "QUEST_DATA_LOAD_RESULT") then
 		local questId, success = ...
@@ -2592,15 +2604,8 @@ local function qcEventHandler(self, event, ...)
 		qcZoneChangedNewArea()		--				
 	elseif (event == "ZONE_CHANGED") then
 		qcZoneChangedNewArea()
-	elseif (event == "QUEST_ITEM_UPDATE") then
---		if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
---		if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end  9.xx Soltion
-		if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
 	elseif (event == "QUEST_DETAIL") then
 		local qcQuestID = GetQuestID()
---		if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
---		if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 9.xx Soltion
-		if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
 		qcBreadcrumbChecks(qcQuestID)
 		qcNewDataChecks(qcQuestID)
 		qcMutuallyExclusiveChecks(qcQuestID)
@@ -2608,9 +2613,6 @@ local function qcEventHandler(self, event, ...)
 		qcRequestRefresh(QC_REDRAW_ROWS, true)
 	elseif (event == "QUEST_PROGRESS") or (event == "QUEST_COMPLETE") then
 		local qcQuestID = GetQuestID()
---		if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
---		if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 9.xx Soltion
-		if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
 		if not (qcQuestID == 0) then
 			qcBreadcrumbChecks(qcQuestID)
 			qcNewDataChecks(qcQuestID)
@@ -2663,7 +2665,6 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("QUEST_PROGRESS")
 	self:RegisterEvent("QUEST_ACCEPTED")
 	self:RegisterEvent("QUEST_REMOVED")
-	self:RegisterEvent("QUEST_ITEM_UPDATE")
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA") -- 
