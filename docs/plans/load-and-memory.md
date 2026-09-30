@@ -107,6 +107,18 @@ each later phase.
 Expected: a short keystroke goes from 27–61 ms and 3–9 MB to about 5 ms and almost nothing
 allocated, and the list's first open costs 3.2 MB less.
 
+### Phase 2 results (#102, measured in game on Kranaa)
+
+| | Before (master) | After |
+|---|---|---|
+| Memory after login | 40.5 MB | 35.4 MB |
+| First search "T" | 101 ms, 18.5 MB allocated | 59 ms, 5.8 MB |
+| Repeat search "T" (one keystroke) | 60 ms, 15.0 MB | 10.4 ms, 0.75 MB |
+| Memory after searching | 58.2 MB | 41.2 MB |
+
+A search keystroke now fits in one 60 fps frame. Offline, every list and search result was
+identical to master's (3,461 lines of output).
+
 ### Phase 3: completions as numbers (one PR)
 
 `qcCompletedQuests[questId]` becomes the mark itself: 1 = completed, 2 = unattainable, 0 = marked
@@ -142,4 +154,4 @@ Around 38 places read or write it today.
 
 ## Status
 
-- 2026-09-30: plan written from offline measurements, decisions agreed. Phase 1 measured in game (results above). Next: phase 2.
+- 2026-09-30: plan written from offline measurements, decisions agreed. Phase 1 measured in game. Phase 2 in #102, measured in game (results above). Next: phase 3.
