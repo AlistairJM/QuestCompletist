@@ -14,9 +14,8 @@ local qcCategoryQuests = {}
 local qcCurrentScrollPosition = 1
 local qcTooltipIndex = nil
 local qcTooltipQuestId = nil
-local qcQuestDataRequested = {}
--- Quests the server has already answered for. Without this the refresh below would request
--- again, get another QUEST_DATA_LOAD_RESULT, and refresh forever.
+-- Quests the server has already answered for. Without this a redraw would request again, get
+-- another QUEST_DATA_LOAD_RESULT, and redraw forever.
 local qcQuestDataLoaded = {}
 local qcMapTooltip = nil
 local qcQuestInformationTooltip = nil
@@ -425,6 +424,111 @@ local function qcBuildQuestIndexes()
     end
 end
 
+--[[ Quest names in the client's language ]]--
+-- The client names a quest in its own language once it has the quest's data. It keeps that data on
+-- disk per language, but a player has met only a few percent of all quests, so missing names are
+-- loaded while the English name stands in. The server stops answering bursts of requests, so only a
+-- few are in flight; answers that take longer than the timeout have always come without a name.
+local QC_MAX_QUEST_LOADS = 4
+local QC_QUEST_LOAD_TIMEOUT = 5
+local QC_QUEST_LOAD_RETRY_DELAY = 30
+local QC_QUEST_LOAD_ATTEMPTS = 2
+
+local qcQuestLoadQueue = {}
+local qcQuestLoadQueued = {}
+local qcQuestLoadInFlight = {}
+local qcQuestLoadInFlightCount = 0
+local qcQuestLoadAttempts = {}
+local qcQuestLoadScheduled = false
+local qcClientNameUpperCache = nil
+-- Quests whose names an open tooltip is still waiting for, so it can be redrawn when they load.
+local qcQuestTooltipWaiting = {}
+local qcMapTooltipWaiting = {}
+local qcMapTooltipPin = nil
+
+local function qcClientQuestName(questId)
+	local title = C_TaskQuest.GetQuestInfoByQuestID(questId)
+	if not title or title == "" then
+		title = C_QuestLog.GetTitleForQuestID(questId)
+	end
+	if title and title ~= "" then return title end
+end
+
+local qcSendQuestLoads, qcQuestLoadEnded, qcRequestQuestData
+
+function qcSendQuestLoads()
+	while qcQuestLoadInFlightCount < QC_MAX_QUEST_LOADS and #qcQuestLoadQueue > 0 do
+		-- Newest first: whatever is on screen now asked last.
+		local questId = table.remove(qcQuestLoadQueue)
+		qcQuestLoadQueued[questId] = nil
+		local attempt = (qcQuestLoadAttempts[questId] or 0) + 1
+		qcQuestLoadAttempts[questId] = attempt
+		qcQuestLoadInFlight[questId] = attempt
+		qcQuestLoadInFlightCount = qcQuestLoadInFlightCount + 1
+		C_QuestLog.RequestLoadQuestByID(questId)
+		C_Timer.After(QC_QUEST_LOAD_TIMEOUT, function()
+			if qcQuestLoadInFlight[questId] == attempt then
+				qcQuestLoadEnded(questId, false)
+			end
+		end)
+	end
+end
+
+-- Frees the request's slot. A quest that failed or got no answer is tried once more later, as some
+-- failures have been seen to load another time.
+function qcQuestLoadEnded(questId, success)
+	if qcQuestLoadInFlight[questId] then
+		qcQuestLoadInFlight[questId] = nil
+		qcQuestLoadInFlightCount = qcQuestLoadInFlightCount - 1
+		if not success and qcQuestLoadAttempts[questId] < QC_QUEST_LOAD_ATTEMPTS then
+			C_Timer.After(QC_QUEST_LOAD_RETRY_DELAY, function() qcRequestQuestData(questId) end)
+		end
+	end
+	qcSendQuestLoads()
+end
+
+function qcRequestQuestData(questId)
+	if qcQuestDataLoaded[questId] or qcQuestLoadQueued[questId] or qcQuestLoadInFlight[questId]
+		or (qcQuestLoadAttempts[questId] or 0) >= QC_QUEST_LOAD_ATTEMPTS then
+		return
+	end
+	qcQuestLoadQueued[questId] = true
+	table.insert(qcQuestLoadQueue, questId)
+	-- Sent on the next frame, so everything a redraw asks for is queued first and the rows it ends
+	-- on go first; a list can draw a page it then scrolls away from within one update.
+	if not qcQuestLoadScheduled then
+		qcQuestLoadScheduled = true
+		C_Timer.After(0, function()
+			qcQuestLoadScheduled = false
+			qcSendQuestLoads()
+		end)
+	end
+end
+
+-- The quest's name in the client's language, or the English name from the database until the
+-- client has it. waiting, if given, collects the quests still loading.
+local function qcQuestName(questId, waiting)
+	local name = qcClientQuestName(questId)
+	if name then return name end
+	qcRequestQuestData(questId)
+	if waiting then waiting[questId] = true end
+	local entry = qcQuestDatabase[questId]
+	return entry and entry[2]
+end
+
+-- Upper-cased client names for search: built on the first search, then kept up to date as names
+-- load. string.upper folds only A-Z, so other letters have to match in case.
+local function qcClientNamesForSearch()
+	if not qcClientNameUpperCache then
+		qcClientNameUpperCache = {}
+		for questId in pairs(qcQuestDatabase) do
+			local name = qcClientQuestName(questId)
+			if name then qcClientNameUpperCache[questId] = string.upper(name) end
+		end
+	end
+	return qcClientNameUpperCache
+end
+
 local function qcIsQuestCompleted(questId)
 	local record = qcCompletedQuests[questId]
 	return record ~= nil and (record["C"] == 1 or record["C"] == 2)
@@ -520,8 +624,11 @@ local function qcGetCategoryQuests(categoryId, searchText)
 
     if (searchText) then
         local stringfind = string.find
+        local clientNames = qcClientNamesForSearch()
         for i, e in pairs(qcQuestDatabase) do
-            if (stringfind(qcQuestNameUpperCache[e[1]], searchText, 1, true)) then
+            local clientName = clientNames[e[1]]
+            if (stringfind(qcQuestNameUpperCache[e[1]], searchText, 1, true))
+                or (clientName and stringfind(clientName, searchText, 1, true)) then
                 tableInsert(holdingTable, e)
             end
         end
@@ -543,15 +650,20 @@ local function qcGetCategoryQuests(categoryId, searchText)
     qcCategoryQuests = qcCopyTable(holdingTable)
 
     -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
-	-- leaving the list empty.
+	-- leaving the list empty. Names are the ones shown now; names that load later don't re-sort the
+	-- list until it's next rebuilt, so rows don't jump while being read.
+	local sortName = {}
+	for _, e in ipairs(qcCategoryQuests) do
+		sortName[e] = qcClientQuestName(e[1]) or e[2]
+	end
 	local function byLevel(a,b)
 		local levelA, levelB = a[3] or 0, b[3] or 0
-		return (levelA<levelB or (levelA == levelB and a[2]<b[2]))
+		return (levelA<levelB or (levelA == levelB and sortName[a]<sortName[b]))
 	end
 	if (qcSettings.SORT == 1) then
 		tableSort(qcCategoryQuests,byLevel)
 	elseif (qcSettings.SORT == 2) then
-		tableSort(qcCategoryQuests,function(a,b) return a[2]<b[2] end)
+		tableSort(qcCategoryQuests,function(a,b) return sortName[a]<sortName[b] end)
 	else
 		tableSort(qcCategoryQuests,byLevel)
 	end
@@ -701,7 +813,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			local questId = e[1]
 			local questType = e[6]
 			local questFaction = e[7]
-			questRecord.QuestName:SetText(stringFormat("[%d] %s",e[3],e[2]))
+			questRecord.QuestName:SetText(stringFormat("[%d] %s",e[3],qcQuestName(questId)))
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
@@ -814,6 +926,46 @@ local function qcRequestRefresh(list, map)
 	if not qcRefreshScheduled then
 		qcRefreshScheduled = true
 		C_Timer.After(0, qcFlushRefresh)
+	end
+end
+
+local qcNameRedrawScheduled = false
+local qcNameRedrawTooltip = false
+local qcNameRedrawPin = false
+
+local function qcRedrawLoadedNames()
+	local tooltip, pin = qcNameRedrawTooltip, qcNameRedrawPin
+	qcNameRedrawScheduled, qcNameRedrawTooltip, qcNameRedrawPin = false, false, false
+	-- The list may have scrolled since the tooltip opened.
+	if tooltip and qcTooltipIndex and _G["qcMenuButton" .. qcTooltipIndex].QuestID == qcTooltipQuestId then
+		qcUpdateTooltip(qcTooltipIndex)
+	end
+	if pin and qcMapTooltipPin and qcMapTooltip:IsShown() then
+		qcMapTooltipPin:OnMouseEnter()
+	end
+end
+
+-- A quest's data arrived, from our request or anyone's: redraw whatever shows its name, once per frame.
+local function qcQuestDataArrived(questId, success)
+	qcQuestLoadEnded(questId, success)
+	if not success then return end
+	qcQuestDataLoaded[questId] = true
+	if qcClientNameUpperCache then
+		local name = qcClientQuestName(questId)
+		if name then qcClientNameUpperCache[questId] = string.upper(name) end
+	end
+	for i = 1, 16 do
+		local row = _G["qcMenuButton" .. i]
+		if row:IsShown() and row.QuestID == questId then
+			qcRequestRefresh(QC_REDRAW_ROWS)
+			break
+		end
+	end
+	if questId == qcTooltipQuestId or qcQuestTooltipWaiting[questId] then qcNameRedrawTooltip = true end
+	if qcMapTooltipWaiting[questId] then qcNameRedrawPin = true end
+	if (qcNameRedrawTooltip or qcNameRedrawPin) and not qcNameRedrawScheduled then
+		qcNameRedrawScheduled = true
+		C_Timer.After(0, qcRedrawLoadedNames)
 	end
 end
 
@@ -1255,13 +1407,11 @@ function qcUpdateTooltip(index)
 
     if questId then
         -- SetHyperlink below renders nothing until the server has sent the quest's data, so ask
-        -- for it and redraw when it lands (see QUEST_DATA_LOAD_RESULT in qcEventHandler).
+        -- for it and redraw when it lands (see qcQuestDataArrived).
         qcTooltipIndex = index
         qcTooltipQuestId = questId
-        if (not qcQuestDataLoaded[questId] and not qcQuestDataRequested[questId]) then
-            qcQuestDataRequested[questId] = true
-            C_QuestLog.RequestLoadQuestByID(questId)
-        end
+        wipe(qcQuestTooltipWaiting)
+        qcRequestQuestData(questId)
 
         -- Temporarily disable ATT's quest tooltip hook so it can't add its own ID
         if C_AddOns.IsAddOnLoaded("AllTheThings") and GameTooltip.OnTooltipSetQuest then
@@ -1277,7 +1427,7 @@ function qcUpdateTooltip(index)
         if HaveQuestData(questId) then
             qcQuestInformationTooltip:SetHyperlink(stringFormat("quest:%d", questId))
         else
-            qcQuestInformationTooltip:AddLine(qcQuestDatabase[questId][2], 1, 1, 1)
+            qcQuestInformationTooltip:AddLine(qcQuestName(questId), 1, 1, 1)
             qcQuestInformationTooltip:AddLine("Quest details not available from the game", 0.5, 0.5, 0.5)
         end
         qcQuestInformationTooltip:AddLine(" ")
@@ -1330,7 +1480,7 @@ function qcUpdateTooltip(index)
                     else
                         questStatus = C_QuestLog.IsQuestFlaggedCompleted(lineQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
                     end
-                    qcQuestInformationTooltip:AddDoubleLine(((lineQuestId == questId) and " > " or " - ") .. questData[2], questStatus)
+                    qcQuestInformationTooltip:AddDoubleLine(((lineQuestId == questId) and " > " or " - ") .. qcQuestName(lineQuestId, qcQuestTooltipWaiting), questStatus)
                 end
             end
             if last < #lineQuests then
@@ -1343,8 +1493,7 @@ function qcUpdateTooltip(index)
         -- Prerequisite quest logic
         local prereqQuestId = qcQuestDatabase[questId][14]
         if prereqQuestId and prereqQuestId ~= 0 then
-            local prereqQuestInfo = qcQuestDatabase[prereqQuestId]
-            local prereqQuestName = prereqQuestInfo and prereqQuestInfo[2] or "Unknown Quest"
+            local prereqQuestName = qcQuestName(prereqQuestId, qcQuestTooltipWaiting) or "Unknown Quest"
             local prereqQuestStatus = C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
             qcQuestInformationTooltip:AddDoubleLine("Prerequired Completed Quest:", string.format("%s - %s", prereqQuestName, prereqQuestStatus))
             qcQuestInformationTooltip:AddLine(" ")
@@ -1523,8 +1672,7 @@ function qcQuestClick(qcButtonIndex)
     if (C_AddOns.IsAddOnLoaded('TomTom')) then
         local mapId, pin = qcFindPinForQuest(qcQuestID)
         if (mapId) then
-            local quest = qcQuestDatabase[qcQuestID]
-            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = pin[3] or (quest and quest[2])})
+            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = pin[3] or qcQuestName(qcQuestID)})
             TomTom:SetClosestWaypoint()
         end
     end
@@ -1698,7 +1846,7 @@ end
 function qcGetToastQuestInformation(questId) -- *
 	if (questId) then
 		if (qcQuestDatabase[questId]) then
-			return tostring(qcQuestDatabase[questId][2] or nil)
+			return qcQuestName(questId)
 		end
 	end
 end
@@ -1735,8 +1883,7 @@ function qcMutuallyExclusiveQuestInformation(qcQuestID)
 
 	if (qcQuestID) then
 		if (qcQuestDatabase[qcQuestID]) then
-			local qcQuestName = tostring(qcQuestDatabase[qcQuestID][2] or nil)
-			return qcQuestName
+			return qcQuestName(qcQuestID)
 		end
 	end
 
@@ -1776,7 +1923,7 @@ end
 local function qcColouredQuestName(questId)
     if not questId or not qcQuestDatabase[questId] then return nil end
     local questData = qcQuestDatabase[questId]
-    local questName = questData[2]
+    local questName = qcQuestName(questId, qcMapTooltipWaiting)
     if questData[6] == 4 or questData[6] == 2 then
         return string.format("|cff178ed5%s|r", questName)
     elseif not qcCompletedQuests[questId] then
@@ -1926,6 +2073,8 @@ end
 function qcPinMixin:OnMouseEnter()
     local pinData = self.PinData
     if not pinData then return end
+    qcMapTooltipPin = self
+    wipe(qcMapTooltipWaiting)
 
     local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
     local x, y = self:GetCenter()
@@ -1977,6 +2126,7 @@ function qcPinMixin:OnMouseEnter()
 end
 
 function qcPinMixin:OnMouseLeave()
+    qcMapTooltipPin = nil
     qcMapTooltip:Hide()
     qcHideTooltipIcons()
 end
@@ -2590,15 +2740,7 @@ end
 
 local function qcEventHandler(self, event, ...)
 	if (event == "QUEST_DATA_LOAD_RESULT") then
-		local questId, success = ...
-		qcQuestDataRequested[questId] = nil
-		if (success) then
-			qcQuestDataLoaded[questId] = true
-			-- Only redraw if this is still the quest being hovered; the list may have scrolled.
-			if (questId == qcTooltipQuestId and qcTooltipIndex and _G["qcMenuButton" .. qcTooltipIndex].QuestID == questId) then
-				qcUpdateTooltip(qcTooltipIndex)
-			end
-		end
+		qcQuestDataArrived(...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then

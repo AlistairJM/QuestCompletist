@@ -106,7 +106,11 @@ local env = {
 		GetLogIndexForQuestID = function() return nil end,
 		IsQuestFlaggedCompleted = function() return true end,
 		IsQuestFlaggedCompletedOnAccount = function() return false end,
+		-- No client names, so a stand-in table is never taken for a quest name.
+		GetTitleForQuestID = function() return nil end,
+		RequestLoadQuestByID = function() end,
 	}),
+	C_TaskQuest = stubTable({GetQuestInfoByQuestID = function() return nil end}),
 }
 setmetatable(env, {__index = function(_, key)
 	local value = _G[key]
