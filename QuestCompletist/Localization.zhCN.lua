@@ -144,6 +144,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "风神王座", -- Needs review
 	TOURNAMENT = "Tournament", -- Requires localization
 	UPPERBLACKROCKSPIRE = "黑石塔上层",
+	UNCATEGORIZED = "未分类", -- Needs review
 	VASHJIR = "瓦丝琪尔", -- Needs review
 	VAULTOFARCHAVON = "阿尔卡冯的宝库",
 	WARLOCK = "术士",

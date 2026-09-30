@@ -134,6 +134,7 @@ qcLocalize = {
 	THEZANDALARI = "The Zandalari",
 	THRONEOFTHEFOURWINDS = "Throne of the Four Winds",
 	TOURNAMENT = "Tournament",
+	UNCATEGORIZED = "Uncategorized",
 	VASHJIR = "Vashj'ir",
 	VAULTOFARCHAVON = "Vault of Archavon",
 	WARLOCK = "Warlock",

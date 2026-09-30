@@ -144,6 +144,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "네 바람의 왕좌",
 	TOURNAMENT = "토너먼트", -- Needs review
 	UPPERBLACKROCKSPIRE = "검은바위 첨탑 상층",
+	UNCATEGORIZED = "미분류", -- Needs review
 	VASHJIR = "바쉬르",
 	VAULTOFARCHAVON = "아카본 석실",
 	WARLOCK = "흑마법사", -- Needs review

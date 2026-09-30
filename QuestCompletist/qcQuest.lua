@@ -136,7 +136,7 @@ qcQuestCategories={
 {235,"The Underbog"},{236,"The Veiled Stair"},{237,"The Vortex Pinnacle"},{238,"The Wandering Isle"},{239,"The Zandalari"},{240,"Thousand Needles"},
 {241,"Throne of the Tides"},{242,"Throne of Thunder"},{243,"Thunder Bluff"},{244,"Timeless Isle"},{245,"Tirisfal Glades"},{246,"Tol Barad"},
 {247,"Tol Barad Peninsula"},{248,"Tournament"},{249,"Townlong Steppes"},{250,"Trial of the Champion"},{251,"Trial of the Crusader"},{252,"Twilight Highlands"},
-{253,"Uldaman"},{254,"Ulduar"},{255,"Uldum"},{256,"Undercity"},{257,"Unga Ingoo"},{258,"Un'Goro Crater"},
+{253,"Uldaman"},{254,"Ulduar"},{255,"Uldum"},{0,"Uncategorized"},{256,"Undercity"},{257,"Unga Ingoo"},{258,"Un'Goro Crater"},
 {311,"Upper Blackrock Spire"},{259,"Utgarde Keep"},{260,"Utgarde Pinnacle"},{261,"Vale of Eternal Blossoms"},{262,"Valley of the Four Winds"},{263,"Valley of Trials"},
 {264,"Vashj'ir"},{265,"Wailing Caverns"},{266,"Warlock"},{267,"Warrior"},{268,"Warsong Gulch"},{312,"Warspear"},
 {313,"Warspear Outpost"},{269,"Well of Eternity"},{270,"Western Plaguelands"},{271,"Westfall"},{272,"Wetlands"},{273,"Wintergrasp"},
@@ -577,6 +577,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 
 qcCategoryClientName = {  -- CategoryId -> where the client names it other than by map; see qcClientCategoryName
 
+	[0]={"string","STABLE_PET_UNCATEGORIZED"},	-- Uncategorized
 	[5]={"skill",171},	-- Alchemy
 	[6]={"area",36},	-- Alterac Mountains
 	[11]={"skill",794},	-- Archaeology
@@ -28470,8 +28471,8 @@ qcQuestDatabase={
 [39015]={39015,"Grumpy",10,"Tanaan Jungle",306,1,3,67108863,8191,0,0,0,0,0},
 [39018]={39018,"Call of the Archmage",40,"Legendary",123,1,0,67108863,8191,0,0,0,0,0},
 [39019]={39019,"Call of the Archmage",40,"Legendary",123,1,1,64175181,8191,0,0,0,0,0},
-[39020]={39020,"A Burning Path Through Time",40,"Weekend Event",319,4,3,67108863,8191,0,0,0,0,0},
-[39021]={39021,"A Frozen Path Through Time",40,"Weekend Event",319,4,3,67108863,8191,0,0,0,0,0},
+[39020]={39020,"A Burning Path Through Time",40,"Weekend Event",0,4,3,67108863,8191,0,0,0,0,0},
+[39021]={39021,"A Frozen Path Through Time",40,"Weekend Event",0,4,3,67108863,8191,0,0,0,0,0},
 [39022]={39022,"Call of the Archmage",40,"Legendary",123,1,3,67108863,0,0,0,0,0,0},
 [39023]={39023,"Call of the Archmage",40,"Legendary",123,1,3,67108863,0,0,0,0,0,0},
 [39024]={39024,"Call of the Archmage",40,"Legendary",123,1,3,67108863,0,0,0,0,0,0},
@@ -28480,11 +28481,11 @@ qcQuestDatabase={
 [39027]={39027,"Dargrul and the Hammer",10,"Highmountain",1005,1,3,67108863,8191,0,0,0,89,0},
 [39029]={39029,"Defend The Temple",10,"Val'sharah",1008,1,3,67108863,8191,0,0,0,0,0},
 [39032]={39032,"A Summons from Saylanna",10,"Val'sharah",1008,1,3,67108863,8191,0,0,0,0,0},
-[39033]={39033,"The Time to Strike",40,"Weekend Event",319,16,3,67108863,8191,0,0,0,0,0},
-[39034]={39034,"Emissary of War",40,"Weekend Event",319,16,1,64175181,8191,0,0,0,0,0},
-[39040]={39040,"A Call to Battle",40,"Weekend Event",319,16,3,67108863,8191,0,0,0,0,0},
-[39041]={39041,"The Arena Calls",40,"Weekend Event",319,16,3,67108863,8191,0,0,0,0,0},
-[39042]={39042,"The Very Best",10,"Weekend Event",319,16,3,67108863,8191,0,0,0,0,0},
+[39033]={39033,"The Time to Strike",40,"Weekend Event",0,16,3,67108863,8191,0,0,0,0,0},
+[39034]={39034,"Emissary of War",40,"Weekend Event",0,16,1,64175181,8191,0,0,0,0,0},
+[39040]={39040,"A Call to Battle",40,"Weekend Event",0,16,3,67108863,8191,0,0,0,0,0},
+[39041]={39041,"The Arena Calls",40,"Weekend Event",0,16,3,67108863,8191,0,0,0,0,0},
+[39042]={39042,"The Very Best",10,"Weekend Event",0,16,3,67108863,8191,0,0,0,0,0},
 [39043]={39043,"Bitestone Enclave",10,"Highmountain",1005,1,3,67108863,8191,0,0,0,89,0},
 [39047]={39047,"Call of the Illidari",10,"Dalaran",1003,1,3,67108863,2048,0,0,0,161,0},
 [39049]={39049,"Eye On the Prize",8,"Mardum, the Shattered Abyss",1010,1,3,67108863,2048,0,0,0,90,0},
@@ -44077,8 +44078,8 @@ qcQuestDatabase={
 [75865]={75865,"Relic Rustler",70,"Zaralek Cavern",1307,128,3,67108863,8191,4,0,0,0,0},
 [75867]={75867,"A Link to the Past",70,"Azerothian Archives",1343,1,3,67108863,8191,0,0,0,5515,75729},
 [75868]={75868,"A Window into the Future",70,"Azerothian Archives",1343,1,3,67108863,8191,0,0,0,5515,75867},
-[75874]={75874,"Time to Fly",30,"Unknown",-398,1,2,67108863,8191,0,0,0,0,0},
-[75877]={75877,"Time to Fly",30,"Unknown",-398,1,1,67108863,8191,0,0,0,0,0},
+[75874]={75874,"Time to Fly",30,"Unknown",0,1,2,67108863,8191,0,0,0,0,0},
+[75877]={75877,"Time to Fly",30,"Unknown",0,1,1,67108863,8191,0,0,0,0,0},
 [75885]={75885,"Get Rich Quick",70,"Zaralek Cavern",1307,1,3,67108863,8191,0,0,0,0,0},
 [75887]={75887,"Fyrakk's Forces",60,"Suffusion Camps",1150,1,3,67108863,8191,0,0,0,5478,0},
 [75888]={75888,"Suffusion Camp",60,"Suffusion Camps",1150,1,3,67108863,8191,0,0,0,0,0},
@@ -44653,7 +44654,7 @@ qcQuestDatabase={
 [77835]={77835,"Handling It: Rune of Shadowbinding",70,"Legendary",123,1,3,67108863,35,0,0,0,5485,0},
 [77838]={77838,"Tattered Dreamleaf",70,"Legendary",123,1,3,67108863,8191,0,0,0,0,0},
 [77839]={77839,"The Eastern Kingdoms Cup Circuit",30,"Eastern Kingdoms Cup",1306,1,3,67108863,8191,0,0,0,0,0},
-[77840]={77840,"The Eastern Kingdoms Cup Begins",30,"Unknown",-398,1,3,67108863,8191,0,0,0,0,0},
+[77840]={77840,"The Eastern Kingdoms Cup Begins",30,"Unknown",0,1,3,67108863,8191,0,0,0,0,0},
 [77841]={77841,"Ysera Invitational",10,"Emerald Dream",1308,4,3,67108863,8191,0,0,0,0,0},
 [77842]={77842,"Ysera Invitational - Advanced",10,"Emerald Dream",1308,4,3,67108863,8191,0,0,0,0,0},
 [77843]={77843,"Ysera Invitational - Reverse",10,"Emerald Dream",1308,4,3,67108863,8191,0,0,0,0,0},

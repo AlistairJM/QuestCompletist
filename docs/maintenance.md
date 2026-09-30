@@ -176,8 +176,11 @@ Uncategorized". For those it adds two rules: a quest named "<category>: …" goe
 and a hand-written list in the script maps the catch-all's zone text ("Death Knight Campaign",
 "Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
 
+A quest nothing can place stays in category 0, which the menu lists as Uncategorized under
+Miscellaneous. A quest in a category that isn't defined is moved there too.
+
 After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf`, then without
-`-WhatIf`. It removes menu entries whose category no longer holds any quests.
+`-WhatIf`. It removes menu entries whose category no longer holds any quests, except Uncategorized.
 
 ### 7. Quests that may no longer be obtainable
 

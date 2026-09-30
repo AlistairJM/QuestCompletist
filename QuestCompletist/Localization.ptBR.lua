@@ -144,6 +144,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "Trono dos Quatro Ventos",
 	TOURNAMENT = "Torneio",
 	UPPERBLACKROCKSPIRE = "Pico da Rocha Negra Superior",
+	UNCATEGORIZED = "Sem categoria", -- Needs review
 	VASHJIR = "Vashj'ir",
 	VAULTOFARCHAVON = "Abóbada de Arcavon",
 	WARLOCK = "Bruxo",

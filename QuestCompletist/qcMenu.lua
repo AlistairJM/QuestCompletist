@@ -541,6 +541,7 @@ qcMenu={
 {text=qcL.WINTERVEIL,isTitle=false,notCheckable=false,hasArrow=false,arg1=413,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.TOURNAMENT,isTitle=false,notCheckable=false,hasArrow=false,arg1=248,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.SEASONAL,isTitle=false,notCheckable=false,hasArrow=false,arg1=173,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
+{text=stringformat("   %s",qcL.UNCATEGORIZED),isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=GetText("SETTINGS"),isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s%s|r","|cFFFF7D0A",GetText("SETTINGS")),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=stringformat("%s%s|r","|cFFFF7D0A",qcL.PERFORMSERVERQUERY),isTitle=false,notCheckable=false,hasArrow=false,arg1="PERFORMSERVERQUERY";func=function(button,arg1)qcProcessMenuAction(button, arg1);end},

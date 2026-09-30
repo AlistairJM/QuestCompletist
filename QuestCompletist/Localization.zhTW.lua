@@ -144,6 +144,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "四風王座", -- Needs review
 	TOURNAMENT = "全球爭霸戰", -- Needs review
 	UPPERBLACKROCKSPIRE = "黑石塔上層",
+	UNCATEGORIZED = "未分類", -- Needs review
 	VASHJIR = "瓦許伊爾", -- Needs review
 	VAULTOFARCHAVON = "亞夏梵穹殿", -- Needs review
 	WARLOCK = "術士", -- Needs review

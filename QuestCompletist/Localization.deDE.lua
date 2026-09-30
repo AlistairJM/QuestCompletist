@@ -143,6 +143,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "Thron der vier Winde",
 	TOURNAMENT = "Turnier",
 	UPPERBLACKROCKSPIRE = "Obere Schwarzfelsspitze",
+	UNCATEGORIZED = "Nicht kategorisiert", -- Needs review
 	VASHJIR = "Vashj'ir",
 	VAULTOFARCHAVON = "Archavons Kammer",
 	WARLOCK = "Hexenmeister",

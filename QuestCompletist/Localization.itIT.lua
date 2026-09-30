@@ -144,6 +144,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "Trono dei Quattro Venti",
 	TOURNAMENT = "Tournament", -- Requires localization
 	UPPERBLACKROCKSPIRE = "Bastioni di Roccianera Superiori",
+	UNCATEGORIZED = "Senza categoria", -- Needs review
 	VASHJIR = "Vashj'ir", -- Needs review
 	VAULTOFARCHAVON = "Volta di Archavon",
 	WARLOCK = "Stregone",

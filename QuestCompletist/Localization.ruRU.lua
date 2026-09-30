@@ -144,6 +144,7 @@ qcLocalize = {
 	THRONEOFTHEFOURWINDS = "Трон Четырех Ветров",
 	TOURNAMENT = "Турнирные",
 	UPPERBLACKROCKSPIRE = "Верхняя часть пика Черной горы",
+	UNCATEGORIZED = "Без категории", -- Needs review
 	VASHJIR = "Вайш'ир",
 	VAULTOFARCHAVON = "Хранилище Аркавона",
 	WARLOCK = "Чернокнижник",
