@@ -217,7 +217,11 @@ To reproduce in game:
   ~720k map draws, 1.2M pins each) with 0 differences, and `qcPinDB` stayed unchanged. Six deliberate
   breakages of the new code were each caught. Offline timing on maps 862/680/2022 with the map
   filters on: ~0.65 ms → ~0.25 ms per refresh (the stand-in `bit` library is pure Lua, so only the
-  ratio means anything). Merged as #95 after the user's in-game check.
+  ratio means anything). Merged as #95. The in-game check reported then turned out to have run on
+  master (the main checkout the game loads was still on master), so the in-game test of PR 2 covers
+  it.
+- Lesson: before an in-game test, confirm the main checkout is on the branch under test
+  (`git -C <repo> status -sb`). The game loads whatever is checked out there, not the worktree.
 - PR 2 on `fix/live-refresh`. A scratch simulation stubs the list UI (slider, rows, search box, map
   visibility, `C_Timer`) and plays the same event sequences through master and the branch. Master
   showed every symptom: (a) 0 map refreshes on turn-in, accept or abandon; (b) the turned-in quest
