@@ -3,6 +3,9 @@ Fetches basic quest data (title, level, area, faction, class/race requirements,
 reputation rewards) from Blizzard's Data API for the quest IDs found in
 wago.tools' location data but missing from our own qcQuestDatabase, so map pins
 for them show real info instead of "Quest Missing in DB".
+
+Each response is kept in quest_api_cache, as Audit-QuestAccuracy.ps1 keeps them, so
+Place-UncategorisedQuests.ps1 can file the new quests by their API area.
 #>
 
 $toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
@@ -21,13 +24,31 @@ $headers = @{ Authorization = "Bearer $token" }
 $questIds = Get-Content "$toolsDir\gap_quest_ids.txt" | Where-Object { $_ -match '\S' }
 Write-Output "Fetching data for $($questIds.Count) quests..."
 
+$cacheDir = "$toolsDir\quest_api_cache"
+if (-not (Test-Path $cacheDir)) { New-Item -ItemType Directory $cacheDir | Out-Null }
+
 $results = New-Object System.Collections.Generic.List[object]
 $notFound = 0
 $i = 0
 foreach ($qid in $questIds) {
     $i++
     try {
-        $q = Invoke-RestMethod -Uri "https://us.api.blizzard.com/data/wow/quest/$qid`?namespace=static-us&locale=en_US" -Headers $headers -ErrorAction Stop
+        if (Test-Path "$cacheDir\$qid.404") { throw "404" }
+        $jsonPath = "$cacheDir\$qid.json"
+        if (Test-Path $jsonPath) {
+            $body = [System.IO.File]::ReadAllText($jsonPath, [System.Text.Encoding]::UTF8)
+        } else {
+            try {
+                $resp = Invoke-WebRequest -UseBasicParsing -Uri "https://us.api.blizzard.com/data/wow/quest/$qid`?namespace=static-us&locale=en_US" -Headers $headers -ErrorAction Stop
+            } catch {
+                if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 404) { [System.IO.File]::WriteAllText("$cacheDir\$qid.404", "") }
+                throw
+            }
+            $body = [System.Text.Encoding]::UTF8.GetString($resp.RawContentStream.ToArray())
+            [System.IO.File]::WriteAllText($jsonPath, $body, (New-Object System.Text.UTF8Encoding $false))
+            Start-Sleep -Milliseconds 50
+        }
+        $q = $body | ConvertFrom-Json
         $factionType = if ($q.requirements -and $q.requirements.faction) { $q.requirements.faction.type } else { "" }
         $classNames = if ($q.requirements -and $q.requirements.classes) { ($q.requirements.classes | ForEach-Object { $_.name }) -join ";" } else { "" }
         $raceNames = if ($q.requirements -and $q.requirements.races) { ($q.requirements.races | ForEach-Object { $_.name }) -join ";" } else { "" }
@@ -48,7 +69,6 @@ foreach ($qid in $questIds) {
         $notFound++
     }
     if ($i % 50 -eq 0) { Write-Output "  ...$i / $($questIds.Count)" }
-    Start-Sleep -Milliseconds 50
 }
 
 Write-Output "Fetched: $($results.Count)  Not found (404 etc): $notFound"

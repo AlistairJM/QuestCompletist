@@ -65,8 +65,12 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
-| 6 | Map pins | see [the pin pipeline](plans/quest-location-data-pipeline.md) | Writes a candidate file only |
+| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md), then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
+
+Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
+ordinary sweep. When step 6 adds quests, those have never been probed. Run
+[the probe](#in-the-game) after step 6, then step 3 again.
 
 ### 1. Faction, race and class
 
@@ -107,7 +111,9 @@ Types are a bitmask. The ones that matter here:
 - `Retype-FlaggedWorldQuests.ps1` moves 128 to daily or repeatable when the API flags the quest that
   way and it isn't a world quest.
 - `Retype-ProbeRecurring.ps1` moves 1 to daily or 128 when the in-game probe (below) says the quest
-  recurs **and** the API flags it daily or weekly.
+  recurs **and** the API flags it daily or weekly. It reads the probe's saved results in
+  `tools\quest_type_probe_results.lua`, which only cover quests that were in the database when the
+  probe ran.
 
 Both only pick up new cases, so they're safe to rerun. Before changing any type by hand, know that
 neither source proves a quest is one-time:
@@ -167,12 +173,19 @@ run `Assemble-PinDB.ps1 -Apply`, which also writes `QuestCompletist\qcPinDB.lua`
 With no real changes, a rerun leaves `qcPinDB.lua` byte-identical.
 
 Quests that appear in the pin data but are missing from the database are fetched with
-`Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. The inserter refuses any
-quest that's already in the database.
+`Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
+`Assemble-PinDB.ps1 -Apply` before inserting, because the inserter uses the new pins. The fetch
+keeps each API response in `tools\quest_api_cache`, and the inserter refuses any quest that's
+already in the database.
 
-It inserts them without a category (category 0), and no menu entry reaches those. Run
-`Place-UncategorisedQuests.ps1 -WhatIf` afterwards, then without `-WhatIf`. It files each quest by
-the first of these that gives an answer:
+The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
+same folder. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. Like
+the other scripts that write, both take `-AddonDir`, so they can run against a scratch copy of the
+addon.
+
+`Place-UncategorisedQuests.ps1` also works on its own, on every quest without a category or in a
+category that isn't defined. Run it with `-WhatIf` first. It files each quest by the first of these
+that gives an answer:
 1. a name of the form "<category>: …" ("Prey: Anguish Island")
 2. its Blizzard API area
 3. the zone that contains that area on Blizzard's map
@@ -217,13 +230,18 @@ Some answers only the game client has.
 **Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It lives on
 the draft pull request #42, branch `tools/quest-type-probe`.
 
-1. Check out that branch, then **restart the game fully**. The probe adds a file to the TOC, and a
-   `/reload` doesn't pick that up.
-2. Type `/qc typecheck`. It loads every quest from the server a few at a time, which takes about two
+Run it after step 6 has added quests, then run step 3 again. On a sweep that adds nothing, the saved
+results are enough.
+
+1. Check out that branch and merge `master` into it. The probe walks the branch's own quest
+   database, so quests added since the branch was last updated aren't probed.
+2. **Restart the game fully**. The probe adds a file to the TOC, and a `/reload` doesn't pick that
+   up.
+3. Type `/qc typecheck`. It loads every quest from the server a few at a time, which takes about two
    hours. `/qc typecheck stop` pauses it, and running it again resumes. Its progress is kept across
    `/reload`s and logouts.
-3. When it says it has finished, `/reload`.
-4. **Before switching branches**, copy
+4. When it says it has finished, `/reload`.
+5. **Before switching branches**, copy
    `C:\Program Files (x86)\World of Warcraft\_retail_\WTF\Account\<ACCOUNT>\SavedVariables\QuestCompletist.lua`
    to `tools\quest_type_probe_results.lua`. Once the probe isn't in the TOC any more, WoW drops its
    results from that file the next time it saves.
