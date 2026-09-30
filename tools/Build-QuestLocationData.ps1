@@ -37,28 +37,34 @@ foreach ($r in $regions) {
 }
 
 # Convert one world (x,y) into a map percentage using a specific region row.
-# Formula verified in Phase 0 against two real in-game landmark readings.
+# Formula verified in Phase 0 against two real in-game landmark readings. A region can cover only
+# part of its map (UiMin..UiMax), as each zone does on a continent map.
 function Convert-WorldToMapPercent($worldX, $worldY, $region) {
     $r0 = [double]$region.Region_0
     $r1 = [double]$region.Region_1
     $r3 = [double]$region.Region_3
     $r4 = [double]$region.Region_4
-    $mapX = ($r4 - $worldY) / ($r4 - $r1)
-    $mapY = ($r3 - $worldX) / ($r3 - $r0)
-    return @{ X = $mapX; Y = $mapY }
+    $fx = ($r4 - $worldY) / ($r4 - $r1)
+    $fy = ($r3 - $worldX) / ($r3 - $r0)
+    $uMin0 = [double]$region.UiMin_0; $uMin1 = [double]$region.UiMin_1
+    $uMax0 = [double]$region.UiMax_0; $uMax1 = [double]$region.UiMax_1
+    return @{ X = $uMin0 + $fx * ($uMax0 - $uMin0); Y = $uMin1 + $fy * ($uMax1 - $uMin1) }
 }
 
-# For UiMapIDs with multiple distinct regions, try each and keep the one that
-# lands inside [0,1] on both axes. Falls back to the first region otherwise.
-function Get-BestConversion($worldX, $worldY, $candidateRegions) {
+# The region that contains the point, preferring one on the location's own instance (a phased copy
+# of a zone has its own instance but shares the zone's coordinates). $null when none does: the point
+# isn't on this map, and a pin placed from it would sit off the map's edge.
+function Get-BestConversion($worldX, $worldY, $instanceId, $candidateRegions) {
+    $fallback = $null
     foreach ($region in $candidateRegions) {
-        $result = Convert-WorldToMapPercent -worldX $worldX -worldY $worldY -region $region
-        if ($result.X -ge 0 -and $result.X -le 1 -and $result.Y -ge 0 -and $result.Y -le 1) {
-            return $result
-        }
+        $inside = $worldX -ge [double]$region.Region_0 -and $worldX -le [double]$region.Region_3 -and
+                  $worldY -ge [double]$region.Region_1 -and $worldY -le [double]$region.Region_4
+        if (-not $inside) { continue }
+        if ($region.MapID -eq $instanceId) { return Convert-WorldToMapPercent $worldX $worldY $region }
+        if (-not $fallback) { $fallback = $region }
     }
-    # Nothing fit cleanly - return the first region's result anyway, flagged by caller via out-of-range values
-    return Convert-WorldToMapPercent -worldX $worldX -worldY $worldY -region $candidateRegions[0]
+    if ($fallback) { return Convert-WorldToMapPercent $worldX $worldY $fallback }
+    return $null
 }
 
 Write-Output "Loading our own qcQuestDatabase quest IDs and zone names..."
@@ -79,6 +85,7 @@ $giverBlobs = $blobs | Where-Object { $_.ObjectiveIndex -eq "-1" }
 $results = New-Object System.Collections.Generic.List[object]
 $skippedNoPoint = 0
 $skippedNoRegion = 0
+$skippedOffMap = 0
 
 foreach ($blob in $giverBlobs) {
     $blobId = $blob.ID
@@ -90,7 +97,8 @@ foreach ($blob in $giverBlobs) {
 
     $pt = $pointsByBlob[$blobId][0]  # take first point; >99.8% of giver blobs have exactly one anyway
     $candidateRegions = $regionsByMap[$uiMapId]
-    $conv = Get-BestConversion -worldX ([double]$pt.X) -worldY ([double]$pt.Y) -candidateRegions $candidateRegions
+    $conv = Get-BestConversion -worldX ([double]$pt.X) -worldY ([double]$pt.Y) -instanceId $blob.MapID -candidateRegions $candidateRegions
+    if (-not $conv) { $skippedOffMap++; continue }
 
     $ours = $ourQuests[$questId]
 
@@ -108,6 +116,7 @@ foreach ($blob in $giverBlobs) {
 
 Write-Output "Skipped (no matching point): $skippedNoPoint"
 Write-Output "Skipped (no matching region): $skippedNoRegion"
+Write-Output "Skipped (point outside every region of its map): $skippedOffMap"
 Write-Output "Converted quest-giver locations: $($results.Count)"
 
 $outFile = "$toolsDir\quest_locations.csv"
