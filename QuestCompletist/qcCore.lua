@@ -2597,7 +2597,7 @@ function qcInterfaceOptions_OnShow(self)
 
     --- Quest List Filters Start ---
     qcListFiltersTitle = self:CreateFontString("qcListFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcListFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -235)
+    qcListFiltersTitle:SetPoint("TOPLEFT", qcMapFiltersTitle, "TOPLEFT", 380, 0)
     qcListFiltersTitle:SetText(qcL.QUESTLISTFILTERS)
 
     qcIO_L_HIDE_COMPLETED = CreateFrame("CheckButton", "qcIO_L_HIDE_COMPLETED", self, "InterfaceOptionsCheckButtonTemplate")
@@ -2673,7 +2673,7 @@ function qcInterfaceOptions_OnShow(self)
 	end)
 
     qcCombinedFiltersTitle = self:CreateFontString("qcCombinedFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -425)
+    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -235)
     qcCombinedFiltersTitle:SetText(qcL.COMBINEDMAPANDQUESTFILTERS)
 
     qcIO_ML_HIDE_FACTION = CreateFrame("CheckButton", "qcIO_ML_HIDE_FACTION", self, "InterfaceOptionsCheckButtonTemplate")
