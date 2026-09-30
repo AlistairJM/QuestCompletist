@@ -1979,10 +1979,10 @@ end
 		for i = #qcPins, 1, -1 do
 			for qcQuestIndex = #qcPins[i][7], 1, -1 do
 				local qcQuestID = qcPins[i][7][qcQuestIndex]
-				if (qcQuestDatabase[qcQuestID]) and (qcQuestDatabase[qcQuestID][11] > 0) then
-					if not ((qcToday >= qcHolidayDates[qcQuestDatabase[qcQuestID][11]][1]) and (qcToday <= qcHolidayDates[qcQuestDatabase[qcQuestID][11]][2])) then
-						TableRemove(qcPins[i][7], qcQuestIndex)
-					end
+				-- A holiday with no dates restricts nothing, like any other field with no data.
+				local qcWindow = qcQuestDatabase[qcQuestID] and qcHolidayDates[qcQuestDatabase[qcQuestID][11]]
+				if qcWindow and not ((qcToday >= qcWindow[1]) and (qcToday <= qcWindow[2])) then
+					TableRemove(qcPins[i][7], qcQuestIndex)
 				end
 			end
 			if (#qcPins[i][7] == 0) then
