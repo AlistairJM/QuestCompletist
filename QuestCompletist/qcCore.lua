@@ -1344,11 +1344,11 @@ function qcUpdateTooltip(index)
             local zoneName = GetZoneNameFromZoneID(zoneId)
 
             for _, npcData in ipairs(npcs) do
-                local npcId = npcData[3]
-                local npcName = npcData[4]
-                local xCoord = npcData[5]
-                local yCoord = npcData[6]
-                local quests = npcData[7]
+                local npcId = npcData[2]
+                local npcName = npcData[3]
+                local xCoord = npcData[4]
+                local yCoord = npcData[5]
+                local quests = npcData[6]
 
                 if type(quests) == "table" then
                     for _, quest in ipairs(quests) do
@@ -1422,10 +1422,10 @@ local function qcFindPinForQuest(questId)
 	local bestMap, bestPin, bestDist, bestOnPlayerMap
 	for mapId, pins in pairs(qcPinDB) do
 		for _, pin in ipairs(pins) do
-			for _, pinQuestId in ipairs(pin[7] or {}) do
+			for _, pinQuestId in ipairs(pin[6] or {}) do
 				if pinQuestId == questId then
 					if mapId == playerMap and px then
-						local dist = (pin[5] - px) ^ 2 + (pin[6] - py) ^ 2
+						local dist = (pin[4] - px) ^ 2 + (pin[5] - py) ^ 2
 						if not bestOnPlayerMap or dist < bestDist then
 							bestMap, bestPin, bestDist, bestOnPlayerMap = mapId, pin, dist, true
 						end
@@ -1482,7 +1482,7 @@ function qcQuestClick(qcButtonIndex)
         local mapId, pin = qcFindPinForQuest(qcQuestID)
         if (mapId) then
             local quest = qcQuestDatabase[qcQuestID]
-            TomTom:AddWaypoint(mapId, pin[5] / 100, pin[6] / 100, {title = pin[4] or (quest and quest[2])})
+            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = pin[3] or (quest and quest[2])})
             TomTom:SetClosestWaypoint()
         end
     end
@@ -1754,10 +1754,10 @@ function qcPinMixin:OnLoad()
 end
 
 local function qcSinglePinIcon(pinData)
-    local icon = pinData[2]
+    local icon = pinData[1]
     if icon == 3 then
         local professionMask = 0
-        for _, questId in ipairs(pinData[7]) do
+        for _, questId in ipairs(pinData[6]) do
             local quest = qcQuestDatabase[questId]
             if quest then
                 professionMask = bit.bor(professionMask, quest[10])
@@ -1765,7 +1765,7 @@ local function qcSinglePinIcon(pinData)
         end
         return qcProfessionIcon(professionMask)
     elseif icon == 1 then
-        return qcNormalPinIcon(pinData[7])
+        return qcNormalPinIcon(pinData[6])
     end
     return QC_PIN_ICONS[icon] or QC_ICON_NORMAL
 end
@@ -1788,7 +1788,7 @@ end
 function qcPinMixin:OnAcquired(pinData)
     self.PinData = pinData
     self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
-    self:SetPosition(pinData[5] / 100, pinData[6] / 100)
+    self:SetPosition(pinData[4] / 100, pinData[5] / 100)
     self:SetSize(24, 24)
 
     qcSetIcon(self.Texture, qcPinIcon(pinData))
@@ -1796,7 +1796,7 @@ function qcPinMixin:OnAcquired(pinData)
     -- Initialize isGrey as true, and turn it to false if ANY quest is available
     local isGrey = true
     local playerLevel = UnitLevel("player")
-    for _, questId in ipairs(pinData[7]) do
+    for _, questId in ipairs(pinData[6]) do
         if questId and qcQuestDatabase[questId] then
             local prereqQuestId = qcQuestDatabase[questId][14]
             local requiredLevel = qcQuestDatabase[questId][3]
@@ -1816,9 +1816,9 @@ function qcPinMixin:OnAcquired(pinData)
 end
 
 local function qcPinGiverName(pinData)
-    if pinData[4] then
-        return pinData[4]
-    elseif pinData[3] ~= 0 or pinData[8] then
+    if pinData[3] then
+        return pinData[3]
+    elseif pinData[2] ~= 0 or pinData[7] then
         return string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r")
     end
 end
@@ -1843,15 +1843,15 @@ local function qcAcquireTooltipIcon()
 end
 
 local function qcAddGiverToTooltip(pinData, name)
-    if pinData[3] == 0 then
+    if pinData[2] == 0 then
         qcMapTooltip:AddLine(name)
     else
-        qcMapTooltip:AddDoubleLine(name, string.format("|cffff7d0a[%d]|r", pinData[3]))
+        qcMapTooltip:AddDoubleLine(name, string.format("|cffff7d0a[%d]|r", pinData[2]))
     end
 end
 
 local function qcAddPinQuestsToTooltip(pinData)
-    for _, qcEntry in ipairs(pinData[7]) do
+    for _, qcEntry in ipairs(pinData[6]) do
         local questData = qcQuestDatabase[qcEntry]
         if questData then
             qcMapTooltip:AddDoubleLine("    " .. qcColouredQuestName(qcEntry), string.format("|cffff7d0a[%d]|r", qcEntry))
@@ -1876,8 +1876,8 @@ local function qcAddPinQuestsToTooltip(pinData)
         end
     end
 
-    if pinData[8] then
-        qcMapTooltip:AddLine(string.format("|cffabd473%s|r", pinData[8]), nil, nil, nil, true)
+    if pinData[7] then
+        qcMapTooltip:AddLine(string.format("|cffabd473%s|r", pinData[7]), nil, nil, nil, true)
     end
 end
 
@@ -1951,7 +1951,7 @@ local function qcMergeStackedPins(pins)
         local stack
         for _, candidate in ipairs(merged) do
             local first = candidate[1]
-            if first[1] == pinData[1] and (first[5] - pinData[5]) ^ 2 + (first[6] - pinData[6]) ^ 2 <= limit then
+            if (first[4] - pinData[4]) ^ 2 + (first[5] - pinData[5]) ^ 2 <= limit then
                 stack = candidate
                 break
             end
@@ -1968,11 +1968,11 @@ local function qcMergeStackedPins(pins)
         else
             local first, quests = stack[1], {}
             for _, member in ipairs(stack) do
-                for _, questId in ipairs(member[7]) do
+                for _, questId in ipairs(member[6]) do
                     table.insert(quests, questId)
                 end
             end
-            merged[i] = {first[1], first[2], first[3], first[4], first[5], first[6], quests, stack = stack}
+            merged[i] = {first[1], first[2], first[3], first[4], first[5], quests, stack = stack}
         end
     end
     return merged
@@ -1993,27 +1993,21 @@ function qcMapDataProvider:RefreshAllData()
     if qcSettings.QC_M_SHOW_ICONS == 0 then return end
 
     local UiMapID = self:GetMap():GetMapID()
-    local mapLevel = 0
     if not UiMapID or not qcPinDB[UiMapID] then return end
 
     wipe(qcPins)
     qcPins = qcCopyTable(qcPinDB[UiMapID])
 
-    for i = #qcPins, 1, -1 do
-        if qcPins[i][1] ~= mapLevel then
-            table.remove(qcPins, i)
-        end
-    end
 		--[[ Map No Data ]]--
 	if qcSettings.QC_M_HIDE_NODATA == 1 then
 		for i = #qcPins, 1, -1 do
-			for questIndex = #qcPins[i][7], 1, -1 do
-				local questId = qcPins[i][7][questIndex]
+			for questIndex = #qcPins[i][6], 1, -1 do
+				local questId = qcPins[i][6][questIndex]
 				if not qcQuestDatabase[questId] then
-					table.remove(qcPins[i][7], questIndex)
+					table.remove(qcPins[i][6], questIndex)
 				end
 			end
-			if #qcPins[i][7] == 0 then
+			if #qcPins[i][6] == 0 then
 				table.remove(qcPins, i)
 			end
 		end
@@ -2021,19 +2015,19 @@ function qcMapDataProvider:RefreshAllData()
 		--[[ Map Low Level ]]--
     if qcSettings.QC_M_HIDE_LOWLEVEL == 1 then
         for i = #qcPins, 1, -1 do
-            for questIndex = #qcPins[i][7], 1, -1 do
-                local questId = qcPins[i][7][questIndex]
+            for questIndex = #qcPins[i][6], 1, -1 do
+                local questId = qcPins[i][6][questIndex]
                 if qcQuestDatabase[questId] then
                     local questLevel = qcQuestDatabase[questId][3] or 0
 					local greenCutoff = (UnitLevel("player") -  UnitQuestTrivialLevelRange("player"))
                     if questLevel < greenCutoff then
-                        table.remove(qcPins[i][7], questIndex)
+                        table.remove(qcPins[i][6], questIndex)
                     end
                 else
-                    table.remove(qcPins[i][7], questIndex)
+                    table.remove(qcPins[i][6], questIndex)
                 end
             end
-            if #qcPins[i][7] == 0 then
+            if #qcPins[i][6] == 0 then
                 table.remove(qcPins, i)
             end
         end
@@ -2050,14 +2044,14 @@ end
 		--[[ Map Completed ]]--
 	if qcSettings["QC_M_HIDE_COMPLETED"] == 1 then
 		for i = #qcPins, 1, -1 do
-			for j = #qcPins[i][7], 1, -1 do
-				local questID = qcPins[i][7][j]
+			for j = #qcPins[i][6], 1, -1 do
+				local questID = qcPins[i][6][j]
 				if (qcCompletedQuests[questID] and (qcCompletedQuests[questID]["C"] == 1 or qcCompletedQuests[questID]["C"] == 2))
 					or overrideCompleted[questID] then
-					table.remove(qcPins[i][7], j)
+					table.remove(qcPins[i][6], j)
 				end
 			end
-			if #qcPins[i][7] == 0 then
+			if #qcPins[i][6] == 0 then
 				table.remove(qcPins, i)
 			end
 		end
@@ -2066,15 +2060,15 @@ end
 		--[[ Map and Quest Faction ]]--
 	if (qcSettings["QC_ML_HIDE_FACTION"] == 1) then
 		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][7], 1, -1 do
-				local qcQuestID = qcPins[i][7][qcQuestIndex]
+			for qcQuestIndex = #qcPins[i][6], 1, -1 do
+				local qcQuestID = qcPins[i][6][qcQuestIndex]
 				local qcCurrentPlayerFaction, _S = UnitFactionGroup("player")
 				local qcCurrentFaction = qcFactionBits[string.upper(qcCurrentPlayerFaction)]
 				if (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][7], qcCurrentFaction) then
-					TableRemove(qcPins[i][7], qcQuestIndex)
+					TableRemove(qcPins[i][6], qcQuestIndex)
 				end
 			end
-			if (#qcPins[i][7] == 0) then
+			if (#qcPins[i][6] == 0) then
 				TableRemove(qcPins, i)
 			end
 		end
@@ -2083,19 +2077,19 @@ end
 		--[[  Map and Quest Race\Class ]]--
 	if (qcSettings["QC_ML_HIDE_RACECLASS"] == 1) then
 		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][7], 1, -1 do
-				local qcQuestID = qcPins[i][7][qcQuestIndex]
+			for qcQuestIndex = #qcPins[i][6], 1, -1 do
+				local qcQuestID = qcPins[i][6][qcQuestIndex]
 				local _S, qcCurrentPlayerRace = UnitRace("player")
 				local qcCurrentRace = qcRaceBits[string.upper(qcCurrentPlayerRace)]
 				local _S, qcCurrentPlayerClass = UnitClass("player")
 				local qcCurrentClass = qcClassBits[string.upper(qcCurrentPlayerClass)]
 				if (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][8], qcCurrentRace) then
-					TableRemove(qcPins[i][7], qcQuestIndex)
+					TableRemove(qcPins[i][6], qcQuestIndex)
 				elseif (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][9], qcCurrentClass) then
-					TableRemove(qcPins[i][7], qcQuestIndex)
+					TableRemove(qcPins[i][6], qcQuestIndex)
 				end
 			end
-			if (#qcPins[i][7] == 0) then
+			if (#qcPins[i][6] == 0) then
 				TableRemove(qcPins, i)
 			end
 		end
@@ -2104,15 +2098,15 @@ end
 	local qcActive = (qcSettings["QC_M_HIDE_SEASONAL"] == 1) and qcUpdateActiveHolidays()
 	if qcActive then
 		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][7], 1, -1 do
-				local qcQuestID = qcPins[i][7][qcQuestIndex]
+			for qcQuestIndex = #qcPins[i][6], 1, -1 do
+				local qcQuestID = qcPins[i][6][qcQuestIndex]
 				-- A holiday value we don't know restricts nothing, like any other field with no data.
 				local qcHoliday = qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][11]
 				if qcKnownHolidayFlags[qcHoliday] and BitBand(qcActive, qcHoliday) == 0 then
-					TableRemove(qcPins[i][7], qcQuestIndex)
+					TableRemove(qcPins[i][6], qcQuestIndex)
 				end
 			end
-			if (#qcPins[i][7] == 0) then
+			if (#qcPins[i][6] == 0) then
 				TableRemove(qcPins, i)
 			end
 		end
@@ -2121,14 +2115,14 @@ end
 		--[[ Map In progress ]]--
 	if qcSettings["QC_M_HIDE_INPROGRESS"] == 1 then
 		for i = #qcPins, 1, -1 do
-			for j = #qcPins[i][7], 1, -1 do
-				local questID = qcPins[i][7][j]
+			for j = #qcPins[i][6], 1, -1 do
+				local questID = qcPins[i][6][j]
 				local isAccepted = C_QuestLog.GetLogIndexForQuestID(questID) and C_QuestLog.GetLogIndexForQuestID(questID) > 0
 				if isAccepted or overrideCompleted[questID] then
-					table.remove(qcPins[i][7], j)
+					table.remove(qcPins[i][6], j)
 				end
 			end
-			if #qcPins[i][7] == 0 then
+			if #qcPins[i][6] == 0 then
 				table.remove(qcPins, i)
 			end
 		end
@@ -2141,16 +2135,16 @@ end
 			local playerCovenantBit = qcCovenantsBits[playerCovenantID] or 0
 
 			for i = #qcPins, 1, -1 do
-				for qcQuestIndex = #qcPins[i][7], 1, -1 do
-					local qcQuestID = qcPins[i][7][qcQuestIndex]
+				for qcQuestIndex = #qcPins[i][6], 1, -1 do
+					local qcQuestID = qcPins[i][6][qcQuestIndex]
 					if qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][12] then
 						local questCovenant = qcQuestDatabase[qcQuestID][12]
 						if questCovenant > 0 and BitBand(questCovenant, playerCovenantBit) == 0 then
-							TableRemove(qcPins[i][7], qcQuestIndex)
+							TableRemove(qcPins[i][6], qcQuestIndex)
 						end
 					end
 				end
-				if #qcPins[i][7] == 0 then
+				if #qcPins[i][6] == 0 then
 					TableRemove(qcPins, i)
 				end
 			end
@@ -2160,13 +2154,13 @@ end
 	if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then -- Only run where account-wide (Warband) quest tracking exists
 		if (qcSettings["QC_ML_HIDE_WARBANDS"] == 1) then
 			for i = #qcPins, 1, -1 do
-				for qcQuestIndex = #qcPins[i][7], 1, -1 do
-					local qcQuestID = qcPins[i][7][qcQuestIndex]
+				for qcQuestIndex = #qcPins[i][6], 1, -1 do
+					local qcQuestID = qcPins[i][6][qcQuestIndex]
 					if C_QuestLog.IsQuestFlaggedCompletedOnAccount(qcQuestID) then
-						TableRemove(qcPins[i][7], qcQuestIndex)
+						TableRemove(qcPins[i][6], qcQuestIndex)
 					end
 				end
-				if #qcPins[i][7] == 0 then
+				if #qcPins[i][6] == 0 then
 					TableRemove(qcPins, i)
 				end
 			end
@@ -2178,8 +2172,8 @@ end
 		local playerFaction, _ = UnitFactionGroup("player")
 
 		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][7], 1, -1 do
-				local qcQuestID = qcPins[i][7][qcQuestIndex]
+			for qcQuestIndex = #qcPins[i][6], 1, -1 do
+				local qcQuestID = qcPins[i][6][qcQuestIndex]
 				local questData = qcQuestDatabase[qcQuestID]
 
 				if questData then
@@ -2208,11 +2202,11 @@ end
 
 					-- Remove the quest if any of the requirements are not met
 					if belowRequiredLevel or prequestNotCompleted or factionStandingTooLow then
-						TableRemove(qcPins[i][7], qcQuestIndex)
+						TableRemove(qcPins[i][6], qcQuestIndex)
 					end
 				end
 			end
-			if #qcPins[i][7] == 0 then
+			if #qcPins[i][6] == 0 then
 				TableRemove(qcPins, i)
 			end
 		end
@@ -2224,21 +2218,21 @@ end
 
     -- Iterate through pins and filter out quests based on profession bitwise flag
     for i = #qcPins, 1, -1 do
-        for questIndex = #qcPins[i][7], 1, -1 do
-            local questId = qcPins[i][7][questIndex]
+        for questIndex = #qcPins[i][6], 1, -1 do
+            local questId = qcPins[i][6][questIndex]
             if qcQuestDatabase[questId] then
                 local questProfessionFlag = qcQuestDatabase[questId][10]
                 if questProfessionFlag and questProfessionFlag ~= 0 then
                     -- Check if the quest's profession flag matches any of the player's professions
                     if bit.band(questProfessionFlag, professionBitwise) == 0 then
                         -- If no match, remove the quest
-                        table.remove(qcPins[i][7], questIndex)
+                        table.remove(qcPins[i][6], questIndex)
                     end
                 end
             end
         end
         -- Clean up any empty pins
-        if #qcPins[i][7] == 0 then
+        if #qcPins[i][6] == 0 then
             table.remove(qcPins, i)
         end
     end

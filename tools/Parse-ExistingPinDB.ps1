@@ -13,7 +13,7 @@ $lines = Get-Content $pinFile
 $currentUiMapId = $null
 $results = New-Object System.Collections.Generic.List[object]
 
-$pinPattern = '^\s*\{(\d+),(\d+),(\d+),(?:"([^"]*)"|nil),([\d.]+),([\d.]+),\{([\d,]*)\}'
+$pinPattern = '^\s*\{(\d+),(\d+),(?:"([^"]*)"|nil),([\d.]+),([\d.]+),\{([\d,]*)\}'
 $mapHeaderPattern = '^\s*\[(\d+)\]\s*=\s*\{'
 
 foreach ($line in $lines) {
@@ -25,20 +25,18 @@ foreach ($line in $lines) {
 
     $pinMatch = [regex]::Match($line, $pinPattern)
     if ($pinMatch.Success -and $currentUiMapId) {
-        $mapLevel = $pinMatch.Groups[1].Value
-        $iconType = $pinMatch.Groups[2].Value
-        $npcId = $pinMatch.Groups[3].Value
-        $npcName = $pinMatch.Groups[4].Value
-        $mapX = $pinMatch.Groups[5].Value
-        $mapY = $pinMatch.Groups[6].Value
-        $questIdsRaw = $pinMatch.Groups[7].Value
+        $iconType = $pinMatch.Groups[1].Value
+        $npcId = $pinMatch.Groups[2].Value
+        $npcName = $pinMatch.Groups[3].Value
+        $mapX = $pinMatch.Groups[4].Value
+        $mapY = $pinMatch.Groups[5].Value
+        $questIdsRaw = $pinMatch.Groups[6].Value
         if ($questIdsRaw) {
             $questIds = $questIdsRaw -split ','
             foreach ($qid in $questIds) {
                 $results.Add([PSCustomObject]@{
                     QuestID     = $qid
                     OldUiMapID  = $currentUiMapId
-                    OldMapLevel = $mapLevel
                     OldMapX     = $mapX
                     OldMapY     = $mapY
                     IconType    = $iconType

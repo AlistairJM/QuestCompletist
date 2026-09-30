@@ -27,13 +27,16 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
   | Field | Meaning |
   |---|---|
-  | `[1]` | Map level/floor (`0` = normal outdoor) — compared against `mapLevel` in `qcRefreshPins` |
-  | `[2]` | Icon type, `1`–`11` (normal/repeatable/profession/daily/seasonal/special/weekly/monthly/class/kill/legendary) — passed straight to `qcShowPin` |
-  | `[3]` | Quest-giver creature (NPC) ID |
-  | `[4]` | NPC name (string, or `nil` for special-case pins) |
-  | `[5]`, `[6]` | X/Y position, **0–100 scale** (matches in-game hover readout directly — multiply our `[0,1]` formula output by 100) |
-  | `[7]` | List of quest IDs offered/completed at this pin |
-  | `[8]` (optional) | Free-text note, seen on special-case pins (e.g. "Provided when you assist an Injured Razer Hill Grunt") |
+  | `[1]` | Icon type, `1`–`11` (normal/repeatable/profession/daily/seasonal/special/weekly/monthly/class/kill/legendary) |
+  | `[2]` | Quest-giver creature (NPC) ID |
+  | `[3]` | NPC name (string, or `nil` for special-case pins) |
+  | `[4]`, `[5]` | X/Y position, **0–100 scale** (matches in-game hover readout directly — multiply our `[0,1]` formula output by 100) |
+  | `[6]` | List of quest IDs offered/completed at this pin |
+  | `[7]` (optional) | Free-text note, seen on special-case pins (e.g. "Provided when you assist an Injured Razer Hill Grunt") |
+
+  Pins originally led with a map level (the pre-8.0 dungeon floor). Since 8.0 every floor has its own
+  `UiMapID`, so the field only ever hid pins. It was removed in September 2026, and every field
+  above moved down one.
 
   `qcPinDB[UiMapID]` keys are confirmed intended as live `UiMapID` (via `qcRefreshPins(UiMapID, mapLevel)`). We also directly caught a real drift bug this pipeline will fix: `qcPinDB[1]` is commented `Durotar`, but current `UiMapID 1` is actually **Kalimdor** (the whole continent) — concrete proof the existing pin data has drifted from the modern ID space.
 

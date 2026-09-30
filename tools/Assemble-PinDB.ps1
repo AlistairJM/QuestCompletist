@@ -54,7 +54,7 @@ $locations = Import-Csv "$toolsDir\quest_locations.csv"
 # Attach identity/icon to every location row
 $enriched = New-Object System.Collections.Generic.List[object]
 foreach ($loc in $locations) {
-    $npcId = "0"; $npcName = ""; $iconType = "1"; $mapLevel = "0"; $identitySource = "inferred-default"
+    $npcId = "0"; $npcName = ""; $iconType = "1"; $identitySource = "inferred-default"
     if ($existingByQuest.ContainsKey($loc.QuestID)) {
         $old = Get-NearestExistingPin $loc.QuestID $loc.UiMapID $loc.MapX $loc.MapY
         $npcId = $old.NpcId
@@ -66,7 +66,7 @@ foreach ($loc in $locations) {
     }
     $enriched.Add([PSCustomObject]@{
         QuestID = $loc.QuestID; UiMapID = $loc.UiMapID; MapX = $loc.MapX; MapY = $loc.MapY
-        NpcId = $npcId; NpcName = $npcName; IconType = $iconType; MapLevel = $mapLevel
+        NpcId = $npcId; NpcName = $npcName; IconType = $iconType
         IdentitySource = $identitySource
     })
 }
@@ -139,7 +139,7 @@ foreach ($e in $existing) {
     if (-not $isCovered) {
         $keptOld.Add([PSCustomObject]@{
             QuestID = $e.QuestID; UiMapID = $e.OldUiMapID; MapX = $e.OldMapX; MapY = $e.OldMapY
-            NpcId = $e.NpcId; NpcName = $e.NpcName; IconType = $e.IconType; MapLevel = $e.OldMapLevel
+            NpcId = $e.NpcId; NpcName = $e.NpcName; IconType = $e.IconType
             IdentitySource = "kept-old-unreplaced"
         })
     }
@@ -160,14 +160,14 @@ $proximityMergeThreshold = 1.5
 # one of their quests on a single pin, up to 90 map points from where the quest starts.
 $npcGroupThreshold = 3.0
 $pinGroups = @{}
-$namedGroupKeysByMapAndName = @{}   # "$UiMapID|$MapLevel|$Name" -> List[pinGroups key], for proximity lookup
-$npcGroupKeys = @{}                 # "$UiMapID|$MapLevel|npc-$NpcId" -> List[pinGroups key]
-$questGroupKeys = @{}               # "$UiMapID|$MapLevel|quest-$QuestID" -> List[pinGroups key]
+$namedGroupKeysByMapAndName = @{}   # "$UiMapID|$Name" -> List[pinGroups key], for proximity lookup
+$npcGroupKeys = @{}                 # "$UiMapID|npc-$NpcId" -> List[pinGroups key]
+$questGroupKeys = @{}               # "$UiMapID|quest-$QuestID" -> List[pinGroups key]
 
 # With no NPC to group by, one quest's starting points share a pin only when they're within 1.5
 # map points; further apart they get a pin each, rather than collapsing onto the first.
 function Get-QuestGroupKey($row) {
-    $base = "$($row.UiMapID)|$($row.MapLevel)|quest-$($row.QuestID)"
+    $base = "$($row.UiMapID)|quest-$($row.QuestID)"
     if (-not $questGroupKeys.ContainsKey($base)) { $questGroupKeys[$base] = New-Object System.Collections.Generic.List[string] }
     foreach ($candidateKey in $questGroupKeys[$base]) {
         $c = $pinGroups[$candidateKey]
@@ -181,7 +181,7 @@ function Get-QuestGroupKey($row) {
 foreach ($row in $enriched) {
     $key = $null
     if ($row.NpcId -ne "0") {
-        $npcKey = "$($row.UiMapID)|$($row.MapLevel)|npc-$($row.NpcId)"
+        $npcKey = "$($row.UiMapID)|npc-$($row.NpcId)"
         if (-not $npcGroupKeys.ContainsKey($npcKey)) { $npcGroupKeys[$npcKey] = New-Object System.Collections.Generic.List[string] }
         $bestDist = [double]::MaxValue
         foreach ($candidateKey in $npcGroupKeys[$npcKey]) {
@@ -194,7 +194,7 @@ foreach ($row in $enriched) {
             $npcGroupKeys[$npcKey].Add($key)
         }
     } elseif ($row.NpcName) {
-        $nameLookupKey = "$($row.UiMapID)|$($row.MapLevel)|$($row.NpcName)"
+        $nameLookupKey = "$($row.UiMapID)|$($row.NpcName)"
         $rowX = [double]$row.MapX; $rowY = [double]$row.MapY
         if ($namedGroupKeysByMapAndName.ContainsKey($nameLookupKey)) {
             $bestKey = $null; $bestDist = [double]::MaxValue
@@ -218,7 +218,7 @@ foreach ($row in $enriched) {
     }
     if (-not $pinGroups.ContainsKey($key)) {
         $pinGroups[$key] = [PSCustomObject]@{
-            UiMapID = $row.UiMapID; MapLevel = $row.MapLevel; NpcId = $row.NpcId; NpcName = $row.NpcName
+            UiMapID = $row.UiMapID; NpcId = $row.NpcId; NpcName = $row.NpcName
             IconType = $row.IconType; MapX = $row.MapX; MapY = $row.MapY
             QuestIDs = New-Object System.Collections.Generic.List[string]
         }
@@ -277,7 +277,7 @@ foreach ($mapId in ($byMap.Keys | Sort-Object { [int]$_ })) {
     foreach ($pin in $ordered) {
         $nameLiteral = if ($pin.NpcName) { '"' + ($pin.NpcName -replace '"', '\"') + '"' } else { "nil" }
         $questList = ($pin.QuestIDs -join ",")
-        [void]$sb.AppendLine("`t`t{$($pin.MapLevel),$($pin.IconType),$($pin.NpcId),$nameLiteral,$($pin.MapX),$($pin.MapY),{$questList}},")
+        [void]$sb.AppendLine("`t`t{$($pin.IconType),$($pin.NpcId),$nameLiteral,$($pin.MapX),$($pin.MapY),{$questList}},")
     }
     [void]$sb.AppendLine("`t},")
 }
