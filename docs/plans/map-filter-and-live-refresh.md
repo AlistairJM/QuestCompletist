@@ -228,7 +228,21 @@ To reproduce in game:
   stayed listed with the counter unchanged; (c) subzone scroll reset, browsing and search overridden;
   (d) no quest ID on the reward page. The branch fixed all of them, and a burst of 7 events gave 1 map
   refresh. `QUEST_REMOVED` and `QUEST_COMPLETE` were checked against Blizzard's live UI source. The
-  reachability report is unchanged. Not yet tested in game.
+  reachability report is unchanged.
+- PR 2 in game (merged as #96). Testing found two problems, both fixed before merge:
+  - After `/reload` the list opened on "Uncategorized". The window starts out shown, and the first
+    zone check didn't follow. The first zone after loading is now always followed.
+  - The quest ID hadn't shown on any quest page for a long time: `QuestFrameNpcNameText` is gone from
+    Blizzard's UI. (The simulation passed only because it supplied a stand-in for it.) The ID is now
+    added by a hook on `QuestFrame_SetPortrait`.
+
+  Everything then passed in game: the list opens on the current zone, turn-ins drop out of the list,
+  the quest ID shows, a pin comes back live when a quest is abandoned from the map's quest log, and
+  all four zone-following checks. Talking to an NPC closes the map, so live map refreshes can only be
+  seen for changes made with the map open.
+- Also found in game and fixed in #97: the zone counter counted quests any character on the account
+  had completed, so a fresh character read 47/51. Another character's completion now counts only while
+  "hide warband-completed" is on.
 
 ## Found along the way (not in scope; separate PRs if wanted)
 
