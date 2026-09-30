@@ -156,4 +156,4 @@ stays unflagged.
 
 ## Status
 
-- 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Phase 2 skipped (all 227 unknown to the API; see above). Phase 3 on `data/place-by-client-map-points`. Next: phase 4.
+- 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Phase 2 skipped (all 227 unknown to the API; see above). Phase 3 in #107. Phase 4 on `feat/unavailable-quests` (183 flagged). Next: phase 5, the review with the user.

@@ -59,6 +59,7 @@ qcLocalize = {
 	HIDEOTHERRACEANDCLASSQUESTS = "Скрывать задания других рас и классов",
 	HIDEOTHERCOVENANTQUESTS = "Hide Other Covenant Quests",
 	HIDEWARBANDS = "Hide quests done by other warband's characters",
+	HIDEUNAVAILABLE = "Hide quests that are no longer available",
 	HIDEREQUIREMENTSNOTMET = "Hide quests with unfinished requirements",
 	HIDENODATA = "Hide pins with no quest data available",
 	HIDEREPEATABLEQUEST = "Hide Repeatable Quests",
