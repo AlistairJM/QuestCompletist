@@ -75,6 +75,23 @@ Using standard `/run` commands, on the big character (Kranaa) and a fresh one:
 The exact commands go to the user when this phase starts. The same commands are run again after
 each later phase.
 
+### Phase 1 results (2026-09-30, retail 12.1.0, master 2a29d47, English client)
+
+| Measurement | In game | Offline (32-bit) |
+|---|---|---|
+| Memory after login (the list window opens at login) | 40.5 MB | ~22 MB |
+| First search for "T" | 101 ms, 18.5 MB allocated | 61 ms, 8.8 MB |
+| Repeat search for "T" (one keystroke) | 60 ms, 15.0 MB allocated | 27–45 ms, 3.4–4.4 MB |
+| Memory after searching (garbage collected first) | 58.2 MB (+17.7 MB kept) | – |
+
+- WoW's 64-bit Lua uses about 1.8× the memory of the offline measurements.
+- A short search keystroke costs about 4 frames at 60 fps and allocates ~15 MB.
+- The 17.7 MB kept after a search is the copies of the 27,642 matching rows (held until the list is
+  next rebuilt) plus the client-name index. Phase 2 removes the copies, so it matters more than the
+  offline numbers suggested.
+- The list window has no `hidden="true"`, so it opens at login, and the list indexes are built at
+  login for every player, not only for players who open the list.
+
 ### Phase 2: search (one PR)
 
 1. **Drop the copies.** `qcCategoryQuests` holds the database rows themselves.
@@ -125,4 +142,4 @@ Around 38 places read or write it today.
 
 ## Status
 
-- 2026-09-30: plan written from offline measurements, decisions agreed. Next: phase 1 in game.
+- 2026-09-30: plan written from offline measurements, decisions agreed. Phase 1 measured in game (results above). Next: phase 2.
