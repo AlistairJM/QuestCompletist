@@ -105,9 +105,8 @@ local function qcProfessionIcon(professionMask)
 end
 
 -- Type 128 holds both world quests and weeklies, since both reset weekly; the client knows which.
--- Classic has no IsWorldQuest, and no world quests either.
 local function qcType128Icon(questId)
-	if C_QuestLog.IsWorldQuest and C_QuestLog.IsWorldQuest(questId) then
+	if C_QuestLog.IsWorldQuest(questId) then
 		return QC_ICON_WORLD
 	end
 	return QC_ICON_WEEKLY
@@ -434,7 +433,7 @@ local function qcIsQuestCompleted(questId)
 end
 
 local function qcIsQuestCompletedOnAccount(questId)
-	return C_QuestLog.IsQuestFlaggedCompletedOnAccount ~= nil and C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId)
+	return C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId)
 end
 
 -- 0 means the database has no data for the field, so it restricts nothing.
@@ -488,7 +487,7 @@ local function qcBuildQuestFilter()
 	end
 
 	local covenantBit
-	if (qcSettings.QC_ML_HIDE_COVENANTS == 1) and C_Covenants and C_Covenants.GetActiveCovenantID then
+	if (qcSettings.QC_ML_HIDE_COVENANTS == 1) then
 		covenantBit = qcCovenantsBits[C_Covenants.GetActiveCovenantID()] or 0
 	end
 
@@ -904,24 +903,11 @@ local function qcQueryQuestFlaggedComplete()
 	return qcFound, qcNewFlagged
 end
 
-local function qcGetCompletedQuestIDs()
-	if (C_QuestLog.GetAllCompletedQuestIDs) then
-		return C_QuestLog.GetAllCompletedQuestIDs()
-	end
-	if (GetQuestsCompleted) then
-		local qcCompletedIDs = {}
-		for qcQuestID in pairs(GetQuestsCompleted()) do
-			qcCompletedIDs[#qcCompletedIDs + 1] = qcQuestID
-		end
-		return qcCompletedIDs
-	end
-end
-
 local function qcQuestQueryCompleted(qcAlwaysReport)
 
 	local qcFound = 0
 	local qcNewFlagged = 0
-	local qcCompletedIDs = qcGetCompletedQuestIDs()
+	local qcCompletedIDs = C_QuestLog.GetAllCompletedQuestIDs()
 
 	if not (qcCompletedIDs) or (#qcCompletedIDs == 0) then
 		qcFound, qcNewFlagged = qcQueryQuestFlaggedComplete()
@@ -1141,27 +1127,19 @@ local function qcClientName(source)
 	if (type(name) == "string" and name ~= "") then return name end
 end
 
--- The category's name as the client has it, in the player's language, or nil. Classic lacks some
--- of these APIs, and the pcall lets those categories fall back to our own strings.
+-- The category's name as the client has it, in the player's language, or nil.
 function qcClientCategoryName(categoryId)
 	local uiMapId = qcCategoryUiMapID and qcCategoryUiMapID[categoryId]
-	if (uiMapId) then
-		local ok, name = pcall(qcClientName, {"map", uiMapId})
-		if (ok and name) then return name end
-	end
+	local name = uiMapId and qcClientName({"map", uiMapId})
+	if (name) then return name end
 	local source = qcCategoryClientName and qcCategoryClientName[categoryId]
-	if (source) then
-		local ok, name = pcall(qcClientName, source)
-		if (ok and name) then return name end
-	end
+	return source and qcClientName(source)
 end
 
 -- A menu heading's text, from the client where qcMenu says how (clientName), keeping its indent.
 function qcMenuHeadingText(item)
-	if (item.clientName and item.text) then
-		local ok, name = pcall(qcClientName, item.clientName)
-		if (ok and name) then return item.text:match("^%s*") .. name end
-	end
+	local name = item.clientName and item.text and qcClientName(item.clientName)
+	if (name) then return item.text:match("^%s*") .. name end
 	return item.text
 end
 
@@ -1213,7 +1191,7 @@ function qcUpdateTooltip(index)
         -- for it and redraw when it lands (see QUEST_DATA_LOAD_RESULT in qcEventHandler).
         qcTooltipIndex = index
         qcTooltipQuestId = questId
-        if (C_QuestLog and C_QuestLog.RequestLoadQuestByID and not qcQuestDataLoaded[questId] and not qcQuestDataRequested[questId]) then
+        if (not qcQuestDataLoaded[questId] and not qcQuestDataRequested[questId]) then
             qcQuestDataRequested[questId] = true
             C_QuestLog.RequestLoadQuestByID(questId)
         end
@@ -1305,35 +1283,32 @@ function qcUpdateTooltip(index)
             qcQuestInformationTooltip:AddLine(" ")
         end
 		-- Renown and Faction requirements Start
-        -- Only handle renown/major faction requirements where the Major Factions API exists
-        if C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel then
-            local renownInfo = qcRenownLevelRequirements[questId]
+        local renownInfo = qcRenownLevelRequirements[questId]
 
-            if renownInfo then
-                if type(renownInfo) == "table" then
-                    local factionId = renownInfo[1]
-                    local requiredRenownLevel = renownInfo[2]
-                    local factionName = qcFactions[factionId] or "Unknown Faction"
-                    local currentRenownLevel = C_MajorFactions.GetCurrentRenownLevel(factionId)
+        if renownInfo then
+            if type(renownInfo) == "table" then
+                local factionId = renownInfo[1]
+                local requiredRenownLevel = renownInfo[2]
+                local factionName = qcFactions[factionId] or "Unknown Faction"
+                local currentRenownLevel = C_MajorFactions.GetCurrentRenownLevel(factionId)
 
-                    qcQuestInformationTooltip:AddDoubleLine("Required Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
+                qcQuestInformationTooltip:AddDoubleLine("Required Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
 
-                    if currentRenownLevel then
-                        if currentRenownLevel >= requiredRenownLevel then
-                            qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", string.format("|cFF00FF00%d (Requirement Fulfilled)|r", requiredRenownLevel))
-                        else
-                            qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", string.format("|cFFFF0000%d (Requirement Not Fulfilled)|r", requiredRenownLevel))
-                        end
+                if currentRenownLevel then
+                    if currentRenownLevel >= requiredRenownLevel then
+                        qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", string.format("|cFF00FF00%d (Requirement Fulfilled)|r", requiredRenownLevel))
                     else
-                        qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", "|cFFFF0000Data Unavailable|r")
+                        qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", string.format("|cFFFF0000%d (Requirement Not Fulfilled)|r", requiredRenownLevel))
                     end
-                elseif type(renownInfo) == "number" then
-                    local factionName = qcFactions[renownInfo] or "Unknown Faction"
-                    qcQuestInformationTooltip:AddDoubleLine("Required Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
+                else
+                    qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", "|cFFFF0000Data Unavailable|r")
                 end
-
-                qcQuestInformationTooltip:AddLine(" ")
+            elseif type(renownInfo) == "number" then
+                local factionName = qcFactions[renownInfo] or "Unknown Faction"
+                qcQuestInformationTooltip:AddDoubleLine("Required Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
             end
+
+            qcQuestInformationTooltip:AddLine(" ")
         end
 		-- Renown and Faction requirements End
 
@@ -2129,40 +2104,36 @@ end
 	end
 
 		--[[ Map Covenants ]]--
-	if C_Covenants and C_Covenants.GetActiveCovenantID then -- Only run where the Covenants API exists
-		if (qcSettings["QC_ML_HIDE_COVENANTS"] == 1) then
-			local playerCovenantID = C_Covenants.GetActiveCovenantID()
-			local playerCovenantBit = qcCovenantsBits[playerCovenantID] or 0
+	if (qcSettings["QC_ML_HIDE_COVENANTS"] == 1) then
+		local playerCovenantID = C_Covenants.GetActiveCovenantID()
+		local playerCovenantBit = qcCovenantsBits[playerCovenantID] or 0
 
-			for i = #qcPins, 1, -1 do
-				for qcQuestIndex = #qcPins[i][6], 1, -1 do
-					local qcQuestID = qcPins[i][6][qcQuestIndex]
-					if qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][12] then
-						local questCovenant = qcQuestDatabase[qcQuestID][12]
-						if questCovenant > 0 and BitBand(questCovenant, playerCovenantBit) == 0 then
-							TableRemove(qcPins[i][6], qcQuestIndex)
-						end
+		for i = #qcPins, 1, -1 do
+			for qcQuestIndex = #qcPins[i][6], 1, -1 do
+				local qcQuestID = qcPins[i][6][qcQuestIndex]
+				if qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][12] then
+					local questCovenant = qcQuestDatabase[qcQuestID][12]
+					if questCovenant > 0 and BitBand(questCovenant, playerCovenantBit) == 0 then
+						TableRemove(qcPins[i][6], qcQuestIndex)
 					end
 				end
-				if #qcPins[i][6] == 0 then
-					TableRemove(qcPins, i)
-				end
+			end
+			if #qcPins[i][6] == 0 then
+				TableRemove(qcPins, i)
 			end
 		end
 	end
 		--[[ Map Warbands ]]--
-	if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then -- Only run where account-wide (Warband) quest tracking exists
-		if (qcSettings["QC_ML_HIDE_WARBANDS"] == 1) then
-			for i = #qcPins, 1, -1 do
-				for qcQuestIndex = #qcPins[i][6], 1, -1 do
-					local qcQuestID = qcPins[i][6][qcQuestIndex]
-					if C_QuestLog.IsQuestFlaggedCompletedOnAccount(qcQuestID) then
-						TableRemove(qcPins[i][6], qcQuestIndex)
-					end
+	if (qcSettings["QC_ML_HIDE_WARBANDS"] == 1) then
+		for i = #qcPins, 1, -1 do
+			for qcQuestIndex = #qcPins[i][6], 1, -1 do
+				local qcQuestID = qcPins[i][6][qcQuestIndex]
+				if C_QuestLog.IsQuestFlaggedCompletedOnAccount(qcQuestID) then
+					TableRemove(qcPins[i][6], qcQuestIndex)
 				end
-				if #qcPins[i][6] == 0 then
-					TableRemove(qcPins, i)
-				end
+			end
+			if #qcPins[i][6] == 0 then
+				TableRemove(qcPins, i)
 			end
 		end
 	end
@@ -2186,18 +2157,16 @@ end
 					-- Check if a prerequisite quest is not completed
 					local prequestNotCompleted = prequestID > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prequestID)
 
-					-- Check faction standing from qcRenownLevelRequirements (Retail only)
+					-- Check faction standing from qcRenownLevelRequirements
 					local factionStandingTooLow = false
-					if C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel then -- Only check faction/renown requirements where the API exists
-						local renownRequirement = qcRenownLevelRequirements[qcQuestID]
-						if renownRequirement then
-							local factionID = renownRequirement[1]  -- First value is faction ID
-							local requiredRenown = renownRequirement[2]  -- Second value is required renown level
-							local currentRenown = C_MajorFactions.GetCurrentRenownLevel(factionID)
+					local renownRequirement = qcRenownLevelRequirements[qcQuestID]
+					if renownRequirement then
+						local factionID = renownRequirement[1]  -- First value is faction ID
+						local requiredRenown = renownRequirement[2]  -- Second value is required renown level
+						local currentRenown = C_MajorFactions.GetCurrentRenownLevel(factionID)
 
-							-- If player's renown is lower than required, mark the quest for removal
-							factionStandingTooLow = currentRenown < requiredRenown
-						end
+						-- If player's renown is lower than required, mark the quest for removal
+						factionStandingTooLow = currentRenown < requiredRenown
 					end
 
 					-- Remove the quest if any of the requirements are not met
@@ -2399,22 +2368,16 @@ function qcApplySettings()
         qcIO_L_HIDE_WORLDQUEST:SetChecked(true)
     end
 
-    -- Only handle qcIO_ML_HIDE_COVENANTS where the checkbox exists (created only where the Covenants API exists)
-    if qcIO_ML_HIDE_COVENANTS then
-        if (qcSettings.QC_ML_HIDE_COVENANTS == 0) then
-            qcIO_ML_HIDE_COVENANTS:SetChecked(false)
-        else
-            qcIO_ML_HIDE_COVENANTS:SetChecked(true)
-        end
+    if (qcSettings.QC_ML_HIDE_COVENANTS == 0) then
+        qcIO_ML_HIDE_COVENANTS:SetChecked(false)
+    else
+        qcIO_ML_HIDE_COVENANTS:SetChecked(true)
     end
 
-    -- Only handle qcIO_ML_HIDE_WARBANDS where the checkbox exists (created only where account-wide quest tracking exists)
-    if qcIO_ML_HIDE_WARBANDS then
-        if (qcSettings.QC_ML_HIDE_WARBANDS == 0) then
-            qcIO_ML_HIDE_WARBANDS:SetChecked(false)
-        else
-            qcIO_ML_HIDE_WARBANDS:SetChecked(true)
-        end
+    if (qcSettings.QC_ML_HIDE_WARBANDS == 0) then
+        qcIO_ML_HIDE_WARBANDS:SetChecked(false)
+    else
+        qcIO_ML_HIDE_WARBANDS:SetChecked(true)
     end
 
     if (qcSettings.QC_ML_HIDE_FACTION == 0) then
@@ -2683,35 +2646,29 @@ function qcInterfaceOptions_OnShow(self)
     qcApplyFilterChange()
     end)
 
-	-- Create Covenant Checkbox where the Covenants API exists
-	if C_Covenants and C_Covenants.GetActiveCovenantID then
-		qcIO_ML_HIDE_COVENANTS = CreateFrame("CheckButton", "qcIO_ML_HIDE_COVENANTS", self, "InterfaceOptionsCheckButtonTemplate")
-		qcIO_ML_HIDE_COVENANTS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -25)
-		_G[qcIO_ML_HIDE_COVENANTS:GetName().."Text"]:SetText(qcL.HIDEOTHERCOVENANTQUESTS)
-		qcIO_ML_HIDE_COVENANTS:SetScript("OnClick", function(self)
-			if (qcIO_ML_HIDE_COVENANTS:GetChecked() == false) then
-				qcSettings.QC_ML_HIDE_COVENANTS = 0
-			else
-				qcSettings.QC_ML_HIDE_COVENANTS = 1
-			end
+	qcIO_ML_HIDE_COVENANTS = CreateFrame("CheckButton", "qcIO_ML_HIDE_COVENANTS", self, "InterfaceOptionsCheckButtonTemplate")
+	qcIO_ML_HIDE_COVENANTS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -25)
+	_G[qcIO_ML_HIDE_COVENANTS:GetName().."Text"]:SetText(qcL.HIDEOTHERCOVENANTQUESTS)
+	qcIO_ML_HIDE_COVENANTS:SetScript("OnClick", function(self)
+		if (qcIO_ML_HIDE_COVENANTS:GetChecked() == false) then
+			qcSettings.QC_ML_HIDE_COVENANTS = 0
+		else
+			qcSettings.QC_ML_HIDE_COVENANTS = 1
+		end
 		qcApplyFilterChange()
-		end)
-	end
+	end)
 
-	-- Create Warband Checkbox where account-wide (Warband) quest tracking exists
-	if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
-		qcIO_ML_HIDE_WARBANDS = CreateFrame("CheckButton", "qcIO_ML_HIDE_WARBANDS", self, "InterfaceOptionsCheckButtonTemplate")
-		qcIO_ML_HIDE_WARBANDS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -50)
-		_G[qcIO_ML_HIDE_WARBANDS:GetName().."Text"]:SetText(qcL.HIDEWARBANDS)
-		qcIO_ML_HIDE_WARBANDS:SetScript("OnClick", function(self)
-			if (qcIO_ML_HIDE_WARBANDS:GetChecked() == false) then
-				qcSettings.QC_ML_HIDE_WARBANDS = 0
-			else
-				qcSettings.QC_ML_HIDE_WARBANDS = 1
-			end
+	qcIO_ML_HIDE_WARBANDS = CreateFrame("CheckButton", "qcIO_ML_HIDE_WARBANDS", self, "InterfaceOptionsCheckButtonTemplate")
+	qcIO_ML_HIDE_WARBANDS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -50)
+	_G[qcIO_ML_HIDE_WARBANDS:GetName().."Text"]:SetText(qcL.HIDEWARBANDS)
+	qcIO_ML_HIDE_WARBANDS:SetScript("OnClick", function(self)
+		if (qcIO_ML_HIDE_WARBANDS:GetChecked() == false) then
+			qcSettings.QC_ML_HIDE_WARBANDS = 0
+		else
+			qcSettings.QC_ML_HIDE_WARBANDS = 1
+		end
 		qcApplyFilterChange()
-		end)
-	end
+	end)
 	
     self:SetScript("OnShow", qcConfigRefresh)
     qcConfigRefresh(self)
@@ -2833,10 +2790,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED")
 	self:RegisterEvent("ADDON_LOADED")
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
-	-- Retail only; the event doesn't exist on the Classic interface the TOC also lists.
-	if (C_QuestLog and C_QuestLog.RequestLoadQuestByID) then
-		pcall(self.RegisterEvent, self, "QUEST_DATA_LOAD_RESULT")
-	end
+	self:RegisterEvent("QUEST_DATA_LOAD_RESULT")
 	self:SetScript("OnEvent", qcEventHandler)
 	qcQuestInformationTooltipSetup()
 	qcMapTooltipSetup()
