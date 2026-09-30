@@ -85,6 +85,134 @@ qcAreaIDToCategoryID={
 [1956]=75,[290]=418,[179]=83,[181]=84,[182]=84,[1682]=107,[1699]=419,[1700]=419,[332]=420,[503]=421,[504]=113,[507]=422,
 [157]=15,[124]=423,[153]=89,[248]=424,[367]=425,
 [2509]=1513,[2512]=1513,
+[837]=9,[844]=9,[1366]=9,[1383]=9,	-- Arathi Basin
+[158]=15,[159]=15,	-- Azjol-Nerub
+[776]=17,[891]=17,	-- Azuremyst Isle
+[1159]=23,[1160]=23,[1186]=23,[1578]=23,[2362]=23,[2363]=23,	-- Blackrock Depths
+[1552]=36,[1553]=36,	-- Caverns of Time
+[1203]=47,[1332]=47,[1333]=47,[1338]=47,	-- Darkshore
+[834]=63,	-- Dun Morogh
+[1535]=64,	-- Durotar
+[397]=75,	-- Eye of the Storm
+[1031]=84,	-- Gilneas City
+[840]=85,[841]=85,[842]=85,	-- Gnomeregan
+[154]=89,	-- Gundrak
+[1540]=92,[1541]=92,[1542]=92,	-- Halls of Origination
+[1375]=94,	-- Halls of Stone
+[698]=107,[699]=107,[700]=107,[701]=107,[1359]=107,[1558]=107,[1602]=107,[1681]=107,	-- Icecrown Citadel
+[1544]=134,[1545]=134,[1546]=134,	-- Mogu'shan Palace
+[1534]=148,	-- Orgrimmar
+[823]=154,	-- Pit of Saron
+[1465]=168,[2418]=168,[2438]=168,	-- Scarlet Halls
+[302]=169,[303]=169,[304]=169,[305]=169,[804]=169,[805]=169,	-- Scarlet Monastery
+[2354]=186,	-- Silithus
+[872]=193,[873]=193,[874]=193,	-- Stormstout Brewery
+[1012]=194,	-- Stormwind City
+[1505]=197,	-- Stratholme
+[1555]=205,	-- Tempest Keep
+[791]=206,[792]=206,	-- Temple of the Jade Serpent
+[490]=211,[759]=211,	-- Black Temple
+[775]=216,	-- The Exodar
+[828]=217,[881]=217,	-- The Eye of Eternity
+[155]=225,	-- The Obsidian Sanctum
+[799]=226,[800]=226,[801]=226,[802]=226,[803]=226,	-- The Oculus
+[860]=227,	-- The Ruby Sanctum
+[737]=237,	-- The Vortex Pinnacle
+[2366]=238,	-- The Wandering Isle
+[2070]=245,	-- Tirisfal Glades
+[773]=246,	-- Tol Barad
+[1563]=251,	-- Trial of the Crusader
+[1476]=252,	-- Twilight Highlands
+[744]=254,[745]=254,[746]=254,	-- Ulduar
+[1571]=255,	-- Uldum
+[1570]=261,	-- Vale of Eternal Blossoms
+[859]=268,[1339]=268,	-- Warsong Gulch
+[1334]=273,	-- Wintergrasp
+[233]=279,	-- Zul'Gurub
+[1478]=280,	-- Ashran
+[620]=308,[621]=308,	-- The Everbloom
+[616]=311,[617]=311,[618]=311,	-- Upper Blackrock Spire
+[449]=406,	-- Temple of Kotmogu
+[728]=412,	-- Terrace of Endless Spring
+[725]=415,[839]=415,	-- The Maelstrom
+[471]=416,[1547]=416,[1548]=416,[1549]=416,	-- Mogu'shan Vaults
+[287]=418,[288]=418,[289]=418,[1560]=418,	-- Blackwing Lair
+[738]=425,[1958]=425,[1959]=425,	-- Firelands
+[1554]=428,	-- Serpentshrine Cavern
+[676]=1002,	-- Broken Shore
+[696]=1006,	-- Stormheim
+[1642]=1008,	-- Val'sharah
+[719]=1010,	-- Mardum, the Shattered Abyss (Demon Hunter)
+[1971]=1012,	-- Skyhold (Warrior)
+[1468]=1013,	-- The Dreamgrove (Druid)
+[717]=1017,	-- Dreadscar Rift
+[793]=1025,	-- Black Rook Hold
+[829]=1030,[2230]=1030,[2231]=1030,	-- Halls of Valor
+[798]=1034,	-- The Arcway
+[677]=1035,[679]=1035,	-- Vault of the Wardens
+[2220]=1039,[2221]=1039,	-- The Nighthold
+[940]=1041,[941]=1041,	-- Krokuun
+[1471]=1048,	-- Emerald Dreamway
+[1604]=1064,[2321]=1064,	-- Chamber of Heart
+[1528]=1065,	-- Nazjatar
+[1574]=1066,	-- Mechagon City
+[1181]=1082,	-- Zuldazar
+[1004]=1103,	-- Kings' Rest
+[1349]=1109,[1350]=1109,[1351]=1109,	-- Tol Dagor
+[1381]=1110,[1382]=1110,	-- Uldir
+[1015]=1111,[1016]=1111,	-- Waycrest Manor
+[1358]=1113,	-- Battle of Dazar'alor
+[1515]=1114,	-- The Eternal Palace
+[1580]=1115,[1590]=1115,[1591]=1115,[1592]=1115,[1593]=1115,	-- Ny'alotha, the Waking City
+[1157]=1131,	-- The Great Sea
+[1603]=1200,[2005]=1200,	-- Ardenweald
+[1689]=1203,	-- Maldraxxus
+[1688]=1205,[1734]=1205,	-- Revendreth
+[1960]=1206,	-- The Maw
+[1644]=1231,	-- Ember Court
+[1989]=1244,[1990]=1244,[1991]=1244,[1992]=1244,[1993]=1244,[1995]=1244,[1996]=1244,	-- Tazavesh
+[1762]=1246,	-- Torghast, Tower of the Damned
+[2232]=1309,[2233]=1309,[2234]=1309,[2238]=1309,[2239]=1309,[2240]=1309,[2244]=1309,[2268]=1309,	-- Amirdrassil
+[2092]=1320,[2204]=1320,	-- Azmerloth
+[2063]=1322,	-- Dragon Isles
+[2406]=1408,[2407]=1408,[2408]=1408,[2409]=1408,[2411]=1408,[2428]=1408,	-- Undermine
+[2345]=1421,	-- Deephaul Ravine
+[2291]=1425,[2292]=1425,[2293]=1425,[2294]=1425,[2295]=1425,[2296]=1425,[2298]=1425,	-- Nerub-ar Palace
+[2352]=1501,	-- Founder's Point
+[2424]=1503,[2565]=1503,	-- Isle of Quel'Danas
+[2351]=1505,	-- Razorwind Shores
+[2397]=1506,[2444]=1506,	-- Slayer's Rise
+[1677]=1702,[1678]=1702,[1679]=1702,[1680]=1702,[1917]=1702,	-- De Other Side
+[1683]=1703,[1684]=1703,[1685]=1703,[1686]=1703,[1687]=1703,	-- Theater of Pain
+[1675]=1704,[1676]=1704,	-- Sanguine Depths
+[1692]=1705,[1693]=1705,[1694]=1705,[1695]=1705,[2017]=1705,[2018]=1705,	-- Spires of Ascension
+[1674]=1706,[1697]=1706,	-- Plaguefall
+[1666]=1707,[1667]=1707,[1668]=1707,	-- The Necrotic Wake
+[1663]=1708,[1664]=1708,[1665]=1708,	-- Halls of Atonement
+[1669]=1709,	-- Mists of Tirna Scithe
+[1735]=1710,[1744]=1710,[1745]=1710,[1746]=1710,[1747]=1710,[1748]=1710,[1750]=1710,[1755]=1710,	-- Castle Nathria
+[1998]=1711,[1999]=1711,[2000]=1711,[2001]=1711,[2002]=1711,[2003]=1711,[2004]=1711,	-- Sanctum of Domination
+[2047]=1712,[2048]=1712,[2049]=1712,[2050]=1712,[2051]=1712,[2052]=1712,[2061]=1712,	-- Sepulcher of the First Ones
+[2097]=1713,[2098]=1713,[2099]=1713,	-- Algeth'ar Academy
+[2119]=1714,[2120]=1714,[2121]=1714,[2122]=1714,[2123]=1714,[2124]=1714,[2125]=1714,[2126]=1714,	-- Vault of the Incarnates
+[2096]=1715,[2106]=1715,	-- Brackenhide Hollow
+[2166]=1716,[2167]=1716,[2168]=1716,[2169]=1716,[2170]=1716,[2171]=1716,[2172]=1716,[2173]=1716,[2174]=1716,[2211]=1716,	-- Aberrus, the Shadowed Crucible
+[2082]=1717,[2083]=1717,	-- Halls of Infusion
+[2080]=1718,[2081]=1718,	-- Neltharus
+[2094]=1719,[2095]=1719,	-- Ruby Life Pools
+[2073]=1720,[2074]=1720,[2075]=1720,[2076]=1720,[2077]=1720,[2183]=1720,	-- The Azure Vault
+[2093]=1721,	-- The Nokhud Offensive
+[2071]=1722,[2072]=1722,	-- Uldaman: Legacy of Tyr
+[2198]=1723,	-- Dawn of the Infinite
+[2341]=1724,	-- The Stonevault
+[2335]=1725,	-- Cinderbrew Meadery
+[2315]=1727,[2316]=1727,[2317]=1727,[2318]=1727,[2319]=1727,[2320]=1727,	-- The Rookery
+[2303]=1728,[2304]=1728,	-- Darkflame Cleft
+[2308]=1729,[2309]=1729,[2330]=1729,	-- Priory of the Sacred Flame
+[2359]=1730,	-- The Dawnbreaker
+[2387]=1731,[2388]=1731,	-- Operation: Floodgate
+[2449]=1732,	-- Eco-Dome Al'dani
+[2460]=1734,[2461]=1734,[2462]=1734,[2463]=1734,[2464]=1734,[2465]=1734,[2466]=1734,[2467]=1734,[2468]=1734,[2469]=1734,[2470]=1734,[2471]=1734,	-- Manaforge Omega
 }	
 
 qcQuestCategories={
@@ -240,6 +368,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[32]=452,	-- Brewmoon Festival
 	[33]=36,	-- Burning Steppes
 	[34]=462,	-- Camp Narache
+	[36]=1552,	-- Caverns of Time
 	[43]=125,	-- Dalaran
 	[47]=62,	-- Darkshore
 	[49]=89,	-- Darnassus
@@ -322,7 +451,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[165]=247,	-- Ruins of Ahn'Qiraj
 	[166]=217,	-- Ruins of Gilneas
 	[168]=431,	-- Scarlet Halls
-	[169]=435,	-- Scarlet Monastery
+	[169]=302,	-- Scarlet Monastery
 	[171]=476,	-- Scholomance
 	[172]=32,	-- Searing Gorge
 	[174]=258,	-- Sethekk Halls
@@ -367,6 +496,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[222]=174,	-- The Lost Isles
 	[223]=267,	-- The Mechanar
 	[224]=129,	-- The Nexus
+	[225]=155,	-- The Obsidian Sanctum
 	[226]=142,	-- The Oculus
 	[227]=200,	-- The Ruby Sanctum
 	[228]=246,	-- The Shattered Halls
@@ -415,7 +545,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[276]=333,	-- Zul'Aman
 	[277]=121,	-- Zul'Drak
 	[278]=219,	-- Zul'Farrak
-	[279]=337,	-- Zul'Gurub
+	[279]=233,	-- Zul'Gurub
 	[280]=588,	-- Ashran
 	[283]=596,	-- Blackrock Foundry
 	[285]=573,	-- Bloodmaul Slag Mines
@@ -429,6 +559,8 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[302]=622,	-- Stormshield
 	[305]=535,	-- Talador
 	[306]=534,	-- Tanaan Jungle
+	[308]=620,	-- The Everbloom
+	[311]=616,	-- Upper Blackrock Spire
 	[312]=624,	-- Warspear
 	[318]=610,	-- Highmaul
 	[403]=275,	-- The Battle for Gilneas
@@ -442,15 +574,16 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[411]=897,	-- The Deaths of Chromie
 	[412]=456,	-- Terrace of Endless Spring
 	[415]=276,	-- The Maelstrom
-	[416]=472,	-- Mogu'shan Vaults
+	[416]=471,	-- Mogu'shan Vaults
 	[417]=127,	-- Crystalsong Forest
-	[418]=290,	-- Blackwing Lair
+	[418]=287,	-- Blackwing Lair
 	[419]=1699,	-- Sinfall
 	[421]=503,	-- Brawl'gar Arena
 	[422]=507,	-- Isle of Giants
 	[423]=124,	-- Plaguelands: The Scarlet Enclave
 	[424]=248,	-- Onyxia's Lair
 	[425]=367,	-- Firelands
+	[428]=1554,	-- Serpentshrine Cavern
 	[1001]=630,	-- Azsuna
 	[1002]=646,	-- Broken Shore
 	[1003]=41,	-- Dalaran
@@ -459,7 +592,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1006]=634,	-- Stormheim
 	[1007]=680,	-- Suramar
 	[1008]=641,	-- Val'sharah
-	[1017]=718,	-- Dreadscar Rift
+	[1017]=717,	-- Dreadscar Rift
 	[1025]=751,	-- Black Rook Hold
 	[1026]=845,	-- Cathedral of Eternal Night
 	[1027]=761,	-- Court of Stars
@@ -468,7 +601,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1030]=703,	-- Halls of Valor
 	[1032]=731,	-- Neltharion's Lair
 	[1034]=749,	-- The Arcway
-	[1035]=678,	-- Vault of the Wardens
+	[1035]=677,	-- Vault of the Wardens
 	[1036]=732,	-- Violet Hold
 	[1037]=777,	-- The Emerald Nightmare
 	[1038]=806,	-- Trial of Valor
@@ -495,13 +628,14 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1100]=934,	-- Atal'Dazar
 	[1101]=1345,	-- Crucible of Storms
 	[1102]=936,	-- Freehold
+	[1103]=1004,	-- Kings' Rest
 	[1104]=1039,	-- Shrine of the Storm
 	[1105]=1162,	-- Siege of Boralus
 	[1107]=1038,	-- Temple of Sethraliss
 	[1108]=1041,	-- The Underrot
 	[1109]=974,	-- Tol Dagor
 	[1110]=1148,	-- Uldir
-	[1111]=1017,	-- Waycrest Manor
+	[1111]=1015,	-- Waycrest Manor
 	[1112]=1010,	-- The MOTHERLODE!!
 	[1113]=1352,	-- Battle of Dazar'alor
 	[1114]=1512,	-- The Eternal Palace
@@ -514,8 +648,10 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1205]=1525,	-- Revendreth
 	[1206]=1543,	-- The Maw
 	[1207]=1970,	-- Zereth Mortis
+	[1231]=1644,	-- Ember Court
 	[1233]=1662,	-- Queen's Conservatory
 	[1243]=1961,	-- Korthia
+	[1246]=1762,	-- Torghast, Tower of the Damned
 	[1301]=2023,	-- Ohn'ahran Plains
 	[1302]=2025,	-- Thaldraszus
 	[1303]=2024,	-- The Azure Span
@@ -524,6 +660,9 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1306]=2112,	-- Valdrakken
 	[1307]=2133,	-- Zaralek Cavern
 	[1308]=2200,	-- Emerald Dream
+	[1309]=2232,	-- Amirdrassil
+	[1320]=2092,	-- Azmerloth
+	[1322]=2063,	-- Dragon Isles
 	[1401]=2255,	-- Azj-Kahet
 	[1402]=2213,	-- City of Threads
 	[1403]=2339,	-- Dornogal
@@ -535,8 +674,13 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1409]=2372,	-- Arathi Highlands
 	[1410]=2371,	-- K'aresh
 	[1411]=2472,	-- Tazavesh
+	[1421]=2345,	-- Deephaul Ravine
+	[1425]=2291,	-- Nerub-ar Palace
+	[1501]=2352,	-- Founder's Point
 	[1502]=2413,	-- Harandar
-	[1503]=2432,	-- Isle of Quel'Danas
+	[1503]=2424,	-- Isle of Quel'Danas
+	[1505]=2351,	-- Razorwind Shores
+	[1506]=2397,	-- Slayer's Rise
 	[1508]=2405,	-- Voidstorm
 	[1510]=2437,	-- Zul'Aman
 	[1511]=2395,	-- Eversong Woods
@@ -586,7 +730,6 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[25]={"skill",164},	-- Blacksmithing
 	[30]={"achievementcategory",15567},	-- Brawler's Guild
 	[31]={"achievementcategory",162},	-- Brewfest
-	[36]={"map",74},	-- Caverns of Time
 	[37]={"achievementcategory",163},	-- Children's Week
 	[39]={"area",3905},	-- Coilfang Reservoir
 	[40]={"area",4024},	-- Coldarra
@@ -628,13 +771,10 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[202]={"skill",197},	-- Tailoring
 	[208]={"area",5931},	-- The Arboretum
 	[219]={"area",5981},	-- The Halfhill Market
-	[225]={"map",155},	-- The Obsidian Sanctum
 	[266]={"class",9},	-- Warlock
 	[267]={"class",1},	-- Warrior
 	[287]={"area",4019},	-- Development Land
 	[295]={"map",425},	-- Northshire
-	[308]={"map",620},	-- The Everbloom
-	[311]={"map",616},	-- Upper Blackrock Spire
 	[314]={"format","%s - %s",{"map",550},{"map",572}},	-- Nagrand - Draenor
 	[315]={"format","%s - %s",{"map",539},{"map",572}},	-- Shadowmoon Valley - Draenor
 	[316]={"map",407},	-- Darkmoon Island
@@ -654,7 +794,6 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[1021]={"format","%s (%s)",{"map",647},{"class",6}},	-- Acherus: The Ebon Hold (Death Knight)
 	[1031]={"instance",727},	-- Maw of Souls
 	[1033]={"instance",860},	-- Return to Karazhan
-	[1103]={"map",1004},	-- Kings' Rest
 	[1115]={"map",2379},	-- Ny'alotha, the Waking City
 	[1133]={"achievementcategory",15426},	-- Visions of N'Zoth
 	[1220]={"covenant",1},	-- Kyrian
@@ -662,16 +801,11 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[1222]={"covenant",3},	-- Night Fae
 	[1223]={"covenant",2},	-- Venthyr
 	[1230]={"skill",2787},	-- Abominable Stitching
-	[1231]={"map",1644},	-- Ember Court
 	[1232]={"string","COVENANT_SANCTUM_FEATURE_KYRIAN"},	-- Path of Ascension
 	[1242]={"area",13625},	-- Keeper's Respite
 	[1244]={"map",2472},	-- Tazavesh
 	[1245]={"faction",2472},	-- The Archivists' Codex
-	[1246]={"map",1762},	-- Torghast, Tower of the Damned
 	[1247]={"string","GARRISON_TYPE_9_0_LANDING_PAGE_TITLE"},	-- Covenant Sanctum
-	[1309]={"map",2232},	-- Amirdrassil
-	[1320]={"map",2092},	-- Azmerloth
-	[1322]={"map",1978},	-- Dragon Isles
 	[1324]={"faction",2507},	-- Dragonscale Expedition
 	[1328]={"faction",2511},	-- Iskaara Tuskarr
 	[1330]={"faction",2503},	-- Maruuk Centaur
@@ -682,15 +816,10 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[1344]={"instance",1207},	-- Amirdrassil, the Dream's Hope
 	[1346]={"area",14096},	-- Little Scales Daycare
 	[1420]={"area",15133},	-- Awakening the Machine
-	[1421]={"map",2345},	-- Deephaul Ravine
-	[1425]={"map",2291},	-- Nerub-ar Palace
 	[1427]={"area",14784},	-- Rambleshire
 	[1430]={"area",15329},	-- Delvers Headquarters
 	[1431]={"achievementcategory",15522},	-- Delves
 	[1432]={"area",15792},	-- The Oasis
-	[1501]={"map",2352},	-- Founder's Point
-	[1505]={"map",2351},	-- Razorwind Shores
-	[1506]={"map",2397},	-- Slayer's Rise
 	[1509]={"area",3466},	-- West Sanctum
 	[1514]={"achievementcategory",15605},	-- Prey
 	[1733]={"instance",1296},	-- Liberation of Undermine
@@ -14730,7 +14859,7 @@ qcQuestDatabase={
 [91281]={91281,"Midnight",80,"Dornogal",1403,1,3,67108863,8191,0,0,0,5811,0},
 [91727]={91727,"Isles United",10,"",427,1,3,67108863,8191,0,0,0,5959,0},
 [88998]={88998,"Root of the World",83,"Harandar",1502,1,3,67108863,8191,0,0,0,6015,0},
-[90748]={90748,"Quel'Danas",90,"",0,1,3,67108863,8191,0,0,0,5797,0},
+[90748]={90748,"Quel'Danas",90,"",1503,1,3,67108863,8191,0,0,0,5797,0},
 [88999]={88999,"Sky's Hope",83,"Harandar",1502,1,3,67108863,8191,0,0,0,6015,0},
 [91993]={91993,"Diminutive Demand",80,"Eversong Woods",1511,4,3,67108863,8191,0,0,0,5841,0},
 [91985]={91985,"Windrunner Memorabilia",80,"Eversong Woods",1511,4,3,67108863,8191,0,0,0,5841,0},
@@ -14885,23 +15014,23 @@ qcQuestDatabase={
 [96053]={96053,"Surveying the Frozen Wastes",80,"",1508,1,3,67108863,8191,0,0,0,6309,0},
 [96054]={96054,"Surveying the Mana-Bog",80,"",1508,1,3,67108863,8191,0,0,0,6310,0},
 [96223]={96223,"The Magisters' Call",90,"",1512,1,3,67108863,8191,0,0,0,6275,0},
-[96224]={96224,"The Magisters' Conundrum",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
-[96225]={96225,"The Magisters' Conundrum",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
-[96227]={96227,"Lycaneum Chaos",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
-[96226]={96226,"Omnium Anomalies",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
+[96224]={96224,"The Magisters' Conundrum",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
+[96225]={96225,"The Magisters' Conundrum",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
+[96227]={96227,"Lycaneum Chaos",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
+[96226]={96226,"Omnium Anomalies",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
 [96228]={96228,"The Shadowed Spire",80,"",1511,1,3,67108863,8191,0,0,0,6275,0},
-[96230]={96230,"Unraveling the Wards",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
-[96231]={96231,"The Grand Magister's Key-Cipher",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
+[96230]={96230,"Unraveling the Wards",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
+[96231]={96231,"The Grand Magister's Key-Cipher",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
 [96229]={96229,"The Void Reveals",80,"",1511,1,3,67108863,8191,0,0,0,6275,0},
-[96232]={96232,"Return to the Omnium",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
-[96238]={96238,"Return to the Omnium",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
+[96232]={96232,"Return to the Omnium",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
+[96238]={96238,"Return to the Omnium",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
 [94882]={94882,"Perfect Timing",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6128,0},
-[96441]={96441,"Seeking Knowledge Week 2 of 5: Ritualized Arcana",90,"",0,1,3,67108863,8191,0,0,0,6307,0},
-[96442]={96442,"Seeking Knowledge Week 3 of 5: Ley Line Assaults",90,"",0,1,3,67108863,8191,0,0,0,6307,0},
-[96443]={96443,"Seeking Knowledge Week 4 of 5: Magical Primessence",90,"",0,1,3,67108863,8191,0,0,0,6307,0},
-[96444]={96444,"Seeking Knowledge Week 5 of 5: Off-World Magic",90,"",0,1,3,67108863,8191,0,0,0,6307,0},
-[96410]={96410,"Seeking Knowledge Week 1 of 5: The Omnium Folio",90,"",0,1,3,67108863,8191,0,0,0,6307,0},
-[96233]={96233,"The Omnium Reawakens",80,"",0,1,3,67108863,8191,0,0,0,6275,0},
+[96441]={96441,"Seeking Knowledge Week 2 of 5: Ritualized Arcana",90,"",1503,1,3,67108863,8191,0,0,0,6307,0},
+[96442]={96442,"Seeking Knowledge Week 3 of 5: Ley Line Assaults",90,"",1503,1,3,67108863,8191,0,0,0,6307,0},
+[96443]={96443,"Seeking Knowledge Week 4 of 5: Magical Primessence",90,"",1503,1,3,67108863,8191,0,0,0,6307,0},
+[96444]={96444,"Seeking Knowledge Week 5 of 5: Off-World Magic",90,"",1503,1,3,67108863,8191,0,0,0,6307,0},
+[96410]={96410,"Seeking Knowledge Week 1 of 5: The Omnium Folio",90,"",1503,1,3,67108863,8191,0,0,0,6307,0},
+[96233]={96233,"The Omnium Reawakens",80,"",1503,1,3,67108863,8191,0,0,0,6275,0},
 [96439]={96439,"Gone Dark",90,"Tokka's Landing",1513,1,3,67108863,8191,0,0,0,6274,0},
 [96450]={96450,"Sideways",90,"The Coiled Isle",1513,1,3,67108863,8191,0,0,0,6274,0},
 [96451]={96451,"A Child of Ula'tek",90,"The Coiled Isle",1513,1,3,67108863,8191,0,0,0,6274,0},
@@ -14970,7 +15099,7 @@ qcQuestDatabase={
 [98428]={98428,"Vaults of Atal'Utek: The Altar of Corrosion",90,"Vaults of Atal'Utek",1513,1,3,67108863,8191,0,0,0,6352,0},
 [96004]={96004,"Prey: A Slithering Threat",90,"Silvermoon City",1512,1,3,67108863,8191,0,0,0,6296,0},
 [98515]={98515,"Vaults of Atal'Utek: A Toxic Tour",90,"Vaults of Atal'Utek",1513,1,3,67108863,8191,0,0,0,6232,0},
-[88769]={88769,"The Battle of the Bridge",90,"",0,1,3,67108863,8191,0,0,0,5796,0},
+[88769]={88769,"The Battle of the Bridge",90,"",1503,1,3,67108863,8191,0,0,0,5796,0},
 
 [2]={2,"Sharptalon's Claw",7,"Ashenvale",12,1,2,5454925,4095,0,0,0,0,11},
 [11]={11,"Riverpaw Gnoll Bounty",1,"Elwynn Forest",70,1,1,64175181,8191,0,0,0,566,76},

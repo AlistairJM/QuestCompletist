@@ -64,7 +64,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
+| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
 | 6 | Map pins | see [the pin pipeline](plans/quest-location-data-pipeline.md) | Writes a candidate file only |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 
@@ -122,11 +122,22 @@ neither source proves a quest is one-time:
 from Blizzard's own questline tables. It skips internal questlines ("8.0 Professions - … - SCS",
 "[DNT] …"). It stores each storyline's quests in Blizzard's order.
 
-### 5. Category names from the client
+### 5. Zone table and category names from the client
 
-`Build-CategoryUiMapIDs.ps1` maps quest categories to game maps, so the client supplies their names
-in every language. `Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became
-redundant. Run it with `-WhatIf` first.
+`Build-CategoryUiMapIDs.ps1 -Refresh` downloads the game's map table (`UiMap.csv`) for the pinned
+build and maps quest categories to game maps, so the client supplies their names in every language.
+
+Then run `Add-ZoneTableMaps.ps1 -WhatIf`, then without `-WhatIf`. It adds the maps missing from
+`qcAreaIDToCategoryID`, which turns the map you're on into a quest category. The addon switches the
+quest list through it when you enter a zone, and `Place-UncategorisedQuests.ps1` files quests by it.
+Nothing else maintains it, so new dungeons and new versions of a zone's map drift out of it. A map
+is added when a category is named by it, when it has the same name and parent as a map already
+listed (a dungeon's other floors), or when its name is exactly that of one category with no map
+yet. It never adds continent-level maps, and never changes an existing entry. Run
+`Build-CategoryUiMapIDs.ps1` again afterwards, without `-Refresh`, so it sees the new maps.
+
+`Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became redundant. Run it with
+`-WhatIf` first.
 
 Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
 other client tables: classes, professions, covenants, dungeons, achievement categories (the world
