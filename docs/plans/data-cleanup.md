@@ -85,6 +85,15 @@ The reachability report changed in exactly two lines (the pin count, and Odyn's 
   - the reachability report shows those pins drawable;
   - no existing row changes.
 
+**Result: skipped, no data change.** Blizzard's API returned a genuine 404 (authenticated;
+`.404` cache files written) for **all 227**. They aren't new content the API lags behind on. Most
+are old: 87 in the Legion ID range, 47 in BfA's, across Legion class halls, Ashran, Maldraxxus,
+Silithus and Blackfathom Deeps. For comparison, the API knows 1,987 of our database's 80000-range
+quests. They're the "in the client, unknown to the API" group of `unavailable-quests.md`, which
+data alone can't sort into obsolete and live. The client could give names but nothing else.
+Adding them would put a couple of hundred probably obsolete quests into lists and pins, so they
+join the phase 5 review instead. The 110 pins stay hidden by "hide quests with no data".
+
 ### 3. A placement rule from the client's map points (tool change, then data)
 
 - Add a rule to `Place-UncategorisedQuests.ps1` after "pin's map". It uses the maps of a quest's
@@ -94,6 +103,29 @@ The reachability report changed in exactly two lines (the pin count, and Odyn's 
   and count how many the new rule puts back where they were. If it's wrong too often, drop it.
 - Then run `-Refile 1150,1050` and the category 0 pass (`-WhatIf` first), and review what moves.
 - **Check:** as above, plus `Remove-EmptyMenuEntries.ps1 -WhatIf`.
+
+**Result.** The rule reads `QuestPOIBlob.csv` directly (it has each point's `UiMapID`), maps each
+point through the script's existing `Get-MapCategory`, and places a quest when its points agree on
+one category. Accuracy test on master's data (same 2,000 quests each time):
+
+| Version | Back where they were | Elsewhere | Left unfiled |
+|---|---|---|---|
+| Before | 1,703 | 237 | 60 |
+| New rule last, after every existing rule | 1,710 | 241 | 49 (rule right 8/12) |
+| New rule before "pin's map" | 1,686 | 265 | 49 |
+| **New rule last, plus the 1150 hand rules applied to category 0** | **1,718** | **240** | **42** |
+
+Before "pin's map" it pre-empted "our zone text" (371/372 right), so it stays last, where it
+can't change a placement the other rules make.
+
+The re-file moved 114 catch-all quests: 64 by the new rule, 50 by existing rules on data that has
+changed since the last re-file (storylines 21, pin's map 19, zone above the pin 10). 14 of the 64
+are Legion class quests that follow their objectives to zones (e.g. a Priest artifact quest to
+Borean Tundra). That's how their already-filed siblings are filed (Paladin "Artifact" quests: 7 in
+Dalaran, 6 in Eastern Plaguelands, 3 in Western Plaguelands), so they aren't special-cased. As
+agreed, the 778 quests left in "Bfa Unknown" then moved to 0 "Uncategorized" (now 891 quests), and
+the emptied menu entry went. The unused `BFAUNCATEQUEST` locale key and the `{1150,"Bfa Unknown"}`
+category row are left in place.
 
 ### 4. Unavailable quests: mechanism, then the 183 (addon code, then data)
 
@@ -124,4 +156,4 @@ stays unflagged.
 
 ## Status
 
-- 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Next: phase 2.
+- 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Phase 2 skipped (all 227 unknown to the API; see above). Phase 3 on `data/place-by-client-map-points`. Next: phase 4.
