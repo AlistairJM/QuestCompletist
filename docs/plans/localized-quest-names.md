@@ -68,7 +68,9 @@ It answers three things:
    back to `e[2]`; nil for a quest that's in neither the game nor the database.
 2. **Load queue:** `qcRequestQuestData(questId)`, shared with the existing tooltip request:
    - at most 4 in flight, first in first out;
-   - each request is freed after `QUEST_DATA_LOAD_RESULT` or after the timeout;
+   - each request is freed after `QUEST_DATA_LOAD_RESULT` or after a 5 s timeout;
+   - a quest that fails or times out is retried once, 30 s later, then left on its English name
+     for the session (see the German results: some failures may be transient);
    - a quest is never requested twice in a session (the existing `qcQuestDataRequested` / `qcQuestDataLoaded`);
    - when an answer lands for a quest that's on screen, it asks for a row redraw through
      `qcRequestRefresh(QC_REDRAW_ROWS)` (from #96), so a burst of answers redraws once per frame.
@@ -121,6 +123,29 @@ that cache on 2026-09-29, and before it ran the client had data for only **1,042
    is "Legion: The Legion Returns", and 83031 "Survivor's Guilt" is "The Hardest Part". Three are
    capitalisation or spacing: 176, 26152, 78749.
 
+### German cold-cache results (2026-09-30, deDE, first session in German)
+
+| Run | Quests | Named straight away | Requested | Loaded | Failed | Answered after 5 s | Took |
+|---|---|---|---|---|---|---|---|
+| Wald von Elwynn (70) | 101 | 1 | 100 | 98 | 2 | 0 | 5 s |
+| Durotar (64) | 150 | 2 (task API) | 148 | 122 | 22 | 4 | 10 s |
+| Insel von Dorn (1405) | 327 | 61 (all task API) | 266 | 235 | 22 | 9 | 19 s |
+
+1. **German titles work.** `GetTitleForQuestID` returned German names for every loaded quest ("Riverpaw
+   Gnoll Bounty" → "Kopfgeld auf die Flusspfotengnolle"). The task API gave German names for all 61
+   Isle of Dorn task quests straight away, without loading.
+2. **A cold cache really is empty:** 1 of 101 Elwynn quests had a title.
+3. **Loading is fast.** Of 455 quests loaded, 392 answered in under 100 ms and none took over
+   1.2 s. At 4 in flight the three zones loaded at 14–20 quests a second, so a cold page of 16 rows
+   fills in about a second. The estimate from the type probe (5 a second) was pessimistic.
+4. **Slow answers carry no title.** All 13 answers that came after the 5 s timeout (at 5–16 s) came
+   without a title, so a 5 s timeout loses nothing.
+5. **Some failures are unexplained.** Of the 46 failures, 22 also failed in the English type probe
+   (quests the server doesn't have). The other 24 **loaded** in that probe on 2026-09-29 (e.g.
+   24785, 31158, 75385, 80231–80236). They may be missing German text, or the failure may have been
+   transient. It can't be told apart without another German session. So phase 2 retries a failed
+   quest once, 30 s later, and otherwise keeps our English name.
+
 ### Phase 3: check on a German client (no code unless something turns up)
 
 **Measure first, before phase 2 is built.** On the probe branch, switch to `deDE`. Its cache starts
@@ -161,4 +186,4 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
 
 ## Status
 
-- 2026-09-30: plan written, decisions agreed. Phase 1 probe on `tools/quest-title-probe` (#99), run on enUS; results above. Next: the cold-cache German probe run.
+- 2026-09-30: plan written, decisions agreed. Phase 1 probe on `tools/quest-title-probe` (#99), run on enUS; results above. German cold-cache run done (results above; raw data kept in `tools/quest_title_probe_results.lua`, gitignored). Next: phase 2.
