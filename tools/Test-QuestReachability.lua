@@ -133,7 +133,8 @@ for line in readFile(ADDON_DIR .. "/QuestCompletist.toc"):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file and file ~= "qcCore.lua" then runFile(file) end
 end
-local core = runFile("qcCore.lua", "\nreturn {BuildQuestFilter = qcBuildQuestFilter, Holidays = qcHolidays}")
+local core = runFile("qcCore.lua",
+	"\nreturn {BuildQuestFilter = function() return qcBuildQuestFilter(QC_LIST_FILTER) end, Holidays = qcHolidays}")
 assert(type(core.BuildQuestFilter) == "function", "qcBuildQuestFilter not found in qcCore.lua")
 
 local QUESTS = env.qcQuestDatabase
