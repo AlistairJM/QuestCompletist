@@ -1,4 +1,4 @@
-﻿## Interface: 120100, 16001
+﻿## Interface: 120100
 ## Version: 110.5
 ## Title: Quest Completist
 ## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
