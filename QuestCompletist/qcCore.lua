@@ -630,7 +630,9 @@ end
 
 
 -- Completed quests still count towards both numbers when the list is hiding them; otherwise
--- turning on "hide completed" would pin the counter at 0/N.
+-- turning on "hide completed" would pin the counter at 0/N. Another character's completion
+-- counts only while the warband filter treats it as done; otherwise the list shows the quest as
+-- still to do.
 function qcGetZoneCompletionStats(areaId)
 	local total = 0
 	local completed = 0
@@ -640,11 +642,12 @@ function qcGetZoneCompletionStats(areaId)
 	end
 
 	local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
+	local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
 	for _, questEntry in ipairs(qcCategoryIndex[areaId] or {}) do
 		if passesFilters(questEntry) then
 			local questId = questEntry[1]
 			total = total + 1
-			if qcIsQuestCompleted(questId) or qcIsQuestCompletedOnAccount(questId) then
+			if qcIsQuestCompleted(questId) or (countWarband and qcIsQuestCompletedOnAccount(questId)) then
 				completed = completed + 1
 			end
 		end
