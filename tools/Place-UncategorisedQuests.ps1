@@ -145,6 +145,21 @@ foreach ($line in [System.IO.File]::ReadAllLines("$AddonDir\qcPinDB.lua")) {
     }
 }
 
+# Categories of the quest's own map points in the client (QuestPOIBlob.csv): its quest giver and
+# its objective areas. Only the giver points become pins, so this also reaches quests whose only
+# location is where their objectives are.
+$pointCategories = @{}
+if (Test-Path "$ToolsDir\QuestPOIBlob.csv") {
+    $categoryOfUiMap = @{}
+    foreach ($row in Import-Csv "$ToolsDir\QuestPOIBlob.csv") {
+        if (-not $categoryOfUiMap.ContainsKey($row.UiMapID)) { $categoryOfUiMap[$row.UiMapID] = Get-MapCategory $row.UiMapID }
+        $category = $categoryOfUiMap[$row.UiMapID]
+        if (-not $category) { continue }
+        if (-not $pointCategories.ContainsKey($row.QuestID)) { $pointCategories[$row.QuestID] = New-Object System.Collections.Generic.HashSet[string] }
+        [void]$pointCategories[$row.QuestID].Add($category)
+    }
+}
+
 # The category of the nearest map at or above any map with this name, if they all agree.
 function Get-ContainingCategory($areaName) {
     if (-not $mapsByName.ContainsKey($areaName)) { return $null }
@@ -192,6 +207,8 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
     $pins = @($pins | Where-Object { & $usable $_ })
     $climbedPins = @(if ($climbedPinCategories.ContainsKey($questId)) { $climbedPinCategories[$questId] })
     $climbedPins = @($climbedPins | Where-Object { & $usable $_ })
+    $points = @(if ($pointCategories.ContainsKey($questId)) { $pointCategories[$questId] })
+    $points = @($points | Where-Object { & $usable $_ })
     $target = $null; $rule = $null
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     $candidates = $null
@@ -233,6 +250,7 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
         if ($pins.Count -eq 1) { $target = $pins[0]; $rule = "pin's map" }
         elseif ($zoneMatches.Count -eq 1) { $target = $zoneMatches[0]; $rule = "our zone text" }
         elseif ($pins.Count -eq 0 -and $climbedPins.Count -eq 1) { $target = $climbedPins[0]; $rule = "zone above the pin's map" }
+        elseif ($points.Count -eq 1) { $target = $points[0]; $rule = "client map points" }
     }
     if ($target) {
         $place[$questId] = $target
