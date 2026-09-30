@@ -36,8 +36,8 @@ exports, the API cache, reports) is gitignored and can be regenerated.
 
 ## Before a sweep
 
-1. **Find the current game builds** at <https://wago.tools/api/builds/latest>. Retail is product
-   `wow`. The TOC's second interface number (`16001`) is Classic 1.60, product `wow_classic_beta`.
+1. **Find the current retail build** at <https://wago.tools/api/builds/latest> (product `wow`).
+   The addon targets retail only.
 2. **Pin the build.** Scripts that take `-Build` should be given the current retail build.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest
    retail build.
@@ -151,7 +151,7 @@ Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that 
 other client tables: classes, professions, covenants, dungeons, achievement categories (the world
 events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
 `qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
-Classic lacks some of these game functions, so those categories fall back to our translations.
+If the game returns no name for a category, our translation is used.
 The same tool writes `clientName` into `qcMenu.lua` for the menu headings it lists (continents,
 expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
 
@@ -265,8 +265,8 @@ It writes `tools\reachability-report.txt`, a report only, listing:
 
 It assumes best-case progress: max level, prerequisites done, max renown, every profession. The
 quest search finds every quest by name whatever this reports. Some results are expected. Pins whose
-quests aren't in the database stay hidden while "hide quests with no data" is on. Classic's map IDs,
-such as 1411–1459, aren't in retail's `UiMap.csv`.
+quests aren't in the database stay hidden while "hide quests with no data" is on. A map missing
+from `UiMap.csv` can't be opened on retail; a newer build than the downloaded one may add it.
 
 ## Holidays
 
