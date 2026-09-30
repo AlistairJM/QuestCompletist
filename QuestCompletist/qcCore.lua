@@ -281,6 +281,12 @@ function qcUpdateCurrentCategoryText(categoryId)
 	qcQuestCompletistUI.qcSelectedCategory:SetText(qcCategoryName(categoryId) or "#")
 end
 
+local qcRecurringTypes = 2 + 4 + 128
+
+local function qcIsRecurringQuest(questId)
+	return bit.band(qcQuestDatabase[questId][6], qcRecurringTypes) ~= 0
+end
+
 local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 	if (qcMutuallyExclusive[qcQuestID]) then
 		for qcMutuallyExclusiveIndex, qcMutuallyExclusiveEntry in pairs(qcMutuallyExclusive[qcQuestID]) do
@@ -791,9 +797,7 @@ function qcQueryQuestFlaggedComplete()
 	for qcIndex, qcEntry in pairs(qcQuestDatabase) do
 		qcChecked = (qcChecked + 1)
 		if (C_QuestLog.IsQuestFlaggedCompleted(qcIndex)) then
-			if not (qcQuestDatabase[qcIndex][6] == 2) or 
-				   (qcQuestDatabase[qcIndex][6] == 4) or 
-				   (qcQuestDatabase[qcIndex][6] == 128) then
+			if not qcIsRecurringQuest(qcIndex) then
 				if (qcCompletedQuests[qcIndex] == nil) then
 					qcNewFlagged = (qcNewFlagged + 1)
 				end
@@ -836,9 +840,7 @@ local function qcQuestQueryCompleted()
 
 	for _, qcIndex in ipairs(qcCompletedIDs) do
 		if not (qcQuestDatabase[qcIndex] == nil) then
-			if not (qcQuestDatabase[qcIndex][6] == 2) or
-				   (qcQuestDatabase[qcIndex][6] == 4) or 
-				   (qcQuestDatabase[qcIndex][6] == 128) then
+			if not qcIsRecurringQuest(qcIndex) then
 				if (qcCompletedQuests[qcIndex] == nil) then
 					qcNewFlagged = (qcNewFlagged + 1)
 				end
@@ -1419,13 +1421,8 @@ function qcCloseTooltip()
 end
 
 local function qcUpdateCompletedQuest(questId) -- *
-	if (qcQuestDatabase[questId]) then
-		if ((qcQuestDatabase[questId][6] == 2) 
-			or (qcQuestDatabase[questId][6] == 3)
-			or (qcQuestDatabase[questId][6] == 4)			
-			or (qcQuestDatabase[questId][6] == 128)) then
-			return nil
-		end
+	if (qcQuestDatabase[questId]) and qcIsRecurringQuest(questId) then
+		return nil
 	end
 	if not (qcCompletedQuests[questId]) then qcCompletedQuests[questId] = {["C"]=1} end
 end
