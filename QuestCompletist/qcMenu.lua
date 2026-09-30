@@ -190,7 +190,6 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1080,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1081,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1082,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=qcL.BFAUNCATEQUEST,isTitle=false,notCheckable=false,hasArrow=false,arg1=1150,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1202,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1065,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 

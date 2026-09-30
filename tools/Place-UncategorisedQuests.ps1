@@ -35,10 +35,10 @@ they were, 251 elsewhere (mostly pins of class, campaign and profession quests) 
 left, with what's missing - no API area, pins in several categories, or pins on maps with no
 category (the summary lists those maps, which usually means qcAreaIDToCategoryID lacks them).
 
--Refile takes catch-all categories whose quests should be filed properly too (1150 "Bfa Unknown"
-and 1050 "Legion Uncategorized" in October 2026). For those quests, between rules 2 and 3, a
-hand-written list maps the catch-all's own zone text to a category ("Death Knight Campaign" -> the
-Death Knight class hall), below in $zoneTextRules.
+-Refile takes catch-all categories whose quests should be filed properly too (1050 "Legion
+Uncategorized"; 1150 "Bfa Unknown" until what was left of it was merged into category 0). For those
+quests, and for category 0, between rules 2 and 3, a hand-written list maps the catch-all's own zone
+text to a category ("Death Knight Campaign" -> the Death Knight class hall), below in $zoneTextRules.
 A quest is never filed in a category no menu entry reaches, nor back into the catch-all.
 
 Only field 5 changes. All-or-nothing: if any chosen quest isn't found exactly once, nothing is
@@ -60,7 +60,7 @@ $zoneTextRules = @{
         "Warlock Campaign" = "1017"; "Shaman Campaign" = "1014"; "Druid Campaign" = "1013"; "Monk Campaign" = "1015"
         "Mage Campaign" = "1009"; "Legionfall Campaign" = "1002"; "Dalaran" = "1003"
     }
-    "1150" = @{
+    "0" = @{
         "Time Rifts" = "1347"; "Zskera Vaults" = "1304"; "Vision of Orgrimmar" = "1133"; "Primalist Storms" = "1322"
         "Death Knight Campaign" = "1021"; "Prey" = "1514"
     }
@@ -145,6 +145,21 @@ foreach ($line in [System.IO.File]::ReadAllLines("$AddonDir\qcPinDB.lua")) {
     }
 }
 
+# Categories of the quest's own map points in the client (QuestPOIBlob.csv): its quest giver and
+# its objective areas. Only the giver points become pins, so this also reaches quests whose only
+# location is where their objectives are.
+$pointCategories = @{}
+if (Test-Path "$ToolsDir\QuestPOIBlob.csv") {
+    $categoryOfUiMap = @{}
+    foreach ($row in Import-Csv "$ToolsDir\QuestPOIBlob.csv") {
+        if (-not $categoryOfUiMap.ContainsKey($row.UiMapID)) { $categoryOfUiMap[$row.UiMapID] = Get-MapCategory $row.UiMapID }
+        $category = $categoryOfUiMap[$row.UiMapID]
+        if (-not $category) { continue }
+        if (-not $pointCategories.ContainsKey($row.QuestID)) { $pointCategories[$row.QuestID] = New-Object System.Collections.Generic.HashSet[string] }
+        [void]$pointCategories[$row.QuestID].Add($category)
+    }
+}
+
 # The category of the nearest map at or above any map with this name, if they all agree.
 function Get-ContainingCategory($areaName) {
     if (-not $mapsByName.ContainsKey($areaName)) { return $null }
@@ -192,6 +207,8 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
     $pins = @($pins | Where-Object { & $usable $_ })
     $climbedPins = @(if ($climbedPinCategories.ContainsKey($questId)) { $climbedPinCategories[$questId] })
     $climbedPins = @($climbedPins | Where-Object { & $usable $_ })
+    $points = @(if ($pointCategories.ContainsKey($questId)) { $pointCategories[$questId] })
+    $points = @($points | Where-Object { & $usable $_ })
     $target = $null; $rule = $null
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     $candidates = $null
@@ -224,7 +241,7 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
             $target = $containing; $rule = "zone containing the API area"
         }
     }
-    if (-not $target -and $refiling -and $zoneTextRules.ContainsKey($current) -and $zoneTextRules[$current].ContainsKey($zoneText)) {
+    if (-not $target -and ($refiling -or $current -eq "0") -and $zoneTextRules.ContainsKey($current) -and $zoneTextRules[$current].ContainsKey($zoneText)) {
         $handTarget = $zoneTextRules[$current][$zoneText]
         if (-not (& $usable $handTarget)) { throw "Zone text rule '$zoneText' points at category $handTarget, which no menu entry reaches" }
         $target = $handTarget; $rule = "catch-all zone text, by hand"
@@ -233,6 +250,7 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
         if ($pins.Count -eq 1) { $target = $pins[0]; $rule = "pin's map" }
         elseif ($zoneMatches.Count -eq 1) { $target = $zoneMatches[0]; $rule = "our zone text" }
         elseif ($pins.Count -eq 0 -and $climbedPins.Count -eq 1) { $target = $climbedPins[0]; $rule = "zone above the pin's map" }
+        elseif ($points.Count -eq 1) { $target = $points[0]; $rule = "client map points" }
     }
     if ($target) {
         $place[$questId] = $target
