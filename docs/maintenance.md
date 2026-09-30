@@ -277,8 +277,13 @@ database to the IDs of the game's Holidays table that its calendar event carries
 `/qc holidays` in game lists what the filter sees: which holidays are running, each one's next dates,
 and any calendar holiday that isn't tied to a quest. A holiday there that should match one of ours,
 under a new ID, means an entry in `qcHolidays` needs that ID adding. A new holiday with quests
-needs a new flag, an entry, and its quests' field 11 set. Until the calendar has loaded after login,
-every seasonal quest is shown.
+needs a new flag, an entry, and its quests' field 11 set.
+
+The calendar only serves events around the month it's set to, and at login it's set to November
+2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
+opens, but leaves it alone while that window is open. If the calendar can't answer, including a day
+with no events at all, the last answer stands, and until there is one every seasonal quest is shown.
+`/qc holidays` steps the calendar through the next 12 months, then sets it back to the current one.
 
 ## In the game
 

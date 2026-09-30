@@ -64,33 +64,19 @@ local P = {}
 local PROFESSION_SKILLS = {}
 local PROFESSION_INDEXES = {}
 
--- The calendar shows the profile's holiday, if any, running across the whole of "now".
+-- Today's calendar: an event no quest follows, plus the profile's holiday if it has one.
 local NOW = {year = 2026, month = 6, monthDay = 15, weekday = 2, hour = 12, minute = 0}
+local function todayEvent(eventID)
+	return {calendarType = "HOLIDAY", eventID = eventID, title = "event " .. eventID,
+		startTime = {year = NOW.year, month = NOW.month, monthDay = 1, hour = 0, minute = 0},
+		endTime = {year = NOW.year, month = NOW.month, monthDay = 30, hour = 0, minute = 0}}
+end
 local calendar = stubTable({
-	OpenCalendar = function() end,
+	SetAbsMonth = function() end,
 	GetMonthInfo = function() return {year = NOW.year, month = NOW.month, numDays = 30, firstWeekday = 1} end,
-	GetNumDayEvents = function() return (P.holiday or 0) ~= 0 and 1 or 0 end,
-	GetDayEvent = function()
-		return {calendarType = "HOLIDAY", eventID = P.holiday, title = "holiday " .. P.holiday,
-			startTime = {year = NOW.year, month = NOW.month, monthDay = 1, hour = 0, minute = 0},
-			endTime = {year = NOW.year, month = NOW.month, monthDay = 30, hour = 0, minute = 0}}
-	end,
+	GetNumDayEvents = function() return (P.holiday or 0) ~= 0 and 2 or 1 end,
+	GetDayEvent = function(_, _, index) return todayEvent(index == 1 and 0 or P.holiday) end,
 })
-
--- Frames remember their event handlers, so events the addon waits for can be fired.
-local frames = {}
-local function createFrame()
-	local frame = stubTable({events = {}, scripts = {}})
-	function frame:RegisterEvent(name) self.events[name] = true end
-	function frame:SetScript(name, handler) self.scripts[name] = handler end
-	frames[#frames + 1] = frame
-	return frame
-end
-local function fireEvent(name)
-	for _, frame in ipairs(frames) do
-		if frame.events[name] and frame.scripts.OnEvent then frame.scripts.OnEvent(frame, name) end
-	end
-end
 
 local env = {
 	bit = bit,
@@ -104,7 +90,6 @@ local env = {
 	floor = math.floor, ceil = math.ceil, max = math.max, min = math.min, abs = math.abs,
 	date = os.date,
 	time = os.time,
-	CreateFrame = createFrame,
 	CreateFromMixins = function() return {} end,
 	C_Calendar = calendar,
 	C_DateAndTime = stubTable({GetCurrentCalendarTime = function() return NOW end}),
@@ -274,7 +259,6 @@ function fakeMap:AcquirePin(_, pinData)
 	end
 end
 provider.GetMap = function() return fakeMap end
-fireEvent("CALENDAR_UPDATE_EVENT_LIST")
 
 local errorMaps = {}
 -- Draws one map through the real pipeline; returns the pins drawn, or nil if it raised an error.

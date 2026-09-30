@@ -240,9 +240,8 @@ for _, holiday in ipairs(qcHolidays) do
 	for _, eventID in ipairs(holiday.eventIDs) do qcHolidayFlagByEventID[eventID] = holiday.flag end
 end
 
--- The holiday flags running now; nil until the calendar has loaded, which restricts nothing.
+-- The holiday flags running now; nil until the calendar has answered, which restricts nothing.
 local qcActiveHolidays = nil
-local qcCalendarLoaded = false
 
 local function qcCalendarTimeValue(t)
 	return (((t.year * 100 + t.month) * 100 + t.monthDay) * 100 + t.hour) * 100 + t.minute
@@ -252,19 +251,32 @@ local function qcFormatCalendarTime(t)
 	return string.format("%04d-%02d-%02d %02d:%02d", t.year, t.month, t.monthDay, t.hour, t.minute)
 end
 
--- The calendar counts months from the one it's showing, which its own frame moves.
-local function qcCalendarMonthOffset(month, year)
-	local shown = C_Calendar.GetMonthInfo(0)
-	return (year - shown.year) * 12 + (month - shown.month)
+local function qcCalendarFrameOpen()
+	return CalendarFrame ~= nil and CalendarFrame:IsShown()
 end
 
+-- The calendar only has events around the month it's set to, and at login that's November 2004.
+-- Blizzard's calendar sets the current month whenever it opens, so doing the same is safe while
+-- it's closed. While it's open the player may be looking at another month, so that's left alone.
+local function qcSetCalendarMonth(month, year)
+	local shown = C_Calendar.GetMonthInfo(0)
+	if (shown.month == month and shown.year == year) then return true end
+	if qcCalendarFrameOpen() then return false end
+	C_Calendar.SetAbsMonth(month, year)
+	return true
+end
+
+-- nil when the calendar can't answer. A day with no events at all means it isn't ready, not that
+-- no holiday is running.
 local function qcReadActiveHolidays()
 	local now = C_DateAndTime.GetCurrentCalendarTime()
-	local offset = qcCalendarMonthOffset(now.month, now.year)
+	if not qcSetCalendarMonth(now.month, now.year) then return nil end
+	local numEvents = C_Calendar.GetNumDayEvents(0, now.monthDay)
+	if (numEvents == 0) then return nil end
 	local nowValue = qcCalendarTimeValue(now)
 	local active = 0
-	for index = 1, C_Calendar.GetNumDayEvents(offset, now.monthDay) do
-		local event = C_Calendar.GetDayEvent(offset, now.monthDay, index)
+	for index = 1, numEvents do
+		local event = C_Calendar.GetDayEvent(0, now.monthDay, index)
 		local flag = event and event.calendarType == "HOLIDAY" and qcHolidayFlagByEventID[event.eventID]
 		if flag and qcCalendarTimeValue(event.startTime) <= nowValue and nowValue < qcCalendarTimeValue(event.endTime) then
 			active = bit.bor(active, flag)
@@ -275,38 +287,23 @@ end
 
 -- Keeps the last answer when the calendar can't be read, e.g. during chat lockdown.
 local function qcUpdateActiveHolidays()
-	if qcCalendarLoaded then
-		local ok, active = pcall(qcReadActiveHolidays)
-		if ok then qcActiveHolidays = active end
-	end
+	local ok, active = pcall(qcReadActiveHolidays)
+	if (ok and active) then qcActiveHolidays = active end
 	return qcActiveHolidays
 end
 
-local qcCalendarFrame = CreateFrame("Frame")
-qcCalendarFrame:RegisterEvent("PLAYER_LOGIN")
-qcCalendarFrame:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
-qcCalendarFrame:SetScript("OnEvent", function(self, event)
-	if (event == "PLAYER_LOGIN") then
-		C_Calendar.OpenCalendar()
-		return
-	end
-	qcCalendarLoaded = true
-	local before = qcActiveHolidays
-	if (qcUpdateActiveHolidays() ~= before) then
-		qcMapDataProvider:RefreshAllData()
-	end
-end)
-
--- /qc holidays: what the seasonal filter sees, and when each holiday next runs.
+-- /qc holidays: what the seasonal filter sees, and when each holiday next runs. Reading ahead
+-- steps the calendar through the months, then sets it back to the current one.
 local function qcScanCalendarHolidays()
 	local now = C_DateAndTime.GetCurrentCalendarTime()
-	local firstOffset = qcCalendarMonthOffset(now.month, now.year)
 	local nextByFlag, untracked = {}, {}
-	for monthOffset = firstOffset, firstOffset + 12 do
-		local firstDay = (monthOffset == firstOffset) and now.monthDay or 1
-		for monthDay = firstDay, C_Calendar.GetMonthInfo(monthOffset).numDays do
-			for index = 1, C_Calendar.GetNumDayEvents(monthOffset, monthDay) do
-				local event = C_Calendar.GetDayEvent(monthOffset, monthDay, index)
+	for step = 0, 12 do
+		local monthIndex = now.month - 1 + step
+		C_Calendar.SetAbsMonth(monthIndex % 12 + 1, now.year + math.floor(monthIndex / 12))
+		local firstDay = (step == 0) and now.monthDay or 1
+		for monthDay = firstDay, C_Calendar.GetMonthInfo(0).numDays do
+			for index = 1, C_Calendar.GetNumDayEvents(0, monthDay) do
+				local event = C_Calendar.GetDayEvent(0, monthDay, index)
 				if event and event.calendarType == "HOLIDAY" then
 					local flag = qcHolidayFlagByEventID[event.eventID]
 					if flag then
@@ -318,12 +315,13 @@ local function qcScanCalendarHolidays()
 			end
 		end
 	end
+	C_Calendar.SetAbsMonth(now.month, now.year)
 	return nextByFlag, untracked
 end
 
 local function qcPrintHolidays()
-	if not qcCalendarLoaded then
-		print(QCADDON_CHAT_TITLE .. "The calendar hasn't loaded yet, so seasonal quests are all shown.")
+	if qcCalendarFrameOpen() then
+		print(QCADDON_CHAT_TITLE .. "Close the calendar first. Reading ahead moves it through the months.")
 		return
 	end
 	local active = qcUpdateActiveHolidays()
@@ -331,6 +329,9 @@ local function qcPrintHolidays()
 	if not ok then
 		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(nextByFlag))
 		return
+	end
+	if not active then
+		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet, so seasonal quests are all shown.")
 	end
 	print(QCADDON_CHAT_TITLE .. "Seasonal quests follow these calendar holidays:")
 	for _, holiday in ipairs(qcHolidays) do
