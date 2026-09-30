@@ -599,7 +599,7 @@ if knownMaps then
 	local unknown = {}
 	for mapId in pairs(PIN_DB) do if not knownMaps[mapId] then unknown[mapId] = true end end
 	note(string.format("%d pin maps not in UiMap.csv",
-		section("Pin maps not in UiMap.csv (retail's export; Classic's own map IDs won't be in it)", unknown,
+		section("Pin maps not in UiMap.csv (the retail client can't open them)", unknown,
 			function(id) return string.format("map %d: %d pins", id, #PIN_DB[id]) end)))
 else
 	out("== tools/UiMap.csv not found; map IDs weren't checked")
