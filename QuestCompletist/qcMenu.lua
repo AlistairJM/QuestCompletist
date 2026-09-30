@@ -220,7 +220,7 @@ qcMenu={
 {text=qcL.COVENANTASSAULTS,isTitle=false,notCheckable=false,hasArrow=false,arg1=1241,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.COVENANTSANCTUM,isTitle=false,notCheckable=false,hasArrow=false,arg1=1247,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.KEEPERSRESPITE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1242,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{text=qcL.TAZAVESH,isTitle=false,notCheckable=false,hasArrow=false,arg1=1244,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1244,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.THEARCHIVISTSCODEX,isTitle=false,notCheckable=false,hasArrow=false,arg1=1245,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.TORGHASTTOWEROFTHEDAMNED,isTitle=false,notCheckable=false,hasArrow=false,arg1=1246,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
