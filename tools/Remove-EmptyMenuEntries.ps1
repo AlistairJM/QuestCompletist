@@ -4,7 +4,8 @@ category rows stay in qcQuestCategories, so an entry can be brought back with on
 are filed there later.
 
 Run it after anything that moves quests between categories (Place-UncategorisedQuests.ps1
--Refile). It refuses to empty a submenu completely; that needs a decision by hand.
+-Refile). It refuses to empty a submenu completely; that needs a decision by hand. The
+Uncategorized entry (category 0) is kept even when empty, so quests placed there later show up.
 #>
 param(
     [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
@@ -28,7 +29,7 @@ $entry = '^\{(?:text=(?:(?!menuList)[^\r\n])*?,)?isTitle=false,notCheckable=fals
 $removed = New-Object System.Collections.Generic.List[string]
 for ($i = $lines.Count - 1; $i -ge 0; $i--) {
     $m = [regex]::Match($lines[$i], $entry)
-    if (-not $m.Success -or $questCount.ContainsKey($m.Groups[1].Value)) { continue }
+    if (-not $m.Success -or $questCount.ContainsKey($m.Groups[1].Value) -or $m.Groups[1].Value -eq "0") { continue }
     $closers = $m.Groups[2].Value
     if ($closers) {
         # The entry closes its submenu, so the entry above takes over the closing brackets.

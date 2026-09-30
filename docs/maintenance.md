@@ -64,8 +64,8 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
-| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md), then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` | A candidate file, until you apply it |
+| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
+| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md), then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
@@ -128,11 +128,22 @@ neither source proves a quest is one-time:
 from Blizzard's own questline tables. It skips internal questlines ("8.0 Professions - … - SCS",
 "[DNT] …"). It stores each storyline's quests in Blizzard's order.
 
-### 5. Category names from the client
+### 5. Zone table and category names from the client
 
-`Build-CategoryUiMapIDs.ps1` maps quest categories to game maps, so the client supplies their names
-in every language. `Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became
-redundant. Run it with `-WhatIf` first.
+`Build-CategoryUiMapIDs.ps1 -Refresh` downloads the game's map table (`UiMap.csv`) for the pinned
+build and maps quest categories to game maps, so the client supplies their names in every language.
+
+Then run `Add-ZoneTableMaps.ps1 -WhatIf`, then without `-WhatIf`. It adds the maps missing from
+`qcAreaIDToCategoryID`, which turns the map you're on into a quest category. The addon switches the
+quest list through it when you enter a zone, and `Place-UncategorisedQuests.ps1` files quests by it.
+Nothing else maintains it, so new dungeons and new versions of a zone's map drift out of it. A map
+is added when a category is named by it, when it has the same name and parent as a map already
+listed (a dungeon's other floors), or when its name is exactly that of one category with no map
+yet. It never adds continent-level maps, and never changes an existing entry. Run
+`Build-CategoryUiMapIDs.ps1` again afterwards, without `-Refresh`, so it sees the new maps.
+
+`Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became redundant. Run it with
+`-WhatIf` first.
 
 Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
 other client tables: classes, professions, covenants, dungeons, achievement categories (the world
@@ -168,28 +179,44 @@ keeps each API response in `tools\quest_api_cache`, and the inserter refuses any
 already in the database.
 
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
-same folder. It lists any new quest it couldn't place; those stay in category 0. Like the other
-scripts that write, both take `-AddonDir`, so they can run against a scratch copy of the addon.
+same folder. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. Like
+the other scripts that write, both take `-AddonDir`, so they can run against a scratch copy of the
+addon.
 
 `Place-UncategorisedQuests.ps1` also works on its own, on every quest without a category or in a
 category that isn't defined. Run it with `-WhatIf` first. It files each quest by the first of these
 that gives an answer:
-1. its Blizzard API area
-2. the zone that contains that area on Blizzard's map
-3. the map its pin is on
-4. its own zone text
+1. a name of the form "<category>: …" ("Prey: Anguish Island")
+2. its Blizzard API area
+3. the zone that contains that area on Blizzard's map
+4. the map its pin is on
+5. its own zone text
+6. the zone above its pin's map, when that map has no category itself (Naigtal → Voidstorm)
+7. its storyline, when the filed quests in it all agree and at least half of it is filed
+
+`-Explain` writes `tools\uncategorised_quests.csv`: each quest it placed, with the rule, and each
+quest it couldn't, with what's missing. The summary names the maps that have pins but no category,
+which usually means `qcAreaIDToCategoryID` lacks them.
 
 It never files a quest in a category that no menu entry reaches. A quest in such a category can
 still be found by search, but not by browsing. After adding categories, check every category that
 holds quests has an entry in `qcMenu.lua`.
 
 `-Refile 1150,1050` also files the quests in the catch-all categories "Bfa Unknown" and "Legion
-Uncategorized". For those it adds two rules: a quest named "<category>: …" goes to that category,
-and a hand-written list in the script maps the catch-all's zone text ("Death Knight Campaign",
-"Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
+Uncategorized". For those it adds a hand-written list in the script that maps the catch-all's zone
+text ("Death Knight Campaign", "Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
+
+A quest nothing can place stays in category 0, which the menu lists as Uncategorized under
+Miscellaneous. A quest in a category that isn't defined is moved there too.
+
+Then run `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf`. It moves the weekly bonus
+event quests (timewalking, "A Call to Battle", "The Arena Calls" and the rest) to Weekly Events, under
+World Events. A quest qualifies when the API puts it in its "Weekly Event" category, or when its
+name is one of the event families and the API names no other category. Placement would otherwise
+file new ones by their quest-giver's zone. It only finds new cases, so it's safe to rerun.
 
 After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf`, then without
-`-WhatIf`. It removes menu entries whose category no longer holds any quests.
+`-WhatIf`. It removes menu entries whose category no longer holds any quests, except Uncategorized.
 
 ### 7. Quests that may no longer be obtainable
 
