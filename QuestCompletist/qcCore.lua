@@ -2727,8 +2727,17 @@ local function qcEventHandler(self, event, ...)
 			qcUpdateQuestList(nil, qcMenuSlider:GetValue())
 			
 		end
+	elseif (event == "QUEST_TURNED_IN") then
+		local qcQuestID = ...
+		qcUpdateCompletedQuest(qcQuestID)
+		qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
+		qcUpdateSkippedBreadcrumbQuest(qcQuestID)
+		qcUpdateQuestList(nil, qcMenuSlider:GetValue())
 	elseif (event == "PLAYER_ENTERING_WORLD") then
-			qcQuestQueryCompleted()
+			local isInitialLogin, isReloadingUi = ...
+			if (isInitialLogin or isReloadingUi) then
+				qcQuestQueryCompleted()
+			end
 			qcZoneChangedNewArea()
 	elseif (event == "ADDON_LOADED") then
 		if (... == "QuestCompletist") then
@@ -2760,7 +2769,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterForDrag("LeftButton")
 	self:RegisterEvent("QUEST_COMPLETE")
 	--self:RegisterEvent("QUEST_FINISHED") -- Cant be used for marking quest complette sinze it marks it done before its turned in 
-	self:RegisterEvent("QUEST_TURNED_IN")  -- Use this instead of QUEST_COMPLETE to fix issues whit some quest not getting marked as completted??
+	self:RegisterEvent("QUEST_TURNED_IN")
 	self:RegisterEvent("QUEST_LOG_UPDATE")
 	self:RegisterEvent("QUEST_DETAIL")
 	self:RegisterEvent("QUEST_PROGRESS")
