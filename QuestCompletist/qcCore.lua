@@ -473,7 +473,7 @@ frame:SetScript("OnEvent", function(self, event)
     end
 
     -- Weekly reset
-    if C_DateAndTime and C_DateAndTime.GetSecondsUntilWeeklyReset and now > QC_LastWeeklyReset then
+    if now > QC_LastWeeklyReset then
         QC_LastWeeklyReset = now + C_DateAndTime.GetSecondsUntilWeeklyReset()
         ResetQCCompletedQuests(128)
     end
@@ -2299,13 +2299,10 @@ function qcApplySettings()
         qcIO_L_HIDE_REPEATABLEQUEST:SetChecked(true)
     end
 
-    -- Only handle qcIO_L_HIDE_WORLDQUEST where the checkbox exists (created only where the Task Quest API exists)
-    if qcIO_L_HIDE_WORLDQUEST then
-        if (qcSettings.QC_L_HIDE_WORLDQUEST == 0) then
-            qcIO_L_HIDE_WORLDQUEST:SetChecked(false)
-        else
-            qcIO_L_HIDE_WORLDQUEST:SetChecked(true)
-        end
+    if (qcSettings.QC_L_HIDE_WORLDQUEST == 0) then
+        qcIO_L_HIDE_WORLDQUEST:SetChecked(false)
+    else
+        qcIO_L_HIDE_WORLDQUEST:SetChecked(true)
     end
 
     -- Only handle qcIO_ML_HIDE_COVENANTS where the checkbox exists (created only where the Covenants API exists)
@@ -2353,15 +2350,9 @@ function qcInterfaceOptions_OnLoad(self)
     self.okay = function(self) qcInterfaceOptions_Okay(self) end
     self.cancel = function(self) qcInterfaceOptions_Cancel(self) end
 
-    if Settings then
-        --print("Registering category with Settings API.")
-        local category = Settings.RegisterCanvasLayoutCategory(self, self.name)
-        Settings.RegisterAddOnCategory(category)
-        self.category = category
-    else
-        InterfaceOptions_AddCategory(self)
-        print("Error: Settings API not available, falling back to InterfaceOptions_AddCategory.")
-    end
+    local category = Settings.RegisterCanvasLayoutCategory(self, self.name)
+    Settings.RegisterAddOnCategory(category)
+    self.category = category
 end
 
 function qcApplyFilterChange()
@@ -2558,20 +2549,17 @@ function qcInterfaceOptions_OnShow(self)
     qcApplyFilterChange()
     end)
 
-	-- Only create the checkbox where the Task Quest (World Quest) API exists
-	if C_TaskQuest and C_TaskQuest.GetQuestsForPlayerByMapID then
-		qcIO_L_HIDE_WORLDQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_WORLDQUEST", self, "InterfaceOptionsCheckButtonTemplate")
-		qcIO_L_HIDE_WORLDQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, -75)
-		_G[qcIO_L_HIDE_WORLDQUEST:GetName().."Text"]:SetText(qcL.HIDEWORLDQUEST .. COLOUR_DEATHKNIGHT .. " ")
-		qcIO_L_HIDE_WORLDQUEST:SetScript("OnClick", function(self)
-			if (qcIO_L_HIDE_WORLDQUEST:GetChecked() == false) then
-				qcSettings.QC_L_HIDE_WORLDQUEST = 0
-			else
-				qcSettings.QC_L_HIDE_WORLDQUEST = 1
-			end
-		qcApplyFilterChange()
-		end)
-	end
+	qcIO_L_HIDE_WORLDQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_WORLDQUEST", self, "InterfaceOptionsCheckButtonTemplate")
+	qcIO_L_HIDE_WORLDQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, -75)
+	_G[qcIO_L_HIDE_WORLDQUEST:GetName().."Text"]:SetText(qcL.HIDEWORLDQUEST .. COLOUR_DEATHKNIGHT .. " ")
+	qcIO_L_HIDE_WORLDQUEST:SetScript("OnClick", function(self)
+		if (qcIO_L_HIDE_WORLDQUEST:GetChecked() == false) then
+			qcSettings.QC_L_HIDE_WORLDQUEST = 0
+		else
+			qcSettings.QC_L_HIDE_WORLDQUEST = 1
+		end
+	qcApplyFilterChange()
+	end)
 
     qcCombinedFiltersTitle = self:CreateFontString("qcCombinedFiltersTitle", "ARTWORK", "GameFontNormal")
     qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -425)
