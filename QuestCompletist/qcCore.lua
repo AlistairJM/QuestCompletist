@@ -811,19 +811,30 @@ function qcQueryQuestFlaggedComplete()
 	
 end
 
+local function qcGetCompletedQuestIDs()
+	if (C_QuestLog.GetAllCompletedQuestIDs) then
+		return C_QuestLog.GetAllCompletedQuestIDs()
+	end
+	if (GetQuestsCompleted) then
+		local qcCompletedIDs = {}
+		for qcQuestID in pairs(GetQuestsCompleted()) do
+			qcCompletedIDs[#qcCompletedIDs + 1] = qcQuestID
+		end
+		return qcCompletedIDs
+	end
+end
+
 local function qcQuestQueryCompleted()
 
-	local qcCountReturned = 0
 	local qcNewFlagged = 0
-	local qcCompletedTable = {}
+	local qcCompletedIDs = qcGetCompletedQuestIDs()
 
---test C_QuestLog.IsQuestFlaggedCompleted(qcCompletedTable)
---test IsComplete(qcCompletedTable)
---GetQuestsCompleted(qcCompletedTable)
-C_QuestLog.GetAllCompletedQuestIDs(qcCompletedTable)
+	if not (qcCompletedIDs) or (#qcCompletedIDs == 0) then
+		qcQueryQuestFlaggedComplete()
+		return
+	end
 
-	for qcIndex, qcEntry in pairs(qcCompletedTable) do
-		qcCountReturned = (qcCountReturned + 1)
+	for _, qcIndex in ipairs(qcCompletedIDs) do
 		if not (qcQuestDatabase[qcIndex] == nil) then
 			if not (qcQuestDatabase[qcIndex][6] == 2) or
 				   (qcQuestDatabase[qcIndex][6] == 4) or 
@@ -838,10 +849,6 @@ C_QuestLog.GetAllCompletedQuestIDs(qcCompletedTable)
 		end
 	end
 
-	if (qcCountReturned == 0) then
---		print(string.format("%sNo quests were returned from the server query. Attempting to check each quest individually...",QCADDON_CHAT_TITLE))
-		qcQueryQuestFlaggedComplete()
-	end
 	if (qcNewFlagged > 0) then
 		print(string.format("%s%d previously completed quest(s) have now been updated as such.",QCADDON_CHAT_TITLE,qcNewFlagged))
 		qcUpdateQuestList(nil,qcMenuSlider:GetValue())
