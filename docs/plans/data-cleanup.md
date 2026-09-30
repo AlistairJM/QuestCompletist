@@ -59,15 +59,18 @@ pin maps, a name prefix, our zone text and storylines. It doesn't use the **clie
 
 ### 1. Remove dead pins and dead pin quest IDs (data only)
 
-- Delete the 39 pins whose quests are all missing from the client, and remove the 45 dead IDs from
-  the 7 good pins.
-- A quest missing from the client's `QuestV2` can't come back from the location pipeline, which
-  builds pins from the client's own tables. So, unlike the backfill pins, this doesn't undo itself
-  on the next pipeline run.
-- **Check:**
-  - the pin diff is exactly those lines;
-  - the reachability report loses exactly those "hidden by: no data" pins and nothing else;
-  - `luac -p` is clean.
+**Done in #105, and much smaller than planned.** The "39 pins" above came from checking retail's
+`QuestV2` alone. Checked as #94 did, against our database, retail's `QuestV2`, and the **12.1.5
+PTR's** `QuestV2` and quest location data (build 12.1.5.70077):
+- **18** of the 38 unknown pin quest IDs are 12.1.5 quests that aren't live yet (e.g. 95211,
+  96707, 98836). Their pins stay.
+- **15** more appear in retail's or the PTR's quest location data, so they aren't clearly dead.
+- **Only 5 exist nowhere.** 157754 on Marshal Gabriel's Conquest's Reward pin was a typo for 57754;
+  a nameless pin at the same spot carried 57754 alone and was removed. 4274, 48268, 1234 and 5312
+  were removed from otherwise good pins.
+
+The reachability report changed in exactly two lines (the pin count, and Odyn's pin's quest list).
+**Lesson:** "missing from retail's quest table" doesn't mean dead; check the PTR build too.
 
 ### 2. Backfill the 227 quests behind 110 pins (data only, uses Blizzard's API)
 
@@ -75,6 +78,8 @@ pin maps, a name prefix, our zone text and storylines. It doesn't use the **clie
   places what it can, see the full sweep runbook).
 - **If the API 404s on a quest:** it's probably hidden or obsolete. List those pins for a decision
   rather than deleting them silently.
+- **Expect 404s for the 12.1.5 quests** found in phase 1: Blizzard's API only serves live quests.
+  Leave those pins for a pass after 12.1.5 goes live.
 - **Check:**
   - the new rows are field-by-field sane (the accuracy audit rules);
   - the reachability report shows those pins drawable;
@@ -119,4 +124,4 @@ stays unflagged.
 
 ## Status
 
-- 2026-09-30: measured and planned, decisions agreed. Next: phase 1.
+- 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Next: phase 2.
