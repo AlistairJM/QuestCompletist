@@ -158,7 +158,7 @@ local function applySettings(keepOn)
 		if key:match("^QC_.*HIDE") then env.qcSettings[key] = keepOn[key] and 1 or 0 end
 	end
 	env.qcSettings.QC_M_SHOW_ICONS = 1
-	env.qcCompletedQuests = {}
+	env.qcCharacterCompletions = {}
 end
 
 --[[ Character profiles ]]--

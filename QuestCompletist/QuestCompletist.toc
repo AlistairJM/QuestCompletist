@@ -3,7 +3,7 @@
 ## Title: Quest Completist
 ## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
 ## SavedVariables: qcSettings qcWorkingDB qcWorkingLog
-## SavedVariablesPerCharacter: qcCompletedQuests QC_LastDailyReset QC_LastWeeklyReset
+## SavedVariablesPerCharacter: qcCharacterCompletions qcCompletedQuests QC_LastDailyReset QC_LastWeeklyReset
 
 Localization.enUS.lua
 Localization.ptBR.lua
