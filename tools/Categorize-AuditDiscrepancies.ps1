@@ -126,6 +126,7 @@ if ($rows.Count -gt 0 -and $rows[0].PSObject.Properties.Name -contains "CurRace"
         foreach ($f in $facs) { $players.Add(@{ F = $f; R = [long]1 -shl $b }) }
     }
     function Get-Visible([long]$f, [long]$r, [long]$c) {
+        if ($f -eq 0) { $f = -1 }; if ($r -eq 0) { $r = -1 }; if ($c -eq 0) { $c = -1 }
         $set = New-Object System.Collections.Generic.HashSet[string]
         foreach ($p in $players) {
             if (($f -band $p.F) -and ($r -band $p.R)) {
