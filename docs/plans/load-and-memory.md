@@ -167,4 +167,8 @@ Around 38 places read or write it today.
   for quests not in our database), and the saved file goes from 346 KB to about 155 KB. Broken
   records are dropped without an error, an existing new-format mark wins, and a second login changes
   nothing. Found in passing: master errors on a completion record that isn't a table; the
-  conversion drops such records. Not yet tested in game.
+  conversion drops such records.
+- Phase 3 in game (Kranaa, full restart): completed zones, the counter and hand marks behaved as
+  before, and marks survived `/reload`. In the saved file afterwards, all 12,259 marks from the backup
+  were present (0 changed, 0 lost, all plain numbers), plus the two test marks. The old variable is
+  written as `qcCompletedQuests = nil`, and the file went from 355 KB to 171 KB.
