@@ -11,18 +11,18 @@ qcAreaIDToCategoryID={
 [122]=112,[123]=273,[125]=43,[126]=43,[128]=196,[130]=410,[131]=410,[132]=2,[133]=259,[134]=259,[135]=259,[136]=260,
 [137]=260,[138]=91,[139]=91,[140]=94,[141]=217,[142]=226,[143]=226,[144]=226,[145]=226,[146]=226,[147]=254,[148]=254,
 [149]=254,[150]=254,[151]=254,[152]=254,[160]=60,[161]=60,[162]=142,[163]=142,[164]=142,[165]=142,[166]=142,
-[167]=142,[168]=1036,[169]=111,[170]=103,[171]=250,[172]=251,[173]=251,[174]=222,[175]=222,[176]=222,[177]=222,
+[167]=142,[168]=1736,[169]=111,[170]=103,[171]=250,[172]=251,[173]=251,[174]=222,[175]=222,[176]=222,[177]=222,
 [178]=222,[183]=218,[184]=154,[185]=93,[186]=107,[187]=107,[188]=107,[189]=107,[190]=107,[191]=107,[192]=107,
 [193]=107,[194]=118,[195]=118,[196]=118,[197]=118,[198]=139,[199]=190,[200]=227,[201]=117,[202]=84,[203]=264,
 [204]=1,[205]=182,[206]=404,[207]=54,[208]=54,[209]=54,[210]=214,[213]=157,[217]=166,[219]=278,[221]=21,[222]=21,[223]=21,
-[225]=231,[226]=85,[227]=85,[228]=85,[229]=85,[230]=253,[231]=253,[232]=135,[234]=58,[235]=58,[236]=58,[237]=58,
-[238]=58,[239]=58,[240]=58,[241]=252,[242]=23,[243]=23,[244]=246,[245]=247,[246]=228,[247]=165,[249]=255,[1527]=255,[250]=24,
+[225]=231,[226]=85,[227]=85,[228]=85,[229]=85,[230]=253,[231]=253,[232]=135,[234]=58,[235]=1740,[236]=58,[237]=58,
+[238]=58,[239]=1739,[240]=1739,[241]=252,[242]=23,[243]=23,[244]=246,[245]=247,[246]=228,[247]=165,[249]=255,[1527]=255,[250]=24,
 [251]=24,[252]=24,[253]=24,[254]=24,[255]=24,[256]=13,[257]=13,[258]=174,[259]=174,[260]=176,[261]=212,[262]=235,
 [263]=230,[264]=230,[265]=229,[266]=213,[267]=223,[268]=223,[269]=209,[270]=209,[271]=209,[272]=131,[273]=409,
 [274]=408,[275]=403,[277]=125,[279]=265,[280]=132,[281]=132,[283]=22,[284]=22,[291]=215,[292]=215,[293]=87,[297]=92,
 [298]=92,[299]=92,[300]=158,[301]=159,[310]=177,[311]=177,[312]=177,[313]=177,[314]=177,[315]=177,[316]=177,
-[317]=197,[318]=197,[219]=278,[220]=198,[221]=21,[322]=241,[323]=241,[324]=232,[325]=237,[329]=105,[331]=130,[333]=276,
-[334]=205,[335]=200,[336]=200,[337]=279,[338]=136,[339]=211,[340]=211,[341]=211,[342]=211,[343]=211,[344]=211,
+[317]=197,[318]=1741,[219]=278,[220]=198,[221]=21,[322]=241,[323]=241,[324]=232,[325]=237,[329]=105,[331]=130,[333]=276,
+[334]=1738,[335]=200,[336]=200,[337]=279,[338]=136,[339]=211,[340]=211,[341]=211,[342]=211,[343]=211,[344]=211,
 [345]=211,[346]=211,[347]=97,[348]=129,[349]=129,[350]=116,[351]=116,[352]=116,[353]=116,[354]=116,[355]=116,
 [356]=116,[357]=116,[358]=116,[359]=116,[360]=116,[361]=116,[362]=116,[363]=116,[364]=116,
 [365]=116,[366]=116,[370]=224,[371]=221,[372]=221,[373]=221,[374]=221,[375]=221,[376]=262,[377]=262,[378]=238,[379]=120,[380]=120,
@@ -81,7 +81,7 @@ qcAreaIDToCategoryID={
 --Mid
 [2413]=1502,[2432]=1503,[2437]=1510,[2395]=1511,[2393]=1512,[2405]=1508,
 --Added Missing
-[577]=306,[578]=306,[448]=86,[319]=3,[320]=3,[321]=3,[327]=3,[129]=224,[678]=1035,[276]=415,[1360]=107,[472]=416,[473]=416,[127]=417,
+[577]=306,[578]=306,[448]=86,[319]=1737,[320]=1737,[321]=1737,[327]=3,[129]=224,[678]=1035,[276]=415,[1360]=107,[472]=416,[473]=416,[127]=417,
 [1956]=75,[290]=418,[179]=83,[181]=84,[182]=84,[1682]=107,[1699]=419,[1700]=419,[332]=420,[503]=421,[504]=113,[507]=422,
 [157]=15,[124]=423,[153]=89,[248]=424,[367]=425,
 [2509]=1513,[2512]=1513,
@@ -213,6 +213,12 @@ qcAreaIDToCategoryID={
 [2387]=1731,[2388]=1731,	-- Operation: Floodgate
 [2449]=1732,	-- Eco-Dome Al'dani
 [2460]=1734,[2461]=1734,[2462]=1734,[2463]=1734,[2464]=1734,[2465]=1734,[2466]=1734,[2467]=1734,[2468]=1734,[2469]=1734,[2470]=1734,[2471]=1734,	-- Manaforge Omega
+[2494]=1742,[2497]=1742,[2498]=1742,[2499]=1742,[2511]=1743,[2516]=1743,[2520]=1743,[2433]=1744,[2435]=1744,[2434]=1744,[2530]=1745,[2529]=1745,[2500]=1746,[2514]=1747,[2513]=1747,[2572]=1748,[2573]=1748,[2532]=1749,[2501]=1750,[2556]=1751,	-- Dungeon Journal boss maps
+[2492]=1742,[2493]=1742,[2496]=1742,	-- Windrunner Spire
+[2515]=1743,[2517]=1743,[2518]=1743,[2519]=1743,	-- Magisters' Terrace
+[2564]=1747,	-- Den of Nalorakk
+[2574]=1748,	-- Voidscar Arena
+[2531]=1749,	-- The Dreamrift
 }	
 
 qcQuestCategories={
@@ -220,14 +226,14 @@ qcQuestCategories={
 {7,"Alterac Valley"},{8,"Ammen Vale"},{9,"Arathi Basin"},{10,"Arathi Highlands"},{11,"Archaeology"},{12,"Ashenvale"},
 {280,"Ashran"},{281,"Assault on the Dark Portal"},{13,"Auchenai Crypts"},{14,"Auchindoun"},{15,"Azjol-Nerub"},{16,"Azshara"},
 {17,"Azuremyst Isle"},{18,"Badlands"},{19,"Battle Pets"},{20,"Battlegrounds"},{282,"Beastwatch"},{21,"Blackfathom Deeps"},
-{22,"Blackrock Caverns"},{23,"Blackrock Depths"},{283,"Blackrock Foundry"},{24,"Blackrock Spire"},{25,"Blacksmithing"},{26,"Blade's Edge Mountains"},
+{22,"Blackrock Caverns"},{23,"Blackrock Depths"},{283,"Blackrock Foundry"},{24,"Lower Blackrock Spire"},{25,"Blacksmithing"},{26,"Blade's Edge Mountains"},
 {27,"Blasted Lands"},{284,"Bloodmane Pridelands"},{285,"Bloodmaul Slag Mines"},{28,"Bloodmyst Isle"},{29,"Borean Tundra"},{30,"Brawler's Guild"},
 {31,"Brewfest"},{32,"Brewmoon Festival"},{33,"Burning Steppes"},{34,"Camp Narache"},{35,"Cataclysm"},{36,"Caverns of Time"},
 {37,"Children's Week"},{38,"Chill Breeze Valley"},{39,"Coilfang Reservoir"},{40,"Coldarra"},{41,"Coldridge Valley"},{42,"Cooking"},
 {286,"Cragplume Cauldron"},{43,"Dalaran"},{44,"Dalaran City"},{45,"Dalaran Crater"},{46,"Darkmoon Faire"},{316,"Darkmoon Island"},
 {47,"Darkshore"},{48,"Darkspear Strand"},{49,"Darnassus"},{50,"Day of the Dead"},{51,"Deadwind Pass"},{52,"Death Knight"},
 {53,"Deathknell"},{54,"Deepholm"},{55,"Deeprun Tram"},{56,"Designer Island"},{57,"Desolace"},{287,"Development Land"},
-{58,"Dire Maul"},{59,"Dragonblight"},{60,"Drak'Tharon Keep"},{61,"Dread Wastes"},{62,"Druid"},{63,"Dun Morogh"},
+{58,"Dire Maul - Capital Gardens"},{59,"Dragonblight"},{60,"Drak'Tharon Keep"},{61,"Dread Wastes"},{62,"Druid"},{63,"Dun Morogh"},
 {64,"Durotar"},{65,"Duskwood"},{66,"Dustwallow Marsh"},{67,"Eastern Plaguelands"},{68,"Echo Isles"},{69,"Elemental Bonds"},
 {70,"Elwynn Forest"},{71,"End Time"},{72,"Engineering"},{73,"Epic"},{74,"Eversong Woods"},{75,"Eye of the Storm"},
 {76,"Felwood"},{77,"Feralas"},{78,"Firelands Invasion"},{79,"First Aid"},{80,"Fishing"},{288,"Frostfire Ridge"},
@@ -236,7 +242,7 @@ qcQuestCategories={
 {88,"Grizzly Hills"},{89,"Gundrak"},{90,"Hallow's End"},{91,"Halls of Lightning"},{92,"Halls of Origination"},{93,"Halls of Reflection"},
 {94,"Halls of Stone"},{95,"Hellfire Citadel"},{96,"Hellfire Peninsula"},{97,"Hellfire Ramparts"},{98,"Herbalism"},{318,"Highmaul"},
 {99,"Hillsbrad"},{100,"Hillsbrad Foothills"},{101,"Hour of Twilight"},{102,"Howling Fjord"},{103,"Hrothgar's Landing"},{104,"Hunter"},
-{105,"Hyjal Summit"},{106,"Icecrown"},{107,"Icecrown Citadel"},{108,"Inscription"},{109,"Invasion"},{293,"Iron Docks"},
+{105,"The Battle for Mount Hyjal"},{106,"Icecrown"},{107,"Icecrown Citadel"},{108,"Inscription"},{109,"Invasion"},{293,"Iron Docks"},
 {110,"Ironforge"},{111,"Isle of Conquest"},{112,"Isle of Quel'Danas"},{113,"Isle of Thunder"},{114,"Jade Temple Grounds"},{115,"Jewelcrafting"},
 {116,"Karazhan"},{117,"Kelp'thar Forest"},{118,"Kezan"},{119,"Krasarang Wilds"},{120,"Kun-Lai Summit"},{121,"Landfall"},
 {122,"Leatherworking"},{123,"Legendary"},{124,"Loch Modan"},{294,"Logging"},{125,"Lost City of the Tol'vir"},{126,"Love is in the Air"},
@@ -253,11 +259,11 @@ qcQuestCategories={
 {181,"Shattrath City"},{182,"Shimmering Expanse"},{183,"Sholazar Basin"},{184,"Siege of Niuzao Temple"},{185,"Siege of Orgrimmar"},{186,"Silithus"},
 {187,"Silvermoon City"},{188,"Silverpine Forest"},{189,"Skettis"},{299,"Skyreach"},{190,"Southern Barrens"},{191,"Special"},
 {300,"Spire of Light"},{301,"Spires of Arak"},{192,"Stonetalon Mountains"},{302,"Stormshield"},{303,"Stormshield Stronghold"},{193,"Stormstout Brewery"},
-{194,"Stormwind City"},{195,"Stormwind Harbor"},{196,"Strand of the Ancients"},{197,"Stratholme"},{198,"Sunken Temple"},{199,"Sunstrider Isle"},
+{194,"Stormwind City"},{195,"Stormwind Harbor"},{196,"Strand of the Ancients"},{197,"Stratholme - Main Gate"},{198,"The Temple of Atal'hakkar"},{199,"Sunstrider Isle"},
 {200,"Sunwell Plateau"},{201,"Swamp of Sorrows"},{202,"Tailoring"},{304,"Tailthrasher Basin"},{305,"Talador"},{306,"Tanaan Jungle"},
 {203,"Tanaris"},{204,"Teldrassil"},{307,"Teluuna Observatory"},{205,"Tempest Keep"},{206,"Temple of the Jade Serpent"},{207,"Terokkar Forest"},
 {208,"The Arboretum"},{209,"The Arcatraz"},{210,"The Barrier Hills"},{211,"Black Temple"},{212,"The Blood Furnace"},{213,"The Botanica"},
-{214,"The Cape of Stranglethorn"},{215,"The Deadmines"},{308,"The Everbloom"},{216,"The Exodar"},{217,"The Eye of Eternity"},{218,"The Forge of Souls"},
+{214,"The Cape of Stranglethorn"},{215,"Deadmines"},{308,"The Everbloom"},{216,"The Exodar"},{217,"The Eye of Eternity"},{218,"The Forge of Souls"},
 {309,"The Forgotten Caves"},{219,"The Halfhill Market"},{220,"The Hinterlands"},{310,"The Howling Crag"},{221,"The Jade Forest"},{222,"The Lost Isles"},
 {223,"The Mechanar"},{224,"The Nexus"},{225,"The Obsidian Sanctum"},{226,"The Oculus"},{227,"The Ruby Sanctum"},{228,"The Shattered Halls"},
 {229,"The Slave Pens"},{230,"The Steamvault"},{231,"The Stockade"},{232,"The Stonecore"},{233,"The Storm Peaks"},{234,"The Thunder Forges"},
@@ -282,8 +288,8 @@ qcQuestCategories={
 {1013,"The Dreamgrove (Druid)"},{1014,"The Heart of Azeroth (Shaman)"},{1015,"The Wandering Isle (Monk)"},{1016,"Trueshot Lodge (Hunter)"},{1017,"Dreadscar Rift"},{1020,"Demon Hunter"},
 {1021,"Acherus: The Ebon Hold (Death Knight)"},{1025,"Black Rook Hold"},{1026,"Cathedral of Eternal Night"},{1027,"Court of Stars"},{1028,"Darkheart Thicket"},
 {1029,"Eye of Azshara"},{1030,"Halls of Valor"},{1031,"Maw of Souls"},{1032,"Neltharion's Lair"},{1033,"Return to Karazhan"},{1034,"The Arcway"},
-{1035,"Vault of the Wardens"},{1036,"Violet Hold"},{1037,"The Emerald Nightmare"},{1038,"Trial of Valor"},{1039,"The Nighthold"},{1040,"Tomb of Sargeras"},
-{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"The Seat of the Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
+{1035,"Vault of the Wardens"},{1036,"Assault on Violet Hold"},{1037,"The Emerald Nightmare"},{1038,"Trial of Valor"},{1039,"The Nighthold"},{1040,"Tomb of Sargeras"},
+{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"Seat of the Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
 --Bfa
 {1060,"Drustvar"},{1061,"Stormsong Valley"},{1062,"Tiragarde Sound"},{1063,"Mechagon Island"},{1064,"Chamber of Heart"},{1065,"Nazjatar"},{1066,"Mechagon City"},{1080,"Nazmir"},{1081,"Vol'dun"},{1082,"Zuldazar"},{1090,"Alliance War Campaign"},{1091,"Horde War Campaign"},{1092,"Warfront Contribution"},{1093,"Heritage"},{1094,"Rated Pvp"},{1095,"World Pvp"},
 {1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Freehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"},{1105,"Siege of Boralus"},{1106,"Siege of Zuldazar"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1110,"Uldir"},{1111,"Waycrest Manor"},{1112,"The MOTHERLODE!!"},{1113,"Battle of Dazar'alor"},{1114,"The Eternal Palace"},{1115,"Ny'alotha, the Waking City"},
@@ -295,7 +301,7 @@ qcQuestCategories={
 {1207,"Zereth Mortis"},{1208,"Zereth Mortis Campaign"},{1290,"Shadowlands Uncategorized Quests"},
 {1220,"Kyrian"},{1221,"Necrolord "},{1222,"Night Fae"},{1223,"Venthyr"},
 {1230,"Abominable Stitching"},{1231,"Ember Court"},{1232,"Path of Ascension"},{1233,"Queen's Conservatory"},
-{1240,"9.1 Campaign"},{1241,"Covenant Assaults"},{1242,"Keeper's Respite"},{1243,"Korthia"},{1244,"Tazavesh"},{1245,"The Archivists' Codex"},{1246,"Torghast, Tower of the Damned"},{1247,"Covenant Sanctum"},
+{1240,"9.1 Campaign"},{1241,"Covenant Assaults"},{1242,"Keeper's Respite"},{1243,"Korthia"},{1244,"Tazavesh, the Veiled Market"},{1245,"The Archivists' Codex"},{1246,"Torghast, Tower of the Damned"},{1247,"Covenant Sanctum"},
 --Dragonflight
 {1301,"Ohn'ahran Plains"},{1302,"Thaldraszus"},{1303,"The Azure Span"},{1304,"The Forbidden Reach"},{1305,"The Waking Shores"},{1306,"Valdrakken"},{1307,"Zaralek Cavern"},{1308,"Emerald Dream"},{1309,"Amirdrassil"},
 {1320,"Azmerloth"},{1322,"Dragon Isles"},{1324,"Dragonscale Expedition"},{1328,"Iskaara Tuskarr"},{1330,"Maruuk Centaur"},{1331,"Obsidian Citadel"},{1335,"Professions"},{1342,"Valdrakken Accord"},{1343,"Azerothian Archives"},{1344,"Amirdrassil, the Dream's Hope"},
@@ -339,7 +345,7 @@ qcQuestCategories={
 {1510,"Zul'Aman"},
 {1511,"Eversong Woods"},
 {1512,"Silvermoon City"},{1513,"The Coiled Isle"},{1514,"Prey"},
-{1702,"De Other Side"},{1703,"Theater of Pain"},{1704,"Sanguine Depths"},{1705,"Spires of Ascension"},{1706,"Plaguefall"},{1707,"The Necrotic Wake"},{1708,"Halls of Atonement"},{1709,"Mists of Tirna Scithe"},{1710,"Castle Nathria"},{1711,"Sanctum of Domination"},{1712,"Sepulcher of the First Ones"},{1713,"Algeth'ar Academy"},{1714,"Vault of the Incarnates"},{1715,"Brackenhide Hollow"},{1716,"Aberrus, the Shadowed Crucible"},{1717,"Halls of Infusion"},{1718,"Neltharus"},{1719,"Ruby Life Pools"},{1720,"The Azure Vault"},{1721,"The Nokhud Offensive"},{1722,"Uldaman: Legacy of Tyr"},{1723,"Dawn of the Infinite"},{1724,"The Stonevault"},{1725,"Cinderbrew Meadery"},{1726,"Ara-Kara, City of Echoes"},{1727,"The Rookery"},{1728,"Darkflame Cleft"},{1729,"Priory of the Sacred Flame"},{1730,"The Dawnbreaker"},{1731,"Operation: Floodgate"},{1732,"Eco-Dome Al'dani"},{1733,"Liberation of Undermine"},{1734,"Manaforge Omega"},{1735,"Weekly Events"},
+{1702,"De Other Side"},{1703,"Theater of Pain"},{1704,"Sanguine Depths"},{1705,"Spires of Ascension"},{1706,"Plaguefall"},{1707,"The Necrotic Wake"},{1708,"Halls of Atonement"},{1709,"Mists of Tirna Scithe"},{1710,"Castle Nathria"},{1711,"Sanctum of Domination"},{1712,"Sepulcher of the First Ones"},{1713,"Algeth'ar Academy"},{1714,"Vault of the Incarnates"},{1715,"Brackenhide Hollow"},{1716,"Aberrus, the Shadowed Crucible"},{1717,"Halls of Infusion"},{1718,"Neltharus"},{1719,"Ruby Life Pools"},{1720,"The Azure Vault"},{1721,"The Nokhud Offensive"},{1722,"Uldaman: Legacy of Tyr"},{1723,"Dawn of the Infinite"},{1724,"The Stonevault"},{1725,"Cinderbrew Meadery"},{1726,"Ara-Kara, City of Echoes"},{1727,"The Rookery"},{1728,"Darkflame Cleft"},{1729,"Priory of the Sacred Flame"},{1730,"The Dawnbreaker"},{1731,"Operation: Floodgate"},{1732,"Eco-Dome Al'dani"},{1733,"Liberation of Undermine"},{1734,"Manaforge Omega"},{1735,"Weekly Events"},{1736,"The Violet Hold"},{1737,"Temple of Ahn'Qiraj"},{1738,"The Eye"},{1739,"Dire Maul - Warpwood Quarter"},{1740,"Dire Maul - Gordok Commons"},{1741,"Stratholme - Service Entrance"},{1742,"Windrunner Spire"},{1743,"Magisters' Terrace"},{1744,"Murder Row"},{1745,"The Voidspire"},{1746,"The Blinding Vale"},{1747,"Den of Nalorakk"},{1748,"Voidscar Arena"},{1749,"The Dreamrift"},{1750,"Maisara Caverns"},{1751,"Nexus-Point Xenas"},
 }
 
 qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name the category
@@ -360,7 +366,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[21]=221,	-- Blackfathom Deeps
 	[22]=283,	-- Blackrock Caverns
 	[23]=242,	-- Blackrock Depths
-	[24]=250,	-- Blackrock Spire
 	[26]=105,	-- Blade's Edge Mountains
 	[27]=17,	-- Blasted Lands
 	[28]=106,	-- Bloodmyst Isle
@@ -377,7 +382,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[54]=207,	-- Deepholm
 	[55]=499,	-- Deeprun Tram
 	[57]=66,	-- Desolace
-	[58]=234,	-- Dire Maul
 	[59]=115,	-- Dragonblight
 	[60]=160,	-- Drak'Tharon Keep
 	[61]=422,	-- Dread Wastes
@@ -411,7 +415,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[101]=399,	-- Hour of Twilight
 	[102]=117,	-- Howling Fjord
 	[103]=170,	-- Hrothgar's Landing
-	[105]=329,	-- Hyjal Summit
 	[106]=118,	-- Icecrown
 	[107]=186,	-- Icecrown Citadel
 	[110]=87,	-- Ironforge
@@ -473,7 +476,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[193]=439,	-- Stormstout Brewery
 	[194]=84,	-- Stormwind City
 	[196]=128,	-- Strand of the Ancients
-	[197]=317,	-- Stratholme
 	[199]=467,	-- Sunstrider Isle
 	[200]=335,	-- Sunwell Plateau
 	[201]=51,	-- Swamp of Sorrows
@@ -487,7 +489,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[212]=261,	-- The Blood Furnace
 	[213]=266,	-- The Botanica
 	[214]=210,	-- The Cape of Stranglethorn
-	[215]=291,	-- The Deadmines
 	[216]=103,	-- The Exodar
 	[217]=141,	-- The Eye of Eternity
 	[218]=183,	-- The Forge of Souls
@@ -602,7 +603,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1032]=731,	-- Neltharion's Lair
 	[1034]=749,	-- The Arcway
 	[1035]=677,	-- Vault of the Wardens
-	[1036]=732,	-- Violet Hold
 	[1037]=777,	-- The Emerald Nightmare
 	[1038]=806,	-- Trial of Valor
 	[1039]=764,	-- The Nighthold
@@ -612,7 +612,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1043]=905,	-- Argus
 	[1045]=909,	-- Antorus, the Burning Throne
 	[1046]=649,	-- Helheim
-	[1047]=903,	-- The Seat of the Triumvirate
 	[1048]=715,	-- Emerald Dreamway
 	[1049]=750,	-- Thunder Totem
 	[1060]=896,	-- Drustvar
@@ -651,6 +650,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1231]=1644,	-- Ember Court
 	[1233]=1662,	-- Queen's Conservatory
 	[1243]=1961,	-- Korthia
+	[1244]=1989,	-- Tazavesh, the Veiled Market
 	[1246]=1762,	-- Torghast, Tower of the Damned
 	[1301]=2023,	-- Ohn'ahran Plains
 	[1302]=2025,	-- Thaldraszus
@@ -689,7 +689,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1702]=1677,	-- De Other Side
 	[1703]=1683,	-- Theater of Pain
 	[1704]=1675,	-- Sanguine Depths
-	[1705]=1692,	-- Spires of Ascension
+	[1705]=2017,	-- Spires of Ascension
 	[1706]=1674,	-- Plaguefall
 	[1707]=1666,	-- The Necrotic Wake
 	[1708]=1663,	-- Halls of Atonement
@@ -701,7 +701,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1714]=2119,	-- Vault of the Incarnates
 	[1715]=2096,	-- Brackenhide Hollow
 	[1716]=2166,	-- Aberrus, the Shadowed Crucible
-	[1717]=2082,	-- Halls of Infusion
 	[1718]=2080,	-- Neltharus
 	[1719]=2094,	-- Ruby Life Pools
 	[1720]=2073,	-- The Azure Vault
@@ -717,6 +716,16 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1731]=2387,	-- Operation: Floodgate
 	[1732]=2449,	-- Eco-Dome Al'dani
 	[1734]=2460,	-- Manaforge Omega
+	[1736]=168,	-- The Violet Hold
+	[1742]=2492,	-- Windrunner Spire
+	[1743]=2511,	-- Magisters' Terrace
+	[1744]=2433,	-- Murder Row
+	[1745]=2529,	-- The Voidspire
+	[1746]=2500,	-- The Blinding Vale
+	[1747]=2513,	-- Den of Nalorakk
+	[1748]=2572,	-- Voidscar Arena
+	[1749]=2531,	-- The Dreamrift
+	[1750]=2501,	-- Maisara Caverns
 }
 
 qcCategoryClientName = {  -- CategoryId -> where the client names it other than by map; see qcClientCategoryName
@@ -727,6 +736,7 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[11]={"skill",794},	-- Archaeology
 	[19]={"string","AUCTION_CATEGORY_BATTLE_PETS"},	-- Battle Pets
 	[20]={"achievementcategory",153},	-- Battlegrounds
+	[24]={"instance",229},	-- Lower Blackrock Spire
 	[25]={"skill",164},	-- Blacksmithing
 	[30]={"achievementcategory",15567},	-- Brawler's Guild
 	[31]={"achievementcategory",162},	-- Brewfest
@@ -737,6 +747,7 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[45]={"area",279},	-- Dalaran Crater
 	[46]={"achievementcategory",15101},	-- Darkmoon Faire
 	[52]={"class",6},	-- Death Knight
+	[58]={"instance",230},	-- Dire Maul - Capital Gardens
 	[62]={"class",11},	-- Druid
 	[72]={"skill",202},	-- Engineering
 	[79]={"string","PROFESSIONS_FIRST_AID"},	-- First Aid
@@ -746,6 +757,7 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[95]={"map",661},	-- Hellfire Citadel
 	[98]={"skill",182},	-- Herbalism
 	[104]={"class",3},	-- Hunter
+	[105]={"instance",750},	-- The Battle for Mount Hyjal
 	[108]={"skill",773},	-- Inscription
 	[114]={"area",5974},	-- Jade Temple Grounds
 	[115]={"skill",755},	-- Jewelcrafting
@@ -767,9 +779,11 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[180]={"class",7},	-- Shaman
 	[191]={"string","SPECIAL"},	-- Special
 	[195]={"area",4411},	-- Stormwind Harbor
-	[198]={"area",1417},	-- Sunken Temple
+	[197]={"instance",236},	-- Stratholme - Main Gate
+	[198]={"instance",237},	-- The Temple of Atal'hakkar
 	[202]={"skill",197},	-- Tailoring
 	[208]={"area",5931},	-- The Arboretum
+	[215]={"instance",63},	-- Deadmines
 	[219]={"area",5981},	-- The Halfhill Market
 	[266]={"class",9},	-- Warlock
 	[267]={"class",1},	-- Warrior
@@ -794,6 +808,8 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[1021]={"format","%s (%s)",{"map",647},{"class",6}},	-- Acherus: The Ebon Hold (Death Knight)
 	[1031]={"instance",727},	-- Maw of Souls
 	[1033]={"instance",860},	-- Return to Karazhan
+	[1036]={"instance",777},	-- Assault on Violet Hold
+	[1047]={"instance",945},	-- Seat of the Triumvirate
 	[1115]={"map",2379},	-- Ny'alotha, the Waking City
 	[1133]={"achievementcategory",15426},	-- Visions of N'Zoth
 	[1220]={"covenant",1},	-- Kyrian
@@ -803,7 +819,6 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[1230]={"skill",2787},	-- Abominable Stitching
 	[1232]={"string","COVENANT_SANCTUM_FEATURE_KYRIAN"},	-- Path of Ascension
 	[1242]={"area",13625},	-- Keeper's Respite
-	[1244]={"map",2472},	-- Tazavesh
 	[1245]={"faction",2472},	-- The Archivists' Codex
 	[1247]={"string","GARRISON_TYPE_9_0_LANDING_PAGE_TITLE"},	-- Covenant Sanctum
 	[1324]={"faction",2507},	-- Dragonscale Expedition
@@ -822,7 +837,14 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[1432]={"area",15792},	-- The Oasis
 	[1509]={"area",3466},	-- West Sanctum
 	[1514]={"achievementcategory",15605},	-- Prey
+	[1717]={"instance",1204},	-- Halls of Infusion
 	[1733]={"instance",1296},	-- Liberation of Undermine
+	[1737]={"instance",744},	-- Temple of Ahn'Qiraj
+	[1738]={"instance",749},	-- The Eye
+	[1739]={"instance",1276},	-- Dire Maul - Warpwood Quarter
+	[1740]={"instance",1277},	-- Dire Maul - Gordok Commons
+	[1741]={"instance",1292},	-- Stratholme - Service Entrance
+	[1751]={"instance",1316},	-- Nexus-Point Xenas
 }
 
 
@@ -14849,7 +14871,7 @@ qcQuestDatabase={
 [90741]={90741,"Once More Into the Rift",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5929,0},
 [90743]={90743,"Ritual Reinforcement",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5929,0},
 [90742]={90742,"Shrouded by Aln'hara",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5929,0},
-[90744]={90744,"The Dreamrift: Malformed Mystery",80,"Harandar",1502,1,3,67108863,8191,0,0,0,5929,0},
+[90744]={90744,"The Dreamrift: Malformed Mystery",80,"Harandar",1749,1,3,67108863,8191,0,0,0,5929,0},
 [90861]={90861,"Those Left Behind",90,"",1512,1,3,67108863,8191,0,0,0,5798,0},
 [90862]={90862,"In Times of Need",90,"",1512,1,3,67108863,8191,0,0,0,5798,0},
 [90867]={90867,"From Darkness, Light",90,"",1512,1,3,67108863,8191,0,0,0,5798,0},
@@ -14932,7 +14954,7 @@ qcQuestDatabase={
 [93024]={93024,"Come With Me",90,"The Coiled Isle",1513,1,3,67108863,8191,0,0,0,6087,0},
 [92953]={92953,"Memories of Malacrass",90,"",1510,1,3,67108863,8191,0,0,0,6050,0},
 [92951]={92951,"Digging Deeper",90,"",1510,1,3,67108863,8191,0,0,0,6050,0},
-[92954]={92954,"Maisara Caverns: Master of Souls",80,"",1510,1,3,67108863,8191,0,0,0,6050,0},
+[92954]={92954,"Maisara Caverns: Master of Souls",80,"",1750,1,3,67108863,8191,0,0,0,6050,0},
 [93010]={93010,"The Serpent Shrine",90,"",1510,1,3,67108863,8191,0,0,0,6050,0},
 [93011]={93011,"Legacy of the Amani",90,"",1510,1,3,67108863,8191,0,0,0,6050,0},
 [93012]={93012,"Dead End",90,"",1510,1,3,67108863,8191,0,0,0,6050,0},
@@ -14964,7 +14986,7 @@ qcQuestDatabase={
 [94527]={94527,"Null Space",90,"Eversong Woods",0,1,3,67108863,8191,0,0,0,6121,0},
 [94528]={94528,"Carving Out Room",90,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6121,0},
 [94529]={94529,"A Dark Shadow Looms",90,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6121,0},
-[94531]={94531,"Like Mother, Like Son",90,"Zul'Aman",0,1,3,67108863,8191,0,0,0,6121,0},
+[94531]={94531,"Like Mother, Like Son",90,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6121,0},
 [92917]={92917,"Saving Those Bound",90,"Witherbark Bluffs",1510,1,3,67108863,8191,0,0,0,6086,0},
 [94521]={94521,"The Direct Method",90,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,6121,0},
 [94936]={94936,"A Bond of Brothers",90,"The Coiled Isle",1513,1,3,67108863,8191,0,0,0,6329,0},
@@ -14984,7 +15006,7 @@ qcQuestDatabase={
 [95521]={95521,"The Med'jai Medallion",90,"Vaults of Atal'Utek",1513,1,3,67108863,8191,0,0,0,6227,0},
 [95522]={95522,"Guardians of Death, Guardians in Stone",90,"Vaults of Atal'Utek",1513,1,3,67108863,8191,0,0,0,6227,0},
 [95564]={95564,"The Serpent's Tail",90,"The Coiled Isle",1513,1,3,67108863,8191,0,0,0,6087,0},
-[92897]={92897,"The Preparations Are Complete",90,"Zul'Aman",0,1,3,67108863,8191,0,0,0,6050,0},
+[92897]={92897,"The Preparations Are Complete",90,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6050,0},
 [94870]={94870,"Eggstra Protection Never Hurts",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6128,0},
 [94883]={94883,"Like Dragonhawks to a Flame",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,6128,0},
 [95523]={95523,"Worthy of the Past",90,"Vaults of Atal'Utek",1513,1,3,67108863,8191,0,0,0,6227,0},
@@ -15500,44 +15522,44 @@ qcQuestDatabase={
 [8488]={8488,"Unexpected Results",1,"Eversong Woods",74,1,2,61658034,8191,0,0,0,569,0},
 [8490]={8490,"Powering our Defenses",1,"Eversong Woods",74,1,2,61658034,8191,0,0,0,569,0},
 [8491]={8491,"Pelt Collection",1,"Eversong Woods",74,1,2,61658034,8191,0,0,0,569,0},
-[8544]={8544,"Conqueror's Spaulders",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
+[8544]={8544,"Conqueror's Spaulders",30,"Ahn'Qiraj",1737,1,3,67108863,1,0,0,0,0,0},
 [8556]={8556,"Signet of Unyielding Strength",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
 [8557]={8557,"Drape of Unyielding Strength",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
 [8558]={8558,"Sickle of Unyielding Strength",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
-[8559]={8559,"Conqueror's Greaves",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
-[8560]={8560,"Conqueror's Legguards",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
-[8561]={8561,"Conqueror's Crown",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
-[8562]={8562,"Conqueror's Breastplate",30,"Ahn'Qiraj",3,1,3,67108863,1,0,0,0,0,0},
+[8559]={8559,"Conqueror's Greaves",30,"Ahn'Qiraj",1737,1,3,67108863,1,0,0,0,0,0},
+[8560]={8560,"Conqueror's Legguards",30,"Ahn'Qiraj",1737,1,3,67108863,1,0,0,0,0,0},
+[8561]={8561,"Conqueror's Crown",30,"Ahn'Qiraj",1737,1,3,67108863,1,0,0,0,0,0},
+[8562]={8562,"Conqueror's Breastplate",30,"Ahn'Qiraj",1737,1,3,67108863,1,0,0,0,0,0},
 [8579]={8579,"Mortal Champions",30,"Ahn'Qiraj",3,1,3,67108863,8191,0,0,0,0,0},
-[8592]={8592,"Tiara of the Oracle",30,"Ahn'Qiraj",3,1,3,67108863,16,0,0,0,0,0},
-[8593]={8593,"Trousers of the Oracle",30,"Ahn'Qiraj",3,1,3,67108863,16,0,0,0,0,0},
-[8594]={8594,"Mantle of the Oracle",30,"Ahn'Qiraj",3,1,3,67108863,16,0,0,0,0,0},
+[8592]={8592,"Tiara of the Oracle",30,"Ahn'Qiraj",1737,1,3,67108863,16,0,0,0,0,0},
+[8593]={8593,"Trousers of the Oracle",30,"Ahn'Qiraj",1737,1,3,67108863,16,0,0,0,0,0},
+[8594]={8594,"Mantle of the Oracle",30,"Ahn'Qiraj",1737,1,3,67108863,16,0,0,0,0,0},
 [8595]={8595,"Mortal Champions",30,"Ahn'Qiraj",3,2,3,67108863,8191,0,0,0,0,0},
-[8596]={8596,"Footwraps of the Oracle",30,"Ahn'Qiraj",3,1,3,67108863,16,0,0,0,0,0},
-[8602]={8602,"Stormcaller's Pauldrons",30,"Ahn'Qiraj",3,1,3,67108863,64,0,0,0,0,0},
-[8603]={8603,"Vestments of the Oracle",30,"Ahn'Qiraj",3,1,3,67108863,16,0,0,0,0,0},
+[8596]={8596,"Footwraps of the Oracle",30,"Ahn'Qiraj",1737,1,3,67108863,16,0,0,0,0,0},
+[8602]={8602,"Stormcaller's Pauldrons",30,"Ahn'Qiraj",1737,1,3,67108863,64,0,0,0,0,0},
+[8603]={8603,"Vestments of the Oracle",30,"Ahn'Qiraj",1737,1,3,67108863,16,0,0,0,0,0},
 [8619]={8619,"Morndeep the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,0,0,0,0},
-[8621]={8621,"Stormcaller's Footguards",30,"Ahn'Qiraj",3,1,3,67108863,64,0,0,0,0,0},
-[8622]={8622,"Stormcaller's Hauberk",30,"Ahn'Qiraj",3,1,3,67108863,64,0,0,0,0,0},
-[8623]={8623,"Stormcaller's Diadem",30,"Ahn'Qiraj",3,1,3,67108863,64,0,0,0,0,0},
-[8624]={8624,"Stormcaller's Leggings",30,"Ahn'Qiraj",3,1,3,67108863,64,0,0,0,0,0},
-[8625]={8625,"Enigma Shoulderpads",30,"Ahn'Qiraj",3,1,3,67108863,128,0,0,0,0,0},
-[8626]={8626,"Striker's Footguards",30,"Ahn'Qiraj",3,1,3,67108863,4,0,0,0,0,0},
-[8627]={8627,"Avenger's Breastplate",30,"Ahn'Qiraj",3,1,3,67108863,2,0,0,0,0,0},
-[8628]={8628,"Avenger's Crown",30,"Ahn'Qiraj",3,1,3,67108863,2,0,0,0,0,0},
-[8629]={8629,"Avenger's Legguards",30,"Ahn'Qiraj",3,1,3,67108863,2,0,0,0,0,0},
-[8630]={8630,"Avenger's Pauldrons",30,"Ahn'Qiraj",3,1,3,67108863,2,0,0,0,0,0},
-[8631]={8631,"Enigma Leggings",30,"Ahn'Qiraj",3,1,3,67108863,128,0,0,0,0,0},
-[8632]={8632,"Enigma Circlet",30,"Ahn'Qiraj",3,1,3,67108863,128,0,0,0,0,0},
-[8633]={8633,"Enigma Robes",30,"Ahn'Qiraj",3,1,3,67108863,128,0,0,0,0,0},
-[8634]={8634,"Enigma Boots",30,"Ahn'Qiraj",3,1,3,67108863,128,0,0,0,0,0},
+[8621]={8621,"Stormcaller's Footguards",30,"Ahn'Qiraj",1737,1,3,67108863,64,0,0,0,0,0},
+[8622]={8622,"Stormcaller's Hauberk",30,"Ahn'Qiraj",1737,1,3,67108863,64,0,0,0,0,0},
+[8623]={8623,"Stormcaller's Diadem",30,"Ahn'Qiraj",1737,1,3,67108863,64,0,0,0,0,0},
+[8624]={8624,"Stormcaller's Leggings",30,"Ahn'Qiraj",1737,1,3,67108863,64,0,0,0,0,0},
+[8625]={8625,"Enigma Shoulderpads",30,"Ahn'Qiraj",1737,1,3,67108863,128,0,0,0,0,0},
+[8626]={8626,"Striker's Footguards",30,"Ahn'Qiraj",1737,1,3,67108863,4,0,0,0,0,0},
+[8627]={8627,"Avenger's Breastplate",30,"Ahn'Qiraj",1737,1,3,67108863,2,0,0,0,0,0},
+[8628]={8628,"Avenger's Crown",30,"Ahn'Qiraj",1737,1,3,67108863,2,0,0,0,0,0},
+[8629]={8629,"Avenger's Legguards",30,"Ahn'Qiraj",1737,1,3,67108863,2,0,0,0,0,0},
+[8630]={8630,"Avenger's Pauldrons",30,"Ahn'Qiraj",1737,1,3,67108863,2,0,0,0,0,0},
+[8631]={8631,"Enigma Leggings",30,"Ahn'Qiraj",1737,1,3,67108863,128,0,0,0,0,0},
+[8632]={8632,"Enigma Circlet",30,"Ahn'Qiraj",1737,1,3,67108863,128,0,0,0,0,0},
+[8633]={8633,"Enigma Robes",30,"Ahn'Qiraj",1737,1,3,67108863,128,0,0,0,0,0},
+[8634]={8634,"Enigma Boots",30,"Ahn'Qiraj",1737,1,3,67108863,128,0,0,0,0,0},
 [8635]={8635,"Splitrock the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,0,0,0,0},
 [8636]={8636,"Rumblerock the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,0,0,0,0},
-[8637]={8637,"Deathdealer's Boots",30,"Ahn'Qiraj",3,1,3,67108863,8,0,0,0,0,0},
-[8638]={8638,"Deathdealer's Vest",30,"Ahn'Qiraj",3,1,3,67108863,8,0,0,0,0,0},
-[8639]={8639,"Deathdealer's Helm",30,"Ahn'Qiraj",3,1,3,67108863,8,0,0,0,0,0},
-[8640]={8640,"Deathdealer's Leggings",30,"Ahn'Qiraj",3,1,3,67108863,8,0,0,0,0,0},
-[8641]={8641,"Deathdealer's Spaulders",30,"Ahn'Qiraj",3,1,3,67108863,8,0,0,0,0,0},
+[8637]={8637,"Deathdealer's Boots",30,"Ahn'Qiraj",1737,1,3,67108863,8,0,0,0,0,0},
+[8638]={8638,"Deathdealer's Vest",30,"Ahn'Qiraj",1737,1,3,67108863,8,0,0,0,0,0},
+[8639]={8639,"Deathdealer's Helm",30,"Ahn'Qiraj",1737,1,3,67108863,8,0,0,0,0,0},
+[8640]={8640,"Deathdealer's Leggings",30,"Ahn'Qiraj",1737,1,3,67108863,8,0,0,0,0,0},
+[8641]={8641,"Deathdealer's Spaulders",30,"Ahn'Qiraj",1737,1,3,67108863,8,0,0,0,0,0},
 [8642]={8642,"Silvervein the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,128,0,0,0},
 [8643]={8643,"Highpeak the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,128,0,0,0},
 [8644]={8644,"Stonefort the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,128,0,0,0},
@@ -15551,21 +15573,21 @@ qcQuestDatabase={
 [8652]={8652,"Graveborn the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,128,0,0,0},
 [8653]={8653,"Goldwell the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,128,0,0,0},
 [8654]={8654,"Primestone the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,128,0,0,0},
-[8655]={8655,"Avenger's Greaves",30,"Ahn'Qiraj",3,1,3,67108863,2,0,0,0,0,0},
-[8656]={8656,"Striker's Hauberk",30,"Ahn'Qiraj",3,1,3,67108863,4,0,0,0,0,0},
-[8657]={8657,"Striker's Diadem",30,"Ahn'Qiraj",3,1,3,67108863,4,0,0,0,0,0},
-[8658]={8658,"Striker's Leggings",30,"Ahn'Qiraj",3,1,3,67108863,4,0,0,0,0,0},
-[8659]={8659,"Striker's Pauldrons",30,"Ahn'Qiraj",3,1,3,67108863,4,0,0,0,0,0},
-[8660]={8660,"Doomcaller's Footwraps",30,"Ahn'Qiraj",3,1,3,67108863,256,0,0,0,0,0},
-[8661]={8661,"Doomcaller's Robes",30,"Ahn'Qiraj",3,1,3,67108863,256,0,0,0,0,0},
-[8662]={8662,"Doomcaller's Circlet",30,"Ahn'Qiraj",3,1,3,67108863,256,0,0,0,0,0},
-[8663]={8663,"Doomcaller's Trousers",30,"Ahn'Qiraj",3,1,3,67108863,256,0,0,0,0,0},
-[8664]={8664,"Doomcaller's Mantle",30,"Ahn'Qiraj",3,1,3,67108863,256,0,0,0,0,0},
-[8665]={8665,"Genesis Boots",30,"Ahn'Qiraj",3,1,3,67108863,512,0,0,0,0,0},
-[8666]={8666,"Genesis Vest",30,"Ahn'Qiraj",3,1,3,67108863,512,0,0,0,0,0},
-[8667]={8667,"Genesis Helm",30,"Ahn'Qiraj",3,1,3,67108863,512,0,0,0,0,0},
-[8668]={8668,"Genesis Trousers",30,"Ahn'Qiraj",3,1,3,67108863,512,0,0,0,0,0},
-[8669]={8669,"Genesis Shoulderpads",30,"Ahn'Qiraj",3,1,3,67108863,512,0,0,0,0,0},
+[8655]={8655,"Avenger's Greaves",30,"Ahn'Qiraj",1737,1,3,67108863,2,0,0,0,0,0},
+[8656]={8656,"Striker's Hauberk",30,"Ahn'Qiraj",1737,1,3,67108863,4,0,0,0,0,0},
+[8657]={8657,"Striker's Diadem",30,"Ahn'Qiraj",1737,1,3,67108863,4,0,0,0,0,0},
+[8658]={8658,"Striker's Leggings",30,"Ahn'Qiraj",1737,1,3,67108863,4,0,0,0,0,0},
+[8659]={8659,"Striker's Pauldrons",30,"Ahn'Qiraj",1737,1,3,67108863,4,0,0,0,0,0},
+[8660]={8660,"Doomcaller's Footwraps",30,"Ahn'Qiraj",1737,1,3,67108863,256,0,0,0,0,0},
+[8661]={8661,"Doomcaller's Robes",30,"Ahn'Qiraj",1737,1,3,67108863,256,0,0,0,0,0},
+[8662]={8662,"Doomcaller's Circlet",30,"Ahn'Qiraj",1737,1,3,67108863,256,0,0,0,0,0},
+[8663]={8663,"Doomcaller's Trousers",30,"Ahn'Qiraj",1737,1,3,67108863,256,0,0,0,0,0},
+[8664]={8664,"Doomcaller's Mantle",30,"Ahn'Qiraj",1737,1,3,67108863,256,0,0,0,0,0},
+[8665]={8665,"Genesis Boots",30,"Ahn'Qiraj",1737,1,3,67108863,512,0,0,0,0,0},
+[8666]={8666,"Genesis Vest",30,"Ahn'Qiraj",1737,1,3,67108863,512,0,0,0,0,0},
+[8667]={8667,"Genesis Helm",30,"Ahn'Qiraj",1737,1,3,67108863,512,0,0,0,0,0},
+[8668]={8668,"Genesis Trousers",30,"Ahn'Qiraj",1737,1,3,67108863,512,0,0,0,0,0},
+[8669]={8669,"Genesis Shoulderpads",30,"Ahn'Qiraj",1737,1,3,67108863,512,0,0,0,0,0},
 [8670]={8670,"Runetotem the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,0,0,0,0},
 [8671]={8671,"Ragetotem the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,0,0,0,0},
 [8672]={8672,"Stonespire the Elder",1,"Lunar Festival",127,64,3,67108863,8191,0,0,0,0,0},
@@ -15630,12 +15652,12 @@ qcQuestDatabase={
 [8761]={8761,"The Path of the Invoker",30,"Tanaris",203,1,3,67108863,8191,0,0,0,0,0},
 [8768]={8768,"A Gaily Wrapped Present",10,"Winter Veil",413,64,3,67108863,8191,0,8,0,0,0},
 [8769]={8769,"A Ticking Present",10,"Winter Veil",413,64,3,67108863,8191,0,8,0,0,0},
-[8784]={8784,"Secrets of the Qiraji",30,"Ahn'Qiraj",3,2,3,67108863,8191,0,0,0,0,0},
-[8789]={8789,"Imperial Qiraji Armaments",30,"Ahn'Qiraj",3,1,3,67108863,8191,0,0,0,0,0},
-[8790]={8790,"Imperial Qiraji Regalia",30,"Ahn'Qiraj",3,1,3,67108863,8191,0,0,0,0,0},
+[8784]={8784,"Secrets of the Qiraji",30,"Ahn'Qiraj",1737,2,3,67108863,8191,0,0,0,0,0},
+[8789]={8789,"Imperial Qiraji Armaments",30,"Ahn'Qiraj",1737,1,3,67108863,8191,0,0,0,0,0},
+[8790]={8790,"Imperial Qiraji Regalia",30,"Ahn'Qiraj",1737,1,3,67108863,8191,0,0,0,0,0},
 [8791]={8791,"The Fall of Ossirian",30,"Ruins of Ahn'Qiraj",165,1,3,67108863,8191,0,0,0,0,0},
-[8801]={8801,"C'Thun's Legacy",30,"Ahn'Qiraj",3,1,3,67108863,8191,0,0,0,0,0},
-[8802]={8802,"The Savior of Kalimdor",30,"Ahn'Qiraj",3,1,3,67108863,8191,0,0,0,0,0},
+[8801]={8801,"C'Thun's Legacy",30,"Ahn'Qiraj",1737,1,3,67108863,8191,0,0,0,0,0},
+[8802]={8802,"The Savior of Kalimdor",30,"Ahn'Qiraj",1737,1,3,67108863,8191,0,0,0,0,0},
 [8803]={8803,"A Festive Gift",10,"Winter Veil",413,64,3,67108863,8191,0,8,0,0,0},
 [8827]={8827,"Winter's Presents",1,"Winter Veil",413,64,1,64175181,8191,0,8,0,0,0},
 [8828]={8828,"Winter's Presents",1,"Winter Veil",413,64,2,61658034,8191,0,8,0,0,0},
@@ -16906,7 +16928,7 @@ qcQuestDatabase={
 [11004]={11004,"World of Shadows",15,"Terokkar Forest",207,1,3,67108863,8191,0,0,0,0,0},
 [11005]={11005,"Secrets of the Talonpriests",15,"Terokkar Forest",207,1,3,67108863,8191,0,0,0,0,0},
 [11006]={11006,"More Shadow Dust",15,"Terokkar Forest",207,1,3,67108863,8191,0,0,0,0,0},
-[11007]={11007,"Kael'thas and the Verdant Sphere",30,"Tempest Keep",205,1,3,67108863,8191,0,0,0,0,0},
+[11007]={11007,"Kael'thas and the Verdant Sphere",30,"Tempest Keep",1738,1,3,67108863,8191,0,0,0,0,0},
 [11008]={11008,"Fires Over Skettis",15,"Terokkar Forest",207,4,3,67108863,8191,0,0,0,0,0},
 [11009]={11009,"Ogre Heaven",20,"Blade's Edge Mountains",26,1,3,67108863,8191,0,0,0,0,0},
 [11010]={11010,"Bombing Run",20,"Blade's Edge Mountains",26,1,3,67108863,8191,0,0,0,0,0},
@@ -22006,11 +22028,11 @@ qcQuestDatabase={
 [27100]={27100,"Twilight Research",30,"Deepholm",54,1,3,67108863,8191,0,0,0,0,0},
 [27101]={27101,"Maziel's Revelation",30,"Deepholm",54,1,3,67108863,8191,0,0,0,0,0},
 [27102]={27102,"Maziel's Ascendancy",30,"Deepholm",54,1,3,67108863,8191,0,0,0,0,0},
-[27103]={27103,"Shards of the Felvine",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27104]={27104,"Alzzin the Wildshaper",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27105]={27105,"An Unwelcome Guest",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27107]={27107,"Pusillin The Thief",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27108]={27108,"Lethtendris's Web",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
+[27103]={27103,"Shards of the Felvine",15,"Dire Maul",1739,1,3,67108863,8191,0,0,0,0,0},
+[27104]={27104,"Alzzin the Wildshaper",15,"Dire Maul",1739,1,3,67108863,8191,0,0,0,0,0},
+[27105]={27105,"An Unwelcome Guest",15,"Dire Maul",1739,1,3,67108863,8191,0,0,0,0,0},
+[27107]={27107,"Pusillin The Thief",15,"Dire Maul",1739,1,3,67108863,8191,0,0,0,0,0},
+[27108]={27108,"Lethtendris's Web",15,"Dire Maul",1739,1,3,67108863,8191,0,0,0,0,0},
 [27109]={27109,"The Warped Defender",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
 [27110]={27110,"The Madness Within",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
 [27111]={27111,"The Treasure of the Shen'dralar",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
@@ -22019,20 +22041,20 @@ qcQuestDatabase={
 [27115]={27115,"Ando's Call",5,"Loch Modan",124,1,1,64175181,8191,0,0,0,441,0},
 [27116]={27116,"The Winds of Loch Modan",5,"Loch Modan",124,1,1,64175181,8191,0,0,0,441,0},
 [27117]={27117,"Brute Strength",15,"Western Plaguelands",270,1,2,61658034,8191,0,0,0,418,0},
-[27118]={27118,"A Broken Trap",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27119]={27119,"The Gordok Ogre Suit",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27120]={27120,"The Gordok Ogre Suit",15,"Dire Maul",58,2,3,67108863,8191,0,0,0,0,0},
+[27118]={27118,"A Broken Trap",15,"Dire Maul",1740,1,3,67108863,8191,0,0,0,0,0},
+[27119]={27119,"The Gordok Ogre Suit",15,"Dire Maul",1740,1,3,67108863,8191,0,0,0,0,0},
+[27120]={27120,"The Gordok Ogre Suit",15,"Dire Maul",1740,2,3,67108863,8191,0,0,0,0,0},
 [27123]={27123,"Deepholm, Realm of Earth",30,"Deepholm",54,1,3,67108863,8191,0,0,0,0,0},
-[27124]={27124,"Unfinished Gordok Business",15,"Dire Maul",58,1,3,67108863,8191,0,0,0,0,0},
-[27125]={27125,"King of the Gordok",15,"Dire Maul",58,1,1,64175181,8191,0,0,0,0,0},
+[27124]={27124,"Unfinished Gordok Business",15,"Dire Maul",1740,1,3,67108863,8191,0,0,0,0,0},
+[27125]={27125,"King of the Gordok",15,"Dire Maul",1740,1,1,64175181,8191,0,0,0,0,0},
 [27126]={27126,"Rush Delivery",30,"Deepholm",54,1,3,67108863,8191,0,0,0,543,0},
-[27128]={27128,"King of the Gordok",15,"Dire Maul",58,1,2,61658034,8191,0,0,0,0,0},
-[27129]={27129,"Saving Warpwood",15,"Dire Maul",58,1,1,64175181,8191,0,0,0,0,0},
-[27130]={27130,"Saving Warpwood",15,"Dire Maul",58,1,2,61658034,8191,0,0,0,0,0},
+[27128]={27128,"King of the Gordok",15,"Dire Maul",1740,1,2,61658034,8191,0,0,0,0,0},
+[27129]={27129,"Saving Warpwood",15,"Dire Maul",1739,1,1,64175181,8191,0,0,0,0,0},
+[27130]={27130,"Saving Warpwood",15,"Dire Maul",1739,1,2,61658034,8191,0,0,0,0,0},
 [27131]={27131,"The Highborne",15,"Dire Maul",58,1,1,64175181,8191,0,0,0,0,0},
 [27132]={27132,"The Highborne",15,"Dire Maul",58,1,2,61658034,8191,0,0,0,0,0},
-[27133]={27133,"Eyes in the Sky",15,"Dire Maul",58,1,1,64175181,8191,0,0,0,0,0},
-[27134]={27134,"Ogre in the Field",15,"Dire Maul",58,1,2,61658034,8191,0,0,0,0,0},
+[27133]={27133,"Eyes in the Sky",15,"Dire Maul",1740,1,1,64175181,8191,0,0,0,0,0},
+[27134]={27134,"Ogre in the Field",15,"Dire Maul",1740,1,2,61658034,8191,0,0,0,0,0},
 [27135]={27135,"Something that Burns",30,"Deepholm",54,1,3,67108863,8191,0,0,0,543,0},
 [27136]={27136,"Elemental Energy",30,"Deepholm",54,1,3,67108863,8191,0,0,0,0,0},
 [27139]={27139,"Hobart Needs You",1,"The Lost Isles",222,1,2,256,8191,0,0,0,0,0},
@@ -22110,10 +22132,10 @@ qcQuestDatabase={
 [27223]={27223,"Retribution",15,"Stratholme",197,1,3,67108863,8191,0,0,0,0,0},
 [27225]={27225,"A Summons from Ander Germaine",8,"Warrior",267,1,1,64175181,1,0,0,0,0,0},
 [27226]={27226,"Hair of the Dog",5,"Silverpine Forest",188,1,2,61658034,8191,0,0,0,432,0},
-[27227]={27227,"Lord Aurius Rivendare",15,"Stratholme",197,1,3,67108863,8191,0,0,0,0,0},
-[27228]={27228,"Man Against Abomination",15,"Stratholme",197,1,3,67108863,8191,0,0,0,0,0},
+[27227]={27227,"Lord Aurius Rivendare",15,"Stratholme",1741,1,3,67108863,8191,0,0,0,0,0},
+[27228]={27228,"Man Against Abomination",15,"Stratholme",1741,1,3,67108863,8191,0,0,0,0,0},
 [27229]={27229,"SMASH BROODQUEEN",15,"Dustwallow Marsh",66,1,2,61658034,8191,0,0,0,526,0},
-[27230]={27230,"Weapons for War",15,"Stratholme",197,1,3,67108863,8191,0,0,0,0,0},
+[27230]={27230,"Weapons for War",15,"Stratholme",1741,1,3,67108863,8191,0,0,0,0,0},
 [27231]={27231,"Reinforcements from Fenris",5,"Silverpine Forest",188,1,2,61658034,8191,0,0,0,432,0},
 [27232]={27232,"The Waters Run Red...",5,"Silverpine Forest",188,1,2,61658034,8191,0,0,0,432,0},
 [27233]={27233,"The Menders' Stead",15,"Western Plaguelands",270,1,1,64175181,8191,0,0,0,0,0},
@@ -22229,14 +22251,14 @@ qcQuestDatabase={
 [27349]={27349,"Break in Communications: Dreadwatch Outpost",5,"Ruins of Gilneas",166,1,2,61658034,8191,0,0,0,432,0},
 [27350]={27350,"Break in Communications: Rutsak's Guard",5,"Ruins of Gilneas",166,1,2,61658034,8191,0,0,0,432,0},
 [27351]={27351,"A Royal Reward",8,"Rogue",164,1,1,64175181,8,0,0,0,0,0},
-[27352]={27352,"Liquid Gold",15,"Stratholme",197,1,3,67108863,8191,0,0,0,0,0},
+[27352]={27352,"Liquid Gold",15,"Stratholme",1741,1,3,67108863,8191,0,0,0,0,0},
 [27353]={27353,"Blessings of the Elements",8,"Shaman",180,1,1,64175181,64,0,0,0,0,0},
 [27354]={27354,"Mastering the Arcane",8,"Mage",128,1,1,64175181,128,0,0,0,0,0},
 [27355]={27355,"A Boon for the Powerful",8,"Warlock",266,1,1,64175181,256,0,0,0,0,0},
 [27356]={27356,"The Circle's Future",8,"Druid",62,1,1,2056,512,0,0,0,0,0},
 [27357]={27357,"The Captive Bride",15,"Thousand Needles",240,1,1,64175181,8191,0,0,0,521,0},
 [27358]={27358,"The Captive Bride",15,"Thousand Needles",240,1,2,61658034,8191,0,0,0,521,0},
-[27359]={27359,"Argent Reinforcements",15,"Stratholme",197,1,3,67108863,8191,0,0,0,0,0},
+[27359]={27359,"Argent Reinforcements",15,"Stratholme",1741,1,3,67108863,8191,0,0,0,0,0},
 [27360]={27360,"Vengeance for Our Soldiers",5,"Ruins of Gilneas",166,1,2,61658034,8191,0,0,0,0,0},
 [27361]={27361,"Favored of the Light",8,"Priest",155,1,1,64175181,16,0,0,0,0,0},
 [27362]={27362,"Favored of Elune",8,"Priest",155,1,1,8,16,0,0,0,0,0},
@@ -24279,7 +24301,7 @@ qcQuestDatabase={
 [29827]={29827,"Acid Rain",10,"The Jade Forest",221,1,2,61658034,8191,0,0,0,552,0},
 [29828]={29828,"What the Scourge Dred",15,"Drak'Tharon Keep",60,1,3,67108863,8191,0,0,0,0,0},
 [29829]={29829,"Discretion is Key",15,"Dalaran",43,1,3,67108863,8191,0,0,0,0,0},
-[29830]={29830,"Containment",15,"The Violet Hold",1003,1,3,67108863,8191,0,0,0,0,0},
+[29830]={29830,"Containment",15,"The Violet Hold",1736,1,3,67108863,8191,0,0,0,0,0},
 [29833]={29833,"Unfinished Business",20,"Gundrak",89,1,3,67108863,8191,0,0,0,0,0},
 [29834]={29834,"Gal'darah Must Pay",20,"Gundrak",89,1,3,67108863,8191,0,0,0,0,0},
 [29835]={29835,"Gal'darah Must Pay",20,"Gundrak",89,1,3,67108863,8191,0,0,0,0,0},
@@ -29324,7 +29346,7 @@ qcQuestDatabase={
 [40611]={40611,"The Fate of Deadwind",10,"Artifact",51,1,3,67108863,256,0,0,0,208,0},
 [40613]={40613,"Maw of Souls: Retrieving the Svalnguard",45,"Artifact",1031,1,3,67108863,8191,0,0,0,205,0},
 [40614]={40614,"A Feast Fit for Odyn",45,"Artifact",1006,1,3,67108863,8191,0,0,0,205,0},
-[40615]={40615,"Halls of Valor: Odyn's Blessing",45,"Stormheim",1006,1,3,67108863,8191,0,0,0,205,0},
+[40615]={40615,"Halls of Valor: Odyn's Blessing",45,"Stormheim",1030,1,3,67108863,8191,0,0,0,205,0},
 [40617]={40617,"Turn Around, Nighteyes",45,"Suramar",1007,1,3,67108863,8191,0,0,0,5819,0},
 [40618]={40618,"Weapons of Legend",10,"Artifact",1003,1,3,67108863,4,0,0,0,271,0},
 [40623]={40623,"The Dark Riders",10,"Artifact",51,1,3,67108863,256,0,0,0,208,0},
@@ -31017,7 +31039,7 @@ qcQuestDatabase={
 [43549]={43549,"Into the Nightmare Il'gynoth",45,"The Emerald Nightmare",1037,1,3,67108863,8191,0,0,0,0,0},
 [43550]={43550,"Court of Stars",45,"Court of Stars ",1027,1,3,67108863,8191,0,0,0,0,0},
 [43551]={43551,"Darkheart Thicket",45,"Darkheart Thicket ",1028,1,3,67108863,8191,0,0,0,0,0},
-[43552]={43552,"Eye of Azshara",45,"Eye of Azshara",1050,1,3,67108863,8191,0,0,0,0,0},
+[43552]={43552,"Eye of Azshara",45,"Eye of Azshara",1029,1,3,67108863,8191,0,0,0,0,0},
 [43553]={43553,"Maw of Souls",45,"Maw of Souls ",1031,1,3,67108863,8191,0,0,0,0,0},
 [43554]={43554,"Neltharion's Lair",45,"Neltharion's Lair ",1032,1,3,67108863,8191,0,0,0,0,0},
 [43555]={43555,"The Arcway",45,"The Arcway ",1034,1,3,67108863,8191,0,0,0,0,0},
@@ -31372,8 +31394,8 @@ qcQuestDatabase={
 [44267]={44267,"Maw of Souls",45,"Maw of Souls ",1031,1,3,67108863,8191,0,0,0,0,0},
 [44268]={44268,"Odyn's Challenge",45,"Halls of Valor ",1030,1,3,67108863,8191,0,0,0,0,0},
 [44269]={44269,"Odyn's Challenge",45,"Halls of Valor ",1030,1,3,67108863,8191,0,0,0,0,0},
-[44270]={44270,"Eye of Azshara",45,"Order Hall",1050,1,3,67108863,8191,0,0,0,0,0},
-[44271]={44271,"Eye of Azshara",45,"Order Hall",1050,1,3,67108863,8191,0,0,0,0,0},
+[44270]={44270,"Eye of Azshara",45,"Order Hall",1029,1,3,67108863,8191,0,0,0,0,0},
+[44271]={44271,"Eye of Azshara",45,"Order Hall",1029,1,3,67108863,8191,0,0,0,0,0},
 [44272]={44272,"Darkheart Thicket",45,"Darkheart Thicket ",1028,1,3,67108863,8191,0,0,0,0,0},
 [44273]={44273,"Darkheart Thicket",45,"Darkheart Thicket ",1028,1,3,67108863,8191,0,0,0,0,0},
 [44274]={44274,"Court of Stars",45,"Court of Stars ",1027,1,3,67108863,8191,0,0,0,0,0},
@@ -31756,7 +31778,7 @@ qcQuestDatabase={
 [45173]={45173,"Desperate Times",45,"Hall of the Guardian",1009,1,3,67108863,8191,0,0,0,0,0},
 [45174]={45174,"The Hunt for Illidan Stormrage",45,"Azsuna",1001,1,3,67108863,8191,0,0,0,336,0},
 [45175]={45175,"Soul Prism of the Illidari",45,"Azsuna",1001,1,3,67108863,8191,0,0,0,336,0},
-[45176]={45176,"Trial of Valor: The Once and Future Lord of Shadows",45,"Azsuna",1001,1,3,67108863,8191,0,0,0,336,0},
+[45176]={45176,"Trial of Valor: The Once and Future Lord of Shadows",45,"Azsuna",1038,1,3,67108863,8191,0,0,0,336,0},
 [45177]={45177,"The Nighthold",45,"Dalaran",1003,1,3,67108863,8191,0,0,0,336,0},
 [45178]={45178,"Contagion Containment",45,"Broken Shore",1002,1,3,67108863,8175,0,0,0,0,0},
 [45179]={45179,"Win The Crowd",45,"Battlegrounds",20,4,3,67108863,8191,0,0,0,0,0},
@@ -31770,7 +31792,7 @@ qcQuestDatabase={
 [45203]={45203,"Battle for the Ruins",10,"Azsuna",1001,128,3,67108863,8191,0,0,0,0,0},
 [45207]={45207,"The Nightborne Apprentice",45,"Mage Campaign",1009,1,3,67108863,128,0,0,0,5871,0},
 [45209]={45209,"Those Scrying Eyes",45,"Suramar",1007,1,3,67108863,8191,0,0,0,279,0},
-[45238]={45238,"Return to Karazhan: Cubic Cynosure",45,"Suramar",1007,128,3,67108863,8191,0,0,0,0,0},
+[45238]={45238,"Return to Karazhan: Cubic Cynosure",45,"Suramar",1033,128,3,67108863,8191,0,0,0,0,0},
 [45239]={45239,"Cubic Coalescing",45,"Suramar",1007,128,3,67108863,8191,0,0,0,0,0},
 [45240]={45240,"Making Preparations",45,"Death Knight Campaign",1021,1,3,67108863,32,0,0,0,5896,0},
 [45243]={45243,"On Daumyr's Wings",45,"Death Knight Campaign",1021,1,3,67108863,32,0,0,0,5896,0},
@@ -33640,7 +33662,7 @@ qcQuestDatabase={
 [49896]={49896,"To Falconhurst!",20,"Drustvar",1060,1,1,64175181,8191,0,0,0,600,0},
 [49897]={49897,"Making Mysteries",10,"Tiragarde Sound",1062,1,1,64175181,8191,0,0,0,0,0},
 [49898]={49898,"Clear Victory",20,"Drustvar",1060,1,1,64175181,8191,0,0,0,0,0},
-[49901]={49901,"Atal'Dazar: Yazma the Fallen Priestess",10,"Zuldazar",1082,1,2,61658034,8191,0,0,0,0,0},
+[49901]={49901,"Atal'Dazar: Yazma the Fallen Priestess",10,"Zuldazar",1100,1,2,61658034,8191,0,0,0,0,0},
 [49902]={49902,"To Gloom Hollow",20,"Nazmir",1080,1,2,61658034,8191,0,0,0,375,0},
 [49905]={49905,"Plot Twist",10,"Zuldazar",1082,1,2,61658034,8191,0,0,0,334,0},
 [49908]={49908,"Back to Brennadam",30,"Stormsong Valley",1061,1,1,64175181,8191,0,0,0,0,0},
@@ -37339,11 +37361,11 @@ qcQuestDatabase={
 [56341]={56341,"Direbrew Cog",1,"Brewfest",31,4,1,64175181,8191,0,0,0,0,0},
 [56346]={56346,"Ancient Technology",50,"Nazjatar",1065,1,1,64175181,8191,0,0,0,0,0},
 [56347]={56347,"An Abyssal Opportunity",50,"Nazjatar",1065,1,1,64175181,8191,0,0,0,0,0},
-[56348]={56348,"The Eternal Palace: We Can Make It Stronger...",50,"Nazjatar",1065,1,1,64175181,8191,0,0,0,0,0},
-[56349]={56349,"The Eternal Palace: Pushing the Limits",50,"Nazjatar",1065,1,1,64175181,8191,0,0,0,0,0},
+[56348]={56348,"The Eternal Palace: We Can Make It Stronger...",50,"Nazjatar",1114,1,1,64175181,8191,0,0,0,0,0},
+[56349]={56349,"The Eternal Palace: Pushing the Limits",50,"Nazjatar",1114,1,1,64175181,8191,0,0,0,0,0},
 [56350]={56350,"Scouting the Palace",50,"Nazjatar",1065,1,1,64175181,8191,0,0,0,949,0},
-[56351]={56351,"The Eternal Palace: Pushing the Limits",50,"Nazjatar",1065,1,2,61658034,8191,0,0,0,0,0},
-[56352]={56352,"The Eternal Palace: We Can Make It Stronger...",50,"Nazjatar",1065,1,2,61658034,8191,0,0,0,0,0},
+[56351]={56351,"The Eternal Palace: Pushing the Limits",50,"Nazjatar",1114,1,2,61658034,8191,0,0,0,0,0},
+[56352]={56352,"The Eternal Palace: We Can Make It Stronger...",50,"Nazjatar",1114,1,2,61658034,8191,0,0,0,0,0},
 [56353]={56353,"An Abyssal Opportunity",50,"Nazjatar",1065,1,2,61658034,8191,0,0,0,0,0},
 [56354]={56354,"Ancient Technology",50,"Nazjatar",1065,1,2,61658034,8191,0,0,0,0,0},
 [56355]={56355,"Battle Tested",50,"Mechagon",1063,4,3,67108863,8191,0,0,0,0,0},
@@ -37726,7 +37748,7 @@ qcQuestDatabase={
 [57581]={57581,"Plucking Plumes",15,"Terokkar Forest",207,1,3,67108863,8191,0,0,0,0,0},
 [57587]={57587,"Spirit Drinker",50,"Uldum",255,128,3,67108863,8191,0,0,0,0,0},
 [57590]={57590,"Spirit Drinker",50,"Uldum",255,128,3,67108863,8191,0,0,0,0,0},
-[57637]={57637,"Disturbance Detected: Firelands",35,"Firelands",1150,128,3,67108863,8191,0,0,0,0,0},
+[57637]={57637,"Disturbance Detected: Firelands",35,"Firelands",173,128,3,67108863,8191,0,0,0,0,0},
 [57642]={57642,"A Winter Veil Gift",10,"Seasonal",173,0,3,67108863,0,0,0,0,0,0},
 [57643]={57643,"A Gently Shaken Gift",10,"Seasonal",173,0,3,67108863,0,0,0,0,0,0},
 [57670]={57670,"Unbeelievable Quality",50,"Stormsong Valley",1061,128,1,64175181,8191,0,0,0,0,0},
@@ -42088,7 +42110,7 @@ qcQuestDatabase={
 [67078]={67078,"Parting Instructions",70,"Thaldraszus",1302,1,3,67108863,8191,0,0,0,1325,67077},
 [67079]={67079,"Hard Lock Life",70,"Thaldraszus",1302,1,3,67108863,8191,0,0,0,1325,67078},
 [67080]={67080,"Artisan's Supply: Dragon's Alchemical Solution",10,"The Waking Shores",1305,1,3,67108863,8191,0,0,0,0,0},
-[67081]={67081,"Halls of Infusion: An Infusion of Materials",70,"Thaldraszus",1302,1,3,67108863,8191,0,0,0,1325,67079},
+[67081]={67081,"Halls of Infusion: An Infusion of Materials",70,"Thaldraszus",1717,1,3,67108863,8191,0,0,0,1325,67079},
 [67084]={67084,"The Silver Purpose",70,"Thaldraszus",1302,1,3,67108863,8191,0,0,0,1325,67081},
 [67093]={67093,"An Anomalous Shrine",40,"Thaldraszus",1302,1,3,67108863,8191,0,0,0,0,0},
 [67094]={67094,"A Dryad's Work Is Never Done",40,"Valdrakken",1306,1,3,67108863,8191,0,0,0,0,0},
@@ -44607,7 +44629,7 @@ qcQuestDatabase={
 [77191]={77191,"Handling It",70,"Legendary",123,1,3,67108863,35,0,0,0,5462,77093},
 [77192]={77192,"An Axe Tempered",70,"Legendary",123,1,3,67108863,35,0,0,0,5462,77191},
 [77193]={77193,"The Power of Temptation",70,"Legendary",123,1,3,67108863,35,0,0,0,5462,77192},
-[77194]={77194,"Free Knot!",1,"Dire Maul",58,2,3,67108863,8191,0,0,0,0,0},
+[77194]={77194,"Free Knot!",1,"Dire Maul",1740,2,3,67108863,8191,0,0,0,0,0},
 [77195]={77195,"A Dragon's Eye View",70,"Emerald Dream",1308,1,3,67108863,8191,0,0,0,5474,76463},
 [77197]={77197,"A Whelping Hand",70,"Emerald Dream",1308,1,3,67108863,8191,0,0,0,5474,77195},
 [77198]={77198,"Home in Time for Tea",70,"Emerald Dream",1308,1,3,67108863,8191,0,0,0,5474,77197},
@@ -46964,7 +46986,7 @@ qcQuestDatabase={
 [85527]={85527,"Buccaneer Bonzai",80,"Undermine",1408,128,3,67108863,8191,0,0,0,5687,85526},
 [85928]={85928,"Breakneck Racing - Sandy Scuttle",70,"Undermine",1408,128,3,67108863,8191,0,0,0,5700,85104},
 [83115]={83115,"In the Mix",80,"Undermine",1408,1,3,67108863,8191,0,0,0,5614,83114},
-[86204]={86204,"Liberation of Undermine: The House Loses",80,"Undermine",1408,1,3,67108863,8191,0,0,0,5694,85780},
+[86204]={86204,"Liberation of Undermine: The House Loses",80,"Undermine",1733,1,3,67108863,8191,0,0,0,5694,85780},
 [86618]={86618,"License Not Required",80,"Undermine",1408,1,3,67108863,8191,0,0,0,5772,87581},
 [84929]={84929,"Lifeguard On Duty",80,"Undermine",1408,128,3,67108863,8191,0,0,0,5687,84995},
 [83169]={83169,"Long Way from Booty Bay",80,"Undermine",1408,1,3,67108863,8191,0,0,0,5661,83168},
@@ -48040,7 +48062,7 @@ qcQuestDatabase={
 [86518]={86518,"The Mantle of Predation",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5730,86517},
 [86519]={86519,"Abyssus, Abyssum",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5730,86518},
 [86520]={86520,"Hunt the Light",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5730,86519},
-[86521]={86521,"Nexus-Point Xenas: Eclipse",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5730,86520},
+[86521]={86521,"Nexus-Point Xenas: Eclipse",88,"Voidstorm",1751,1,3,67108863,8191,0,0,0,5730,86520},
 [86522]={86522,"Daylight is Breaking",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5730,86521},
 [86528]={86528,"A Cracked Holokey",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,86530},
 [86530]={86530,"First, The Shells",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,86531},
@@ -48052,7 +48074,7 @@ qcQuestDatabase={
 [86540]={86540,"Third, Blow It Up",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,88768},
 [86541]={86541,"Just In Case...",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,86540},
 [86542]={86542,"Flicker in the Dark",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,86541},
-[86543]={86543,"Magisters' Terrace: Homecoming",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5728,92061},
+[86543]={86543,"Magisters' Terrace: Homecoming",88,"Voidstorm",1743,1,3,67108863,8191,0,0,0,5728,92061},
 [86544]={86544,"Post-Mortem",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,86542},
 [86545]={86545,"The Light's Brand",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5729,86544},
 [86549]={86549,"No Fear of the Dark",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5728,86543},
@@ -48103,8 +48125,8 @@ qcQuestDatabase={
 [86664]={86664,"Seer or Sear",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5723,86663},
 [86665]={86665,"Face in the Fire",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5723,86664},
 [86666]={86666,"In the Shadow of Rebirth",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5723,90772},
-[86681]={86681,"Den of Nalorakk: A Taste of Vengeance",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5938,0},
-[86682]={86682,"Den of Nalorakk: Waking de Bear",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5938,86681},
+[86681]={86681,"Den of Nalorakk: A Taste of Vengeance",83,"Zul'Aman",1747,1,3,67108863,8191,0,0,0,5938,0},
+[86682]={86682,"Den of Nalorakk: Waking de Bear",83,"Zul'Aman",1747,1,3,67108863,8191,0,0,0,5938,86681},
 [86683]={86683,"Hash'ey Away",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5724,0},
 [86684]={86684,"The Blade's Edge",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5724,86683},
 [86685]={86685,"Chip and Shatter",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5724,86684},
@@ -48442,10 +48464,10 @@ qcQuestDatabase={
 [90772]={90772,"The Flames Rise Higher",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5723,86665},
 [90777]={90777,"Feeding the Flame",90,"Midnight",1150,1,2,67108863,8191,0,0,0,5792,0},
 [90782]={90782,"The Nethersent",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5933,0},
-[90818]={90818,"Murder Row: Loose Lips",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5931,90835},
-[90819]={90819,"Murder Row: Acting the Part",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5931,90837},
-[90821]={90821,"Murder Row: Harbored Secrets",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5931,90819},
-[90822]={90822,"Murder Row: One Fel Swoop",80,"Dungeon",1512,1,3,67108863,8191,0,0,0,5931,90821},
+[90818]={90818,"Murder Row: Loose Lips",80,"Eversong Woods",1744,1,3,67108863,8191,0,0,0,5931,90835},
+[90819]={90819,"Murder Row: Acting the Part",80,"Eversong Woods",1744,1,3,67108863,8191,0,0,0,5931,90837},
+[90821]={90821,"Murder Row: Harbored Secrets",80,"Eversong Woods",1744,1,3,67108863,8191,0,0,0,5931,90819},
+[90822]={90822,"Murder Row: One Fel Swoop",80,"Dungeon",1744,1,3,67108863,8191,0,0,0,5931,90821},
 [90824]={90824,"My Brother's Alive!",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5932,0},
 [90826]={90826,"The Healing Waters of Ahl'ua",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5932,90824},
 [90827]={90827,"Only the Poisonous Parts",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5932,90826},
@@ -48455,8 +48477,8 @@ qcQuestDatabase={
 [90832]={90832,"As Her Voice Goes Silent",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5932,90831},
 [90833]={90833,"The Final Rite",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5932,90832},
 [90834]={90834,"From This Point Forward",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5932,90833},
-[90835]={90835,"Murder Row: Rumors Abound",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5931,0},
-[90837]={90837,"Murder Row: Traces of Fel",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5931,90818},
+[90835]={90835,"Murder Row: Rumors Abound",80,"Eversong Woods",1744,1,3,67108863,8191,0,0,0,5931,0},
+[90837]={90837,"Murder Row: Traces of Fel",80,"Eversong Woods",1744,1,3,67108863,8191,0,0,0,5931,90818},
 [90838]={90838,"Oaths and Heirlooms",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,6014,90845},
 [90840]={90840,"What's Your Specialty?",7,"Stormwind City",194,1,2,67108863,8191,0,0,0,5459,0},
 [90842]={90842,"Home Is Where the Hearth Is",7,"Stormwind City",194,1,2,67108863,8191,0,0,0,5459,90840},
@@ -48688,7 +48710,7 @@ qcQuestDatabase={
 [91408]={91408,"Seeking Shadra",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5950,91405},
 [91409]={91409,"Dreaming of Spiders",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5950,91630},
 [91410]={91410,"Shared Loa",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5950,91412},
-[91411]={91411,"Maisara Caverns: Deep in Maisara",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5950,91409},
+[91411]={91411,"Maisara Caverns: Deep in Maisara",80,"Zul'Aman",1750,1,3,67108863,8191,0,0,0,5950,91409},
 [91412]={91412,"Return of the Venom Queen",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5950,91411},
 [91417]={91417,"Seek out Arator",90,"Midnight",1508,1,3,67108863,8191,0,0,0,5792,88699},
 [91419]={91419,"Elemental Dominance",90,"Slayer's Rise",1506,128,3,67108863,8191,0,0,0,0,0},
@@ -48756,10 +48778,10 @@ qcQuestDatabase={
 [91560]={91560,"Expunging Explorers",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,6028,91559},
 [91561]={91561,"Bloodborne Pathogen",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,6028,91560},
 [91563]={91563,"Halazzi's Hunt",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,0,0},
-[91565]={91565,"Voidscar Arena: The Grief Spire",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,0},
-[91566]={91566,"Voidscar Arena: The Hate Spire",88,"Voidstorm",1508,1,2,67108863,8191,0,0,0,5964,0},
+[91565]={91565,"Voidscar Arena: The Grief Spire",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,0},
+[91566]={91566,"Voidscar Arena: The Hate Spire",88,"Voidstorm",1748,1,2,67108863,8191,0,0,0,5964,0},
 [91582]={91582,"Pruning the Lattice",90,"Harandar",1502,128,3,67108863,8191,0,0,0,5983,91555},
-[91583]={91583,"Voidscar Arena: The Bastion of Valor",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,91565},
+[91583]={91583,"Voidscar Arena: The Bastion of Valor",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,91565},
 [91585]={91585,"Fresh from the Garden",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5966,0},
 [91586]={91586,"Soil-Based Alternatives",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5966,91585},
 [91587]={91587,"Carcass Cuisine",83,"Harandar",1502,1,3,67108863,8191,0,0,0,5966,91588},
@@ -48771,23 +48793,23 @@ qcQuestDatabase={
 [91594]={91594,"Prey: Endurance Hunter",80,"Prey",1514,128,3,67108863,8191,0,0,0,5954,91592},
 [91595]={91595,"Prey: Endurance Hunter",80,"Prey",1514,128,3,67108863,8191,0,0,0,5954,91594},
 [91596]={91596,"Prey: Endurance Hunter",80,"Prey",1514,128,3,67108863,8191,0,0,0,5954,91595},
-[91597]={91597,"Voidscar Arena: For My Alliance",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,91583},
-[91598]={91598,"Voidscar Arena: Pre-Provoked Violence",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,91597},
-[91599]={91599,"Voidscar Arena: A Familiar Grudge",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,91598},
-[91600]={91600,"Voidscar Arena: Setting It Aside",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,91599},
+[91597]={91597,"Voidscar Arena: For My Alliance",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,91583},
+[91598]={91598,"Voidscar Arena: Pre-Provoked Violence",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,91597},
+[91599]={91599,"Voidscar Arena: A Familiar Grudge",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,91598},
+[91600]={91600,"Voidscar Arena: Setting It Aside",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,91599},
 [91601]={91601,"Prey: Apex Predator",80,"Prey",1514,128,3,67108863,8191,0,0,0,5954,91207},
 [91602]={91602,"Prey: Apex Predator",80,"Prey",1514,128,3,67108863,8191,0,0,0,5954,91601},
-[91603]={91603,"Voidscar Arena: Two Against One",88,"Voidstorm",1508,1,2,61658034,8191,0,0,0,5964,94855},
+[91603]={91603,"Voidscar Arena: Two Against One",88,"Voidstorm",1748,1,2,61658034,8191,0,0,0,5964,94855},
 [91604]={91604,"Prey: Apex Predator",80,"Prey",1514,128,3,67108863,8191,0,0,0,5954,91602},
-[91605]={91605,"Voidscar Arena: The Wrong Side",88,"Voidstorm",1508,1,1,67108863,8191,0,0,0,5964,91600},
-[91606]={91606,"Voidscar Arena: Clearing House",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5964,91605},
+[91605]={91605,"Voidscar Arena: The Wrong Side",88,"Voidstorm",1748,1,1,67108863,8191,0,0,0,5964,91600},
+[91606]={91606,"Voidscar Arena: Clearing House",88,"Voidstorm",1748,1,3,67108863,8191,0,0,0,5964,91605},
 [91627]={91627,"Saltheril's Haven",90,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5967,0},
 [91628]={91628,"Honored Guests",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5967,91627},
 [91629]={91629,"High Esteem",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5967,91628},
 [91630]={91630,"Stolen Sight",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5950,91408},
 [91691]={91691,"The Vanishing of Iridikron",10,"Dawn Of The Infinite",1723,1,3,67108863,8191,0,0,0,6214,0},
 [91693]={91693,"The Subtle Game",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,5967,91629},
-[91694]={91694,"Voidscar Arena: Breaking the Triad",88,"Dungeon",1150,1,3,67108863,8191,0,0,0,5964,91606},
+[91694]={91694,"Voidscar Arena: Breaking the Triad",88,"Dungeon",1748,1,3,67108863,8191,0,0,0,5964,91606},
 [91695]={91695,"Tracking Down Incarnates",10,"Dawn Of The Infinite",1723,1,3,67108863,8191,0,0,0,6214,91691},
 [91700]={91700,"Darkness Unmade",90,"Voidstorm",1508,128,3,67108863,8191,0,0,0,0,0},
 [91726]={91726,"Unstoppable Force",83,"Burning Steppes",33,1,3,67108863,8191,0,0,0,5751,86829},
@@ -48858,7 +48880,7 @@ qcQuestDatabase={
 [91933]={91933,"The Abundant Honor",80,"Abundance",1510,1,3,67108863,8191,0,0,0,5810,91932},
 [91937]={91937,"Portraits in the Vale",90,"Harandar",1502,128,3,67108863,8191,0,0,0,5983,92184},
 [91954]={91954,"Freezing Over",80,"Manaforge Omega",1734,128,3,67108863,8191,0,0,0,0,0},
-[91958]={91958,"Den of Nalorakk: Unforgiven",83,"Dungeon",1510,1,3,67108863,8191,0,0,0,5938,86682},
+[91958]={91958,"Den of Nalorakk: Unforgiven",83,"Dungeon",1747,1,3,67108863,8191,0,0,0,5938,86682},
 [91963]={91963,"Running Amok",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,5961,91544},
 [91966]={91966,"Saltheril's Soiree",80,"Eversong Woods",1511,4,3,67108863,8191,0,0,0,0,0},
 [91967]={91967,"You Know This Evil?",80,"Silvermoon City",1512,1,3,67108863,8191,0,0,0,5979,91854},
@@ -49273,7 +49295,7 @@ qcQuestDatabase={
 [93569]={93569,"Exaliburn",80,"Eastern Kingdoms",1150,1,3,67108863,8191,0,0,0,0,0},
 [93571]={93571,"Dispersing Shadows",80,"Voidstorm",1508,128,3,67108863,8191,0,0,0,0,0},
 [93573]={93573,"Deciphering Darkness",80,"Voidstorm",1508,128,3,67108863,8191,0,0,0,0,0},
-[93575]={93575,"Maisara Caverns: Maisara Hungers",83,"Dungeon",1510,1,3,67108863,8191,0,0,0,6224,0},
+[93575]={93575,"Maisara Caverns: Maisara Hungers",83,"Dungeon",1750,1,3,67108863,8191,0,0,0,6224,0},
 [93577]={93577,"Captured Instinct",80,"Voidstorm",1508,128,3,67108863,8191,0,0,0,0,0},
 [93579]={93579,"Path of Purgation",80,"Voidstorm",1508,128,3,67108863,8191,0,0,0,0,0},
 [93581]={93581,"Against Overwhelming Odds",90,"World Pvp",1095,128,1,67108863,8191,0,0,0,0,0},
@@ -49290,7 +49312,7 @@ qcQuestDatabase={
 [93640]={93640,"Fish Finagling",80,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,0,0},
 [93641]={93641,"Against Overwhelming Odds",90,"World Pvp",1095,128,1,67108863,8191,0,0,0,0,0},
 [93647]={93647,"Lumber For You",0,"Unknown",1150,1,3,67108863,8191,0,0,0,0,0},
-[93651]={93651,"The Blinding Vale: Lightbloom Roots",83,"Dungeon",1512,1,3,67108863,8191,0,0,0,0,0},
+[93651]={93651,"The Blinding Vale: Lightbloom Roots",83,"Dungeon",1746,1,3,67108863,8191,0,0,0,0,0},
 [93667]={93667,"Camp Stonewash",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5905,0},
 [93683]={93683,"Conditional Objectives - Singular",10,"Arathi Highlands",1409,1,3,67108863,8191,0,0,0,0,0},
 [93687]={93687,"Taste True Power",90,"Silvermoon City",1512,1,3,67108863,8191,0,0,0,0,0},
@@ -49346,7 +49368,7 @@ qcQuestDatabase={
 [93801]={93801,"Calculated Culling",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,6028,91561},
 [93810]={93810,"Masters' Perch",88,"Voidstorm",1508,1,3,67108863,8191,0,0,0,0,0},
 [93811]={93811,"Renowned with the Silvermoon Court",80,"Eversong Woods",1511,1,3,67108863,8191,0,0,0,0,0},
-[93850]={93850,"Windrunner Spire: Haunting Melodies",80,"Dungeon",1511,1,3,67108863,8191,0,0,0,0,0},
+[93850]={93850,"Windrunner Spire: Haunting Melodies",80,"Dungeon",1742,1,3,67108863,8191,0,0,0,0,0},
 [93865]={93865,"Carve Your Way",90,"Voidstorm",1508,4,3,67108863,8191,0,0,0,0,0},
 [93877]={93877,"Conditional Objectives - Sequential",10,"Arathi Highlands",1409,1,3,67108863,8191,0,0,0,0,0},
 [93878]={93878,"Conditional Objectives - Multiple Steps, No Sequence",10,"Arathi Highlands",1409,1,3,67108863,8191,0,0,0,0,0},
@@ -49424,9 +49446,9 @@ qcQuestDatabase={
 [94470]={94470,"A Cluster of Voidlight Marl",80,"Harandar",1502,1,3,67108863,8191,0,0,0,0,0},
 [94471]={94471,"A Trove of Voidlight Marl",80,"Harandar",1502,1,3,67108863,8191,0,0,0,0,0},
 [94474]={94474,"The Great Vault",90,"Azuremyst Isle",17,1,3,67108863,8191,0,0,0,0,0},
-[94475]={94475,"The Voidspire: Flicker in the Hollow",90,"The Voidspire",1508,128,3,67108863,8191,0,0,0,0,0},
-[94476]={94476,"The Voidspire: Flicker in the Hollow",90,"The Voidspire",1508,128,3,67108863,8191,0,0,0,0,0},
-[94477]={94477,"The Voidspire: Flicker in the Hollow",90,"The Voidspire",1508,128,3,67108863,8191,0,0,0,0,0},
+[94475]={94475,"The Voidspire: Flicker in the Hollow",90,"The Voidspire",1745,128,3,67108863,8191,0,0,0,0,0},
+[94476]={94476,"The Voidspire: Flicker in the Hollow",90,"The Voidspire",1745,128,3,67108863,8191,0,0,0,0,0},
+[94477]={94477,"The Voidspire: Flicker in the Hollow",90,"The Voidspire",1745,128,3,67108863,8191,0,0,0,0,0},
 [94478]={94478,"Emissary of Silvermoon Court",80,"Eversong Woods",1511,128,3,67108863,8191,0,0,0,0,0},
 [94492]={94492,"Paragon of the Slayer's Duellum",90,"Slayer's Rise",1506,128,3,67108863,8191,0,0,0,0,0},
 [94580]={94580,"Kate's Test Quest",80,"Eastern Kingdoms",1150,1,3,67108863,8191,0,0,0,0,0},
@@ -49449,12 +49471,12 @@ qcQuestDatabase={
 [94837]={94837,"Midnight Training",90,"Silvermoon City",1512,1,3,67108863,8191,0,0,0,0,0},
 [94838]={94838,"Final Training",90,"Silvermoon City",1512,1,3,67108863,8191,0,0,0,0,0},
 [94839]={94839,"Blessings of Peril",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,0,0},
-[94844]={94844,"Voidscar Arena: For My Horde",88,"Voidstorm",1508,1,2,67108863,8191,0,0,0,5964,94845},
-[94845]={94845,"Voidscar Arena: The Bastion of Might",88,"Voidstorm",1508,1,2,67108863,8191,0,0,0,5964,91566},
+[94844]={94844,"Voidscar Arena: For My Horde",88,"Voidstorm",1748,1,2,67108863,8191,0,0,0,5964,94845},
+[94845]={94845,"Voidscar Arena: The Bastion of Might",88,"Voidstorm",1748,1,2,67108863,8191,0,0,0,5964,91566},
 [94847]={94847,"Preparations Underway",45,"Paladin Campaign",67,1,3,67108863,8191,0,0,0,302,46070},
-[94848]={94848,"Voidscar Arena: Pre-Provoked Violence",88,"Voidstorm",1508,1,2,67108863,8191,0,0,0,5964,94844},
-[94849]={94849,"Voidscar Arena: A Familiar Grudge",88,"Voidstorm",1508,1,2,67108863,8191,0,0,0,5964,94848},
-[94855]={94855,"Voidscar Arena: Setting It Aside",88,"Voidstorm",1508,1,2,67108863,8191,0,0,0,5964,94849},
+[94848]={94848,"Voidscar Arena: Pre-Provoked Violence",88,"Voidstorm",1748,1,2,67108863,8191,0,0,0,5964,94844},
+[94849]={94849,"Voidscar Arena: A Familiar Grudge",88,"Voidstorm",1748,1,2,67108863,8191,0,0,0,5964,94848},
+[94855]={94855,"Voidscar Arena: Setting It Aside",88,"Voidstorm",1748,1,2,67108863,8191,0,0,0,5964,94849},
 [94865]={94865,"Special Assignment: What Remains of a Temple Broken",80,"Zul'Aman",1510,128,3,67108863,8191,0,0,0,0,0},
 [94866]={94866,"Special Assignment: Ours Once More!",80,"Zul'Aman",1510,128,3,67108863,8191,0,0,0,0,0},
 [94867]={94867,"Lost in Atal'Abasi",83,"Zul'Aman",1510,1,3,67108863,8191,0,0,0,5939,0},
