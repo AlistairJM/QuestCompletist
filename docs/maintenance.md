@@ -68,6 +68,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md), then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
+| 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
 ordinary sweep. When step 6 adds quests, those have never been probed. Run
@@ -242,6 +243,31 @@ quests that happen to name a dungeon, quests in a hub (Ahn'Qiraj, Auchindoun, Ca
 Coilfang Reservoir, the Burning Crusade Hellfire Citadel, Tempest Keep), Return to Karazhan quests
 the API calls Karazhan, and lead-in quests handed out in a city or zone.
 
+### 9. Quests and pins nothing can display
+
+`Test-QuestReachability.lua` is the one Lua tool. It loads the addon with stand-ins for the WoW API
+and runs the real quest list filter and map pin code for every race, faction, class, covenant and
+holiday date, so it can't drift from the addon's own logic. It takes about 25 seconds:
+
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua
+```
+
+It writes `tools\reachability-report.txt`, a report only, listing:
+- Lua errors the addon raises. One bad value can stop a whole map's pins from drawing.
+- Quests and pins that never show, even with every filter off.
+- Quests and pins that every possible character is denied with the character filters on (faction,
+  race/class, profession, covenant, seasonal, no-data, requirements-not-met), and which filter
+  hides each one. This is where contradictory data turns up, such as an Alliance quest whose race
+  mask only holds Horde races.
+- Quests in categories the list can't browse to, pin maps missing from `tools\UiMap.csv`, holiday
+  values with no dates, and holidays whose date window has ended.
+
+It assumes best-case progress: max level, prerequisites done, max renown, every profession. The
+quest search finds every quest by name whatever this reports. Some results are expected. Pins whose
+quests aren't in the database stay hidden while "hide quests with no data" is on. Classic's map IDs,
+such as 1411–1459, aren't in retail's `UiMap.csv`.
+
 ## In the game
 
 Some answers only the game client has.
@@ -281,6 +307,8 @@ git diff --stat
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
+- For filter or data changes, run `Test-QuestReachability.lua` (step 9) before and after, and compare
+  the summaries it prints.
 
 ## Never rerun these
 
