@@ -162,19 +162,25 @@ quest that's already in the database.
 It inserts them without a category (category 0), and no menu entry reaches those. Run
 `Place-UncategorisedQuests.ps1 -WhatIf` afterwards, then without `-WhatIf`. It files each quest by
 the first of these that gives an answer:
-1. its Blizzard API area
-2. the zone that contains that area on Blizzard's map
-3. the map its pin is on
-4. its own zone text
+1. a name of the form "<category>: …" ("Prey: Anguish Island")
+2. its Blizzard API area
+3. the zone that contains that area on Blizzard's map
+4. the map its pin is on
+5. its own zone text
+6. the zone above its pin's map, when that map has no category itself (Naigtal → Voidstorm)
+7. its storyline, when the filed quests in it all agree and at least half of it is filed
+
+`-Explain` writes `tools\uncategorised_quests.csv`: each quest it placed, with the rule, and each
+quest it couldn't, with what's missing. The summary names the maps that have pins but no category,
+which usually means `qcAreaIDToCategoryID` lacks them.
 
 It never files a quest in a category that no menu entry reaches. A quest in such a category can
 still be found by search, but not by browsing. After adding categories, check every category that
 holds quests has an entry in `qcMenu.lua`.
 
 `-Refile 1150,1050` also files the quests in the catch-all categories "Bfa Unknown" and "Legion
-Uncategorized". For those it adds two rules: a quest named "<category>: …" goes to that category,
-and a hand-written list in the script maps the catch-all's zone text ("Death Knight Campaign",
-"Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
+Uncategorized". For those it adds a hand-written list in the script that maps the catch-all's zone
+text ("Death Knight Campaign", "Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
 
 A quest nothing can place stays in category 0, which the menu lists as Uncategorized under
 Miscellaneous. A quest in a category that isn't defined is moved there too.
