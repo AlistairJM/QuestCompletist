@@ -148,12 +148,13 @@ To reproduce in game:
 
 ### Design
 
-1. **Separate choosing what to show from refreshing it.** `qcUpdateQuestList` currently does both.
-   - `qcSelectCategory(categoryId)`: something the player did. Clears the search, scrolls to the top,
-     and rebuilds the list. The menu, `qcProcessMenuSelection`, and following the zone call this.
-   - `qcRefreshQuestList()`: rebuilds the current view (category or search) from current state. It keeps
-     the scroll position, clamped to the new length, and leaves the search box alone. Events call this.
-   - `qcRedrawQuestRows()`: just the 16 rows, for quest-log progress. The scrollbar calls this too.
+1. **Separate choosing what to show from refreshing it.** As built, this is a lighter split than first
+   planned. `qcUpdateQuestList` keeps its three modes (pick a category, search, redraw rows) but no
+   longer clears the search box itself; the menu actions already did that. It now records
+   `qcCurrentSearchText`, and draws rows from the slider's clamped value, so a list that shrinks under
+   the scroll position still fills all 16 rows. The new `qcRefreshQuestList()` rebuilds the current
+   view (category or search) at the current scroll position. Events, filter changes and opening the
+   window call it.
 
 2. **Batch refreshes: at most one per frame.** `qcRequestRefresh(list, map)` sets flags and schedules
    one `C_Timer.After(0, qcFlushRefresh)`. The flush rebuilds the list if the window is shown, and calls
@@ -169,11 +170,19 @@ To reproduce in game:
    | `UNIT_QUEST_LOG_CHANGED` ("player") | rows | no |
    | server completion sync with new marks | rebuild | yes |
    | filter change (`qcApplyFilterChange`) | rebuild, keep scroll | yes |
+   | "clear update cache" menu action | rebuild | yes |
+   | shift/alt-click to mark a quest by hand | rows | yes |
    | `QUEST_LOG_UPDATE` | nothing (stop listening; drop the handler) | no |
-   | `QUEST_COMPLETE` | stop listening | — |
+   | `QUEST_COMPLETE` | handled like `QUEST_PROGRESS` | — |
 
    Keep the quest ID shown in the NPC frame title. `QUEST_DETAIL`, `QUEST_PROGRESS` and
-   `QUEST_ITEM_UPDATE` already do that without `QUEST_LOG_UPDATE`.
+   `QUEST_ITEM_UPDATE` already do that without `QUEST_LOG_UPDATE`. On the **reward page**, though,
+   `QUEST_LOG_UPDATE` was the only thing setting the title and running the breadcrumb, new-data and
+   exclusive checks. `QUEST_COMPLETE` was registered but had no handler, so it now does what
+   `QUEST_PROGRESS` does.
+
+   Marking a quest by hand only redraws the rows, even with "hide completed" on. That way a quest
+   marked by mistake stays on screen to be unmarked. The counter catches up on the next rebuild.
 
 4. **Zone following.** Keep track of the category the player's current zone maps to (`qcZoneCategoryID`).
    On `ZONE_CHANGED_NEW_AREA` / `ZONE_CHANGED`:
@@ -208,7 +217,18 @@ To reproduce in game:
   ~720k map draws, 1.2M pins each) with 0 differences, and `qcPinDB` stayed unchanged. Six deliberate
   breakages of the new code were each caught. Offline timing on maps 862/680/2022 with the map
   filters on: ~0.65 ms → ~0.25 ms per refresh (the stand-in `bit` library is pure Lua, so only the
-  ratio means anything). In-game timing and smoke test still to do.
+  ratio means anything). Merged as #95. The in-game check reported then turned out to have run on
+  master (the main checkout the game loads was still on master), so the in-game test of PR 2 covers
+  it.
+- Lesson: before an in-game test, confirm the main checkout is on the branch under test
+  (`git -C <repo> status -sb`). The game loads whatever is checked out there, not the worktree.
+- PR 2 on `fix/live-refresh`. A scratch simulation stubs the list UI (slider, rows, search box, map
+  visibility, `C_Timer`) and plays the same event sequences through master and the branch. Master
+  showed every symptom: (a) 0 map refreshes on turn-in, accept or abandon; (b) the turned-in quest
+  stayed listed with the counter unchanged; (c) subzone scroll reset, browsing and search overridden;
+  (d) no quest ID on the reward page. The branch fixed all of them, and a burst of 7 events gave 1 map
+  refresh. `QUEST_REMOVED` and `QUEST_COMPLETE` were checked against Blizzard's live UI source. The
+  reachability report is unchanged. Not yet tested in game.
 
 ## Found along the way (not in scope; separate PRs if wanted)
 

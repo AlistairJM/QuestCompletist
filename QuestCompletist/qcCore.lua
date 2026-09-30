@@ -6,6 +6,7 @@ local BitBand = bit.band
 local qcL = qcLocalize
 
 local qcCurrentCategoryID = 0
+local qcCurrentSearchText = nil
 local qcCurrentCategoryQuestCount = 0
 local qcCategoryQuests = {}
 
@@ -660,8 +661,8 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 	if not (qcQuestCompletistUI:IsVisible()) then return nil end
 	local stringFormat = string.format
 	if (categoryId) then
-		qcQuestCompletistUI.qcSearchBox:SetText("")
 		qcCurrentCategoryID = categoryId
+		qcCurrentSearchText = nil
 		qcUpdateCurrentCategoryText(categoryId)
 		qcGetCategoryQuests(categoryId)
 		qcCurrentCategoryQuestCount = (#qcCategoryQuests)
@@ -671,12 +672,14 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			qcMenuSlider:SetMinMaxValues(1, qcCurrentCategoryQuestCount - 15)
 		end
 		qcMenuSlider:SetValue(startIndex)
+		startIndex = qcMenuSlider:GetValue()
 
 		local completedInZone, totalInZone = qcGetZoneCompletionStats(categoryId)
 		local completionPercent = (totalInZone > 0) and math.floor((completedInZone / totalInZone) * 100) or 0
 		qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d/%d Complete (%d%%)", completedInZone, totalInZone, completionPercent))
 	else
 		if (searchText) then
+			qcCurrentSearchText = searchText
 			qcGetCategoryQuests(nil, searchText)
 			qcCurrentCategoryQuestCount = (#qcCategoryQuests)
 			qcQuestCompletistUI.qcSelectedCategory:SetText("Search Results")
@@ -686,6 +689,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 				qcMenuSlider:SetMinMaxValues(1, qcCurrentCategoryQuestCount - 15)
 			end
 			qcMenuSlider:SetValue(startIndex)
+			startIndex = qcMenuSlider:GetValue()
 			qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d Quests Found", qcCurrentCategoryQuestCount))
 		end
 	end
@@ -774,7 +778,55 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 	end
 end
 
+-- Rebuilds whatever the list is showing from current state, keeping its scroll position.
+local function qcRefreshQuestList()
+	if qcCurrentSearchText then
+		qcUpdateQuestList(nil, qcMenuSlider:GetValue(), qcCurrentSearchText)
+	else
+		qcUpdateQuestList(qcCurrentCategoryID, qcMenuSlider:GetValue())
+	end
+end
+
+local QC_REDRAW_ROWS = 1
+local QC_REBUILD_LIST = 2
+local qcPendingListRefresh = 0
+local qcPendingMapRefresh = false
+local qcRefreshScheduled = false
+
+local function qcFlushRefresh()
+	local list, map = qcPendingListRefresh, qcPendingMapRefresh
+	qcPendingListRefresh, qcPendingMapRefresh, qcRefreshScheduled = 0, false, false
+	if list == QC_REBUILD_LIST then
+		qcRefreshQuestList()
+	elseif list == QC_REDRAW_ROWS then
+		qcUpdateQuestList(nil, qcMenuSlider:GetValue())
+	end
+	if map and WorldMapFrame:IsShown() then
+		qcMapDataProvider:RefreshAllData()
+	end
+end
+
+-- Quest events arrive in bursts, so they're collected and applied once on the next frame. A hidden
+-- list or map is left alone; each is rebuilt when it's shown.
+local function qcRequestRefresh(list, map)
+	qcPendingListRefresh = math.max(qcPendingListRefresh, list or 0)
+	qcPendingMapRefresh = qcPendingMapRefresh or map or false
+	if not qcRefreshScheduled then
+		qcRefreshScheduled = true
+		C_Timer.After(0, qcFlushRefresh)
+	end
+end
+
 -- Search function start
+
+local function qcResetSearchBox()
+	local searchBox = qcQuestCompletistUI.qcSearchBox
+	searchBox:SetText("Search")
+	searchBox:SetTextColor(0.5, 0.5, 0.5)
+	if searchBox.Instructions then
+		searchBox.Instructions:SetText("Search")
+	end
+end
 
 -- Function to handle when the search box gains focus
 function qcSearchBox_OnEditFocusGained(self)
@@ -847,11 +899,7 @@ local function OnAddonLoaded(self, event, addonName)
             wipeButton:SetSize(20, 20) -- small size
             wipeButton:SetPoint("RIGHT", qcSearchBox, "RIGHT", 20, 0) -- adjust offset as needed
             wipeButton:SetScript("OnClick", function()
-                qcSearchBox:SetText("Search")
-                qcSearchBox:SetTextColor(0.5, 0.5, 0.5)
-                if qcSearchBox.Instructions then
-                    qcSearchBox.Instructions:SetText("Search")
-                end
+                qcResetSearchBox()
                 qcUpdateQuestList(qcCurrentCategoryID, 1)
             end)
             wipeButton:Hide() -- hidden until there’s text
@@ -930,7 +978,7 @@ local function qcQuestQueryCompleted(qcAlwaysReport)
 	end
 
 	if (qcNewFlagged > 0) then
-		qcUpdateQuestList(nil,qcMenuSlider:GetValue())
+		qcRequestRefresh(QC_REBUILD_LIST, true)
 	end
 	if (qcNewFlagged > 0) or (qcAlwaysReport) then
 		print(string.format("%sThe server reports %d completed quest(s) known to Quest Completist, %d of them newly marked as completed.",QCADDON_CHAT_TITLE,qcFound,qcNewFlagged))
@@ -941,6 +989,7 @@ end
 local function qcClearUpdateCache()
 	wipe(qcCompletedQuests)
 	print(string.format("%sCache Cleared.",QCADDON_CHAT_TITLE))
+	qcRequestRefresh(QC_REBUILD_LIST, true)
 end
 
 local function qcPurgeCollectedCache()
@@ -1076,13 +1125,24 @@ function qcProcessMenuSelection(self, arg1)
     CloseDropDownMenus()
 end
 
+-- The category of the zone the player is in. The list follows the player while it's hidden, or
+-- while it's showing that zone with no search; someone browsing elsewhere is left where they are.
+-- The first zone after loading is always followed: the window starts out shown.
+local qcZoneCategoryID = nil
+
 local function qcZoneChangedNewArea() -- *
---	SetMapToCurrentZone()
-	local id = C_Map.GetBestMapForUnit("player")
-	if (qcAreaIDToCategoryID[id]) then
-		qcCurrentCategoryID = qcAreaIDToCategoryID[id]
-		qcUpdateQuestList(qcCurrentCategoryID,1)
+	local categoryId = qcAreaIDToCategoryID[C_Map.GetBestMapForUnit("player")]
+	if not categoryId or categoryId == qcZoneCategoryID then return end
+	local following = (qcZoneCategoryID == nil) or not qcQuestCompletistUI:IsVisible()
+		or (qcCurrentCategoryID == qcZoneCategoryID and not qcCurrentSearchText)
+	qcZoneCategoryID = categoryId
+	if not following then return end
+	if qcCurrentSearchText then
+		qcResetSearchBox()
 	end
+	qcCurrentCategoryID = categoryId
+	qcCurrentSearchText = nil
+	qcUpdateQuestList(categoryId, 1)
 end
 
 -- Start Tooltip when mouse over quest name
@@ -1470,8 +1530,8 @@ function qcQuestClick(qcButtonIndex)
     end
 end
 
-  --print(string.format("%sUpdating quest list",QCADDON_CHAT_TITLE))
-	qcUpdateQuestList(nil, qcMenuSlider:GetValue())
+	-- The list only redraws, so a quest marked by mistake stays on screen to unmark.
+	qcRequestRefresh(QC_REDRAW_ROWS, true)
 
 end
 
@@ -2247,7 +2307,7 @@ function qcInterfaceOptions_OnLoad(self)
 end
 
 function qcApplyFilterChange()
-    qcUpdateQuestList(qcCurrentCategoryID, 1)
+    qcRefreshQuestList()
     qcMapDataProvider:RefreshAllData()
 end
 
@@ -2516,6 +2576,18 @@ end
 -- Initialize settings when the addon is loaded
 qcCheckSettings()
 
+-- Blizzard writes the quest giver's name into the quest frame's title each time it shows a quest
+-- page; the quest's ID goes after it. The greeting page lists several quests and has no ID. A
+-- missing function (renamed in a patch) costs only the ID, not the whole addon.
+if QuestFrame_SetPortrait then
+	hooksecurefunc("QuestFrame_SetPortrait", function()
+		local questId = GetQuestID()
+		if questId and questId ~= 0 then
+			QuestFrame:SetTitle(string.format("%s [%d]", UnitName("questnpc") or "", questId))
+		end
+	end)
+end
+
 local function qcEventHandler(self, event, ...)
 	if (event == "QUEST_DATA_LOAD_RESULT") then
 		local questId, success = ...
@@ -2530,52 +2602,31 @@ local function qcEventHandler(self, event, ...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
-		if (... == "player") then qcUpdateQuestList(nil, qcMenuSlider:GetValue()) end
+		if (... == "player") then qcRequestRefresh(QC_REDRAW_ROWS) end
 	elseif (event == "ZONE_CHANGED_NEW_AREA") then
 		qcZoneChangedNewArea()		--				
 	elseif (event == "ZONE_CHANGED") then
 		qcZoneChangedNewArea()
-	elseif (event == "QUEST_ITEM_UPDATE") then
---		if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
---		if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end  9.xx Soltion
-		if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
 	elseif (event == "QUEST_DETAIL") then
 		local qcQuestID = GetQuestID()
---		if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
---		if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 9.xx Soltion
-		if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
 		qcBreadcrumbChecks(qcQuestID)
 		qcNewDataChecks(qcQuestID)
 		qcMutuallyExclusiveChecks(qcQuestID)
-	elseif (event == "QUEST_ACCEPTED") then
-		qcUpdateQuestList(nil, qcMenuSlider:GetValue())
-	elseif (event == "QUEST_PROGRESS") then
+	elseif (event == "QUEST_ACCEPTED") or (event == "QUEST_REMOVED") then
+		qcRequestRefresh(QC_REDRAW_ROWS, true)
+	elseif (event == "QUEST_PROGRESS") or (event == "QUEST_COMPLETE") then
 		local qcQuestID = GetQuestID()
---		if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
---		if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 9.xx Soltion
-		if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
 		if not (qcQuestID == 0) then
 			qcBreadcrumbChecks(qcQuestID)
 			qcNewDataChecks(qcQuestID)
 			qcMutuallyExclusiveChecks(qcQuestID)
-		end
-	elseif (event == "QUEST_LOG_UPDATE") then
-		local qcQuestID = GetQuestID()
-	--	if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
-	--	if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 9.xx Soltion
-	if (QuestFrame:IsShown() and QuestFrameNpcNameText) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end
-		if not (qcQuestID == 0) then
-			qcBreadcrumbChecks(qcQuestID)
-			qcNewDataChecks(qcQuestID)
-			qcMutuallyExclusiveChecks(qcQuestID)
-			qcUpdateQuestList(nil, qcMenuSlider:GetValue())
 		end
 	elseif (event == "QUEST_TURNED_IN") then
 		local qcQuestID = ...
 		qcUpdateCompletedQuest(qcQuestID)
 		qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 		qcUpdateSkippedBreadcrumbQuest(qcQuestID)
-		qcUpdateQuestList(nil, qcMenuSlider:GetValue())
+		qcRequestRefresh(QC_REBUILD_LIST, true)
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 			local isInitialLogin, isReloadingUi = ...
 			if (isInitialLogin or isReloadingUi) then
@@ -2600,7 +2651,7 @@ end
 
 function qcQuestCompletistUI_OnShow(self)
 	if (qcSettings) then
-		qcUpdateQuestList(qcCurrentCategoryID,qcMenuSlider:GetValue())
+		qcRefreshQuestList()
 	end
 end
 
@@ -2613,11 +2664,10 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("QUEST_COMPLETE")
 	--self:RegisterEvent("QUEST_FINISHED") -- Cant be used for marking quest complette sinze it marks it done before its turned in 
 	self:RegisterEvent("QUEST_TURNED_IN")
-	self:RegisterEvent("QUEST_LOG_UPDATE")
 	self:RegisterEvent("QUEST_DETAIL")
 	self:RegisterEvent("QUEST_PROGRESS")
 	self:RegisterEvent("QUEST_ACCEPTED")
-	self:RegisterEvent("QUEST_ITEM_UPDATE")
+	self:RegisterEvent("QUEST_REMOVED")
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA") -- 
