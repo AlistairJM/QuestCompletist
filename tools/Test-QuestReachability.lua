@@ -243,8 +243,8 @@ end
 
 --[[ Pin identity survives the copies RefreshAllData makes ]]--
 local function pinKey(mapId, pin)
-	return string.format("%s|%s|%s|%s|%s|%s|%s", mapId, tostring(pin[1]), tostring(pin[2]), tostring(pin[3]),
-		tostring(pin[4]), tostring(pin[5]), tostring(pin[6]))
+	return string.format("%s|%s|%s|%s|%s|%s", mapId, tostring(pin[1]), tostring(pin[2]), tostring(pin[3]),
+		tostring(pin[4]), tostring(pin[5]))
 end
 local function pairKey(key, questId)
 	return key .. "#" .. questId
@@ -291,7 +291,7 @@ local function sweep(keepOn, candidates, profiles)
 		for mapId, pins in pairs(PIN_DB) do
 			for _, pin in ipairs(pins) do
 				local key = pinKey(mapId, pin)
-				for _, questId in ipairs(pin[7]) do
+				for _, questId in ipairs(pin[6]) do
 					if remainingPairs[pairKey(key, questId)] then
 						db[mapId] = db[mapId] or {}
 						table.insert(db[mapId], pin)
@@ -328,7 +328,7 @@ local function sweep(keepOn, candidates, profiles)
 			for mapId in pairs(pinDb) do
 				for _, pin in ipairs(drawMap(mapId, pinDb) or {}) do
 					local key = pinKey(mapId, pin)
-					for _, questId in ipairs(pin[7]) do
+					for _, questId in ipairs(pin[6]) do
 						local pair = pairKey(key, questId)
 						if remainingPairs[pair] then
 							seen.pinQuests[pair], remainingPairs[pair], changed = current, nil, true
@@ -354,7 +354,7 @@ for mapId, pins in pairs(PIN_DB) do
 		local key = pinKey(mapId, pin)
 		allPins[key] = true
 		pinInfo[key] = {mapId = mapId, pin = pin}
-		for _, questId in ipairs(pin[7]) do
+		for _, questId in ipairs(pin[6]) do
 			local pair = pairKey(key, questId)
 			allPairs[pair] = true
 			pairInfo[pair] = {pin = key, quest = questId}
@@ -509,9 +509,9 @@ local function pinLabel(key)
 	local info = pinInfo[key]
 	local pin = info.pin
 	local quests = {}
-	for _, id in ipairs(pin[7]) do quests[#quests + 1] = tostring(id) end
-	return string.format("map %d level %s NPC %s %q at %s,%s quests {%s}",
-		info.mapId, tostring(pin[1]), tostring(pin[3]), tostring(pin[4]), tostring(pin[5]), tostring(pin[6]),
+	for _, id in ipairs(pin[6]) do quests[#quests + 1] = tostring(id) end
+	return string.format("map %d NPC %s %q at %s,%s quests {%s}",
+		info.mapId, tostring(pin[2]), tostring(pin[3]), tostring(pin[4]), tostring(pin[5]),
 		table.concat(quests, ","))
 end
 local function sortedNumbers(t)
@@ -580,10 +580,9 @@ local undrawn = minus(allPins, openPins)
 note(string.format("%d pins never drawn, even with every filter off",
 	section("Pins never drawn, even with every filter off", undrawn, pinLabel, function(key)
 		local info = pinInfo[key]
-		if info.pin[1] ~= 0 then return "map level isn't 0" end
 		if knownMaps and not knownMaps[info.mapId] then return "map ID not in UiMap.csv" end
 		local anyKnown = false
-		for _, id in ipairs(info.pin[7]) do if QUESTS[id] then anyKnown = true end end
+		for _, id in ipairs(info.pin[6]) do if QUESTS[id] then anyKnown = true end end
 		if not anyKnown then return "no quest in the database" end
 		return nil
 	end)))
