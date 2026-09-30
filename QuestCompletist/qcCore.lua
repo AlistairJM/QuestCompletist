@@ -232,6 +232,7 @@ local qcHolidays = {
 	{flag=1024, name="Pilgrim's Bounty", eventIDs={404}},
 	{flag=2048, name="Pirates' Day", eventIDs={398}},
 	{flag=4096, name="Trial of Style", eventIDs={691}},
+	{flag=8192, name="Darkmoon Faire", eventIDs={479}},
 }
 local qcHolidayFlagByEventID = {}
 local qcKnownHolidayFlags = {}
