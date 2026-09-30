@@ -1,12 +1,9 @@
 local TableInsert = table.insert;
-local TableRemove = table.remove;
 local StringFormat = string.format;
 local ToString = tostring;
 local BitBand = bit.band
 
 local qcL = qcLocalize
-
-local qcPins = {}
 
 local qcCurrentCategoryID = 0
 local qcCurrentCategoryQuestCount = 0
@@ -451,24 +448,31 @@ local function qcPlayerProfessionMask()
 	return mask
 end
 
--- Every quest list filter except the two that hide a quest for being done. The completion counter
--- shares it, so the counter's total is always the quests the list can show.
-local function qcBuildQuestFilter()
+-- The list and the map each have their own low-level and profession settings; only the list hides
+-- quests by type. Faction, race/class and covenant are shared.
+local QC_LIST_FILTER = {lowLevel = "QC_L_HIDE_LOWLEVEL", profession = "QC_L_HIDE_PROFESSION", types = true}
+local QC_MAP_FILTER = {lowLevel = "QC_M_HIDE_LOWLEVEL", profession = "QC_M_HIDE_PROFESSION"}
+
+-- Every quest filter that reads only the quest's data, not whether it's done. The completion
+-- counter shares the list's, so the counter's total is always the quests the list can show.
+local function qcBuildQuestFilter(scope)
 	local BitBand = bit.band
 	local stringUpper = string.upper
 
 	local hiddenTypes = 0
-	if (qcSettings.QC_L_HIDE_DAILYQUEST == 1) then hiddenTypes = hiddenTypes + 4 end
-	if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == 1) then hiddenTypes = hiddenTypes + 2 end
-	if (qcSettings.QC_L_HIDE_WORLDQUEST == 1) then hiddenTypes = hiddenTypes + 128 end
+	if scope.types then
+		if (qcSettings.QC_L_HIDE_DAILYQUEST == 1) then hiddenTypes = hiddenTypes + 4 end
+		if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == 1) then hiddenTypes = hiddenTypes + 2 end
+		if (qcSettings.QC_L_HIDE_WORLDQUEST == 1) then hiddenTypes = hiddenTypes + 128 end
+	end
 
 	local greenCutoff
-	if (qcSettings.QC_L_HIDE_LOWLEVEL == 1) then
+	if (qcSettings[scope.lowLevel] == 1) then
 		greenCutoff = UnitLevel("player") - UnitQuestTrivialLevelRange("player")
 	end
 
 	local professionBitmask
-	if (qcSettings.QC_L_HIDE_PROFESSION == 1) then
+	if (qcSettings[scope.profession] == 1) then
 		professionBitmask = qcPlayerProfessionMask()
 	end
 
@@ -524,7 +528,7 @@ local function qcGetCategoryQuests(categoryId, searchText)
         return nil
     end
 
-    local passesFilters = qcBuildQuestFilter()
+    local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
     local hideCompleted = (qcSettings.QC_L_HIDE_COMPLETED == 1)
     local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
     for _, e in ipairs(qcCategoryIndex[categoryId] or {}) do
@@ -635,7 +639,7 @@ function qcGetZoneCompletionStats(areaId)
 		qcBuildQuestIndexes()
 	end
 
-	local passesFilters = qcBuildQuestFilter()
+	local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
 	for _, questEntry in ipairs(qcCategoryIndex[areaId] or {}) do
 		if passesFilters(questEntry) then
 			local questId = questEntry[1]
@@ -1953,6 +1957,55 @@ local function qcMergeStackedPins(pins)
     return merged
 end
 
+local function qcIsQuestInLog(questId)
+    local logIndex = C_QuestLog.GetLogIndexForQuestID(questId)
+    return logIndex ~= nil and logIndex > 0
+end
+
+-- Decides one pin quest at a time; a pin is drawn while any of its quests is kept. A quest with no
+-- data passes every check that reads the database.
+local function qcBuildMapQuestFilter()
+    local passesFilters = qcBuildQuestFilter(QC_MAP_FILTER)
+    -- The low-level filter has always hidden quests with no data too.
+    local hideNoData = (qcSettings.QC_M_HIDE_NODATA == 1) or (qcSettings.QC_M_HIDE_LOWLEVEL == 1)
+    local hideCompleted = (qcSettings.QC_M_HIDE_COMPLETED == 1)
+    local hideInProgress = (qcSettings.QC_M_HIDE_INPROGRESS == 1)
+    local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+    local activeHolidays = (qcSettings.QC_M_HIDE_SEASONAL == 1) and qcUpdateActiveHolidays()
+    local playerLevel = (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == 1) and UnitLevel("player")
+
+    local overrideCompleted = {}
+    if hideCompleted or hideInProgress then
+        overrideCompleted = simulateExclusiveCompletions(qcOverrideDailyExclusiveQuest)
+        for questId in pairs(simulateExclusiveCompletions(qcOverrideWeeklyExclusiveQuest)) do
+            overrideCompleted[questId] = true
+        end
+    end
+
+    local function requirementsMet(questId, e)
+        if (e[3] or 0) > playerLevel then return false end
+        local prereqId = e[14] or 0
+        if prereqId > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prereqId) then return false end
+        local renown = qcRenownLevelRequirements[questId]
+        if renown and C_MajorFactions.GetCurrentRenownLevel(renown[1]) < renown[2] then return false end
+        return true
+    end
+
+    return function(questId)
+        local e = qcQuestDatabase[questId]
+        if not e and hideNoData then return false end
+        if hideCompleted and (qcIsQuestCompleted(questId) or overrideCompleted[questId]) then return false end
+        if hideInProgress and (qcIsQuestInLog(questId) or overrideCompleted[questId]) then return false end
+        if hideWarband and qcIsQuestCompletedOnAccount(questId) then return false end
+        if not e then return true end
+        if not passesFilters(e) then return false end
+        -- A holiday value we don't know restricts nothing, like any other field with no data.
+        if activeHolidays and qcKnownHolidayFlags[e[11]] and BitBand(activeHolidays, e[11]) == 0 then return false end
+        if playerLevel and not requirementsMet(questId, e) then return false end
+        return true
+    end
+end
+
 qcMapDataProvider = CreateFromMixins(MapCanvasDataProviderMixin)
 
 function qcMapDataProvider:RemoveAllData()
@@ -1970,244 +2023,22 @@ function qcMapDataProvider:RefreshAllData()
     local UiMapID = self:GetMap():GetMapID()
     if not UiMapID or not qcPinDB[UiMapID] then return end
 
-    wipe(qcPins)
-    qcPins = qcCopyTable(qcPinDB[UiMapID])
-
-		--[[ Map No Data ]]--
-	if qcSettings.QC_M_HIDE_NODATA == 1 then
-		for i = #qcPins, 1, -1 do
-			for questIndex = #qcPins[i][6], 1, -1 do
-				local questId = qcPins[i][6][questIndex]
-				if not qcQuestDatabase[questId] then
-					table.remove(qcPins[i][6], questIndex)
-				end
-			end
-			if #qcPins[i][6] == 0 then
-				table.remove(qcPins, i)
-			end
-		end
-	end
-		--[[ Map Low Level ]]--
-    if qcSettings.QC_M_HIDE_LOWLEVEL == 1 then
-        for i = #qcPins, 1, -1 do
-            for questIndex = #qcPins[i][6], 1, -1 do
-                local questId = qcPins[i][6][questIndex]
-                if qcQuestDatabase[questId] then
-                    local questLevel = qcQuestDatabase[questId][3] or 0
-					local greenCutoff = (UnitLevel("player") -  UnitQuestTrivialLevelRange("player"))
-                    if questLevel < greenCutoff then
-                        table.remove(qcPins[i][6], questIndex)
-                    end
-                else
-                    table.remove(qcPins[i][6], questIndex)
-                end
-            end
-            if #qcPins[i][6] == 0 then
-                table.remove(qcPins, i)
-            end
+    local keepQuest = qcBuildMapQuestFilter()
+    local pins = {}
+    for _, pin in ipairs(qcPinDB[UiMapID]) do
+        local quests = {}
+        for _, questId in ipairs(pin[6]) do
+            if keepQuest(questId) then TableInsert(quests, questId) end
+        end
+        if #quests > 0 then
+            local pinData = {}
+            for key, value in pairs(pin) do pinData[key] = value end
+            pinData[6] = quests
+            TableInsert(pins, pinData)
         end
     end
-local overrideCompleted = {}
 
-if qcSettings["QC_M_HIDE_COMPLETED"] == 1 or qcSettings["QC_M_HIDE_INPROGRESS"] == 1 then
-    overrideCompleted = simulateExclusiveCompletions(qcOverrideDailyExclusiveQuest)
-    for questID, _ in pairs(simulateExclusiveCompletions(qcOverrideWeeklyExclusiveQuest)) do
-        overrideCompleted[questID] = true
-    end
-end
-
-		--[[ Map Completed ]]--
-	if qcSettings["QC_M_HIDE_COMPLETED"] == 1 then
-		for i = #qcPins, 1, -1 do
-			for j = #qcPins[i][6], 1, -1 do
-				local questID = qcPins[i][6][j]
-				if (qcCompletedQuests[questID] and (qcCompletedQuests[questID]["C"] == 1 or qcCompletedQuests[questID]["C"] == 2))
-					or overrideCompleted[questID] then
-					table.remove(qcPins[i][6], j)
-				end
-			end
-			if #qcPins[i][6] == 0 then
-				table.remove(qcPins, i)
-			end
-		end
-	end
-
-		--[[ Map and Quest Faction ]]--
-	if (qcSettings["QC_ML_HIDE_FACTION"] == 1) then
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][6], 1, -1 do
-				local qcQuestID = qcPins[i][6][qcQuestIndex]
-				local qcCurrentPlayerFaction, _S = UnitFactionGroup("player")
-				local qcCurrentFaction = qcFactionBits[string.upper(qcCurrentPlayerFaction)]
-				if (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][7], qcCurrentFaction) then
-					TableRemove(qcPins[i][6], qcQuestIndex)
-				end
-			end
-			if (#qcPins[i][6] == 0) then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-
-		--[[  Map and Quest Race\Class ]]--
-	if (qcSettings["QC_ML_HIDE_RACECLASS"] == 1) then
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][6], 1, -1 do
-				local qcQuestID = qcPins[i][6][qcQuestIndex]
-				local _S, qcCurrentPlayerRace = UnitRace("player")
-				local qcCurrentRace = qcRaceBits[string.upper(qcCurrentPlayerRace)]
-				local _S, qcCurrentPlayerClass = UnitClass("player")
-				local qcCurrentClass = qcClassBits[string.upper(qcCurrentPlayerClass)]
-				if (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][8], qcCurrentRace) then
-					TableRemove(qcPins[i][6], qcQuestIndex)
-				elseif (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][9], qcCurrentClass) then
-					TableRemove(qcPins[i][6], qcQuestIndex)
-				end
-			end
-			if (#qcPins[i][6] == 0) then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-		--[[ Map Seasonal ]]--
-	local qcActive = (qcSettings["QC_M_HIDE_SEASONAL"] == 1) and qcUpdateActiveHolidays()
-	if qcActive then
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][6], 1, -1 do
-				local qcQuestID = qcPins[i][6][qcQuestIndex]
-				-- A holiday value we don't know restricts nothing, like any other field with no data.
-				local qcHoliday = qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][11]
-				if qcKnownHolidayFlags[qcHoliday] and BitBand(qcActive, qcHoliday) == 0 then
-					TableRemove(qcPins[i][6], qcQuestIndex)
-				end
-			end
-			if (#qcPins[i][6] == 0) then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-
-		--[[ Map In progress ]]--
-	if qcSettings["QC_M_HIDE_INPROGRESS"] == 1 then
-		for i = #qcPins, 1, -1 do
-			for j = #qcPins[i][6], 1, -1 do
-				local questID = qcPins[i][6][j]
-				local isAccepted = C_QuestLog.GetLogIndexForQuestID(questID) and C_QuestLog.GetLogIndexForQuestID(questID) > 0
-				if isAccepted or overrideCompleted[questID] then
-					table.remove(qcPins[i][6], j)
-				end
-			end
-			if #qcPins[i][6] == 0 then
-				table.remove(qcPins, i)
-			end
-		end
-	end
-
-		--[[ Map Covenants ]]--
-	if (qcSettings["QC_ML_HIDE_COVENANTS"] == 1) then
-		local playerCovenantID = C_Covenants.GetActiveCovenantID()
-		local playerCovenantBit = qcCovenantsBits[playerCovenantID] or 0
-
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][6], 1, -1 do
-				local qcQuestID = qcPins[i][6][qcQuestIndex]
-				if qcQuestDatabase[qcQuestID] and qcQuestDatabase[qcQuestID][12] then
-					local questCovenant = qcQuestDatabase[qcQuestID][12]
-					if questCovenant > 0 and BitBand(questCovenant, playerCovenantBit) == 0 then
-						TableRemove(qcPins[i][6], qcQuestIndex)
-					end
-				end
-			end
-			if #qcPins[i][6] == 0 then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-		--[[ Map Warbands ]]--
-	if (qcSettings["QC_ML_HIDE_WARBANDS"] == 1) then
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][6], 1, -1 do
-				local qcQuestID = qcPins[i][6][qcQuestIndex]
-				if C_QuestLog.IsQuestFlaggedCompletedOnAccount(qcQuestID) then
-					TableRemove(qcPins[i][6], qcQuestIndex)
-				end
-			end
-			if #qcPins[i][6] == 0 then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-		--[[ Map Prerequisites Not Met ]] --
-	if (qcSettings["QC_M_HIDE_REQUIREMENTSNOTMET"] == 1) then
-		local playerLevel = UnitLevel("player")
-		local playerFaction, _ = UnitFactionGroup("player")
-
-		for i = #qcPins, 1, -1 do
-			for qcQuestIndex = #qcPins[i][6], 1, -1 do
-				local qcQuestID = qcPins[i][6][qcQuestIndex]
-				local questData = qcQuestDatabase[qcQuestID]
-
-				if questData then
-					local questLevel = questData[3] or 0  -- Assuming quest level is at index 3
-					local prequestID = questData[14] or 0 -- Assuming prequest ID is at index 14
-
-					-- Check if the player's level is below the required quest level
-					local belowRequiredLevel = questLevel > playerLevel
-
-					-- Check if a prerequisite quest is not completed
-					local prequestNotCompleted = prequestID > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prequestID)
-
-					-- Check faction standing from qcRenownLevelRequirements
-					local factionStandingTooLow = false
-					local renownRequirement = qcRenownLevelRequirements[qcQuestID]
-					if renownRequirement then
-						local factionID = renownRequirement[1]  -- First value is faction ID
-						local requiredRenown = renownRequirement[2]  -- Second value is required renown level
-						local currentRenown = C_MajorFactions.GetCurrentRenownLevel(factionID)
-
-						-- If player's renown is lower than required, mark the quest for removal
-						factionStandingTooLow = currentRenown < requiredRenown
-					end
-
-					-- Remove the quest if any of the requirements are not met
-					if belowRequiredLevel or prequestNotCompleted or factionStandingTooLow then
-						TableRemove(qcPins[i][6], qcQuestIndex)
-					end
-				end
-			end
-			if #qcPins[i][6] == 0 then
-				TableRemove(qcPins, i)
-			end
-		end
-	end
-
-		--[[ Map Professions ]]--
-	if qcSettings.QC_M_HIDE_PROFESSION == 1 then
-		local professionBitwise = qcPlayerProfessionMask()
-
-    -- Iterate through pins and filter out quests based on profession bitwise flag
-    for i = #qcPins, 1, -1 do
-        for questIndex = #qcPins[i][6], 1, -1 do
-            local questId = qcPins[i][6][questIndex]
-            if qcQuestDatabase[questId] then
-                local questProfessionFlag = qcQuestDatabase[questId][10]
-                if questProfessionFlag and questProfessionFlag ~= 0 then
-                    -- Check if the quest's profession flag matches any of the player's professions
-                    if bit.band(questProfessionFlag, professionBitwise) == 0 then
-                        -- If no match, remove the quest
-                        table.remove(qcPins[i][6], questIndex)
-                    end
-                end
-            end
-        end
-        -- Clean up any empty pins
-        if #qcPins[i][6] == 0 then
-            table.remove(qcPins, i)
-        end
-    end
-end
-
-    for _, pinData in ipairs(qcMergeStackedPins(qcPins)) do
+    for _, pinData in ipairs(qcMergeStackedPins(pins)) do
         self:GetMap():AcquirePin("qcPinTemplate", pinData)
     end
 end
