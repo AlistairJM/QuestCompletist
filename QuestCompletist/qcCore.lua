@@ -2674,7 +2674,7 @@ local function qcEventHandler(self, event, ...)
 			qcNewDataChecks(qcQuestID)
 			qcMutuallyExclusiveChecks(qcQuestID)
 		end
-	elseif (event == "QUEST_LOG_UPDATE") then --  trying instead of QUEST_COMPLETE
+	elseif (event == "QUEST_LOG_UPDATE") then
 		local qcQuestID = GetQuestID()
 	--	if (QuestFrame:IsShown() and QuestFrame.TopTileStreaks) then QuestFrame.TopTileStreaks:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 10.X replacemnt from beta?
 	--	if (QuestFrame:IsShown()) then QuestFrameNpcNameText:SetText(string.format("%s [%d]",UnitName("questnpc") or "nil",GetQuestID())) end 9.xx Soltion
@@ -2683,11 +2683,7 @@ local function qcEventHandler(self, event, ...)
 			qcBreadcrumbChecks(qcQuestID)
 			qcNewDataChecks(qcQuestID)
 			qcMutuallyExclusiveChecks(qcQuestID)
-			qcUpdateCompletedQuest(qcQuestID)
-			qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
-			qcUpdateSkippedBreadcrumbQuest(qcQuestID)
 			qcUpdateQuestList(nil, qcMenuSlider:GetValue())
-			
 		end
 	elseif (event == "QUEST_TURNED_IN") then
 		local qcQuestID = ...
