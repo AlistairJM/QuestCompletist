@@ -195,5 +195,10 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
   now fixed: opening a category while scrolled down elsewhere briefly draws the old scroll position,
   and sending requests immediately let those invisible rows take the first slots. #96's list
   simulations give identical output on master and the branch, and the reachability report is
-  unchanged. Not yet tested in game. Still to measure there: any pause on the first search of a
-  session, which checks all ~35k quests once.
+  unchanged.
+- Phase 2 in game (2026-09-30):
+  - **English:** "Wanted: James Clark" shows as Blizzard's "WANTED: James Clark", and nothing felt
+    slow, including the first search. A full cache is that search's most expensive case.
+  - **German:** list rows, scrolling, tooltips, pin tooltips, search and A–Z sort all worked.
+  - The text language has to be set in the Battle.net app (World of Warcraft → cog → Game Settings
+    → Text Language). Launching through the app resets a choice made in game to the app's setting.
