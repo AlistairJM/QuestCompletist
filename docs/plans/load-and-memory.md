@@ -155,3 +155,20 @@ Around 38 places read or write it today.
 ## Status
 
 - 2026-09-30: plan written from offline measurements, decisions agreed. Phase 1 measured in game. Phase 2 in #102, measured in game (results above). Next: phase 3.
+- Phase 3 on `perf/completions-as-numbers`. A scratch simulation plays the same sequence through
+  master and the branch from three starting points: no saved data, a copy of Kranaa's saved file,
+  and a synthetic file with 0/1/2 marks. The sequence is loading, the login reset, the server sync,
+  shift/alt-click cycles on daily, weekly and one-time quests, turn-ins (with breadcrumb and
+  exclusive marks), the daily/weekly reset, and clearing the cache. After each step it dumps every
+  quest's mark, every category's rows (colour and icon) and counter with "hide completed" off and
+  on, pin tooltips, drawn map pins and breadcrumb toasts. **16,964 lines per start, identical
+  apart from the old variable now being emptied.** Four deliberate breakages were each caught.
+  The conversion check on Kranaa's file converted all 12,259 records with the same mark (two are
+  for quests not in our database), and the saved file goes from 346 KB to about 155 KB. Broken
+  records are dropped without an error, an existing new-format mark wins, and a second login changes
+  nothing. Found in passing: master errors on a completion record that isn't a table; the
+  conversion drops such records.
+- Phase 3 in game (Kranaa, full restart): completed zones, the counter and hand marks behaved as
+  before, and marks survived `/reload`. In the saved file afterwards, all 12,259 marks from the backup
+  were present (0 changed, 0 lost, all plain numbers), plus the two test marks. The old variable is
+  written as `qcCompletedQuests = nil`, and the file went from 355 KB to 171 KB.

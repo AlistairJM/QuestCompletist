@@ -379,7 +379,7 @@ local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 	if (qcMutuallyExclusive[qcQuestID]) then
 		for qcMutuallyExclusiveIndex, qcMutuallyExclusiveEntry in pairs(qcMutuallyExclusive[qcQuestID]) do
 			if (qcQuestDatabase[qcMutuallyExclusiveEntry]) and not qcIsRecurringQuest(qcMutuallyExclusiveEntry) then
-				qcCompletedQuests[qcMutuallyExclusiveEntry] = {["C"]=1}
+				qcCharacterCompletions[qcMutuallyExclusiveEntry] = 1
 			end
 		end
 	end
@@ -389,7 +389,7 @@ local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
 	if (qcBreadcrumbQuests[qcQuestID]) then
 		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[qcQuestID]) do
 			if (qcQuestDatabase[qcBreadcrumbEntry]) and not qcIsRecurringQuest(qcBreadcrumbEntry) then
-				qcCompletedQuests[qcBreadcrumbEntry] = {["C"]=1}
+				qcCharacterCompletions[qcBreadcrumbEntry] = 1
 			end
 		end
 	end
@@ -531,8 +531,8 @@ local function qcClientNamesForSearch()
 end
 
 local function qcIsQuestCompleted(questId)
-	local record = qcCompletedQuests[questId]
-	return record ~= nil and (record["C"] == 1 or record["C"] == 2)
+	local mark = qcCharacterCompletions[questId]
+	return mark == 1 or mark == 2
 end
 
 local function qcIsQuestCompletedOnAccount(questId)
@@ -675,16 +675,32 @@ end
 -- Initialize saved variables if needed
 QC_LastDailyReset = QC_LastDailyReset or 0
 QC_LastWeeklyReset = QC_LastWeeklyReset or 0
-qcCompletedQuests = qcCompletedQuests or {}
+qcCharacterCompletions = qcCharacterCompletions or {}
 
--- Clears completions of a given type flag (4 = daily, 128 = weekly); unattainable marks (C = 2) never expire
+-- Clears completions of a given type flag (4 = daily, 128 = weekly); unattainable marks (2) never expire
 local function ResetQCCompletedQuests(flag)
-    for questId, record in pairs(qcCompletedQuests) do
+    for questId, mark in pairs(qcCharacterCompletions) do
         local questData = qcQuestDatabase[questId]
-        if questData and record["C"] ~= 2 and bit.band(questData[6], flag) ~= 0 then
-            qcCompletedQuests[questId] = nil
+        if questData and mark ~= 2 and bit.band(questData[6], flag) ~= 0 then
+            qcCharacterCompletions[questId] = nil
         end
     end
+end
+
+-- Completions used to be saved as qcCompletedQuests, one {["C"] = mark} table per quest. They're now
+-- the mark itself (1 completed, 2 unattainable, 0 marked not done) in qcCharacterCompletions. The old
+-- variable is emptied, so an older version of the addon finds nothing rather than a format it can't
+-- read; the TOC keeps declaring it so the old data can still be loaded here.
+local function qcMigrateCompletions()
+    if type(qcCompletedQuests) == "table" then
+        for questId, record in pairs(qcCompletedQuests) do
+            local mark = type(record) == "table" and record["C"]
+            if type(mark) == "number" and qcCharacterCompletions[questId] == nil then
+                qcCharacterCompletions[questId] = mark
+            end
+        end
+    end
+    qcCompletedQuests = nil
 end
 
 -- Event handler
@@ -718,7 +734,7 @@ local function simulateExclusiveCompletions(groupTable)
         for _, questID in ipairs(group.quests) do
             local qID = tonumber(questID)
             if qID then
-                local isCompleted = qcCompletedQuests[qID] and (qcCompletedQuests[qID]["C"] == 1 or qcCompletedQuests[qID]["C"] == 2)
+                local isCompleted = qcIsQuestCompleted(qID)
                 local isAccepted = C_QuestLog.GetLogIndexForQuestID(qID) and C_QuestLog.GetLogIndexForQuestID(qID) > 0
 
                 if isCompleted or isAccepted then
@@ -871,12 +887,13 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
                     questRecord.QuestName:SetTextColor(0.9372549019607843, 0.1490196078431373, 0.0627450980392157, 1.0)
                 end
             end	
-			if (qcCompletedQuests[questId]) then
+			local mark = qcCharacterCompletions[questId]
+			if (mark) then
 				if not ((questType == 2) or (questType == 4) or (questType == 128)) then
-					if (qcCompletedQuests[questId]["C"] == 1) then
+					if (mark == 1) then
 						qcSetIcon(questRecord.QuestIcon, QC_ICON_COMPLETE)
 						questRecord.QuestName:SetTextColor(0.0, 1.0, 0.0, 1.0)
-					elseif (qcCompletedQuests[questId]["C"] == 2) then
+					elseif (mark == 2) then
 						qcSetIcon(questRecord.QuestIcon, QC_ICON_UNATTAINABLE)
 						questRecord.QuestName:SetTextColor(0.77, 0.12, 0.23, 1.0)
 					end
@@ -1089,8 +1106,8 @@ end
 
 local function qcRecordServerCompletion(qcIndex)
 	if qcIsRecurringQuest(qcIndex) then return false end
-	local qcIsNew = (qcCompletedQuests[qcIndex] == nil)
-	qcCompletedQuests[qcIndex] = {["C"]=1}
+	local qcIsNew = (qcCharacterCompletions[qcIndex] == nil)
+	qcCharacterCompletions[qcIndex] = 1
 	qcUpdateMutuallyExclusiveCompletedQuest(qcIndex)
 	qcUpdateSkippedBreadcrumbQuest(qcIndex)
 	return qcIsNew
@@ -1142,7 +1159,7 @@ local function qcQuestQueryCompleted(qcAlwaysReport)
 end
 
 local function qcClearUpdateCache()
-	wipe(qcCompletedQuests)
+	wipe(qcCharacterCompletions)
 	print(string.format("%sCache Cleared.",QCADDON_CHAT_TITLE))
 	qcRequestRefresh(QC_REBUILD_LIST, true)
 end
@@ -1637,39 +1654,11 @@ end
 function qcQuestClick(qcButtonIndex)
 	local qcQuestID = _G["qcMenuButton" .. qcButtonIndex].QuestID
 	if (IsLeftShiftKeyDown()) then --[[ User wants to toggle the completed status of a quest ]]--
-	  --print(string.format("%sLeft shift key is down",QCADDON_CHAT_TITLE))
-		if (qcCompletedQuests[qcQuestID] == nil) then
-			qcCompletedQuests[qcQuestID] = {["C"] = 1}
-		else
-			if (qcCompletedQuests[qcQuestID]["C"] == nil) then
-				qcCompletedQuests[qcQuestID]["C"] = 1
-			else
-				if (qcCompletedQuests[qcQuestID]["C"] == 1) then
-					qcCompletedQuests[qcQuestID]["C"] = 0
-				elseif (qcCompletedQuests[qcQuestID]["C"] == 0) then
-					qcCompletedQuests[qcQuestID]["C"] = 1
-				elseif (qcCompletedQuests[qcQuestID]["C"] == 2) then
-					qcCompletedQuests[qcQuestID]["C"] = 1
-				end
-			end
-		end
+		-- Completed becomes marked not done (0); anything else becomes completed.
+		qcCharacterCompletions[qcQuestID] = (qcCharacterCompletions[qcQuestID] == 1) and 0 or 1
 	elseif (IsLeftAltKeyDown()) then --[[ User wants to toggle the unattainable status of a quest ]]--
-	  --print(string.format("%sLeft alt key is down",QCADDON_CHAT_TITLE))
-		if (qcCompletedQuests[qcQuestID] == nil) then
-			qcCompletedQuests[qcQuestID] = {["C"] = 2}
-		else
-			if (qcCompletedQuests[qcQuestID]["C"] == nil) then
-				qcCompletedQuests[qcQuestID]["C"] = 2
-			else
-				if (qcCompletedQuests[qcQuestID]["C"] == 2) then
-					qcCompletedQuests[qcQuestID]["C"] = 0
-				elseif (qcCompletedQuests[qcQuestID]["C"] == 0) then
-					qcCompletedQuests[qcQuestID]["C"] = 2
-				elseif (qcCompletedQuests[qcQuestID]["C"] == 1) then
-					qcCompletedQuests[qcQuestID]["C"] = 2
-				end
-			end
-		end
+		-- Unattainable becomes marked not done (0); anything else becomes unattainable.
+		qcCharacterCompletions[qcQuestID] = (qcCharacterCompletions[qcQuestID] == 2) and 0 or 2
   else
 		-- print(string.format("%sLooking for Tom Tom.",QCADDON_CHAT_TITLE))
     if (C_AddOns.IsAddOnLoaded('TomTom')) then
@@ -1702,7 +1691,7 @@ local function qcUpdateCompletedQuest(questId) -- *
 	if (qcQuestDatabase[questId]) and qcIsRecurringQuest(questId) then
 		return nil
 	end
-	if not (qcCompletedQuests[questId]) then qcCompletedQuests[questId] = {["C"]=1} end
+	if not (qcCharacterCompletions[questId]) then qcCharacterCompletions[questId] = 1 end
 end
 
 local function qcNewDataChecks(questId) -- *
@@ -1779,10 +1768,10 @@ local function qcBreadcrumbChecks(qcQuestID)
 		qcToast.QuestID = qcQuestID
 		local qcCount = 0
 		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[qcQuestID]) do
-			if (qcCompletedQuests[qcBreadcrumbEntry] == nil) then
+			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
 				qcCount = (qcCount + 1)
 			else
-				if not (qcCompletedQuests[qcBreadcrumbEntry]["C"] == 1) then
+				if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
 					qcCount = (qcCount + 1)
 				end
 			end
@@ -1863,11 +1852,11 @@ function qcToast_OnEnter(self)
 		qcToastTooltip:ClearLines()
 		qcToastTooltip:AddLine("Breadcrumb Quests")
 		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[self.QuestID]) do
-			if (qcCompletedQuests[qcBreadcrumbEntry] == nil) then
+			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
 				if (qcQuestName and qcBreadcrumbEntry) then qcToastTooltip:AddLine(tostring(COLOUR_DRUID .. qcQuestName .. COLOUR_MAGE .. " [" .. qcBreadcrumbEntry .. "]")) end
 			else
-				if not (qcCompletedQuests[qcBreadcrumbEntry]["C"] == 1) then
+				if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
 				if (qcQuestName and qcBreadcrumbEntry) then qcToastTooltip:AddLine(tostring(COLOUR_DRUID .. qcQuestName .. " [" .. qcBreadcrumbEntry .. "]")) end
 				end
@@ -1929,9 +1918,9 @@ local function qcColouredQuestName(questId)
     local questName = qcQuestName(questId, qcMapTooltipWaiting)
     if questData[6] == 4 or questData[6] == 2 then
         return string.format("|cff178ed5%s|r", questName)
-    elseif not qcCompletedQuests[questId] then
+    elseif not qcCharacterCompletions[questId] then
         return string.format("|cffffffff%s|r", questName)
-    elseif qcCompletedQuests[questId]["C"] == 1 or qcCompletedQuests[questId]["C"] == 2 then
+    elseif qcIsQuestCompleted(questId) then
         return string.format("|cff00ff00%s|r", questName)
     else
         return string.format("|cffffffff%s [U]|r", questName)
@@ -2051,7 +2040,7 @@ local function qcAddPinQuestsToTooltip(pinData)
             if line then
                 local lineIcon = qcRecurringQuestIcon(qcEntry, questData[6])
                 if not lineIcon then
-                    if qcCompletedQuests[qcEntry] and (qcCompletedQuests[qcEntry]["C"] == 1 or qcCompletedQuests[qcEntry]["C"] == 2) then
+                    if qcIsQuestCompleted(qcEntry) then
                         lineIcon = QC_ICON_COMPLETE
                     else
                         lineIcon = QC_ICON_NORMAL
@@ -2780,7 +2769,8 @@ local function qcEventHandler(self, event, ...)
 			qcZoneChangedNewArea()
 	elseif (event == "ADDON_LOADED") then
 		if (... == "QuestCompletist") then
-			if not (qcCompletedQuests) then qcCompletedQuests = {} end
+			if not (qcCharacterCompletions) then qcCharacterCompletions = {} end
+			qcMigrateCompletions()
 			if not (qcWorkingDB) then qcWorkingDB = {} end
 			if not (qcWorkingLog) then qcWorkingLog = {} end
 			qcCheckSettings()
