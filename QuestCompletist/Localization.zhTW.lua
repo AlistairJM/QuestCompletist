@@ -150,6 +150,7 @@ qcLocalize = {
 	WARLOCK = "術士", -- Needs review
 	WARRIOR = "戰士", -- Needs review
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
+	WEEKLYEVENTS = "每週活動", -- Needs review
 	WINTERVEIL = "冬幕節", -- Needs review
 	WORLDEVENTS = "世界事件", -- Needs review
 	THEBROKENISLES = "The Broken Isles",

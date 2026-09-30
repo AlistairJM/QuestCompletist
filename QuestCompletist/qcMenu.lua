@@ -538,6 +538,7 @@ qcMenu={
 --{text=qcL.NEWYEARSEVE,isTitle=false,notCheckable=false,hasArrow=false,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.NOBLEGARDEN,isTitle=false,notCheckable=false,hasArrow=false,arg1=145,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.PILGRIMSBOUNTY,isTitle=false,notCheckable=false,hasArrow=false,arg1=153,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text=qcL.WEEKLYEVENTS,isTitle=false,notCheckable=false,hasArrow=false,arg1=1735,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.WINTERVEIL,isTitle=false,notCheckable=false,hasArrow=false,arg1=413,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.TOURNAMENT,isTitle=false,notCheckable=false,hasArrow=false,arg1=248,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.SEASONAL,isTitle=false,notCheckable=false,hasArrow=false,arg1=173,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},

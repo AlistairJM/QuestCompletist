@@ -139,6 +139,7 @@ qcLocalize = {
 	VAULTOFARCHAVON = "Vault of Archavon",
 	WARLOCK = "Warlock",
 	WARRIOR = "Warrior",
+	WEEKLYEVENTS = "Weekly Events",
 	WINTERVEIL = "Winter Veil",
 	WORLDEVENTS = "World Events",
 	THEEVERBLOOM = "The Everbloom",

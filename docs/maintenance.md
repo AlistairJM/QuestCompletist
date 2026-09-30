@@ -179,6 +179,12 @@ and a hand-written list in the script maps the catch-all's zone text ("Death Kni
 A quest nothing can place stays in category 0, which the menu lists as Uncategorized under
 Miscellaneous. A quest in a category that isn't defined is moved there too.
 
+Then run `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf`. It moves the weekly bonus
+event quests (timewalking, "A Call to Battle", "The Arena Calls" and the rest) to Weekly Events, under
+World Events. A quest qualifies when the API puts it in its "Weekly Event" category, or when its
+name is one of the event families and the API names no other category. Placement would otherwise
+file new ones by their quest-giver's zone. It only finds new cases, so it's safe to rerun.
+
 After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf`, then without
 `-WhatIf`. It removes menu entries whose category no longer holds any quests, except Uncategorized.
 

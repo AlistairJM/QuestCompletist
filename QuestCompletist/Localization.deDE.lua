@@ -149,6 +149,7 @@ qcLocalize = {
 	WARLOCK = "Hexenmeister",
 	WARRIOR = "Krieger",
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
+	WEEKLYEVENTS = "Wöchentliche Events", -- Needs review
 	WINTERVEIL = "Winterhauchfest",
 	WORLDEVENTS = "Weltereignisse",
 	THEBROKENISLES = "The Broken Isles",	

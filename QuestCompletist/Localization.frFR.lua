@@ -150,6 +150,7 @@ qcLocalize = {
 	WARLOCK = "Démoniste",
 	WARRIOR = "Guerrier",
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
+	WEEKLYEVENTS = "Évènements hebdomadaires", -- Needs review
 	WINTERVEIL = "Voile d'hiver",
 	WORLDEVENTS = "Évènements mondiaux",
 	THEBROKENISLES = "Iles Brisees",
