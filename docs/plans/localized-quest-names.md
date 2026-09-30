@@ -86,7 +86,48 @@ It answers three things:
 On an English client the only visible change is where Blizzard's title differs from ours, which is
 the phase 1 report.
 
+### Phase 1 results (2026-09-30, enUS, build 12.1.0.69933)
+
+Five runs: Elwynn Forest, Durotar and Isle of Dorn after a full restart, Elwynn again after `/reload`,
+and Elwynn again after a second full restart.
+
+| Run | Quests | Named straight away | Requested | Loaded | Failed | No answer |
+|---|---|---|---|---|---|---|
+| Elwynn Forest (70) | 101 | 101 | 0 | – | – | – |
+| Durotar (64) | 150 | 137 (2 via the task API) | 13 | 0 | 13 | 0 |
+| Isle of Dorn (1405) | 327 | 315 (61 via the task API) | 12 | 0 | 12 | 0 |
+| Elwynn, after `/reload` | 101 | 101 | 0 | – | – | – |
+| Elwynn, after a restart | 101 | 101 | 0 | – | – | – |
+
+**These numbers flatter a normal player.** The client keeps quest data on disk per language
+(`Cache\WDB\enUS\questcache.wdb`, 30.6 MB here). The quest-type probe (#42) loaded 31,425 quests into
+that cache on 2026-09-29, and before it ran the client had data for only **1,042 of 35,023 quests
+(3%)**. So:
+
+1. **The load queue is needed.** A player's cache starts near empty for each language: quests they've
+   met, not quests in general.
+2. **The cache persists** across `/reload` and full restarts (runs 4 and 5, and the probe's loads from
+   the day before). A quest is loaded once per language, not once per session. The client may clear
+   the cache when a patch changes the build.
+3. **Failures are real and quick.** All 25 requests failed at once, and the same 25 quests failed to
+   load in the type probe: the server doesn't have them. They keep our English name. That probe also
+   saw 3,598 such quests in all, and 0 timeouts across ~35k requests (with one retry), so the timeout
+   is only a safety net. (The 3,598 are also evidence for `docs/plans/unavailable-quests.md`.)
+4. **Load speed** is still unmeasured here: nothing needed loading. The type probe's ~2 hours for
+   ~35k requests at 4 in flight suggests roughly 5 a second, so a cold page of 16 rows fills in about
+   3 seconds, with English names shown meanwhile. The German run below measures it properly.
+5. **The task API is needed:** it named 61 of Isle of Dorn's 327 quests.
+6. **Name differences are few:** 5 of ~580 quests checked. Two are real: 43926 "The Legion Returns"
+   is "Legion: The Legion Returns", and 83031 "Survivor's Guilt" is "The Hardest Part". Three are
+   capitalisation or spacing: 176, 26152, 78749.
+
 ### Phase 3: check on a German client (no code unless something turns up)
+
+**Measure first, before phase 2 is built.** On the probe branch, switch to `deDE`. Its cache starts
+empty, so this is a real cold-cache measurement. Straight after the restart, run `/qc titlecheck 70`,
+`/qc titlecheck 64` and `/qc titlecheck 1405`. That confirms `GetTitleForQuestID` gives German
+titles, and measures load speed and failures with nothing cached. Then build phase 2 with those
+numbers, and repeat the checks below with it.
 
 Switch the text language to `deDE` (Game Menu → System → Languages, or `SET textLocale "deDE"` in
 `WTF\Config.wtf` with the game closed), which downloads the language data and needs a restart. Then:
@@ -120,4 +161,4 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
 
 ## Status
 
-- 2026-09-30: plan written, decisions agreed. Phase 1 probe on `tools/quest-title-probe`.
+- 2026-09-30: plan written, decisions agreed. Phase 1 probe on `tools/quest-title-probe` (#99), run on enUS; results above. Next: the cold-cache German probe run.
