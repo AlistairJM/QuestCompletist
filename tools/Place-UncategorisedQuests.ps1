@@ -16,8 +16,8 @@ The category comes from, in order:
      when its pins all point to one category.
   4. Last, our own zone text, when it names exactly one category (three Nazmir quests sat under
      a mistyped category id).
-Anything else stays where it is: hidden tracking entries with no zone at all, and the odd area
-with neither a category nor a map.
+Anything else stays in, or moves to, category 0, which the menu lists as Uncategorized: hidden
+tracking entries with no zone at all, and the odd area with neither a category nor a map.
 
 -Refile takes catch-all categories whose quests should be filed properly too (1150 "Bfa Unknown"
 and 1050 "Legion Uncategorized" in October 2026). For those quests two more rules apply:
@@ -174,6 +174,7 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
         if ($pins.Count -eq 1) { $target = $pins[0]; $rule = "pin's map" }
         elseif ($zoneMatches.Count -eq 1) { $target = $zoneMatches[0]; $rule = "our zone text" }
     }
+    if (-not $target -and -not $categoryName.ContainsKey($current)) { $target = "0"; $rule = "undefined category, to Uncategorized" }
     if ($target) {
         $place[$questId] = $target
         $rules[$rule] = 1 + $rules[$rule]
