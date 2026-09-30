@@ -89,7 +89,7 @@ foreach ($s in $sources) {
     }
     $orderBy = if ($s.Order) { $s.Order } else { $s.Id }
     $names[$s.Kind] = @{}
-    $byName[$s.Kind] = @{}
+    $byName[$s.Kind] = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)   # names match exactly, case included
     foreach ($row in (Import-Csv $csv | Sort-Object { [int]$_.$orderBy })) {
         $id = $row.($s.Id); $name = $row.($s.Name)
         if (-not $name) { continue }
