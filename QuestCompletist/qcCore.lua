@@ -194,28 +194,6 @@ qcProfessionBits = {
 	[356]=16384,	-- Fishing
 	[20222]=32768  	-- Gnomish Engineering
 }	
-local primaryProfessionBits = {
-	[171]=1,		-- Alchemy
-	[164]=2,		-- Blacksmithing
-	[333]=4,		-- Enchanting
-	[202]=8,		-- Engineering
-	[773]=16,		-- Inscription
-	[755]=32,		-- Jewelcrafting
-	[165]=64,		-- Leatherworking
-	[197]=128,		-- Tailoring
-	[182]=256,		-- Herbalism
-	[186]=512,		-- Mining
-	[393]=1024,		-- Skinning
---	[794]=2048,		-- Archaeology
---	[129]=4096,		-- First Aid
---	[185]=8192,		-- Cooking
---	[356]=16384,	-- Fishing
-}
-local secondaryProfessionIDs = {
-    [794] = true,   -- Archaeology
-    [356] = true,   -- Fishing
-    [185] = true,   -- Cooking
-}
 qcCovenantsBits = {
 	[0]=1,		-- None
 	[1]=2,		-- Kyrian
@@ -332,6 +310,21 @@ local function qcIsQuestCompletedOnAccount(questId)
 	return C_QuestLog.IsQuestFlaggedCompletedOnAccount ~= nil and C_QuestLog.IsQuestFlaggedCompletedOnAccount(questId)
 end
 
+-- 0 means the database has no data for the field, so it restricts nothing.
+local function qcMaskAllows(mask, flag)
+	return mask == 0 or bit.band(mask, flag) ~= 0
+end
+
+-- GetProfessions returns both primaries, then Archaeology, Fishing and Cooking; any can be nil.
+local function qcPlayerProfessionMask()
+	local mask = 0
+	for _, index in pairs({GetProfessions()}) do
+		local skillLine = select(7, GetProfessionInfo(index))
+		mask = bit.bor(mask, qcProfessionBits[skillLine] or 0)
+	end
+	return mask
+end
+
 -- Every quest list filter except the two that hide a quest for being done. The completion counter
 -- shares it, so the counter's total is always the quests the list can show.
 local function qcBuildQuestFilter()
@@ -350,16 +343,7 @@ local function qcBuildQuestFilter()
 
 	local professionBitmask
 	if (qcSettings.QC_L_HIDE_PROFESSION == 1) then
-		professionBitmask = 0
-		local prof1, prof2 = GetProfessions()
-		if prof1 then
-			local _, _, _, _, _, _, skillLine1 = GetProfessionInfo(prof1)
-			professionBitmask = professionBitmask + (qcProfessionBits[skillLine1] or 0)
-		end
-		if prof2 then
-			local _, _, _, _, _, _, skillLine2 = GetProfessionInfo(prof2)
-			professionBitmask = professionBitmask + (qcProfessionBits[skillLine2] or 0)
-		end
+		professionBitmask = qcPlayerProfessionMask()
 	end
 
 	local factionFlag
@@ -385,9 +369,9 @@ local function qcBuildQuestFilter()
 		if (BitBand(e[6], hiddenTypes) ~= 0) then return false end
 		if greenCutoff and (e[3] or 0) < greenCutoff then return false end
 		if professionBitmask and e[10] ~= 0 and BitBand(e[10], professionBitmask) == 0 then return false end
-		if factionFlag and BitBand(e[7], factionFlag) == 0 then return false end
-		if raceFlag and BitBand(e[8], raceFlag) == 0 then return false end
-		if classFlag and BitBand(e[9], classFlag) == 0 then return false end
+		if factionFlag and not qcMaskAllows(e[7], factionFlag) then return false end
+		if raceFlag and not qcMaskAllows(e[8], raceFlag) then return false end
+		if classFlag and not qcMaskAllows(e[9], classFlag) then return false end
 		if covenantBit and e[12] ~= 0 and BitBand(e[12], covenantBit) == 0 then return false end
 		return true
 	end
@@ -1144,7 +1128,7 @@ function qcUpdateTooltip(index)
             local lineQuests = {}
             for _, lineQuestId in ipairs(storyline.quests) do
                 local lineQuest = qcQuestDatabase[lineQuestId]
-                if lineQuest and (lineQuestId == questId or not factionFlag or bit.band(lineQuest[7], factionFlag) ~= 0) then
+                if lineQuest and (lineQuestId == questId or not factionFlag or qcMaskAllows(lineQuest[7], factionFlag)) then
                     table.insert(lineQuests, lineQuestId)
                 end
             end
@@ -1959,7 +1943,7 @@ end
 				local qcQuestID = qcPins[i][7][qcQuestIndex]
 				local qcCurrentPlayerFaction, _S = UnitFactionGroup("player")
 				local qcCurrentFaction = qcFactionBits[string.upper(qcCurrentPlayerFaction)]
-				if (qcQuestDatabase[qcQuestID]) and (BitBand(qcQuestDatabase[qcQuestID][7], qcCurrentFaction) == 0) then
+				if (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][7], qcCurrentFaction) then
 					TableRemove(qcPins[i][7], qcQuestIndex)
 				end
 			end
@@ -1978,9 +1962,9 @@ end
 				local qcCurrentRace = qcRaceBits[string.upper(qcCurrentPlayerRace)]
 				local _S, qcCurrentPlayerClass = UnitClass("player")
 				local qcCurrentClass = qcClassBits[string.upper(qcCurrentPlayerClass)]
-				if (qcQuestDatabase[qcQuestID]) and (BitBand(qcQuestDatabase[qcQuestID][8], qcCurrentRace) == 0) then
+				if (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][8], qcCurrentRace) then
 					TableRemove(qcPins[i][7], qcQuestIndex)
-				elseif (qcQuestDatabase[qcQuestID]) and (BitBand(qcQuestDatabase[qcQuestID][9], qcCurrentClass) == 0) then
+				elseif (qcQuestDatabase[qcQuestID]) and not qcMaskAllows(qcQuestDatabase[qcQuestID][9], qcCurrentClass) then
 					TableRemove(qcPins[i][7], qcQuestIndex)
 				end
 			end
@@ -2109,18 +2093,7 @@ end
 
 		--[[ Map Professions ]]--
 	if qcSettings.QC_M_HIDE_PROFESSION == 1 then
-		local professionBitwise = 0
-		local playerProfessions = {GetProfessions()}
-
-		-- Calculate the player's profession bitwise flag
-		for _, prof in ipairs(playerProfessions) do
-			if prof then
-				local _, _, _, _, _, _, professionID = GetProfessionInfo(prof)
-				if professionID and qcProfessionBits[professionID] then
-					professionBitwise = professionBitwise + qcProfessionBits[professionID]
-				end
-			end
-		end
+		local professionBitwise = qcPlayerProfessionMask()
 
     -- Iterate through pins and filter out quests based on profession bitwise flag
     for i = #qcPins, 1, -1 do
