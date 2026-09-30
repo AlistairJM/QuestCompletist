@@ -8516,7 +8516,6 @@ qcPinDB = {
 		{1,125454,"Spiritwalker Graysky",38.5,69.1,{41764}},
 		{1,125459,"Spiritwalker Graysky",57,46.25,{41799}},
 		{1,125466,"Spiritwalker Graysky",53.27,63.93,{41800}},
-		{1,130423,"Baine Bloodhoof ",56.4,89.2,{41810}},
 		{1,108434,"Mayla Highmountain",56.47,89.18,{41815}},
 		{1,105213,"Spiritwalker Ebonhorn",57.55,92.36,{41840,41841,48403}},
 		{1,126134,"Baine Bloodhoof ",56.83,92.02,{41882}},
