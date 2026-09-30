@@ -789,30 +789,30 @@ function qcScrollUpdate(value) -- *
 	end
 end
 
-function qcQueryQuestFlaggedComplete()
+local function qcRecordServerCompletion(qcIndex)
+	if qcIsRecurringQuest(qcIndex) then return false end
+	local qcIsNew = (qcCompletedQuests[qcIndex] == nil)
+	qcCompletedQuests[qcIndex] = {["C"]=1}
+	qcUpdateMutuallyExclusiveCompletedQuest(qcIndex)
+	qcUpdateSkippedBreadcrumbQuest(qcIndex)
+	return qcIsNew
+end
 
-	local qcChecked = 0
+local function qcQueryQuestFlaggedComplete()
+
+	local qcFound = 0
 	local qcNewFlagged = 0
 
-	for qcIndex, qcEntry in pairs(qcQuestDatabase) do
-		qcChecked = (qcChecked + 1)
+	for qcIndex in pairs(qcQuestDatabase) do
 		if (C_QuestLog.IsQuestFlaggedCompleted(qcIndex)) then
-			if not qcIsRecurringQuest(qcIndex) then
-				if (qcCompletedQuests[qcIndex] == nil) then
-					qcNewFlagged = (qcNewFlagged + 1)
-				end
-				qcCompletedQuests[qcIndex] = {["C"]=1}
-				qcUpdateMutuallyExclusiveCompletedQuest(qcIndex)
-				qcUpdateSkippedBreadcrumbQuest(qcIndex)
+			qcFound = (qcFound + 1)
+			if qcRecordServerCompletion(qcIndex) then
+				qcNewFlagged = (qcNewFlagged + 1)
 			end
 		end
 	end
 
-	if (qcNewFlagged > 0) then
-		print(string.format("%s%d quests were checked, and %d previously completed quest(s) have now been updated as such.",QCADDON_CHAT_TITLE,qcChecked,qcNewFlagged))
-		qcUpdateQuestList(nil,qcMenuSlider:GetValue())
-	end
-	
+	return qcFound, qcNewFlagged
 end
 
 local function qcGetCompletedQuestIDs()
@@ -828,35 +828,31 @@ local function qcGetCompletedQuestIDs()
 	end
 end
 
-local function qcQuestQueryCompleted()
+local function qcQuestQueryCompleted(qcAlwaysReport)
 
+	local qcFound = 0
 	local qcNewFlagged = 0
 	local qcCompletedIDs = qcGetCompletedQuestIDs()
 
 	if not (qcCompletedIDs) or (#qcCompletedIDs == 0) then
-		qcQueryQuestFlaggedComplete()
-		return
-	end
-
-	for _, qcIndex in ipairs(qcCompletedIDs) do
-		if not (qcQuestDatabase[qcIndex] == nil) then
-			if not qcIsRecurringQuest(qcIndex) then
-				if (qcCompletedQuests[qcIndex] == nil) then
+		qcFound, qcNewFlagged = qcQueryQuestFlaggedComplete()
+	else
+		for _, qcIndex in ipairs(qcCompletedIDs) do
+			if not (qcQuestDatabase[qcIndex] == nil) then
+				qcFound = (qcFound + 1)
+				if qcRecordServerCompletion(qcIndex) then
 					qcNewFlagged = (qcNewFlagged + 1)
 				end
-				qcCompletedQuests[qcIndex] = {["C"]=1}
-				qcUpdateMutuallyExclusiveCompletedQuest(qcIndex)
-				qcUpdateSkippedBreadcrumbQuest(qcIndex)
 			end
 		end
 	end
 
 	if (qcNewFlagged > 0) then
-		print(string.format("%s%d previously completed quest(s) have now been updated as such.",QCADDON_CHAT_TITLE,qcNewFlagged))
 		qcUpdateQuestList(nil,qcMenuSlider:GetValue())
 	end
-	
---	print(string.format("%sQuery completed.",QCADDON_CHAT_TITLE))
+	if (qcNewFlagged > 0) or (qcAlwaysReport) then
+		print(string.format("%sThe server reports %d completed quest(s) known to Quest Completist, %d of them newly marked as completed.",QCADDON_CHAT_TITLE,qcFound,qcNewFlagged))
+	end
 
 end
 
@@ -973,7 +969,7 @@ end
 function qcProcessMenuAction(button, arg1)
     if (arg1 == "PERFORMSERVERQUERY") then
         print(string.format("%s%s", QCADDON_CHAT_TITLE, qcL.QUERYREQUESTED))
-        qcQuestQueryCompleted()
+        qcQuestQueryCompleted(true)
         CloseDropDownMenus()
     elseif (arg1 == "CLEARUPDATECACHE") then
         print(string.format("%s%s", QCADDON_CHAT_TITLE, "Clearing your update Cache..."))
