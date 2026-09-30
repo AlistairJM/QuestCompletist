@@ -42,6 +42,8 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
 - **Multi-row `UiMapAssignment` entries, checked across the full table (1,956 distinct `UiMapID`s):** the vast majority (e.g. Stormwind City, `UiMapID 137`, 22 rows) share one identical bounding box across all rows — those extra rows just tag different building/WMO sub-areas, not different geography, so picking any row is safe. But **150 UiMapIDs (~7.7%) have genuinely different bounding boxes across rows.** Phase 1's script needs to handle this: for those maps, try each candidate region and keep whichever produces a normalized result inside `[0, 1]`, rather than assuming one row per map.
 
+  Since September 2026 the script keeps the region that contains the point, preferring one on the location's own instance (a phased copy of a zone has its own instance but shares the zone's coordinates), and scales into the part of the map that region covers (`UiMin`..`UiMax`), as each zone's region does on a continent map. A point no region contains is skipped. It used to fall back to the first region, which wrote 31 pins off their maps' edges, and ignoring `UiMin`/`UiMax` put Broken Isles pins well south of Dalaran.
+
 ## Open questions (still unresolved, may need work during Phase 1)
 
 1. **`ObjectiveID`/`ObjectiveIndex` meaning beyond "-1 = giver pin."** Didn't resolve what table (if any) `ObjectiveID` cross-references. Not blocking for giver pins, but blocks pulling in richer "objective area" pins as a bonus.

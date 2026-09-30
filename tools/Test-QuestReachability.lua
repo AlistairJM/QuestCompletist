@@ -253,9 +253,13 @@ end
 local fakeMap = {mapId = nil, drawn = nil}
 function fakeMap:GetMapID() return self.mapId end
 function fakeMap:RemoveAllPinsByTemplate() end
+-- A pin placed outside 0-100 lands off the map's edge, so it isn't really drawn.
+local function onMap(pin)
+	return pin[4] >= 0 and pin[4] <= 100 and pin[5] >= 0 and pin[5] <= 100
+end
 function fakeMap:AcquirePin(_, pinData)
 	for _, member in ipairs(pinData.stack or {pinData}) do
-		self.drawn[#self.drawn + 1] = member
+		if onMap(member) then self.drawn[#self.drawn + 1] = member end
 	end
 end
 provider.GetMap = function() return fakeMap end
@@ -580,6 +584,7 @@ local undrawn = minus(allPins, openPins)
 note(string.format("%d pins never drawn, even with every filter off",
 	section("Pins never drawn, even with every filter off", undrawn, pinLabel, function(key)
 		local info = pinInfo[key]
+		if not onMap(info.pin) then return "coordinates outside the map" end
 		if knownMaps and not knownMaps[info.mapId] then return "map ID not in UiMap.csv" end
 		local anyKnown = false
 		for _, id in ipairs(info.pin[6]) do if QUESTS[id] then anyKnown = true end end
