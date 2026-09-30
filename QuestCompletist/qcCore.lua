@@ -290,7 +290,7 @@ end
 local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 	if (qcMutuallyExclusive[qcQuestID]) then
 		for qcMutuallyExclusiveIndex, qcMutuallyExclusiveEntry in pairs(qcMutuallyExclusive[qcQuestID]) do
-			if (qcQuestDatabase[qcMutuallyExclusiveEntry]) then
+			if (qcQuestDatabase[qcMutuallyExclusiveEntry]) and not qcIsRecurringQuest(qcMutuallyExclusiveEntry) then
 				qcCompletedQuests[qcMutuallyExclusiveEntry] = {["C"]=1}
 			end
 		end
@@ -300,7 +300,7 @@ end
 local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
 	if (qcBreadcrumbQuests[qcQuestID]) then
 		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[qcQuestID]) do
-			if (qcQuestDatabase[qcBreadcrumbEntry]) then
+			if (qcQuestDatabase[qcBreadcrumbEntry]) and not qcIsRecurringQuest(qcBreadcrumbEntry) then
 				qcCompletedQuests[qcBreadcrumbEntry] = {["C"]=1}
 			end
 		end
@@ -448,31 +448,11 @@ QC_LastDailyReset = QC_LastDailyReset or 0
 QC_LastWeeklyReset = QC_LastWeeklyReset or 0
 qcCompletedQuests = qcCompletedQuests or {}
 
--- Returns timestamp of next weekly reset
-local function GetNextWeeklyReset()
-    local now = time()
-    local region = GetCVar("portal")
-    local regionResetDay = {
-        ["US"] = 2, -- Tuesday
-        ["EU"] = 3, -- Wednesday
-        ["KR"] = 4, ["TW"] = 4, ["CN"] = 4, -- Thursday
-    }
-    local resetDay = regionResetDay[region] or 2
-    local t = date("*t", now)
-    local daysUntilReset = (resetDay - t.wday + 7) % 7
-    if daysUntilReset == 0 and t.hour >= 15 then
-        daysUntilReset = 7
-    end
-    t.day = t.day + daysUntilReset
-    t.hour = 15; t.min = 0; t.sec = 0
-    return time(t)
-end
-
--- Resets all completed quests of a given type flag (4 = daily, 128 = weekly)
+-- Clears completions of a given type flag (4 = daily, 128 = weekly); unattainable marks (C = 2) never expire
 local function ResetQCCompletedQuests(flag)
-    for questId, questData in pairs(qcQuestDatabase) do
-        local questType = tonumber(questData[6])
-        if questType and bit.band(questType, flag) ~= 0 then
+    for questId, record in pairs(qcCompletedQuests) do
+        local questData = qcQuestDatabase[questId]
+        if questData and record["C"] ~= 2 and bit.band(questData[6], flag) ~= 0 then
             qcCompletedQuests[questId] = nil
         end
     end
@@ -487,16 +467,14 @@ frame:SetScript("OnEvent", function(self, event)
     local now = time()
 
     -- Daily reset
-    local nextDailyReset = now + GetQuestResetTime()
     if now > QC_LastDailyReset then
-        QC_LastDailyReset = nextDailyReset
+        QC_LastDailyReset = now + GetQuestResetTime()
         ResetQCCompletedQuests(4)
     end
 
     -- Weekly reset
-    local nextWeeklyReset = GetNextWeeklyReset()
-    if now > QC_LastWeeklyReset then
-        QC_LastWeeklyReset = nextWeeklyReset
+    if C_DateAndTime and C_DateAndTime.GetSecondsUntilWeeklyReset and now > QC_LastWeeklyReset then
+        QC_LastWeeklyReset = now + C_DateAndTime.GetSecondsUntilWeeklyReset()
         ResetQCCompletedQuests(128)
     end
 end)
