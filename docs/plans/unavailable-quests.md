@@ -80,16 +80,16 @@ A flagged quest is hidden **unless** any of these is true:
   has it, it's obtainable by definition;
 - the new option **"Show unavailable quests"** is on (default off).
 
-Where to apply it (all in `qcCore.lua`):
-- **Quest list:** alongside the other hide filters, right after the category list is built
-  (`qcCategoryQuests = qcCopyTable(...)` around lines 248–254; the existing filters follow at
-  ~262–360).
-- **Completion counts:** the "X/Y Complete" figure (~505–532) should exclude flagged quests the
-  character hasn't completed, so unobtainable quests don't drag completion percentages down.
-- **Map pins:** skip flagged quest IDs when building a map's pins (~1736 onwards), with the same
-  completed/in-log exceptions.
+Where to apply it (all in `qcCore.lua`; updated 2026-09-30 for the code after #95–#103):
+- **Quest list and completion counter:** both use `qcBuildQuestFilter(QC_LIST_FILTER)`. The
+  counter's total should exclude flagged quests the character hasn't completed, so unobtainable
+  quests don't drag completion percentages down. The completed/in-log exceptions need the
+  character's state, which that filter deliberately doesn't read, so the check sits next to the
+  "hide completed" and warband checks in `qcGetCategoryQuests` and `qcGetZoneCompletionStats`.
+- **Map pins:** one more check in `qcBuildMapQuestFilter`, with the same exceptions.
+- **Search:** unchanged. A search finds flagged quests, so they can still be looked up.
 - **Options panel:** add the checkbox following the live-apply pattern from PR #5 (the filter
-  applies immediately; no reliance on the legacy `self.okay` callback).
+  applies immediately through `qcApplyFilterChange`).
 
 ### Self-correction
 If a flagged quest is ever found in the player's quest log or completes, record its ID in a new
@@ -120,8 +120,10 @@ it catches mistakes that no offline data can.
     the option is on;
   - a completed flagged quest still shows;
   - counts change as expected.
-- Also verify under the "WoW: Forever" interface (`16001`), which the TOC also targets. Guard any
-  API that may not exist there, the same way the existing code guards `C_MajorFactions`.
+- (The "WoW: Forever" check originally listed here no longer applies: the addon is retail-only
+  since #87.)
+- Check offline first: the scratch list/map simulations must give identical output with an empty
+  flag list, and the expected differences with test flags.
 
 ### Phase 1: flag the 183 "not in client, no signal" quests (reason 2)
 - Generate their decision rows from the signals CSV.
