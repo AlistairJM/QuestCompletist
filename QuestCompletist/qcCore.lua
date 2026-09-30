@@ -1124,12 +1124,13 @@ end
 
 -- The category of the zone the player is in. The list follows the player while it's hidden, or
 -- while it's showing that zone with no search; someone browsing elsewhere is left where they are.
+-- The first zone after loading is always followed: the window starts out shown.
 local qcZoneCategoryID = nil
 
 local function qcZoneChangedNewArea() -- *
 	local categoryId = qcAreaIDToCategoryID[C_Map.GetBestMapForUnit("player")]
 	if not categoryId or categoryId == qcZoneCategoryID then return end
-	local following = not qcQuestCompletistUI:IsVisible()
+	local following = (qcZoneCategoryID == nil) or not qcQuestCompletistUI:IsVisible()
 		or (qcCurrentCategoryID == qcZoneCategoryID and not qcCurrentSearchText)
 	qcZoneCategoryID = categoryId
 	if not following then return end
