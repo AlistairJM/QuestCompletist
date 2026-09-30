@@ -51,7 +51,7 @@ $skipped = New-Object System.Collections.Generic.List[string]
 foreach ($cat in ($categories.Keys | Sort-Object)) {
     $ids = $byCategory[$cat]
     if (-not $ids) { continue }
-    $matching = @($ids | Where-Object { $uiName[$_] -eq $categories[$cat] } | Sort-Object { [int]$_ })
+    $matching = @($ids | Where-Object { $uiName[$_] -ceq $categories[$cat] } | Sort-Object { [int]$_ })
     if ($matching.Count) { $chosen[$cat] = $matching[0] }
     else {
         $live = @($ids | Where-Object { $uiName.ContainsKey($_) } | ForEach-Object { $uiName[$_] } | Select-Object -Unique)

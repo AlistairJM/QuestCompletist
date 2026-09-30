@@ -67,6 +67,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md), then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
+| 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
 ordinary sweep. When step 6 adds quests, those have never been probed. Run
@@ -223,6 +224,24 @@ After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables
 and our pins. It's a report only; see [plans/unavailable-quests.md](plans/unavailable-quests.md).
 
+### 8. Dungeons and raids against the Dungeon Journal
+
+`Audit-DungeonCategories.ps1 -Refresh` checks every dungeon and raid in the game's Dungeon Journal,
+expansion by expansion. It's a report only, written to `tools\dungeon_audit.csv`, with the quests it
+finds filed elsewhere in `tools\dungeon_audit_quests.csv`. For each instance it reports:
+- a category that the game would show under a name that isn't exactly the journal's. Case counts,
+  and the name checked is the one the game shows (from a map, the journal or an area), not our own
+  string;
+- a category missing from the menu, or not under Dungeons & Raids in the instance's expansion;
+- quests tied to the instance and filed elsewhere. A quest is tied by a name "<instance>: …", its API
+  area, or our zone text.
+
+After a new expansion or patch it's the check that finds dungeons and raids with no category yet.
+Some quests it reports are filed elsewhere on purpose and stay where they are: class and profession
+quests that happen to name a dungeon, quests in a hub (Ahn'Qiraj, Auchindoun, Caverns of Time,
+Coilfang Reservoir, the Burning Crusade Hellfire Citadel, Tempest Keep), Return to Karazhan quests
+the API calls Karazhan, and lead-in quests handed out in a city or zone.
+
 ## In the game
 
 Some answers only the game client has.
@@ -279,6 +298,7 @@ twice:
 - `Fix-DuplicateCategory1344.ps1`
 - `Fix-MenuStructure.ps1`
 - `Retype-OneTimeFamilies.ps1`, a hand-judged list of quests
+- `Fix-DungeonCategories.ps1`
 - `Derive-IconTypeMapping.ps1`, analysis only
 
 ## Where the data comes from
