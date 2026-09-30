@@ -364,19 +364,6 @@ SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
 	ShowUIPanel(qcQuestCompletistUI)
 end
 
-function qcCopyTable(qcTable)
-	if not (qcTable) then return nil end
-	if not (type(qcTable) == "table") then return nil end
-	local qcNewTable = {}
-	for qcKey, qcValue in pairs(qcTable) do
-		if (type(qcValue) == "table") then
-			qcNewTable[qcKey] = qcCopyTable(qcValue)
-		else
-			qcNewTable[qcKey] = qcValue
-		end
-	end
-	return qcNewTable
-end
 
 function qcUpdateCurrentCategoryText(categoryId)
 	qcQuestCompletistUI.qcSelectedCategory:SetText(qcCategoryName(categoryId) or "#")
@@ -413,15 +400,24 @@ local qcQuestNameUpperCache = nil
 
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
-    qcQuestNameUpperCache = {}
     for questId, e in pairs(qcQuestDatabase) do
         local categoryId = e[5]
         if not qcCategoryIndex[categoryId] then
             qcCategoryIndex[categoryId] = {}
         end
         table.insert(qcCategoryIndex[categoryId], e)
-        qcQuestNameUpperCache[questId] = string.upper(e[2])
     end
+end
+
+-- Upper-cased English names, built on the first search: the list itself never needs them.
+local function qcEnglishNamesForSearch()
+    if not qcQuestNameUpperCache then
+        qcQuestNameUpperCache = {}
+        for questId, e in pairs(qcQuestDatabase) do
+            qcQuestNameUpperCache[questId] = string.upper(e[2])
+        end
+    end
+    return qcQuestNameUpperCache
 end
 
 --[[ Quest names in the client's language ]]--
@@ -517,13 +513,18 @@ local function qcQuestName(questId, waiting)
 end
 
 -- Upper-cased client names for search: built on the first search, then kept up to date as names
--- load. string.upper folds only A-Z, so other letters have to match in case.
+-- load. Only names that differ from the English one are kept, as search checks that anyway; on an
+-- English client that's a handful. string.upper folds only A-Z, so other letters match in case.
 local function qcClientNamesForSearch()
 	if not qcClientNameUpperCache then
+		local englishNames = qcEnglishNamesForSearch()
 		qcClientNameUpperCache = {}
 		for questId in pairs(qcQuestDatabase) do
 			local name = qcClientQuestName(questId)
-			if name then qcClientNameUpperCache[questId] = string.upper(name) end
+			local upper = name and string.upper(name)
+			if upper and upper ~= englishNames[questId] then
+				qcClientNameUpperCache[questId] = upper
+			end
 		end
 	end
 	return qcClientNameUpperCache
@@ -615,25 +616,26 @@ end
 local function qcGetCategoryQuests(categoryId, searchText)
     local tableInsert = table.insert
     local tableSort = table.sort
+    -- The list holds the database's own rows; nothing writes to them, so they aren't copied.
     local holdingTable = {}
-    wipe(qcCategoryQuests)
-
-    if not qcCategoryIndex then
-        qcBuildQuestIndexes()
-    end
 
     if (searchText) then
         local stringfind = string.find
+        local englishNames = qcEnglishNamesForSearch()
         local clientNames = qcClientNamesForSearch()
         for i, e in pairs(qcQuestDatabase) do
             local clientName = clientNames[e[1]]
-            if (stringfind(qcQuestNameUpperCache[e[1]], searchText, 1, true))
+            if (stringfind(englishNames[e[1]], searchText, 1, true))
                 or (clientName and stringfind(clientName, searchText, 1, true)) then
                 tableInsert(holdingTable, e)
             end
         end
-        qcCategoryQuests = qcCopyTable(holdingTable)
+        qcCategoryQuests = holdingTable
         return nil
+    end
+
+    if not qcCategoryIndex then
+        qcBuildQuestIndexes()
     end
 
     local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
@@ -647,7 +649,7 @@ local function qcGetCategoryQuests(categoryId, searchText)
             tableInsert(holdingTable, e)
         end
     end
-    qcCategoryQuests = qcCopyTable(holdingTable)
+    qcCategoryQuests = holdingTable
 
     -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
 	-- leaving the list empty. Names are the ones shown now; names that load later don't re-sort the
@@ -952,7 +954,8 @@ local function qcQuestDataArrived(questId, success)
 	qcQuestDataLoaded[questId] = true
 	if qcClientNameUpperCache then
 		local name = qcClientQuestName(questId)
-		if name then qcClientNameUpperCache[questId] = string.upper(name) end
+		local upper = name and string.upper(name)
+		qcClientNameUpperCache[questId] = (upper ~= qcQuestNameUpperCache[questId]) and upper or nil
 	end
 	for i = 1, 16 do
 		local row = _G["qcMenuButton" .. i]
