@@ -2183,8 +2183,7 @@ end
 -- data passes every check that reads the database.
 local function qcBuildMapQuestFilter()
     local passesFilters = qcBuildQuestFilter(QC_MAP_FILTER)
-    -- The low-level filter has always hidden quests with no data too.
-    local hideNoData = (qcSettings.QC_M_HIDE_NODATA == 1) or (qcSettings.QC_M_HIDE_LOWLEVEL == 1)
+    local hideNoData = (qcSettings.QC_M_HIDE_NODATA == 1)
     local hideCompleted = (qcSettings.QC_M_HIDE_COMPLETED == 1)
     local hideInProgress = (qcSettings.QC_M_HIDE_INPROGRESS == 1)
     local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
