@@ -976,6 +976,13 @@ local function qcRedrawLoadedNames()
 	end
 end
 
+local function qcScheduleNameRedraw()
+	if (qcNameRedrawTooltip or qcNameRedrawPin) and not qcNameRedrawScheduled then
+		qcNameRedrawScheduled = true
+		C_Timer.After(0, qcRedrawLoadedNames)
+	end
+end
+
 -- A quest's data arrived, from our request or anyone's: redraw whatever shows its name, once per frame.
 local function qcQuestDataArrived(questId, success)
 	qcQuestLoadEnded(questId, success)
@@ -995,9 +1002,132 @@ local function qcQuestDataArrived(questId, success)
 	end
 	if questId == qcTooltipQuestId or qcQuestTooltipWaiting[questId] then qcNameRedrawTooltip = true end
 	if qcMapTooltipWaiting[questId] then qcNameRedrawPin = true end
-	if (qcNameRedrawTooltip or qcNameRedrawPin) and not qcNameRedrawScheduled then
-		qcNameRedrawScheduled = true
-		C_Timer.After(0, qcRedrawLoadedNames)
+	qcScheduleNameRedraw()
+end
+
+--[[ Quest givers' names in the client's language ]]--
+-- A creature's tooltip data names it in the client's language. For a creature the client hasn't
+-- cached, the reply is empty and TOOLTIP_DATA_UPDATE fires when the name arrives; an empty reply has
+-- no ID to match that event to, so every name still awaited is checked again. Inside an instance the
+-- game hides creature names, so nothing is asked there. A pin with no NPC ID keeps its stored name.
+local QC_MAX_NPC_LOADS = 16
+local QC_NPC_LOAD_TIMEOUT = 5
+
+local qcNpcNames = {}
+local qcNpcLoadQueue = {}
+local qcNpcLoadQueued = {}
+local qcNpcLoadInFlight = {}
+local qcNpcLoadInFlightCount = 0
+local qcNpcLoadTried = {}
+local qcNpcLoadScheduled = false
+-- NPCs whose names an open tooltip is still waiting for.
+local qcNpcTooltipWaiting = {}
+local qcNpcMapTooltipWaiting = {}
+
+local function qcClientNpcName(npcId)
+	local data = C_TooltipInfo.GetHyperlink(string.format("unit:Creature-0-0-0-0-%d-0000000000", npcId))
+	local line = data and data.lines and data.lines[1]
+	local name = line and line.leftText
+	if name and not (issecretvalue and issecretvalue(name)) and name ~= "" then
+		qcNpcNames[npcId] = name
+		return name
+	end
+end
+
+local function qcNpcNameArrived(npcId)
+	if qcNpcTooltipWaiting[npcId] then qcNameRedrawTooltip = true end
+	if qcNpcMapTooltipWaiting[npcId] then qcNameRedrawPin = true end
+	qcScheduleNameRedraw()
+end
+
+local qcSendNpcLoads
+
+-- Asking for a creature the client hasn't cached sends the request; it's tracked from then until the
+-- name arrives or the timeout passes.
+local function qcNpcLoadStarted(npcId)
+	local token = {}
+	qcNpcLoadTried[npcId] = true
+	qcNpcLoadInFlight[npcId] = token
+	qcNpcLoadInFlightCount = qcNpcLoadInFlightCount + 1
+	C_Timer.After(QC_NPC_LOAD_TIMEOUT, function()
+		if qcNpcLoadInFlight[npcId] ~= token then return end
+		qcNpcLoadInFlight[npcId] = nil
+		qcNpcLoadInFlightCount = qcNpcLoadInFlightCount - 1
+		-- Names an instance hid aren't a failure: ask again after leaving.
+		if IsInInstance() then qcNpcLoadTried[npcId] = nil end
+		qcSendNpcLoads()
+	end)
+end
+
+-- Only the pins of an opened map wait in the queue; a hovered pin asks straight away.
+function qcSendNpcLoads()
+	if IsInInstance() then return end
+	while qcNpcLoadInFlightCount < QC_MAX_NPC_LOADS and #qcNpcLoadQueue > 0 do
+		-- Newest first: the map opened last goes first.
+		local npcId = table.remove(qcNpcLoadQueue)
+		qcNpcLoadQueued[npcId] = nil
+		if not (qcNpcNames[npcId] or qcNpcLoadInFlight[npcId] or qcNpcLoadTried[npcId]) then
+			if qcClientNpcName(npcId) then
+				qcNpcNameArrived(npcId)
+			else
+				qcNpcLoadStarted(npcId)
+			end
+		end
+	end
+end
+
+local function qcQueueNpcName(npcId)
+	if qcNpcNames[npcId] or qcNpcLoadQueued[npcId] or qcNpcLoadInFlight[npcId] or qcNpcLoadTried[npcId] then
+		return
+	end
+	qcNpcLoadQueued[npcId] = true
+	table.insert(qcNpcLoadQueue, npcId)
+	if not qcNpcLoadScheduled then
+		qcNpcLoadScheduled = true
+		C_Timer.After(0, function()
+			qcNpcLoadScheduled = false
+			qcSendNpcLoads()
+		end)
+	end
+end
+
+local function qcNpcDataUpdated()
+	if qcNpcLoadInFlightCount == 0 or IsInInstance() then return end
+	local arrived = {}
+	for npcId in pairs(qcNpcLoadInFlight) do
+		if qcClientNpcName(npcId) then arrived[#arrived + 1] = npcId end
+	end
+	for _, npcId in ipairs(arrived) do
+		qcNpcLoadInFlight[npcId] = nil
+		qcNpcLoadInFlightCount = qcNpcLoadInFlightCount - 1
+		qcNpcNameArrived(npcId)
+	end
+	if #arrived > 0 then qcSendNpcLoads() end
+end
+
+-- A pin's quest giver in the client's language, or the stored name until the client has it.
+-- waiting, if given, collects the NPCs still loading.
+local function qcNpcName(pinData, waiting)
+	local npcId, stored = pinData[2], pinData[3]
+	if not stored or npcId == 0 then return stored end
+	local name = qcNpcNames[npcId]
+	if name then return name end
+	if IsInInstance() then
+		qcQueueNpcName(npcId)
+	else
+		name = qcClientNpcName(npcId)
+		if name then return name end
+		if not (qcNpcLoadInFlight[npcId] or qcNpcLoadTried[npcId]) then qcNpcLoadStarted(npcId) end
+	end
+	if waiting then waiting[npcId] = true end
+	return stored
+end
+
+-- The pins a map draws ask for their givers' names, so they're there before a pin is hovered.
+local function qcRequestPinNpcNames(pins)
+	if IsInInstance() then return end
+	for _, pinData in ipairs(pins) do
+		if pinData[3] and pinData[2] ~= 0 then qcQueueNpcName(pinData[2]) end
 	end
 end
 
@@ -1443,6 +1573,7 @@ function qcUpdateTooltip(index)
         qcTooltipIndex = index
         qcTooltipQuestId = questId
         wipe(qcQuestTooltipWaiting)
+        wipe(qcNpcTooltipWaiting)
         qcRequestQuestData(questId)
 
         -- Temporarily disable ATT's quest tooltip hook so it can't add its own ID
@@ -1567,8 +1698,6 @@ function qcUpdateTooltip(index)
             local zoneName = GetZoneNameFromZoneID(zoneId)
 
             for _, npcData in ipairs(npcs) do
-                local npcId = npcData[2]
-                local npcName = npcData[3]
                 local xCoord = npcData[4]
                 local yCoord = npcData[5]
                 local quests = npcData[6]
@@ -1576,6 +1705,7 @@ function qcUpdateTooltip(index)
                 if type(quests) == "table" then
                     for _, quest in ipairs(quests) do
                         if quest == questId then
+                            local npcName = qcNpcName(npcData, qcNpcTooltipWaiting)
                             qcQuestInformationTooltip:AddDoubleLine(
                                 "Quest Giver:",
                                 string.format("%s (%s, %.1f, %.1f)", npcName or "Unknown NPC", zoneName, xCoord or 0, yCoord or 0)
@@ -1676,7 +1806,7 @@ function qcQuestClick(qcButtonIndex)
     if (C_AddOns.IsAddOnLoaded('TomTom')) then
         local mapId, pin = qcFindPinForQuest(qcQuestID)
         if (mapId) then
-            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = pin[3] or qcQuestName(qcQuestID)})
+            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = qcNpcName(pin) or qcQuestName(qcQuestID)})
             TomTom:SetClosestWaypoint()
         end
     end
@@ -2010,7 +2140,7 @@ end
 
 local function qcPinGiverName(pinData)
     if pinData[3] then
-        return pinData[3]
+        return qcNpcName(pinData, qcNpcMapTooltipWaiting)
     elseif pinData[2] ~= 0 or pinData[7] then
         return string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r")
     end
@@ -2079,6 +2209,7 @@ function qcPinMixin:OnMouseEnter()
     if not pinData then return end
     qcMapTooltipPin = self
     wipe(qcMapTooltipWaiting)
+    wipe(qcNpcMapTooltipWaiting)
 
     local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
     local x, y = self:GetCenter()
@@ -2256,6 +2387,7 @@ function qcMapDataProvider:RefreshAllData()
         end
     end
 
+    qcRequestPinNpcNames(pins)
     for _, pinData in ipairs(qcMergeStackedPins(pins)) do
         self:GetMap():AcquirePin("qcPinTemplate", pinData)
     end
@@ -2760,7 +2892,9 @@ if QuestFrame_SetPortrait then
 end
 
 local function qcEventHandler(self, event, ...)
-	if (event == "QUEST_DATA_LOAD_RESULT") then
+	if (event == "TOOLTIP_DATA_UPDATE") then
+		qcNpcDataUpdated()
+	elseif (event == "QUEST_DATA_LOAD_RESULT") then
 		qcQuestDataArrived(...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
@@ -2798,6 +2932,7 @@ local function qcEventHandler(self, event, ...)
 				qcQuestQueryCompleted()
 			end
 			qcZoneChangedNewArea()
+			qcSendNpcLoads()
 	elseif (event == "ADDON_LOADED") then
 		if (... == "QuestCompletist") then
 			if not (qcCharacterCompletions) then qcCharacterCompletions = {} end
@@ -2842,6 +2977,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ADDON_LOADED")
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
 	self:RegisterEvent("QUEST_DATA_LOAD_RESULT")
+	self:RegisterEvent("TOOLTIP_DATA_UPDATE")
 	self:SetScript("OnEvent", qcEventHandler)
 	qcQuestInformationTooltipSetup()
 	qcMapTooltipSetup()
