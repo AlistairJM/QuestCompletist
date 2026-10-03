@@ -157,9 +157,12 @@ sets just those, and ask the game for each new ID's name in English: it must be 
 1. **`qcNpcName(pinData)`:** the stored name for a pin with NPC ID 0 or no name. Otherwise, the
    session's name for that NPC if it has one; else the name from `GetHyperlink` if the client has
    it; else start a request and return the stored English name.
-2. **Requests:** up to 16 in flight (phase 1 saw no throttling), a 5 s timeout and one retry. On any
-   `TOOLTIP_DATA_UPDATE`, the NPCs being waited for are re-checked. A name is kept for the session.
-   Nothing is saved: the client's cache keeps names between sessions.
+2. **Requests:** asking for an uncached creature is itself the request, so a hovered pin, the quest
+   tooltip and a TomTom click ask straight away. Only an opened map's pins wait in a queue: up to 16
+   in flight (phase 1 saw no throttling), the map opened last first. On any `TOOLTIP_DATA_UPDATE`,
+   the NPCs being waited for are re-checked. A 5 s timeout frees a request's slot; an NPC that timed
+   out isn't asked again that session (the probe saw no failures that a retry would have fixed). A
+   name is kept for the session. Nothing is saved: the client's cache keeps names between sessions.
 3. **Instances:** a secret value (`issecretvalue`) counts as no name, and nothing is requested or
    retried while `IsInInstance()`; NPCs without a name are tried again after leaving. So inside an
    instance, pins show names learned earlier in the session, and English otherwise.
@@ -217,4 +220,14 @@ inside an instance either; this covers them.) Then switch back to English.
   and German runs done (results above; raw data kept in `tools/npc_name_probe_results_all.lua`,
   gitignored). Phase 1 is complete.
 - Phase 2 on `data/pin-npc-ids`: 63 pins renamed and 172 IDs cleared; the 106 lookups wait for a
-  person with Wowhead. The name-lookup phase was dropped (see "Dropped").
+  person with Wowhead. The name-lookup phase was dropped (see "Dropped"). In game (German): Chromie's
+  pin shows no wrong ID, and Renzik's shows `"The Shiv"`. Merged as #113.
+- Phase 3 on `feat/localized-npc-names`. A scratch simulation (a fake clock, and a fake server that
+  replies empty, names the creature 100–180 ms later and fires an update event with no matching ID,
+  and hides names in instances) passes 34 checks: map prefetch (Isle of Dorn's 28 givers named
+  0.4 s after it opens, each asked once, at most 16 in flight), hover, the quest tooltip's giver
+  line, TomTom, instances, timeouts, secret values, stacked pins and redraw batching. 14 deliberate
+  breakages were each caught. It found two real problems, both fixed: the quest tooltip's giver line
+  asked for every pin it looked through (3,936 NPCs for one tooltip), and a hovered pin waited
+  behind its map's queue. #100's quest-name simulation (27 checks) and #96's list simulations give
+  identical output on master and the branch, and the reachability report is unchanged.
