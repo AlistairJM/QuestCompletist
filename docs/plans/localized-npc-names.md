@@ -99,11 +99,27 @@ only re-checked once a second, so their times are that interval, not the server'
    starting at Chromie, NPC 73691, and NPC 8155 as the Kargath Grunt. Trusting the ID would have put
    "Kargath Grunt" on Chromie's pin, in every language.
 
-**German runs still to do** (Battle.net app → World of Warcraft → cog → Game Settings → Text
-Language → Deutsch): `/qc npccheck 37`, `1`, `2248` and `84`; `/qc npccheck 2339` inside a dungeon;
-`/qc npccheck 85` while fighting a training dummy; then `/qc npccheck all 16`. They answer whether
-German names come back the same way, whether combat or an instance blocks anything, and whether 16
-in flight is throttled.
+**German results (2026-10-03, deDE, after the English runs; the German cache started nearly empty):**
+
+| Run | NPCs | Took | Straight away | After an update event | Never |
+|---|---|---|---|---|---|
+| Wald von Elwynn (37) | 19 | 0.8 s | 1 | 18 | 0 |
+| Durotar (1) | 35 | 1.3 s | 0 | 35 | 0 |
+| Insel von Dorn (2248) | 136 | 20 s | 0 | 133 | 3 |
+| Sturmwind (84) | 79 | 3.0 s | 2 | 77 | 0 |
+| Dornogal (2339), **inside a dungeon** | 106 | 146 s | 0 | 0 | **106** |
+| Orgrimmar (85), **in combat** (all 65 requests) | 65 | 1.5 s | 24 | 41 | 0 |
+| Every pin NPC, **16 in flight** | 6,468 | 72 s | 393 | 6,044 | 31 |
+
+1. **German names come back the same way:** "Marshal Dughan" → "Marschall Dughan", `"Auntie" Bernice
+   Stonefield` → "Tantchen Bernice Steinfeld", "Lunar Festival Harbinger" → "Botin des Mondfests".
+2. **Combat changes nothing.**
+3. **Instances hide the names.** Inside the dungeon, the 32 NPCs earlier runs had cached all came back
+   as secret values, and the other 74 came back empty and never named. The server did answer: 73
+   of those 74 were cached when the next run asked for them outside. So in an instance the addon
+   can't read a name it hasn't already learned that session.
+4. **16 in flight isn't throttled:** 6,468 NPCs in 72 s (about 84 requests a second), with the same
+   timings as at 4 (median 100 ms, 99th percentile 165 ms, at most 192 ms) and no failures.
 
 ### Phase 2: correct the pins' NPC IDs (data)
 
@@ -141,25 +157,29 @@ sets just those, and ask the game for each new ID's name in English: it must be 
 1. **`qcNpcName(pinData)`:** the stored name for a pin with NPC ID 0 or no name. Otherwise, the
    session's name for that NPC if it has one; else the name from `GetHyperlink` if the client has
    it; else start a request and return the stored English name.
-2. **Requests:** a few in flight (phase 1: 4 had no failures; the German run tests 16), a 5 s
-   timeout and one retry. On any `TOOLTIP_DATA_UPDATE`, the NPCs being waited for are re-checked.
-   A name is kept for the session. Nothing is saved: the client's cache keeps names between
-   sessions.
-3. **Redraw:** when a name lands for an NPC in an open tooltip, the existing
+2. **Requests:** up to 16 in flight (phase 1 saw no throttling), a 5 s timeout and one retry. On any
+   `TOOLTIP_DATA_UPDATE`, the NPCs being waited for are re-checked. A name is kept for the session.
+   Nothing is saved: the client's cache keeps names between sessions.
+3. **Instances:** a secret value (`issecretvalue`) counts as no name, and nothing is requested or
+   retried while `IsInInstance()`; NPCs without a name are tried again after leaving. So inside an
+   instance, pins show names learned earlier in the session, and English otherwise.
+4. **Redraw:** when a name lands for an NPC in an open tooltip, the existing
    `qcRedrawLoadedNames` redraws it once per frame, as for quest names.
-4. **Use it at all three sites in the table above.** The pin tooltip keeps grouping stacked pins by
+5. **Use it at all three sites in the table above.** The pin tooltip keeps grouping stacked pins by
    the name shown. The TomTom waypoint uses whatever name is known when it's clicked, since a
    waypoint's title can't change afterwards.
-5. **What gets requested:** the NPCs in a tooltip when it opens, and possibly the open map's NPCs
+6. **What gets requested:** the NPCs in a tooltip when it opens, and possibly the open map's NPCs
    (decision 2).
-6. **Test harness:** `Test-QuestReachability.lua` needs a `C_TooltipInfo` stand-in that returns
+7. **Test harness:** `Test-QuestReachability.lua` needs a `C_TooltipInfo` stand-in that returns
    nothing, or its dummy table ends up used as a name.
 
 ### Phase 4: check in game, on English and German
 
 Switch the text language in the Battle.net app, not in game: the app resets a choice made in game.
 Then check map pin tooltips, the quest tooltip's giver line and a TomTom waypoint, on a map you've
-played and on one you haven't, and switch back to English.
+played and on one you haven't. Inside a dungeon, open a pin tooltip and the quest list: no errors,
+and pins show English names or ones learned earlier. (Quest names from #100 haven't been checked
+inside an instance either; this covers them.) Then switch back to English.
 
 ## Dropped (2026-10-03)
 
@@ -176,10 +196,12 @@ played and on one you haven't, and switch back to English.
 1. **English clients use Blizzard's names too.** Where Blizzard's English name differs from ours,
    the English client shows Blizzard's, as quest names already do. Phase 2 makes this safe: every
    remaining ID's English name matches ours.
-2. **Request the open map's NPCs when the map opens?** This makes hovering instant, at the cost of
+2. **Request the open map's NPCs when the map opens?** (Agreed to decide after phase 1; still to
+   agree.) This makes hovering instant, at the cost of
    requests for pins the player may never hover. A busy map has up to ~140 NPCs (Isle of Dorn 136,
-   Dornogal 106). In English, 4,865 requests took 3.4 min at 4 in flight, about 24 a second, so an
-   uncached busy map takes about 6 s. **Recommendation:** decide after the German runs.
+   Dornogal 106). At 16 in flight the server answered about 84 requests a second, so an uncached
+   busy map takes about 2 s. **Recommendation:** yes, outside instances: when the map opens, request
+   the names of the NPCs on its pins, so most are there by the time the player hovers one.
 3. **Correct IDs rather than add a lookup table** (see "Dropped").
 
 ## Out of scope
@@ -194,6 +216,7 @@ played and on one you haven't, and switch back to English.
 ## Status
 
 - 2026-10-03: plan written; decisions agreed. Phase 1 probe on `tools/npc-name-probe` (#112); English
-  runs done (results above); German runs next.
+  and German runs done (results above; raw data kept in `tools/npc_name_probe_results_all.lua`,
+  gitignored). Phase 1 is complete.
 - Phase 2 on `data/pin-npc-ids`: 63 pins renamed and 172 IDs cleared; the 106 lookups wait for a
   person with Wowhead. The name-lookup phase was dropped (see "Dropped").
