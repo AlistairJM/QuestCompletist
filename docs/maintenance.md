@@ -71,6 +71,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 |---|---|---|---|
 | 1 | Faction, race and class | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
 | 1b | Second source for race and class | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
+| 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
@@ -368,6 +369,6 @@ twice:
 
 | Source | Used for | How |
 |---|---|---|
-| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
+| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not | in-game probes and runtime API calls |

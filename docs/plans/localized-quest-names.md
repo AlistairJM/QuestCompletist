@@ -182,7 +182,7 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
   available from the game", "You are on this quest" and others are hard-coded English in
   `qcCore.lua`, not in the `Localization.*.lua` files. Moving them is easy; translating them needs
   translators.
-- **Fixing `qcQuestDatabase` names** from the phase 1 mismatch report.
+- **Fixing `qcQuestDatabase` names** from the phase 1 mismatch report: done for all 338 names that differed from Blizzard's API, with `tools/Sync-QuestNamesFromApi.ps1` (2026-10-03).
 
 ## Status
 
