@@ -23,7 +23,7 @@ What the pins hold (14,738 pins, 6,468 distinct NPC IDs):
 | Pins | Count | What happens to them |
 |---|---|---|
 | A name and an NPC ID | 9,063 | Can be looked up |
-| A name but NPC ID 0 | 2,588 | Stay English: nothing to look up. Mostly NPCs whose ID was never recorded (Durotan 23 pins, Archmage Khadgar 16, Draka 13), plus objects ("Hero's Call Board", "Wanted Poster") and items |
+| A name but NPC ID 0 | 2,588 | Nothing to look up yet. Mostly NPCs whose ID was never recorded (Durotan 23 pins, Archmage Khadgar 16, Draka 13), plus objects ("Hero's Call Board", "Wanted Poster") and items. Phase 3 finds a creature ID to look up for as many as it can |
 | No name | 3,087 | Unchanged: they show as "<Yourself>" or under "Other quests" |
 
 ## Where the names can come from
@@ -57,6 +57,10 @@ Shipping translated names in ten languages would also add to the download and th
    needed a limit of 4 in flight).
 3. Whether anything is blocked in combat or in an instance.
 4. How many of our English names differ from Blizzard's.
+5. Whether creatures that share an English name also share the translated one. Blizzard makes a new
+   creature for each appearance of a major character: in the client's table, "Archmage Khadgar" is
+   76 creature IDs, Thrall 51, Draka 21 and Durotan 18. Phase 3 relies on any of them giving the
+   right name.
 
 ## Phases (one PR each)
 
@@ -84,12 +88,20 @@ Runs, each on English and then German (whose creature cache is nearly empty):
 
 Then two small runs on German: one inside a dungeon, and one while fighting a training dummy.
 
+Finally, a same-name run on German, `/qc npccheck names`. The probe branch carries the client
+table's creature IDs for a handful of names with several: Archmage Khadgar (76), Thrall (51), Draka
+(21), Durotan (18), Garrosh Hellscream (11) and Grand Magister Rommath (13). The run requests all of
+them and lists every distinct German name per English name.
+
 It answers:
 1. **Can unmet NPCs be named at all?** If not, this feature only translates NPCs the player has met,
    which is still the ones near where they play.
 2. **The queue settings.** Is a limit needed, and does a 5 s timeout hold up?
 3. **Combat and instances.** Do they work there, or do names have to wait until afterwards?
 4. **Name differences.** This becomes a report. Fixing names in `qcPinDB` is a separate data decision.
+5. **Is any ID with the right English name good enough?** If every Khadgar comes back as the same
+   German name, phase 3 can use any of them. If not, phase 3 uses only names that match exactly one
+   creature.
 
 ### Phase 2: use the client's name
 
@@ -111,12 +123,43 @@ It answers:
 6. **Test harness:** `Test-QuestReachability.lua` needs a `C_TooltipInfo` stand-in that returns
    nothing, or its dummy table ends up used as a name.
 
-### Phase 3: check in game, on English and German
+### Phase 3: name lookups for pins without an NPC ID (tool, data, then a small code change)
+
+The 2,588 named pins with NPC ID 0 have 1,698 distinct names. Matched against the client's
+`Creature` table by exact English name:
+
+| Match | Names | Pins |
+|---|---|---|
+| Exactly one creature | 97 | 172 |
+| Several creatures | 131 | 448 |
+| Not in the client's table | 1,470 | 1,968 |
+
+1. **A separate table, `qcNpcNameLookup`** (its own generated file): English name → one creature ID,
+   used **only** to ask the game for that name's translation. The found IDs aren't written into
+   `qcPinDB`. The pin tooltip shows a pin's NPC ID as fact, and for a name with several creatures we
+   can't know which one is the pin's giver.
+2. **A script, `tools/Build-NpcNameLookup.ps1`,** fills it:
+   - first from the client's `Creature` table at the pinned build (the 97 + 131 names above);
+   - then, for the 1,470 names that table lacks, from Blizzard's creature search
+     (`/data/wow/search/creature`, by exact English name), with responses cached like the quest
+     audit's. How many it finds is unknown until it runs; the client's table only holds the
+     creatures the client needs, so the API should know far more.
+   - Only exact, whole-name matches count. A name whose matches disagree (phase 1's question 5) is
+     left out, or every name with several matches is, if phase 1 says so.
+   - Objects and items match no creature, so they stay English.
+3. **`qcNpcName`** uses the table for a pin with NPC ID 0: if the pin's name is in it, it asks for
+   that creature's name; otherwise it uses the stored name.
+4. **Checks:**
+   - an offline comparison shows only NPC-ID-0 pins with a table entry change behaviour;
+   - the table's size (at most ~1,700 small entries) and the memory after login are measured;
+   - the script refuses a name not on any pin, and a creature ID that isn't a number.
+
+### Phase 4: check in game, on English and German
 
 Switch the text language in the Battle.net app (World of Warcraft → cog → Game Settings → Text
 Language), not in game: the app resets a choice made in game. Then check map pin tooltips, the quest
-tooltip's giver line and a TomTom waypoint, on a map you've played and on one you haven't, and switch
-back to English.
+tooltip's giver line and a TomTom waypoint, on a map you've played and on one you haven't. Include a
+pin that phase 3 covers, such as Archmage Khadgar's or Durotan's. Then switch back to English.
 
 ## Decisions
 
@@ -131,13 +174,15 @@ back to English.
 
 ## Out of scope
 
-- **Pins with NPC ID 0** (2,588 named pins): we have no ID for them, so they stay English. Filling
-  in the NPC IDs that are missing (Durotan, Khadgar and the like) would let those be translated too.
-  That's a data job for later. Objects and items would need their own kind of lookup.
+- **Objects and items** among the pins with NPC ID 0 ("Hero's Call Board", "Wanted Poster"): they
+  aren't creatures, so they stay English.
+- **Writing real NPC IDs into `qcPinDB`** for the pins with NPC ID 0: phase 3 only finds an ID that
+  gives the right name, not necessarily the pin's giver.
 - **The addon's own text,** including "Quest Giver:" and "Unknown or Auto-Accepted Quest": that's
   the hard-coded-text item in `localized-quest-names.md`.
 - **Fixing `qcPinDB` names** from the phase 1 report.
 
 ## Status
 
-- 2026-10-03: plan written. Next: agree the decisions, then phase 1.
+- 2026-10-03: plan written, then phase 3 added (name lookups for pins with no NPC ID). Next: agree
+  the decisions, then phase 1.
