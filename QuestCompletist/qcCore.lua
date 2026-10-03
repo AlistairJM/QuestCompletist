@@ -357,6 +357,11 @@ SLASH_QUESTCOMPLETIST1 = "/qc"
 SLASH_QUESTCOMPLETIST2 = "/questc"
 
 SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
+	local probeArgument = strtrim(msg or ""):lower():match("^npccheck%s*(.*)$")
+	if (probeArgument and qcNpcNameProbe) then
+		qcNpcNameProbe(probeArgument)
+		return
+	end
 	if (strtrim(msg or ""):lower() == "holidays") then
 		qcPrintHolidays()
 		return
