@@ -231,3 +231,12 @@ inside an instance either; this covers them.) Then switch back to English.
   asked for every pin it looked through (3,936 NPCs for one tooltip), and a hovered pin waited
   behind its map's queue. #100's quest-name simulation (27 checks) and #96's list simulations give
   identical output on master and the branch, and the reachability report is unchanged.
+- Phase 4 in game (2026-10-03):
+  - **German:** pin tooltips on a zone never visited, the quest tooltip's giver line and a TomTom
+    waypoint showed German names.
+  - **Inside a dungeon** (Stormwind Stockade): no errors on the map or in the quest list, so neither
+    NPC nor quest names (#100) trip over the hidden names. Names arriving after leaving couldn't be
+    checked in game (the instance map can't be opened outside); the simulation covers it.
+  - **English:** pins look as before.
+  
+  Merged as #114. All four phases are done; the 106 Wowhead lookups for pins with cleared IDs remain.
