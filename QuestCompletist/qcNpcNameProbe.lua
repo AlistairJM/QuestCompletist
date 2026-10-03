@@ -17,9 +17,13 @@ In flight defaults to 4.
 
 Each run is appended to qcNpcNameProbeResults, which /reload (or logging out) saves. One row per NPC:
   result | ms | lines | first reply | name | ours
-result: now (named straight away), event (named on TOOLTIP_DATA_UPDATE), poll (named on a re-check
-with no event), late (named after the timeout), none (never named); ms: time to the name; lines:
-the number of tooltip lines when named; first reply: what the first reply held when it had no name.
+result: now (named straight away), event (named on the re-check that follows any TOOLTIP_DATA_UPDATE;
+an empty reply carries no ID to match the event to), poll (named on the once-a-second re-check),
+late (named after the timeout), none (never named); ms: time to the name; lines: the number of
+tooltip lines when named; first reply: what the first reply held when it had no name.
+
+Runs of 100 NPCs or more report progress every 10%. Starting a run drops runs that never finished
+(a /reload ends a run part-way).
 
 Delete this file once phase 1 is done. ]]--
 
@@ -28,6 +32,7 @@ local REQUEST_TIMEOUT_MS = 5000
 local POLL_MS = 1000
 local LATE_ANSWER_WAIT_MS = 10000
 local TICK_SECONDS = 0.05
+local PROGRESS_MIN_NPCS = 100
 
 -- From the client's Creature table (wago.tools, build 12.1.0.69933): every creature with that name.
 local SAME_NAME_IDS = {
@@ -125,20 +130,32 @@ local function finish(stopped)
 		end
 	end
 
-	say(string.format("%s %s: %d NPCs in %.1f s (%d in flight%s%s). %d named straight away, %d on the event, %d on a re-check, %d after the timeout, %d never. Requested ones took %d ms on average, %d ms at most. %d names differ from ours.",
+	say(string.format("%s %s: %d NPCs in %.1f s (%d in flight%s%s). %d named straight away, %d after an update event, %d on the 1 s re-check, %d after the timeout, %d never. Requested ones took %d ms on average, %d ms at most. %d names differ from ours.",
 		stopped and "Stopped" or "Finished", record.label, r.total, record.seconds, record.inFlight,
 		record.instanceType ~= "none" and (", in an instance: " .. tostring(record.instanceType)) or "",
 		record.requestsInCombat > 0 and string.format(", %d requested in combat", record.requestsInCombat) or "",
 		counts.now, counts.event, counts.poll, counts.late, counts.none,
 		named > 0 and math.floor(namedMs / named) or 0, maxMs, differ))
 	if next(firstReplies) then say("First replies without a name: " .. topCounts(firstReplies, 8)) end
-	say(string.format("Events: %d named an NPC, %d came without a name, %d were for other tooltips.",
-		record.eventsNamed, record.eventsWithoutName, record.otherEvents))
+	say(string.format("Update events: %d named an NPC, %d named none; %d had no data instance ID.",
+		record.eventsNamed, record.eventsWithoutName, record.eventsWithoutId))
 	for _, line in ipairs(examples) do print(line) end
 	if record.mode == "names" then
 		for english, names in pairs(byEnglish) do say(string.format("%s -> %s", english, topCounts(names, 5))) end
 	end
 	say("/reload to save the results.")
+end
+
+local function reportProgress()
+	local r = run
+	if r.total < PROGRESS_MIN_NPCS then return end
+	local step = math.floor(r.done * 10 / r.total)
+	if step <= r.lastStep or step >= 10 then return end
+	r.lastStep = step
+	local elapsed = (debugprofilestop() - r.startedMs) / 1000
+	local left = elapsed / r.done * (r.total - r.done)
+	say(string.format("%s: %d of %d (%d%%) after %s, about %s to go.", r.record.label, r.done, r.total, step * 10,
+		SecondsToTime(elapsed), SecondsToTime(left)))
 end
 
 local function named(npcId, result, name, lines)
@@ -148,6 +165,7 @@ local function named(npcId, result, name, lines)
 	if r.inFlight[npcId] then
 		r.inFlight[npcId] = nil
 		r.inFlightCount = r.inFlightCount - 1
+		r.done = r.done + 1
 	end
 	r.timedOut[npcId] = nil
 end
@@ -156,23 +174,22 @@ local function send(npcId)
 	local r = run
 	local now = debugprofilestop()
 	if InCombatLockdown() then r.record.requestsInCombat = r.record.requestsInCombat + 1 end
-	local name, lines, firstReply, instance = ask(npcId)
+	local name, lines, firstReply = ask(npcId)
 	if name then
 		r.record.npcs[npcId] = row("now", nil, lines, nil, name, r.ours[npcId])
+		r.done = r.done + 1
 		return
 	end
 	r.firstReply[npcId] = firstReply
 	r.inFlight[npcId] = now
 	r.lastAsked[npcId] = now
 	r.inFlightCount = r.inFlightCount + 1
-	if instance then r.byInstance[instance] = npcId end
 end
 
 local function recheck(npcId, result)
 	local r = run
-	local name, lines, _, instance = ask(npcId)
+	local name, lines = ask(npcId)
 	r.lastAsked[npcId] = debugprofilestop()
-	if instance then r.byInstance[instance] = npcId end
 	if name then named(npcId, result, name, lines) end
 	return name
 end
@@ -187,6 +204,7 @@ local function tick()
 			r.inFlightCount = r.inFlightCount - 1
 			r.timedOut[npcId] = started
 			r.record.npcs[npcId] = row("none", nil, 0, r.firstReply[npcId], nil, r.ours[npcId])
+			r.done = r.done + 1
 		elseif now - r.lastAsked[npcId] >= POLL_MS then
 			recheck(npcId, "poll")
 		end
@@ -196,6 +214,7 @@ local function tick()
 		r.nextIndex = r.nextIndex + 1
 		send(npcId)
 	end
+	reportProgress()
 	if r.inFlightCount == 0 and r.nextIndex > #r.queue then
 		if next(r.timedOut) and not r.lateWaitUntil then
 			r.lateWaitUntil = now + LATE_ANSWER_WAIT_MS
@@ -214,13 +233,15 @@ events:RegisterEvent("TOOLTIP_DATA_UPDATE")
 events:SetScript("OnEvent", function(_, _, dataInstanceID)
 	local r = run
 	if not r then return end
-	local npcId = dataInstanceID and r.byInstance[dataInstanceID]
-	if not npcId or not (r.inFlight[npcId] or r.timedOut[npcId]) then
-		r.record.otherEvents = r.record.otherEvents + 1
-		return
+	if not dataInstanceID then r.record.eventsWithoutId = r.record.eventsWithoutId + 1 end
+	local namedAny = false
+	for npcId in pairs(r.inFlight) do
+		if recheck(npcId, "event") then namedAny = true end
 	end
-	r.byInstance[dataInstanceID] = nil
-	if recheck(npcId, r.inFlight[npcId] and "event" or "late") then
+	for npcId in pairs(r.timedOut) do
+		if recheck(npcId, "late") then namedAny = true end
+	end
+	if namedAny then
 		r.record.eventsNamed = r.record.eventsNamed + 1
 	else
 		r.record.eventsWithoutName = r.record.eventsWithoutName + 1
@@ -263,16 +284,26 @@ local function start(mode, mapId, inFlight)
 	end
 
 	qcNpcNameProbeResults = qcNpcNameProbeResults or {}
+	for i = #qcNpcNameProbeResults, 1, -1 do
+		local old = qcNpcNameProbeResults[i]
+		if not old.finished then
+			local checked = 0
+			for _ in pairs(old.npcs or {}) do checked = checked + 1 end
+			table.remove(qcNpcNameProbeResults, i)
+			say(string.format("removed an unfinished run from before (%s, %s, %d NPCs checked).", tostring(old.label),
+				tostring(old.locale), checked))
+		end
+	end
 	local version, build = GetBuildInfo()
 	local inInstance, instanceType = IsInInstance()
 	local record = {mode = mode, map = mapId, label = label, inFlight = inFlight, locale = GetLocale(),
 		build = string.format("%s.%s", tostring(version), tostring(build)), started = time(),
 		combatAtStart = InCombatLockdown() or nil, instanceType = inInstance and instanceType or "none",
-		requestsInCombat = 0, eventsNamed = 0, eventsWithoutName = 0, otherEvents = 0, npcs = {}}
+		requestsInCombat = 0, eventsNamed = 0, eventsWithoutName = 0, eventsWithoutId = 0, npcs = {}}
 	table.insert(qcNpcNameProbeResults, record)
 
 	run = {record = record, ours = ours, total = #queue, queue = queue, nextIndex = 1, inFlight = {},
-		inFlightCount = 0, timedOut = {}, lastAsked = {}, firstReply = {}, byInstance = {},
+		inFlightCount = 0, timedOut = {}, lastAsked = {}, firstReply = {}, done = 0, lastStep = 0,
 		startedMs = debugprofilestop()}
 	say(string.format("NPC name check: %s, %d NPCs, %d in flight...", label, #queue, inFlight))
 	run.ticker = C_Timer.NewTicker(TICK_SECONDS, tick)
