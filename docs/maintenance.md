@@ -204,9 +204,9 @@ It never files a quest in a category that no menu entry reaches. A quest in such
 still be found by search, but not by browsing. After adding categories, check every category that
 holds quests has an entry in `qcMenu.lua`.
 
-`-Refile 1150,1050` also files the quests in the catch-all categories "Bfa Unknown" and "Legion
-Uncategorized". For those it adds a hand-written list in the script that maps the catch-all's zone
-text ("Death Knight Campaign", "Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
+`-Refile 1050` also files the quests in the catch-all category "Legion Uncategorized". For those,
+and for category 0, it adds a hand-written list in the script that maps the quest's zone text
+("Death Knight Campaign", "Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
 
 A quest nothing can place stays in category 0, which the menu lists as Uncategorized under
 Miscellaneous. A quest in a category that isn't defined is moved there too.

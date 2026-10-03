@@ -252,3 +252,7 @@ To reproduce in game:
   checkbox and nothing reads them.
 - `qcPinMixin:OnAcquired` compares `playerLevel >= requiredLevel` with no `or 0`. Safe today (no quest
   has a nil level) but it would error if a pipeline run ever added one.
+
+All three fixed after 110.7 on `fix/small-fixes-and-housekeeping`. Offline, with every map pin quest
+and 16 setting combinations, the first changes only the 267 no-data quests, and only with low-level on
+and no-data off. Every pin is coloured as before, and a quest with no level no longer errors.

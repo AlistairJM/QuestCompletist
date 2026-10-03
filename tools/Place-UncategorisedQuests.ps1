@@ -186,7 +186,7 @@ foreach ($m in [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*
     if (-not $storyQuests.ContainsKey($story)) { $storyQuests[$story] = New-Object System.Collections.Generic.List[string] }
     $storyQuests[$story].Add($m.Groups[1].Value)
 }
-$catchAlls = @("1050", "1150")
+$catchAlls = @("1050")
 
 $entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?<name>(?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)",)(-?\d+),'
 $place = @{}
