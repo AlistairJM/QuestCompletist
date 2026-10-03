@@ -2296,9 +2296,6 @@ function qcCheckSettings()
     if (qcSettings.QC_M_HIDE_PROFESSION == nil) then
         qcSettings.QC_M_HIDE_PROFESSION = 1
     end
-    if (qcSettings.QC_M_HIDE_WORLDQUEST == nil) then
-        qcSettings.QC_M_HIDE_WORLDQUEST = 1
-    end
     if (qcSettings.QC_M_HIDE_SEASONAL == nil) then
         qcSettings.QC_M_HIDE_SEASONAL = 1
     end
@@ -2346,9 +2343,6 @@ function qcCheckSettings()
     end
     if (qcSettings.QC_SERVER_QUERY_COMPLETE == nil) then
         qcSettings.QC_SERVER_QUERY_COMPLETE = 0
-    end
-    if (qcSettings.QC_M_HIDE_DAILYREPEATABLE == nil) then
-        qcSettings.QC_M_HIDE_DAILYREPEATABLE = 0
     end
 end
 
