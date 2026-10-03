@@ -177,8 +177,7 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
 
 ## Out of scope (for later)
 
-- **NPC names in pin tooltips** (`pinData[3]`) are English too. The client can name a creature through a
-  tooltip hyperlink once it has seen it; that's a separate, smaller change.
+- **NPC names in pin tooltips** (`pinData[3]`) are English too. Planned in `localized-npc-names.md`.
 - **The addon's own text:** "Search Results", "%d Quests Found", "x/y Complete", "Quest details not
   available from the game", "You are on this quest" and others are hard-coded English in
   `qcCore.lua`, not in the `Localization.*.lua` files. Moving them is easy; translating them needs
