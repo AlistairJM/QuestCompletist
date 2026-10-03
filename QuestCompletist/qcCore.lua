@@ -1993,7 +1993,7 @@ function qcPinMixin:OnAcquired(pinData)
         if questId and qcQuestDatabase[questId] then
             local prereqQuestId = qcQuestDatabase[questId][14]
             local requiredLevel = qcQuestDatabase[questId][3]
-            if playerLevel >= requiredLevel then
+            if playerLevel >= (requiredLevel or 0) then
                 if prereqQuestId == 0 or (prereqQuestId and C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId)) then
                     isGrey = false
                     break
