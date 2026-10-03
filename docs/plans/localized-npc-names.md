@@ -161,7 +161,7 @@ Language), not in game: the app resets a choice made in game. Then check map pin
 tooltip's giver line and a TomTom waypoint, on a map you've played and on one you haven't. Include a
 pin that phase 3 covers, such as Archmage Khadgar's or Durotan's. Then switch back to English.
 
-## Decisions
+## Decisions (agreed 2026-10-03)
 
 1. **English clients use Blizzard's names too.** Where Blizzard's English name differs from ours,
    the English client shows Blizzard's, as quest names already do.
@@ -184,5 +184,5 @@ pin that phase 3 covers, such as Archmage Khadgar's or Durotan's. Then switch ba
 
 ## Status
 
-- 2026-10-03: plan written, then phase 3 added (name lookups for pins with no NPC ID). Next: agree
-  the decisions, then phase 1.
+- 2026-10-03: plan written, then phase 3 added (name lookups for pins with no NPC ID). Decisions agreed.
+  Next: phase 1.
