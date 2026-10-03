@@ -111,6 +111,9 @@ local env = {
 		RequestLoadQuestByID = function() end,
 	}),
 	C_TaskQuest = stubTable({GetQuestInfoByQuestID = function() return nil end}),
+	-- No client NPC names either, and not in an instance.
+	C_TooltipInfo = stubTable({GetHyperlink = function() return nil end}),
+	IsInInstance = function() return false end,
 }
 setmetatable(env, {__index = function(_, key)
 	local value = _G[key]
