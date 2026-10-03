@@ -125,7 +125,7 @@ Borean Tundra). That's how their already-filed siblings are filed (Paladin "Arti
 Dalaran, 6 in Eastern Plaguelands, 3 in Western Plaguelands), so they aren't special-cased. As
 agreed, the 778 quests left in "Bfa Unknown" then moved to 0 "Uncategorized" (now 891 quests), and
 the emptied menu entry went. The unused `BFAUNCATEQUEST` locale key and the `{1150,"Bfa Unknown"}`
-category row are left in place.
+category row were left in place, then removed after 110.7 on `fix/small-fixes-and-housekeeping`.
 
 ### 4. Unavailable quests: mechanism, then the 183 (addon code, then data)
 

@@ -288,7 +288,7 @@ qcQuestCategories={
 --Bfa
 {1060,"Drustvar"},{1061,"Stormsong Valley"},{1062,"Tiragarde Sound"},{1063,"Mechagon Island"},{1064,"Chamber of Heart"},{1065,"Nazjatar"},{1066,"Mechagon City"},{1080,"Nazmir"},{1081,"Vol'dun"},{1082,"Zuldazar"},{1090,"Alliance War Campaign"},{1091,"Horde War Campaign"},{1092,"Warfront Contribution"},{1093,"Heritage"},{1094,"Rated Pvp"},{1095,"World Pvp"},
 {1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Freehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"},{1105,"Siege of Boralus"},{1106,"Siege of Zuldazar"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1110,"Uldir"},{1111,"Waycrest Manor"},{1112,"The MOTHERLODE!!"},{1113,"Battle of Dazar'alor"},{1114,"The Eternal Palace"},{1115,"Ny'alotha, the Waking City"},
-{1130,"Island Expeditions"},{1131,"The Great Sea"},{1132,"Black Empire Campaign"},{1133,"Visions of N'Zoth"},{1134,"Death Rising"},{1150,"Bfa Unknown"},
+{1130,"Island Expeditions"},{1131,"The Great Sea"},{1132,"Black Empire Campaign"},{1133,"Visions of N'Zoth"},{1134,"Death Rising"},
 --Classic
 {500,"Stranglethorn Vale"},{501,"The Barrens"},
 --Shadowlands

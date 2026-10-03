@@ -172,7 +172,6 @@ qcLocalize = {
 	HELHEIM = "헬하임",
 	EMERALDDREAMWAY = "Emerald Dreamway",
 	BFA = "격전의 아제로스",
-	BFAUNCATEQUEST = "BFA Uncategorized Quests",
 	ZANDALAR = "Zandalar",
 	KULTIRAS = "Kul Tiras",
 	THUNDERTOTEM = "Thunder Totem",
