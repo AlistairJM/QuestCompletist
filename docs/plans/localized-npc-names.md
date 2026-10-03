@@ -168,8 +168,8 @@ sets just those, and ask the game for each new ID's name in English: it must be 
 5. **Use it at all three sites in the table above.** The pin tooltip keeps grouping stacked pins by
    the name shown. The TomTom waypoint uses whatever name is known when it's clicked, since a
    waypoint's title can't change afterwards.
-6. **What gets requested:** the NPCs in a tooltip when it opens, and possibly the open map's NPCs
-   (decision 2).
+6. **What gets requested:** the NPCs on the drawn pins when the map shows a map (decision 2), and
+   the NPCs in a tooltip when it opens (the quest tooltip's giver line isn't on the map).
 7. **Test harness:** `Test-QuestReachability.lua` needs a `C_TooltipInfo` stand-in that returns
    nothing, or its dummy table ends up used as a name.
 
@@ -196,12 +196,10 @@ inside an instance either; this covers them.) Then switch back to English.
 1. **English clients use Blizzard's names too.** Where Blizzard's English name differs from ours,
    the English client shows Blizzard's, as quest names already do. Phase 2 makes this safe: every
    remaining ID's English name matches ours.
-2. **Request the open map's NPCs when the map opens?** (Agreed to decide after phase 1; still to
-   agree.) This makes hovering instant, at the cost of
-   requests for pins the player may never hover. A busy map has up to ~140 NPCs (Isle of Dorn 136,
-   Dornogal 106). At 16 in flight the server answered about 84 requests a second, so an uncached
-   busy map takes about 2 s. **Recommendation:** yes, outside instances: when the map opens, request
-   the names of the NPCs on its pins, so most are there by the time the player hovers one.
+2. **Request the open map's NPCs when the map opens: yes, outside instances.** It costs requests for
+   pins the player may never hover, but a busy map has at most ~140 NPCs (Isle of Dorn 136, Dornogal
+   106). At 16 in flight the server answered about 84 requests a second, so an uncached busy map
+   takes about 2 s, and most names are there by the time the player hovers a pin.
 3. **Correct IDs rather than add a lookup table** (see "Dropped").
 
 ## Out of scope
