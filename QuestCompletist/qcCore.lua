@@ -358,8 +358,12 @@ SLASH_QUESTCOMPLETIST2 = "/questc"
 
 SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
 	local probeArgument = strtrim(msg or ""):lower():match("^npccheck%s*(.*)$")
-	if (probeArgument and qcNpcNameProbe) then
-		qcNpcNameProbe(probeArgument)
+	if probeArgument then
+		if qcNpcNameProbe then
+			qcNpcNameProbe(probeArgument)
+		else
+			print("|cFFFFD100Quest Completist:|r the NPC name probe isn't loaded. Fully restart the game, and check the AddOns folder links to the repository.")
+		end
 		return
 	end
 	if (strtrim(msg or ""):lower() == "holidays") then
