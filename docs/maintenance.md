@@ -31,6 +31,16 @@ you. It will tell you up front which steps need you in the game.
   what broke the link last time, and depending on how it clears the folder, it could delete files
   in the repository.
 
+  It happened again on 2026-10-03: CurseForge's 110.7 update replaced the link with a plain copy,
+  deleting the repository's `QuestCompletist/Images` on the way, and in-game tests ran the released
+  copy without anyone noticing. The fix was to uninstall Quest Completist in the CurseForge app (safe
+  while the folder is a plain copy), then create the link again. **Before every in-game test**, check
+  both:
+  ```powershell
+  (Get-Item "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\QuestCompletist").LinkType   # must be Junction
+  git -C "C:\Users\alist\RiderProjects\QuestCompletist" status -sb   # the branch under test, no deleted files
+  ```
+
 `tools\` only tracks its `*.ps1` scripts. Everything the scripts download or write there (CSV
 exports, the API cache, reports) is gitignored and can be regenerated.
 
