@@ -9,7 +9,7 @@ row of 14 values.
 | Point | What | Status |
 |---|---|---|
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
-| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (this PR); stages 2 and 3 next |
+| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120); stage 2 under way |
 | 4 | Named fields for the tools | Comes with point 6: tools read and write records through `tools\AddonData.ps1` |
 | 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | After point 6, as a change to the build step and to qcCore.lua |
 | 2 | The zone text (field 4, never read in game) left out of the rows | After point 6, the same way |
@@ -30,9 +30,34 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
    - `qcPinDB.lua`: coordinates written the short way (581 lines, e.g. `42.0` → `42`), `\'` written
      as `'` (145 lines), 17 lines with a doubled carriage return, and 2 quest lists with a stray
      trailing comma.
-2. **Move the tools over, a few per PR.** First list exactly which repeatable tools change the quest
-   rows or the pins. Each then reads and writes the data files through `AddonData.ps1` and runs the
-   build, instead of editing the Lua with regular expressions.
+2. **Move the tools over, a few per PR.** Each reads and writes the data files through
+   `AddonData.ps1` and rebuilds the Lua, instead of editing it with regular expressions. The
+   inventory (2026-10-04) of the 25 repeatable scripts:
+   - **Change quest rows or pins (10).**
+     - Batch 1, done: `Apply-AccuracyFixes`, `Sync-QuestNamesFromApi`, `Retype-FlaggedWorldQuests`,
+       `Retype-ProbeRecurring`, `File-WeeklyEventQuests`, `Apply-PinNpcIds`.
+     - Batch 2: `Place-UncategorisedQuests`, `Insert-GapQuestEntries` (which runs it) and
+       `Build-QuestLines` (which also rewrites the `qcQuestLines` table, which stays Lua).
+     - Batch 3: `Assemble-PinDB`, with `Parse-ExistingPinDB`, which feeds it.
+   - **Only read them (10).** `Apply-ReputationBackfill`, `Audit-DungeonCategories`,
+     `Audit-QuestAccuracy`, `Build-CategoryClientNames`, `Build-QuestLocationData`,
+     `Build-UnavailableQuests`, `Compare-QuestReputation`, `Find-UnavailableQuestCandidates`,
+     `Remove-EmptyMenuEntries`, `Parse-ExistingPinDB`. These would keep working against the
+     generated Lua, but they read it by position, so they have to move before points 1 to 3 change
+     the rows.
+   - **Touch neither (5)**, nothing to do: `Add-ZoneTableMaps`, `Build-CategoryUiMapIDs`,
+     `Categorize-AuditDiscrepancies`, `Fetch-GapQuestData`, `Get-WagoQuestRequirements`.
+
+   Found along the way:
+   - `Apply-PinNpcIds` matched pins by the coordinate text, so stage 1's tidy (`38.0` became `38`)
+     left 17 decision rows matching no pin. Fixed in batch 1: it compares coordinates as numbers.
+   - `Assemble-PinDB -Apply` rewrites the whole of `qcPinDB.lua`. It sorts each map's pins by quest
+     ID, drops notes, and doesn't escape `\` in names.
+   - `Parse-ExistingPinDB` can't read a name with an escaped quote, so 15 pins, such as
+     `Remy "Two Times"`, lose their NPC when the pins are rebuilt.
+   - `Insert-GapQuestEntries` puts new quests at the top of the rows, with two comment lines.
+   - Every save now first checks that the Lua still matches the data files. Rebuilding it otherwise
+     would lose a change an old-style tool made, or a hand edit.
 3. **Switch.** Once no tool edits the Lua, the data files become the master copy:
    `Export-AddonData.ps1` is deleted, the generated Lua gets a "generated, don't edit" header, and
    the maintenance notes say to edit only the data files.

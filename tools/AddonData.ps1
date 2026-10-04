@@ -378,11 +378,13 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
 # For tools: the records of a data file, in order. A field a record leaves out reads as $null; set
 # fields with Set-RecordField, which adds the ones a record doesn't have yet.
 function Read-QuestData([string]$DataDir = $DefaultDataDir) {
-    return , (Read-JsonLines (Join-Path (Resolve-Path $DataDir).Path 'quests.jsonl'))
+    $records = Read-JsonLines (Join-Path (Resolve-Path $DataDir).Path 'quests.jsonl')
+    return $records
 }
 
 function Read-PinData([string]$DataDir = $DefaultDataDir) {
-    return , (Read-JsonLines (Join-Path (Resolve-Path $DataDir).Path 'pins.jsonl'))
+    $records = Read-JsonLines (Join-Path (Resolve-Path $DataDir).Path 'pins.jsonl')
+    return $records
 }
 
 function Set-RecordField($record, [string]$field, $value) {
@@ -393,10 +395,12 @@ function Set-RecordField($record, [string]$field, $value) {
 }
 
 # For tools: checks the records, writes them to the data file and rebuilds the Lua from both data
-# files. Throws, writing nothing, if a record has a problem.
+# files. Throws, writing nothing, if a record has a problem, or if the Lua no longer matches the data
+# files: rebuilding it would then lose whatever changed it.
 function Save-QuestData($quests, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
     $problems = @(Test-QuestRecords $quests)
     if ($problems.Count -gt 0) { throw ("The quests weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'quests.jsonl'), (ConvertTo-QuestJsonLines $quests), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
 }
@@ -404,8 +408,16 @@ function Save-QuestData($quests, [string]$DataDir = $DefaultDataDir, [string]$Ad
 function Save-PinData($pins, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
     $problems = @(Test-PinRecords $pins)
     if ($problems.Count -gt 0) { throw ("The pins weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'pins.jsonl'), (ConvertTo-PinJsonLines $pins), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Assert-LuaMatchesData([string]$DataDir, [string]$AddonDir) {
+    $check = Invoke-AddonDataBuild -DataDir $DataDir -AddonDir $AddonDir -Check
+    if ($check.Ok) { return }
+    throw ("Nothing was saved: the Lua files don't match the data files.`n  " + ($check.Lines -join "`n  ") +
+        "`nIf a tool changed the Lua, run Export-AddonData.ps1 first, then this again.")
 }
 
 function Complete-AddonDataSave([string]$DataDir, [string]$AddonDir) {
