@@ -73,7 +73,8 @@ the game never reads it.
 **Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
 `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`,
-`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Apply-PinNpcIds.ps1` and `Assemble-PinDB.ps1`.
+`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Apply-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and
+`Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
@@ -123,7 +124,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
-| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md), then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
+| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
@@ -235,11 +236,21 @@ run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` 
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
   Notes that find no pin are listed.
 - Pins are written in a fixed order.
-- As of October 2026, rebuilding from the September 30 locations would change 156 pins. Most are
-  the same NPC at almost the same spot, which the rebuild merges into one pin (Archmage Pentarus at
-  68.6, 42 and 68.49, 42.05). Review them before the next `-Apply`.
+- As of October 2026, rebuilding from the September 30 locations would change 158 lines of
+  `data\pins.jsonl`. Most are the same NPC at almost the same spot, which the rebuild merges into
+  one pin (Archmage Pentarus at 68.6, 42 and 68.49, 42.05). Review them before the next `-Apply`.
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical.
+
+After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
+if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
+points has it too, which would list it twice in one tooltip or show it on two pins side by side.
+Where the game has a start point for the quest, the quest stays on the pin nearest it; otherwise,
+of pins within half a point of each other, it stays on one. Pins further apart, with no start point
+to choose between them, are only listed: a character in a phased story often stands in two places
+(Captain Danuvin at Sentinel Hill). A rebuild from clean pins creates no duplicates, but renaming
+pins can, as two pins then share a name. It says which rows of `pin-npc-id-decisions.csv` belong to
+pins it removed; delete them, or `Apply-PinNpcIds.ps1` stops.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
@@ -400,7 +411,7 @@ git diff --stat
 - The syntax check must be silent.
 - `Build-AddonData.ps1 -Check` must say both files are up to date. Its last line gives the quest and
   pin counts, which should only change when quests or pins were meant to be added or removed. As
-  of October 2026 they're 35,023 quests and 14,738 pins.
+  of October 2026 they're 35,023 quests and 14,726 pins.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.

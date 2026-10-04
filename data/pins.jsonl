@@ -1695,14 +1695,13 @@
 {"map":71,"icon":1,"npc":226658,"name":"Blue","x":52.5,"y":26.85,"quests":[83492,83493,83494,83496]}
 {"map":71,"icon":1,"npc":226658,"name":"Blue","x":48.48,"y":31.64,"quests":[83495]}
 {"map":71,"icon":1,"npc":231433,"name":"Raenie Fizzlebog","x":63,"y":52,"quests":[83825]}
-{"map":71,"icon":1,"npc":226683,"name":"Alyx","x":63,"y":50.2,"quests":[83832,84143,84236,84278,84334,84435,84506,84583,84923,84932,84985,85477]}
-{"map":71,"icon":1,"npc":232404,"name":"Alyx","x":63,"y":50.2,"quests":[83832,84278,84334,84435,84506,84563,84583,84755,84923,84932,84985,85024,85042,85477]}
+{"map":71,"icon":1,"npc":226683,"name":"Alyx","x":63,"y":50.2,"quests":[84143,84236]}
+{"map":71,"icon":1,"npc":232404,"name":"Alyx","x":63,"y":50.2,"quests":[83832,84278,84583]}
 {"map":71,"icon":1,"npc":226684,"name":"Maru","x":63.2,"y":52.4,"quests":[84144,84419,84588,84756,85025,85043,85476]}
 {"map":71,"icon":1,"npc":226796,"name":"Athelton Jones","x":61,"y":50.6,"quests":[84237,84336,85503]}
 {"map":71,"icon":1,"npc":223877,"name":"Yllana","x":62.8,"y":50.6,"quests":[84254,84489,84616]}
 {"map":71,"icon":1,"npc":226952,"name":"Rexxar","x":61,"y":50.6,"quests":[84296]}
 {"map":71,"icon":1,"npc":232406,"name":"Alyx","x":63,"y":50.2,"quests":[84334,84435,84506,84563,84755,84923,84932,84985,85024,85042,85047,85208,85475,85477,85502]}
-{"map":71,"icon":1,"npc":232405,"name":"Alyx","x":63,"y":50.2,"quests":[84334,84563,84755,85024,85042,85047,85208]}
 {"map":71,"icon":1,"npc":229062,"name":"Maru","x":37.2,"y":78.8,"quests":[84363,84393]}
 {"map":71,"icon":1,"npc":228276,"name":"Jepetto Joybuzz","x":62.2,"y":49.6,"quests":[84469]}
 {"map":71,"icon":1,"npc":226766,"name":"Benatauk","x":63.2,"y":52.4,"quests":[84521,84868]}
@@ -5325,7 +5324,7 @@
 {"map":371,"icon":1,"npc":54918,"name":"Instructor Myang","x":42.75,"y":23.16,"quests":[29647]}
 {"map":371,"icon":1,"npc":55054,"name":"General Nazgrim","x":30.77,"y":10.16,"quests":[29690]}
 {"map":371,"icon":1,"name":"General Nazgrim","x":29.13,"y":13.73,"quests":[29694,31770]}
-{"map":371,"icon":1,"npc":55234,"name":"An Windfur","x":46.66,"y":46.15,"quests":[29716,29723]}
+{"map":371,"icon":1,"npc":55234,"name":"An Windfur","x":46.66,"y":46.15,"quests":[29716]}
 {"map":371,"icon":1,"npc":55274,"name":"An Windfur","x":46.47,"y":45.53,"quests":[29717,29723]}
 {"map":371,"icon":1,"name":"Rell Nightwind","x":58.57,"y":81.82,"quests":[29725,29885,29883,30565]}
 {"map":371,"icon":1,"npc":55284,"name":"Little Lu","x":59.07,"y":81.89,"quests":[29726]}
@@ -5987,7 +5986,7 @@
 {"map":422,"icon":1,"npc":63349,"name":"Deck Boss Arie","x":56.57,"y":75.9,"quests":[31190]}
 {"map":422,"icon":1,"npc":63785,"name":"Hisek the Swarmkeeper","x":54.83,"y":36.19,"quests":[31237,31510,31504,31216]}
 {"map":422,"icon":3,"npc":62180,"name":"Korven the Prime","x":55.07,"y":35.83,"quests":[31232,31233,31269,31507,31496,31270]}
-{"map":422,"icon":3,"npc":65253,"name":"Rik'kal the Dissector","x":55.05,"y":36.14,"quests":[31234,31271,31502,31503,31606]}
+{"map":422,"icon":3,"npc":65253,"name":"Rik'kal the Dissector","x":55.05,"y":36.14,"quests":[31234,31606]}
 {"map":422,"icon":3,"npc":63072,"name":"Rik'kal the Dissector","x":54.36,"y":35.94,"quests":[31271,31508,31502,31503,31509]}
 {"map":422,"icon":1,"name":"Glowing Amber","x":54.38,"y":35.63,"quests":[31398]}
 {"map":422,"icon":1,"npc":64672,"name":"Hisek the Swarmkeeper","x":56.3,"y":58.2,"quests":[31441,31458,31465]}
@@ -7851,8 +7850,6 @@
 {"map":646,"icon":1,"npc":120372,"name":"Prophet Velen","x":44.56,"y":63.38,"quests":[46248,46805]}
 {"map":646,"icon":1,"npc":121237,"name":"Anduin Wrynn","x":60.51,"y":25.01,"quests":[46282]}
 {"map":646,"icon":1,"npc":118314,"name":"Illidari Enforcer","x":41.8,"y":60.8,"quests":[46333]}
-{"map":646,"icon":1,"npc":118316,"name":"Illidari Enforcer","x":41.8,"y":60.8,"quests":[46333]}
-{"map":646,"icon":1,"npc":118306,"name":"Illidari Enforcer","x":41.8,"y":60.8,"quests":[46333]}
 {"map":646,"icon":1,"npc":119886,"name":"Excavator Karla","x":39.47,"y":71.68,"quests":[46499,46501,46509,46510,46511]}
 {"map":646,"icon":1,"npc":119886,"name":"Excavator Karla","x":45.03,"y":52.28,"quests":[46666]}
 {"map":646,"icon":1,"npc":120070,"name":"Thisalee Crow","x":43.58,"y":58.32,"quests":[46674,46675,46676]}
@@ -8149,7 +8146,6 @@
 {"map":680,"icon":1,"npc":104406,"name":"Brytag","x":74.95,"y":63.39,"quests":[40364,41618]}
 {"map":680,"icon":1,"npc":115736,"name":"First Arcanist Thalyssra","x":41.65,"y":51.64,"quests":[40391,44739,40632,44743,44859]}
 {"map":680,"icon":1,"npc":100185,"name":"Iadreth","x":41.36,"y":60.72,"quests":[40401]}
-{"map":680,"icon":1,"npc":100823,"name":"Lyana Darksorrow","x":31,"y":85,"quests":[40412]}
 {"map":680,"icon":1,"npc":100053,"name":"Lyana Darksorrow","x":31.17,"y":84.6,"quests":[40412]}
 {"map":680,"icon":1,"npc":100185,"name":"Iadreth","x":37.76,"y":61.74,"quests":[40424]}
 {"map":680,"icon":1,"npc":100192,"name":"Astoril","x":34.32,"y":56.15,"quests":[40469]}
@@ -8230,7 +8226,7 @@
 {"map":680,"icon":1,"npc":106271,"name":"Jarum Skymane","x":50.02,"y":16.85,"quests":[42202]}
 {"map":680,"icon":1,"npc":103571,"name":"Solendra Featherdown","x":61.62,"y":49.27,"quests":[42223]}
 {"map":680,"icon":1,"x":17.15,"y":37.73,"quests":[42225]}
-{"map":680,"icon":1,"npc":112146,"name":"First Arcanist Thalyssra","x":36.5,"y":46.73,"quests":[42889,42226,44876,43314,42490]}
+{"map":680,"icon":1,"npc":112146,"name":"First Arcanist Thalyssra","x":36.5,"y":46.73,"quests":[42889,42226,44876]}
 {"map":680,"icon":1,"npc":107126,"name":"Valewalker Farodin","x":21.3,"y":42.35,"quests":[42227,44562,44563,44561]}
 {"map":680,"icon":1,"npc":107126,"name":"Valewalker Farodin","x":21.22,"y":33.84,"quests":[42228]}
 {"map":680,"icon":1,"npc":108101,"name":"Ancient Seed","x":21.2,"y":34,"quests":[42230]}
@@ -8242,7 +8238,6 @@
 {"map":680,"icon":1,"npc":108063,"name":"Korine","x":48.31,"y":83.25,"quests":[42486]}
 {"map":680,"icon":1,"npc":107598,"name":"Vanthir","x":36.88,"y":46.62,"quests":[42487,44052]}
 {"map":680,"icon":1,"npc":107126,"name":"Valewalker Farodin","x":36.88,"y":46.62,"quests":[42489,42828,43502,43362,43568]}
-{"map":680,"icon":1,"npc":115371,"name":"Arcanist Valtrois","x":37,"y":46.6,"quests":[42491]}
 {"map":680,"icon":1,"npc":103155,"name":"Arcanist Valtrois","x":37.02,"y":46.24,"quests":[43562,43563,43564,43995,44492,44495,44493,42491]}
 {"map":680,"icon":1,"npc":108085,"name":"Image of Kalec","x":35,"y":87.84,"quests":[42493,42494]}
 {"map":680,"icon":1,"x":34.3,"y":83.41,"quests":[42508]}
@@ -8252,7 +8247,6 @@
 {"map":680,"icon":1,"npc":108872,"name":"Margaux","x":56.08,"y":51.89,"quests":[42832,42833]}
 {"map":680,"icon":1,"npc":108870,"name":"Sylverin","x":58.22,"y":53.05,"quests":[42834]}
 {"map":680,"icon":1,"npc":108872,"name":"Margaux","x":61.39,"y":55.1,"quests":[42837,42835,54036,53906]}
-{"map":680,"icon":1,"npc":112653,"name":"Sylverin","x":61.2,"y":56,"quests":[42836]}
 {"map":680,"icon":1,"npc":97140,"name":"First Arcanist Thalyssra","x":48.4,"y":83.3,"quests":[42839,43309]}
 {"map":680,"icon":1,"npc":107253,"name":"Arluin","x":48.92,"y":73.44,"quests":[42840,42841,43352]}
 {"map":680,"icon":1,"npc":107632,"name":"Ly'leth Lunastre","x":57.57,"y":57.31,"quests":[43310]}
@@ -8572,7 +8566,7 @@
 {"map":720,"icon":1,"npc":108572,"name":"Kayn Sunfury","x":58.6,"y":56.8,"quests":[40247,42695,43186,42132,40819,39515,42776]}
 {"map":720,"icon":1,"npc":103025,"name":"Battlelord Gaardoun","x":56.4,"y":53.8,"quests":[41064]}
 {"map":720,"icon":1,"npc":108571,"name":"Altruis the Sufferer","x":58,"y":38.2,"quests":[41803,42690,44214]}
-{"map":720,"icon":1,"npc":103761,"name":"Kor'vas Bloodthorn","x":59.6,"y":56.8,"quests":[42673,44161]}
+{"map":720,"icon":1,"npc":103761,"name":"Kor'vas Bloodthorn","x":59.6,"y":56.8,"quests":[42673]}
 {"map":720,"icon":1,"npc":112407,"name":"Falara Nightsong","x":58.8,"y":43.4,"quests":[42731]}
 {"map":720,"icon":1,"npc":108782,"name":"Belath Dawnblade","x":58.6,"y":52.4,"quests":[42777]}
 {"map":720,"icon":1,"npc":110433,"name":"Slitesh","x":60.2,"y":44.2,"quests":[44223]}
@@ -8761,7 +8755,7 @@
 {"map":739,"icon":1,"npc":107317,"name":"Emmarel Shadewarden","x":43.4,"y":26,"quests":[44366,44043,41541,40957,41542,41540]}
 {"map":739,"icon":1,"npc":102940,"name":"Altar Keeper Biehn","x":42.51,"y":47.07,"quests":[40958,42519,41047]}
 {"map":739,"icon":1,"npc":103023,"name":"Tactician Tinderfell","x":42.77,"y":47.07,"quests":[40959,42524,42526,42525,42523,46783,46023,44058]}
-{"map":739,"icon":1,"npc":107973,"name":"Emmarel Shadewarden","x":43.53,"y":24.61,"quests":[42388,42405,42402,44680,44366,44043,41541,41542,41540]}
+{"map":739,"icon":1,"npc":107973,"name":"Emmarel Shadewarden","x":43.53,"y":24.61,"quests":[42388,42405,42402,44680,41541,41542,41540]}
 {"map":739,"icon":1,"npc":107966,"name":"Archmage Khadgar","x":43.4,"y":26.34,"quests":[42133,43182]}
 {"map":739,"icon":1,"npc":103023,"name":"Tactician Tinderfell","x":57.96,"y":32.48,"quests":[42134]}
 {"map":739,"icon":1,"npc":103023,"name":"Tactician Tinderfell","x":43.4,"y":26.34,"quests":[42384]}
@@ -9031,7 +9025,7 @@
 {"map":862,"icon":1,"npc":127814,"name":"Habutu","x":49.61,"y":64.52,"quests":[49147]}
 {"map":862,"icon":1,"npc":127815,"name":"Zolani","x":49.61,"y":64.52,"quests":[49148]}
 {"map":862,"icon":1,"npc":127837,"name":"Kaza'jin the Wavebinder","x":49.61,"y":64.52,"quests":[49149,49309]}
-{"map":862,"icon":1,"npc":132617,"name":"Bently Greaseflare","x":51.6,"y":50.6,"quests":[49919,49222]}
+{"map":862,"icon":1,"npc":132617,"name":"Bently Greaseflare","x":51.6,"y":50.6,"quests":[49222]}
 {"map":862,"icon":1,"npc":131763,"name":"Excavator Morgrum Emberflint","x":44.4,"y":73.4,"quests":[50044,49428,49282,49274,49427]}
 {"map":862,"icon":1,"npc":129586,"name":"Batu","x":73.68,"y":60.98,"quests":[49284]}
 {"map":862,"icon":1,"npc":128888,"name":"Koba","x":73.68,"y":60.98,"quests":[49285]}
@@ -9238,7 +9232,7 @@
 {"map":863,"icon":1,"npc":124666,"name":"Kajosh","x":51.75,"y":33.24,"quests":[47924]}
 {"map":863,"icon":1,"npc":125317,"name":"Shadow Hunter Narez","x":77.6,"y":53.2,"quests":[48090,48092]}
 {"map":863,"icon":1,"npc":126039,"name":"Mag'ash the Poisonous","x":69,"y":50.4,"quests":[48402]}
-{"map":863,"icon":1,"npc":130481,"name":"Shinga Deathwalker","x":38.93,"y":59.91,"quests":[48473,48468]}
+{"map":863,"icon":1,"npc":130481,"name":"Shinga Deathwalker","x":38.93,"y":59.91,"quests":[48473]}
 {"map":863,"icon":1,"npc":126080,"name":"Shinga Deathwalker","x":38.95,"y":59.91,"quests":[48468,48478,48480]}
 {"map":863,"icon":1,"npc":126079,"name":"Kol'jun Deathwalker","x":39.01,"y":59.94,"quests":[48479]}
 {"map":863,"icon":1,"npc":126289,"name":"Chadwick Paxton","x":28.61,"y":43.78,"quests":[48492]}
@@ -9860,7 +9854,7 @@
 {"map":896,"icon":1,"npc":142651,"name":"Lucille Waycrest","x":36.06,"y":51.18,"quests":[52486,52149,53109]}
 {"map":896,"icon":1,"npc":140495,"name":"Katherine Proudmoore","x":36.88,"y":50.08,"quests":[52481]}
 {"map":896,"icon":1,"npc":129642,"name":"Lucille Waycrest","x":45.21,"y":45.85,"quests":[52482]}
-{"map":896,"icon":1,"npc":141894,"name":"Ulfar","x":45.21,"y":45.85,"quests":[52483,52484,52485]}
+{"map":896,"icon":1,"npc":141894,"name":"Ulfar","x":45.21,"y":45.85,"quests":[52483,52485]}
 {"map":896,"icon":1,"npc":129642,"name":"Lucille Waycrest","x":27.51,"y":58.94,"quests":[52487]}
 {"map":896,"icon":1,"npc":141785,"name":"Katherine Proudmoore","x":27.51,"y":58.94,"quests":[52488]}
 {"map":896,"icon":1,"npc":139926,"name":"Thornspeaker Birchgrove","x":45.21,"y":45.85,"quests":[53110]}
@@ -9912,7 +9906,7 @@
 {"map":942,"icon":1,"npc":129808,"name":"Farmer Goldfield","x":50.71,"y":77.01,"quests":[50088]}
 {"map":942,"icon":1,"npc":132118,"name":"Farmer Burton","x":51.59,"y":65.96,"quests":[50135,50134,50136]}
 {"map":942,"icon":1,"npc":132647,"name":"Ancel Mildenhall","x":74.07,"y":72.78,"quests":[50161]}
-{"map":942,"icon":1,"npc":132292,"name":"Raimond Mildenhall","x":74.1,"y":72.75,"quests":[50162,50168,50504]}
+{"map":942,"icon":1,"npc":132292,"name":"Raimond Mildenhall","x":74.1,"y":72.75,"quests":[50162,50168]}
 {"map":942,"icon":1,"npc":134447,"name":"Lost Farmhand","x":68.97,"y":74.66,"quests":[50165]}
 {"map":942,"icon":1,"npc":134028,"name":"Sam Robinson","x":71,"y":69.24,"quests":[50264,50493]}
 {"map":942,"icon":1,"npc":131793,"name":"Ancel Mildenhall","x":68.5,"y":67.81,"quests":[50343,53347,53371]}
@@ -9920,8 +9914,8 @@
 {"map":942,"icon":1,"npc":134752,"name":"Mayor Roz","x":46.66,"y":73.84,"quests":[50354]}
 {"map":942,"icon":1,"x":69.13,"y":69,"quests":[50359]}
 {"map":942,"icon":1,"npc":133576,"name":"Coxswain Hook","x":26.01,"y":55.23,"quests":[50376,52130]}
-{"map":942,"icon":1,"npc":143565,"name":"Wayne the Ancestral","x":78.5,"y":53.41,"quests":[50387,50386,50417,50385,50388,50389,53099,53105,53097]}
-{"map":942,"icon":1,"npc":133640,"name":"Wayne the Ancestral","x":78.8,"y":54.4,"quests":[50385,50388,50389,53099,53105,53097,50386,50387]}
+{"map":942,"icon":1,"npc":143565,"name":"Wayne the Ancestral","x":78.5,"y":53.41,"quests":[50387,50386,50417,53097]}
+{"map":942,"icon":1,"npc":133640,"name":"Wayne the Ancestral","x":78.8,"y":54.4,"quests":[50385,50388,50389,53099,53105,53097]}
 {"map":942,"icon":1,"npc":133577,"name":"Master Gunner Line","x":25.94,"y":55.15,"quests":[50391,50418]}
 {"map":942,"icon":1,"npc":132355,"name":"Raimond Mildenhall","x":74,"y":72.6,"quests":[50504]}
 {"map":942,"icon":1,"npc":134447,"name":"Lost Farmhand","x":71,"y":69.21,"quests":[50534,50553]}
@@ -11107,7 +11101,7 @@
 {"map":1565,"icon":1,"npc":171099,"name":"Guardian Kota","x":62.61,"y":36.08,"quests":[58022]}
 {"map":1565,"icon":1,"npc":171099,"name":"Guardian Kota","x":62.89,"y":32.18,"quests":[58023]}
 {"map":1565,"icon":1,"npc":158921,"name":"Guardian Kota","x":59.58,"y":33.44,"quests":[58024]}
-{"map":1565,"icon":1,"npc":160155,"name":"Guardian Kota","x":63.49,"y":36.29,"quests":[58026,58024]}
+{"map":1565,"icon":1,"npc":160155,"name":"Guardian Kota","x":63.49,"y":36.29,"quests":[58026]}
 {"map":1565,"icon":1,"npc":160155,"name":"Guardian Kota","x":59.58,"y":33.44,"quests":[58025]}
 {"map":1565,"icon":1,"npc":161509,"name":"Lady Moonberry","x":40.71,"y":42.78,"quests":[58104]}
 {"map":1565,"icon":1,"npc":160484,"name":"Featherlight","x":40.71,"y":42.78,"quests":[58157,58158]}
@@ -12585,7 +12579,7 @@
 {"map":2133,"icon":1,"npc":200053,"name":"Effervesta","x":54.6,"y":54.8,"quests":[72881]}
 {"map":2133,"icon":1,"npc":200056,"name":"Cinnam","x":55.6,"y":60.2,"quests":[72882]}
 {"map":2133,"icon":1,"npc":200238,"name":"Dead Cave Swallow","x":57.8,"y":54.8,"quests":[72883]}
-{"map":2133,"icon":1,"npc":200052,"name":"Aurantia","x":54.73,"y":54.53,"quests":[75644,76101,72884,72886]}
+{"map":2133,"icon":1,"npc":200052,"name":"Aurantia","x":54.73,"y":54.53,"quests":[75644,72884,72886]}
 {"map":2133,"icon":1,"npc":200080,"name":"Ebyssian","x":35.48,"y":41.83,"quests":[72908]}
 {"map":2133,"icon":1,"npc":199852,"name":"Ebyssian","x":30.18,"y":41,"quests":[72909]}
 {"map":2133,"icon":1,"npc":199851,"name":"Sabellian","x":30.27,"y":40.98,"quests":[72910]}
@@ -12622,7 +12616,7 @@
 {"map":2133,"icon":1,"npc":203965,"name":"Ebyssian","x":49.92,"y":27.54,"quests":[72987]}
 {"map":2133,"icon":1,"npc":200298,"name":"Veritistrasz","x":40.21,"y":68.4,"quests":[73036,74994,74495]}
 {"map":2133,"icon":1,"npc":200291,"name":"Rupert, the Gentleman Elemental","x":40.12,"y":68.36,"quests":[73037]}
-{"map":2133,"icon":1,"npc":203176,"name":"Rupert, the Gentleman Elemental","x":40.14,"y":68.32,"quests":[73040,73037,73047]}
+{"map":2133,"icon":1,"npc":203176,"name":"Rupert, the Gentleman Elemental","x":40.14,"y":68.32,"quests":[73040,73047]}
 {"map":2133,"icon":1,"npc":200290,"name":"Voraxian","x":53.68,"y":79.51,"quests":[73038]}
 {"map":2133,"icon":1,"npc":200953,"name":"Earthmender Narvra","x":48.31,"y":32.79,"quests":[73039,73045]}
 {"map":2133,"icon":1,"npc":203176,"name":"Rupert, the Gentleman Elemental","x":53.61,"y":79.32,"quests":[73040]}
@@ -12765,8 +12759,8 @@
 {"map":2200,"icon":1,"npc":209323,"name":"Lilian Voss","x":50.2,"y":48,"quests":[77674]}
 {"map":2200,"icon":1,"npc":209292,"name":"Sprout","x":48.6,"y":67.8,"quests":[77677]}
 {"map":2200,"icon":1,"npc":209458,"name":"Dewy Sapling","x":48.6,"y":67.8,"quests":[77697]}
-{"map":2200,"icon":1,"npc":208337,"name":"Professor Ash","x":48.48,"y":68.04,"quests":[77711,77762,78398]}
-{"map":2200,"icon":1,"npc":209571,"name":"Professor Ash","x":48.6,"y":68,"quests":[78398,77762,77711]}
+{"map":2200,"icon":1,"npc":208337,"name":"Professor Ash","x":48.48,"y":68.04,"quests":[77711,77762]}
+{"map":2200,"icon":1,"npc":209571,"name":"Professor Ash","x":48.6,"y":68,"quests":[78398]}
 {"map":2200,"icon":1,"npc":209083,"name":"Shandris Feathermoon","x":49.6,"y":46.2,"quests":[77739]}
 {"map":2200,"icon":1,"npc":211634,"name":"Tyrande Whisperwind","x":73.02,"y":52.55,"quests":[77780]}
 {"map":2200,"icon":1,"npc":209788,"name":"Dionaessa","x":53.8,"y":74.6,"quests":[77802]}
@@ -12965,7 +12959,6 @@
 {"map":2214,"icon":1,"npc":234294,"name":"Trixxie Boltcrank","x":67.27,"y":98.15,"quests":[86274,86275,86575]}
 {"map":2214,"icon":1,"npc":236361,"name":"Cataloger Shotfrenzy","x":58.8,"y":79,"quests":[86701]}
 {"map":2214,"icon":1,"npc":238340,"name":"Ringing Deeps Flame Guardian","x":43.6,"y":32.6,"quests":[87357]}
-{"map":2214,"icon":5,"name":"Ringing Deeps Flame Guardian","x":43.65,"y":32.72,"quests":[87357]}
 {"map":2215,"icon":1,"npc":206528,"name":"Aliya Hillhelm","x":61.18,"y":30.5,"quests":[79108,50690,76247]}
 {"map":2215,"icon":1,"npc":212419,"name":"Attica Whiskervale","x":64.4,"y":18.8,"quests":[76169,81632,82007]}
 {"map":2215,"icon":1,"npc":206533,"name":"Chef Dinaire","x":64.4,"y":31,"quests":[76394,78933,80562]}
@@ -13092,7 +13085,6 @@
 {"map":2215,"icon":1,"npc":236362,"name":"Cataloger Elaine","x":42.6,"y":54.6,"quests":[86702]}
 {"map":2215,"icon":1,"npc":236364,"name":"Cataloger Grilka","x":61.2,"y":31,"quests":[86703]}
 {"map":2215,"icon":1,"npc":238338,"name":"Hallowfall Flame Guardian","x":42.4,"y":51.6,"quests":[87355]}
-{"map":2215,"icon":5,"name":"Hallowfall Flame Guardian","x":42.41,"y":51.6,"quests":[87355]}
 {"map":2215,"icon":1,"npc":234774,"name":"Mylton Wyldbraun","x":28.2,"y":56.2,"quests":[87475,87477,87480,88711,88916,88945,89295,89331,89332,91173]}
 {"map":2215,"icon":1,"npc":240852,"name":"Lars Bronsmaelt","x":28.2,"y":56.2,"quests":[89349,89390,89391,89392,89393,89394,89395,89396,89397,89398,89399,89400,89493,89494,89496]}
 {"map":2215,"icon":1,"npc":245191,"name":"Dagran Thaurissan II","x":34.34,"y":47.27,"quests":[90969]}
@@ -13211,7 +13203,6 @@
 {"map":2248,"icon":1,"npc":225453,"name":"Dagran Thaurissan II","x":61.63,"y":70.18,"quests":[79716]}
 {"map":2248,"icon":1,"npc":212295,"name":"Wenbrandt","x":56.42,"y":47.98,"quests":[79721]}
 {"map":2248,"icon":1,"npc":217763,"name":"Rannan Korren","x":77.97,"y":30.3,"quests":[79724]}
-{"map":2248,"icon":1,"npc":217657,"name":"Rannan Korren","x":77.96,"y":30.3,"quests":[79725]}
 {"map":2248,"icon":1,"npc":217828,"name":"Rannan Korren","x":77.96,"y":30.3,"quests":[79725,79728]}
 {"map":2248,"icon":1,"npc":217656,"name":"Tuberros","x":77.93,"y":30.39,"quests":[79726]}
 {"map":2248,"icon":1,"npc":217659,"name":"Tharessa Sunstrand","x":77.95,"y":30.32,"quests":[79727]}
@@ -13393,7 +13384,6 @@
 {"map":2255,"icon":1,"npc":234272,"name":"Rhubarn","x":77.54,"y":61.78,"quests":[86187,86188,86189,86190]}
 {"map":2255,"icon":1,"npc":236365,"name":"Cataloger Moonsage","x":56.6,"y":40.6,"quests":[86704]}
 {"map":2255,"icon":1,"npc":236366,"name":"Cataloger Simone","x":59.8,"y":18.6,"quests":[86705]}
-{"map":2255,"icon":5,"name":"Azj-Kahet Flame Guardian","x":55.54,"y":43.35,"quests":[87356]}
 {"map":2255,"icon":1,"npc":238339,"name":"Azj-Kahet Flame Guardian","x":55.6,"y":43.4,"quests":[87356]}
 {"map":2255,"icon":1,"npc":241603,"name":"Nerubian Orphan","x":55.6,"y":43.6,"quests":[89320]}
 {"map":2255,"icon":1,"npc":241605,"name":"Goblin Orphan","x":55.6,"y":43.6,"quests":[89321]}
@@ -13511,7 +13501,6 @@
 {"map":2339,"icon":1,"npc":236382,"name":"Soridormi","x":34.7,"y":68.79,"quests":[87328,87329,87332]}
 {"map":2339,"icon":1,"npc":238136,"name":"Augermu","x":35.13,"y":68.5,"quests":[87335,87336,90719,90731]}
 {"map":2339,"icon":1,"npc":238236,"name":"Isle of Dorn Flame Guardian","x":48.2,"y":51.6,"quests":[87342]}
-{"map":2339,"icon":5,"name":"Isle of Dorn Flame Guardian","x":48.3,"y":51.5,"quests":[87342]}
 {"map":2339,"icon":1,"npc":241677,"name":"Image of Lady Liadrin","x":44.22,"y":34.79,"quests":[88719,89012,91281]}
 {"map":2339,"icon":5,"npc":240696,"name":"Ullna","x":55.4,"y":27.2,"quests":[89317]}
 {"map":2339,"icon":5,"npc":241593,"name":"Kobold Orphan","x":55.4,"y":27,"quests":[89318]}
@@ -14064,7 +14053,6 @@
 {"map":2395,"icon":1,"npc":247955,"name":"Jonas Everdawn","x":42.68,"y":47.31,"quests":[91627]}
 {"map":2395,"icon":1,"npc":242381,"name":"Valeera Sanguinar","x":61.89,"y":68.34,"quests":[91822]}
 {"map":2395,"icon":1,"npc":248750,"name":"Valeera Sanguinar","x":61.89,"y":68.34,"quests":[91823,91824,91825,91826]}
-{"map":2395,"icon":1,"npc":248874,"name":"Valeera Sanguinar","x":61.8,"y":68.2,"quests":[91826]}
 {"map":2395,"icon":1,"npc":249337,"name":"Talandra Dawnsprite","x":37.5,"y":72.5,"quests":[92021,92022]}
 {"map":2395,"icon":1,"npc":249337,"name":"Talandra Dawnsprite","x":40.71,"y":60.1,"quests":[92023]}
 {"map":2395,"icon":1,"npc":249426,"name":"Limien Bountcask","x":37.45,"y":72.07,"quests":[92024]}

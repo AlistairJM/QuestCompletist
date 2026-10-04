@@ -66,7 +66,6 @@ ID,487,A Little Patience,41.89,15.4,Admiral Taylor,2404,Blacksmith Verringtan,32
 ID,885,Antoran Wastes,68.77,26.09,High Exarch Turalyon,109254,Sana Bloodletter,48202 Reinforce the Veiled Den,https://www.wowhead.com/quest=48202,,,A different creature
 ID,885,Antoran Wastes,72.39,74.84,High Exarch Turalyon,109254,Sana Bloodletter,48201 Reinforce Light's Purchase,https://www.wowhead.com/quest=48201,,,A different creature
 ID,885,Antoran Wastes,72.89,50.27,High Exarch Turalyon,109254,Sana Bloodletter,48200 Securing a Foothold,https://www.wowhead.com/quest=48200,,,A different creature
-ID,2255,Azj-Kahet,55.54,43.35,Azj-Kahet Flame Guardian,114492,Azsuna Flame Guardian,87356 Honor the Flame,https://www.wowhead.com/quest=87356,,,Each Midsummer Flame Guardian is a separate NPC
 ID,2255,Azj-Kahet,60.09,66.18,Familiar,443995,,79711 That's Pretty Gross,https://www.wowhead.com/quest=79711,,,"An object or item, not a creature: leave NewId blank"
 ID,97,Azuremyst Isle,49.0,51.2,Spring Gatherer,32799,Spring Collector,13480 The Great Egg Hunt,https://www.wowhead.com/quest=13480,,,Noblegarden has a Spring Gatherer and a Spring Collector
 ID,15,Badlands,20.58,56.11,Victoria Dolen,46759,Lidia Sunglow,"27827 The Swift, the Fierce, and the Stout; 27828 Eric, the Utility Dwarf; 27834 Baelog, the Glass Cannon; 27835 Olaf, the Big Fella'; 27877 The Morons' League; 27825 Survival of the Fattest",https://www.wowhead.com/quest=27827,,,A different creature
@@ -80,7 +79,6 @@ ID,500,Deeprun Tram,70,47.33,Admiral Taylor,2404,Blacksmith Verringtan,32380 The
 ID,500,Deeprun Tram,24.05,82.2,Barkeep Townsley,2990,Bael'dun Appraiser,"32426 Stirred, Not Shaken",https://www.wowhead.com/quest=32426,,,A different creature
 ID,500,Deeprun Tram,70,47.33,Barkeep Townsley,2990,Bael'dun Appraiser,32381 To Catch A Spy,https://www.wowhead.com/quest=32381,,,A different creature
 ID,235,Dire Maul,26.5,57.8,Broken Trap,48413,Blackrock Necromancer,27118 A Broken Trap,https://www.wowhead.com/quest=27118,,,A different creature
-ID,2339,Dornogal,48.30,51.5,Isle of Dorn Flame Guardian,114492,Azsuna Flame Guardian,87342 Honor the Flame,https://www.wowhead.com/quest=87342,,,Each Midsummer Flame Guardian is a separate NPC
 ID,2339,Dornogal,53.94,19.86,Wanted: The Boroughbreaker,454463,,83335 Wanted: The Boroughbreaker,https://www.wowhead.com/quest=83335,,,"An object or item, not a creature: leave NewId blank"
 ID,422,Dread Wastes,44.4,16.8,Chen Stormstout,1602,Paladin 1,31078 Han Stormstout,https://www.wowhead.com/quest=31078,,,A different creature
 ID,422,Dread Wastes,50.1,10.13,Chen Stormstout,1602,Paladin 1,31077 Evie Stormstout,https://www.wowhead.com/quest=31077,,,A different creature
@@ -112,7 +110,6 @@ ID,227,Gnomeregan,65.7,57.9,The Sparklematic 5200,44013,Dragonmaw Envoy,4604 Mor
 ID,227,Gnomeregan,68.6,62.2,The Sparklematic 5200,11415,Amber Provost,2953 More Sparklematic Action,https://www.wowhead.com/quest=2953,,,A different creature
 ID,2215,Hallowfall,60.8,27.9,Egg Basket,430581,,80382 Eggs in One Basket,https://www.wowhead.com/quest=80382,,,"An object or item, not a creature: leave NewId blank"
 ID,2215,Hallowfall,61.5,17.4,Empty Crab Cage,424347,,80004 Crab Grab,https://www.wowhead.com/quest=80004,,,"An object or item, not a creature: leave NewId blank"
-ID,2215,Hallowfall,42.41,51.60,Hallowfall Flame Guardian,114492,Azsuna Flame Guardian,87355 Honor the Flame,https://www.wowhead.com/quest=87355,,,Each Midsummer Flame Guardian is a separate NPC
 ID,87,Ironforge,77.0,11.8,Historian Karnik,2960,Prairie Wolf Alpha,7063 The Feast of Winter Veil,https://www.wowhead.com/quest=7063,,,A different creature
 ID,2248,Isle of Dorn,55.3,55.9,DELVER'S CALL,455716,,83758 Delver's Call: Fungal Folly; 83759 Delver's Call: Kriegval's Rest; 85648 Delver's Call: Earthcrawl Mines,https://www.wowhead.com/quest=83758,,,"An object or item, not a creature: leave NewId blank"
 ID,2248,Isle of Dorn,42.1,71.32,Discarded Botanist Notes,428135,,79686 Concerning Fungarians,https://www.wowhead.com/quest=79686,,,"An object or item, not a creature: leave NewId blank"
@@ -210,7 +207,6 @@ ID,2214,The Ringing Deeps,61.71,42.64,Broodmother's Egg,423581,,79372 A Clutch o
 ID,2214,The Ringing Deeps,62.61,38.75,Broodmother's Egg,423581,,80513 Snouty Sabotage; 80512 Beat the Best,https://www.wowhead.com/quest=80513,,,"An object or item, not a creature: leave NewId blank"
 ID,2214,The Ringing Deeps,65.92,75.51,Dirty Scroll,456062,,83142 Order of Magnitude,https://www.wowhead.com/quest=83142,,,"An object or item, not a creature: leave NewId blank"
 ID,2214,The Ringing Deeps,72.52,79.23,Dirty Scroll,456062,,83142 Order of Magnitude,https://www.wowhead.com/quest=83142,,,"An object or item, not a creature: leave NewId blank"
-ID,2214,The Ringing Deeps,43.65,32.72,Ringing Deeps Flame Guardian,114492,Azsuna Flame Guardian,87357 Honor the Flame,https://www.wowhead.com/quest=87357,,,Each Midsummer Flame Guardian is a separate NPC
 ID,2214,The Ringing Deeps,49.2,44.6,Rusted Lever,443532,,82195 Rust and Redemption,https://www.wowhead.com/quest=82195,,,"An object or item, not a creature: leave NewId blank"
 ID,2214,The Ringing Deeps,43.87,32.04,Suspicious Vent,413694,,78827 Go Take Candle!; 78860 More Candles!; 83326 The Final Candle,https://www.wowhead.com/quest=78827,,,"An object or item, not a creature: leave NewId blank"
 ID,886,The Vindicaar,33.47,58.31,High Exarch Turalyon,109254,Sana Bloodletter,48200 Securing a Foothold; 48448 Hindering the Legion War Machine; 48600 Take the Edge Off; 48601 Felfire Shattering; 47473 Sizing Up The Opposition,https://www.wowhead.com/quest=48200,,,A different creature
