@@ -7,6 +7,8 @@ in PowerShell, using the scripts in `tools/`.
 If you're working with Claude Code in this repository, **"do a full sweep"** runs all of this for
 you. It will tell you up front which steps need you in the game.
 
+Releasing a new version is covered in [releasing.md](releasing.md).
+
 ## One-time setup
 
 - **Lua 5.1** at `C:\Program Files (x86)\Lua\5.1\` – for `luac -p`, the syntax check every change
