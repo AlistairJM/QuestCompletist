@@ -15,7 +15,7 @@ Quest Completist's main releases are made for **Retail**. The **Files** tab also
 - Every quest in a zone, dungeon, raid, class, profession or holiday category, marked done or still to do.
 - A running total for each category, like *142/180 Complete (78%)*.
 - The list follows you as you travel, switching to the zone you're in, without losing your search or a category you're browsing.
-- Category and quest names show in your game's language, and search finds a quest by its name in your language or in English.
+- Category and quest names, and the addon's own tooltips, options and messages, show in your game's language. Search finds a quest by its name in your language or in English.
 - Sort by level or alphabetically.
 
 **Clear icons at a glance**
