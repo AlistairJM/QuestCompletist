@@ -2,23 +2,27 @@
 Generates the quest storyline data from Blizzard's own questline tables (QuestLine and
 QuestLineXQuest on wago.tools, pinned to one build):
 
-  - qcQuestLines: [questLineID] = {name = "...", quests = {...}} - the storyline's name and its
-    quests in Blizzard's order (OrderIndex), limited to quests in qcQuestDatabase.
-  - field 13 of every qcQuestDatabase entry: the quest's storyline, or 0.
+  - qcQuestLines in qcQuest.lua: [questLineID] = {name = "...", quests = {...}} - the storyline's
+    name and its quests in Blizzard's order (OrderIndex), limited to quests we have.
+  - every quest's storyline in data\quests.jsonl (left out when it has none), then qcQuest.lua is
+    rebuilt.
 
 Questlines with internal names ("8.0 Professions - ... - SCS", "[DNT] ...", "Test Questline") are
 never shown. A quest in several questlines is given the most specific one - the fewest quests,
 then the lowest ID - so a campaign chapter wins over the whole campaign.
 
-All-or-nothing: if the quest database or the qcQuestLines block isn't found as expected, nothing
-is written.
+All-or-nothing: if the Lua doesn't match the data files, or the qcQuestLines block isn't found as
+expected, nothing is written.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
 )
+$ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\AddonData.ps1"
 
 $ProgressPreference = "SilentlyContinue"
 foreach ($table in "QuestLine", "QuestLineXQuest") {
@@ -31,19 +35,19 @@ foreach ($table in "QuestLine", "QuestLineXQuest") {
 
 $internalName = '^\s*$|^\d+\.\d|\[DNT\]|\(DNT\)|\[PH\]|\[DEPRECATED\]|\(STM\)|\(POC\)|- SCS$|(?i)\btest\b|^Zone \d+ Neck \d+$|^Catch Up: .*Wrapper'
 
+# qcQuestLines is written into qcQuest.lua before the quests are saved, so check first that saving
+# them won't refuse.
+Assert-LuaMatchesData $DataDir $AddonDir
 $questFile = "$AddonDir\qcQuest.lua"
 $content = [System.IO.File]::ReadAllText($questFile, [System.Text.Encoding]::UTF8)
 
-# Fields 1-12 of an entry, then field 13 (storyline).
-$entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",-?\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,)(\d+),'
+$questRecords = Read-QuestData $DataDir
 $ourQuests = @{}
 $before = @{}
-foreach ($m in [regex]::Matches($content, $entryPattern)) {
-    $ourQuests[$m.Groups[2].Value] = $true
-    $before[$m.Groups[2].Value] = $m.Groups[3].Value
+foreach ($quest in $questRecords) {
+    $ourQuests[[string]$quest.id] = $true
+    $before[[string]$quest.id] = if ($quest.storyline) { [string]$quest.storyline } else { "0" }
 }
-$entryCount = ([regex]::Matches($content, '(?m)^\[\d+\]=\{')).Count
-if ($ourQuests.Count -ne $entryCount) { throw "Parsed $($ourQuests.Count) entries but the file has $entryCount" }
 
 $names = @{}
 $dropped = 0
@@ -85,17 +89,16 @@ foreach ($lineId in ($usedLines | Sort-Object { [int]$_ })) {
 $block = [regex]::Match($content, '(?sm)^qcQuestLines = \{.*?^\}')
 if (-not $block.Success) { throw "qcQuestLines block not found" }
 if (([regex]::Matches($content, '(?m)^qcQuestLines = \{')).Count -ne 1) { throw "qcQuestLines is defined more than once" }
-$content = $content.Substring(0, $block.Index) + $sb.ToString() + $content.Substring($block.Index + $block.Length)
+$updated = $content.Substring(0, $block.Index) + $sb.ToString() + $content.Substring($block.Index + $block.Length)
+if ($updated -cne $content) { [System.IO.File]::WriteAllText($questFile, $updated, $script:Utf8) }
 
 $changed = 0
-$content = [regex]::Replace($content, $entryPattern, {
-    param($m)
-    $new = if ($primary.ContainsKey($m.Groups[2].Value)) { $primary[$m.Groups[2].Value] } else { "0" }
-    if ($new -ne $m.Groups[3].Value) { $script:changed++ }
-    return $m.Groups[1].Value + $new + ","
-})
-
-[System.IO.File]::WriteAllText($questFile, $content, (New-Object System.Text.UTF8Encoding $false))
+foreach ($quest in $questRecords) {
+    $questId = [string]$quest.id
+    $new = if ($primary.ContainsKey($questId)) { $primary[$questId] } else { "0" }
+    if ($new -ne $before[$questId]) { Set-RecordField $quest 'storyline' ([int]$new); $changed++ }
+}
+if ($changed -gt 0) { Save-QuestData $questRecords $DataDir $AddonDir }
 
 $hadBefore = @($before.Values | Where-Object { $_ -ne "0" }).Count
 $gained = @($primary.Keys | Where-Object { $before[$_] -eq "0" }).Count

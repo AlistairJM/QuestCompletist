@@ -36,8 +36,9 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
    - **Change quest rows or pins (10).**
      - Batch 1, done: `Apply-AccuracyFixes`, `Sync-QuestNamesFromApi`, `Retype-FlaggedWorldQuests`,
        `Retype-ProbeRecurring`, `File-WeeklyEventQuests`, `Apply-PinNpcIds`.
-     - Batch 2: `Place-UncategorisedQuests`, `Insert-GapQuestEntries` (which runs it) and
-       `Build-QuestLines` (which also rewrites the `qcQuestLines` table, which stays Lua).
+     - Batch 2, done: `Place-UncategorisedQuests`, `Insert-GapQuestEntries` (which runs it) and
+       `Build-QuestLines` (which also rewrites the `qcQuestLines` table, which stays Lua). New quests
+       now go at the end of the data file, with no comment lines.
      - Batch 3: `Assemble-PinDB`, with `Parse-ExistingPinDB`, which feeds it.
    - **Only read them (10).** `Apply-ReputationBackfill`, `Audit-DungeonCategories`,
      `Audit-QuestAccuracy`, `Build-CategoryClientNames`, `Build-QuestLocationData`,
