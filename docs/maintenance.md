@@ -44,6 +44,32 @@ you. It will tell you up front which steps need you in the game.
 `tools\` only tracks its `*.ps1` scripts. Everything the scripts download or write there (CSV
 exports, the API cache, reports) is gitignored and can be regenerated.
 
+## The quest and pin data files
+
+The quest rows and the map pins are also kept in `data\`, one record per line, with named fields:
+
+- `data\quests.jsonl`, one quest per line:
+  `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
+  `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
+- `data\pins.jsonl`, one pin per line:
+  `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
+  `npc` is left out when it's 0, and `name` and `note` when the pin has none.
+
+`tools\Build-AddonData.ps1` checks them and writes the `qcQuestDatabase` rows of `qcQuest.lua` and
+the whole of `qcPinDB.lua`. With `-Check` it writes nothing and only says whether the Lua matches.
+It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
+
+**For now the tools still edit the Lua files.** Until they all write the data files instead (see
+[the plan](plans/data-structure.md)), run this after any step that changes `qcQuest.lua` or
+`qcPinDB.lua`, and commit the data files along with the Lua:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Export-AddonData.ps1    # about a minute
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -Check
+```
+
+`-Check` must say both files are up to date.
+
 ## Before a sweep
 
 1. **Find the current retail build** at <https://wago.tools/api/builds/latest> (product `wow`).
@@ -80,6 +106,9 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
+
+After each step that edits the addon, bring the data files up to date as described in
+[The quest and pin data files](#the-quest-and-pin-data-files).
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
 ordinary sweep. When step 6 adds quests, those have never been probed. Run
@@ -334,15 +363,18 @@ results are enough.
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\luac.exe" -p QuestCompletist\qcQuest.lua QuestCompletist\qcCore.lua
 (Select-String -Path QuestCompletist\qcQuest.lua -Pattern '^\[\d+\]=\{').Count
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -Check
 git diff --stat
 ```
 
 - The syntax check must be silent.
+- `Build-AddonData.ps1 -Check` must say both files are up to date.
 - The quest count should only change when quests were meant to be added or removed. It's 35,023 as
   of September 2026.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
+  `.gitattributes` stores `qcQuest.lua` and `qcPinDB.lua` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` (step 9) before and after, and compare
   the summaries it prints.
 

@@ -1,0 +1,7 @@
+# Built by tools/Build-AddonData.ps1 with Windows line endings, and stored exactly as written, so
+# Build-AddonData.ps1 -Check sees the same bytes on every machine.
+QuestCompletist/qcQuest.lua -text
+QuestCompletist/qcPinDB.lua -text
+
+# The data files they're built from.
+data/*.jsonl text eol=lf
