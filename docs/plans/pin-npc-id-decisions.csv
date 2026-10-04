@@ -98,8 +98,6 @@ ID,1409,Exile's Reach,61.88,82.88,Captain Garrick,156626,Lady Jaina Proudmoore,5
 ID,1409,Exile's Reach,40.17,32.31,Herbert Gloomburst,167631,Wrathion,59980 Catapult Destruction,https://www.wowhead.com/quest=59980,,,A different creature
 ID,1409,Exile's Reach,40.17,32.22,Meredy Huntswell,156960,Wrathion,55989 Catapult Destruction,https://www.wowhead.com/quest=55989,,,A different creature
 ID,1409,Exile's Reach,40.17,32.09,Shuja Grimaxe,167632,Breka Grimaxe,59979 Like Ogres to the Slaughter,https://www.wowhead.com/quest=59979,,,Shuja and Breka Grimaxe are different NPCs
-ID,1409,Exile's Reach,39.65,31.98,Warlord Breka Grimaxe,167675,Thrall,59985 An End to Beginnings,https://www.wowhead.com/quest=59985,,,A different creature
-ID,1409,Exile's Reach,40.14,32.4,Warlord Breka Grimaxe,167633,Thrall,59981 Controlling their Stones,https://www.wowhead.com/quest=59981,,,A different creature
 ID,1409,Exile's Reach,40.26,32.49,Warlord Breka Grimaxe,167596,Thrall,59978 Right Beneath Their Eyes,https://www.wowhead.com/quest=59978,,,A different creature
 ID,1409,Exile's Reach,48.89,49.52,Warlord Breka Grimaxe,167212,Thrall,59975 To Darkmaul Citadel,https://www.wowhead.com/quest=59975,,,A different creature
 ID,1409,Exile's Reach,52.09,55.29,Warlord Breka Grimaxe,167212,Thrall,58915 Hjalmar's Final Execution; 58933 The Deadliest of Poisons; 59950 Stocking Up on Supplies; 85678 Repair Yourself,https://www.wowhead.com/quest=58915,,,A different creature
@@ -124,7 +122,7 @@ ID,504,Isle of Thunder,40.1,59.3,Danara Silverglass,4132,Krkk'kx,32525 Ashes of 
 ID,504,Isle of Thunder,55.6,74.5,Image of Archmage Vargoth,4142,[Deprecated for 4.x]Sparkleshell Tortoise,32549 Skin of the Saurok,https://www.wowhead.com/quest=32549,,,A different creature
 ID,504,Isle of Thunder,51.41,46.07,Lady Jaina Proudmoore,2456,Newton Burnside,32706 Allies in the Shadows,https://www.wowhead.com/quest=32706,,,A different creature
 ID,504,Isle of Thunder,63.24,72.23,Lady Jaina Proudmoore,2456,Newton Burnside,32656 The Fall of Shan Bu; 32652 To the Skies!; 32644 The Assault on Shaol'mara; 32654 Tear Down This Wall!; 32733 Za'Tual; 32567 The Beast Pens; 32581 Imposing Threat,https://www.wowhead.com/quest=32656,,,A different creature
-ID,504,Isle of Thunder,32.58,34.5,Lor'themar Theron,2454,Skeletal Fiend (Enraged Form),32277 To the Skies!; 32212 The Assault on Zeb'tula; 32276 Tear Down This Wall!,https://www.wowhead.com/quest=32277,,,A different creature
+ID,504,Isle of Thunder,32.5,35.59,Lor'themar Theron,2454,Skeletal Fiend (Enraged Form),32279 The Fall of Shan Bu; 32277 To the Skies!; 32212 The Assault on Zeb'tula; 32276 Tear Down This Wall!,https://www.wowhead.com/quest=32277,,,A different creature
 ID,504,Isle of Thunder,51.41,46.07,Lor'themar Theron,2454,Skeletal Fiend (Enraged Form),32709 Allies in the Shadows,https://www.wowhead.com/quest=32709,,,A different creature
 ID,504,Isle of Thunder,55.9,74.4,Lyalia,4139,[Deprecated for 4.x]Scorpid Terror,32545 The Residents of Ihgaluk,https://www.wowhead.com/quest=32545,,,A different creature
 ID,504,Isle of Thunder,61.9,52.1,Miura Brightweaver,2463,,32558 All In the Family; 32588 On Her Magic-ey Secret Service; 32555 Centuries in Sentries,https://www.wowhead.com/quest=32558,,,The game has no creature with this ID
@@ -185,7 +183,6 @@ ID,778,The Emerald Nightmare,57.7,48.3,Malfurion Stormrage,101097,Calydus,44283 
 ID,371,The Jade Forest,27.58,24.26,General Nazgrim,463,,31779 The Darkness Within,https://www.wowhead.com/quest=31779,,,The game has no creature with this ID
 ID,371,The Jade Forest,29.13,13.73,General Nazgrim,1110,Skeletal Raider,29694 Regroup!; 31770 You're Either With Us Or...,https://www.wowhead.com/quest=29694,,,A different creature
 ID,371,The Jade Forest,31.66,21.9,General Nazgrim,463,,31775 Assault on the Airstrip; 31776 Strongarm Tactics,https://www.wowhead.com/quest=31775,,,The game has no creature with this ID
-ID,371,The Jade Forest,33.64,10.62,General Nazgrim,1110,Skeletal Raider,31769 The Final Blow!,https://www.wowhead.com/quest=31769,,,A different creature
 ID,371,The Jade Forest,34.78,10.64,General Nazgrim,654,,31768 Fire Is Always the Answer; 31767 Finish Them!,https://www.wowhead.com/quest=31768,,,The game has no creature with this ID
 ID,371,The Jade Forest,32.0,13.3,Gi-Oh,1126,Large Crag Boar,31978 Priorities!,https://www.wowhead.com/quest=31978,,,A different creature
 ID,371,The Jade Forest,29.14,13.84,Kai-Lin Honeydew,1317,Lucan Cordell,31773 Prowler Problems,https://www.wowhead.com/quest=31773,,,A different creature
@@ -210,7 +207,6 @@ ID,2214,The Ringing Deeps,72.52,79.23,Dirty Scroll,456062,,83142 Order of Magnit
 ID,2214,The Ringing Deeps,49.2,44.6,Rusted Lever,443532,,82195 Rust and Redemption,https://www.wowhead.com/quest=82195,,,"An object or item, not a creature: leave NewId blank"
 ID,2214,The Ringing Deeps,43.87,32.04,Suspicious Vent,413694,,78827 Go Take Candle!; 78860 More Candles!; 83326 The Final Candle,https://www.wowhead.com/quest=78827,,,"An object or item, not a creature: leave NewId blank"
 ID,886,The Vindicaar,33.47,58.31,High Exarch Turalyon,109254,Sana Bloodletter,48200 Securing a Foothold; 48448 Hindering the Legion War Machine; 48600 Take the Edge Off; 48601 Felfire Shattering; 47473 Sizing Up The Opposition,https://www.wowhead.com/quest=48200,,,A different creature
-ID,886,The Vindicaar,33.52,58.33,High Exarch Turalyon,109254,Sana Bloodletter,48799 Fuel of a Doomed World; 48344 We Have a Problem; 48912 Supplying the Antoran Campaign; 48636 Fueling the Antoran Campaign,https://www.wowhead.com/quest=48799,,,A different creature
 ID,64,Thousand Needles,42.17,48.35,Brienna Starglow,25871,Midsummer Celebrant Costume: Gnome,27275 Together Again,https://www.wowhead.com/quest=27275,,,A different creature
 ID,64,Thousand Needles,46.77,56.12,Brienna Starglow,25871,Midsummer Celebrant Costume: Gnome,25871 Save the Sentinel; 25872 The Brave and the Bold,https://www.wowhead.com/quest=25871,,,A different creature
 ID,64,Thousand Needles,46.33,57.56,Montarr,25873,Midsummer Celebrant Costume: Human,25873 Horn of the Traitor,https://www.wowhead.com/quest=25873,,,A different creature

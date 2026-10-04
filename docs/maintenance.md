@@ -236,11 +236,15 @@ run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` 
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
   Notes that find no pin are listed.
 - Pins are written in a fixed order.
-- As of October 2026, rebuilding from the September 30 locations would change 158 lines of
-  `data\pins.jsonl`. Most are the same NPC at almost the same spot, which the rebuild merges into
-  one pin (Archmage Pentarus at 68.6, 42 and 68.49, 42.05). Review them before the next `-Apply`.
 
-With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical.
+With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
+September 30 locations were last applied in October 2026 (see the pipeline plan, "October 2026
+rebuild"). So whatever a rerun changes comes from new client data or a change made since, and is
+for review before `-Apply`.
+
+After `-Apply`, run `Apply-PinNpcIds.ps1 -WhatIf`. A row in `pin-npc-id-decisions.csv` whose pin
+the rebuild merged into another matches no pin, and stops that tool: point the row at the pin that
+took its quests, or delete it if that pin has a row of its own.
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -411,7 +415,7 @@ git diff --stat
 - The syntax check must be silent.
 - `Build-AddonData.ps1 -Check` must say both files are up to date. Its last line gives the quest and
   pin counts, which should only change when quests or pins were meant to be added or removed. As
-  of October 2026 they're 35,023 quests and 14,726 pins.
+  of October 2026 they're 35,023 quests and 14,680 pins.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
