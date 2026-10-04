@@ -158,6 +158,16 @@ stays unflagged.
   **Decision (the user's): a pin for a quest that's still valid and matches the client's data stays,
   however odd its spot looks.** Remove a pin only when its quest is gone, or the client's data puts
   it somewhere else.
+- **Three Midnight quests stuck in Uncategorized: filed under Eversong Woods** (2026-10-04). They're
+  94519 "What Hope in the Light?", 94527 "Null Space" and 95973 "Echoes of the Darkwell", from the
+  storyline "The Call of the Void". Blizzard files all three in area 15968, Midnight's Eversong Woods,
+  but two of our categories are called Eversong Woods, and their pins are on other maps (Isle of
+  Quel'Danas, Zul'Aman, Silvermoon City), so `Place-UncategorisedQuests.ps1` couldn't choose.
+  **Decision (the user's): file them as Blizzard does, under Midnight's Eversong Woods.** The tool now
+  lets the area's number choose between same-named categories (the category every other filed quest
+  of that area is in, as for the 199 already in Midnight's Eversong Woods), which placed exactly these
+  three. Its 2,000-quest accuracy check puts 1,702 back where they were (was 1,695), with 33 left
+  unfiled (was 41).
 
 ## Decisions (agreed 2026-09-30)
 

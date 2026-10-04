@@ -507,14 +507,14 @@
 {"id":94381,"name":"Outfitting and Allies","level":80,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6270}
 {"id":94380,"name":"Ranger Captain's Summons","level":80,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6270}
 {"id":91974,"name":"Sunfire to the Blade","level":80,"zone":"Eversong Woods","category":1511,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5841}
-{"id":94519,"name":"What Hope in the Light?","level":90,"zone":"Eversong Woods","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
+{"id":94519,"name":"What Hope in the Light?","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94520,"name":"Resurgence in Deatholme","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94523,"name":"My Poor Beautiful Self","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94522,"name":"They Always Write It Down","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94524,"name":"Under New Management","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94525,"name":"A Comeback Story","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94526,"name":"Verifiably Untrustworthy","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
-{"id":94527,"name":"Null Space","level":90,"zone":"Eversong Woods","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
+{"id":94527,"name":"Null Space","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94528,"name":"Carving Out Room","level":90,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94529,"name":"A Dark Shadow Looms","level":90,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":94531,"name":"Like Mother, Like Son","level":90,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
@@ -544,7 +544,7 @@
 {"id":95524,"name":"The Unremembered","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6227}
 {"id":95525,"name":"A Worthy Vigil","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6227}
 {"id":95954,"name":"An Ancient Foe","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6227}
-{"id":95973,"name":"Echoes of the Darkwell","level":90,"zone":"Eversong Woods","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
+{"id":95973,"name":"Echoes of the Darkwell","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6121}
 {"id":96049,"name":"Stalkers of the Stars","level":80,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6309}
 {"id":96080,"name":"Void Strike","level":80,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6270}
 {"id":96089,"name":"Somethin's Not Right","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6264}

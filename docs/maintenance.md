@@ -256,12 +256,16 @@ and `-AddonDir`, so they can run against a scratch copy.
 category that isn't defined. Run it with `-WhatIf` first. It files each quest by the first of these
 that gives an answer:
 1. a name of the form "<category>: …" ("Prey: Anguish Island")
-2. its Blizzard API area
+2. its Blizzard API area. When two of our categories share the area's name (the old and the
+   Midnight Eversong Woods), the map its pin is on chooses between them; failing that, the area's
+   number does: the category every other filed quest of that area is in, if at least 3 are
 3. the zone that contains that area on Blizzard's map
 4. the map its pin is on
 5. its own zone text
 6. the zone above its pin's map, when that map has no category itself (Naigtal → Voidstorm)
-7. its storyline, when the filed quests in it all agree and at least half of it is filed
+7. its map points in the game's own quest data (`QuestPOIBlob.csv`), when they all point to one
+   category
+8. its storyline, when the filed quests in it all agree and at least half of it is filed
 
 `-Explain` writes `tools\uncategorised_quests.csv`: each quest it placed, with the rule, and each
 quest it couldn't, with what's missing. The summary names the maps that have pins but no category,
