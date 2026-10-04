@@ -15,53 +15,6 @@ param(
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\AddonData.ps1"
 
-$AddonDir = (Resolve-Path $AddonDir).Path
-$DataDir = (Resolve-Path $DataDir).Path
-
-$questData = Join-Path $DataDir 'quests.jsonl'
-$pinData = Join-Path $DataDir 'pins.jsonl'
-try {
-    $quests = Read-JsonLines $questData
-    $pins = Read-JsonLines $pinData
-} catch {
-    "  $($_.Exception.Message)"
-    "The data files can't be read; nothing was written."
-    exit 1
-}
-$problems = @(Find-UnknownFields $questData $QuestFields) + @(Test-QuestRecords $quests) +
-    @(Find-UnknownFields $pinData $PinFields) + @(Test-PinRecords $pins)
-if ($problems.Count -gt 0) {
-    $problems | Select-Object -First 30 | ForEach-Object { "  $_" }
-    if ($problems.Count -gt 30) { "  ... and $($problems.Count - 30) more" }
-    "$($problems.Count) problem$(if ($problems.Count -ne 1) { 's' }) in the data files; nothing was written."
-    exit 1
-}
-
-$questPath = Join-Path $AddonDir 'qcQuest.lua'
-$pinPath = Join-Path $AddonDir 'qcPinDB.lua'
-$questLua = [IO.File]::ReadAllText($questPath)
-$outputs = @(
-    @{ Path = $questPath; Old = $questLua; New = (Set-LuaQuestRows $questLua (ConvertTo-LuaQuestRows $quests)) },
-    @{ Path = $pinPath; Old = [IO.File]::ReadAllText($pinPath); New = (ConvertTo-LuaPinFile $pins) }
-)
-
-$differ = 0
-foreach ($output in $outputs) {
-    $name = Split-Path -Leaf $output.Path
-    if ($output.Old -ceq $output.New) { "${name}: up to date"; continue }
-    $differ++
-    if ($Check) {
-        $old = $output.Old.Split("`n"); $new = $output.New.Split("`n")
-        $i = 0
-        while ($i -lt $old.Count -and $i -lt $new.Count -and $old[$i] -ceq $new[$i]) { $i++ }
-        $show = { param($lines) if ($i -lt $lines.Count) { $lines[$i].TrimEnd("`r") } else { '(end of file)' } }
-        "${name}: doesn't match the data files, first at line $($i + 1)"
-        "  file: $(& $show $old)"
-        "  data: $(& $show $new)"
-    } else {
-        [IO.File]::WriteAllText($output.Path, $output.New, (New-Object System.Text.UTF8Encoding $false))
-        "${name}: written"
-    }
-}
-"$($quests.Count) quests, $($pins.Count) pins"
-if ($Check -and $differ -gt 0) { exit 1 }
+$build = Invoke-AddonDataBuild -DataDir $DataDir -AddonDir $AddonDir -Check:$Check
+$build.Lines
+if (-not $build.Ok) { exit 1 }

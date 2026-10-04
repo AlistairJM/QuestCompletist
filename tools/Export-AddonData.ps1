@@ -18,6 +18,6 @@ $DataDir = (Resolve-Path $DataDir).Path
 
 $quests = ConvertFrom-LuaQuestBlock ([IO.File]::ReadAllText((Join-Path $AddonDir 'qcQuest.lua')))
 $pins = ConvertFrom-LuaPinFile ([IO.File]::ReadAllText((Join-Path $AddonDir 'qcPinDB.lua')))
-Write-JsonLines (Join-Path $DataDir 'quests.jsonl') $quests $QuestFields
-Write-JsonLines (Join-Path $DataDir 'pins.jsonl') $pins $PinFields
+[IO.File]::WriteAllText((Join-Path $DataDir 'quests.jsonl'), (ConvertTo-QuestJsonLines $quests), $script:Utf8)
+[IO.File]::WriteAllText((Join-Path $DataDir 'pins.jsonl'), (ConvertTo-PinJsonLines $pins), $script:Utf8)
 "Wrote $($quests.Count) quests and $($pins.Count) pins to $DataDir"

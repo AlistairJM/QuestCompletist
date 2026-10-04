@@ -59,9 +59,15 @@ The quest rows and the map pins are also kept in `data\`, one record per line, w
 the whole of `qcPinDB.lua`. With `-Check` it writes nothing and only says whether the Lua matches.
 It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
-**For now the tools still edit the Lua files.** Until they all write the data files instead (see
-[the plan](plans/data-structure.md)), run this after any step that changes `qcQuest.lua` or
-`qcPinDB.lua`, and commit the data files along with the Lua:
+**Tools are moving over to the data files** (see [the plan](plans/data-structure.md)). These already
+change the data files and rebuild the Lua themselves: `Apply-AccuracyFixes.ps1`,
+`Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`,
+`File-WeeklyEventQuests.ps1` and `Apply-PinNpcIds.ps1`. They take `-DataDir` and `-AddonDir`, and
+default to the checkout they're in. Before saving, they check that the Lua still matches the data
+files, and stop without changing anything if it doesn't.
+
+The other tools still edit the Lua. After any of them changes `qcQuest.lua` or `qcPinDB.lua`, run
+this, and commit the data files along with the Lua:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Export-AddonData.ps1    # about a minute
