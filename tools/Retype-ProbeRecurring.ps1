@@ -1,6 +1,7 @@
 <#
-Retypes quests stored as 1 (normal) that two independent sources say recur, in data\quests.jsonl,
-then rebuilds qcQuestData.lua:
+Retypes quests the addon treats as one-time - 1 (normal), 0 (no type) or 16 (the original data's
+weekly type, which the addon draws and counts as normal) - that two independent sources say recur,
+in data\quests.jsonl, then rebuilds qcQuestData.lua:
 
   - the game client, via the /qc typecheck probe: with the quest's data loaded,
     C_QuestInfoSystem.GetQuestClassification answers Recurring (5), and
@@ -27,18 +28,19 @@ $ErrorActionPreference = 'Stop'
 if (-not (Test-Path $ProbeResults)) { throw "Probe results not found at $ProbeResults" }
 $probe = [System.IO.File]::ReadAllText($ProbeResults)
 $recurring = @{}
-foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "(\d+)\|[^|]*\|(\d+),[01-],([01t])",?\s*$')) {
-    if ($m.Groups[2].Value -eq "1" -and $m.Groups[3].Value -eq "5" -and $m.Groups[4].Value -eq "1") { $recurring[$m.Groups[1].Value] = $true }
+foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "\d+\|[^|]*\|(\d+),[01-],([01t])",?\s*$')) {
+    if ($m.Groups[2].Value -eq "5" -and $m.Groups[3].Value -eq "1") { $recurring[$m.Groups[1].Value] = $true }
 }
-if (-not $recurring.Count) { throw "No loaded Recurring answers for type-1 quests in $ProbeResults" }
+if (-not $recurring.Count) { throw "No loaded Recurring answers in $ProbeResults" }
 
-# The probe recorded each quest's type as it was then; only quests still typed 1 are candidates,
-# so a rerun after an earlier retype finds only new cases.
+# Candidates are the quests typed one-time now, not when the probe ran, so a rerun after an
+# earlier retype finds only new cases.
+$oneTimeTypes = @(0, 1, 16)
 $quests = Read-QuestData $DataDir
 $retyped = @{ 4 = 0; 128 = 0 }
 foreach ($quest in $quests) {
     $questId = [string]$quest.id
-    if ($quest.type -ne 1 -or -not $recurring.ContainsKey($questId)) { continue }
+    if ($oneTimeTypes -notcontains $quest.type -or -not $recurring.ContainsKey($questId)) { continue }
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     if (-not (Test-Path $cached)) { continue }
     $json = [System.IO.File]::ReadAllText($cached)
@@ -50,7 +52,7 @@ foreach ($quest in $quests) {
     $retyped[$type]++
 }
 
-"Type-1 quests the loaded client calls Recurring: $($recurring.Count)"
+"Quests the loaded client calls Recurring: $($recurring.Count)"
 "Quests retyped: $($retyped[4] + $retyped[128])"
 foreach ($type in 4, 128) { if ($retyped[$type] -gt 0) { "  to type ${type}: $($retyped[$type])" } }
 if ($retyped[4] + $retyped[128] -gt 0) { Save-QuestData $quests $DataDir $AddonDir }
