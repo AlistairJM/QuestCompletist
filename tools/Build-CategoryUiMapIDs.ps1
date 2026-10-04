@@ -38,7 +38,7 @@ foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcAreaIDToCatego
     if (-not $byCategory.ContainsKey($cat)) { $byCategory[$cat] = New-Object System.Collections.Generic.List[string] }
     $byCategory[$cat].Add($m.Groups[1].Value)
 }
-# Entries added directly (the dungeon and raid categories from Add-DungeonCategories.ps1) have no
+# Entries added directly (such as the Shadowlands to War Within dungeon and raid categories) have no
 # zone mapping, so the current table is a candidate source too; the name check below still applies.
 foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcCategoryUiMapID = \{(.*?)^\}').Groups[1].Value, '\[(\d+)\]=(\d+)')) {
     $cat = [int]$m.Groups[1].Value
