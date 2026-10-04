@@ -6,19 +6,20 @@ Each FLAG row becomes [QuestID]=Reason: 1 = obsolete (reviewed), 2 = not in the 
 decisions (KEEP) stay in the CSV as a record and aren't written. The file is generated in quest ID
 order, one entry per line; edit the CSV and rerun rather than editing the file.
 
-Refuses to write anything if a FLAG row names a quest that isn't in qcQuestDatabase, a task quest
+Refuses to write anything if a FLAG row names a quest that isn't in data\quests.jsonl, a task quest
 (world quests and bonus objectives are generally still live; tools\QuestV2CliTask.csv), a quest ID
 twice, or a reason other than 1 or 2.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string]$Decisions = "$PSScriptRoot\..\docs\plans\unavailable-quest-decisions.csv"
 )
+. "$PSScriptRoot\AddonData.ps1"
 
-$questContent = [System.IO.File]::ReadAllText("$AddonDir\qcQuest.lua", [System.Text.Encoding]::UTF8)
 $inDatabase = New-Object System.Collections.Generic.HashSet[string]
-foreach ($m in [regex]::Matches($questContent, '(?m)^\[(\d+)\]=\{')) { [void]$inDatabase.Add($m.Groups[1].Value) }
+foreach ($quest in (Read-QuestData $DataDir)) { [void]$inDatabase.Add([string]$quest.id) }
 
 $isTask = New-Object System.Collections.Generic.HashSet[string]
 foreach ($row in Import-Csv "$ToolsDir\QuestV2CliTask.csv") { [void]$isTask.Add($row.ID) }
@@ -30,7 +31,7 @@ foreach ($row in Import-Csv $Decisions) {
     $id = $row.QuestID
     if ($flags.Contains($id)) { $problems.Add("$id is listed twice"); continue }
     if ($row.Reason -notin @("1", "2")) { $problems.Add("$id has reason '$($row.Reason)', not 1 or 2"); continue }
-    if (-not $inDatabase.Contains($id)) { $problems.Add("$id isn't in qcQuestDatabase"); continue }
+    if (-not $inDatabase.Contains($id)) { $problems.Add("$id isn't in quests.jsonl"); continue }
     if ($isTask.Contains($id)) { $problems.Add("$id is a task quest"); continue }
     $flags[$id] = $row.Reason
 }

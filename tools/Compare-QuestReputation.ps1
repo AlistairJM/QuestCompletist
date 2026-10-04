@@ -11,8 +11,9 @@ Output: quest_reputation_compare.csv (one row per quest where ours and the API d
 plus a summary on stdout.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$QuestFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua')
 )
 
 $content = [System.IO.File]::ReadAllText($QuestFile)
@@ -22,18 +23,15 @@ $fm = [regex]::Match($content, '(?s)qcFactions = \{(.*?)\n\}')
 foreach ($m in [regex]::Matches($fm.Groups[1].Value, '\[(\d+)\]\s*=\s*"((?:[^"\\]|\\.)*)"')) { $qcFactions[$m.Groups[1].Value] = $m.Groups[2].Value }
 
 . "$PSScriptRoot\QuestReputation.ps1"
+. "$PSScriptRoot\AddonData.ps1"
 
 $sideTable = Get-QuestReputation $content
 
-$ours = @{}; $shapes = @{}
-$start = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
-foreach ($l in ($content.Substring($start) -split "`r`n")) {
-    $m = [regex]::Match($l, '^\[(\d+)\]=\{(.*)\},?$'); if (-not $m.Success) { continue }
-    $id = $m.Groups[1].Value
-    $f = Split-Top $m.Groups[2].Value
-    $shapes[$f.Count]++
+$ours = @{}
+foreach ($quest in (Read-QuestData $DataDir)) {
+    $id = [string]$quest.id
     $set = if ($sideTable.ContainsKey($id)) { $sideTable[$id] } else { @{} }
-    $ours[$id] = @{ Rep = $set; Fields = $f.Count }
+    $ours[$id] = @{ Rep = $set }
 }
 
 $orphans = @($sideTable.Keys | Where-Object { -not $ours.ContainsKey($_) })
@@ -58,14 +56,13 @@ foreach ($id in $ours.Keys) {
     $kind = if (-not $o.Count -and -not $api.Count) { "neither" } elseif (-not $o.Count) { "api-only" } elseif (-not $api.Count) { "ours-only" } elseif ($a -eq $b) { "match" } else { "differ" }
     $summary[$kind]++
     if ($kind -in "api-only", "ours-only", "differ") {
-        $rows.Add([PSCustomObject]@{ QuestID = $id; Kind = $kind; OurFields = $ours[$id].Fields; Ours = $b; Api = $a; ApiFactionNames = (($names.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ";") })
+        $rows.Add([PSCustomObject]@{ QuestID = $id; Kind = $kind; Ours = $b; Api = $a; ApiFactionNames = (($names.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ";") })
     }
 }
 
 $outFile = "$ToolsDir\quest_reputation_compare.csv"
 $rows | Sort-Object { [int]$_.QuestID } | Export-Csv $outFile -NoTypeInformation -Encoding utf8
-"Entry shapes: " + (($shapes.GetEnumerator() | Sort-Object { [int]$_.Key } | ForEach-Object { "$($_.Key) fields=$($_.Value)" }) -join ", ")
-"qcQuestReputation rows: $($sideTable.Count)" + $(if ($orphans.Count) { " (WARNING - $($orphans.Count) not in qcQuestDatabase: $($orphans -join ','))" } else { "" })
+"qcQuestReputation rows: $($sideTable.Count)" + $(if ($orphans.Count) { " (WARNING - $($orphans.Count) not in quests.jsonl: $($orphans -join ','))" } else { "" })
 "Quests the API 404s on (no reputation source): $noApi"
 "Comparison: " + (($summary.GetEnumerator() | Sort-Object Name | ForEach-Object { "$($_.Name)=$($_.Value)" }) -join ", ")
 "API-only rows with more than one faction: $(@($rows | Where-Object { $_.Kind -eq 'api-only' -and $_.Api -match ';' }).Count)"

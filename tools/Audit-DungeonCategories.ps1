@@ -14,13 +14,15 @@ The menu is read by loading qcMenu.lua in Lua 5.1, so nested submenus come out e
 builds them. Writes tools/dungeon_audit.csv.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string]$Lua = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
 )
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot\AddonData.ps1"
 
 foreach ($table in "JournalTier", "JournalTierXInstance", "JournalInstance", "Map") {
     if ($Refresh -or -not (Test-Path "$ToolsDir\$table.csv")) {
@@ -130,14 +132,14 @@ foreach ($id in $expansionOf.Keys) {
 }
 $questsIn = @{}
 $tied = @{}
-foreach ($m in [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)",(-?\d+),')) {
-    $questId = $m.Groups[1].Value
-    $category = $m.Groups[4].Value
+foreach ($quest in (Read-QuestData $DataDir)) {
+    $questId = [string]$quest.id
+    $category = [string]$quest.category
     $questsIn[$category] = 1 + $questsIn[$category]
     $how = @{}
-    $prefix = [regex]::Match($m.Groups[2].Value, '^(.+?):\s')
+    $prefix = [regex]::Match($quest.name, '^(.+?):\s')
     if ($prefix.Success) { $how[(Get-Key $prefix.Groups[1].Value)] += @("name") }
-    if ($m.Groups[3].Value) { $how[(Get-Key $m.Groups[3].Value)] += @("zone text") }
+    if ($quest.zone) { $how[(Get-Key $quest.zone)] += @("zone text") }
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     if (Test-Path $cached) {
         $area = [regex]::Match([System.IO.File]::ReadAllText($cached), '"area":\{.*?"name":"([^"]+)"')
@@ -146,7 +148,7 @@ foreach ($m in [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)
     foreach ($key in $how.Keys) {
         if (-not $instanceKeys.ContainsKey($key)) { continue }
         if (-not $tied.ContainsKey($key)) { $tied[$key] = New-Object System.Collections.Generic.List[object] }
-        $tied[$key].Add([PSCustomObject]@{ QuestID = $questId; Name = $m.Groups[2].Value; Category = $category; How = $how[$key] -join "+" })
+        $tied[$key].Add([PSCustomObject]@{ QuestID = $questId; Name = $quest.name; Category = $category; How = $how[$key] -join "+" })
     }
 }
 

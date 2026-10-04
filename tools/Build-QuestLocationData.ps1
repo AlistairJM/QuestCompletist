@@ -1,7 +1,7 @@
 <#
 Phase 1 pipeline: join wago.tools QuestPOIBlob + QuestPOIPoint + UiMapAssignment
 into per-quest, per-map converted (mapX%, mapY%) positions for quest-giver pins,
-then cross-reference against this addon's own qcQuestDatabase.
+then cross-reference against this addon's own quests (data\quests.jsonl).
 
 Inputs (expected already downloaded into tools/):
   QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv
@@ -9,9 +9,12 @@ Inputs (expected already downloaded into tools/):
 Output:
   tools/quest_locations.csv - QuestID, UiMapID, MapX, MapY, NumPointsUsed, InOurDB, OurZoneName
 #>
-
-$toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
-$questFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
+param(
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data')
+)
+. "$PSScriptRoot\AddonData.ps1"
+$toolsDir = $ToolsDir
 
 Write-Output "Loading source tables..."
 $blobs = Import-Csv "$toolsDir\QuestPOIBlob.csv"
@@ -67,18 +70,12 @@ function Get-BestConversion($worldX, $worldY, $instanceId, $candidateRegions) {
     return $null
 }
 
-Write-Output "Loading our own qcQuestDatabase quest IDs and zone names..."
-$content = Get-Content $questFile -Raw
-$startIdx = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
-$dbBlock = $content.Substring($startIdx)
-# Names can hold escaped quotes (Grillok \"Darkeye\"); a plain [^"]* missed 29 quests, which then
-# looked missing and were queued to be inserted again.
-$ourQuestMatches = [regex]::Matches($dbBlock, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)"')
+Write-Output "Loading our own quest IDs and zone names..."
 $ourQuests = @{}
-foreach ($m in $ourQuestMatches) {
-    $ourQuests[$m.Groups[1].Value] = @{ Name = $m.Groups[2].Value; Zone = $m.Groups[3].Value }
+foreach ($quest in (Read-QuestData $DataDir)) {
+    $ourQuests[[string]$quest.id] = @{ Name = $quest.name; Zone = $quest.zone }
 }
-Write-Output "Our qcQuestDatabase has $($ourQuests.Count) quests parsed."
+Write-Output "Our quest data has $($ourQuests.Count) quests."
 
 Write-Output "Processing quest-giver blobs (ObjectiveIndex = -1)..."
 $giverBlobs = $blobs | Where-Object { $_.ObjectiveIndex -eq "-1" }
@@ -125,5 +122,5 @@ Write-Output "Written to $outFile"
 
 $inOurDb = ($results | Where-Object { $_.InOurDB }).Count
 $notInOurDb = $results.Count - $inOurDb
-Write-Output "Quests already in our qcQuestDatabase: $inOurDb"
-Write-Output "Quests NOT in our qcQuestDatabase (gap list): $notInOurDb"
+Write-Output "Quests already in our quest data: $inOurDb"
+Write-Output "Quests NOT in our quest data (gap list): $notInOurDb"

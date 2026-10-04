@@ -8,14 +8,16 @@ Run it after anything that moves quests between categories (Place-UncategorisedQ
 Uncategorized entry (category 0) is kept even when empty, so quests placed there later show up.
 #>
 param(
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [switch]$WhatIf
 )
+. "$PSScriptRoot\AddonData.ps1"
 
 $quest = [System.IO.File]::ReadAllText("$AddonDir\qcQuest.lua", [System.Text.Encoding]::UTF8)
 $questCount = @{}
-foreach ($m in [regex]::Matches($quest, '(?m)^\[\d+\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",(-?\d+),')) {
-    $questCount[$m.Groups[1].Value] = 1 + $questCount[$m.Groups[1].Value]
+foreach ($record in (Read-QuestData $DataDir)) {
+    $questCount[[string]$record.category] = 1 + $questCount[[string]$record.category]
 }
 $categoryName = @{}
 foreach ($m in [regex]::Matches([regex]::Match($quest, '(?sm)^qcQuestCategories=\{(.*?)^\}').Groups[1].Value, '\{(-?\d+),"((?:[^"\\]|\\.)*)"\}')) {

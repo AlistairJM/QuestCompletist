@@ -1,5 +1,5 @@
 <#
-Report-only. Gathers independent evidence about whether each quest in qcQuestDatabase is still
+Report-only. Gathers independent evidence about whether each quest in data\quests.jsonl is still
 obtainable, for building qcUnavailableQuests.lua. Makes no edits.
 
 Quest titles are deliberately NOT used: Blizzard marks retired quests inconsistently.
@@ -10,17 +10,17 @@ Signals per quest (1 = present):
   InClient      in the client's QuestV2 table
   GiverPOI      client has a quest-giver map point (QuestPOIBlob, ObjectiveIndex -1)
   AnyPOI        client has any map point for it
-  InPinDB       our qcPinDB has a pin for it
+  InPinDB       one of our pins (data\pins.jsonl) offers it
   InQuestLine   part of a client quest line (QuestLineXQuest)
   InAchievement an achievement criterion requires completing it (Criteria Type 27)
-  IsPrereq      another quest in our DB lists it as its prerequisite (field 14)
+  IsPrereq      another of our quests lists it as its prereq
 Bucket: task / api-found / nontask-inclient / not-in-client
 
 Output: quest_availability_signals.csv (every quest) plus a summary on stdout.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string[]]$SampleIds = @(),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
@@ -44,27 +44,20 @@ $giverPoi = Set-Of ($blobs | Where-Object ObjectiveIndex -eq "-1" | ForEach-Obje
 $inLine = Set-Of (Import-Csv "$ToolsDir\QuestLineXQuest.csv" | ForEach-Object QuestID)
 $inAch = Set-Of (Import-Csv "$ToolsDir\Criteria.csv" | Where-Object Type -eq "27" | ForEach-Object Asset)
 
-$pinText = [System.IO.File]::ReadAllText("$AddonDir\qcPinDB.lua")
+. "$PSScriptRoot\AddonData.ps1"
 $inPin = @{}
-foreach ($m in [regex]::Matches($pinText, ',\{([\d,]+)\}\}')) { foreach ($q in $m.Groups[1].Value -split ",") { $inPin[$q] = $true } }
+foreach ($pin in (Read-PinData $DataDir)) { foreach ($q in $pin.quests) { $inPin["$q"] = $true } }
 
-$content = [System.IO.File]::ReadAllText("$AddonDir\qcQuest.lua")
-$start = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
-$entries = New-Object System.Collections.Generic.List[object]
+$entries = @(Read-QuestData $DataDir)
 $prereqOf = @{}
-$p = '^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",(\d+|Unknown),"((?:[^"\\]|\\.)*)",-?\d+,(\d+),\d+,\d+,\d+,-?\d+,-?\d+,-?\d+,-?\d+,(-?\d+)'
-foreach ($l in ($content.Substring($start) -split "`r`n")) {
-    $m = [regex]::Match($l, $p); if (-not $m.Success) { continue }
-    $entries.Add($m)
-    if ($m.Groups[6].Value -ne "0") { $prereqOf[$m.Groups[6].Value] = $true }
-}
+foreach ($quest in $entries) { if ($quest.prereq) { $prereqOf["$($quest.prereq)"] = $true } }
 
-$rows = foreach ($m in $entries) {
-    $id = $m.Groups[1].Value
+$rows = foreach ($quest in $entries) {
+    $id = [string]$quest.id
     $api = Test-Path "$ToolsDir\quest_api_cache\$id.json"
     $bucket = if ($isTask.ContainsKey($id)) { "task" } elseif ($api) { "api-found" } elseif ($inClient.ContainsKey($id)) { "nontask-inclient" } else { "not-in-client" }
     [PSCustomObject]@{
-        QuestID = $id; Name = $m.Groups[2].Value; Zone = $m.Groups[4].Value; Type = $m.Groups[5].Value; Bucket = $bucket
+        QuestID = $id; Name = $quest.name; Zone = $quest.zone; Type = [string]$quest.type; Bucket = $bucket
         ApiFound = [int]$api; IsTask = [int]$isTask.ContainsKey($id); InClient = [int]$inClient.ContainsKey($id)
         GiverPOI = [int]$giverPoi.ContainsKey($id); AnyPOI = [int]$anyPoi.ContainsKey($id); InPinDB = [int]$inPin.ContainsKey($id)
         InQuestLine = [int]$inLine.ContainsKey($id); InAchievement = [int]$inAch.ContainsKey($id); IsPrereq = [int]$prereqOf.ContainsKey($id)
