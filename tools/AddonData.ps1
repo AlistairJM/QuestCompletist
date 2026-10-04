@@ -1,15 +1,16 @@
 <#
-Shared reading and writing of the quest and pin data, dot-sourced by Build-AddonData.ps1 and
-Export-AddonData.ps1:
+Shared reading and writing of the quest and pin data, dot-sourced by Build-AddonData.ps1 and every
+tool that reads or changes quests or pins:
 	. "$PSScriptRoot\AddonData.ps1"
 
-data\quests.jsonl and data\pins.jsonl hold one record per line, with named fields:
+data\quests.jsonl and data\pins.jsonl are the master copy of the quests and pins. They hold one
+record per line, with named fields:
 	{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}
 	{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}
 Fields that are empty are left out: a quest's profession, holiday, covenant, storyline and prereq
 when 0, and a pin's npc when 0, its name when it has none and its note when it has none. The
 records become the qcQuestDatabase rows of qcQuest.lua, in file order, and the whole of qcPinDB.lua,
-map by map in ascending order.
+map by map in ascending order. Both start with a line saying they're generated.
 #>
 
 $script:Invariant = [Globalization.CultureInfo]::InvariantCulture
@@ -25,45 +26,6 @@ $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
 
-function ConvertFrom-LuaString([string]$token) {
-    $body = $token.Substring(1, $token.Length - 2)
-    return [regex]::Replace($body, '\\(\d{1,3}|.)', {
-        param($m)
-        $e = $m.Groups[1].Value
-        switch -CaseSensitive ($e) {
-            '\' { return '\' }
-            '"' { return '"' }
-            "'" { return "'" }
-            'n' { return "`n" }
-            't' { return "`t" }
-            default {
-                if ($e -match '^\d+$' -and [int]$e -lt 128) { return [string][char][int]$e }
-                throw "Unsupported escape \$e in $token"
-            }
-        }
-    })
-}
-
-# One Lua value: a string, nil, a {..} list of whole numbers, or a number.
-function ConvertFrom-LuaValue([string]$token) {
-    if ($token.StartsWith('"')) { return ConvertFrom-LuaString $token }
-    if ($token -eq 'nil') { return $null }
-    if ($token.StartsWith('{')) {
-        $ids = New-Object System.Collections.Generic.List[long]
-        foreach ($part in $token.Substring(1, $token.Length - 2).Split(',')) {
-            if ($part -ne '') { $ids.Add([long]::Parse($part, $script:Invariant)) }
-        }
-        return , $ids.ToArray()
-    }
-    if ($token -match '^-?\d+$') { return [long]::Parse($token, $script:Invariant) }
-    if ($token -match '^-?\d+\.\d+$') { return [decimal]::Parse($token, $script:Invariant) }
-    throw "Not a value: $token"
-}
-
-function Split-LuaValues([string]$inner) {
-    return , @([regex]::Matches($inner, '"(?:[^"\\]|\\.)*"|\{[^}]*\}|[^,]+') | ForEach-Object { $_.Value })
-}
-
 function Find-QuestBlock([string]$luaText) {
     $open = [regex]::Match($luaText, '(?m)^qcQuestDatabase=\{\r?\n')
     if (-not $open.Success) { throw "qcQuestDatabase={ not found" }
@@ -72,59 +34,6 @@ function Find-QuestBlock([string]$luaText) {
     if (-not $close.Success) { throw "The end of qcQuestDatabase not found" }
     return @{ Start = $start; End = $start + $close.Index }
 }
-
-function ConvertFrom-LuaQuestBlock([string]$luaText) {
-    $block = Find-QuestBlock $luaText
-    $quests = New-Object System.Collections.Generic.List[object]
-    $lineNo = 0
-    foreach ($line in $luaText.Substring($block.Start, $block.End - $block.Start).Split("`n")) {
-        $lineNo++
-        $line = $line.TrimEnd("`r")
-        if ($line -eq '' -or $line.StartsWith('--')) { continue }
-        $m = [regex]::Match($line, '^\[(\d+)\]=\{(.*)\},$')
-        if (-not $m.Success) { throw "qcQuestDatabase line $lineNo isn't a quest row: $line" }
-        $values = Split-LuaValues $m.Groups[2].Value
-        if ($values.Count -ne $QuestFields.Count) { throw "Quest $($m.Groups[1].Value) has $($values.Count) fields, not $($QuestFields.Count)" }
-        $quest = [ordered]@{}
-        for ($f = 0; $f -lt $QuestFields.Count; $f++) {
-            $value = ConvertFrom-LuaValue $values[$f]
-            if ($QuestOptionalFields -contains $QuestFields[$f] -and $value -eq 0) { continue }
-            $quest[$QuestFields[$f]] = $value
-        }
-        if ([string]$quest.id -ne $m.Groups[1].Value) { throw "Quest [$($m.Groups[1].Value)] holds id $($quest.id)" }
-        $quests.Add($quest)
-    }
-    return , $quests
-}
-
-function ConvertFrom-LuaPinFile([string]$luaText) {
-    $pins = New-Object System.Collections.Generic.List[object]
-    $map = $null
-    $lineNo = 0
-    foreach ($line in $luaText.Split("`n")) {
-        $lineNo++
-        $line = $line.TrimEnd("`r")
-        if ($line -eq 'qcPinDB = {' -or $line -eq "`t}," -or $line -eq '}' -or $line -eq '') { continue }
-        $m = [regex]::Match($line, '^\t\[(\d+)\] = \{$')
-        if ($m.Success) { $map = [long]$m.Groups[1].Value; continue }
-        $m = [regex]::Match($line, '^\t\t\{(.*)\},$')
-        if (-not $m.Success -or $null -eq $map) { throw "qcPinDB.lua line $lineNo isn't a pin: $line" }
-        $values = Split-LuaValues $m.Groups[1].Value
-        if ($values.Count -lt 6 -or $values.Count -gt 7) { throw "qcPinDB.lua line $lineNo has $($values.Count) fields" }
-        $pin = [ordered]@{ map = $map; icon = (ConvertFrom-LuaValue $values[0]) }
-        $npc = ConvertFrom-LuaValue $values[1]
-        if ($npc -ne 0) { $pin.npc = $npc }
-        $name = ConvertFrom-LuaValue $values[2]
-        if ($null -ne $name) { $pin.name = $name }
-        $pin.x = ConvertFrom-LuaValue $values[3]
-        $pin.y = ConvertFrom-LuaValue $values[4]
-        $pin.quests = ConvertFrom-LuaValue $values[5]
-        if ($values.Count -eq 7) { $pin.note = ConvertFrom-LuaValue $values[6] }
-        $pins.Add($pin)
-    }
-    return , $pins
-}
-
 
 # The text of quests.jsonl and pins.jsonl. Strings go in double quotes with \ and " escaped (the
 # same in Lua and JSON; control characters are refused by the checks), and numbers are written the
@@ -274,6 +183,7 @@ function Test-PinRecords($pins) {
 # Whole numbers turn into text the same way in any culture, so they're joined as they are.
 function ConvertTo-LuaQuestRows($quests) {
     $sb = New-Object System.Text.StringBuilder (6MB)
+    [void]$sb.Append("-- Generated from data\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not these rows.`r`n")
     foreach ($q in $quests) {
         $profession = $q.profession; if ($null -eq $profession) { $profession = 0 }
         $holiday = $q.holiday; if ($null -eq $holiday) { $holiday = 0 }
@@ -297,6 +207,7 @@ function ConvertTo-LuaPinFile($pins) {
         $byMap[$map].Add($pin)
     }
     $sb = New-Object System.Text.StringBuilder (2MB)
+    [void]$sb.Append("-- Generated from data\pins.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`n")
     [void]$sb.Append("qcPinDB = {`r`n")
     foreach ($entry in $byMap.GetEnumerator()) {
         [void]$sb.Append("`t[" + $entry.Key + "] = {`r`n")
@@ -417,7 +328,8 @@ function Assert-LuaMatchesData([string]$DataDir, [string]$AddonDir) {
     $check = Invoke-AddonDataBuild -DataDir $DataDir -AddonDir $AddonDir -Check
     if ($check.Ok) { return }
     throw ("Nothing was saved: the Lua files don't match the data files.`n  " + ($check.Lines -join "`n  ") +
-        "`nIf a tool changed the Lua, run Export-AddonData.ps1 first, then this again.")
+        "`nThe quest rows and the pins are generated. Make that change in the data files instead, run" +
+        " Build-AddonData.ps1 (which overwrites the Lua with what the data files hold), then this again.")
 }
 
 function Complete-AddonDataSave([string]$DataDir, [string]$AddonDir) {

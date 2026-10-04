@@ -1,3 +1,4 @@
+-- Generated from data\pins.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.
 qcPinDB = {
 	[1] = {
 		{1,3293,"Rezlak",46.36,22.93,{834,835}},
