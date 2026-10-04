@@ -9,7 +9,7 @@ row of 14 values.
 | Point | What | Status |
 |---|---|---|
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
-| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120); stage 2 under way |
+| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120). Stage 2: every tool that changes quests or pins moved (#121, #122, #123); the 10 that only read them still to move. Stage 3 can go ahead. |
 | 4 | Named fields for the tools | Comes with point 6: tools read and write records through `tools\AddonData.ps1` |
 | 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | After point 6, as a change to the build step and to qcCore.lua |
 | 2 | The zone text (field 4, never read in game) left out of the rows | After point 6, the same way |
@@ -20,7 +20,7 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
 
 ## Point 6, in three stages
 
-1. **The data files, the build step and the export (this PR).** `data\quests.jsonl` and
+1. **The data files, the build step and the export (#120).** `data\quests.jsonl` and
    `data\pins.jsonl` hold the same records as the Lua. `Build-AddonData.ps1` checks them and writes
    the Lua; `-Check` confirms the two agree. The Lua stays the copy the tools edit, so
    `Export-AddonData.ps1` brings the data files up to date after a tool runs. The Lua text was
@@ -63,9 +63,10 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
      batch 2.
    - Every save now first checks that the Lua still matches the data files. Rebuilding it otherwise
      would lose a change an old-style tool made, or a hand edit.
-3. **Switch.** Once no tool edits the Lua, the data files become the master copy:
-   `Export-AddonData.ps1` is deleted, the generated Lua gets a "generated, don't edit" header, and
-   the maintenance notes say to edit only the data files.
+3. **Switch.** Once no tool edits the quest rows or pins in the Lua, the data files become the
+   master copy: `Export-AddonData.ps1` is deleted, the generated Lua gets a "generated, don't edit"
+   header, and the maintenance notes say to edit only the data files. That condition was met with
+   batch 3. The read-only tools don't hold it up; they have to move before points 1 to 3.
 
 ## Decisions
 

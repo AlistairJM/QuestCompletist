@@ -59,17 +59,18 @@ The quest rows and the map pins are also kept in `data\`, one record per line, w
 the whole of `qcPinDB.lua`. With `-Check` it writes nothing and only says whether the Lua matches.
 It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
-**Tools are moving over to the data files** (see [the plan](plans/data-structure.md)). These already
-change the data files and rebuild the Lua themselves: `Apply-AccuracyFixes.ps1`,
-`Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`,
-`File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`,
-`Build-QuestLines.ps1`, `Apply-PinNpcIds.ps1` and `Assemble-PinDB.ps1`. They take `-DataDir` and
-`-AddonDir`, and
-default to the checkout they're in. Before saving, they check that the Lua still matches the data
-files, and stop without changing anything if it doesn't.
+**Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
+`Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
+`Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`,
+`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Apply-PinNpcIds.ps1` and `Assemble-PinDB.ps1`.
+They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
+a trial run needs both folders. Before saving, they check that the Lua still matches the data
+files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
 
-The other tools still edit the Lua. After any of them changes `qcQuest.lua` or `qcPinDB.lua`, run
-this, and commit the data files along with the Lua:
+The other tools edit tables the data files don't hold (menus, categories, the zone table,
+reputation rewards), so the rows and pins stay in step. Only a hand edit to the quest rows in
+`qcQuest.lua` or to `qcPinDB.lua` puts them out of step. Until stage 3 of
+[the plan](plans/data-structure.md), bring the data files up to date after one with:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Export-AddonData.ps1    # about a minute
@@ -174,7 +175,7 @@ neither source proves a quest is one-time:
 
 ### 4. Storylines
 
-`Build-QuestLines.ps1` regenerates each quest's storyline (field 13) and the `qcQuestLines` table
+`Build-QuestLines.ps1` regenerates each quest's `storyline` and the `qcQuestLines` table
 from Blizzard's own questline tables. It skips internal questlines ("8.0 Professions - … - SCS",
 "[DNT] …"). It stores each storyline's quests in Blizzard's order.
 
@@ -226,7 +227,7 @@ run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` 
   the same NPC at almost the same spot, which the rebuild merges into one pin (Archmage Pentarus at
   68.6, 42 and 68.49, 42.05). Review them before the next `-Apply`.
 
-With no real changes, a rerun leaves `qcPinDB.lua` byte-identical.
+With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
@@ -339,7 +340,7 @@ database to the IDs of the game's Holidays table that its calendar event carries
 `/qc holidays` in game lists what the filter sees: which holidays are running, each one's next dates,
 and any calendar holiday that isn't tied to a quest. A holiday there that should match one of ours,
 under a new ID, means an entry in `qcHolidays` needs that ID adding. A new holiday with quests
-needs a new flag, an entry, and its quests' field 11 set.
+needs a new flag, an entry, and its quests' `holiday` set in `data\quests.jsonl`.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
