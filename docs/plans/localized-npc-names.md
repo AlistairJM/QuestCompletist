@@ -137,15 +137,26 @@ game for that creature's name. So it has to be the right creature, or 0.
   once it's been looked up.
 
 **The lookup, by hand.** 27 of the ID rows are objects or items, marked "leave NewId blank". For the
-other 137 pins (102 NPC-and-map pairs, mostly on Isle of Thunder, the Jade Forest, Exile's Reach and
-Krasarang Wilds), open the row's Wowhead link, read the quest's start NPC and its ID, and put the ID
-in NewId. If the quest starts at an object or item, leave NewId blank. Then rerun the tool, which
+other 109 pins (91 NPC-and-map pairs, mostly on Isle of Thunder, Krasarang Wilds and the Jade
+Forest), open the row's Wowhead link, read the quest's start NPC and its ID, and put the ID in
+NewId. If the quest starts at an object or item, leave NewId blank. Then rerun the tool, which
 sets just those, and ask the game for each new ID's name in English: it must be the pin's name.
 (There were 145 pins, 106 pairs, until October 2026, when four Midsummer Flame Guardian pins went:
 each was beside the same guardian's pin with the right ID and the same quest. See data-cleanup.md,
 "Found later". The October 2026 pin rebuild then merged four more into a pin of the same name and
 map that has its own row, and moved Lor'themar Theron's Isle of Thunder row to the pin that took
 his quests; see quest-location-data-pipeline.md.)
+
+**Filled from pins of the same name (October 2026).** 28 rows had a pin on the same map with the
+same name and an ID, which the English probe had already confirmed is that name. Their NewId is
+that pin's ID, applied, and their Note says which pin it came from.
+- A story character with a different ID in each phase (Captain Garrick, General Nazgrim, Rell
+  Nightwind, Shuja Grimaxe, Rivett Clutchpop) took the nearest such pin's ID. That's the right name
+  in every language, though it may be another phase's creature.
+- With the IDs in, a pipeline rerun put seven pins of one character beside a pin with the same ID,
+  so that rebuild was applied too, as the pipeline's 3-point rule asks: Captain Garrick, Warlord
+  Breka Grimaxe, Rell Nightwind and Chen Stormstout. The six rows whose pins it merged were
+  deleted, as the pin that took their quests already had their ID.
 
 **Checks:**
 - 235 lines change, each only in the ID or name field; line endings are unchanged.
@@ -245,4 +256,4 @@ inside an instance either; this covers them.) Then switch back to English.
   - **English:** pins look as before.
   
   Merged as #114. All four phases are done; the Wowhead lookups for pins with cleared IDs remain
-  (102 NPC-and-map pairs since October 2026, was 106).
+  (91 NPC-and-map pairs, 109 pins, since October 2026; 106 pairs to begin with).

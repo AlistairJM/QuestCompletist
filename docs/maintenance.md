@@ -249,8 +249,12 @@ rebuild"). So whatever a rerun changes comes from new client data or a change ma
 for review before `-Apply`.
 
 After `-Apply`, run `Apply-PinNpcIds.ps1 -WhatIf`. A row in `pin-npc-id-decisions.csv` whose pin
-the rebuild merged into another matches no pin, and stops that tool: point the row at the pin that
-took its quests, or delete it if that pin has a row of its own.
+the rebuild merged into another matches no pin, and stops that tool. Point the row at the pin that
+took its quests, or delete it if that pin has a row of its own or already has the row's NewId.
+
+It works the other way too. When `Apply-PinNpcIds.ps1` gives a pin the ID of another pin of that NPC
+within 3 points, the next rebuild merges the two. So after setting IDs, rerun the pipeline: apply
+what it merges, then check the rows again.
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -449,7 +453,7 @@ git diff --stat
 - The syntax check must be silent.
 - `Build-AddonData.ps1 -Check` must say both files are up to date. Its last line gives the quest and
   pin counts, which should only change when quests or pins were meant to be added or removed. As
-  of October 2026 they're 35,023 quests and 14,680 pins.
+  of October 2026 they're 35,023 quests and 14,673 pins.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.

@@ -130,6 +130,10 @@ leaves the pins byte-identical. Five rows of `pin-npc-id-decisions.csv` were for
 were deleted, as the pin that took their quests has a row of its own, and Lor'themar Theron's moved
 to the pin that took his quests.
 
+Later the same day, filling 28 NPC IDs from pins of the same name (localized-npc-names.md) gave seven
+pins the ID of a pin of that character within 3 points, so the rebuild was applied again: 14,673
+pins, and a rerun still leaves them byte-identical.
+
 ## Possible future extensions (explicitly not this plan)
 
 - **Forever**: wago.tools tracks a `wow_classic_beta` build (`1.60.1.69913`) that matches Forever's own `/dump GetBuildInfo()` output exactly. If that build's client files include the same `QuestPOIBlob`/`QuestPOIPoint` tables, the same pipeline might work for Forever specifically — worth a quick check later, not part of this plan.
