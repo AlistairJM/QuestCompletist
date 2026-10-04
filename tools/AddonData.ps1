@@ -13,6 +13,9 @@ map by map in ascending order.
 #>
 
 $script:Invariant = [Globalization.CultureInfo]::InvariantCulture
+$script:Utf8 = New-Object System.Text.UTF8Encoding $false
+$DefaultDataDir = Join-Path $PSScriptRoot '..\data'
+$DefaultAddonDir = Join-Path $PSScriptRoot '..\QuestCompletist'
 
 $QuestFields = @('id', 'name', 'level', 'zone', 'category', 'type', 'faction', 'race', 'class',
     'profession', 'holiday', 'covenant', 'storyline', 'prereq')
@@ -21,19 +24,6 @@ $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
-
-# Numbers are written the shortest way: 47.3 rather than 47.30, 64 rather than 64.0.
-function Format-DataNumber($value) {
-    if ($value -is [decimal]) { return $value.ToString('0.############################', $script:Invariant) }
-    if (Test-WholeNumber $value) { return $value.ToString($script:Invariant) }
-    throw "Not a number: $value"
-}
-
-# Lua and JSON both take a string in double quotes with \ and " escaped; control characters are
-# refused by the checks below.
-function ConvertTo-QuotedString([string]$s) {
-    return '"' + $s.Replace('\', '\\').Replace('"', '\"') + '"'
-}
 
 function ConvertFrom-LuaString([string]$token) {
     $body = $token.Substring(1, $token.Length - 2)
@@ -135,23 +125,41 @@ function ConvertFrom-LuaPinFile([string]$luaText) {
     return , $pins
 }
 
-function ConvertTo-JsonLine($record, [string[]]$fields) {
-    $parts = New-Object System.Collections.Generic.List[string]
-    foreach ($field in $fields) {
-        $value = $record.$field
-        if ($null -eq $value) { continue }
-        if ($value -is [string]) { $text = ConvertTo-QuotedString $value }
-        elseif ($value -is [array]) { $text = '[' + (($value | ForEach-Object { Format-DataNumber $_ }) -join ',') + ']' }
-        else { $text = Format-DataNumber $value }
-        $parts.Add('"' + $field + '":' + $text)
+
+# The text of quests.jsonl and pins.jsonl. Strings go in double quotes with \ and " escaped (the
+# same in Lua and JSON; control characters are refused by the checks), and numbers are written the
+# shortest way: 47.3 rather than 47.30. Like the Lua writers further down, these do it inline: a
+# function call per field made writing them take a minute. A profession, holiday, covenant,
+# storyline or prereq of 0 is left out, as is a pin's npc of 0.
+function ConvertTo-QuestJsonLines($quests) {
+    $sb = New-Object System.Text.StringBuilder (6MB)
+    foreach ($q in $quests) {
+        [void]$sb.Append('{"id":' + $q.id + ',"name":"' + $q.name.Replace('\', '\\').Replace('"', '\"') + '","level":' + $q.level +
+            ',"zone":"' + $q.zone.Replace('\', '\\').Replace('"', '\"') + '","category":' + $q.category + ',"type":' + $q.type +
+            ',"faction":' + $q.faction + ',"race":' + $q.race + ',"class":' + $q.class)
+        if ($q.profession) { [void]$sb.Append(',"profession":' + $q.profession) }
+        if ($q.holiday) { [void]$sb.Append(',"holiday":' + $q.holiday) }
+        if ($q.covenant) { [void]$sb.Append(',"covenant":' + $q.covenant) }
+        if ($q.storyline) { [void]$sb.Append(',"storyline":' + $q.storyline) }
+        if ($q.prereq) { [void]$sb.Append(',"prereq":' + $q.prereq) }
+        [void]$sb.Append("}`n")
     }
-    return '{' + ($parts -join ',') + '}'
+    return $sb.ToString()
 }
 
-function Write-JsonLines([string]$path, $records, [string[]]$fields) {
-    $sb = New-Object System.Text.StringBuilder
-    foreach ($record in $records) { [void]$sb.Append((ConvertTo-JsonLine $record $fields)).Append("`n") }
-    [IO.File]::WriteAllText($path, $sb.ToString(), (New-Object System.Text.UTF8Encoding $false))
+function ConvertTo-PinJsonLines($pins) {
+    $sb = New-Object System.Text.StringBuilder (2MB)
+    foreach ($pin in $pins) {
+        $x = $pin.x; if ($x -is [decimal]) { $x = $x.ToString('0.############################', $script:Invariant) }
+        $y = $pin.y; if ($y -is [decimal]) { $y = $y.ToString('0.############################', $script:Invariant) }
+        [void]$sb.Append('{"map":' + $pin.map + ',"icon":' + $pin.icon)
+        if ($pin.npc) { [void]$sb.Append(',"npc":' + $pin.npc) }
+        if ($null -ne $pin.name) { [void]$sb.Append(',"name":"' + $pin.name.Replace('\', '\\').Replace('"', '\"') + '"') }
+        [void]$sb.Append(',"x":' + $x + ',"y":' + $y + ',"quests":[' + ($pin.quests -join ',') + ']')
+        if ($null -ne $pin.note) { [void]$sb.Append(',"note":"' + $pin.note.Replace('\', '\\').Replace('"', '\"') + '"') }
+        [void]$sb.Append("}`n")
+    }
+    return $sb.ToString()
 }
 
 # One record per line, so a record's number is its line number; a blank line is refused.
@@ -262,8 +270,8 @@ function Test-PinRecords($pins) {
 }
 
 # The qcQuestDatabase rows, each ending in CRLF. This and ConvertTo-LuaPinFile quote and format
-# inline rather than through the helpers above: a function call per field made the build take half
-# a minute. Whole numbers turn into text the same way in any culture, so they're joined as they are.
+# inline, as the JSON writers do; a function call per field made the build take half a minute.
+# Whole numbers turn into text the same way in any culture, so they're joined as they are.
 function ConvertTo-LuaQuestRows($quests) {
     $sb = New-Object System.Text.StringBuilder (6MB)
     foreach ($q in $quests) {
@@ -310,4 +318,98 @@ function ConvertTo-LuaPinFile($pins) {
 function Set-LuaQuestRows([string]$luaText, [string]$rows) {
     $block = Find-QuestBlock $luaText
     return $luaText.Substring(0, $block.Start) + $rows + $luaText.Substring($block.End)
+}
+
+# Checks both data files and builds the Lua from them; with -Check, only compares. Returns Ok and the
+# Lines to show. Ok is false if a file can't be read, a record has a problem, or -Check finds the
+# Lua out of date.
+function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir, [switch]$Check) {
+    $lines = New-Object System.Collections.Generic.List[string]
+    $DataDir = (Resolve-Path $DataDir).Path
+    $AddonDir = (Resolve-Path $AddonDir).Path
+    $questData = Join-Path $DataDir 'quests.jsonl'
+    $pinData = Join-Path $DataDir 'pins.jsonl'
+    try {
+        $quests = Read-JsonLines $questData
+        $pins = Read-JsonLines $pinData
+    } catch {
+        $lines.Add("  $($_.Exception.Message)")
+        $lines.Add("The data files can't be read; nothing was written.")
+        return [pscustomobject]@{ Ok = $false; Lines = $lines.ToArray() }
+    }
+    $problems = @(Find-UnknownFields $questData $QuestFields) + @(Test-QuestRecords $quests) +
+        @(Find-UnknownFields $pinData $PinFields) + @(Test-PinRecords $pins)
+    if ($problems.Count -gt 0) {
+        $problems | Select-Object -First 30 | ForEach-Object { $lines.Add("  $_") }
+        if ($problems.Count -gt 30) { $lines.Add("  ... and $($problems.Count - 30) more") }
+        $lines.Add("$($problems.Count) problem$(if ($problems.Count -ne 1) { 's' }) in the data files; nothing was written.")
+        return [pscustomobject]@{ Ok = $false; Lines = $lines.ToArray() }
+    }
+
+    $questPath = Join-Path $AddonDir 'qcQuest.lua'
+    $pinPath = Join-Path $AddonDir 'qcPinDB.lua'
+    $questLua = [IO.File]::ReadAllText($questPath)
+    $outputs = @(
+        @{ Path = $questPath; Old = $questLua; New = (Set-LuaQuestRows $questLua (ConvertTo-LuaQuestRows $quests)) },
+        @{ Path = $pinPath; Old = [IO.File]::ReadAllText($pinPath); New = (ConvertTo-LuaPinFile $pins) }
+    )
+    $differ = 0
+    foreach ($output in $outputs) {
+        $name = Split-Path -Leaf $output.Path
+        if ($output.Old -ceq $output.New) { $lines.Add("${name}: up to date"); continue }
+        $differ++
+        if ($Check) {
+            $old = $output.Old.Split("`n"); $new = $output.New.Split("`n")
+            $i = 0
+            while ($i -lt $old.Count -and $i -lt $new.Count -and $old[$i] -ceq $new[$i]) { $i++ }
+            $at = { param($all) if ($i -lt $all.Count) { $all[$i].TrimEnd("`r") } else { '(end of file)' } }
+            $lines.Add("${name}: doesn't match the data files, first at line $($i + 1)")
+            $lines.Add("  file: $(& $at $old)")
+            $lines.Add("  data: $(& $at $new)")
+        } else {
+            [IO.File]::WriteAllText($output.Path, $output.New, $script:Utf8)
+            $lines.Add("${name}: written")
+        }
+    }
+    $lines.Add("$($quests.Count) quests, $($pins.Count) pins")
+    return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
+}
+
+# For tools: the records of a data file, in order. A field a record leaves out reads as $null; set
+# fields with Set-RecordField, which adds the ones a record doesn't have yet.
+function Read-QuestData([string]$DataDir = $DefaultDataDir) {
+    return , (Read-JsonLines (Join-Path (Resolve-Path $DataDir).Path 'quests.jsonl'))
+}
+
+function Read-PinData([string]$DataDir = $DefaultDataDir) {
+    return , (Read-JsonLines (Join-Path (Resolve-Path $DataDir).Path 'pins.jsonl'))
+}
+
+function Set-RecordField($record, [string]$field, $value) {
+    if ($QuestFields -notcontains $field -and $PinFields -notcontains $field) { throw "No data file has a field '$field'" }
+    if ($record -is [System.Collections.IDictionary]) { $record[$field] = $value; return }
+    $property = $record.PSObject.Properties[$field]
+    if ($property) { $property.Value = $value } else { $record | Add-Member -NotePropertyName $field -NotePropertyValue $value }
+}
+
+# For tools: checks the records, writes them to the data file and rebuilds the Lua from both data
+# files. Throws, writing nothing, if a record has a problem.
+function Save-QuestData($quests, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-QuestRecords $quests)
+    if ($problems.Count -gt 0) { throw ("The quests weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'quests.jsonl'), (ConvertTo-QuestJsonLines $quests), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Save-PinData($pins, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-PinRecords $pins)
+    if ($problems.Count -gt 0) { throw ("The pins weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'pins.jsonl'), (ConvertTo-PinJsonLines $pins), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Complete-AddonDataSave([string]$DataDir, [string]$AddonDir) {
+    $build = Invoke-AddonDataBuild -DataDir $DataDir -AddonDir $AddonDir
+    $build.Lines | ForEach-Object { Write-Host $_ }
+    if (-not $build.Ok) { throw 'The data file was written, but the Lua could not be built from it.' }
 }
