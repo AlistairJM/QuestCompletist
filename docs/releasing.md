@@ -1,16 +1,22 @@
 # Releasing a new version
 
-How to turn what's merged on `master` into a release: version number, ZIP, tag, changelog,
-CurseForge description, and tidying up the branches afterwards. Everything here is run from the
-repository root in PowerShell.
+How to turn what's merged on `master` into a release: version number and README, ZIP, tag,
+changelog, CurseForge description, and tidying up the branches afterwards. Everything here is run
+from the repository root in PowerShell.
 
 If you're working with Claude Code in this repository, **"do a release"** runs all of this for you,
 and gives you the ZIP, the changelog and the refreshed description to upload.
+
+`README.md` is the addon's CurseForge description without the changelogs. Each release keeps the
+two the same (steps 3 and 7).
 
 ## 1. Everything merged
 
 Merge the pull requests that are ready. A pull request that changes the addon and hasn't been tested
 in game yet waits until it has.
+
+Check [Dated changes](#dated-changes) at the end: a change whose date has passed goes into this
+release, in a pull request of its own.
 
 ## 2. Everything pushed
 
@@ -26,7 +32,7 @@ git log origin/master..master
 - No local branch should hold commits that aren't on `master`. Anything left over is reported and
   decided on, not silently released or dropped.
 
-## 3. Version number
+## 3. Version number and README
 
 On a `release/<version>` branch, change both:
 - `## Version:` in `QuestCompletist\QuestCompletist.toc`
@@ -34,7 +40,18 @@ On a `release/<version>` branch, change both:
 
 The next version is the last tag plus 0.1 (110.9 follows 110.8), unless you choose otherwise. Both
 files use Windows line endings; edit them in an editor or with perl, not Git Bash's `sed`, which
-turns them into Unix ones. Then check:
+turns them into Unix ones.
+
+In the same pull request, bring `README.md` up to date. It's the addon's CurseForge description
+without the changelogs, and step 7 publishes it as it is:
+- Start from the live page, <https://www.curseforge.com/wow/addons/quest-completist>, not the
+  README, as the description may have been edited there.
+- Keep its layout: the title, Game versions, Features with bold subheadings, Handy clicks, Feedback
+  and the "Viduus, Frostmane EU" heading.
+- Change the description only when a release adds something big enough to mention. Check its
+  numbers against the data: `Build-AddonData.ps1 -Check` prints the quest and pin counts.
+
+Then check:
 
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\luac.exe" -p (Get-ChildItem QuestCompletist\*.lua).FullName
@@ -83,17 +100,13 @@ not developers:
 
 ## 7. CurseForge description
 
-Refresh the whole description: the description itself, then, after the `---`, the changelogs of
-**the last 5 versions only**, newest first.
+The whole description is `README.md` as merged in step 3, then, after a `---`, the changelogs of
+**the last 5 versions only**, newest first. The README never holds the changelogs.
 
-- Start from the live page, <https://www.curseforge.com/wow/addons/quest-completist>, not an old
-  copy, as it may have been edited there.
-- Keep its layout: the title, Game versions, Features with bold subheadings, Handy clicks, Feedback,
-  the "Viduus, Frostmane EU" heading, `---`, then the changelogs.
-- Change the description itself only when a release adds something big enough to mention. Check
-  its numbers against the data: `Build-AddonData.ps1 -Check` prints the quest and pin counts.
 - Older changelogs come from the page, or from the Files tab's "What's new" for versions no longer
   on it. Every changelog uses bold openers on its bullets.
+- If the description needs a change at this point, change the README too, in a pull request of its
+  own, so the two stay the same.
 
 Upload the ZIP to CurseForge with the changelog, and paste in the refreshed description.
 
@@ -113,3 +126,16 @@ git branch -d <branch>                                  # refuses a branch with 
 - Keep any branch with work that isn't on `master`, and any local branch an old worktree still has
   checked out; the app removes old worktrees itself.
 - Note what was deleted and what's left.
+
+## Dated changes
+
+Changes that wait for a date rather than a number of releases. Once a date has passed, make the
+change in its own pull request before the release.
+
+- **From 1 April 2027: drop the old completions format.**
+  - Remove `qcCompletedQuests` from `## SavedVariablesPerCharacter` in `QuestCompletist.toc`.
+  - Delete `qcMigrateCompletions` and its call in `qcCore.lua`.
+  - The changelog says to fully close and restart World of Warcraft. It also says that a character
+    not logged in since 110.7 loses the quests marked on it by hand; the server resyncs the rest.
+
+  Why it waits: [plans/load-and-memory.md](plans/load-and-memory.md), decision 2.
