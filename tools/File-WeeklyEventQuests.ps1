@@ -9,7 +9,7 @@ when its name is one of the event families and the API names no other category. 
 event quests are gone from the API, so the names are needed; the API check keeps out same-named
 quests from elsewhere ("The Time to Strike" is also a Void Assaults quest).
 
-Only the category changes, in data\quests.jsonl, then qcQuest.lua is rebuilt. Safe to rerun:
+Only the category changes, in data\quests.jsonl, then qcQuestData.lua is rebuilt. Safe to rerun:
 quests already filed there are left alone.
 #>
 param(

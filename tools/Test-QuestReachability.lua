@@ -326,7 +326,7 @@ local function sweep(keepOn, candidates, profiles)
 				recordError(filter, "list filter, " .. profileText())
 			else
 				for id in pairs(remainingList) do
-					local passed, result = pcall(filter, QUESTS[id])
+					local passed, result = pcall(filter, id, QUESTS[id])
 					if not passed then
 						recordError(result, "list quest " .. id .. ", " .. profileText())
 					elseif result then
@@ -359,7 +359,7 @@ local allQuests, browsableQuests, allPairs, allPins, pinInfo, pairInfo = {}, {},
 local pairsByPin, pairsByQuest = {}, {}
 for id, entry in pairs(QUESTS) do
 	allQuests[id] = true
-	if browsable[entry[5]] then browsableQuests[id] = true end
+	if browsable[entry[3]] then browsableQuests[id] = true end
 end
 for mapId, pins in pairs(PIN_DB) do
 	for _, pin in ipairs(pins) do
@@ -502,7 +502,7 @@ end
 local knownHolidays, unknownHolidays = {}, {}
 for _, holiday in ipairs(core.Holidays) do knownHolidays[holiday.flag] = true end
 for id, entry in pairs(QUESTS) do
-	local holiday = entry[11]
+	local holiday = env.qcQuestHoliday[id]
 	if holiday and holiday ~= 0 and not knownHolidays[holiday] then
 		unknownHolidays[holiday] = unknownHolidays[holiday] or {}
 		table.insert(unknownHolidays[holiday], id)
@@ -515,7 +515,7 @@ local function out(text) lines[#lines + 1] = text or "" end
 local function questLabel(id)
 	local e = QUESTS[id]
 	return string.format("%d %q (category %s, faction %s, race %s, class %s, profession %s, holiday %s)",
-		id, e[2], tostring(e[5]), tostring(e[7]), tostring(e[8]), tostring(e[9]), tostring(e[10]), tostring(e[11]))
+		id, e[1], tostring(e[3]), tostring(e[5]), tostring(e[6]), tostring(e[7]), tostring(env.qcQuestProfession[id] or 0), tostring(env.qcQuestHoliday[id] or 0))
 end
 local function pinLabel(key)
 	local info = pinInfo[key]
@@ -577,7 +577,7 @@ note(string.format("%d quests hidden from every possible character by the identi
 local unbrowsable = minus(allQuests, browsableQuests)
 local unbrowsableByCategory = {}
 for id in pairs(unbrowsable) do
-	local categoryId = QUESTS[id][5]
+	local categoryId = QUESTS[id][3]
 	unbrowsableByCategory[categoryId] = (unbrowsableByCategory[categoryId] or 0) + 1
 end
 out(string.format("== Quests in categories the list can't browse to: %d, by category", count(unbrowsable)))

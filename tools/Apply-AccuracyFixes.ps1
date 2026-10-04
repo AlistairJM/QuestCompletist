@@ -1,6 +1,6 @@
 <#
 Applies one field's FIX decisions from quest_accuracy_candidates.csv (written by
-Categorize-AuditDiscrepancies.ps1) to data\quests.jsonl, then rebuilds qcQuest.lua. Only the named
+Categorize-AuditDiscrepancies.ps1) to data\quests.jsonl, then rebuilds qcQuestData.lua. Only the named
 field changes. Aborts without writing if any quest is missing or its current value differs from
 the CSV's.
 #>

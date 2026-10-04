@@ -4,7 +4,7 @@ QuestLineXQuest on wago.tools, pinned to one build):
 
   - qcQuestLines in qcQuest.lua: [questLineID] = {name = "...", quests = {...}} - the storyline's
     name and its quests in Blizzard's order (OrderIndex), limited to quests we have.
-  - every quest's storyline in data\quests.jsonl (left out when it has none), then qcQuest.lua is
+  - every quest's storyline in data\quests.jsonl (left out when it has none), then qcQuestData.lua is
     rebuilt.
 
 Questlines with internal names ("8.0 Professions - ... - SCS", "[DNT] ...", "Test Questline") are

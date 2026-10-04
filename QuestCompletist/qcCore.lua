@@ -128,7 +128,7 @@ local function qcNormalPinIcon(questIds)
 	for _, questId in ipairs(questIds) do
 		local quest = qcQuestDatabase[questId]
 		if quest then
-			local icon = qcRecurringQuestIcon(questId, quest[6])
+			local icon = qcRecurringQuestIcon(questId, quest[4])
 			if not icon or (shared and icon ~= shared) then
 				return QC_ICON_NORMAL
 			end
@@ -372,7 +372,7 @@ end
 local qcRecurringTypes = 2 + 4 + 128
 
 local function qcIsRecurringQuest(questId)
-	return bit.band(qcQuestDatabase[questId][6], qcRecurringTypes) ~= 0
+	return bit.band(qcQuestDatabase[questId][4], qcRecurringTypes) ~= 0
 end
 
 local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
@@ -398,14 +398,16 @@ end
 local qcCategoryIndex = nil
 local qcQuestNameUpperCache = nil
 
+-- A quest's row in qcQuestDatabase (qcQuestData.lua) is {name, level, category, type, faction, race,
+-- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID.
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
     for questId, e in pairs(qcQuestDatabase) do
-        local categoryId = e[5]
+        local categoryId = e[3]
         if not qcCategoryIndex[categoryId] then
             qcCategoryIndex[categoryId] = {}
         end
-        table.insert(qcCategoryIndex[categoryId], e)
+        table.insert(qcCategoryIndex[categoryId], questId)
     end
 end
 
@@ -414,7 +416,7 @@ local function qcEnglishNamesForSearch()
     if not qcQuestNameUpperCache then
         qcQuestNameUpperCache = {}
         for questId, e in pairs(qcQuestDatabase) do
-            qcQuestNameUpperCache[questId] = string.upper(e[2])
+            qcQuestNameUpperCache[questId] = string.upper(e[1])
         end
     end
     return qcQuestNameUpperCache
@@ -509,7 +511,7 @@ local function qcQuestName(questId, waiting)
 	qcRequestQuestData(questId)
 	if waiting then waiting[questId] = true end
 	local entry = qcQuestDatabase[questId]
-	return entry and entry[2]
+	return entry and entry[1]
 end
 
 -- Upper-cased client names for search: built on the first search, then kept up to date as names
@@ -609,14 +611,17 @@ local function qcBuildQuestFilter(scope)
 		covenantBit = qcCovenantsBits[C_Covenants.GetActiveCovenantID()] or 0
 	end
 
-	return function(e)
-		if (BitBand(e[6], hiddenTypes) ~= 0) then return false end
-		if greenCutoff and (e[3] or 0) < greenCutoff then return false end
-		if professionBitmask and e[10] ~= 0 and BitBand(e[10], professionBitmask) == 0 then return false end
-		if factionFlag and not qcMaskAllows(e[7], factionFlag) then return false end
-		if raceFlag and not qcMaskAllows(e[8], raceFlag) then return false end
-		if classFlag and not qcMaskAllows(e[9], classFlag) then return false end
-		if covenantBit and e[12] ~= 0 and BitBand(e[12], covenantBit) == 0 then return false end
+	local professions, covenants = qcQuestProfession, qcQuestCovenant
+	return function(questId, e)
+		if (BitBand(e[4], hiddenTypes) ~= 0) then return false end
+		if greenCutoff and (e[2] or 0) < greenCutoff then return false end
+		local profession = professions[questId]
+		if professionBitmask and profession and BitBand(profession, professionBitmask) == 0 then return false end
+		if factionFlag and not qcMaskAllows(e[5], factionFlag) then return false end
+		if raceFlag and not qcMaskAllows(e[6], raceFlag) then return false end
+		if classFlag and not qcMaskAllows(e[7], classFlag) then return false end
+		local covenant = covenants[questId]
+		if covenantBit and covenant and BitBand(covenant, covenantBit) == 0 then return false end
 		return true
 	end
 end
@@ -624,18 +629,18 @@ end
 local function qcGetCategoryQuests(categoryId, searchText)
     local tableInsert = table.insert
     local tableSort = table.sort
-    -- The list holds the database's own rows; nothing writes to them, so they aren't copied.
+    -- The list holds quest IDs.
     local holdingTable = {}
 
     if (searchText) then
         local stringfind = string.find
         local englishNames = qcEnglishNamesForSearch()
         local clientNames = qcClientNamesForSearch()
-        for i, e in pairs(qcQuestDatabase) do
-            local clientName = clientNames[e[1]]
-            if (stringfind(englishNames[e[1]], searchText, 1, true))
+        for questId in pairs(qcQuestDatabase) do
+            local clientName = clientNames[questId]
+            if (stringfind(englishNames[questId], searchText, 1, true))
                 or (clientName and stringfind(clientName, searchText, 1, true)) then
-                tableInsert(holdingTable, e)
+                tableInsert(holdingTable, questId)
             end
         end
         qcCategoryQuests = holdingTable
@@ -650,13 +655,12 @@ local function qcGetCategoryQuests(categoryId, searchText)
     local hideCompleted = (qcSettings.QC_L_HIDE_COMPLETED == 1)
     local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
     local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
-    for _, e in ipairs(qcCategoryIndex[categoryId] or {}) do
-        local questId = e[1]
-        if passesFilters(e)
+    for _, questId in ipairs(qcCategoryIndex[categoryId] or {}) do
+        if passesFilters(questId, qcQuestDatabase[questId])
             and not (hideCompleted and qcIsQuestCompleted(questId))
             and not (hideWarband and qcIsQuestCompletedOnAccount(questId))
             and not (hideUnavailable and qcIsUnavailable(questId)) then
-            tableInsert(holdingTable, e)
+            tableInsert(holdingTable, questId)
         end
     end
     qcCategoryQuests = holdingTable
@@ -664,12 +668,14 @@ local function qcGetCategoryQuests(categoryId, searchText)
     -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
 	-- leaving the list empty. Names are the ones shown now; names that load later don't re-sort the
 	-- list until it's next rebuilt, so rows don't jump while being read.
-	local sortName = {}
-	for _, e in ipairs(qcCategoryQuests) do
-		sortName[e] = qcClientQuestName(e[1]) or e[2]
+	local sortName, sortLevel = {}, {}
+	for _, questId in ipairs(qcCategoryQuests) do
+		local e = qcQuestDatabase[questId]
+		sortName[questId] = qcClientQuestName(questId) or e[1]
+		sortLevel[questId] = e[2] or 0
 	end
 	local function byLevel(a,b)
-		local levelA, levelB = a[3] or 0, b[3] or 0
+		local levelA, levelB = sortLevel[a], sortLevel[b]
 		return (levelA<levelB or (levelA == levelB and sortName[a]<sortName[b]))
 	end
 	if (qcSettings.SORT == 1) then
@@ -691,7 +697,7 @@ qcCharacterCompletions = qcCharacterCompletions or {}
 local function ResetQCCompletedQuests(flag)
     for questId, mark in pairs(qcCharacterCompletions) do
         local questData = qcQuestDatabase[questId]
-        if questData and mark ~= 2 and bit.band(questData[6], flag) ~= 0 then
+        if questData and mark ~= 2 and bit.band(questData[4], flag) ~= 0 then
             qcCharacterCompletions[questId] = nil
         end
     end
@@ -786,9 +792,8 @@ function qcGetZoneCompletionStats(areaId)
 	local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
 	-- A quest nobody can get would hold the percentage below 100 for ever.
 	local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
-	for _, questEntry in ipairs(qcCategoryIndex[areaId] or {}) do
-		if passesFilters(questEntry) and not (hideUnavailable and qcIsUnavailable(questEntry[1])) then
-			local questId = questEntry[1]
+	for _, questId in ipairs(qcCategoryIndex[areaId] or {}) do
+		if passesFilters(questId, qcQuestDatabase[questId]) and not (hideUnavailable and qcIsUnavailable(questId)) then
 			total = total + 1
 			if qcIsQuestCompleted(questId) or (countWarband and qcIsQuestCompletedOnAccount(questId)) then
 				completed = completed + 1
@@ -839,11 +844,11 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 		local offset = ((i + startIndex) - 1)
 		local questRecord = _G["qcMenuButton" .. i]
 		if (qcCurrentCategoryQuestCount >= offset) then
-			local e = qcCategoryQuests[offset]
-			local questId = e[1]
-			local questType = e[6]
-			local questFaction = e[7]
-			questRecord.QuestName:SetText(stringFormat("[%d] %s",e[3],qcQuestName(questId)))
+			local questId = qcCategoryQuests[offset]
+			local e = qcQuestDatabase[questId]
+			local questType = e[4]
+			local questFaction = e[5]
+			questRecord.QuestName:SetText(stringFormat("[%d] %s",e[2],qcQuestName(questId)))
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
@@ -862,7 +867,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 				qcSetIcon(questRecord.QuestIcon, QC_ICON_NORMAL)
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 32) then
-				qcSetIcon(questRecord.QuestIcon, qcProfessionIcon(e[10]))
+				qcSetIcon(questRecord.QuestIcon, qcProfessionIcon(qcQuestProfession[questId] or 0))
 				questRecord.QuestName:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			elseif (questType == 64) then
 				qcSetIcon(questRecord.QuestIcon, QC_ICON_SEASONAL)
@@ -1649,7 +1654,7 @@ function qcUpdateTooltip(index)
 
         -- Storyline information. qcQuestLines holds each storyline's quests in Blizzard's order;
         -- a whole-zone storyline runs to 200+ quests, so only a window around this one is shown.
-        local storylineId = qcQuestDatabase[questId][13]
+        local storylineId = qcQuestDatabase[questId][8]
         local storyline = storylineId and qcQuestLines[storylineId]
         if storyline then
             -- Older zones share one storyline between both factions; follow the list's faction filter.
@@ -1657,7 +1662,7 @@ function qcUpdateTooltip(index)
             local lineQuests = {}
             for _, lineQuestId in ipairs(storyline.quests) do
                 local lineQuest = qcQuestDatabase[lineQuestId]
-                if lineQuest and (lineQuestId == questId or not factionFlag or qcMaskAllows(lineQuest[7], factionFlag)) then
+                if lineQuest and (lineQuestId == questId or not factionFlag or qcMaskAllows(lineQuest[5], factionFlag)) then
                     table.insert(lineQuests, lineQuestId)
                 end
             end
@@ -1698,7 +1703,7 @@ function qcUpdateTooltip(index)
         end
 
         -- Prerequisite quest logic
-        local prereqQuestId = qcQuestDatabase[questId][14]
+        local prereqQuestId = qcQuestPrereq[questId]
         if prereqQuestId and prereqQuestId ~= 0 then
             local prereqQuestName = qcQuestName(prereqQuestId, qcQuestTooltipWaiting) or "Unknown Quest"
             local prereqQuestStatus = C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
@@ -1844,15 +1849,15 @@ local function qcNewDataChecks(questId) -- *
 		local _, playerRace = UnitRace("player")
 		local _, playerClass = UnitClass("player")
 		factionFlag = qcFactionBits[string.upper(playerFaction)]
-		if (bit.band(factionFlag,qcQuestDatabase[questId][7]) == 0) then
+		if (bit.band(factionFlag,qcQuestDatabase[questId][5]) == 0) then
 			qcNewDataAlert.Faction = true
 		end
 		raceFlag = qcRaceBits[string.upper(playerRace)]
-		if (bit.band(raceFlag,qcQuestDatabase[questId][8]) == 0) then
+		if (bit.band(raceFlag,qcQuestDatabase[questId][6]) == 0) then
 			qcNewDataAlert.Race = true
 		end
 		classFlag = qcClassBits[string.upper(playerClass)]
-		if (bit.band(classFlag,qcQuestDatabase[questId][9]) == 0) then
+		if (bit.band(classFlag,qcQuestDatabase[questId][7]) == 0) then
 			qcNewDataAlert.Class = true
 		end
 		if ((qcNewDataAlert.Faction) or (qcNewDataAlert.Race) or (qcNewDataAlert.Class)) then
@@ -2047,7 +2052,7 @@ local function qcColouredQuestName(questId)
     if not questId or not qcQuestDatabase[questId] then return nil end
     local questData = qcQuestDatabase[questId]
     local questName = qcQuestName(questId, qcMapTooltipWaiting)
-    if questData[6] == 4 or questData[6] == 2 then
+    if questData[4] == 4 or questData[4] == 2 then
         return string.format("|cff178ed5%s|r", questName)
     elseif not qcCharacterCompletions[questId] then
         return string.format("|cffffffff%s|r", questName)
@@ -2072,7 +2077,7 @@ local function qcSinglePinIcon(pinData)
         for _, questId in ipairs(pinData[6]) do
             local quest = qcQuestDatabase[questId]
             if quest then
-                professionMask = bit.bor(professionMask, quest[10])
+                professionMask = bit.bor(professionMask, qcQuestProfession[questId] or 0)
             end
         end
         return qcProfessionIcon(professionMask)
@@ -2110,8 +2115,8 @@ function qcPinMixin:OnAcquired(pinData)
     local playerLevel = UnitLevel("player")
     for _, questId in ipairs(pinData[6]) do
         if questId and qcQuestDatabase[questId] then
-            local prereqQuestId = qcQuestDatabase[questId][14]
-            local requiredLevel = qcQuestDatabase[questId][3]
+            local prereqQuestId = qcQuestPrereq[questId] or 0
+            local requiredLevel = qcQuestDatabase[questId][2]
             if playerLevel >= (requiredLevel or 0) then
                 if prereqQuestId == 0 or (prereqQuestId and C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId)) then
                     isGrey = false
@@ -2169,7 +2174,7 @@ local function qcAddPinQuestsToTooltip(pinData)
             qcMapTooltip:AddDoubleLine("    " .. qcColouredQuestName(qcEntry), string.format("|cffff7d0a[%d]|r", qcEntry))
             local line = _G["qcMapTooltipTextLeft" .. qcMapTooltip:NumLines()]
             if line then
-                local lineIcon = qcRecurringQuestIcon(qcEntry, questData[6])
+                local lineIcon = qcRecurringQuestIcon(qcEntry, questData[4])
                 if not lineIcon then
                     if qcIsQuestCompleted(qcEntry) then
                         lineIcon = QC_ICON_COMPLETE
@@ -2320,8 +2325,8 @@ local function qcBuildMapQuestFilter()
     end
 
     local function requirementsMet(questId, e)
-        if (e[3] or 0) > playerLevel then return false end
-        local prereqId = e[14] or 0
+        if (e[2] or 0) > playerLevel then return false end
+        local prereqId = qcQuestPrereq[questId] or 0
         if prereqId > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prereqId) then return false end
         local renown = qcRenownLevelRequirements[questId]
         if renown and C_MajorFactions.GetCurrentRenownLevel(renown[1]) < renown[2] then return false end
@@ -2336,9 +2341,10 @@ local function qcBuildMapQuestFilter()
         if hideWarband and qcIsQuestCompletedOnAccount(questId) then return false end
         if hideUnavailable and qcIsUnavailable(questId) then return false end
         if not e then return true end
-        if not passesFilters(e) then return false end
+        if not passesFilters(questId, e) then return false end
         -- A holiday value we don't know restricts nothing, like any other field with no data.
-        if activeHolidays and qcKnownHolidayFlags[e[11]] and BitBand(activeHolidays, e[11]) == 0 then return false end
+        local holiday = qcQuestHoliday[questId]
+        if activeHolidays and holiday and qcKnownHolidayFlags[holiday] and BitBand(activeHolidays, holiday) == 0 then return false end
         if playerLevel and not requirementsMet(questId, e) then return false end
         return true
     end

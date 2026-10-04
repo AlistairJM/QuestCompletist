@@ -41,7 +41,7 @@ quests, and for category 0, between rules 2 and 3, a hand-written list maps the 
 text to a category ("Death Knight Campaign" -> the Death Knight class hall), below in $zoneTextRules.
 A quest is never filed in a category no menu entry reaches, nor back into the catch-all.
 
-Only the category changes, in data\quests.jsonl, then qcQuest.lua is rebuilt. Categories, maps and
+Only the category changes, in data\quests.jsonl, then qcQuestData.lua is rebuilt. Categories, maps and
 menu entries are read from qcQuest.lua and qcMenu.lua, and pins from data\pins.jsonl.
 #>
 param(

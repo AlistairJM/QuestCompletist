@@ -1,5 +1,7 @@
 # Plan: Quest Database Accuracy Cleanup (post-audit)
 
+> Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
+
 ## Status (2026-09-22): Phase 0–3, manual review and world-quest batch done; reputation and a few follow-ups remain
 
 **Phase 2, the manual review and the world-quest batch shipped as six stacked PRs, merged in order #15 → #16 → #17 → #18 → #19 → #20** (1,170 quests changed):

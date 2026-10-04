@@ -1,6 +1,6 @@
 <#
 Retypes quests stored as 1 (normal) that two independent sources say recur, in data\quests.jsonl,
-then rebuilds qcQuest.lua:
+then rebuilds qcQuestData.lua:
 
   - the game client, via the /qc typecheck probe: with the quest's data loaded,
     C_QuestInfoSystem.GetQuestClassification answers Recurring (5), and

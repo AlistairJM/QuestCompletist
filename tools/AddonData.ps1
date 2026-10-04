@@ -9,8 +9,9 @@ record per line, with named fields:
 	{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}
 Fields that are empty are left out: a quest's profession, holiday, covenant, storyline and prereq
 when 0, and a pin's npc when 0, its name when it has none and its note when it has none. The
-records become the qcQuestDatabase rows of qcQuest.lua, in file order, and the whole of qcPinDB.lua,
-map by map in ascending order. Both start with a line saying they're generated.
+records become the whole of QuestCompletist\qcQuestData.lua, in file order (see
+ConvertTo-LuaQuestFile for its layout), and the whole of qcPinDB.lua, map by map in ascending order.
+Both start with a line saying they're generated.
 #>
 
 $script:Invariant = [Globalization.CultureInfo]::InvariantCulture
@@ -25,15 +26,6 @@ $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
-
-function Find-QuestBlock([string]$luaText) {
-    $open = [regex]::Match($luaText, '(?m)^qcQuestDatabase=\{\r?\n')
-    if (-not $open.Success) { throw "qcQuestDatabase={ not found" }
-    $start = $open.Index + $open.Length
-    $close = [regex]::Match($luaText.Substring($start), '(?m)^\}')
-    if (-not $close.Success) { throw "The end of qcQuestDatabase not found" }
-    return @{ Start = $start; End = $start + $close.Index }
-}
 
 # The text of quests.jsonl and pins.jsonl. Strings go in double quotes with \ and " escaped (the
 # same in Lua and JSON; control characters are refused by the checks), and numbers are written the
@@ -178,23 +170,31 @@ function Test-PinRecords($pins) {
     return $problems.ToArray()
 }
 
-# The qcQuestDatabase rows, each ending in CRLF. This and ConvertTo-LuaPinFile quote and format
-# inline, as the JSON writers do; a function call per field made the build take half a minute.
-# Whole numbers turn into text the same way in any culture, so they're joined as they are.
-function ConvertTo-LuaQuestRows($quests) {
-    $sb = New-Object System.Text.StringBuilder (6MB)
-    [void]$sb.Append("-- Generated from data\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not these rows.`r`n")
+# The whole of qcQuestData.lua, each line ending in CRLF. A quest's row in qcQuestDatabase is
+# {name, level, category, type, faction, race, class, storyline}, with storyline left off when it's
+# 0; profession, holiday, covenant and prereq, which most quests don't have, go in tables of their
+# own keyed by quest ID. The zone text isn't written: the game never reads it.
+# This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
+# field made the build take half a minute. Whole numbers turn into text the same way in any
+# culture, so they're joined as they are.
+function ConvertTo-LuaQuestFile($quests) {
+    $sb = New-Object System.Text.StringBuilder (4MB)
+    [void]$sb.Append("-- Generated from data\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
+    $sparse = [ordered]@{ qcQuestProfession = 'profession'; qcQuestHoliday = 'holiday'; qcQuestCovenant = 'covenant'; qcQuestPrereq = 'prereq' }
+    $tables = @{}
+    foreach ($table in $sparse.Keys) { $tables[$table] = New-Object System.Text.StringBuilder }
     foreach ($q in $quests) {
-        $profession = $q.profession; if ($null -eq $profession) { $profession = 0 }
-        $holiday = $q.holiday; if ($null -eq $holiday) { $holiday = 0 }
-        $covenant = $q.covenant; if ($null -eq $covenant) { $covenant = 0 }
-        $storyline = $q.storyline; if ($null -eq $storyline) { $storyline = 0 }
-        $prereq = $q.prereq; if ($null -eq $prereq) { $prereq = 0 }
         $name = '"' + $q.name.Replace('\', '\\').Replace('"', '\"') + '"'
-        $zone = '"' + $q.zone.Replace('\', '\\').Replace('"', '\"') + '"'
-        [void]$sb.Append('[' + $q.id + ']={' + (@($q.id, $name, $q.level, $zone, $q.category, $q.type, $q.faction,
-            $q.race, $q.class, $profession, $holiday, $covenant, $storyline, $prereq) -join ',') + "},`r`n")
+        $row = @($name, $q.level, $q.category, $q.type, $q.faction, $q.race, $q.class) -join ','
+        if ($q.storyline) { $row += ',' + $q.storyline }
+        [void]$sb.Append('[' + $q.id + ']={' + $row + "},`r`n")
+        foreach ($table in $sparse.Keys) {
+            $value = $q.($sparse[$table])
+            if ($value) { [void]$tables[$table].Append('[' + $q.id + ']=' + $value + ",`r`n") }
+        }
     }
+    [void]$sb.Append("}`r`n")
+    foreach ($table in $sparse.Keys) { [void]$sb.Append($table + "={`r`n").Append($tables[$table].ToString()).Append("}`r`n") }
     return $sb.ToString()
 }
 
@@ -225,12 +225,6 @@ function ConvertTo-LuaPinFile($pins) {
     return $sb.ToString()
 }
 
-# qcQuest.lua with its qcQuestDatabase rows replaced; everything around them is kept as it is.
-function Set-LuaQuestRows([string]$luaText, [string]$rows) {
-    $block = Find-QuestBlock $luaText
-    return $luaText.Substring(0, $block.Start) + $rows + $luaText.Substring($block.End)
-}
-
 # Checks both data files and builds the Lua from them; with -Check, only compares. Returns Ok and the
 # Lines to show. Ok is false if a file can't be read, a record has a problem, or -Check finds the
 # Lua out of date.
@@ -257,12 +251,12 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         return [pscustomobject]@{ Ok = $false; Lines = $lines.ToArray() }
     }
 
-    $questPath = Join-Path $AddonDir 'qcQuest.lua'
+    $questPath = Join-Path $AddonDir 'qcQuestData.lua'
     $pinPath = Join-Path $AddonDir 'qcPinDB.lua'
-    $questLua = [IO.File]::ReadAllText($questPath)
+    $current = { param($path) if (Test-Path $path) { [IO.File]::ReadAllText($path) } else { '' } }
     $outputs = @(
-        @{ Path = $questPath; Old = $questLua; New = (Set-LuaQuestRows $questLua (ConvertTo-LuaQuestRows $quests)) },
-        @{ Path = $pinPath; Old = [IO.File]::ReadAllText($pinPath); New = (ConvertTo-LuaPinFile $pins) }
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests) },
+        @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins) }
     )
     $differ = 0
     foreach ($output in $outputs) {

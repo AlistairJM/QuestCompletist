@@ -1,5 +1,7 @@
 # Plan: Flagging Unavailable Quests (obsolete and hidden tracking quests)
 
+> Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
+
 ## Goal
 
 Stop showing players quests they can no longer obtain, such as obsolete quests Blizzard retired
