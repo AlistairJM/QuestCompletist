@@ -11,9 +11,9 @@ row of 14 values.
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
 | 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Done. Stage 1 #120; stage 2 #121, #122, #123 and the read-only tools; stage 3 #124. |
 | 4 | Named fields for the tools | Done with point 6: every tool reads and writes records through `tools\AddonData.ps1`, and only the build knows the Lua row layout |
-| 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | Done, with points 2 and 3 (see below) |
-| 2 | The zone text (field 4, never read in game) left out of the rows | Done |
-| 3 | The quest ID no longer repeated inside its own row | Done |
+| 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | Done, #126, with points 2 and 3 (see below) |
+| 2 | The zone text (field 4, never read in game) left out of the rows | Done, #126 |
+| 3 | The quest ID no longer repeated inside its own row | Done, #126 |
 
 Estimated beforehand on the rows alone: 10.55 MB, 8.79 MB after point 1, 8.25 MB after points 1
 and 2, 7.72 MB after all three. Measured on the real files after the change: the quest data takes
@@ -77,7 +77,7 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
    After stage 3 the read-only tools moved too, so nothing but the build reads or writes the Lua
    rows, and points 1 to 3 only need the build step and qcCore.lua to change.
 
-## Points 1 to 3, done together
+## Points 1 to 3, done together (#126)
 
 - **A file of its own.** The build writes `QuestCompletist\qcQuestData.lua` whole, as it does
   `qcPinDB.lua`, and the TOC loads it straight after `qcQuest.lua`. `qcQuest.lua` keeps only the

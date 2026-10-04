@@ -148,6 +148,16 @@ stays unflagged.
   Mountains!", has two Westfall (map 52) pins for Captain Danuvin about 2 apart, at 56.5, 47.6 with
   no NPC ID and at 56.4, 49.5 with ID 821. Before removing one, look for other pairs with the same
   name close together on a map.
+- **Pins in the water at Stormwind Harbor: checked, and left alone** (2026-10-04, while testing
+  #126). They're the start points Blizzard's own quest data (QuestPOIBlob, ObjectiveIndex -1) gives
+  quests that start without a quest giver: from a popup, an item or boarding a ship. Examples are
+  Legion's "A Royal Summons" (38035, at 18.41, 48.71, which converts exactly from Blizzard's world
+  point), "The Battle for Broken Shore" and "To Be Prepared", Argus's "The Hand of Fate", and
+  Dragonflight's "Chasing Storms". Many were where an expansion's ships docked, so today they sit in
+  open water. 3,087 of the 14,738 pins have neither an NPC nor a name, 47 of Stormwind City's 144.
+  **Decision (the user's): a pin for a quest that's still valid and matches the client's data stays,
+  however odd its spot looks.** Remove a pin only when its quest is gone, or the client's data puts
+  it somewhere else.
 
 ## Decisions (agreed 2026-09-30)
 
