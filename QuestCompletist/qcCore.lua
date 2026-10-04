@@ -352,7 +352,7 @@ end
 
 --[[ Constants for the Key Bindings & Slash Commands ]]--
 BINDING_HEADER_QCQUESTCOMPLETIST = "Quest Completist";
-BINDING_NAME_QCTOGGLEFRAME = "Toggle Frame";
+BINDING_NAME_QCTOGGLEFRAME = qcL.TOGGLEFRAME;
 SLASH_QUESTCOMPLETIST1 = "/qc"
 SLASH_QUESTCOMPLETIST2 = "/questc"
 
@@ -823,13 +823,13 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 
 		local completedInZone, totalInZone = qcGetZoneCompletionStats(categoryId)
 		local completionPercent = (totalInZone > 0) and math.floor((completedInZone / totalInZone) * 100) or 0
-		qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d/%d Complete (%d%%)", completedInZone, totalInZone, completionPercent))
+		qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat(qcL.PROGRESS, completedInZone, totalInZone, completionPercent))
 	else
 		if (searchText) then
 			qcCurrentSearchText = searchText
 			qcGetCategoryQuests(nil, searchText)
 			qcCurrentCategoryQuestCount = (#qcCategoryQuests)
-			qcQuestCompletistUI.qcSelectedCategory:SetText("Search Results")
+			qcQuestCompletistUI.qcSelectedCategory:SetText(qcL.SEARCHRESULTS)
 			if (qcCurrentCategoryQuestCount < 16) then
 				qcMenuSlider:SetMinMaxValues(1, 1)
 			else
@@ -837,7 +837,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			end
 			qcMenuSlider:SetValue(startIndex)
 			startIndex = qcMenuSlider:GetValue()
-			qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat("%d Quests Found", qcCurrentCategoryQuestCount))
+			qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat(qcL.QUESTSFOUND, qcCurrentCategoryQuestCount))
 		end
 	end
 	for i = 1, 16 do
@@ -1138,38 +1138,41 @@ end
 
 -- Search function start
 
+-- The box shows the game's own word for "Search" until something is typed.
+local QC_SEARCH_PLACEHOLDER = SEARCH or "Search"
+
 local function qcResetSearchBox()
 	local searchBox = qcQuestCompletistUI.qcSearchBox
-	searchBox:SetText("Search")
+	searchBox:SetText(QC_SEARCH_PLACEHOLDER)
 	searchBox:SetTextColor(0.5, 0.5, 0.5)
 	if searchBox.Instructions then
-		searchBox.Instructions:SetText("Search")
+		searchBox.Instructions:SetText(QC_SEARCH_PLACEHOLDER)
 	end
 end
 
 -- Function to handle when the search box gains focus
 function qcSearchBox_OnEditFocusGained(self)
-    if self:GetText() == "Search" then
+    if self:GetText() == QC_SEARCH_PLACEHOLDER then
         self:SetText("")
         self:SetTextColor(1, 1, 1)  -- Set text color to normal
     end
     if self.Instructions then
-        self.Instructions:SetText("Search")
+        self.Instructions:SetText(QC_SEARCH_PLACEHOLDER)
     end
 end
 
 -- Function to handle when the search box loses focus
 function qcSearchBox_OnEditFocusLost(self)
     if self:GetText() == "" then
-        self:SetText("Search")
+        self:SetText(QC_SEARCH_PLACEHOLDER)
         self:SetTextColor(0.5, 0.5, 0.5)  -- Set text color to grey to indicate placeholder
         if self.Instructions then
-            self.Instructions:SetText("Search")
+            self.Instructions:SetText(QC_SEARCH_PLACEHOLDER)
         end
     end
 
     local searchText = string.upper(self:GetText())
-    if not (searchText == "") and searchText ~= "SEARCH" then
+    if not (searchText == "") and searchText ~= string.upper(QC_SEARCH_PLACEHOLDER) then
         qcUpdateQuestList(nil, 1, searchText)
     else
         qcUpdateQuestList(qcCurrentCategoryID, 1)
@@ -1179,19 +1182,9 @@ end
 -- Function to handle when the text in the search box changes
 function qcSearchBox_OnTextChanged(self, userInput)
     if userInput == true then
-        local searchText = self:GetText()
         self.Instructions:SetText("")
-        -- Clear placeholder text when the user starts typing
-        if searchText == "S" or searchText == "s" or searchText:sub(1, 1):upper() ~= "S" then
-            if self:GetText() == "Search" then
-                self:SetText("")
-                self:SetTextColor(1, 1, 1)  -- Set text color to normal
-                searchText = ""
-            end
-        end
-
-        searchText = string.upper(self:GetText())
-        if not (searchText == "") and searchText ~= "SEARCH" then
+        local searchText = string.upper(self:GetText())
+        if not (searchText == "") and searchText ~= string.upper(QC_SEARCH_PLACEHOLDER) then
             qcUpdateQuestList(nil, 1, searchText)
         else
             qcUpdateQuestList(qcCurrentCategoryID, 1)
@@ -1204,10 +1197,10 @@ local function OnAddonLoaded(self, event, addonName)
     if addonName == "QuestCompletist" then
         local qcSearchBox = _G["qcSearchBox"]
         if qcSearchBox then
-            qcSearchBox:SetText("Search")
+            qcSearchBox:SetText(QC_SEARCH_PLACEHOLDER)
             qcSearchBox:SetTextColor(0.5, 0.5, 0.5)
             if qcSearchBox.Instructions then
-                qcSearchBox.Instructions:SetText("Search")
+                qcSearchBox.Instructions:SetText(QC_SEARCH_PLACEHOLDER)
             end
             qcSearchBox:HookScript("OnEditFocusGained", qcSearchBox_OnEditFocusGained)
             qcSearchBox:HookScript("OnEditFocusLost", qcSearchBox_OnEditFocusLost)
@@ -1225,7 +1218,7 @@ local function OnAddonLoaded(self, event, addonName)
 
             -- Show/hide the wipe button depending on text content
             qcSearchBox:HookScript("OnTextChanged", function(self)
-                if self:GetText() ~= "" and self:GetText() ~= "Search" then
+                if self:GetText() ~= "" and self:GetText() ~= QC_SEARCH_PLACEHOLDER then
                     wipeButton:Show()
                 else
                     wipeButton:Hide()
@@ -1300,14 +1293,14 @@ local function qcQuestQueryCompleted(qcAlwaysReport)
 		qcRequestRefresh(QC_REBUILD_LIST, true)
 	end
 	if (qcNewFlagged > 0) or (qcAlwaysReport) then
-		print(string.format("%sThe server reports %d completed quest(s) known to Quest Completist, %d of them newly marked as completed.",QCADDON_CHAT_TITLE,qcFound,qcNewFlagged))
+		print(QCADDON_CHAT_TITLE .. string.format(qcL.SERVERQUERYRESULT, qcFound, qcNewFlagged))
 	end
 
 end
 
 local function qcClearUpdateCache()
 	wipe(qcCharacterCompletions)
-	print(string.format("%sCache Cleared.",QCADDON_CHAT_TITLE))
+	print(QCADDON_CHAT_TITLE .. qcL.CACHECLEARED)
 	qcRequestRefresh(QC_REBUILD_LIST, true)
 end
 
@@ -1422,7 +1415,7 @@ function qcProcessMenuAction(button, arg1)
         qcQuestQueryCompleted(true)
         CloseDropDownMenus()
     elseif (arg1 == "CLEARUPDATECACHE") then
-        print(string.format("%s%s", QCADDON_CHAT_TITLE, "Clearing your update Cache..."))
+        print(QCADDON_CHAT_TITLE .. qcL.CLEARINGCACHE)
         qcClearUpdateCache()
         CloseDropDownMenus()
     elseif (arg1 == "SORTLEVEL") then
@@ -1506,8 +1499,9 @@ local function qcClientName(source)
 	elseif (kind == "format") then
 		local parts = {}
 		for i = 3, #source do
-			parts[#parts + 1] = qcClientName(source[i])
-			if (not parts[#parts]) then return nil end
+			local part = qcClientName(source[i])
+			if (not part) then return nil end
+			parts[#parts + 1] = part
 		end
 		name = string.format(id, unpack(parts))
 	end
@@ -1541,23 +1535,15 @@ function qcCategoryName(categoryId)
 end
 
 -- Function to get the zone name from a zone ID with enhanced handling for array-style lookup
+-- The name of the category a map belongs to, else the map's own name from the client (a class hall
+-- or a city floor qcAreaIDToCategoryID doesn't list).
 function GetZoneNameFromZoneID(zoneId)
-    -- First, check if the zoneId is present in qcAreaIDToCategoryID
     local categoryID = qcAreaIDToCategoryID[zoneId]
-    if not categoryID then
-        -- Fall back to a default message if the mapping is missing
-        return "Unknown Zone (Invalid Area ID)"
-    end
-
-    local zoneName = qcCategoryName(categoryID)
-
-    if not zoneName or zoneName == "" then
-        -- Handle cases where the zone name is missing or empty
-        return "Unknown Zone (No Zone Name)"
-    end
-
-    -- Return the valid zone name if all checks passed
-    return zoneName
+    local zoneName = categoryID and qcCategoryName(categoryID)
+    if zoneName and zoneName ~= "" then return zoneName end
+    local info = C_Map.GetMapInfo(zoneId)
+    if info and info.name and info.name ~= "" then return info.name end
+    return qcL.UNKNOWNZONE
 end
 
 -- Every pin that offers a quest, with its map, found on first use. An index of all quests would
@@ -1609,6 +1595,12 @@ end
 
 local QC_STORYLINE_WINDOW = 15
 
+-- The faction's name in the player's language, or the English one from qcFactions.
+local function qcFactionName(factionId)
+	local data = C_Reputation.GetFactionDataByID(factionId)
+	if data and data.name and data.name ~= "" then return data.name end
+	return qcFactions[factionId]
+end
 
 -- Function to update the quest tooltip
 function qcUpdateTooltip(index)
@@ -1640,10 +1632,10 @@ function qcUpdateTooltip(index)
             qcQuestInformationTooltip:SetHyperlink(stringFormat("quest:%d", questId))
         else
             qcQuestInformationTooltip:AddLine(qcQuestName(questId), 1, 1, 1)
-            qcQuestInformationTooltip:AddLine("Quest details not available from the game", 0.5, 0.5, 0.5)
+            qcQuestInformationTooltip:AddLine(qcL.NODETAILS, 0.5, 0.5, 0.5)
         end
         qcQuestInformationTooltip:AddLine(" ")
-        qcQuestInformationTooltip:AddDoubleLine("Quest ID:", stringFormat("|cFF69CCF0%d|r", questId))
+        qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("|cFF69CCF0%d|r", questId))
         qcQuestInformationTooltip:AddLine(" ")
 
         -- Restore ATT hook if we temporarily replaced it
@@ -1673,14 +1665,14 @@ function qcUpdateTooltip(index)
                     break
                 end
             end
-            qcQuestInformationTooltip:AddDoubleLine("Storyline:", stringFormat("%s%s|r |cFF808080(%d of %d)|r", COLOUR_HUNTER, storyline.name, position, #lineQuests))
+            qcQuestInformationTooltip:AddDoubleLine(qcL.STORYLINE, stringFormat("%s%s|r |cFF808080%s|r", COLOUR_HUNTER, storyline.name, stringFormat(qcL.STORYLINEPOSITION, position, #lineQuests)))
             qcQuestInformationTooltip:AddLine(" ")
 
             local first = math.max(1, position - math.floor(QC_STORYLINE_WINDOW / 2))
             local last = math.min(#lineQuests, first + QC_STORYLINE_WINDOW - 1)
             first = math.max(1, last - QC_STORYLINE_WINDOW + 1)
             if first > 1 then
-                qcQuestInformationTooltip:AddLine(stringFormat("|cFF808080   ... %d earlier|r", first - 1))
+                qcQuestInformationTooltip:AddLine("|cFF808080   " .. stringFormat(qcL.EARLIERQUESTS, first - 1) .. "|r")
             end
             for i = first, last do
                 local lineQuestId = lineQuests[i]
@@ -1688,15 +1680,15 @@ function qcUpdateTooltip(index)
                 if questData then
                     local questStatus
                     if C_QuestLog.IsOnQuest(lineQuestId) then
-                        questStatus = "|cFFFFFF00You are on this quest|r"
+                        questStatus = "|cFFFFFF00" .. qcL.ONQUEST .. "|r"
                     else
-                        questStatus = C_QuestLog.IsQuestFlaggedCompleted(lineQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
+                        questStatus = C_QuestLog.IsQuestFlaggedCompleted(lineQuestId) and ("|cFF00FF00" .. qcL.COMPLETED .. "|r") or ("|cFFFF0000" .. qcL.NOTCOMPLETED .. "|r")
                     end
                     qcQuestInformationTooltip:AddDoubleLine(((lineQuestId == questId) and " > " or " - ") .. qcQuestName(lineQuestId, qcQuestTooltipWaiting), questStatus)
                 end
             end
             if last < #lineQuests then
-                qcQuestInformationTooltip:AddLine(stringFormat("|cFF808080   ... %d more|r", #lineQuests - last))
+                qcQuestInformationTooltip:AddLine("|cFF808080   " .. stringFormat(qcL.LATERQUESTS, #lineQuests - last) .. "|r")
             end
 
             qcQuestInformationTooltip:AddLine(" ")
@@ -1705,9 +1697,9 @@ function qcUpdateTooltip(index)
         -- Prerequisite quest logic
         local prereqQuestId = qcQuestPrereq[questId]
         if prereqQuestId and prereqQuestId ~= 0 then
-            local prereqQuestName = qcQuestName(prereqQuestId, qcQuestTooltipWaiting) or "Unknown Quest"
-            local prereqQuestStatus = C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId) and "|cFF00FF00Completed|r" or "|cFFFF0000Not Completed|r"
-            qcQuestInformationTooltip:AddDoubleLine("Prerequired Completed Quest:", string.format("%s - %s", prereqQuestName, prereqQuestStatus))
+            local prereqQuestName = qcQuestName(prereqQuestId, qcQuestTooltipWaiting) or qcL.UNKNOWNQUEST
+            local prereqQuestStatus = C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId) and ("|cFF00FF00" .. qcL.COMPLETED .. "|r") or ("|cFFFF0000" .. qcL.NOTCOMPLETED .. "|r")
+            qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDQUEST, string.format("%s - %s", prereqQuestName, prereqQuestStatus))
             qcQuestInformationTooltip:AddLine(" ")
         end
 		-- Renown and Faction requirements Start
@@ -1717,23 +1709,23 @@ function qcUpdateTooltip(index)
             if type(renownInfo) == "table" then
                 local factionId = renownInfo[1]
                 local requiredRenownLevel = renownInfo[2]
-                local factionName = qcFactions[factionId] or "Unknown Faction"
+                local factionName = qcFactionName(factionId) or qcL.UNKNOWNFACTION
                 local currentRenownLevel = C_MajorFactions.GetCurrentRenownLevel(factionId)
 
-                qcQuestInformationTooltip:AddDoubleLine("Required Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
+                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s", COLOUR_DRUID, factionName))
 
                 if currentRenownLevel then
                     if currentRenownLevel >= requiredRenownLevel then
-                        qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", string.format("|cFF00FF00%d (Requirement Fulfilled)|r", requiredRenownLevel))
+                        qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFF00FF00" .. string.format(qcL.RENOWNMET, requiredRenownLevel) .. "|r")
                     else
-                        qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", string.format("|cFFFF0000%d (Requirement Not Fulfilled)|r", requiredRenownLevel))
+                        qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFFFF0000" .. string.format(qcL.RENOWNNOTMET, requiredRenownLevel) .. "|r")
                     end
                 else
-                    qcQuestInformationTooltip:AddDoubleLine("Required Renown Level:", "|cFFFF0000Data Unavailable|r")
+                    qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFFFF0000" .. qcL.DATAUNAVAILABLE .. "|r")
                 end
             elseif type(renownInfo) == "number" then
-                local factionName = qcFactions[renownInfo] or "Unknown Faction"
-                qcQuestInformationTooltip:AddDoubleLine("Required Faction:", string.format("%s%s", COLOUR_DRUID, factionName))
+                local factionName = qcFactionName(renownInfo) or qcL.UNKNOWNFACTION
+                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s", COLOUR_DRUID, factionName))
             end
 
             qcQuestInformationTooltip:AddLine(" ")
@@ -1744,12 +1736,12 @@ function qcUpdateTooltip(index)
         local giverMapId, giverPin = qcFindPinForQuest(questId)
         if giverPin then
             qcQuestInformationTooltip:AddDoubleLine(
-                "Quest Giver:",
-                string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or "Unknown NPC",
+                qcL.QUESTGIVER,
+                string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or qcL.UNKNOWNNPC,
                     GetZoneNameFromZoneID(giverMapId), giverPin[4] or 0, giverPin[5] or 0)
             )
         else
-            qcQuestInformationTooltip:AddDoubleLine("Quest Giver:", "Unknown or Auto-Accepted Quest")
+            qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTGIVER, qcL.NOQUESTGIVER)
         end
 
         -- Faction and reputation information
@@ -1773,8 +1765,8 @@ function qcUpdateTooltip(index)
 
             for _, factionId in ipairs(factionIds) do
                 qcQuestInformationTooltip:AddDoubleLine(
-                    "  " .. (qcFactions[factionId] or tostring(factionId)),
-                    stringFormat("%s%d rep", COLOUR_DRUID, reputationEntries[factionId])
+                    "  " .. (qcFactionName(factionId) or tostring(factionId)),
+                    COLOUR_DRUID .. stringFormat(qcL.REPAMOUNT, reputationEntries[factionId])
                 )
             end
         end
@@ -1870,19 +1862,19 @@ function qcNewDataAlert_OnEnter(self) -- *
 	qcNewDataAlertTooltip:SetOwner(qcNewDataAlert, "ANCHOR_CURSOR")
 	qcNewDataAlertTooltip:ClearLines()
 	qcNewDataAlertTooltip:AddLine("Quest Completist")
-	qcNewDataAlertTooltip:AddLine(COLOUR_HUNTER .. "Quest Completist was not aware of the following information. Please help improve the accuracy of the addon by submiting a post or new issue over at curse", nil, nil, nil, true)
+	qcNewDataAlertTooltip:AddLine(COLOUR_HUNTER .. qcL.NEWDATAINTRO, nil, nil, nil, true)
 	if (qcNewDataAlert.New) then
-		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. " - Quest does not exist in the database.", nil, nil, nil, true)
+		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. qcL.NEWDATAQUEST, nil, nil, nil, true)
 		qcNewDataAlertTooltip:Show()
 	end
 	if (qcNewDataAlert.Faction) then
-		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. " - QC was not aware your FACTION could complete this quest.", nil, nil, nil, true)
+		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. qcL.NEWDATAFACTION, nil, nil, nil, true)
 	end
 	if (qcNewDataAlert.Race) then
-		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. " - QC was not aware your RACE could complete this quest.", nil, nil, nil, true)
+		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. qcL.NEWDATARACE, nil, nil, nil, true)
 	end
 	if (qcNewDataAlert.Class) then
-		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. " - QC was not aware your CLASS could complete this quest.", nil, nil, nil, true)
+		qcNewDataAlertTooltip:AddLine(COLOUR_MAGE .. qcL.NEWDATACLASS, nil, nil, nil, true)
 	end
 	if ((qcNewDataAlert.New) or (qcNewDataAlert.Faction) or (qcNewDataAlert.Race) or (qcNewDataAlert.Class)) then
 		qcNewDataAlertTooltip:Show()
@@ -1917,9 +1909,9 @@ local function qcBreadcrumbChecks(qcQuestID)
 			qcToast:Hide()
 		else
 			if (qcCount == 1) then
-				qcToastText:SetText("1 Breadcrumb Available!")
+				qcToastText:SetText(qcL.BREADCRUMBAVAILABLE)
 			else
-				qcToastText:SetText(string.format("%d Breadcrumbs Available!",qcCount))
+				qcToastText:SetText(string.format(qcL.BREADCRUMBSAVAILABLE, qcCount))
 			end
 			qcToast:Show()
 		end
@@ -1986,7 +1978,7 @@ function qcToast_OnEnter(self)
 	else
 		qcToastTooltip:SetOwner(qcToast, "ANCHOR_CURSOR")
 		qcToastTooltip:ClearLines()
-		qcToastTooltip:AddLine("Breadcrumb Quests")
+		qcToastTooltip:AddLine(qcL.BREADCRUMBQUESTS)
 		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[self.QuestID]) do
 			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
@@ -2027,10 +2019,10 @@ function qcMutuallyExclusiveAlert_OnEnter(self)
 		qcMutuallyExclusiveAlertTooltip:SetOwner(qcMutuallyExclusiveAlert, "ANCHOR_BOTTOMRIGHT")
 		qcMutuallyExclusiveAlertTooltip:ClearLines()
 		qcMutuallyExclusiveAlertTooltip:AddLine("Quest Completist")
-		qcMutuallyExclusiveAlertTooltip:AddLine(COLOUR_MAGE .. "This quest is mutually exclusive with others, meaning you can only complete one of them. The other quests are:", nil, nil, nil, true)
+		qcMutuallyExclusiveAlertTooltip:AddLine(COLOUR_MAGE .. qcL.MUTUALLYEXCLUSIVE, nil, nil, nil, true)
 		for qcMutuallyExclusiveIndex, qcMutuallyExclusiveEntry in pairs(qcMutuallyExclusive[self.QuestID]) do
 			if (qcQuestDatabase[qcMutuallyExclusiveEntry] == nil) then
-				qcMutuallyExclusiveAlertTooltip:AddLine(string.format("%s<Quest Not Found In DB> [%d]|r",COLOUR_DRUID,qcMutuallyExclusiveEntry))
+				qcMutuallyExclusiveAlertTooltip:AddLine(string.format("%s<%s> [%d]|r", COLOUR_DRUID, qcL.NOTINDATABASE, qcMutuallyExclusiveEntry))
 			else
 				local qcQuestName = qcMutuallyExclusiveQuestInformation(qcMutuallyExclusiveEntry)
 				if (qcQuestName and qcMutuallyExclusiveEntry) then qcMutuallyExclusiveAlertTooltip:AddLine(string.format("%s%s [%d]|r",COLOUR_DRUID,qcQuestName,qcMutuallyExclusiveEntry)) end
@@ -2136,7 +2128,7 @@ local function qcPinGiverName(pinData)
     if pinData[3] then
         return qcNpcName(pinData, qcNpcMapTooltipWaiting)
     elseif pinData[2] ~= 0 or pinData[7] then
-        return string.format("%s %s", UnitName("player"), "|cff69ccf0<Yourself>|r")
+        return string.format("%s |cff69ccf0%s|r", UnitName("player"), qcL.YOURSELF)
     end
 end
 
@@ -2189,7 +2181,7 @@ local function qcAddPinQuestsToTooltip(pinData)
                 icon:Show()
             end
         else
-            qcMapTooltip:AddDoubleLine("    |cff808080Quest Missing in DB|r", string.format("|cffff7d0a[%d]|r", qcEntry))
+            qcMapTooltip:AddDoubleLine("    |cff808080" .. qcL.NOTINDATABASE .. "|r", string.format("|cffff7d0a[%d]|r", qcEntry))
         end
     end
 
@@ -2245,7 +2237,7 @@ function qcPinMixin:OnMouseEnter()
     end
     if #others > 0 and #givers > 0 then
         qcMapTooltip:AddLine(" ")
-        qcMapTooltip:AddLine("|cff808080Other quests|r")
+        qcMapTooltip:AddLine("|cff808080" .. qcL.OTHERQUESTS .. "|r")
     end
     for _, member in ipairs(others) do
         qcAddPinQuestsToTooltip(member)
@@ -2573,7 +2565,7 @@ function qcApplySettings()
 end
 
 function qcWelcomeMessage()
-    print(string.format("%sThanks for using Quest Completist. Spot a quest inaccuracy? Please report it on Curse.", QCADDON_CHAT_TITLE))
+    print(QCADDON_CHAT_TITLE .. qcL.WELCOME)
 end
 
 function qcInterfaceOptions_OnLoad(self)
@@ -2866,12 +2858,11 @@ qcCheckSettings()
 
 -- Accepting or turning in a quest flagged in qcUnavailableQuests.lua proves the flag wrong. It's kept
 -- in qcFlaggedButSeen (account-wide) for the flag list's review, and mentioned in chat once.
-local QC_SEEN_WORDING = {accepted = "just accepted it", ["turned in"] = "just turned it in"}
+local QC_SEEN_MESSAGE = {accepted = "UNAVAILABLEACCEPTED", ["turned in"] = "UNAVAILABLETURNEDIN"}
 local function qcNoteUnavailableQuestSeen(questId, how)
 	if not qcUnavailableQuests[questId] or qcFlaggedButSeen[questId] then return end
 	qcFlaggedButSeen[questId] = {how = how, time = time(), build = select(4, GetBuildInfo())}
-	print(string.format("%sQuest %d \"%s\" is listed as no longer available, but you've %s. It shows as normal for you; please report it so the list can be corrected.",
-		QCADDON_CHAT_TITLE, questId, qcQuestName(questId) or "?", QC_SEEN_WORDING[how]))
+	print(QCADDON_CHAT_TITLE .. string.format(qcL[QC_SEEN_MESSAGE[how]], questId, qcQuestName(questId) or "?"))
 end
 
 -- Blizzard writes the quest giver's name into the quest frame's title each time it shows a quest
@@ -2957,6 +2948,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self.qcTitleText:SetText(string.format("Quest Completist v%s", QCADDON_VERSION))
 	self.qcCategoryDropdownButton:SetText(GetText("CATEGORIES"))
 	self.qcOptionsButton:SetText(GetText("FILTERS"))
+	qcNewDataAlert.qcNewDataAlertText:SetText(qcL.NEWDATAALERT)
 	self:RegisterForDrag("LeftButton")
 	self:RegisterEvent("QUEST_COMPLETE")
 	--self:RegisterEvent("QUEST_FINISHED") -- Cant be used for marking quest complette sinze it marks it done before its turned in 

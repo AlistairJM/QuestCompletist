@@ -194,12 +194,12 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1065,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 
 {text=stringformat("   %s",qcL.SHADOWLANDS),clientName={"string","EXPANSION_NAME8"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{text=qcL.COVENANTCALLINGS,isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=qcL.COVENANTCALLINGS,clientName={"string","CALLINGS_QUESTS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.KYRIAN,isTitle=false,notCheckable=false,hasArrow=false,arg1=1220,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.NECROLORD,isTitle=false,notCheckable=false,hasArrow=false,arg1=1221,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.NIGHTFAE,isTitle=false,notCheckable=false,hasArrow=false,arg1=1222,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.VENTHYR,isTitle=false,notCheckable=false,hasArrow=false,arg1=1223,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=qcL.COVENANTSANCTUARY,isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=qcL.COVENANTSANCTUARY,clientName={"string","GARRISON_TYPE_9_0_LANDING_PAGE_TITLE"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.ABOMINABLESTICHING,isTitle=false,notCheckable=false,hasArrow=false,arg1=1230,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=419,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=qcL.EMBERCOURT,isTitle=false,notCheckable=false,hasArrow=false,arg1=1231,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
