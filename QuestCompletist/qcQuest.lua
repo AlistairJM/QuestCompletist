@@ -14453,6 +14453,7 @@ qcOverrideWeeklyExclusiveQuest = { -- This will hide pins if an questgiver only 
 }
 
 qcQuestDatabase={
+-- Generated from data\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not these rows.
 [53669]={53669,"The Altar's Power",50,"",10,1,2,67108863,8191,0,0,0,0,0},
 [53668]={53668,"Flightgineer's Network",50,"",10,1,2,67108863,8191,0,0,0,0,0},
 [53665]={53665,"Ready for Battle",50,"",10,1,2,67108863,8191,0,0,0,0,0},

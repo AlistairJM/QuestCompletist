@@ -46,7 +46,9 @@ exports, the API cache, reports) is gitignored and can be regenerated.
 
 ## The quest and pin data files
 
-The quest rows and the map pins are also kept in `data\`, one record per line, with named fields:
+The quests and the map pins live in `data\`, one record per line, with named fields. These are the
+master copy: the `qcQuestDatabase` rows of `qcQuest.lua` and the whole of `qcPinDB.lua` are built
+from them, and each starts with a line saying so.
 
 - `data\quests.jsonl`, one quest per line:
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
@@ -66,18 +68,18 @@ It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'le
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
-
 The other tools edit tables the data files don't hold (menus, categories, the zone table,
-reputation rewards), so the rows and pins stay in step. Only a hand edit to the quest rows in
-`qcQuest.lua` or to `qcPinDB.lua` puts them out of step. Until stage 3 of
-[the plan](plans/data-structure.md), bring the data files up to date after one with:
+reputation rewards), which stay hand-edited Lua.
+
+**To change a quest or a pin by hand**, edit its line in the data file with a text editor, then
+rebuild:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\Export-AddonData.ps1    # about a minute
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -Check
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1
 ```
 
-`-Check` must say both files are up to date.
+Never edit the generated rows or `qcPinDB.lua` directly: the next build overwrites them, and until
+then every tool refuses to save.
 
 ## Before a sweep
 

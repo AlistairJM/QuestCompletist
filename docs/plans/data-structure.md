@@ -9,7 +9,7 @@ row of 14 values.
 | Point | What | Status |
 |---|---|---|
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
-| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120). Stage 2: every tool that changes quests or pins moved (#121, #122, #123); the 10 that only read them still to move. Stage 3 can go ahead. |
+| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120). Stage 2: every tool that changes quests or pins moved (#121, #122, #123); the 10 that only read them still to move. Stage 3 done: the data files are the master copy. |
 | 4 | Named fields for the tools | Comes with point 6: tools read and write records through `tools\AddonData.ps1` |
 | 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | After point 6, as a change to the build step and to qcCore.lua |
 | 2 | The zone text (field 4, never read in game) left out of the rows | After point 6, the same way |
@@ -23,7 +23,7 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
 1. **The data files, the build step and the export (#120).** `data\quests.jsonl` and
    `data\pins.jsonl` hold the same records as the Lua. `Build-AddonData.ps1` checks them and writes
    the Lua; `-Check` confirms the two agree. The Lua stays the copy the tools edit, so
-   `Export-AddonData.ps1` brings the data files up to date after a tool runs. The Lua text was
+   `Export-AddonData.ps1` brought the data files up to date after a tool ran. The Lua text was
    tidied once so the build reproduces it byte for byte; loaded in Lua 5.1, the tidied files give
    identical tables, iterated in the same order:
    - `qcQuest.lua`: the 27 comment and blank lines among the quest rows removed.
@@ -63,10 +63,15 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
      batch 2.
    - Every save now first checks that the Lua still matches the data files. Rebuilding it otherwise
      would lose a change an old-style tool made, or a hand edit.
-3. **Switch.** Once no tool edits the quest rows or pins in the Lua, the data files become the
-   master copy: `Export-AddonData.ps1` is deleted, the generated Lua gets a "generated, don't edit"
-   header, and the maintenance notes say to edit only the data files. That condition was met with
-   batch 3. The read-only tools don't hold it up; they have to move before points 1 to 3.
+3. **Switch, done.** Once no tool edited the quest rows or pins in the Lua (batch 3), the data files
+   became the master copy. `Export-AddonData.ps1` and the Lua readers in `AddonData.ps1` are
+   deleted. The generated rows of `qcQuest.lua` and the whole of `qcPinDB.lua` start with a line
+   saying they're generated from the data files. The maintenance notes say to make hand changes in
+   the data files and rebuild. The safeguard now tells anyone who edited the generated Lua to make
+   the change in the data files instead. Loaded in Lua 5.1, the switched files give identical tables,
+   in the same order.
+
+   Still to do before points 1 to 3: move the 10 read-only tools, which read the Lua rows by position.
 
 ## Decisions
 
@@ -79,7 +84,8 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
 - **Records keep the order the Lua has them in.** The order of the rows decides the order the game
   walks the table in, and search results come out in that order.
 - **Comments among the quest rows were dropped** (the user's call). The tables that stay hand-edited
-  Lua keep theirs.
+  Lua keep theirs. Since stage 3 the build writes one line above the rows, and at the top of
+  `qcPinDB.lua`, saying they're generated.
 - **Only the quest rows and the pins move.** Menus, categories, storylines and the other tables in
   `qcQuest.lua` stay Lua for now; the build leaves everything outside the quest rows as it is.
 - **The PowerShell JSON writer isn't used** for the data files: it writes `'` as `'`. The
