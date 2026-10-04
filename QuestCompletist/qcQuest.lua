@@ -14453,13 +14453,6 @@ qcOverrideWeeklyExclusiveQuest = { -- This will hide pins if an questgiver only 
 }
 
 qcQuestDatabase={
--- 14 fields, all present on every entry: id, name, level, zone, areaid, type, faction, race,
--- class, profession, holiday, covenant, storyline, prereq. Reputation rewards are not stored
--- here - they live in qcQuestReputation, keyed by quest ID. Sparse data belongs in its own
--- keyed table rather than in new positional fields.
--- Entries below added from Blizzard's Data API to backfill quests found in
--- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).
--- areaid is unmapped (0) - these won't appear correctly in the zone checklist yet.
 [53669]={53669,"The Altar's Power",50,"",10,1,2,67108863,8191,0,0,0,0,0},
 [53668]={53668,"Flightgineer's Network",50,"",10,1,2,67108863,8191,0,0,0,0,0},
 [53665]={53665,"Ready for Battle",50,"",10,1,2,67108863,8191,0,0,0,0,0},
@@ -14700,8 +14693,6 @@ qcQuestDatabase={
 [54781]={54781,"What's For Lunch?",90,"Voidstorm",1508,1,3,67108863,8191,0,0,0,0,0},
 [91928]={91928,"What's For Lunch?",90,"Voidstorm",1508,1,3,67108863,8191,0,0,0,0,0},
 [91929]={91929,"What's For Lunch?",90,"Voidstorm",1508,1,3,67108863,8191,0,0,0,0,0},
-
--- Backfilled from Blizzard's API; areaid unmapped (0)
 [9751]={9751,"The Bloodcurse Legacy",1,"Bloodmyst Isle",28,1,1,67108863,8191,0,0,0,504,0},
 [10871]={10871,"Ally of the Netherwing",25,"Shadowmoon Valley",179,1,3,1,8191,0,0,0,493,0},
 [10872]={10872,"Zuluhed the Whacked",25,"Shadowmoon Valley",179,1,3,1,8191,0,0,0,493,0},
@@ -15117,7 +15108,6 @@ qcQuestDatabase={
 [96004]={96004,"Prey: A Slithering Threat",90,"Silvermoon City",1512,1,3,67108863,8191,0,0,0,6296,0},
 [98515]={98515,"Vaults of Atal'Utek: A Toxic Tour",90,"Vaults of Atal'Utek",1513,1,3,67108863,8191,0,0,0,6232,0},
 [88769]={88769,"The Battle of the Bridge",90,"",1503,1,3,67108863,8191,0,0,0,5796,0},
-
 [2]={2,"Sharptalon's Claw",7,"Ashenvale",12,1,2,5454925,4095,0,0,0,0,11},
 [11]={11,"Riverpaw Gnoll Bounty",1,"Elwynn Forest",70,1,1,64175181,8191,0,0,0,566,76},
 [16]={16,"Give Gerard a Drink",7,"Elwynn Forest",70,2,1,64175181,8191,0,0,0,0,0},
@@ -23757,7 +23747,6 @@ qcQuestDatabase={
 [29054]={29054,"Stink Bombs Away!",10,"Hallow's End",90,4,1,64175181,8191,0,16,0,0,0},
 [29066]={29066,"Good News... and Bad News",30,"Mount Hyjal",139,1,3,67108863,8191,0,0,0,542,0},
 [29067]={29067,"Potion Master",1,"Alchemy",5,32,3,67108863,8191,1,0,0,0,0},
-
 [29074]={29074,"A Season for Celebration",10,"Hallow's End",90,64,1,64175181,8191,0,16,0,0,0},
 [29075]={29075,"A Time to Gain",10,"Hallow's End",90,4,1,64175181,8191,0,16,0,0,0},
 [29078]={29078,"Beating Them Back!",1,"Elwynn Forest",70,1,1,7244,8191,0,0,0,1226,0},
@@ -38010,7 +37999,6 @@ qcQuestDatabase={
 [59291]={59291,"Conquest's Reward",50,"Rated PvP",1094,1,1,64175181,8191,0,0,0,0,0},
 [59292]={59292,"Conquest's Reward",50,"Rated PvP",1094,1,1,64175181,8191,0,0,0,0,0},
 [28298]={28298,"Meet with Thega Graveblade",20,"Orgrimmar",148,1,2,61658034,8,0,0,0,0,0},
---Shadowlands
 [38288]={38288,"Raw Beast Hides",10,"Engineering",72,4,3,67108863,8191,8,0,0,0,0},
 [38294]={38294,"Sumptuous Fur",10,"Engineering",72,4,3,67108863,8191,8,0,0,0,0},
 [38297]={38297,"Herbs Galore",10,"Engineering",72,4,3,67108863,8191,8,0,0,0,0},
@@ -41386,8 +41374,6 @@ qcQuestDatabase={
 [66693]={66693,"Tempting Fate: Castle Nathria",60,"Raid",1205,128,3,67108863,8191,0,0,0,0,0},
 [66694]={66694,"Tempting Fate: Sanctum of Domination",60,"Raid",1206,128,3,67108863,8191,0,0,0,0,0},
 [66695]={66695,"Tempting Fate: Sepulcher of the First Ones",60,"Raid",1207,128,3,67108863,8191,0,0,0,0,0},
-
---Dragonflight
 [37625]={37625,"Assault on Magnarok",40,"Garrison Support",290,1,1,64175181,8191,0,0,0,0,0},
 [38598]={38598,"TEST: Craft Some Legplates",10,"Blacksmithing",25,1,3,67108863,8191,2,0,0,0,0},
 [44482]={44482,"Recruiting Ebon Knights",10,"Warrior Campaign",1014,1,3,67108863,32,0,0,0,5893,0},
@@ -45242,10 +45228,7 @@ qcQuestDatabase={
 [83777]={83777,"Infinite Growth IV",10,"Eastern Kingdoms",221,1,3,67108863,8191,0,0,0,0,0},
 [83793]={83793,"Aid the Jinyu",10,"Dread Wastes",61,1,1,67108863,8191,0,0,0,0,0},
 [83795]={83795,"Aid the Hozen",10,"Dread Wastes",61,1,2,67108863,8191,0,0,0,0,0},
-
---TWW
 [50690]={50690,"A Flickering of Hope",80,"Hallowfall",1404,1,3,67108863,8191,0,0,0,0,0},
-
 [70660]={70660,"High-Grade Minerals",20,"Ohnahran Plains",1301,128,3,67108863,8191,0,0,0,0,0},
 [70707]={70707,"The Next Waygate",10,"The Waking Shores",1305,1,3,67108863,8191,0,0,0,0,0},
 [71025]={71025,"Against Overwhelming Odds",70,"Unknown",1306,128,2,61658034,8191,0,0,0,0,70371},
@@ -46595,7 +46578,6 @@ qcQuestDatabase={
 [85667]={85667,"Delver's Call: The Underkeep",70,"Azj Kahet",1401,1,3,67108863,8191,0,0,0,0,0},
 [85718]={85718,"A Shining Stone",70,"Isle Of Dorn",1405,1,3,67108863,8191,0,0,0,0,0},
 [86481]={86481,"Short-Supply Reward",30,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
---11.0.5
 [85947]={85947,"An Original Journey Through Time",1,"Weekly Event",1735,128,3,67108863,8191,0,0,0,0,0},
 [57308]={57308,"The Battle of Alterac",10,"Alterac Valley",7,128,3,67108863,8191,0,0,0,0,0},
 [84693]={84693,"Weaver's Lair Profession Table",78,"Azj Kahet",1401,1,3,67108863,8191,0,0,0,0,0},
@@ -46670,7 +46652,6 @@ qcQuestDatabase={
 [85949]={85949,"A Frozen Journey Through Time",1,"Weekly Event",1735,128,3,67108863,8191,0,0,0,0,0},
 [83274]={83274,"An Original Path Through Time",80,"Weekly Event",1735,128,3,67108863,8191,0,0,0,0,0},
 [83358]={83358,"The Arena Calls",80,"Weekly Event",1735,128,3,67108863,8191,0,0,0,0,0},
---11.0.7
 [77485]={77485,"Technoscrying: Back to Eadweard!",70,"Unknown",1302,1,3,67108863,8191,0,0,0,5469,77425},
 [81560]={81560,"Winter's Presents",1,"Winter Veil",413,64,1,64175181,8191,0,8,0,0,0},
 [81561]={81561,"Winter's Presents",1,"Unknown",1403,1,2,67108863,8191,0,0,0,0,0},
@@ -46798,8 +46779,6 @@ qcQuestDatabase={
 [86731]={86731,"An Original Path Through Time",80,"Unknown",1735,128,3,67108863,8191,0,0,0,0,0},
 [89263]={89263,"Your Cut of the Spoils",11,"Unknown",0,1,3,67108863,8191,0,0,0,0,0},
 [89346]={89346,"Your Cut of the Spoils",11,"Unknown",0,1,3,67108863,8191,0,0,0,0,0},
-
---11.1.0
 [86853]={86853,"Sparks of War: Undermine",70,"Azj Kahet",1401,128,3,67108863,8191,0,0,0,0,0},
 [82739]={82739,"Twilight Scheming",20,"Blackrock Depths",23,1,3,67108863,16,0,0,0,0,0},
 [86448]={86448,"Piecing Things Together",70,"Delvers Headquarters",1403,128,3,67108863,8191,0,0,0,0,0},
@@ -47206,7 +47185,6 @@ qcQuestDatabase={
 [87583]={87583,"Delves: The Sluice Contains the Juice",80,"Unknown",1431,128,3,67108863,8191,0,0,0,0,0},
 [87582]={87582,"Delves: Site of Madness",80,"Unknown",1431,128,3,67108863,8191,0,0,0,0,0},
 [85005]={85005,"A Radiant Call",70,"Hallowfall",1404,1,3,67108863,8191,0,0,0,0,78687},
---11.1.5
 [42130]={42130,"Building Our Troops",10,"Death Knight Campaign",1021,1,3,67108863,32,0,0,0,0,0},
 [44241]={44241,"Champion: Thassarian",10,"Death Knight Campaign",1021,1,3,67108863,32,0,0,0,0,0},
 [44242]={44242,"Champion: Nazgrim",10,"Death Knight Campaign",1021,1,3,67108863,32,0,0,0,0,0},
@@ -47287,7 +47265,6 @@ qcQuestDatabase={
 [90731]={90731,"Enhancing Corruption",80,"Isle of Dorn",1405,1,3,67108863,8191,0,0,0,0,0},
 [90779]={90779,"Cracked Keystone",70,"Meta Quests",0,1,3,67108863,8191,0,0,0,0,0},
 [91173]={91173,"The Flame Burns Eternal",70,"Hallowfall",1404,128,3,67108863,8191,0,0,0,0,0},
---11.1.7
 [36719]={36719,"Into Aegwynn's Retreat",10,"Mage",128,1,3,67108863,128,0,0,0,0,0},
 [43181]={43181,"Tracking Down the Scepter",10,"Artifact",0,1,3,67108863,256,0,0,0,0,0},
 [44196]={44196,"Mathias Visit Not Active 01",45,"Rogue Campaign",0,1,3,67108863,8,0,0,0,0,0},
@@ -47392,7 +47369,6 @@ qcQuestDatabase={
 [91052]={91052,"Worldsoul: Overcharged Delves",70,"Meta Quests",1403,1,3,67108863,8191,0,0,0,5572,87417},
 [91283]={91283,"Greedy Emissary",0,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
 [91392]={91392,"Greedy Emissary",0,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
---11.2.0
 [84485]={84485,"Renowned with the Tazaveshi Brokers",60,"11 2 Karesh Test",0,1,3,67108863,8191,0,0,0,0,0},
 [84740]={84740,"Bridge to Nowhere",80,"K'aresh",1410,1,3,67108863,8191,0,0,0,5683,0},
 [84741]={84741,"Signs in the Sands",80,"K'aresh",1410,1,3,67108863,8191,0,0,0,5683,84740},
@@ -47770,7 +47746,6 @@ qcQuestDatabase={
 [91855]={91855,"Worldsoul: K'aresh World Quests",70,"Meta Quests",1405,1,3,67108863,8191,0,0,0,5572,82488},
 [92031]={92031,"Meet the Vandals",70,"Manaforge Omega",1734,1,3,67108863,8191,0,0,0,0,0},
 [92330]={92330,"Valorstones",70,"K'aresh",1410,1,3,67108863,8191,0,0,0,0,0},
---11.2.5 
 [88754]={88754,"Short-Supply",10,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
 [89403]={89403,"11.2.5 Delves - Mid-Season Refresh - Player Choice Affix - TEST - ZGS",0,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
 [89404]={89404,"Time Crisis",10,"Timerunning",427,1,3,67108863,8191,0,0,0,5899,0},
@@ -47949,7 +47924,6 @@ qcQuestDatabase={
 [93120]={93120,"Infinite Research: Special Assignment, A World to Explore",10,"Timerunning",427,1,3,67108863,8191,0,0,0,0,0},
 [94850]={94850,"If You Build It",45,"Order Hall",1017,1,3,67108863,256,0,0,0,315,46238},
 [94932]={94932,"Bindings of the Windlord",45,"Artifact",1006,1,3,67108863,8191,0,0,0,0,0},
---11.2.7
 [40226]={40226,"Remnants of the Sashj'tar",45,"Suramar",1007,1,3,67108863,8191,0,0,0,0,0},
 [40801]={40801,"Journey to Azsuna",10,"Artifact",0,1,3,67108863,1024,0,0,0,0,0},
 [40984]={40984,"Murkwater Naga Incursion: Highmountain",45,"High Mountain",1005,128,3,67108863,8191,0,0,0,0,0},
@@ -47990,7 +47964,6 @@ qcQuestDatabase={
 [93979]={93979,"Lingering Memories",80,"K'aresh",1410,1,3,67108863,8191,0,0,0,0,84967},
 [94431]={94431,"[DNT] House Level 3 Room Award",0,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
 [94437]={94437,"[DNT] House Level 5 Room Award",0,"Eastern Kingdoms",0,1,3,67108863,8191,0,0,0,0,0},
---12.0.
 [83547]={83547,"Welcome to the Neighborhood",1,"Northshire",295,1,3,67108863,8191,0,0,0,5636,0},
 [84442]={84442,"Invitation to the Spirit Festival",50,"Heritage",1093,1,1,4096,8191,0,0,0,5682,0},
 [84444]={84444,"Invitation to the Spirit Festival",50,"Heritage",1093,1,2,4096,8191,0,0,0,5682,0},

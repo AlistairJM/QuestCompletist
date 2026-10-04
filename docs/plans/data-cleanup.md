@@ -142,6 +142,13 @@ Review in groups by zone: Warfronts, Rated PvP season rewards and so on. The evi
 the user's knowledge, or Wowhead viewed by hand (it blocks automated browsing). Anything uncertain
 stays unflagged.
 
+### Found later
+
+- **A probable duplicate pin** (2026-10-04, while testing #118): quest 26365, "Hero's Call: Redridge
+  Mountains!", has two Westfall (map 52) pins for Captain Danuvin about 2 apart, at 56.5, 47.6 with
+  no NPC ID and at 56.4, 49.5 with ID 821. Before removing one, look for other pairs with the same
+  name close together on a map.
+
 ## Decisions (agreed 2026-09-30)
 
 1. **What to call "Bfa Unknown".** It's shown in the menu under that name, but it holds quests
