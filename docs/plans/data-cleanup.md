@@ -148,6 +148,24 @@ stays unflagged.
   Mountains!", has two Westfall (map 52) pins for Captain Danuvin about 2 apart, at 56.5, 47.6 with
   no NPC ID and at 56.4, 49.5 with ID 821. Before removing one, look for other pairs with the same
   name close together on a map.
+  **Checked: not a duplicate, and both stay.** The game has no start point for any of his quests.
+  Both pins are in the original 2018 data. The second stands with the pins for King Varian's "Return
+  to Sentinel Hill" and Marshal Stoutmantle's second spot, at the end of the Westfall story, so it's
+  where Danuvin stands then; the first is beside his early quests and the old pin for his classic
+  quest. "Hero's Call" is offered from both.
+- **The same quest twice on one giver's pins: taken off** (2026-10-04). Pins with the same name
+  within 3 map points of each other: 1,310 pairs, mostly a story character with a different NPC ID
+  in each phase (Lady Liadrin, Kalecgos) offering different quests from each. The addon already
+  draws pins within half a point of each other as one and names the giver once, so those look like
+  one pin. The fault was 40 pairs that share a quest: 47 quest lines listed twice in 16 tooltips
+  (28 of them Alyx's in Tanaris), or a quest shown on two pins a short way apart.
+  `Remove-DuplicatePinQuests.ps1` took 65 quests off 30 pins, removing the 12 left with none. Where
+  the game has a start point it decided (Wayne the Ancestral's two spots in Stormsong Valley each kept
+  their own quests). Four of the removed pins were Midsummer Flame Guardians whose wrong NPC IDs were
+  cleared in #113, beside the same guardian with the right ID; their rows left
+  `pin-npc-id-decisions.csv`. Every quest is still on every map it was on, and no pin moved. Left
+  alone: 14 quests of 8 characters on pins visibly apart that the game has no start point for
+  (Danuvin, First Arcanist Thalyssra in Suramar, two Moonfall Riding Hippogryphs).
 - **Pins in the water at Stormwind Harbor: checked, and left alone** (2026-10-04, while testing
   #126). They're the start points Blizzard's own quest data (QuestPOIBlob, ObjectiveIndex -1) gives
   quests that start without a quest giver: from a popup, an item or boarding a ship. Examples are
