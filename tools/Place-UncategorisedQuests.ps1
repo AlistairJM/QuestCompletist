@@ -10,7 +10,9 @@ The category comes from, in order:
      the same name. This is the database's own convention: of categorised quests with both
      signals, 96% are filed under their API area and 90% under their pin's map. Where several
      categories share the name (the old and the Midnight Eversong Woods), the one the quest's map
-     pin sits in is taken; with no pin to choose, the quest is left alone.
+     pin sits in is taken. With no pin to choose, the area's number decides: the category every
+     other filed quest of that area is in, when at least 3 are and none is in its namesake (area
+     15968 is Midnight's Eversong Woods). Otherwise the quest is left alone.
   2. An API area with no category of its own is looked up as a map (UiMap.csv, from
      Build-CategoryUiMapIDs.ps1) and filed under the first map above it that has a category
      (Vaults of Atal'Utek -> The Coiled Isle).
@@ -22,14 +24,16 @@ The category comes from, in order:
      it that has one, or whose name is exactly one category's, short of a continent (Naigtal ->
      Voidstorm). Below zone text, because a garrison or covenant sanctum map would otherwise climb
      to the zone outside it.
-  6. Last, the quest's storyline, when every filed quest in it is in one category and at least half
+  6. The quest's own map points in the client (QuestPOIBlob.csv: its giver and objective areas),
+     when they all point to one category.
+  7. Last, the quest's storyline, when every filed quest in it is in one category and at least half
      of it is filed.
 Anything else stays in, or moves to, category 0, which the menu lists as Uncategorized: hidden
 tracking entries with no zone at all, and the odd area with neither a category nor a map.
 
-Checked by un-filing 2,000 random filed quests on a scratch copy: these rules put 1,706 back where
-they were, 251 elsewhere (mostly pins of class, campaign and profession quests) and left 43, against
-1,693 / 255 / 52 before rules 0 (outside -Refile), 5 and 6 were added.
+Checked by un-filing 2,000 random filed quests on a scratch copy (October 2026 data): these rules
+put 1,702 back where they were, 265 elsewhere (mostly pins of class, campaign and profession quests)
+and left 33, against 1,695 / 264 / 41 before the area number chose between same-named categories.
 
 -Explain writes tools/uncategorised_quests.csv: every quest placed, with the rule, and every quest
 left, with what's missing - no API area, pins in several categories, or pins on maps with no
@@ -176,6 +180,31 @@ function Get-ContainingCategory($areaName) {
     return $null
 }
 
+$areaPattern = '"area":\{.*?"name":"([^"]+)","id":(\d+)'
+$areaQuests = $null
+
+# The one category among $choices that the area's filed quests are in, if at least 3 are. Reading
+# every cached quest takes a few seconds, so it waits for the first same-named area.
+function Get-AreaCategory($areaId, $choices) {
+    if ($null -eq $script:areaQuests) {
+        $script:areaQuests = @{}
+        foreach ($file in [System.IO.Directory]::EnumerateFiles("$ToolsDir\quest_api_cache", "*.json")) {
+            $area = [regex]::Match([System.IO.File]::ReadAllText($file), $areaPattern)
+            if (-not $area.Success) { continue }
+            $id = $area.Groups[2].Value
+            if (-not $script:areaQuests.ContainsKey($id)) { $script:areaQuests[$id] = New-Object System.Collections.Generic.List[string] }
+            $script:areaQuests[$id].Add([System.IO.Path]::GetFileNameWithoutExtension($file))
+        }
+    }
+    $counts = @{}
+    foreach ($questId in $script:areaQuests[$areaId]) {
+        $category = $filedIn[$questId]
+        if ($choices -contains $category) { $counts[$category] = 1 + $counts[$category] }
+    }
+    if ($counts.Count -eq 1 -and @($counts.Values)[0] -ge 3) { return @($counts.Keys)[0] }
+    return $null
+}
+
 $quests = Read-QuestData $DataDir
 $storyOf = @{}
 $storyQuests = @{}
@@ -214,9 +243,10 @@ foreach ($quest in $quests) {
     $cached = "$ToolsDir\quest_api_cache\$questId.json"
     $candidates = $null
     $areaName = $null
+    $areaId = $null
     if (Test-Path $cached) {
-        $area = [regex]::Match([System.IO.File]::ReadAllText($cached), '"area":\{.*?"name":"([^"]+)"')
-        if ($area.Success) { $areaName = $area.Groups[1].Value; $candidates = $categoriesByName[(Get-NameKey $areaName)] }
+        $area = [regex]::Match([System.IO.File]::ReadAllText($cached), $areaPattern)
+        if ($area.Success) { $areaName = $area.Groups[1].Value; $areaId = $area.Groups[2].Value; $candidates = $categoriesByName[(Get-NameKey $areaName)] }
     }
     $containing = if ($areaName -and -not $candidates) { Get-ContainingCategory $areaName }
     $zoneMatches = @(if ($zoneText -and $categoriesByName.ContainsKey((Get-NameKey $zoneText))) { $categoriesByName[(Get-NameKey $zoneText)] })
@@ -236,7 +266,11 @@ foreach ($quest in $quests) {
             elseif ($usableCandidates.Count -gt 1) {
                 $picked = @($pins | Where-Object { $usableCandidates -contains $_ })
                 if ($picked.Count -eq 1) { $target = $picked[0]; $rule = "API area, pin picks between same-named categories" }
-                else { $ambiguous = $true }
+                else {
+                    $byArea = Get-AreaCategory $areaId $usableCandidates
+                    if ($byArea) { $target = $byArea; $rule = "API area, its other quests pick between same-named categories" }
+                    else { $ambiguous = $true }
+                }
             }
         } elseif ($containing -and (& $usable $containing)) {
             $target = $containing; $rule = "zone containing the API area"
@@ -257,7 +291,7 @@ foreach ($quest in $quests) {
         $place[$questId] = $target
         $rules[$rule] = 1 + $rules[$rule]; $ruleOf[$questId] = $rule
     } else {
-        $apiStatus = if ($ambiguous) { "area '$areaName' matches several categories, no pin to choose" }
+        $apiStatus = if ($ambiguous) { "area '$areaName' matches several categories, neither pin nor area number chooses" }
             elseif (Test-Path "$ToolsDir\quest_api_cache\$questId.404") { "not in the API" }
             elseif (-not (Test-Path $cached)) { "not fetched" }
             elseif ($areaName) { "area '$areaName' matches no category or map" }
