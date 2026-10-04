@@ -9,11 +9,11 @@ row of 14 values.
 | Point | What | Status |
 |---|---|---|
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
-| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120). Stage 2: every tool that changes quests or pins moved (#121, #122, #123); the 10 that only read them still to move. Stage 3 done: the data files are the master copy. |
-| 4 | Named fields for the tools | Comes with point 6: tools read and write records through `tools\AddonData.ps1` |
-| 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | After point 6, as a change to the build step and to qcCore.lua |
-| 2 | The zone text (field 4, never read in game) left out of the rows | After point 6, the same way |
-| 3 | The quest ID no longer repeated inside its own row | After point 6, optional |
+| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Done. Stage 1 #120; stage 2 #121, #122, #123 and the read-only tools; stage 3 #124. |
+| 4 | Named fields for the tools | Done with point 6: every tool reads and writes records through `tools\AddonData.ps1`, and only the build knows the Lua row layout |
+| 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | Next: a change to the build step and to qcCore.lua |
+| 2 | The zone text (field 4, never read in game) left out of the rows | Next, the same way |
+| 3 | The quest ID no longer repeated inside its own row | Optional, the same way |
 
 Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after points 1 and 2,
 7.72 MB after all three.
@@ -41,12 +41,13 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
        now go at the end of the data file, with no comment lines.
      - Batch 3, done: `Assemble-PinDB`, with `Parse-ExistingPinDB`, which feeds it. The candidate
        for review is now `tools\pins_candidate.jsonl`.
-   - **Only read them (10).** `Apply-ReputationBackfill`, `Audit-DungeonCategories`,
-     `Audit-QuestAccuracy`, `Build-CategoryClientNames`, `Build-QuestLocationData`,
-     `Build-UnavailableQuests`, `Compare-QuestReputation`, `Find-UnavailableQuestCandidates`,
-     `Remove-EmptyMenuEntries`, and `Parse-ExistingPinDB` (moved with batch 3). These would keep
-     working against the generated Lua, but they read it by position, so they have to move before
-     points 1 to 3 change the rows.
+   - **Only read them (10), done after stage 3.** `Apply-ReputationBackfill`,
+     `Audit-DungeonCategories`, `Audit-QuestAccuracy`, `Build-CategoryClientNames`,
+     `Build-QuestLocationData`, `Build-UnavailableQuests`, `Compare-QuestReputation`,
+     `Find-UnavailableQuestCandidates`, `Remove-EmptyMenuEntries`, and `Parse-ExistingPinDB` (moved
+     with batch 3). They read the Lua rows by position, so they had to move before points 1 to 3
+     change the rows. `Compare-QuestReputation` no longer reports each row's field count, a check
+     left over from when reputation sat inside the rows.
    - **Touch neither (5)**, nothing to do: `Add-ZoneTableMaps`, `Build-CategoryUiMapIDs`,
      `Categorize-AuditDiscrepancies`, `Fetch-GapQuestData`, `Get-WagoQuestRequirements`.
 
@@ -71,7 +72,8 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
    the change in the data files instead. Loaded in Lua 5.1, the switched files give identical tables,
    in the same order.
 
-   Still to do before points 1 to 3: move the 10 read-only tools, which read the Lua rows by position.
+   After stage 3 the read-only tools moved too, so nothing but the build reads or writes the Lua
+   rows, and points 1 to 3 only need the build step and qcCore.lua to change.
 
 ## Decisions
 

@@ -1,24 +1,28 @@
 <#
-Report-only audit of the ENTIRE qcQuestDatabase (all ~35k quests) against
-Blizzard's Data API for faction/race/class/reputation accuracy. Does NOT
-modify qcQuest.lua - writes a CSV of every discrepancy found, plus a
+Report-only audit of ALL our quests (data\quests.jsonl, ~35k) against
+Blizzard's Data API for faction/race/class/reputation accuracy. Changes no
+data - writes a CSV of every discrepancy found, plus a
 separate list of quest IDs Blizzard's API no longer knows about (old/
 removed content - expected, not itself a bug), for manual review before
 any fix gets applied.
 
-Every entry is 14 fields (id, name, level, zone, areaid, type, faction,
-race, class, profession, holiday, covenant, storyline, prereq). Reputation
-rewards are not part of the entry - they live in the qcQuestReputation
-side table, read here via QuestReputation.ps1.
+Reputation rewards are not part of a quest's record - they live in the
+qcQuestReputation side table in qcQuest.lua, read here via QuestReputation.ps1.
 
 Reuses the exact same bitmask-resolution rules already used and verified
 in Insert-GapQuestEntries.ps1.
 #>
+param(
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua')
+)
 
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\QuestReputation.ps1"
-$toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
-$questFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
+. "$PSScriptRoot\AddonData.ps1"
+$toolsDir = $ToolsDir
+$questFile = $QuestFile
 
 $envFile = "$toolsDir\.env"
 $envVars = @{}
@@ -63,31 +67,22 @@ function Resolve-Bitmask($namesJoined, $bitTable, $allValue, $maxNarrow) {
     return $mask
 }
 
-Write-Output "Parsing current qcQuestDatabase..."
+Write-Output "Reading our quests..."
 $content = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($questFile))
-$anchor = [regex]::Match($content, '(?m)^qcQuestDatabase=\{')
-$dbBlock = $content.Substring($anchor.Index)
-$lines = $dbBlock -split "`r`n"
-$allIdLines = $lines | Where-Object { $_ -match '^\[\d+\]=\{' }
-$entryPattern = '^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",(\d+|Unknown),"(?:[^"\\]|\\.)*",(-?\d+),(\d+),(\d+),(\d+),(\d+),(.*)\},?$'
-
 $questReputation = Get-QuestReputation $content
 
 $entries = New-Object System.Collections.Generic.List[object]
-foreach ($line in $allIdLines) {
-    $m = [regex]::Match($line, $entryPattern)
-    if (-not $m.Success) { Write-Output "PARSE FAILURE (skipped): $line"; continue }
-    $hasRepCurrently = $questReputation.ContainsKey($m.Groups[1].Value)
+foreach ($quest in (Read-QuestData $DataDir)) {
     $entries.Add([PSCustomObject]@{
-        QuestID   = $m.Groups[1].Value
-        Name      = $m.Groups[2].Value
-        Faction   = [int]$m.Groups[6].Value
-        Race      = [int]$m.Groups[7].Value
-        Class     = [int]$m.Groups[8].Value
-        HasRepCur = $hasRepCurrently
+        QuestID   = [string]$quest.id
+        Name      = $quest.name
+        Faction   = [int]$quest.faction
+        Race      = [int]$quest.race
+        Class     = [int]$quest.class
+        HasRepCur = $questReputation.ContainsKey([string]$quest.id)
     })
 }
-Write-Output "Parsed $($entries.Count) / $($allIdLines.Count) quest entries."
+Write-Output "Read $($entries.Count) quests."
 
 $wago = @{}
 $wagoFile = "$toolsDir\quest_wago_requirements.csv"

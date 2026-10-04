@@ -13,13 +13,15 @@ Every entry is checked by rebuilding its English name from the tables; only the 
 listed in $expectedDifferences are allowed. Only categories holding quests are considered.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$QuestFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua",
-    [string]$MenuFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcMenu.lua",
-    [string]$LocaleFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\Localization.enUS.lua",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua'),
+    [string]$MenuFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcMenu.lua'),
+    [string]$LocaleFile = (Join-Path $PSScriptRoot '..\QuestCompletist\Localization.enUS.lua'),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
 )
+. "$PSScriptRoot\AddonData.ps1"
 
 $sources = @(
     @{ Kind = "class"; Table = "ChrClasses"; Name = "Name_lang"; Id = "ID" },
@@ -125,7 +127,7 @@ foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcQuestCategorie
 $mapNamed = New-Object System.Collections.Generic.HashSet[string]
 foreach ($m in [regex]::Matches([regex]::Match($content, '(?sm)^qcCategoryUiMapID = \{(.*?)^\}').Groups[1].Value, '\[(\d+)\]=')) { [void]$mapNamed.Add($m.Groups[1].Value) }
 $withQuests = New-Object System.Collections.Generic.HashSet[string]
-foreach ($m in [regex]::Matches($content, '(?m)^\[\d+\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",(\d+),')) { [void]$withQuests.Add($m.Groups[1].Value) }
+foreach ($quest in (Read-QuestData $DataDir)) { [void]$withQuests.Add([string]$quest.category) }
 
 $chosen = [ordered]@{}
 $left = New-Object System.Collections.Generic.List[string]

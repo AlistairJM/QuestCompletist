@@ -6,28 +6,30 @@ Purely additive: rows are inserted into the qcQuestReputation block in quest ID 
 existing line in qcQuest.lua is touched.
 
 All-or-nothing: any unparseable row, any quest ID already in the table, and any quest ID absent
-from qcQuestDatabase aborts the run before anything is written.
+from data\quests.jsonl aborts the run before anything is written.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$QuestFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua')
 )
 
 . "$PSScriptRoot\QuestReputation.ps1"
+. "$PSScriptRoot\AddonData.ps1"
 
 $content = [System.IO.File]::ReadAllText($QuestFile, [System.Text.Encoding]::UTF8)
 $lines = $content -split "`r`n"
 
 $existing = Get-QuestReputation $content
 $questIds = @{}
-foreach ($m in [regex]::Matches($content, '(?m)^\[(\d+)\]=\{')) { $questIds[$m.Groups[1].Value] = $true }
+foreach ($quest in (Read-QuestData $DataDir)) { $questIds[[string]$quest.id] = $true }
 
 $errors = New-Object System.Collections.Generic.List[string]
 $new = @{}
 foreach ($row in (Import-Csv "$ToolsDir\quest_reputation_compare.csv" | Where-Object { $_.Kind -eq "api-only" })) {
     $id = $row.QuestID
     if ($existing.ContainsKey($id)) { $errors.Add("$id already has a reputation row"); continue }
-    if (-not $questIds.ContainsKey($id)) { $errors.Add("$id is not in qcQuestDatabase"); continue }
+    if (-not $questIds.ContainsKey($id)) { $errors.Add("$id is not in quests.jsonl"); continue }
     $pairs = New-Object System.Collections.Generic.List[object]
     foreach ($part in ($row.Api -split ";")) {
         if ($part -match '^(\d+)=(-?\d+)$') {

@@ -68,8 +68,9 @@ It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'le
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
-The other tools edit tables the data files don't hold (menus, categories, the zone table,
-reputation rewards), which stay hand-edited Lua.
+Every other tool reads quests and pins from the data files too, never from the Lua. Some of them
+edit tables the data files don't hold (menus, categories, the zone table, reputation rewards),
+which stay hand-edited Lua.
 
 **To change a quest or a pin by hand**, edit its line in the data file with a text editor, then
 rebuild:
