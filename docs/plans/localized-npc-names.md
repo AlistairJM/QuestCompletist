@@ -137,13 +137,15 @@ game for that creature's name. So it has to be the right creature, or 0.
   once it's been looked up.
 
 **The lookup, by hand.** 27 of the ID rows are objects or items, marked "leave NewId blank". For the
-other 141 pins (102 NPC-and-map pairs, mostly on Isle of Thunder, the Jade Forest, Exile's Reach and
+other 137 pins (102 NPC-and-map pairs, mostly on Isle of Thunder, the Jade Forest, Exile's Reach and
 Krasarang Wilds), open the row's Wowhead link, read the quest's start NPC and its ID, and put the ID
 in NewId. If the quest starts at an object or item, leave NewId blank. Then rerun the tool, which
 sets just those, and ask the game for each new ID's name in English: it must be the pin's name.
 (There were 145 pins, 106 pairs, until October 2026, when four Midsummer Flame Guardian pins went:
 each was beside the same guardian's pin with the right ID and the same quest. See data-cleanup.md,
-"Found later".)
+"Found later". The October 2026 pin rebuild then merged four more into a pin of the same name and
+map that has its own row, and moved Lor'themar Theron's Isle of Thunder row to the pin that took
+his quests; see quest-location-data-pipeline.md.)
 
 **Checks:**
 - 235 lines change, each only in the ID or name field; line endings are unchanged.

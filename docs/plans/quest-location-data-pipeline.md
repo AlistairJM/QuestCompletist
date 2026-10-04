@@ -96,6 +96,40 @@ A working pipeline exists (`tools/Build-QuestLocationData.ps1` → `tools/Join-L
   - This merge logic isn't built yet — `Assemble-PinDB.ps1` currently only emits from the new pipeline's data and doesn't fold in untouched old entries. That's the next concrete step.
 - Revisit the "should the live map-pin feature still exist" question now that fresh, verified data is actually possible — this plan doesn't presume the answer, it just makes the answer informed instead of guessed.
 
+## October 2026 rebuild
+
+On 2026-10-04 the September 30 locations were applied again, after a review of the 158 lines a
+rerun changed. None came from new client data: the pipeline was catching up with changes made to
+the pins since its last run on September 29.
+
+- **47 merges of two pins of one quest giver.** 32 of the pins that joined another still carried a
+  pre-8.0 map floor on September 29, which hid them and kept them apart; drawn since September 30,
+  they sat beside the same NPC's pin (Lord Jorach Ravenholdt and Archmage Modera in Legion's
+  Dalaran, Odyn in Skyhold). 5 were the Demon Hunter class hall pins
+  moved to the Fel Hammer's maps that day. 6 have no NPC ID, so join by name: Kairoz and Emperor
+  Shaohao, moved to the Timeless Isle's map, and Warlord Breka Grimaxe, General Nazgrim and
+  Lor'themar Theron, whose wrong IDs #113 cleared. The rest were pairs on exactly the same spot.
+  Moving a pin's quests to their giver's other pin shifted them by up to 2.05 points; none of those
+  has a start point in the client's data. Two quests that do start exactly where they were moved
+  1.1 points, within the pipeline's 1.5-point "same spot": General Nazgrim's "The Final Blow!" and
+  Lor'themar Theron's "To the Skies!".
+- **3 quests moved to their own pin where the client's data starts them**, 1.5 to 3 points from a
+  giver pin with no NPC ID: Sky Admiral Rogers (the Jade Forest), Korven the Prime (Dread Wastes) and
+  Jessup McCree (New Tinkertown).
+- **3 quests taken off a pin, the client's data starting them elsewhere:** "Abundant Offerings" from
+  Zul'Aman's map edge (x = 100, left by the old off-map conversion; its pins in Eversong Woods and
+  two other maps stay), "We Have a Problem" from the Vindicaar (it starts in Eredath) and "Working
+  for G.E.T.A." from Gig Sheets (it starts at the G.E.T.A. board).
+- **2 quest lists in a new order:** Marshal Gabriel's (57754 back in sequence after #105's typo fix)
+  and Ulfar's.
+
+Checks: no quest left a map but those three; no tooltip lists a quest twice; 14,726 pins became
+14,680, and the map draws 8,383 pin icons instead of 8,401. The reachability report differs only in
+five pins that held nothing but quests with no data, and joined their giver's pin. A rerun now
+leaves the pins byte-identical. Five rows of `pin-npc-id-decisions.csv` were for merged pins: four
+were deleted, as the pin that took their quests has a row of its own, and Lor'themar Theron's moved
+to the pin that took his quests.
+
 ## Possible future extensions (explicitly not this plan)
 
 - **Forever**: wago.tools tracks a `wow_classic_beta` build (`1.60.1.69913`) that matches Forever's own `/dump GetBuildInfo()` output exactly. If that build's client files include the same `QuestPOIBlob`/`QuestPOIPoint` tables, the same pipeline might work for Forever specifically — worth a quick check later, not part of this plan.
