@@ -1467,9 +1467,10 @@ local qcQuestCategories = qcQuestCategories or {} -- Maps internal category ID t
 -- Category names come from the client where qcCategoryUiMapID knows a map for them, so they need
 -- no translation of ours. Everything else falls back to qcLocalize, then to the English name in
 -- qcQuestCategories.
-local qcCategoryLocaleKey = {}
+local qcCategoryLocaleKey, qcCategoryEnglishName = {}, {}
 for _, categoryData in ipairs(qcQuestCategories) do
 	qcCategoryLocaleKey[categoryData[1]] = (categoryData[2]:gsub("[^%a%d]", "")):upper()
+	qcCategoryEnglishName[categoryData[1]] = categoryData[2]
 end
 
 local function qcClientName(source)
@@ -1531,11 +1532,7 @@ function qcCategoryName(categoryId)
 	local key = qcCategoryLocaleKey[categoryId]
 	if (key and qcL[key]) then return qcL[key] end
 
-	for _, categoryData in ipairs(qcQuestCategories) do
-		if (categoryData[1] == categoryId) then return categoryData[2] end
-	end
-
-	return nil
+	return qcCategoryEnglishName[categoryId]
 end
 
 -- Function to get the zone name from a zone ID with enhanced handling for array-style lookup
@@ -1556,6 +1553,53 @@ function GetZoneNameFromZoneID(zoneId)
 
     -- Return the valid zone name if all checks passed
     return zoneName
+end
+
+-- Every pin that offers a quest, with its map, found on first use. An index of all quests would
+-- cost several MB; only the quests whose tooltips or waypoints are used get a list.
+local qcPinsOfQuest = {}
+local function qcQuestPins(questId)
+	local found = qcPinsOfQuest[questId]
+	if not found then
+		found = {}
+		for mapId, pins in pairs(qcPinDB) do
+			for _, pin in ipairs(pins) do
+				for _, pinQuestId in ipairs(pin[6] or {}) do
+					if pinQuestId == questId then
+						found[#found + 1] = {mapId, pin}
+						break
+					end
+				end
+			end
+		end
+		qcPinsOfQuest[questId] = found
+	end
+	return found
+end
+
+-- A quest can have several pins (offered in more than one place, or by an NPC who moves around a
+-- map). Pick one: the nearest on the player's current map, otherwise the one on the lowest map ID.
+local function qcFindPinForQuest(questId)
+	local playerMap = C_Map.GetBestMapForUnit("player")
+	local playerPos = playerMap and C_Map.GetPlayerMapPosition(playerMap, "player")
+	local px, py
+	if playerPos then
+		px, py = playerPos:GetXY()
+		px, py = px * 100, py * 100
+	end
+	local bestMap, bestPin, bestDist, bestOnPlayerMap
+	for _, found in ipairs(qcQuestPins(questId)) do
+		local mapId, pin = found[1], found[2]
+		if mapId == playerMap and px then
+			local dist = (pin[4] - px) ^ 2 + (pin[5] - py) ^ 2
+			if not bestOnPlayerMap or dist < bestDist then
+				bestMap, bestPin, bestDist, bestOnPlayerMap = mapId, pin, dist, true
+			end
+		elseif not bestOnPlayerMap and (not bestMap or mapId < bestMap) then
+			bestMap, bestPin = mapId, pin
+		end
+	end
+	return bestMap, bestPin
 end
 
 local QC_STORYLINE_WINDOW = 15
@@ -1691,39 +1735,15 @@ function qcUpdateTooltip(index)
         end
 		-- Renown and Faction requirements End
 
-        -- Quest Giver Information from qcPinDB.lua
-        local questGiverInfoFound = false
-        for zoneId, npcs in pairs(qcPinDB) do
-            -- Retrieve the zone name for the current zone ID
-            local zoneName = GetZoneNameFromZoneID(zoneId)
-
-            for _, npcData in ipairs(npcs) do
-                local xCoord = npcData[4]
-                local yCoord = npcData[5]
-                local quests = npcData[6]
-
-                if type(quests) == "table" then
-                    for _, quest in ipairs(quests) do
-                        if quest == questId then
-                            local npcName = qcNpcName(npcData, qcNpcTooltipWaiting)
-                            qcQuestInformationTooltip:AddDoubleLine(
-                                "Quest Giver:",
-                                string.format("%s (%s, %.1f, %.1f)", npcName or "Unknown NPC", zoneName, xCoord or 0, yCoord or 0)
-                            )
-                            questGiverInfoFound = true
-                            break
-                        end
-                    end
-                end
-
-                if questGiverInfoFound then break end
-            end
-
-            if questGiverInfoFound then break end
-        end
-
-        -- Handle case where quest giver information isn't found
-        if not questGiverInfoFound then
+        -- Quest Giver Information from qcPinDB.lua: the pin a TomTom waypoint would go to
+        local giverMapId, giverPin = qcFindPinForQuest(questId)
+        if giverPin then
+            qcQuestInformationTooltip:AddDoubleLine(
+                "Quest Giver:",
+                string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or "Unknown NPC",
+                    GetZoneNameFromZoneID(giverMapId), giverPin[4] or 0, giverPin[5] or 0)
+            )
+        else
             qcQuestInformationTooltip:AddDoubleLine("Quest Giver:", "Unknown or Auto-Accepted Quest")
         end
 
@@ -1761,37 +1781,6 @@ end
 
 -- End Tooltip when mouse over quest name
 
-
--- A quest can have several pins (offered in more than one place, or by an NPC who moves around a
--- map). Pick one: the nearest on the player's current map, otherwise the one on the lowest map ID.
-local function qcFindPinForQuest(questId)
-	local playerMap = C_Map.GetBestMapForUnit("player")
-	local playerPos = playerMap and C_Map.GetPlayerMapPosition(playerMap, "player")
-	local px, py
-	if playerPos then
-		px, py = playerPos:GetXY()
-		px, py = px * 100, py * 100
-	end
-	local bestMap, bestPin, bestDist, bestOnPlayerMap
-	for mapId, pins in pairs(qcPinDB) do
-		for _, pin in ipairs(pins) do
-			for _, pinQuestId in ipairs(pin[6] or {}) do
-				if pinQuestId == questId then
-					if mapId == playerMap and px then
-						local dist = (pin[4] - px) ^ 2 + (pin[5] - py) ^ 2
-						if not bestOnPlayerMap or dist < bestDist then
-							bestMap, bestPin, bestDist, bestOnPlayerMap = mapId, pin, dist, true
-						end
-					elseif not bestOnPlayerMap and (not bestMap or mapId < bestMap) then
-						bestMap, bestPin = mapId, pin
-					end
-					break
-				end
-			end
-		end
-	end
-	return bestMap, bestPin
-end
 
 function qcQuestClick(qcButtonIndex)
 	local qcQuestID = _G["qcMenuButton" .. qcButtonIndex].QuestID
