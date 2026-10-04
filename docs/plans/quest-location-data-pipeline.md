@@ -52,7 +52,7 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
 ## Phase 1 status: MVP built and working
 
-A working pipeline exists (`tools/Build-QuestLocationData.ps1` → `tools/Join-LocationsWithExisting.ps1` → `tools/Derive-IconTypeMapping.ps1` → `tools/Assemble-PinDB.ps1`), producing `tools/qcPinDB_candidate.lua` (syntax-checked, valid Lua). Numbers from the current run:
+A working pipeline exists (`tools/Build-QuestLocationData.ps1` → `tools/Join-LocationsWithExisting.ps1` → `tools/Assemble-PinDB.ps1`), producing `tools/qcPinDB_candidate.lua` (syntax-checked, valid Lua). Numbers from the current run:
 
 - 17,885 quest-giver locations converted from wago.tools source data, zero pipeline failures
 - Cross-referenced against our own `qcQuestDatabase`: 17,260 matched, 625 quest IDs found in Blizzard's data with no match in ours at all (a bonus gap list)

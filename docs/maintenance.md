@@ -346,24 +346,15 @@ git diff --stat
 - For filter or data changes, run `Test-QuestReachability.lua` (step 9) before and after, and compare
   the summaries it prints.
 
-## Never rerun these
+## One-off scripts
 
-These were one-off fixes or migrations. Running them again would fail, or worse, apply their change
-twice:
+A script written for a one-off fix or migration is deleted once its change is merged, so everything
+in `tools\` is safe to run again. Git history keeps the old ones; this lists them and the commit
+that deleted each:
 
-- `Migrate-ReputationToSideTable.ps1`
-- `Fix-MenuDeadEntries.ps1`
-- `Fix-MisfiledUiMapCategories.ps1`
-- `Fix-QuestDatabaseIssues.ps1`
-- `Relocate-GapQuestEntries.ps1`
-- `Add-DungeonCategories.ps1`
-- `Add-MissingMenuEntries.ps1`
-- `Fix-CategoryNameTypos.ps1`
-- `Fix-DuplicateCategory1344.ps1`
-- `Fix-MenuStructure.ps1`
-- `Retype-OneTimeFamilies.ps1`, a hand-judged list of quests
-- `Fix-DungeonCategories.ps1`
-- `Derive-IconTypeMapping.ps1`, analysis only
+```powershell
+git log --diff-filter=D --name-only --oneline -- tools
+```
 
 ## Where the data comes from
 
