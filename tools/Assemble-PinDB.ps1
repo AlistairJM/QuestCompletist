@@ -2,28 +2,29 @@
 Final assembly: for each converted quest-giver location, attach NPC identity +
 icon type (borrowed from ANY existing pin match, regardless of drift status -
 identity isn't affected by map-ID reorganization), group quests an NPC offers
-from the same spot (within 3 map points) into one pin, and emit valid qcPinDB.lua
-Lua table syntax as a new, separate candidate file for review. -Apply also writes
-it over QuestCompletist\qcPinDB.lua.
+from the same spot (within 3 map points) into one pin, and write the result as
+tools\pins_candidate.jsonl for review, in the same form as data\pins.jsonl.
+-Apply also saves it as data\pins.jsonl and rebuilds qcPinDB.lua.
+
+A pin's note stays with it when the rebuilt pin is put back at the existing pin's
+spot (see the position step below); notes that find no pin are listed.
 #>
 
 param(
-    # Also write the result over QuestCompletist\qcPinDB.lua. Without it only the candidate is written.
-    [switch]$Apply
+    # Also save the result as the pins. Without it only the candidate is written.
+    [switch]$Apply,
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist')
 )
+$ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\AddonData.ps1"
+$toolsDir = $ToolsDir
 
-$toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
-$questFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua"
-$pinFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcPinDB.lua"
-
-Write-Output "Loading profession flag (field 10) per quest for the default-icon fallback rule..."
-$content = Get-Content $questFile -Raw
-$startIdx = [regex]::Match($content, '(?m)^qcQuestDatabase=\{').Index
-$dbBlock = $content.Substring($startIdx)
-$profMatches = [regex]::Matches($dbBlock, '(?m)^\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",-?\d+,\d+,\d+,\d+,\d+,(\d+),')
+Write-Output "Loading the profession flag per quest for the default-icon fallback rule..."
 $questProfession = @{}
-foreach ($m in $profMatches) {
-    $questProfession[$m.Groups[1].Value] = [int]$m.Groups[2].Value
+foreach ($quest in (Read-QuestData $DataDir)) {
+    $questProfession[[string]$quest.id] = if ($quest.profession) { [int]$quest.profession } else { 0 }
 }
 
 Write-Output "Loading existing pin data (any match, not just position-verified) for identity borrowing..."
@@ -140,7 +141,7 @@ foreach ($e in $existing) {
         $keptOld.Add([PSCustomObject]@{
             QuestID = $e.QuestID; UiMapID = $e.OldUiMapID; MapX = $e.OldMapX; MapY = $e.OldMapY
             NpcId = $e.NpcId; NpcName = $e.NpcName; IconType = $e.IconType
-            IdentitySource = "kept-old-unreplaced"
+            IdentitySource = "kept-old-unreplaced"; Note = $e.Note
         })
     }
 }
@@ -221,8 +222,10 @@ foreach ($row in $enriched) {
             UiMapID = $row.UiMapID; NpcId = $row.NpcId; NpcName = $row.NpcName
             IconType = $row.IconType; MapX = $row.MapX; MapY = $row.MapY
             QuestIDs = New-Object System.Collections.Generic.List[string]
+            Note = $null
         }
     }
+    if ($row.Note -and -not $pinGroups[$key].Note) { $pinGroups[$key].Note = $row.Note }
     if (-not $pinGroups[$key].QuestIDs.Contains($row.QuestID)) {
         $pinGroups[$key].QuestIDs.Add($row.QuestID)
     }
@@ -258,39 +261,49 @@ foreach ($g in $pinGroups.Values) {
         $g.MapX = $best.OldMapX; $g.MapY = $best.OldMapY
         $keptPositions++
     }
+    if ($best -and $best.Note -and -not $g.Note) { $g.Note = $best.Note }
 }
 Write-Output "Pins snapped back to an existing position within $stableThreshold points: $keptPositions"
 
-Write-Output "Emitting Lua syntax grouped by UiMapID..."
+$keptNotes = @{}
+foreach ($g in $pinGroups.Values) { if ($g.Note) { $keptNotes[$g.Note] = $true } }
+$lostNotes = @($existing | Where-Object { $_.Note -and -not $keptNotes.ContainsKey($_.Note) } |
+    ForEach-Object { "  map $($_.OldUiMapID) at $($_.OldMapX),$($_.OldMapY): $($_.Note)" } | Select-Object -Unique)
+Write-Output "Pin notes that found no pin: $($lostNotes.Count)"
+$lostNotes
+
+Write-Output "Writing the pins, map by map..."
 $byMap = @{}
 foreach ($g in $pinGroups.Values) {
     if (-not $byMap.ContainsKey($g.UiMapID)) { $byMap[$g.UiMapID] = New-Object System.Collections.Generic.List[object] }
     $byMap[$g.UiMapID].Add($g)
 }
 
-$sb = New-Object System.Text.StringBuilder
-[void]$sb.AppendLine("qcPinDB_candidate = {")
+$pins = New-Object System.Collections.Generic.List[object]
 foreach ($mapId in ($byMap.Keys | Sort-Object { [int]$_ })) {
-    [void]$sb.AppendLine("`t[$mapId] = {")
     # Hashtable order changes between runs; a fixed order keeps an unchanged rerun byte-identical.
     $ordered = $byMap[$mapId] | Sort-Object { ($_.QuestIDs | ForEach-Object { [int]$_ } | Measure-Object -Minimum).Minimum }, { [double]$_.MapX }, { [double]$_.MapY }
-    foreach ($pin in $ordered) {
-        $nameLiteral = if ($pin.NpcName) { '"' + ($pin.NpcName -replace '"', '\"') + '"' } else { "nil" }
-        $questList = ($pin.QuestIDs -join ",")
-        [void]$sb.AppendLine("`t`t{$($pin.IconType),$($pin.NpcId),$nameLiteral,$($pin.MapX),$($pin.MapY),{$questList}},")
+    foreach ($group in $ordered) {
+        $pins.Add([pscustomobject][ordered]@{
+            map = [int]$mapId
+            icon = [int]$group.IconType
+            npc = [int]$group.NpcId
+            name = if ($group.NpcName) { $group.NpcName } else { $null }
+            x = [decimal]::Parse([string]$group.MapX, $script:Invariant)
+            y = [decimal]::Parse([string]$group.MapY, $script:Invariant)
+            quests = [int[]]@($group.QuestIDs | ForEach-Object { [int]$_ })
+            note = $group.Note
+        })
     }
-    [void]$sb.AppendLine("`t},")
 }
-[void]$sb.AppendLine("}")
 
-$outFile = "$toolsDir\qcPinDB_candidate.lua"
-$sb.ToString() | Out-File -FilePath $outFile -Encoding utf8
+$outFile = "$toolsDir\pins_candidate.jsonl"
+[System.IO.File]::WriteAllText($outFile, (ConvertTo-PinJsonLines $pins), $script:Utf8)
 Write-Output "Written candidate file to $outFile"
 
 if ($Apply) {
-    $live = $sb.ToString() -replace '^qcPinDB_candidate = \{', 'qcPinDB = {'
-    [System.IO.File]::WriteAllText($pinFile, $live, (New-Object System.Text.UTF8Encoding $false))
-    Write-Output "Applied to $pinFile"
+    Save-PinData $pins $DataDir $AddonDir
+    Write-Output "Applied to the pins."
 }
 
 $borrowedCount = ($enriched | Where-Object { $_.IdentitySource -eq "borrowed" }).Count

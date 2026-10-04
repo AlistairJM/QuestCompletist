@@ -1,11 +1,14 @@
 <#
-Joins the new wago.tools-derived quest locations against the existing
-qcPinDB.lua (quest-ID-keyed) to:
+Joins the new wago.tools-derived quest locations against the existing pins
+(existing_pindb_by_quest.csv, from Parse-ExistingPinDB.ps1) to:
   1. Borrow NPC identity + icon type where the quest already has a pin.
   2. Measure drift: does the old pin's UiMapID/position still match reality?
 #>
+param(
+    [string]$ToolsDir = $PSScriptRoot
+)
 
-$toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
+$toolsDir = $ToolsDir
 
 $newLocations = Import-Csv "$toolsDir\quest_locations.csv"
 $existing = Import-Csv "$toolsDir\existing_pindb_by_quest.csv"
