@@ -1,15 +1,11 @@
 <#
-Generates qcQuestDatabase entries for the gap-list quests fetched from Blizzard's
-API and inserts them into qcQuest.lua, right after the qcQuestDatabase={ line.
-
-Field layout matches the existing schema, 14 fields exactly:
-id, name, level, zone, areaid, type, faction, race, class, profession, holiday,
-covenant, storyline, prereq.
+Adds the gap-list quests fetched from Blizzard's API (tools\gap_quest_data.csv) to the end of
+data\quests.jsonl, then rebuilds qcQuest.lua.
 
 Safe defaults for fields the API can't tell us: type=1 (normal quest - the
 overwhelming empirical default), everything else 0 (no restriction/no data).
-The category (areaid) starts at 0, then Place-UncategorisedQuests.ps1 runs on the
-same file to file each new quest by its API area or its pin; the ones it can't
+The category starts at 0, then Place-UncategorisedQuests.ps1 runs on the same
+data to file each new quest by its API area or its pin; the ones it can't
 place are listed and stay at 0. Apply the new pins (Assemble-PinDB.ps1 -Apply)
 first, so the placement can use them.
 Race/class default to "all" (67108863/8191) UNLESS Fetch-GapQuestData.ps1 found
@@ -20,24 +16,21 @@ Druid-only Order Hall quests) for 87 quests before that got caught and fixed.
 Reputation rewards are NOT part of the entry: they live in qcQuestReputation,
 keyed by quest ID. This script emitted them inline until that moved, and did it
 one slot early (five zeros instead of six between class and the faction id), so
-any entry it wrote needed correcting afterwards. Rows for new quests go through
+any entry it wrote needed correcting afterwards. Rewards for new quests go through
 Apply-ReputationBackfill.ps1 instead.
 #>
 
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist"
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist')
 )
+$ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\AddonData.ps1"
 
-$toolsDir = $ToolsDir
-$questFile = "$AddonDir\qcQuest.lua"
-
-$data = Import-Csv "$toolsDir\gap_quest_data.csv"
+$data = @(Import-Csv "$ToolsDir\gap_quest_data.csv")
+if ($data.Count -eq 0) { Write-Output "gap_quest_data.csv lists no quests; nothing to add."; exit 0 }
 Write-Output "Generating entries for $($data.Count) quests..."
-
-function Escape-Lua($s) {
-    return ($s -replace '\\', '\\\\') -replace '"', '\"'
-}
 
 $classBits = @{
     "WARRIOR"=1;"PALADIN"=2;"HUNTER"=4;"ROGUE"=8;"PRIEST"=16;"DEATHKNIGHT"=32;"SHAMAN"=64;
@@ -78,47 +71,39 @@ function Resolve-Bitmask($namesJoined, $bitTable, $allValue, $maxNarrow) {
     return $mask
 }
 
-$lines = New-Object System.Collections.Generic.List[string]
-foreach ($row in $data) {
+$quests = @(Read-QuestData $DataDir)
+# A second entry for a quest ID would silently replace the first when Lua loads the table.
+$present = @{}
+foreach ($quest in $quests) { $present[[string]$quest.id] = $true }
+$duplicates = @($data | Where-Object { $present.ContainsKey("$($_.QuestID)") } | ForEach-Object { $_.QuestID })
+if ($duplicates.Count) { throw "Already in quests.jsonl, refusing to insert again: $($duplicates -join ', ')" }
+
+$added = foreach ($row in $data) {
     $factionBits = switch ($row.Faction) {
         "ALLIANCE" { 1 }
         "HORDE" { 2 }
         default { 3 }
     }
-    $title = Escape-Lua $row.Title
-    $zone = Escape-Lua $row.AreaName
-    $level = if ($row.Level) { $row.Level } else { 0 }
-    $raceMask = Resolve-Bitmask $row.RaceNames $raceBits $ALL_RACES 8
-    $classMask = Resolve-Bitmask $row.ClassNames $classBits $ALL_CLASSES 12
-    $lines.Add("[$($row.QuestID)]={$($row.QuestID),`"$title`",$level,`"$zone`",0,1,$factionBits,$raceMask,$classMask,0,0,0,0,0},")
+    [pscustomobject][ordered]@{
+        id = [int]$row.QuestID
+        name = $row.Title
+        level = if ($row.Level) { [int]$row.Level } else { 0 }
+        zone = $row.AreaName
+        category = 0
+        type = 1
+        faction = $factionBits
+        race = Resolve-Bitmask $row.RaceNames $raceBits $ALL_RACES 8
+        class = Resolve-Bitmask $row.ClassNames $classBits $ALL_CLASSES 12
+    }
 }
+Save-QuestData ($quests + @($added)) $DataDir $AddonDir
+Write-Output "Added $($data.Count) quests to the end of quests.jsonl"
 
-$content = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($questFile))
-# A second entry for a quest ID silently replaces the first when Lua loads the table.
-$present = @([regex]::Matches($content, '(?m)^\[(\d+)\]=\{') | ForEach-Object { $_.Groups[1].Value })
-$duplicates = @($data | Where-Object { $present -contains "$($_.QuestID)" } | ForEach-Object { $_.QuestID })
-if ($duplicates.Count) { throw "Already in qcQuestDatabase, refusing to insert again: $($duplicates -join ', ')" }
-$marker = "qcQuestDatabase={"
-$anchorMatch = [regex]::Match($content, '(?m)^qcQuestDatabase=\{')
-if (-not $anchorMatch.Success) { throw "Could not find qcQuestDatabase={ marker" }
-$insertAt = $anchorMatch.Index + $marker.Length
+& "$PSScriptRoot\Place-UncategorisedQuests.ps1" -ToolsDir $ToolsDir -DataDir $DataDir -AddonDir $AddonDir
 
-$header = "`r`n-- Entries below added from Blizzard's Data API to backfill quests found in`r`n-- wago.tools' location data with no prior entry here (see docs/plans/quest-location-data-pipeline.md).`r`n"
-$block = $header + ($lines -join "`r`n") + "`r`n"
-
-$newContent = $content.Substring(0, $insertAt) + $block + $content.Substring($insertAt)
-
-$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-[System.IO.File]::WriteAllBytes($questFile, $utf8NoBom.GetBytes($newContent))
-
-Write-Output "Inserted $($lines.Count) entries into $questFile"
-
-& "$PSScriptRoot\Place-UncategorisedQuests.ps1" -ToolsDir $toolsDir -AddonDir $AddonDir
-
-$placed = [System.IO.File]::ReadAllText($questFile, [System.Text.Encoding]::UTF8)
 $inserted = @{}
 foreach ($row in $data) { $inserted["$($row.QuestID)"] = $true }
-$unplaced = @([regex]::Matches($placed, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)",[^,]*,"(?:[^"\\]|\\.)*",0,') |
-    Where-Object { $inserted.ContainsKey($_.Groups[1].Value) } | ForEach-Object { "  $($_.Groups[1].Value) $($_.Groups[2].Value)" })
+$unplaced = @(Read-QuestData $DataDir | Where-Object { $inserted.ContainsKey([string]$_.id) -and $_.category -eq 0 } |
+    ForEach-Object { "  $($_.id) $($_.name)" })
 Write-Output "New quests left without a category: $($unplaced.Count)"
 $unplaced

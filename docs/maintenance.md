@@ -62,7 +62,8 @@ It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'le
 **Tools are moving over to the data files** (see [the plan](plans/data-structure.md)). These already
 change the data files and rebuild the Lua themselves: `Apply-AccuracyFixes.ps1`,
 `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`,
-`File-WeeklyEventQuests.ps1` and `Apply-PinNpcIds.ps1`. They take `-DataDir` and `-AddonDir`, and
+`File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`,
+`Build-QuestLines.ps1` and `Apply-PinNpcIds.ps1`. They take `-DataDir` and `-AddonDir`, and
 default to the checkout they're in. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't.
 
@@ -227,9 +228,9 @@ keeps each API response in `tools\quest_api_cache`, and the inserter refuses any
 already in the database.
 
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
-same folder. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. Like
-the other scripts that write, both take `-AddonDir`, so they can run against a scratch copy of the
-addon.
+same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. New
+quests go at the end of `data\quests.jsonl`. Like the other scripts that write, both take `-DataDir`
+and `-AddonDir`, so they can run against a scratch copy.
 
 `Place-UncategorisedQuests.ps1` also works on its own, on every quest without a category or in a
 category that isn't defined. Run it with `-WhatIf` first. It files each quest by the first of these

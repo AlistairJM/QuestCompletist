@@ -41,16 +41,19 @@ quests, and for category 0, between rules 2 and 3, a hand-written list maps the 
 text to a category ("Death Knight Campaign" -> the Death Knight class hall), below in $zoneTextRules.
 A quest is never filed in a category no menu entry reaches, nor back into the catch-all.
 
-Only field 5 changes. All-or-nothing: if any chosen quest isn't found exactly once, nothing is
-written.
+Only the category changes, in data\quests.jsonl, then qcQuest.lua is rebuilt. Categories, maps and
+menu entries are read from qcQuest.lua and qcMenu.lua, and pins from data\pins.jsonl.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string[]]$Refile = @(),
     [switch]$WhatIf,
     [switch]$Explain
 )
+$ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\AddonData.ps1"
 
 $Refile = @($Refile | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 
@@ -127,16 +130,14 @@ function Get-MapCategory($mapId) {
 $pinCategories = @{}
 $climbedPinCategories = @{}
 $pinMaps = @{}
-$currentMap = $null
-foreach ($line in [System.IO.File]::ReadAllLines("$AddonDir\qcPinDB.lua")) {
-    $header = [regex]::Match($line, '^\t\[(\d+)\] = \{')
-    if ($header.Success) { $currentMap = $header.Groups[1].Value; continue }
-    $pin = [regex]::Match($line, '\{([\d,]*)\}\},?\s*$')
-    if (-not $pin.Success -or -not $currentMap) { continue }
+$mapCategories = @{}
+foreach ($pin in (Read-PinData $DataDir)) {
+    $currentMap = [string]$pin.map
     $direct = $categoryOfMap.ContainsKey($currentMap)
-    $mapCategory = Get-MapCategory $currentMap
+    if (-not $mapCategories.ContainsKey($currentMap)) { $mapCategories[$currentMap] = Get-MapCategory $currentMap }
+    $mapCategory = $mapCategories[$currentMap]
     $into = if ($direct) { $pinCategories } else { $climbedPinCategories }
-    foreach ($questId in ($pin.Groups[1].Value -split ',' | Where-Object { $_ })) {
+    foreach ($questId in ($pin.quests | ForEach-Object { [string]$_ })) {
         if (-not $pinMaps.ContainsKey($questId)) { $pinMaps[$questId] = New-Object System.Collections.Generic.HashSet[string] }
         [void]$pinMaps[$questId].Add($currentMap)
         if (-not $mapCategory) { continue }
@@ -175,28 +176,28 @@ function Get-ContainingCategory($areaName) {
     return $null
 }
 
+$quests = Read-QuestData $DataDir
 $storyOf = @{}
 $storyQuests = @{}
 $filedIn = @{}
-foreach ($m in [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"(?:[^"\\]|\\.)*",[^,]*,"(?:[^"\\]|\\.)*",(-?\d+),(?:[^,]*,){7}(\d+),')) {
-    $filedIn[$m.Groups[1].Value] = $m.Groups[2].Value
-    $story = $m.Groups[3].Value
-    if ($story -eq "0") { continue }
-    $storyOf[$m.Groups[1].Value] = $story
+foreach ($quest in $quests) {
+    $filedIn[[string]$quest.id] = [string]$quest.category
+    if (-not $quest.storyline) { continue }
+    $story = [string]$quest.storyline
+    $storyOf[[string]$quest.id] = $story
     if (-not $storyQuests.ContainsKey($story)) { $storyQuests[$story] = New-Object System.Collections.Generic.List[string] }
-    $storyQuests[$story].Add($m.Groups[1].Value)
+    $storyQuests[$story].Add([string]$quest.id)
 }
 $catchAlls = @("1050")
 
-$entryPattern = '(?m)^(\[(\d+)\]=\{\d+,"(?<name>(?:[^"\\]|\\.)*)",[^,]*,"((?:[^"\\]|\\.)*)",)(-?\d+),'
 $place = @{}
 $rules = @{}
 $pending = New-Object System.Collections.Generic.List[object]
 $ruleOf = @{}
-foreach ($m in [regex]::Matches($content, $entryPattern)) {
-    $questId = $m.Groups[2].Value
-    $zoneText = $m.Groups[3].Value
-    $current = $m.Groups[4].Value
+foreach ($quest in $quests) {
+    $questId = [string]$quest.id
+    $zoneText = $quest.zone
+    $current = [string]$quest.category
     $refiling = $Refile -contains $current
     if (-not $refiling -and $current -ne "0" -and $categoryName.ContainsKey($current)) { continue }
     $usable = { param($c) $inMenu.Contains($c) -and $c -ne $current }
@@ -222,7 +223,7 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
     $zoneMatches = @($zoneMatches | Where-Object { & $usable $_ })
     $ambiguous = $false
 
-    $prefix = [regex]::Match($m.Groups["name"].Value, '^(.+?):\s')
+    $prefix = [regex]::Match($quest.name, '^(.+?):\s')
     if ($prefix.Success) {
         $named = @(if ($categoriesByName.ContainsKey((Get-NameKey $prefix.Groups[1].Value))) { $categoriesByName[(Get-NameKey $prefix.Groups[1].Value)] })
         $named = @($named | Where-Object { & $usable $_ })
@@ -261,7 +262,7 @@ foreach ($m in [regex]::Matches($content, $entryPattern)) {
             elseif (-not (Test-Path $cached)) { "not fetched" }
             elseif ($areaName) { "area '$areaName' matches no category or map" }
             else { "no area" }
-        $pending.Add([PSCustomObject]@{ QuestID = $questId; Name = $m.Groups["name"].Value; ZoneText = $zoneText; Current = $current; Api = $apiStatus })
+        $pending.Add([PSCustomObject]@{ QuestID = $questId; Name = $quest.name; ZoneText = $zoneText; Current = $current; Api = $apiStatus })
     }
 }
 
@@ -307,20 +308,18 @@ foreach ($quest in $pending) {
 }
 
 $placed = 0
-$content = [regex]::Replace($content, $entryPattern, {
-    param($m)
-    if ($place.ContainsKey($m.Groups[2].Value)) { $script:placed++; return $m.Groups[1].Value + $place[$m.Groups[2].Value] + "," }
-    return $m.Value
-})
-if ($placed -ne $place.Count) { throw "Expected to place $($place.Count) quests, placed $placed" }
+foreach ($quest in $quests) {
+    $questId = [string]$quest.id
+    if ($place.ContainsKey($questId)) { Set-RecordField $quest 'category' ([int]$place[$questId]); $placed++ }
+}
 
-if (-not $WhatIf) { [System.IO.File]::WriteAllText($questFile, $content, (New-Object System.Text.UTF8Encoding $false)) }
+if (-not $WhatIf -and $placed -gt 0) { Save-QuestData $quests $DataDir $AddonDir }
 "$(if ($WhatIf) { 'Would place' } else { 'Placed' }) $placed quests in a category"
 $rules.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object { "  by {0}: {1}" -f $_.Key, $_.Value }
 "Left without a category: $($left.Count)"
 if ($Explain) {
     $nameOf = @{}
-    foreach ($m in [regex]::Matches($content, '(?m)^\[(\d+)\]=\{\d+,"((?:[^"\\]|\\.)*)"')) { $nameOf[$m.Groups[1].Value] = $m.Groups[2].Value }
+    foreach ($quest in $quests) { $nameOf[[string]$quest.id] = $quest.name }
     $report = @($ruleOf.Keys | Sort-Object { [int]$_ } | ForEach-Object {
         [PSCustomObject]@{ QuestID = $_; Name = $nameOf[$_]; PlacedIn = "$($place[$_]) $($categoryName[$place[$_]])"; Rule = $ruleOf[$_]; ZoneText = ""; Api = ""; Pins = ""; Storyline = "" }
     })
