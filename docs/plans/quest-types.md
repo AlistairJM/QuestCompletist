@@ -32,9 +32,9 @@ does:
 | #38 | 36 | Typed 128, but the API flags them daily or repeatable, and they aren't world quests (`Retype-FlaggedWorldQuests.ps1`). |
 | #43 | 897 | Typed one-time, and both the game and the API say daily or weekly (`Retype-ProbeRecurring.ps1`). |
 | #44 | 132 | Typed daily or weekly, but one-time by nature: Legion profession questlines, reputation milestones, pet battle introduction, dungeon and raid story quests. Judgement, by family. It left 346 of the 478 the game calls Normal: 202 that recur on a schedule, and 144 it couldn't place. |
-| October 2026 | 135 | Below. |
+| #133 | 135 | October 2026, below. |
 
-**October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
+**#133, October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
 one-time, so its 79 weeklies got a permanent tick: Wintergrasp's, Wrath raids' "… Must Die!",
 the Warlords raid wings, Throne of Thunder's and "The Arena Calls".
 
