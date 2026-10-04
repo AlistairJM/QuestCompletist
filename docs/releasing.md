@@ -12,6 +12,9 @@ and gives you the ZIP, the changelog and the refreshed description to upload.
 Merge the pull requests that are ready. A pull request that changes the addon and hasn't been tested
 in game yet waits until it has.
 
+Check [Dated changes](#dated-changes) at the end: a change whose date has passed goes into this
+release, in a pull request of its own.
+
 ## 2. Everything pushed
 
 ```powershell
@@ -113,3 +116,16 @@ git branch -d <branch>                                  # refuses a branch with 
 - Keep any branch with work that isn't on `master`, and any local branch an old worktree still has
   checked out; the app removes old worktrees itself.
 - Note what was deleted and what's left.
+
+## Dated changes
+
+Changes that wait for a date rather than a number of releases. Once a date has passed, make the
+change in its own pull request before the release.
+
+- **From 1 April 2027: drop the old completions format.**
+  - Remove `qcCompletedQuests` from `## SavedVariablesPerCharacter` in `QuestCompletist.toc`.
+  - Delete `qcMigrateCompletions` and its call in `qcCore.lua`.
+  - The changelog says to fully close and restart World of Warcraft. It also says that a character
+    not logged in since 110.7 loses the quests marked on it by hand; the server resyncs the rest.
+
+  Why it waits: [plans/load-and-memory.md](plans/load-and-memory.md), decision 2.

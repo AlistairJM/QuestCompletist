@@ -150,6 +150,13 @@ Around 38 places read or write it today.
    cleaner name. Cost: a TOC change, so players need a full restart after updating, as with any
    addon update. Once enough releases have passed, the old name comes out of the TOC.
 
+   **When (decided 2026-10-04): the first release after 1 April 2027.** The conversion runs once
+   per character, at its first login on 110.7 or later, and releases came three in three days, so
+   the measure is time, not releases. A character not logged in since then would keep only what the
+   server resyncs, losing the quests marked by hand (completed, unattainable or not done). Keeping
+   the conversion costs a TOC entry and one short function. The steps are in
+   [../releasing.md](../releasing.md), "Dated changes".
+
    Formats, from Kranaa's saved file: before, `[31730] = { ["C"] = 1, },` (one table per quest);
    after, `[31730] = 1,`. The values are unchanged: 1 completed, 2 unattainable, 0 marked not done by
    hand; no entry means nothing recorded. Only the `C` field has ever been used.
