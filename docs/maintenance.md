@@ -368,6 +368,33 @@ quest search finds every quest by name whatever this reports. Some results are e
 quests aren't in the database stay hidden while "hide quests with no data" is on. A map missing
 from `UiMap.csv` can't be opened on retail; a newer build than the downloaded one may add it.
 
+## Text in other languages
+
+Names come from the game in the player's language: quests, NPCs, factions, maps, and the categories
+and menu headings of step 5. The addon's own text is in `QuestCompletist\Localization.<language>.lua`.
+
+- `Localization.enUS.lua` has every key in English. Each other file sets the keys it translates,
+  and any key it lacks shows in English.
+- Text the game already has in the same words comes from the game, such as "Search" (`SEARCH`), and
+  "Categories" and "Filters" on the window's buttons.
+- `-- Needs review` marks a translation no native speaker has checked: most of them, including those
+  written in October 2026. `-- Requires localization` marks text still in English.
+- A translation must keep the English placeholders (`%d`, `%s`) in the same order: `string.format`
+  stops with an error when a translation asks for more values than the code passes.
+- To add text, add its key to `Localization.enUS.lua`, use `qcL.KEY` in the code, and add
+  translations where you can. Then run the check below.
+
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Localization.lua
+```
+
+It loads the files as the game does, for each language, and reports keys the code uses that have
+no text, placeholders that differ from the English, and translations that don't format.
+
+Still in English: the `/qc holidays` output, which is for maintainers, and about 20 category names
+the game has no name for, mostly Blizzard content such as "Timerunning" and "The Harbinger", whose
+official translations we don't have.
+
 ## Holidays
 
 Seasonal quests need no yearly upkeep. The map's seasonal filter asks the game's calendar which
@@ -429,6 +456,8 @@ git diff --stat
   `.gitattributes` stores `qcQuest.lua`, `qcQuestData.lua` and `qcPinDB.lua` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` (step 9) before and after, and compare
   the summaries it prints.
+- For changes to the addon's text, run `Test-Localization.lua` (see
+  [Text in other languages](#text-in-other-languages)). It must say "No problems".
 
 ## One-off scripts
 

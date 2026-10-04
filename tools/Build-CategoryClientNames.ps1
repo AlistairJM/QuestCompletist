@@ -72,12 +72,15 @@ $headings = [ordered]@{
     "MIDNIGHT" = @("string", "EXPANSION_NAME11"); "MISCELLANEOUS" = @("string", "MISCELLANEOUS")
     "DUNGEONSANDRAIDS" = @("achievementcategory", 168); "PLAYERVSPLAYER" = @("string", "PLAYER_V_PLAYER")
     "BATTLEGROUNDS" = @("string", "BATTLEGROUNDS"); "PROFESSIONS" = @("string", "TRADE_SKILLS")
-    "WORLDEVENTS" = @("achievementcategory", 155)
+    "WORLDEVENTS" = @("achievementcategory", 155); "COVENANTCALLINGS" = @("string", "CALLINGS_QUESTS")
+    "COVENANTSANCTUARY" = @("string", "GARRISON_TYPE_9_0_LANDING_PAGE_TITLE")
 }
 $headingDifferences = @{
     "THEBROKENISLES" = "Broken Isles"
     "BFA" = "Battle for Azeroth"
     "PLAYERVSPLAYER" = "Player vs. Player"
+    "COVENANTCALLINGS" = "Callings"
+    "COVENANTSANCTUARY" = "Covenant Sanctum"
 }
 
 $ProgressPreference = "SilentlyContinue"
