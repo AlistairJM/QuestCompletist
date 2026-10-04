@@ -59,16 +59,18 @@ The quest rows and the map pins are also kept in `data\`, one record per line, w
 the whole of `qcPinDB.lua`. With `-Check` it writes nothing and only says whether the Lua matches.
 It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
-**Tools are moving over to the data files** (see [the plan](plans/data-structure.md)). These already
-change the data files and rebuild the Lua themselves: `Apply-AccuracyFixes.ps1`,
-`Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`,
-`File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`,
-`Build-QuestLines.ps1` and `Apply-PinNpcIds.ps1`. They take `-DataDir` and `-AddonDir`, and
-default to the checkout they're in. Before saving, they check that the Lua still matches the data
-files, and stop without changing anything if it doesn't.
+**Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
+`Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
+`Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`,
+`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Apply-PinNpcIds.ps1` and `Assemble-PinDB.ps1`.
+They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
+a trial run needs both folders. Before saving, they check that the Lua still matches the data
+files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
 
-The other tools still edit the Lua. After any of them changes `qcQuest.lua` or `qcPinDB.lua`, run
-this, and commit the data files along with the Lua:
+The other tools edit tables the data files don't hold (menus, categories, the zone table,
+reputation rewards), so the rows and pins stay in step. Only a hand edit to the quest rows in
+`qcQuest.lua` or to `qcPinDB.lua` puts them out of step. Until stage 3 of
+[the plan](plans/data-structure.md), bring the data files up to date after one with:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Export-AddonData.ps1    # about a minute
@@ -173,7 +175,7 @@ neither source proves a quest is one-time:
 
 ### 4. Storylines
 
-`Build-QuestLines.ps1` regenerates each quest's storyline (field 13) and the `qcQuestLines` table
+`Build-QuestLines.ps1` regenerates each quest's `storyline` and the `qcQuestLines` table
 from Blizzard's own questline tables. It skips internal questlines ("8.0 Professions - … - SCS",
 "[DNT] …"). It stores each storyline's quests in Blizzard's order.
 
@@ -204,8 +206,9 @@ expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
 
 ### 6. Map pins
 
-The pipeline builds `tools\qcPinDB_candidate.lua` for review. It never overwrites
-`QuestCompletist\qcPinDB.lua`, and existing pins shouldn't move without a reason. The steps are in
+The pipeline builds `tools\pins_candidate.jsonl` for review, in the same form as `data\pins.jsonl`,
+so the two compare line by line. It never changes the pins without `-Apply`, and existing pins
+shouldn't move without a reason. The steps are in
 [plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md). Download
 `QuestPOIPoint` and `UiMapAssignment` for the pinned build first; `QuestPOIBlob` comes with step 1b.
 Then run `Build-QuestLocationData.ps1`, `Parse-ExistingPinDB.ps1`, `Join-LocationsWithExisting.ps1`
@@ -213,13 +216,18 @@ and `Assemble-PinDB.ps1`, in that order.
 
 `Join-LocationsWithExisting.ps1` reports how far each quest's start in the fresh data is from its
 nearest existing pin. Treat that as a finding to review. When you're ready to take the new data,
-run `Assemble-PinDB.ps1 -Apply`, which also writes `QuestCompletist\qcPinDB.lua`.
+run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` and rebuilds
+`QuestCompletist\qcPinDB.lua`.
 
 - An NPC's quests share a pin only where they start within 3 map points of each other.
-- A pin that lands within 1.5 points of an existing one keeps the existing coordinates.
+- A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
+  Notes that find no pin are listed.
 - Pins are written in a fixed order.
+- As of October 2026, rebuilding from the September 30 locations would change 156 pins. Most are
+  the same NPC at almost the same spot, which the rebuild merges into one pin (Archmage Pentarus at
+  68.6, 42 and 68.49, 42.05). Review them before the next `-Apply`.
 
-With no real changes, a rerun leaves `qcPinDB.lua` byte-identical.
+With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
@@ -332,7 +340,7 @@ database to the IDs of the game's Holidays table that its calendar event carries
 `/qc holidays` in game lists what the filter sees: which holidays are running, each one's next dates,
 and any calendar holiday that isn't tied to a quest. A holiday there that should match one of ours,
 under a new ID, means an entry in `qcHolidays` needs that ID adding. A new holiday with quests
-needs a new flag, an entry, and its quests' field 11 set.
+needs a new flag, an entry, and its quests' `holiday` set in `data\quests.jsonl`.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it

@@ -9,7 +9,7 @@ row of 14 values.
 | Point | What | Status |
 |---|---|---|
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
-| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120); stage 2 under way |
+| 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Stage 1 done (#120). Stage 2: every tool that changes quests or pins moved (#121, #122, #123); the 10 that only read them still to move. Stage 3 can go ahead. |
 | 4 | Named fields for the tools | Comes with point 6: tools read and write records through `tools\AddonData.ps1` |
 | 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | After point 6, as a change to the build step and to qcCore.lua |
 | 2 | The zone text (field 4, never read in game) left out of the rows | After point 6, the same way |
@@ -20,7 +20,7 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
 
 ## Point 6, in three stages
 
-1. **The data files, the build step and the export (this PR).** `data\quests.jsonl` and
+1. **The data files, the build step and the export (#120).** `data\quests.jsonl` and
    `data\pins.jsonl` hold the same records as the Lua. `Build-AddonData.ps1` checks them and writes
    the Lua; `-Check` confirms the two agree. The Lua stays the copy the tools edit, so
    `Export-AddonData.ps1` brings the data files up to date after a tool runs. The Lua text was
@@ -39,29 +39,34 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
      - Batch 2, done: `Place-UncategorisedQuests`, `Insert-GapQuestEntries` (which runs it) and
        `Build-QuestLines` (which also rewrites the `qcQuestLines` table, which stays Lua). New quests
        now go at the end of the data file, with no comment lines.
-     - Batch 3: `Assemble-PinDB`, with `Parse-ExistingPinDB`, which feeds it.
+     - Batch 3, done: `Assemble-PinDB`, with `Parse-ExistingPinDB`, which feeds it. The candidate
+       for review is now `tools\pins_candidate.jsonl`.
    - **Only read them (10).** `Apply-ReputationBackfill`, `Audit-DungeonCategories`,
      `Audit-QuestAccuracy`, `Build-CategoryClientNames`, `Build-QuestLocationData`,
      `Build-UnavailableQuests`, `Compare-QuestReputation`, `Find-UnavailableQuestCandidates`,
-     `Remove-EmptyMenuEntries`, `Parse-ExistingPinDB`. These would keep working against the
-     generated Lua, but they read it by position, so they have to move before points 1 to 3 change
-     the rows.
+     `Remove-EmptyMenuEntries`, and `Parse-ExistingPinDB` (moved with batch 3). These would keep
+     working against the generated Lua, but they read it by position, so they have to move before
+     points 1 to 3 change the rows.
    - **Touch neither (5)**, nothing to do: `Add-ZoneTableMaps`, `Build-CategoryUiMapIDs`,
      `Categorize-AuditDiscrepancies`, `Fetch-GapQuestData`, `Get-WagoQuestRequirements`.
 
    Found along the way:
    - `Apply-PinNpcIds` matched pins by the coordinate text, so stage 1's tidy (`38.0` became `38`)
      left 17 decision rows matching no pin. Fixed in batch 1: it compares coordinates as numbers.
-   - `Assemble-PinDB -Apply` rewrites the whole of `qcPinDB.lua`. It sorts each map's pins by quest
-     ID, drops notes, and doesn't escape `\` in names.
-   - `Parse-ExistingPinDB` can't read a name with an escaped quote, so 15 pins, such as
-     `Remy "Two Times"`, lose their NPC when the pins are rebuilt.
-   - `Insert-GapQuestEntries` puts new quests at the top of the rows, with two comment lines.
+   - `Assemble-PinDB -Apply` rewrote the whole of `qcPinDB.lua`, dropping notes and not escaping
+     `\` in names. Fixed in batch 3: it saves through the data file, and a note stays with a pin that
+     keeps its spot. It still sorts each map's pins by quest ID, as the pins have always been built.
+   - `Parse-ExistingPinDB` couldn't read a name with an escaped quote, so 15 pins, such as
+     `Remy "Two Times"`, lost their NPC when the pins were rebuilt. Their quests went to whoever
+     stood nearby (Renzik "The Shiv"'s to Monte Gazlowe). Fixed in batch 3: it reads the data file.
+   - `Insert-GapQuestEntries` put new quests at the top of the rows, with two comment lines. Fixed in
+     batch 2.
    - Every save now first checks that the Lua still matches the data files. Rebuilding it otherwise
      would lose a change an old-style tool made, or a hand edit.
-3. **Switch.** Once no tool edits the Lua, the data files become the master copy:
-   `Export-AddonData.ps1` is deleted, the generated Lua gets a "generated, don't edit" header, and
-   the maintenance notes say to edit only the data files.
+3. **Switch.** Once no tool edits the quest rows or pins in the Lua, the data files become the
+   master copy: `Export-AddonData.ps1` is deleted, the generated Lua gets a "generated, don't edit"
+   header, and the maintenance notes say to edit only the data files. That condition was met with
+   batch 3. The read-only tools don't hold it up; they have to move before points 1 to 3.
 
 ## Decisions
 

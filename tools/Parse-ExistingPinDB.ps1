@@ -1,50 +1,35 @@
 <#
-Parses the existing qcPinDB.lua into a flat, quest-ID-keyed lookup:
-  QuestID -> { NpcId, NpcName, IconType, OldUiMapID, OldMapX, OldMapY }
+Flattens the pins in data\pins.jsonl into a quest-ID-keyed lookup, tools\existing_pindb_by_quest.csv:
+  QuestID -> { OldUiMapID, OldMapX, OldMapY, IconType, NpcId, NpcName, Note }
 
 A single quest ID can appear at multiple pins (e.g. offered in more than one
-place) - all occurrences are kept as a list per quest ID.
+place) - all occurrences are kept as a list per quest ID. NpcName and Note are
+the plain text, empty when the pin has none.
 #>
+param(
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data')
+)
+$ErrorActionPreference = 'Stop'
+. "$PSScriptRoot\AddonData.ps1"
 
-$pinFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcPinDB.lua"
-$outFile = "C:\Users\alist\RiderProjects\QuestCompletist\tools\existing_pindb_by_quest.csv"
-
-$lines = Get-Content $pinFile
-$currentUiMapId = $null
+$outFile = Join-Path $ToolsDir "existing_pindb_by_quest.csv"
+$format = '0.############################'
 $results = New-Object System.Collections.Generic.List[object]
-
-$pinPattern = '^\s*\{(\d+),(\d+),(?:"([^"]*)"|nil),([\d.]+),([\d.]+),\{([\d,]*)\}'
-$mapHeaderPattern = '^\s*\[(\d+)\]\s*=\s*\{'
-
-foreach ($line in $lines) {
-    $mapMatch = [regex]::Match($line, $mapHeaderPattern)
-    if ($mapMatch.Success) {
-        $currentUiMapId = $mapMatch.Groups[1].Value
-        continue
-    }
-
-    $pinMatch = [regex]::Match($line, $pinPattern)
-    if ($pinMatch.Success -and $currentUiMapId) {
-        $iconType = $pinMatch.Groups[1].Value
-        $npcId = $pinMatch.Groups[2].Value
-        $npcName = $pinMatch.Groups[3].Value
-        $mapX = $pinMatch.Groups[4].Value
-        $mapY = $pinMatch.Groups[5].Value
-        $questIdsRaw = $pinMatch.Groups[6].Value
-        if ($questIdsRaw) {
-            $questIds = $questIdsRaw -split ','
-            foreach ($qid in $questIds) {
-                $results.Add([PSCustomObject]@{
-                    QuestID     = $qid
-                    OldUiMapID  = $currentUiMapId
-                    OldMapX     = $mapX
-                    OldMapY     = $mapY
-                    IconType    = $iconType
-                    NpcId       = $npcId
-                    NpcName     = $npcName
-                })
-            }
-        }
+foreach ($pin in (Read-PinData $DataDir)) {
+    $mapX = ([decimal]$pin.x).ToString($format, $script:Invariant)
+    $mapY = ([decimal]$pin.y).ToString($format, $script:Invariant)
+    foreach ($qid in $pin.quests) {
+        $results.Add([PSCustomObject]@{
+            QuestID     = [string]$qid
+            OldUiMapID  = [string]$pin.map
+            OldMapX     = $mapX
+            OldMapY     = $mapY
+            IconType    = [string]$pin.icon
+            NpcId       = if ($pin.npc) { [string]$pin.npc } else { "0" }
+            NpcName     = if ($null -ne $pin.name) { $pin.name } else { "" }
+            Note        = if ($null -ne $pin.note) { $pin.note } else { "" }
+        })
     }
 }
 

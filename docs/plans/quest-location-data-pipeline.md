@@ -52,6 +52,9 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
 ## Phase 1 status: MVP built and working
 
+(This section records the first run. Since #123 the pipeline works from `data\pins.jsonl` and writes
+`tools\pins_candidate.jsonl` for review; the current steps are in `docs/maintenance.md`, step 6.)
+
 A working pipeline exists (`tools/Build-QuestLocationData.ps1` → `tools/Join-LocationsWithExisting.ps1` → `tools/Assemble-PinDB.ps1`), producing `tools/qcPinDB_candidate.lua` (syntax-checked, valid Lua). Numbers from the current run:
 
 - 17,885 quest-giver locations converted from wago.tools source data, zero pipeline failures
