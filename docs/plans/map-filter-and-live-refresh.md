@@ -1,5 +1,7 @@
 # Map pin filtering and live refresh
 
+> Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
+
 ## Goal
 
 Two linked pieces of work in `QuestCompletist/qcCore.lua`, one PR each:

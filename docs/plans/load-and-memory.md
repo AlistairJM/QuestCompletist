@@ -1,5 +1,7 @@
 # Load time, memory and search speed
 
+> Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
+
 ## Goal
 
 Item 4 of the improvement list: measure what the addon costs at login and while it runs, then cut

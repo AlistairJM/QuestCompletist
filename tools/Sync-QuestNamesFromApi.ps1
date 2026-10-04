@@ -1,6 +1,6 @@
 <#
 Gives each quest in data\quests.jsonl the title Blizzard's API has for it, from tools\quest_api_cache
-(filled by Audit-QuestAccuracy.ps1), then rebuilds qcQuest.lua. The game shows its own title once a
+(filled by Audit-QuestAccuracy.ps1), then rebuilds qcQuestData.lua. The game shows its own title once a
 quest's data has loaded, so our name only matters for English search and until then; keeping the
 two the same means a quest is found under the name it's shown with.
 

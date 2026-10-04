@@ -1,7 +1,7 @@
 <#
 Retypes quests stored as 128 ("world quest or weekly") that Blizzard's quest API explicitly flags
 as daily or repeatable, and that the client's task-quest table (QuestV2CliTask) has no row for -
-so they are not world quests either. Changes data\quests.jsonl, then rebuilds qcQuest.lua.
+so they are not world quests either. Changes data\quests.jsonl, then rebuilds qcQuestData.lua.
 
   is_daily      -> 4, daily. Resets daily instead of weekly; hidden by the daily filter.
   is_repeatable -> 2, repeatable (only when not also flagged daily).

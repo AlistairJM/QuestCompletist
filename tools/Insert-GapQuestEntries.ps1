@@ -1,6 +1,6 @@
 <#
 Adds the gap-list quests fetched from Blizzard's API (tools\gap_quest_data.csv) to the end of
-data\quests.jsonl, then rebuilds qcQuest.lua.
+data\quests.jsonl, then rebuilds qcQuestData.lua.
 
 Safe defaults for fields the API can't tell us: type=1 (normal quest - the
 overwhelming empirical default), everything else 0 (no restriction/no data).

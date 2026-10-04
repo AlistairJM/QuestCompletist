@@ -47,8 +47,9 @@ exports, the API cache, reports) is gitignored and can be regenerated.
 ## The quest and pin data files
 
 The quests and the map pins live in `data\`, one record per line, with named fields. These are the
-master copy: the `qcQuestDatabase` rows of `qcQuest.lua` and the whole of `qcPinDB.lua` are built
-from them, and each starts with a line saying so.
+master copy: `QuestCompletist\qcQuestData.lua` and `QuestCompletist\qcPinDB.lua` are built from them,
+and each starts with a line saying so. `qcQuest.lua` holds only the hand-edited tables (menus,
+categories, the zone table, reputation rewards, storylines and so on).
 
 - `data\quests.jsonl`, one quest per line:
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
@@ -57,9 +58,15 @@ from them, and each starts with a line saying so.
   `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
   `npc` is left out when it's 0, and `name` and `note` when the pin has none.
 
-`tools\Build-AddonData.ps1` checks them and writes the `qcQuestDatabase` rows of `qcQuest.lua` and
-the whole of `qcPinDB.lua`. With `-Check` it writes nothing and only says whether the Lua matches.
-It names any problem by file and line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
+`tools\Build-AddonData.ps1` checks them and writes both Lua files. With `-Check` it writes nothing
+and only says whether the Lua matches. It names any problem by file and line, e.g.
+`quests.jsonl line 3 (id 53665): 'level' is missing`.
+
+In `qcQuestData.lua` a quest's row in `qcQuestDatabase` is `{name, level, category, type, faction,
+race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant and
+prerequisite, which most quests don't have, are in `qcQuestProfession`, `qcQuestHoliday`,
+`qcQuestCovenant` and `qcQuestPrereq`, keyed by quest ID. The zone text stays in the data file only:
+the game never reads it.
 
 **Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
@@ -79,7 +86,7 @@ rebuild:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1
 ```
 
-Never edit the generated rows or `qcPinDB.lua` directly: the next build overwrites them, and until
+Never edit `qcQuestData.lua` or `qcPinDB.lua` directly: the next build overwrites them, and until
 then every tool refuses to save.
 
 ## Before a sweep
@@ -379,20 +386,19 @@ results are enough.
 ## Checking a change before its pull request
 
 ```powershell
-& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p QuestCompletist\qcQuest.lua QuestCompletist\qcCore.lua
-(Select-String -Path QuestCompletist\qcQuest.lua -Pattern '^\[\d+\]=\{').Count
+& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p QuestCompletist\qcQuest.lua QuestCompletist\qcQuestData.lua QuestCompletist\qcPinDB.lua QuestCompletist\qcCore.lua
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -Check
 git diff --stat
 ```
 
 - The syntax check must be silent.
-- `Build-AddonData.ps1 -Check` must say both files are up to date.
-- The quest count should only change when quests were meant to be added or removed. It's 35,023 as
-  of September 2026.
+- `Build-AddonData.ps1 -Check` must say both files are up to date. Its last line gives the quest and
+  pin counts, which should only change when quests or pins were meant to be added or removed. As
+  of October 2026 they're 35,023 quests and 14,738 pins.
 - The diff should touch only what the change is about. For data changes, check that only the
-  intended field moved on each line.
+  intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
-  `.gitattributes` stores `qcQuest.lua` and `qcPinDB.lua` exactly as written.
+  `.gitattributes` stores `qcQuest.lua`, `qcQuestData.lua` and `qcPinDB.lua` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` (step 9) before and after, and compare
   the summaries it prints.
 

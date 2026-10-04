@@ -11,12 +11,13 @@ row of 14 values.
 | 5 | Find a quest's pins once per session; a keyed table for categories' English names | Done, #118 |
 | 6 | Quest rows and pins kept in JSON Lines files; the Lua built from them | Done. Stage 1 #120; stage 2 #121, #122, #123 and the read-only tools; stage 3 #124. |
 | 4 | Named fields for the tools | Done with point 6: every tool reads and writes records through `tools\AddonData.ps1`, and only the build knows the Lua row layout |
-| 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | Next: a change to the build step and to qcCore.lua |
-| 2 | The zone text (field 4, never read in game) left out of the rows | Next, the same way |
-| 3 | The quest ID no longer repeated inside its own row | Optional, the same way |
+| 1 | Profession, holiday, covenant and prerequisite in their own keyed tables | Done, with points 2 and 3 (see below) |
+| 2 | The zone text (field 4, never read in game) left out of the rows | Done |
+| 3 | The quest ID no longer repeated inside its own row | Done |
 
-Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after points 1 and 2,
-7.72 MB after all three.
+Estimated beforehand on the rows alone: 10.55 MB, 8.79 MB after point 1, 8.25 MB after points 1
+and 2, 7.72 MB after all three. Measured on the real files after the change: the quest data takes
+10.43 MB before and 7.57 MB after, 2.85 MB (27%) less.
 
 ## Point 6, in three stages
 
@@ -66,14 +67,48 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
      would lose a change an old-style tool made, or a hand edit.
 3. **Switch, done.** Once no tool edited the quest rows or pins in the Lua (batch 3), the data files
    became the master copy. `Export-AddonData.ps1` and the Lua readers in `AddonData.ps1` are
-   deleted. The generated rows of `qcQuest.lua` and the whole of `qcPinDB.lua` start with a line
-   saying they're generated from the data files. The maintenance notes say to make hand changes in
+   deleted. The generated rows of `qcQuest.lua` (since points 1 to 3, their own file,
+   `qcQuestData.lua`) and the whole of `qcPinDB.lua` start with a line saying they're generated from
+   the data files. The maintenance notes say to make hand changes in
    the data files and rebuild. The safeguard now tells anyone who edited the generated Lua to make
    the change in the data files instead. Loaded in Lua 5.1, the switched files give identical tables,
    in the same order.
 
    After stage 3 the read-only tools moved too, so nothing but the build reads or writes the Lua
    rows, and points 1 to 3 only need the build step and qcCore.lua to change.
+
+## Points 1 to 3, done together
+
+- **A file of its own.** The build writes `QuestCompletist\qcQuestData.lua` whole, as it does
+  `qcPinDB.lua`, and the TOC loads it straight after `qcQuest.lua`. `qcQuest.lua` keeps only the
+  hand-edited tables, so no file mixes generated and hand-edited Lua.
+- **The row** is `{name, level, category, type, faction, race, class, storyline}`, with storyline
+  left off when it's 0 (half the quests have none; a missing last value costs nothing).
+- **Profession, holiday, covenant and prereq** are in `qcQuestProfession` (1,332 quests),
+  `qcQuestHoliday` (911), `qcQuestCovenant` (777) and `qcQuestPrereq` (4,851), keyed by quest ID.
+  The code reads them as "nil means none", where it used to test for 0.
+- **The zone text isn't written to the Lua.** The game never read it; it stays in the data file for
+  the tools.
+- **The quest ID isn't repeated inside its row.** The quest list now holds quest IDs rather than
+  rows, the list and map filters take `(questId, row)`, and the list sorts by a level and name looked
+  up per ID.
+- **Tools:** only `AddonData.ps1` and the reachability harness, `Test-QuestReachability.lua`, which
+  loads the addon's Lua, needed changing.
+
+Checked against master on the real data, in Lua 5.1:
+- every quest's fields match the old layout's, the game walks the quests in the same order, and
+  every other table in `qcQuest.lua` is unchanged;
+- the reachability report is identical (every quest's and pin's visibility under each filter);
+- the quest list for every category under four settings profiles, page by page, is identical:
+  each row's quest, text, icon and colour, the order, the completion counts, and seven searches;
+- every map's pins under four profiles, including out-of-season holiday quests hidden, are
+  identical: icon, greyed or not, and the whole tooltip;
+- the quest tooltip of every quest with a storyline or prerequisite, and every tenth other, with
+  and without the faction filter, and the new-data alert for every quest and three characters, are
+  identical;
+- the NPC-name and pin-lookup simulations pass unchanged.
+Each of those comparisons was also run against deliberately broken copies of the code, and caught
+every one (15 in all).
 
 ## Decisions
 
@@ -89,9 +124,10 @@ Measured on the rows alone: 10.55 MB today, 8.79 MB after point 1, 8.25 MB after
   Lua keep theirs. Since stage 3 the build writes one line above the rows, and at the top of
   `qcPinDB.lua`, saying they're generated.
 - **Only the quest rows and the pins move.** Menus, categories, storylines and the other tables in
-  `qcQuest.lua` stay Lua for now; the build leaves everything outside the quest rows as it is.
-- **The PowerShell JSON writer isn't used** for the data files: it writes `'` as `'`. The
+  `qcQuest.lua` stay hand-edited Lua. Since points 1 to 3 the generated quest data has a file of its
+  own, so the build doesn't touch `qcQuest.lua` at all.
+- **The PowerShell JSON writer isn't used** for the data files: it writes `'` as `\u0027`. The
   records are written by `AddonData.ps1`, escaping only `\` and `"`.
-- **Line endings are pinned in `.gitattributes`.** The two generated Lua files are stored exactly
-  as written (Windows line endings), and the data files always use Unix line endings, so `-Check`
-  sees the same bytes on any machine.
+- **Line endings are pinned in `.gitattributes`.** The two generated Lua files, `qcQuestData.lua`
+  and `qcPinDB.lua`, are stored exactly as written (Windows line endings), as is `qcQuest.lua`, and
+  the data files always use Unix line endings, so `-Check` sees the same bytes on any machine.
