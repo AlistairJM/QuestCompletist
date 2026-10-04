@@ -172,12 +172,18 @@ Types are a bitmask. The ones that matter here:
 | 4 | daily |
 | 128 | world quest **or** weekly. The weekly reset clears both. |
 
+Type 0 (no type) acts as 1. The original data also had a weekly type, 16, which the addon treats
+as one-time; since October 2026 no quest has it.
+
 - `Retype-FlaggedWorldQuests.ps1` moves 128 to daily or repeatable when the API flags the quest that
   way and it isn't a world quest.
-- `Retype-ProbeRecurring.ps1` moves 1 to daily or 128 when the in-game probe (below) says the quest
-  recurs **and** the API flags it daily or weekly. It reads the probe's saved results in
-  `tools\quest_type_probe_results.lua`, which only cover quests that were in the database when the
-  probe ran.
+- `Retype-ProbeRecurring.ps1` moves a quest typed one-time (1, 0 or 16) to daily or 128 when the
+  in-game probe (below) says the quest recurs **and** the API flags it daily or weekly. It reads the
+  probe's saved results in `tools\quest_type_probe_results.lua`, which only cover quests that were
+  in the database when the probe ran.
+
+What's been checked and decided, and the quests still open, are in
+[plans/quest-types.md](plans/quest-types.md).
 
 Both only pick up new cases, so they're safe to rerun. Before changing any type by hand, know that
 neither source proves a quest is one-time:
@@ -383,14 +389,15 @@ with no events at all, the last answer stands, and until there is one every seas
 
 Some answers only the game client has.
 
-**Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It lives on
-the draft pull request #42, branch `tools/quest-type-probe`.
+**Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It's pull
+request #42, which is closed and its branch deleted; GitHub keeps its commits.
 
 Run it after step 6 has added quests, then run step 3 again. On a sweep that adds nothing, the saved
 results are enough.
 
-1. Check out that branch and merge `master` into it. The probe walks the branch's own quest
-   database, so quests added since the branch was last updated aren't probed.
+1. Bring the branch back with `git fetch origin pull/42/head:tools/quest-type-probe`, check it out
+   and merge `master` into it. The probe walks the branch's own quest database, so quests added
+   since the branch was last updated aren't probed.
 2. **Restart the game fully**. The probe adds a file to the TOC, and a `/reload` doesn't pick that
    up.
 3. Type `/qc typecheck`. It loads every quest from the server a few at a time, which takes about two
