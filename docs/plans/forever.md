@@ -118,8 +118,8 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
-2. **Cache reader** (tool): decodes the cache records, checked against CMaNGOS for the quests both
-   have.
+2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`, #141): decodes the cache records, checked
+   against CMaNGOS for the quests both have.
 3. **CMaNGOS importer** (tool): turns the dump into `data/forever`, with spawns converted to map
    positions. It merges the probe, cache and recorder results, and lists every disagreement for
    review, including the 83 givers and 185 positions above.
@@ -169,6 +169,32 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
   all 8 NPCs, CMaNGOS's spawn converted with Forever's map data is within 0.04–0.14 map points of
   where you stood, and so are our old pins.
 
+### Phase 2: the cache reader (5 October 2026)
+
+`tools/Read-ForeverQuestCache.ps1` reads `questcache.wdb` into
+`tools/forever_quest_cache_<build>.jsonl`, one quest per line:
+- **Always:** id, title, level, minLevel and sort (the zone, or a negative QuestSort for class,
+  profession and holiday quests).
+- **Where they apply:** questInfo, groupSize, recurs, nextQuest, startItem, flags, reputation, and
+  races with their faction.
+
+It reads every record to its last byte, or writes nothing. On the beta cache (2,860 quests, under 2
+seconds):
+- **Every record reads exactly, and every title matches the game's.** It stops without writing on a
+  changed objective count, text length or record length, a cache from another build, or a creature
+  cache. A rerun gives the same file byte for byte.
+- **Recurrence:** the daily (0x1000) and weekly (0x8000) flags pick out exactly the 171 quests the
+  game calls Recurring.
+- **Races** decode with Forever's `ChrRaces`:
+  - Bits 0–7 are the original eight races, and bits 32 and 33 the Alliance and Horde Skyborne (races
+    95 and 96). The races playable in Forever carry the flag 0x400000.
+  - 404 quests are Alliance-only, 404 Horde-only, and 12 are for both Skyborne.
+  - The other 2,040 leave it to the giver, including 1,172 that CMaNGOS gives one faction.
+- **Against CMaNGOS** (1,811 quests): the starting item matches for all 500 that have one, and the
+  faction for all 129 both give. The zone matches for 1,802, the level for 1,795, the minimum level
+  for 1,743, and the follow-up quest for 746 of 795. The differences are Blizzard's, such as a cooking
+  quest filed under Cooking, or Forever's new follow-ups such as 98298 after quest 99.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -180,11 +206,11 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 
 - The interface number at launch, and whether the `_Camelot` suffix stays.
 - Whether retail recognises the `camelot` token. That only matters for a one-TOC layout.
-- Which race each bit of the race mask is, from Forever's `ChrRaces` (for the cache reader).
 - Whether Thalid83 plans a Forever version, and whether their Classic data can be compared.
 
 ## Status
 
 - 2026-10-04 and 05: researched and planned.
-- 2026-10-05: phase 1's probe (#139) ran on the beta; results above. Next: rerun it when the beta
-  opens levels above 40, then phase 2.
+- 2026-10-05: phase 1's probe (#139) ran on the beta; results above.
+- 2026-10-05: phase 2's cache reader (#141) written; results above. Next: phase 3, the CMaNGOS importer, and
+  a probe rerun when the beta opens levels above 40.
