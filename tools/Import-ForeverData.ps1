@@ -2,8 +2,8 @@
 Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from four sources
 (docs/plans/forever.md, phase 3):
 
-  - the client's tables for -Build: which quests exist (QuestV2), and where some start
-    (QuestPOIBlob and QuestPOIPoint);
+  - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
+    some start (QuestPOIBlob and QuestPOIPoint);
   - the quest cache file Read-ForeverQuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
@@ -14,8 +14,10 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
 The game wins wherever it speaks. Title, level, zone, recurrence and race restrictions come from the
 cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC names come
 from the probe. A quest's givers are CMaNGOS's and the recorder's together. Quests with internal
-titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out, as are
-CMaNGOS quests the client doesn't have.
+titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out.
+QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
+row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
+out until the game answers for it. Every kept quest QuestV2 lacks is listed for review.
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
@@ -28,8 +30,9 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
   class     the addon's class bits, from CMaNGOS or a class heading; 8191 for any.
-  type      64 seasonal, 4 daily, 128 weekly, 32 profession, 2 repeatable or 1, the first that
-            applies. holiday and profession hold the addon's flags.
+  type      64 seasonal, 4 daily, 128 weekly, 2 repeatable, 32 profession or 1, the first that
+            applies, so a repeatable profession quest is repeatable, as on retail. holiday and
+            profession hold the addon's flags.
   prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache.
 Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
 it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
@@ -285,7 +288,7 @@ function Add-Review([string]$kind, $quest, $other, [string]$detail) {
     $review.Add([pscustomobject]@{ Kind = $kind; Quest = $quest; Other = $other; Detail = $detail })
 }
 
-$ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] }) | Sort-Object -Unique)
+$ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] -or ($cmQuest[$_].Special -band 1) }) | Sort-Object -Unique)
 $records = @{}
 $refiled = 0
 $gameGivers = 0
@@ -307,6 +310,10 @@ foreach ($id in $ids) {
     if (-not $c) {
         if ($probeResult[$id] -eq 'fail' -and $m.Level -le 35) { Add-Review 'failed on the beta below level 36' $id '' $title }
         else { Add-Review 'not confirmed by the game yet' $id '' $title }
+    }
+    if (-not $inClient[$id]) {
+        $cmangosSays = if (-not $m) { 'not in CMaNGOS' } elseif ($m.Special -band 1) { 'CMaNGOS: repeatable' } else { 'CMaNGOS: not repeatable' }
+        Add-Review "not in the client's QuestV2" $id '' "$title ($cmangosSays)"
     }
     if ($c -and $c.giver) {
         $gameGivers++
@@ -334,7 +341,7 @@ foreach ($id in $ids) {
     }
     $recurs = if ($c) { $c.recurs } else { $null }
     $type = if ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 }
-        elseif ($profession) { 32 } elseif ($m -and ($m.Special -band 1)) { 2 } else { 1 }
+        elseif ($m -and ($m.Special -band 1)) { 2 } elseif ($profession) { 32 } else { 1 }
 
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $(if ($c) { [int]$c.level } else { $m.Level })
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
@@ -480,7 +487,7 @@ foreach ($id in ($records.Keys | Sort-Object)) {
 foreach ($pin in $pins.Values) {
     $onPin = @($pin.quests | ForEach-Object { $records[$_] })
     $pin.icon = if (-not ($onPin | Where-Object { $_.type -ne 64 })) { 5 }
-        elseif (-not ($onPin | Where-Object { $_.type -ne 32 })) { 3 }
+        elseif (-not ($onPin | Where-Object { -not $_.profession })) { 3 }
         elseif (-not ($onPin | Where-Object { $_.class -eq 8191 })) { 9 } else { 1 }
     $pin.quests = @($pin.quests | Sort-Object)
 }

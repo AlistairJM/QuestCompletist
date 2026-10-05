@@ -124,6 +124,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-264,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=stringformat("   %s",qcL.WORLDEVENTS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-365,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=-364,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-368,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-366,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-369,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -133,7 +134,9 @@ qcMenu={
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-1,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-344,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-676,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-367,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-284,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-221,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=stringformat("   %s",qcL.UNCATEGORIZED),isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=GetText("SETTINGS"),isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s%s|r","|cFFFF7D0A",GetText("SETTINGS")),isTitle=false,notCheckable=true,hasArrow=true,menuList={
