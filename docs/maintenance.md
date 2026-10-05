@@ -95,7 +95,7 @@ then every tool refuses to save.
 ## Before a sweep
 
 1. **Find the current retail build** at <https://wago.tools/api/builds/latest> (product `wow`).
-   The addon targets retail only.
+   The addon targets retail only. A Forever version is planned in [plans/forever.md](plans/forever.md).
 2. **Pin the build.** Scripts that take `-Build` should be given the current retail build.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest
    retail build.
