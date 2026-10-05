@@ -10,7 +10,8 @@ byte, or nothing is written: a record that doesn't fit means the layout has chan
 A line holds the quest's id, title, level, minLevel and sort (its zone, or a negative QuestSort for
 class, profession and holiday quests), and when they apply: questInfo (1 group, 41 PvP, 62 raid,
 81 dungeon), groupSize, recurs (daily or weekly), nextQuest (the follow-up offered on hand-in),
-startItem, flags, reputation (the factions it rewards), and races with their faction. races lists
+startItem, giver (the quest giver's creature ID, empty in every record so far), flags, reputation
+(the factions it rewards), and races with their faction. races lists
 the races playable in Forever that may take the quest; it's left out when every race may, as for
 most quests of one faction, whose giver decides. The quest texts other than the title are left out.
 
@@ -58,7 +59,7 @@ $textBits = 9, 12, 12, 9, 10, 8, 10, 8, 11
 $fields = New-Object 'int[]' 122
 $lines = New-Object System.Collections.Generic.List[string]
 $failed = New-Object System.Collections.Generic.List[string]
-$counts = @{ alliance = 0; horde = 0; someRaces = 0; noRace = 0; daily = 0; weekly = 0; startItem = 0; nextQuest = 0 }
+$counts = @{ alliance = 0; horde = 0; someRaces = 0; noRace = 0; daily = 0; weekly = 0; startItem = 0; nextQuest = 0; giver = 0 }
 $offset = 24
 while ($offset + 8 -le $bytes.Length) {
     $id = [BitConverter]::ToUInt32($bytes, $offset)
@@ -111,6 +112,7 @@ while ($offset + 8 -le $bytes.Length) {
     elseif ($flags -band 0x8000) { $line += ',"recurs":"weekly"'; $counts.weekly++ }
     if ($fields[9]) { $line += ',"nextQuest":' + $fields[9]; $counts.nextQuest++ }
     if ($fields[24]) { $line += ',"startItem":' + $fields[24]; $counts.startItem++ }
+    if ($fields[117]) { $line += ',"giver":' + $fields[117]; $counts.giver++ }
     if ($flags) { $line += ',"flags":' + $flags }
     $factions = @(75, 79, 83, 87, 91 | Where-Object { $fields[$_] } | ForEach-Object { $fields[$_] })
     if ($factions.Count) { $line += ',"reputation":[' + ($factions -join ',') + ']' }
@@ -136,5 +138,5 @@ if (-not $OutFile) { $OutFile = "$ToolsDir\forever_quest_cache_$Build.jsonl" }
 $sorted = $lines | Sort-Object { [int]($_ -replace '^\{"id":(\d+),.*$', '$1') }
 [System.IO.File]::WriteAllText($OutFile, (($sorted -join "`n") + "`n"), (New-Object System.Text.UTF8Encoding $false))
 Write-Host ("{0} quests from build {1} ({2}) written to {3}." -f $lines.Count, $cacheBuild, $locale, $OutFile)
-Write-Host ("Races: {0} Alliance only, {1} Horde only, {2} other sets, {3} no race playable in Forever. Recurring: {4} daily, {5} weekly. {6} start from an item, {7} offer a follow-up." -f
-    $counts.alliance, $counts.horde, $counts.someRaces, $counts.noRace, $counts.daily, $counts.weekly, $counts.startItem, $counts.nextQuest)
+Write-Host ("Races: {0} Alliance only, {1} Horde only, {2} other sets, {3} no race playable in Forever. Recurring: {4} daily, {5} weekly. {6} start from an item, {7} offer a follow-up, {8} name their quest giver." -f
+    $counts.alliance, $counts.horde, $counts.someRaces, $counts.noRace, $counts.daily, $counts.weekly, $counts.startItem, $counts.nextQuest, $counts.giver)
