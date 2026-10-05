@@ -240,9 +240,8 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
     convert.
 - **`tools\Build-ForeverMenu.ps1`** writes Forever's menu and category tables from the data and the
   client's tables:
-  - **Continents:** the Kalimdor and Eastern Kingdoms zones by retail's regions, with subzones after
-    their zone, and Zephras Isle.
-  - **Dungeons and raids,** including dungeon quests filed under the outdoor area of the same name.
+  - **Continents:** the Kalimdor and Eastern Kingdoms zones by retail's regions, and Zephras Isle.
+  - **Dungeons and raids,** by their instance's type.
   - **Classes, battlegrounds, professions, world events** and Forever's other headings.
   - **Names:** the menu's names come from the client in the player's language (areas, classes,
     professions), with English as the fallback.
@@ -256,8 +255,16 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
 - **`Test-QuestReachability.lua`** takes a TOC and a UiMap table. On Forever's files, every quest is
   reachable from the menu and every pin is drawn, on a map the client has, with no Lua errors.
   Retail's report is unchanged.
-- **Import change:** `Import-ForeverData.ps1` now files a quest under Uncategorized when its zone isn't
-  in the client's AreaTable. Two quests are affected, both in area 16550.
+- **Import changes:** `Import-ForeverData.ps1` now files 297 quests under a whole zone or instance,
+  so the menu has neither one-quest subzones nor two entries for one instance.
+  - **Subzones go under their zone,** as retail's categories are zones: Valley of Trials under
+    Durotar, Northshire Valley under Elwynn Forest, Booty Bay under Stranglethorn Vale.
+  - **Outdoor areas named after an instance go under the instance's own area:** Gnomeregan in Dun
+    Morogh, Zul'Gurub in Stranglethorn, and the Alterac Valley subzone. Zones with a map of their own
+    are left alone, since Forever also has a dungeon called Deadwind Pass. Areas inside an instance
+    stay in it: Sunken Temple's map names the outdoor temple as its area.
+  - **Quests in a zone the client's AreaTable lacks go under Uncategorized.** Two quests are affected,
+    both in area 16550.
 - **The beta test:** a copy of `QuestCompletist` goes into `_classic_beta_\Interface\AddOns\`.
 
 ## Decisions

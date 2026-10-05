@@ -19,7 +19,10 @@ CMaNGOS quests the client doesn't have.
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
             profession, holiday and Forever's other headings; 0 for none, or for an area the
-            client's AreaTable doesn't have. zone is its name.
+            client's AreaTable doesn't have. A quest filed under an area named after an instance
+            (Gnomeregan in Dun Morogh) gets the instance's own area; one filed under any other
+            subzone (Valley of Trials) gets its zone, as retail's categories are zones. zone is its
+            name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
@@ -93,9 +96,38 @@ $gameOnlyJunk = '(?i)test quest|test kill quest|do not use|^\[never used\]$|^REU
 
 $inClient = @{}
 foreach ($row in Get-ClientTable 'QuestV2') { $inClient[[int]$row.ID] = $true }
-$sortName = @{}
-foreach ($row in Get-ClientTable 'AreaTable') { $sortName[[int]$row.ID] = $row.AreaName_lang }
+$sortName = @{}; $areaParent = @{}; $areaMap = @{}
+foreach ($row in Get-ClientTable 'AreaTable') {
+    $sortName[[int]$row.ID] = $row.AreaName_lang
+    $areaParent[[int]$row.ID] = [int]$row.ParentAreaID
+    $areaMap[[int]$row.ID] = [int]$row.ContinentID
+}
 foreach ($row in Get-ClientTable 'QuestSort') { $sortName[-[int]$row.ID] = $row.SortName_lang }
+$zoneAreas = @{}
+foreach ($row in Get-ClientTable 'UiMapAssignment') { if ([int]$row.AreaID) { $zoneAreas[[int]$row.AreaID] = $true } }
+$instanceMaps = @{}; $instanceArea = @{}
+foreach ($map in (Get-ClientTable 'Map' | Where-Object { [int]$_.InstanceType -ge 1 -and [int]$_.InstanceType -le 4 } | Sort-Object { -[int]$_.AreaTableID }, { [int]$_.ID })) {
+    $instanceMaps[[int]$map.ID] = $true
+    if ($instanceArea.ContainsKey($map.MapName_lang)) { continue }
+    $onMap = @($areaMap.Keys | Where-Object { $areaMap[$_] -eq [int]$map.ID -and -not $areaParent[$_] } | Sort-Object { $sortName[$_] -ne $map.MapName_lang }, { $_ })
+    $own = if ($onMap.Count -and $sortName[$onMap[0]] -eq $map.MapName_lang) { $onMap[0] }
+        elseif ($sortName.ContainsKey([int]$map.AreaTableID)) { [int]$map.AreaTableID } elseif ($onMap.Count) { $onMap[0] } else { $null }
+    $instanceArea[$map.MapName_lang] = $own
+}
+
+# A quest filed under an outdoor area named after an instance (Gnomeregan in Dun Morogh) goes under
+# the instance's own area, if it has one; one filed under any other subzone goes under its zone, or
+# under the top area of its instance.
+function Resolve-Category([int]$category) {
+    if ($category -le 0) { return $category }
+    $name = $sortName[$category]
+    if (-not $instanceMaps[$areaMap[$category]] -and -not $zoneAreas[$category] -and $instanceArea.ContainsKey($name)) {
+        if ($instanceArea[$name]) { return [int]$instanceArea[$name] }
+        return $category
+    }
+    while ($areaParent[$category] -and $sortName.ContainsKey($areaParent[$category])) { $category = $areaParent[$category] }
+    return $category
+}
 $storylineOf = @{}
 foreach ($row in Get-ClientTable 'QuestLineXQuest') { $storylineOf[[int]$row.QuestID] = [int]$row.QuestLineID }
 $uiMapType = @{}
@@ -208,6 +240,7 @@ function Add-Review([string]$kind, $quest, $other, [string]$detail) {
 
 $ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] }) | Sort-Object -Unique)
 $records = @{}
+$refiled = 0
 foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
@@ -217,7 +250,12 @@ foreach ($id in $ids) {
         Add-Review 'zone not in the client, so Uncategorized' $id $category $title
         $category = 0
     }
-    if ($c -and $m -and $m.Zone -ne $category) { Add-Review 'zone differs from CMaNGOS' $id $m.Zone "$($sortName[$category]) / CMaNGOS: $($sortName[$m.Zone])" }
+    $filedUnder = $category
+    $category = Resolve-Category $category
+    if ($category -ne $filedUnder) { $refiled++ }
+    if ($c -and $m -and $sortName.ContainsKey($m.Zone) -and (Resolve-Category $m.Zone) -ne $category) {
+        Add-Review 'zone differs from CMaNGOS' $id $m.Zone "$($sortName[$category]) / CMaNGOS: $($sortName[$m.Zone])"
+    }
     if (-not $c) {
         if ($probeResult[$id] -eq 'fail' -and $m.Level -le 35) { Add-Review 'failed on the beta below level 36' $id '' $title }
         else { Add-Review 'not confirmed by the game yet' $id '' $title }
@@ -377,6 +415,7 @@ $fromBoth = @($questList | Where-Object { $cache.ContainsKey($_.id) -and $cmQues
 $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $cmQuest.ContainsKey($_.id) }).Count
 Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, {3} from CMaNGOS only. {4} pins on {5} maps." -f
     $questList.Count, $fromBoth, $fromGame, ($questList.Count - $fromBoth - $fromGame), $pinList.Count, @($pinList | Select-Object -ExpandProperty map -Unique).Count)
+Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
 if ($WhatIf) { return }

@@ -4,12 +4,13 @@ phase 4): qcMenu.lua, qcQuest.lua and qcUnavailableQuests.lua. They're built fro
 data\forever\quests.jsonl and the client's tables for -Build. Rerun it after Import-ForeverData.ps1.
 
 Every category in the data gets a place in the menu:
-  - The zones of the Eastern Kingdoms and Kalimdor go under their region, with subzones after their
-    zone. A zone missing from the region table below goes in its continent's "Other" group; add it
-    to the table.
+  - The zones of the Eastern Kingdoms and Kalimdor go under their region. Import-ForeverData.ps1
+    has already filed subzones' quests under their zone. A zone missing from the region table below
+    goes in its continent's "Other" group; add it to the table.
   - Lands with a map of their own (Zephras Isle) go under Continents.
-  - Dungeons, raids and battlegrounds are placed by their instance's type, including quests filed
-    under the outdoor area of the same name (Gnomeregan, Uldaman).
+  - Dungeons, raids and battlegrounds are placed by their instance's type. That includes an outdoor
+    area of the same name the importer kept, such as Blackrock Depths, but never a zone with a map
+    of its own: Forever also has a dungeon called Deadwind Pass.
   - Class, profession and holiday headings, and Forever's other headings, go under their own titles;
     Uncategorized comes last.
 The Settings entries are copied from retail's QuestCompletist\qcMenu.lua.
@@ -73,7 +74,10 @@ foreach ($row in (Get-ClientTable 'UiMapAssignment' | Sort-Object { [int]$_.UiMa
     if ($uiMapType[$uiMap] -ge 3 -and $area -and -not $zoneMaps.ContainsKey($uiMap)) { $zoneMaps[$uiMap] = $area }
 }
 $instanceType = @{}
-foreach ($map in $maps.Values) { $type = [int]$map.InstanceType; if ($type -ge 1 -and $type -le 4) { $instanceType[$map.MapName_lang] = $type } }
+foreach ($map in ($maps.Values | Sort-Object { -[int]$_.AreaTableID }, { [int]$_.ID })) {
+    $type = [int]$map.InstanceType
+    if ($type -ge 1 -and $type -le 4 -and -not $instanceType.ContainsKey($map.MapName_lang)) { $instanceType[$map.MapName_lang] = $type }
+}
 
 $categories = @{}
 foreach ($line in [IO.File]::ReadAllLines((Join-Path $DataDir 'quests.jsonl'))) {
@@ -91,8 +95,6 @@ foreach ($continent in $regions.Keys) {
     foreach ($region in $regions[$continent].Keys) { $continents[$continent][$region] = New-Object System.Collections.Generic.List[int] }
     $continents[$continent]['OTHERCATEGORIES'] = New-Object System.Collections.Generic.List[int]
 }
-$subzones = @{}
-$placedZones = @{}
 $lands = New-Object System.Collections.Generic.List[int]
 $dungeons = New-Object System.Collections.Generic.List[int]
 $raids = New-Object System.Collections.Generic.List[int]
@@ -113,7 +115,9 @@ foreach ($id in $categories.Keys) {
     $area = $areas[$id]
     if (-not $area) { throw "Category $id isn't in AreaTable for build $Build. Rerun Import-ForeverData.ps1." }
     $type = [int]$maps[[int]$area.ContinentID].InstanceType
-    if ($type -eq 0 -and $instanceType.ContainsKey($area.AreaName_lang)) { $type = $instanceType[$area.AreaName_lang] }
+    if ($type -eq 0 -and -not ($zoneMaps.Values -contains $id) -and $instanceType.ContainsKey($area.AreaName_lang)) {
+        $type = $instanceType[$area.AreaName_lang]
+    }
     if ($type -eq 1) { $dungeons.Add($id); continue }
     if ($type -eq 2) { $raids.Add($id); continue }
     if ($type -eq 3 -or $type -eq 4) { $battlegrounds.Add($id); continue }
@@ -125,18 +129,11 @@ foreach ($id in $categories.Keys) {
     }
     $top = $area
     while ([int]$top.ParentAreaID -and $areas[[int]$top.ParentAreaID]) { $top = $areas[[int]$top.ParentAreaID] }
-    $topId = [int]$top.ID
-    if ($topId -ne $id) {
-        if (-not $subzones.ContainsKey($topId)) { $subzones[$topId] = New-Object System.Collections.Generic.List[int] }
-        $subzones[$topId].Add($id)
-    }
-    if ($placedZones.ContainsKey($topId)) { continue }
-    $placedZones[$topId] = $true
     $placed = $false
     foreach ($region in $regions[$continent].Keys) {
-        if ($regions[$continent][$region] -contains $top.AreaName_lang) { $continents[$continent][$region].Add($topId); $placed = $true; break }
+        if ($regions[$continent][$region] -contains $top.AreaName_lang) { $continents[$continent][$region].Add($id); $placed = $true; break }
     }
-    if (-not $placed) { $continents[$continent]['OTHERCATEGORIES'].Add($topId) }
+    if (-not $placed) { $continents[$continent]['OTHERCATEGORIES'].Add($id) }
 }
 
 function Get-Sorted($ids) { return @($ids | Sort-Object { Get-EnglishName $_ }, { $_ }) }
@@ -152,14 +149,7 @@ function Format-Title([string]$key, [string]$clientName = '') {
     $client = if ($clientName) { "clientName=$clientName," } else { '' }
     return "{text=qcL.$key,${client}isTitle=true,notCheckable=true,hasArrow=false}"
 }
-function Get-ZoneLeaves($ids) {
-    $leaves = New-Object System.Collections.Generic.List[string]
-    foreach ($id in (Get-Sorted $ids)) {
-        if ($categories.ContainsKey($id)) { $leaves.Add((Format-Leaf $id '')) }
-        foreach ($sub in (Get-Sorted $subzones[$id])) { $leaves.Add((Format-Leaf $sub '   ')) }
-    }
-    return $leaves
-}
+function Get-ZoneLeaves($ids) { return @(Get-Sorted $ids | ForEach-Object { Format-Leaf $_ '' }) }
 
 $menu = New-Object System.Collections.Generic.List[string]
 $menu.Add((Format-Title 'CONTINENTS'))
@@ -235,7 +225,7 @@ foreach ($file in @(@{ Name = 'qcMenu.lua'; Text = $menuText }, @{ Name = 'qcQue
     [IO.File]::WriteAllText($path, $file.Text, $utf8)
     "$($file.Name): written"
 }
-"{0} categories: {1} zones and subzones, {2} other lands, {3} dungeons, {4} raids, {5} battlegrounds, {6} classes, {7} professions, {8} world events, {9} others." -f
+"{0} categories: {1} zones, {2} other lands, {3} dungeons, {4} raids, {5} battlegrounds, {6} classes, {7} professions, {8} world events, {9} others." -f
     $categories.Count, ($categories.Count - $lands.Count - $dungeons.Count - $raids.Count - $battlegrounds.Count - $classes.Count - $professions.Count - $events.Count - $others.Count - [int]$categories.ContainsKey(0)),
     $lands.Count, $dungeons.Count, $raids.Count, $battlegrounds.Count, $classes.Count, $professions.Count, $events.Count, $others.Count
 $unplaced = @($continents.Values | ForEach-Object { $_['OTHERCATEGORIES'] } | ForEach-Object { Get-EnglishName $_ })
