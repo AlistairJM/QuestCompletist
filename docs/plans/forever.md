@@ -4,8 +4,9 @@
 
 A version of the addon for WoW: Forever, running alongside retail: one folder, one release, and our
 own Forever quest and pin database. It's a longer-term project, and the retail plan comes first.
-Phases 1 to 4 are done: the addon runs on the Forever beta with its own data, and the full sweep
-refreshes that data along with retail's ([maintenance.md](../maintenance.md), step 10).
+Phases 1 to 4 are done: the addon runs on the Forever beta with its own data, every release since
+111.1 carries Forever's files, and the full sweep refreshes that data along with retail's
+([maintenance.md](../maintenance.md), step 10).
 
 ## What Forever is (checked October 2026)
 
@@ -23,8 +24,9 @@ refreshes that data along with retail's ([maintenance.md](../maintenance.md), st
 
 ## What the client's own tables hold (build 70205)
 
-- **Which quests exist:** `QuestV2` lists 6,609 quest IDs. 4,805 are also in Classic Era (1.15.9).
-  1,804 are new, 1,720 of them numbered 90000 and up.
+- **Which quests the game records as completed:** `QuestV2` lists 6,609 quest IDs. 4,805 are also
+  in Classic Era (1.15.9). 1,804 are new, 1,720 of them numbered 90000 and up. It isn't a list of
+  every quest: it leaves out repeatable ones (see "Repeatable quests" below).
 - **Maps:** Classic Era's map IDs (947 and 1411–1464), plus six new ones: 2482 Mount Hyjal, 2521
   and 2665 Zephras Isle, 2524 Darkspear Islands, 2548 Riverglades and 2652 Shen'dralas.
   `UiMapAssignment` converts world coordinates to map positions, and our pin tool's formula works
@@ -69,7 +71,8 @@ The disagreements are a review list for the importer.
 
 ### The game: a probe on the beta now, and again at launch
 
-- **The probe** asks the server about all 6,609 quests, as #99, #42 and #112 did on retail:
+- **The probe** asks the server about every quest in `QuestV2` and every CMaNGOS quest it lacks
+  (7,319 on build 70205), as #99, #42 and #112 did on retail:
   `RequestLoadQuestByID`, then `GetTitleForQuestID`, `GetQuestDifficultyLevel`, `GetQuestTagInfo`,
   `IsEliteQuest`, `IsRepeatableQuest` and `GetSuggestedGroupSize`. A second pass asks for the NPCs
   CMaNGOS names as givers, as #112 did, to check they exist in Forever.
@@ -113,8 +116,9 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
   holiday headings.
 - **Code:** the same files. Retail-only features (covenants, renown, the warband, world quests) never
   come up in Forever's data. Check each feature on the Forever client before release.
-- **CurseForge:** Thalid83's Classic files are on the same project, so talk to them before the first
-  Forever file goes up.
+- **CurseForge:** Thalid83's Classic files are on the same project. Release 111.1 (5 October 2026)
+  was the first with Forever's files, uploaded for both Retail and Forever (1.60.1); it's still
+  worth talking to them (see the open questions).
 
 ## Phases (one PR each)
 
@@ -127,7 +131,8 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
    `data/forever`, with spawns converted to map positions. It merges the probe, cache and recorder results, and lists every disagreement for
    review, including the 83 givers and 185 positions above.
 4. **Forever TOC, menus and build** (addon), tested on the beta.
-5. **At launch:** rerun the probe on the live build (a full sweep's step 10), compare, and release.
+5. **At launch:** rerun the probe on the live build (a full sweep's step 10), compare, and release
+   the update. Releases have carried Forever's beta data since 111.1.
 6. **After launch:** keep recording the new content's givers, and look up the rest on Wowhead.
 
 ### Phase 1 results (5 October 2026, beta build 70205, enUS)
@@ -154,7 +159,9 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
   and Blizzard's version wins. 201 of the 1,273 old IDs CMaNGOS lacks answered, all internal:
   "<UNUSED>", "<TXT>", "<NYI>" and test quests.
 - **Tags and recurrence:** 129 dungeon, 115 elite, 17 PvP and 6 raid quests. The quest classification
-  calls 171 quests Recurring, while `IsRepeatableQuest` said no to every quest.
+  calls 171 quests Recurring, while `IsRepeatableQuest` said no to every quest. That proves nothing:
+  the run asked only about quests in `QuestV2`, which leaves out repeatable ones, and on retail
+  `IsRepeatableQuest` also said no to all 386 loaded quests Blizzard's API flags repeatable.
 - **All 1,460 NPCs were named**, 113 at once and the rest on the 1-second re-check, in under 6
   minutes. No `TOOLTIP_DATA_UPDATE` named one. 1,458 names match CMaNGOS, and Forever renamed two:
   8479 Kalaran Windblade is now Velarok Windblade, and 10776 Finkle Einhorn is Pip Quickwit.
@@ -296,6 +303,7 @@ The beta test found Felwood and Winterspring quest givers drawn at the edge of t
     filed under a neighbouring zone are the misses: Tirion Fordring, the Bulwark's NPCs, Cairne
     Bloodhoof.
   - So the old pins come first, and the rules only decide for NPCs without one.
+  - The rules changed again after the probe rerun: see "Three importer fixes" below.
 - **New zones get pins only from the recorder** (or a lookup). CMaNGOS's NPCs are vanilla, and the
   quest cache names no quest giver. Mount Hyjal has no quests yet: the beta answered none filed
   there. Riverglades has one, "Remember That I Love You", started by an item, so it has no giver.
@@ -325,6 +333,118 @@ the importer didn't read all the ones that could place a quest:
 
 The importer's summary prints the start point and giver counts, so a sweep shows when either grows.
 
+### Repeatable quests (5 October 2026)
+
+The importer took only the CMaNGOS quests `QuestV2` lists, and the probe asked only about those. But
+`QuestV2` isn't a list of every quest:
+- **It lists the quests the game records as completed.** Each row's `UniqueBitFlag` is the quest's
+  bit in the character's record of completed quests. Dailies and weeklies are there, as they stay
+  completed until the reset. A repeatable quest is never recorded as completed, so it has no row.
+- **On retail** (12.1.0.69933), none of the 500 quests Blizzard's API flags repeatable is in it,
+  against 98% of all its other quests (29,004 of 29,568), dailies and weeklies included.
+- **On Forever**, 39 of CMaNGOS's 612 repeatable quests are in it, against 3,496 of its 3,633
+  others. So 573 repeatable quests were missing from our data: Argent Dawn and Cenarion Circle
+  turn-ins, the Darkmoon Faire's, the mount exchanges, the shaman's Saptas, "Apprentice Angler".
+- **137 more CMaNGOS quests it lacks** aren't repeatable in CMaNGOS, but most look repeatable in
+  Blizzard's data: 72 Naxxramas tier 3 turn-ins, Lunar Festival and Hallow's End turn-ins, Ahn'Qiraj
+  War signets and battleground mark turn-ins. Retail's API calls 3 of the Lunar Festival ones
+  repeatable. Some may be IDs Forever doesn't use.
+
+What changed (user's decision, 5 October 2026):
+- **The importer keeps CMaNGOS's repeatable quests** without `QuestV2`. Any other CMaNGOS quest it
+  lacks comes in once the game answers for it, as every quest in the cache does. Each kept quest
+  `QuestV2` lacks goes on the review list as "not in the client's QuestV2".
+- **The probe asks about all 710** (#139): 7,319 quests and 1,550 NPCs on build 70205. 65 of the 573
+  and 19 of the 137 are level 1 to 35, which the beta answers now. Most of the rest are level 46 to
+  60.
+- **A repeatable profession quest is repeatable** (type 2) with its profession set, as on retail,
+  not a profession quest (type 32), which would keep a tick after one turn-in. That's 18 of the 573,
+  such as "Membership Card Renewal" and the Felwood salves, plus Goblin Engineering and "Enchanted
+  Thorium Platemail: Volume III". A pin takes the profession icon when every quest on it has a
+  profession, as retail's pin tool does, so Riggle Bassbait's pin ("Master Angler", weekly) shows
+  fishing's.
+
+The result: **5,079 quests** (573 more) and **1,725 pins** (180 more, and 111 existing pins with new
+quests). Darkmoon Faire gets its first quests, its 40 turn-ins, and Reputation (the Commendation
+Signets) and Treasure Map are new headings. 79 of the new quests have no pin, as their givers stand
+inside instances (48 in Ahn'Qiraj), and 101 have no known giver (71 start from an item). The review
+list has 4,650 rows.
+
+The probe can't say whether a quest repeats: on retail, `IsRepeatableQuest` said no to all 386 loaded
+quests the API flags repeatable. So a quest's type comes from CMaNGOS. The recorder notes whether a
+giver offers a quest as repeatable, though the importer doesn't read that yet.
+
+### Probe rerun (5 October 2026, evening, build 70205)
+
+The rerun asked about 4,459 quests in 6½ minutes: the 3,749 that failed the first time, and the 710
+new IDs. 138 answered (6 already in the cache) and 4,321 failed. The NPC pass named the 90 new NPCs.
+- **The beta hasn't opened more.** Only 21 of the 3,749 earlier failures answered.
+- **117 of the 710 new IDs answered:** 94 of the 573 repeatable quests and 23 of the 137 others. At
+  levels 1 to 35, 54 of 84 answered. The cut-off isn't strictly by level: all 32 Commendation Signet
+  quests and some Darkmoon Faire turn-ins answered at level 60.
+- **Failures that say something:**
+  - The 14 mount exchanges (7660–7678, level 1) fail, although the beta answers level 1 quests.
+    Forever probably doesn't have them.
+  - Every battleground quest fails, the ones in `QuestV2` included, so the battlegrounds seem to be
+    closed on the beta.
+  - The Scourge Invasion turn-ins and "Apprentice Angler" fail. They're event quests, perhaps only
+    served while their event runs.
+- **The recorder** gave Zephras Isle its first pins: 7 givers for 10 quests, such as Rorian the
+  Dayseeker and Elatrell Featherlight.
+
+Step 10 then gave **5,109 quests** (30 more) and **1,739 pins** (14 more):
+- **New quests:** 23 of the 137, now that the server answers them, such as Paladin, Shaman and
+  Darkmoon Faire quests, the Ahn'Qiraj War signets and the battleground "Past Victories"; and 7 of
+  Forever's new quests, such as "Conflict at Darkspear Islands".
+- **The server's answers replace CMaNGOS's** for the quests it now knows: titles ("Thunderbrew Lager"
+  is "Thunderbrew"), levels (the rare fish are level 60) and race limits (6 quests).
+- **7 quests have no zone in the server's record**, so they're under Uncategorized, as quest 1782
+  already was: the 6 "Past Victories" quests and "Arena Grandmaster". Each is listed for review.
+- **The review list** has 4,580 rows. "Failed on the beta below level 36" now holds 84, with the mount
+  exchanges, battleground and event quests.
+- **Found while checking the pins:** the Darkmoon Faire's givers in Mulgore are pinned on Desolace
+  (4) and Thunder Bluff (2). They have no old Classic pin, and their quests' heading isn't a zone,
+  so the last rule, the smallest frame that holds the spawn, picks a neighbour whose rectangle
+  reaches into Mulgore.
+
+### Three importer fixes (5 October 2026)
+
+All three came out of the rerun (user's decision: do all three).
+
+1. **Which map a spawn goes on.** Measured as #144 was, on the 884 NPCs with an old pin whose spawn
+   several Era frames hold, with each NPC's own pin left out:
+
+   | Rule after the NPC's own old pin | Right |
+   |---|---|
+   | City, zone, smallest (before) | 796 (90.0%) |
+   | City, zone, then the frame the spawn stands furthest inside | 819 (92.6%) |
+   | Old pins within 100 yards, then city, zone, furthest inside | 867 (98.1%) |
+   | The same, with near-ties (within 0.05) going to the smallest | 868 (98.2%) |
+
+   - The importer uses the last. The old pins within 100 yards are a human answer: Ravenholdt's
+     guards stay on Alterac Mountains, with Fahrad's and Lord Jorach Ravenholdt's old pins.
+   - The near-tie rule keeps the two guards furthest out there, and Golhine the Hooded in Felwood's
+     Talonbranch Glade. Each stands about as far inside a neighbouring zone's frame.
+   - A city also needs the spawn's height: within 50 yards of the heights its old-pinned NPCs stand
+     at. That keeps the Darkmoon Faire at the foot of Thunder Bluff's mesa (height about −8) off the
+     city's map (62 to 177). A margin from the city frame's edge doesn't work instead: at 10% it
+     moves 19 genuine Ironforge, Darnassus and Undercity NPCs out.
+   - **Result:** 31 pins moved, none added or lost. All six Mulgore faire givers go to Mulgore.
+     Kargath's "WANTED" and "KILL ON SIGHT" posters go from Searing Gorge's edge to the Badlands, and
+     the Bulwark's Argent Officer Garush to Tirisfal. Lunar Festival elders go to their towns.
+2. **Zones.** When the server's record names no zone, CMaNGOS's is used. 8 quests leave
+   Uncategorized for Arathi Basin, Warsong Gulch, Stranglethorn Vale and Warrior, each listed for
+   review. Uncategorized keeps 9 quests that neither source places, among them "REUSE ME" (98338),
+   an internal title the junk filter misses.
+3. **Quests the beta refuses.** A quest `QuestV2` lacks rests on CMaNGOS alone. When the beta
+   refused it at level 1 to 35, where it answers nearly everything, it's left out, and it comes back
+   once the server answers it.
+   - That's 28 of #157's repeatable quests: the 14 mount exchanges and 14 battleground turn-ins.
+   - The battleground ones may return when the battlegrounds answer.
+   - The 7 mount vendors' pins go with them.
+
+The result: **5,081 quests** and **1,732 pins**. The review list has 4,580 rows.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -339,6 +459,10 @@ The importer's summary prints the start point and giver counts, so a sweep shows
 - Whether Thalid83 plans a Forever version, and whether their Classic data can be compared.
 - Which old quests that only the game knows Forever really offers. They're later Classic Era
   additions, such as a Warlock "The Binding" chain and Paladin quests numbered 78000 and up.
+- Whether the 39 quests CMaNGOS calls repeatable that `QuestV2` does list really repeat. No quest
+  retail's API flags repeatable is in retail's `QuestV2`, but Forever's lists "Junkboxes Needed"
+  (8249), which retail's API calls repeatable. They keep CMaNGOS's type until the recorder sees them
+  offered.
 
 ## Status
 
@@ -351,6 +475,11 @@ The importer's summary prints the start point and giver counts, so a sweep shows
 - 2026-10-05: the full sweep covers Forever: maintenance.md's step 10 rebuilds its data, and the
   probe's steps are under "In the game" (#145).
 - 2026-10-05: the importer pins quests at the client's start points and counts what Blizzard fills
-  in; the sweep takes in the recorder's notes every time. Next: Zephras Isle's pins from the
-  recorder, a probe rerun when the beta opens levels above 40, and the importer's next pieces
-  (breadcrumbs, mutually exclusive quests, reputation rewards).
+  in; the sweep takes in the recorder's notes every time.
+- 2026-10-05: `QuestV2` leaves out repeatable quests, so the importer keeps CMaNGOS's 573 and the
+  probe (#139) asks about all 710 CMaNGOS quests it lacks (#157); results above.
+- 2026-10-05: the probe rerun and step 10 (#159); results above.
+- 2026-10-05: three importer fixes: spawns' maps by nearby old pins and height, CMaNGOS's zone where
+  the game gives none, and quests the beta refuses left out; results above. Next: a probe rerun once
+  the beta opens levels above 40, more of Zephras Isle from the recorder, and the importer's next
+  pieces (breadcrumbs, mutually exclusive quests, reputation rewards).

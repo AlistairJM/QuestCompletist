@@ -2,8 +2,8 @@
 Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from four sources
 (docs/plans/forever.md, phase 3):
 
-  - the client's tables for -Build: which quests exist (QuestV2), and where some start
-    (QuestPOIBlob and QuestPOIPoint);
+  - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
+    some start (QuestPOIBlob and QuestPOIPoint);
   - the quest cache file Read-ForeverQuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
@@ -14,30 +14,37 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
 The game wins wherever it speaks. Title, level, zone, recurrence and race restrictions come from the
 cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC names come
 from the probe. A quest's givers are CMaNGOS's and the recorder's together. Quests with internal
-titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out, as are
-CMaNGOS quests the client doesn't have.
+titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out.
+QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
+row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
+out until the game answers for it. With no row, a quest the probe asked about that failed at level 1
+to 35, where the beta answers nearly every quest, is left out too, until the game answers for it.
+Every kept quest QuestV2 lacks is listed for review.
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
-            profession, holiday and Forever's other headings; 0 for none, or for an area the
-            client's AreaTable doesn't have. A quest filed under an area named after an instance
-            (Gnomeregan in Dun Morogh) gets the instance's own area; one filed under any other
-            subzone (Valley of Trials) gets its zone, as retail's categories are zones. zone is its
-            name.
+            profession, holiday and Forever's other headings; CMaNGOS's when the game's record
+            has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
+            filed under an area named after an instance (Gnomeregan in Dun Morogh) gets the
+            instance's own area; one filed under any other subzone (Valley of Trials) gets its
+            zone, as retail's categories are zones. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
   class     the addon's class bits, from CMaNGOS or a class heading; 8191 for any.
-  type      64 seasonal, 4 daily, 128 weekly, 32 profession, 2 repeatable or 1, the first that
-            applies. holiday and profession hold the addon's flags.
+  type      64 seasonal, 4 daily, 128 weekly, 2 repeatable, 32 profession or 1, the first that
+            applies, so a repeatable profession quest is repeatable, as on retail. holiday and
+            profession hold the addon's flags.
   prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache.
 Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
 it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
 rectangles and overlap, so a spawn goes on the first of these maps whose frame holds it:
   1. the map our old Classic pins had for that NPC (git history before #89);
-  2. a city;
-  3. the zone its giver's quests are in;
-  4. the smallest.
+  2. the map our old pins put most NPCs within 100 yards on;
+  3. a city, if the spawn stands within 50 yards of the heights of the NPCs our old pins have there;
+  4. the zone its giver's quests are in;
+  5. the one the spawn stands furthest inside, measured from the frame's nearest edge, or the
+     smallest of those within 0.05 of that.
 Only maps Classic Era (-EraBuild) already had are used, as CMaNGOS's NPCs can't stand in Forever's new
 zones, whose frames reach over old ones (Mount Hyjal's covers parts of Felwood and Winterspring).
 Givers inside dungeons get no pin.
@@ -157,13 +164,45 @@ $frames = @(Get-ClientTable 'UiMapAssignment' | Where-Object { $uiMapType[[int]$
 } | Sort-Object Area)
 
 $cityMaps = @{ 1453 = $true; 1454 = $true; 1455 = $true; 1456 = $true; 1457 = $true; 1458 = $true }
+$cityHeights = @{}
+$oldPinSpots = @{}
+
+# How far inside a frame a spawn stands: its distance to the nearest edge, as a share of the frame.
+function Get-Centrality($frame, [double]$x, [double]$y) {
+    $fx = ($frame.MaxY - $y) / ($frame.MaxY - $frame.MinY)
+    $fy = ($frame.MaxX - $x) / ($frame.MaxX - $frame.MinX)
+    return [Math]::Min([Math]::Min($fx, 1 - $fx), [Math]::Min($fy, 1 - $fy))
+}
+
+# Of the frames that hold a spawn, the map our old pins put most NPCs within 100 yards of it on.
+function Get-NearbyOldPinMap($holding, [int]$map, [double]$x, [double]$y) {
+    $votes = @{}
+    $cellX = [Math]::Floor($x / 100); $cellY = [Math]::Floor($y / 100)
+    foreach ($i in -1, 0, 1) {
+        foreach ($j in -1, 0, 1) {
+            foreach ($spot in $oldPinSpots["$map|$($cellX + $i)|$($cellY + $j)"]) {
+                if (($spot.X - $x) * ($spot.X - $x) + ($spot.Y - $y) * ($spot.Y - $y) -gt 10000) { continue }
+                foreach ($uiMap in $spot.UiMaps) { $votes[$uiMap] = 1 + [int]$votes[$uiMap] }
+            }
+        }
+    }
+    $best = $null; $bestVotes = 0
+    foreach ($frame in $holding) { if ([int]$votes[$frame.UiMap] -gt $bestVotes) { $best = $frame; $bestVotes = [int]$votes[$frame.UiMap] } }
+    return $best
+}
 
 # The map position of a CMaNGOS spawn: on -OnUiMap's frame if given. Otherwise the frames that hold
-# it, of maps Classic Era had, are tried in this order: a map -OldMaps has (our old Classic pins' maps
-# for the giver), a city, one of -Zones (the zones the giver's quests are in), then the smallest. The
-# old pins come first because the others guess wrong for a giver whose quests are filed under a
-# neighbouring zone, like Tirion Fordring's.
-function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $OldMaps = $null, [int]$OnUiMap = 0) {
+# it, of maps Classic Era had, are tried in this order:
+#   1. a map -OldMaps has (our old Classic pins' maps for the giver);
+#   2. the map our old pins put most NPCs within 100 yards on;
+#   3. a city whose old pins' NPCs stand within 50 yards of the spawn's height -Z;
+#   4. one of -Zones (the zones the giver's quests are in);
+#   5. the one the spawn stands furthest inside, with any within 0.05 of that counting as a tie that
+#      the smallest wins.
+# The old pins come first because the others guess wrong for a giver whose quests are filed under a
+# neighbouring zone, like Tirion Fordring's. A frame is a rectangle, so a city's reaches past its
+# walls: the height keeps the Darkmoon Faire at the foot of Thunder Bluff's mesa off the city's map.
+function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $OldMaps = $null, [int]$OnUiMap = 0, [double]$Z = [double]::NaN) {
     $holding = @($frames | Where-Object { $_.Map -eq $map -and $x -ge $_.MinX -and $x -le $_.MaxX -and $y -ge $_.MinY -and $y -le $_.MaxY })
     if ($OnUiMap) {
         $chosen = $holding | Where-Object { $_.UiMap -eq $OnUiMap } | Select-Object -First 1
@@ -171,9 +210,16 @@ function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $O
         $old = @($holding | Where-Object { -not $_.New })
         $chosen = $null
         if ($OldMaps) { $chosen = $old | Where-Object { $OldMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
-        if (-not $chosen) { $chosen = $old | Where-Object { $cityMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
+        if (-not $chosen) { $chosen = Get-NearbyOldPinMap $old $map $x $y }
+        if (-not $chosen) {
+            $chosen = $old | Where-Object { $cityMaps.ContainsKey($_.UiMap) -and
+                ([double]::IsNaN($Z) -or -not $cityHeights[$_.UiMap] -or ($Z -ge $cityHeights[$_.UiMap].Min - 50 -and $Z -le $cityHeights[$_.UiMap].Max + 50)) } | Select-Object -First 1
+        }
         if (-not $chosen -and $Zones) { $chosen = $old | Where-Object { $Zones.ContainsKey($_.Zone) } | Select-Object -First 1 }
-        if (-not $chosen) { $chosen = $old | Select-Object -First 1 }
+        if (-not $chosen -and $old.Count) {
+            $deepest = ($old | ForEach-Object { Get-Centrality $_ $x $y } | Measure-Object -Maximum).Maximum
+            $chosen = $old | Where-Object { (Get-Centrality $_ $x $y) -ge $deepest - 0.05 } | Select-Object -First 1
+        }
     }
     if (-not $chosen) { return $null }
     $fx = ($chosen.MaxY - $y) / ($chosen.MaxY - $chosen.MinY)
@@ -209,7 +255,7 @@ try {
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
     foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31'), @('creature_questrelation', '1,2'),
-            @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6'), @('gameobject', '1,2,3,5,6'),
+            @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'))) {
         $dump[$read[0]] = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $sql $read[0] $read[1])
@@ -241,20 +287,47 @@ $questHoliday = @{}
 foreach ($line in $dump.game_event_quest) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $questHoliday[[int]$f[0]] = $flag } }
 $spawnHoliday = @{}
 foreach ($line in $dump.game_event_creature) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $spawnHoliday[[int]$f[0]] = $flag } }
-$npcSpawns = @{}; $npcHoliday = @{}
+$oldPins = New-Object System.Collections.Generic.List[object]
+$oldPinMaps = @{}
+$mapId = 0
+foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
+    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
+    if ($mapId -lt 1411 -or $mapId -gt 1459 -or $line -notmatch '^\t\t\{\d+,(\d+),".*",([-0-9.]+),([-0-9.]+),\{([0-9,]*)\}') { continue }
+    $npc = [int]$Matches[1]
+    $oldPins.Add([pscustomobject]@{ UiMap = $mapId; Npc = $npc; X = [decimal]$Matches[2]; Y = [decimal]$Matches[3]
+        Quests = @($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ }) })
+    if (-not $oldPinMaps.ContainsKey($npc)) { $oldPinMaps[$npc] = @{} }
+    $oldPinMaps[$npc][$mapId] = $true
+}
+$npcSpawns = @{}; $npcHoliday = @{}; $oldPinNpcSpawns = @{}
 foreach ($line in $dump.creature) {
     $f = $line.Split("`t")
     $npc = [int]$f[1]
+    $spawn = [pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }
+    if ($oldPinMaps.ContainsKey($npc)) { $oldPinNpcSpawns[$npc] += @($spawn) }
     if (-not $starterNpcs[$npc]) { continue }
-    $npcSpawns[$npc] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4] })
+    $npcSpawns[$npc] += @($spawn)
     $holiday = $spawnHoliday[[int]$f[0]]
     if (-not $npcHoliday.ContainsKey($npc)) { $npcHoliday[$npc] = $holiday } elseif ($npcHoliday[$npc] -ne $holiday) { $npcHoliday[$npc] = $null }
+}
+foreach ($npc in $oldPinNpcSpawns.Keys) {
+    foreach ($spawn in $oldPinNpcSpawns[$npc]) {
+        $maps = @($frames | Where-Object { $oldPinMaps[$npc].ContainsKey($_.UiMap) -and $_.Map -eq $spawn.Map -and
+            $spawn.X -ge $_.MinX -and $spawn.X -le $_.MaxX -and $spawn.Y -ge $_.MinY -and $spawn.Y -le $_.MaxY } | Select-Object -ExpandProperty UiMap -Unique)
+        if (-not $maps.Count) { continue }
+        $oldPinSpots["$($spawn.Map)|$([Math]::Floor($spawn.X / 100))|$([Math]::Floor($spawn.Y / 100))"] += @([pscustomobject]@{ X = $spawn.X; Y = $spawn.Y; UiMaps = $maps })
+        foreach ($uiMap in ($maps | Where-Object { $cityMaps.ContainsKey($_) })) {
+            $heights = $cityHeights[$uiMap]
+            if (-not $heights) { $cityHeights[$uiMap] = [pscustomobject]@{ Min = $spawn.Z; Max = $spawn.Z }; continue }
+            $heights.Min = [Math]::Min($heights.Min, $spawn.Z); $heights.Max = [Math]::Max($heights.Max, $spawn.Z)
+        }
+    }
 }
 $objectSpawns = @{}
 foreach ($line in $dump.gameobject) {
     $f = $line.Split("`t")
     $object = [int]$f[1]
-    if ($starterObjects[$object]) { $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4] }) }
+    if ($starterObjects[$object]) { $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }) }
 }
 $cmNpcName = @{}; foreach ($line in $dump.creature_template) { $f = $line.Split("`t"); if ($starterNpcs[[int]$f[0]]) { $cmNpcName[[int]$f[0]] = $f[1] } }
 $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Split("`t"); if ($starterObjects[[int]$f[0]]) { $objectName[[int]$f[0]] = $f[1] } }
@@ -285,7 +358,7 @@ function Add-Review([string]$kind, $quest, $other, [string]$detail) {
     $review.Add([pscustomobject]@{ Kind = $kind; Quest = $quest; Other = $other; Detail = $detail })
 }
 
-$ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] }) | Sort-Object -Unique)
+$ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] -or ($cmQuest[$_].Special -band 1) }) | Sort-Object -Unique)
 $records = @{}
 $refiled = 0
 $gameGivers = 0
@@ -293,7 +366,12 @@ foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
     if ($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) { Add-Review 'left out: internal title' $id '' $title; continue }
-    $category = if ($c) { [int]$c.sort } else { $m.Zone }
+    if (-not $c -and -not $inClient[$id] -and $probeResult[$id] -eq 'fail' -and $m.Level -ge 1 -and $m.Level -le 35) {
+        Add-Review 'left out: failed on the beta below level 36' $id '' "$title (not in QuestV2)"
+        continue
+    }
+    $category = if ($c -and [int]$c.sort) { [int]$c.sort } elseif ($m) { $m.Zone } else { 0 }
+    if ($c -and -not [int]$c.sort -and $category) { Add-Review "no zone in the game's record, so CMaNGOS's" $id $category $title }
     if ($category -ne 0 -and -not $sortName.ContainsKey($category)) {
         Add-Review 'zone not in the client, so Uncategorized' $id $category $title
         $category = 0
@@ -307,6 +385,10 @@ foreach ($id in $ids) {
     if (-not $c) {
         if ($probeResult[$id] -eq 'fail' -and $m.Level -le 35) { Add-Review 'failed on the beta below level 36' $id '' $title }
         else { Add-Review 'not confirmed by the game yet' $id '' $title }
+    }
+    if (-not $inClient[$id]) {
+        $cmangosSays = if (-not $m) { 'not in CMaNGOS' } elseif ($m.Special -band 1) { 'CMaNGOS: repeatable' } else { 'CMaNGOS: not repeatable' }
+        Add-Review "not in the client's QuestV2" $id '' "$title ($cmangosSays)"
     }
     if ($c -and $c.giver) {
         $gameGivers++
@@ -334,7 +416,7 @@ foreach ($id in $ids) {
     }
     $recurs = if ($c) { $c.recurs } else { $null }
     $type = if ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 }
-        elseif ($profession) { 32 } elseif ($m -and ($m.Special -band 1)) { 2 } else { 1 }
+        elseif ($m -and ($m.Special -band 1)) { 2 } elseif ($profession) { 32 } else { 1 }
 
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $(if ($c) { [int]$c.level } else { $m.Level })
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
@@ -352,19 +434,6 @@ foreach ($q in $records.Values) {
 
 foreach ($npc in $gameNpcName.Keys) {
     if ($cmNpcName.ContainsKey($npc) -and $cmNpcName[$npc] -ne $gameNpcName[$npc]) { Add-Review 'NPC renamed' '' $npc "$($cmNpcName[$npc]) is now $($gameNpcName[$npc])" }
-}
-
-$oldPins = New-Object System.Collections.Generic.List[object]
-$oldPinMaps = @{}
-$mapId = 0
-foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
-    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
-    if ($mapId -lt 1411 -or $mapId -gt 1459 -or $line -notmatch '^\t\t\{\d+,(\d+),".*",([-0-9.]+),([-0-9.]+),\{([0-9,]*)\}') { continue }
-    $npc = [int]$Matches[1]
-    $oldPins.Add([pscustomobject]@{ UiMap = $mapId; Npc = $npc; X = [decimal]$Matches[2]; Y = [decimal]$Matches[3]
-        Quests = @($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ }) })
-    if (-not $oldPinMaps.ContainsKey($npc)) { $oldPinMaps[$npc] = @{} }
-    $oldPinMaps[$npc][$mapId] = $true
 }
 
 $giverZones = @{}
@@ -390,7 +459,7 @@ function Get-GiverSpots([string]$kind, [int]$id) {
     $spawns = if ($kind -eq 'GameObject') { $objectSpawns[$id] } else { $npcSpawns[$id] }
     $spots = @()
     foreach ($spawn in $spawns) {
-        $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $giverZones["${kind}:$id"] $(if ($kind -ne 'GameObject') { $oldPinMaps[$id] })
+        $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $giverZones["${kind}:$id"] $(if ($kind -ne 'GameObject') { $oldPinMaps[$id] }) -Z $spawn.Z
         if (-not $spot) { continue }
         $near = $spots | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
         if (-not $near) { $spots += $spot }
@@ -480,7 +549,7 @@ foreach ($id in ($records.Keys | Sort-Object)) {
 foreach ($pin in $pins.Values) {
     $onPin = @($pin.quests | ForEach-Object { $records[$_] })
     $pin.icon = if (-not ($onPin | Where-Object { $_.type -ne 64 })) { 5 }
-        elseif (-not ($onPin | Where-Object { $_.type -ne 32 })) { 3 }
+        elseif (-not ($onPin | Where-Object { -not $_.profession })) { 3 }
         elseif (-not ($onPin | Where-Object { $_.class -eq 8191 })) { 9 } else { 1 }
     $pin.quests = @($pin.quests | Sort-Object)
 }

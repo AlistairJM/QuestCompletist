@@ -8,7 +8,7 @@ Type **/qc** (or **/questc**) to open it, or set a key binding.
 
 Quest Completist's main releases are made for **Retail** and, since 111.1, **WoW: Forever**. One download covers both: each game loads its own quest list, menus and map pins.
 
-On **WoW: Forever**, it knows around 4,500 quests and places around 1,500 quest-giver pins. Its list was built from the Forever beta, so it's still growing: Forever's new quests above level 40, and the quest givers in its new zones, will follow in updates. Retail-only features, like covenants, renown, the Warband and world quests, don't apply there.
+On **WoW: Forever**, it knows around 5,100 quests and places around 1,700 quest-giver pins. Its list was built from the Forever beta, so it's still growing: Forever's new quests above level 40, and the quest givers in its new zones, will follow in updates. Retail-only features, like covenants, renown, the Warband and world quests, don't apply there.
 
 The **Files** tab also has versions for other editions of the game, such as Classic, created and maintained by **Thalid83** (Thanks!). If you play one of those, pick the file for your game version there. They're built separately, so some features on this page may work differently or not be available.
 
