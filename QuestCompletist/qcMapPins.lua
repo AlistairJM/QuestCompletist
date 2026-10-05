@@ -8,12 +8,13 @@ local QC_ICON_NORMAL, QC_ICON_COMPLETE = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE
 local QC_PIN_ICONS, QC_PIN_ICON_RANK = QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK
 local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
-local qcIsUnavailable, qcQuestName = QC.qcIsUnavailable, QC.qcQuestName
+local qcIsUnavailable, qcQuestName, qcMaskAllows = QC.qcIsUnavailable, QC.qcQuestName, QC.qcMaskAllows
 local qcKnownHolidayFlags, qcUpdateActiveHolidays = QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays
 local QC_MAP_FILTER, qcBuildQuestFilter, simulateExclusiveCompletions = QC.QC_MAP_FILTER, QC.qcBuildQuestFilter, QC.simulateExclusiveCompletions
-local qcNpcName, qcRequestPinNpcNames = QC.qcNpcName, QC.qcRequestPinNpcNames
+local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
-local qcQuestStatus, qcTooltipBar = QC.qcQuestStatus, QC.qcTooltipBar
+local qcQuestStatus, qcTooltipBar, qcTooltipDivider = QC.qcQuestStatus, QC.qcTooltipBar, QC.qcTooltipDivider
+local qcFactionName = QC.qcFactionName
 
 local qcMapTooltip
 -- The pin under the mouse, so names arriving later can redraw its tooltip.
@@ -110,6 +111,10 @@ local function qcPinGiverName(pinData)
     end
 end
 
+local function qcTomTomLoaded()
+    return C_AddOns.IsAddOnLoaded("TomTom") and TomTom and TomTom.AddWaypoint and true
+end
+
 local function qcHideTooltipDecorations()
     qcMapTooltip.qcIcons = qcMapTooltip.qcIcons or {}
     for _, icon in ipairs(qcMapTooltip.qcIcons) do
@@ -117,6 +122,7 @@ local function qcHideTooltipDecorations()
     end
     qcMapTooltip.qcIconsUsed = 0
     qcTooltipBar.HideAll(qcMapTooltip)
+    qcTooltipDivider.HideAll(qcMapTooltip)
 end
 
 local function qcAcquireTooltipIcon()
@@ -150,20 +156,104 @@ local function qcAddMapTooltipLine(left, right, leftFont, wrap)
     return leftText, rightText
 end
 
-local function qcSetMapTooltipLineIcon(leftText, icon)
+local function qcSetMapTooltipLineIcon(leftText, icon, dim)
     if not leftText then return end
     local texture = qcAcquireTooltipIcon()
     qcSetIcon(texture, icon)
+    local shade = dim and 0.5 or 1
+    texture:SetVertexColor(shade, shade, shade)
     texture:ClearAllPoints()
     texture:SetPoint("LEFT", leftText, "LEFT", -6, 0)
     texture:Show()
 end
 
+local function qcAddMapTooltipDivider()
+    local leftText, rightText = qcAddMapTooltipLine(" ", " ")
+    if leftText and rightText then
+        qcTooltipDivider.Show(qcMapTooltip, leftText, rightText)
+    end
+end
+
+-- The client's names for the races, built when first needed.
+local qcRaceNames
+
+local function qcRaceName(token)
+    if not qcRaceNames then
+        qcRaceNames = {}
+        for raceId = 1, 100 do
+            local info = C_CreatureInfo.GetRaceInfo(raceId)
+            if info and info.clientFileString then
+                qcRaceNames[string.upper(info.clientFileString)] = info.raceName
+            end
+        end
+    end
+    return qcRaceNames[token]
+end
+
+local function qcClassName(token)
+    return LOCALIZED_CLASS_NAMES_MALE[token]
+end
+
+-- The races or classes a mask allows, named in the client's language in alphabetical order; nil when
+-- the client names none of them.
+local function qcMaskNames(mask, bits, nameOf)
+    local names = {}
+    for token, flag in pairs(bits) do
+        if BitBand(mask, flag) ~= 0 then
+            names[#names + 1] = nameOf(token)
+        end
+    end
+    if #names == 0 then return nil end
+    table.sort(names)
+    return table.concat(names, ", ")
+end
+
+-- What stands between the character and a quest, in the words of Blizzard's item tooltips; nil when
+-- nothing does. The map hides these quests unless the filters for them are off.
+local function qcPinQuestNeeds(questId)
+    local e = qcQuestDatabase[questId]
+    if not e then return nil end
+    local needs = {}
+    local faction = qcFactionBits[string.upper(UnitFactionGroup("player") or "")]
+    if faction and not qcMaskAllows(e[5], faction) then
+        local alliance, horde = BitBand(e[5], qcFactionBits.ALLIANCE) ~= 0, BitBand(e[5], qcFactionBits.HORDE) ~= 0
+        local only = (alliance and not horde and ITEM_REQ_ALLIANCE) or (horde and not alliance and ITEM_REQ_HORDE)
+        if only then needs[#needs + 1] = only end
+    else
+        local _, race = UnitRace("player")
+        local raceFlag = race and qcRaceBits[string.upper(race)]
+        local races = raceFlag and not qcMaskAllows(e[6], raceFlag) and qcMaskNames(e[6], qcRaceBits, qcRaceName)
+        if races then needs[#needs + 1] = string.format(ITEM_RACES_ALLOWED, races) end
+    end
+    local _, class = UnitClass("player")
+    local classFlag = class and qcClassBits[class]
+    local classes = classFlag and not qcMaskAllows(e[7], classFlag) and qcMaskNames(e[7], qcClassBits, qcClassName)
+    if classes then needs[#needs + 1] = string.format(ITEM_CLASSES_ALLOWED, classes) end
+    if (e[2] or 0) > UnitLevel("player") then
+        needs[#needs + 1] = string.format(ITEM_MIN_LEVEL, e[2])
+    end
+    local prereqId = qcQuestPrereq[questId] or 0
+    if prereqId > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prereqId) then
+        needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcQuestName(prereqId, qcMapTooltipWaiting) or qcL.UNKNOWNQUEST)
+    end
+    local renown = qcRenownLevelRequirements[questId]
+    local renownLevel = type(renown) == "table" and C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel(renown[1])
+    if renownLevel and renownLevel < renown[2] then
+        needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or qcL.UNKNOWNFACTION,
+            string.format(RENOWN_LEVEL_LABEL, renown[2]))
+    end
+    if #needs > 0 then return table.concat(needs, ", ") end
+end
+
+-- A quest that can't be taken yet is greyed, with what stands in the way.
 local function qcAddPinQuestLine(questId, state)
     local icon, colour = qcQuestStatus.Look(questId, state)
-    local leftText = qcAddMapTooltipLine(string.format("    |cff%s%s|r", colour, qcQuestName(questId, qcMapTooltipWaiting)),
-        string.format("|cff808080%d|r", questId))
-    qcSetMapTooltipLineIcon(leftText, icon)
+    local name = qcQuestName(questId, qcMapTooltipWaiting)
+    local needs = (state == qcQuestStatus.TODO or state == qcQuestStatus.RECURRING) and qcPinQuestNeeds(questId)
+    local text = needs and string.format("    |cff9d9d9d%s|r |cff808080(%s)|r", name, needs)
+        or string.format("    |cff%s%s|r", colour, name)
+    local leftText = qcAddMapTooltipLine(text, string.format("|cff808080%d|r", questId))
+    qcSetMapTooltipLineIcon(leftText, icon, needs)
 end
 
 -- One giver's quests: a progress bar when there are two or more to count, then the quests to do
@@ -271,18 +361,25 @@ function qcPinMixin:OnMouseEnter()
 
     for index, giver in ipairs(givers) do
         if index > 1 then
-            qcAddMapTooltipLine(" ")
+            qcAddMapTooltipDivider()
         end
         local npcId = giver.pins[1][2]
         qcAddMapTooltipLine(giver.name, npcId ~= 0 and string.format("|cff808080%d|r", npcId) or nil, GameTooltipHeaderText)
+        local subtitle = npcId ~= 0 and qcNpcSubtitles[npcId]
+        if subtitle then
+            qcAddMapTooltipLine("|cffc0c0c0" .. subtitle .. "|r", nil, GameTooltipTextSmall)
+        end
         qcAddPinQuestsToTooltip(giver.pins)
     end
     if #others > 0 then
         if #givers > 0 then
-            qcAddMapTooltipLine(" ")
+            qcAddMapTooltipDivider()
             qcAddMapTooltipLine("|cff808080" .. qcL.OTHERQUESTS .. "|r")
         end
         qcAddPinQuestsToTooltip(others)
+    end
+    if qcTomTomLoaded() then
+        qcAddMapTooltipLine("|cff808080" .. qcL.PINWAYPOINT .. "|r", nil, GameTooltipTextSmall)
     end
 
     qcMapTooltip:SetMinimumWidth(qcMapTooltip.qcBarsUsed > 0 and QC_PIN_TOOLTIP.barMinWidth or 0)
@@ -293,6 +390,18 @@ function qcPinMixin:OnMouseLeave()
     qcMapTooltipPin = nil
     qcMapTooltip:Hide()
     qcHideTooltipDecorations()
+end
+
+-- Clicking a pin sets a TomTom waypoint to it, as clicking a quest in the list does. The map hands a
+-- pin's clicks to OnMouseClickAction, and its right-clicks to the map itself, to zoom out.
+function qcPinMixin:OnMouseClickAction(button)
+    if button ~= "LeftButton" or IsModifierKeyDown() or not qcTomTomLoaded() then return end
+    local pinData = self.PinData
+    local mapId = pinData and self:GetMap() and self:GetMap():GetMapID()
+    if not mapId then return end
+    local first = pinData.stack and pinData.stack[1] or pinData
+    TomTom:AddWaypoint(mapId, pinData[4] / 100, pinData[5] / 100, {title = qcNpcName(first) or qcQuestName(first[6][1])})
+    TomTom:SetClosestWaypoint()
 end
 
 -- Pressing or letting go of Shift lists or folds the done quests of the pin under the mouse.

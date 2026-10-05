@@ -111,11 +111,56 @@ function qcTooltipBar.Show(tooltip, leftText, rightText, done, total)
 	bar:Show()
 end
 
+-- A thin line across a tooltip line, between sections. The caller adds the line with a right text, so
+-- both ends of the divider sit on it.
+local qcTooltipDivider = {colour = {0.6, 0.6, 0.6, 0.35}}
+
+function qcTooltipDivider.HideAll(tooltip)
+	tooltip.qcDividers = tooltip.qcDividers or {}
+	for _, divider in ipairs(tooltip.qcDividers) do
+		divider:Hide()
+	end
+	tooltip.qcDividersUsed = 0
+end
+
+function qcTooltipDivider.Show(tooltip, leftText, rightText)
+	tooltip.qcDividersUsed = tooltip.qcDividersUsed + 1
+	local divider = tooltip.qcDividers[tooltip.qcDividersUsed]
+	if not divider then
+		divider = tooltip:CreateTexture(nil, "OVERLAY")
+		divider:SetHeight(1)
+		divider:SetColorTexture(unpack(qcTooltipDivider.colour))
+		tooltip.qcDividers[tooltip.qcDividersUsed] = divider
+	end
+	divider:ClearAllPoints()
+	divider:SetPoint("LEFT", leftText, "LEFT")
+	divider:SetPoint("RIGHT", rightText, "RIGHT")
+	divider:Show()
+end
+
 -- The faction's name in the player's language, or the English one from qcFactions.
 local function qcFactionName(factionId)
 	local data = C_Reputation.GetFactionDataByID(factionId)
 	if data and data.name and data.name ~= "" then return data.name end
 	return qcFactions[factionId]
+end
+
+-- A renown faction's emblem, written into a line's text and followed by a space; empty for other
+-- factions, and in a game without renown.
+local function qcFactionIconText(factionId)
+	local data = C_MajorFactions and C_MajorFactions.GetMajorFactionData(factionId)
+	if not (data and data.textureKit) then return "" end
+	return string.format("|A:majorfactions_icons_%s512:16:16|a ", data.textureKit)
+end
+
+local function qcAddQuestTooltipDivider()
+	qcQuestInformationTooltip:AddDoubleLine(" ", " ")
+	local line = qcQuestInformationTooltip:NumLines()
+	local leftText = _G["qcQuestInformationTooltipTextLeft" .. line]
+	local rightText = _G["qcQuestInformationTooltipTextRight" .. line]
+	if leftText and rightText then
+		qcTooltipDivider.Show(qcQuestInformationTooltip, leftText, rightText)
+	end
 end
 
 -- Function to update the quest tooltip
@@ -143,6 +188,7 @@ function qcUpdateTooltip(index)
         qcQuestInformationTooltip:SetOwner(qcQuestCompletistUI, "ANCHOR_BOTTOMRIGHT", -30, 500)
         qcQuestInformationTooltip:ClearLines()
         qcTooltipBar.HideAll(qcQuestInformationTooltip)
+        qcTooltipDivider.HideAll(qcQuestInformationTooltip)
         -- Without the quest's data, SetHyperlink leaves the tooltip unable to show at all, even the
         -- lines added after it, so name the quest ourselves until the data arrives.
         if HaveQuestData(questId) then
@@ -151,9 +197,9 @@ function qcUpdateTooltip(index)
             qcQuestInformationTooltip:AddLine(qcQuestName(questId), 1, 1, 1)
             qcQuestInformationTooltip:AddLine(qcL.NODETAILS, 0.5, 0.5, 0.5)
         end
-        qcQuestInformationTooltip:AddLine(" ")
+        qcAddQuestTooltipDivider()
         qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("|cFF69CCF0%d|r", questId))
-        qcQuestInformationTooltip:AddLine(" ")
+        qcAddQuestTooltipDivider()
 
         -- Restore ATT hook if we temporarily replaced it
         if att_HookBackup then
@@ -228,7 +274,7 @@ function qcUpdateTooltip(index)
                 qcQuestInformationTooltip:AddLine("|cFF808080   " .. stringFormat(qcL.LATERQUESTS, #lineQuests - last) .. "|r")
             end
 
-            qcQuestInformationTooltip:AddLine(" ")
+            qcAddQuestTooltipDivider()
         end
 
         -- Prerequisite quest logic
@@ -245,7 +291,7 @@ function qcUpdateTooltip(index)
                 icon, colour = QC_ICON_NORMAL, "ffffff"
             end
             qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDQUEST, stringFormat("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, prereqQuestName))
-            qcQuestInformationTooltip:AddLine(" ")
+            qcAddQuestTooltipDivider()
         end
 		-- Renown and Faction requirements Start
         local renownInfo = qcRenownLevelRequirements[questId]
@@ -257,23 +303,21 @@ function qcUpdateTooltip(index)
                 local factionName = qcFactionName(factionId) or qcL.UNKNOWNFACTION
                 local currentRenownLevel = C_MajorFactions.GetCurrentRenownLevel(factionId)
 
-                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s", COLOUR_DRUID, factionName))
+                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s%s", qcFactionIconText(factionId), COLOUR_DRUID, factionName))
 
                 if currentRenownLevel then
-                    if currentRenownLevel >= requiredRenownLevel then
-                        qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFF00FF00" .. string.format(qcL.RENOWNMET, requiredRenownLevel) .. "|r")
-                    else
-                        qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFFFF0000" .. string.format(qcL.RENOWNNOTMET, requiredRenownLevel) .. "|r")
-                    end
+                    local met = currentRenownLevel >= requiredRenownLevel
+                    qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, string.format("|A:%s:14:14|a |cff%s%d|r",
+                        met and "common-icon-checkmark" or "common-icon-redx", met and "00ff00" or "ff2020", requiredRenownLevel))
                 else
                     qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFFFF0000" .. qcL.DATAUNAVAILABLE .. "|r")
                 end
             elseif type(renownInfo) == "number" then
                 local factionName = qcFactionName(renownInfo) or qcL.UNKNOWNFACTION
-                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s", COLOUR_DRUID, factionName))
+                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s%s", qcFactionIconText(renownInfo), COLOUR_DRUID, factionName))
             end
 
-            qcQuestInformationTooltip:AddLine(" ")
+            qcAddQuestTooltipDivider()
         end
 		-- Renown and Faction requirements End
 
@@ -305,12 +349,12 @@ function qcUpdateTooltip(index)
         end
 
         if hasReputation then
-            qcQuestInformationTooltip:AddLine(" ")
+            qcAddQuestTooltipDivider()
             qcQuestInformationTooltip:AddLine(GetText("COMBAT_TEXT_SHOW_REPUTATION_TEXT"))
 
             for _, factionId in ipairs(factionIds) do
                 qcQuestInformationTooltip:AddDoubleLine(
-                    "  " .. (qcFactionName(factionId) or tostring(factionId)),
+                    "  " .. qcFactionIconText(factionId) .. (qcFactionName(factionId) or tostring(factionId)),
                     COLOUR_DRUID .. stringFormat(qcL.REPAMOUNT, reputationEntries[factionId])
                 )
             end
@@ -347,4 +391,5 @@ function QC.IsTooltipQuest(questId)
 end
 
 QC.qcQuestStatus = qcQuestStatus
-QC.qcTooltipBar = qcTooltipBar
+QC.qcTooltipBar, QC.qcTooltipDivider = qcTooltipBar, qcTooltipDivider
+QC.qcFactionName = qcFactionName
