@@ -8,19 +8,27 @@ C_QuestInfoSystem.GetQuestClassification says Recurring (5), Normal (7) or anoth
 means daily or weekly: none of the 3,309 quests the API flags daily or weekly answered Normal, and
 all 291 it flags repeatable and nothing else did, including 100 typed repeatable for years. So:
 
-  API flags                       Recurring   Normal       not loaded, or another class
-  weekly (with daily or not)      128         left alone   128
-  daily (with repeatable or not)  4           left alone   4
-  repeatable only                 left alone  2            2
-  none, or 404                    128         left alone   left alone
+  API flags                       Recurring   Normal               another class        not loaded
+  weekly (with daily or not)      128         left alone           128                  128
+  daily (with repeatable or not)  4           left alone           4                    4
+  repeatable only                 left alone  2                    2                    2
+  none, or 404                    128         2 if not in QuestV2  2 if not in QuestV2  left alone
 
 A recurring quest the API doesn't flag is most likely weekly: the API flags nearly every daily but
 leaves many weeklies unflagged, and of the 100 such quests already typed daily or weekly in October
-2026, 85 were weekly. A quest the API cache hasn't fetched is left alone. See
-docs\plans\quest-types.md.
+2026, 85 were weekly.
+
+The client's QuestV2 table lists the quests the game can record as done, so it leaves out repeatable
+ones: none of the 500 the API flags repeatable are in it, against 98% of the rest, and the rest it
+leaves out are repeatables the API doesn't flag, such as Alterac Valley's supply turn-ins and the
+Darkmoon Faire's decks. So a quest the server knows (the probe loaded it) that QuestV2 leaves out is
+repeatable. The table must be the probe's build, QuestV2-<build>.csv, downloaded when missing: a
+quest added since would look left out. Task quests are left alone, and so is a quest the API cache
+hasn't fetched. See docs\plans\quest-types.md.
 
 Input: a copy of the SavedVariables file holding qcQuestTypeProbeResults (WoW drops it from the
-live file once the probe is no longer in the TOC), and the API cache in quest_api_cache.
+live file once the probe is no longer in the TOC), the API cache in quest_api_cache, and
+QuestV2CliTask.csv (task quests).
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -29,6 +37,7 @@ param(
     [string]$ProbeResults = (Join-Path $PSScriptRoot 'quest_type_probe_results.lua')
 )
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
 
 if (-not (Test-Path $ProbeResults)) { throw "Probe results not found at $ProbeResults" }
@@ -38,6 +47,19 @@ foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "\d+\|[^|]*\|(\d+),[01
     if ($m.Groups[3].Value -eq "1") { $classification[$m.Groups[1].Value] = [int]$m.Groups[2].Value }
 }
 if (-not $classification.Count) { throw "No loaded answers in $ProbeResults" }
+$probeBuild = [regex]::Match($probe, '\["client"\] = "([^"]+)"').Groups[1].Value
+if (-not $probeBuild) { throw "No client build in $ProbeResults" }
+
+$clientQuests = "$ToolsDir\QuestV2-$probeBuild.csv"
+if (-not (Test-Path $clientQuests)) {
+    "Downloading QuestV2 for $probeBuild..."
+    Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/QuestV2/csv?build=$probeBuild" -OutFile $clientQuests
+}
+$inClient = @{}
+foreach ($row in Import-Csv $clientQuests) { $inClient[$row.ID] = $true }
+if (-not (Test-Path "$ToolsDir\QuestV2CliTask.csv")) { throw "QuestV2CliTask.csv missing - needed to leave task quests alone" }
+$isTask = @{}
+foreach ($row in Import-Csv "$ToolsDir\QuestV2CliTask.csv") { $isTask[$row.ID] = $true }
 
 # Candidates are the quests typed one-time now, not when the probe ran, so a rerun after an
 # earlier retype finds only new cases.
@@ -62,6 +84,7 @@ foreach ($quest in $quests) {
         elseif ($isDaily) { if (-not $normal) { 4 } }
         elseif ($isRepeatable) { if (-not $recurring) { 2 } }
         elseif ($recurring) { 128 }
+        elseif ($classification.ContainsKey($questId) -and -not $inClient[$questId] -and -not $isTask[$questId]) { 2 }
     if (-not $type) { continue }
     Set-RecordField $quest 'type' $type
     $retyped[$type]++

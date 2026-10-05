@@ -24,9 +24,18 @@ does:
   nothing else answered Normal, 100 of them typed repeatable for years. So Normal says nothing
   against the API's repeatable flag.
 - **Blizzard's quest API**: `is_daily`, `is_weekly` and `is_repeatable`. It leaves many weeklies
-  unflagged, and has no record (404) of many recent and removed quests.
-- Neither source can show a quest is one-time, so that call is judgement: the quest's name, zone
-  and questline.
+  unflagged, misses some repeatables, and has no record (404) of many recent and removed quests.
+- **The client's `QuestV2` table** lists the quests the game can record as done.
+  - It leaves out repeatable quests: none of the 500 the API flags repeatable are in it, against 98%
+    of the rest.
+  - The rest it leaves out are repeatables the API doesn't flag, such as Alterac Valley's supply
+    turn-ins and the Darkmoon Faire's decks. So a quest it leaves out, which the server still knows
+    (the probe loaded it), is repeatable.
+  - A quest it lists isn't repeatable. It's one-time, daily or weekly.
+- Neither the game nor the API can show a quest is one-time. With the quest in `QuestV2`, the API
+  flagging nothing and the game saying Normal, it's one-time unless it recurs by a system of its
+  own, such as emissary bounties, Legion Assaults, Special Assignments, crafting orders and Delves.
+  That call is judgement: the quest's name, zone and questline.
 
 ## Done
 
@@ -37,6 +46,7 @@ does:
 | #44 | 132 | Typed daily or weekly, but one-time by nature: Legion profession questlines, reputation milestones, pet battle introduction, dungeon and raid story quests. Judgement, by family. It left 346 of the 478 the game calls Normal: 202 that recur on a schedule, and 144 it couldn't place. |
 | #133 | 135 | October 2026, below. |
 | #153 | 587 | October 2026 review, below. |
+| #156 | 603 | October 2026, the last sets, below. |
 
 **#133, October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
 one-time, so its 79 weeklies got a permanent tick: Wintergrasp's, Wrath raids' "… Must Die!",
@@ -88,13 +98,41 @@ so a later sweep retypes new cases the same way:
 Only the type field changed. Completions recorded while these were typed one-time go at the next
 reset: dailies' and weeklies' as before, and repeatables' now with the dailies'.
 
-## Still open (counted October 2026)
+**#156, October 2026: the last sets.** Decided with the user, using the client's `QuestV2` table
+(The sources, above):
+- **511 typed one-time became repeatable.** The server knows them but `QuestV2` leaves them out.
+  `Retype-ProbeRecurring.ps1` has the rule now, against `QuestV2-<build>.csv` for the probe's build.
+  - They include Alterac Valley's supply turn-ins, the Darkmoon Faire's decks, the Ahn'Qiraj and
+    Warlords tier-token quests, Garrison invasions, the Ember Court's favors, Legion dungeon and
+    Emerald Nightmare quests from the order hall table, and Torghast's and the Horrific Visions'
+    quests.
+  - The user's checks agreed: Wowhead marks "Avenger's Breastplate" repeatable, and Wowhead misses
+    the mark on "Irondeep Supplies" and the Darkmoon decks, which the user knows are repeatable.
+  - 2 of the 511 are internal entries already flagged unavailable.
+- **The 326 typed daily or weekly that the game calls Normal**, the rest of #44's set:
+  - **234 stay.**
+    - 118 aren't in `QuestV2`, so they can't be one-time: the Legion raid quests in four copies,
+      paragon caches, the Mechagon disc turn-ins.
+    - 50 are "Conquest's Reward", flagged unavailable in #154.
+    - 50 recur by a system of their own: Special Assignments, emissary bounties, the war efforts
+      and tracking quests.
+    - 16 belong to recurring families: the Legion Assaults (their questlines are weekly), "Peak
+      Precision" (in "Siren Isle Weeklies"), the War Mode slayers, Crafting Orders, Delves and
+      Deephaul Ravine.
+  - **92 became one-time.** `QuestV2` lists them, the API flags nothing, the game says Normal, and
+    Wowhead shows no schedule for any of the 8 the user checked.
+    - 28 raid quests (Manaforge Omega, Liberation of Undermine, The Voidspire, Shadowlands' "Turning
+      the Wheel").
+    - 22 story quests, such as Suramar's "Insurrection" chapters, "Let's Fish!" and "Moments of
+      Reflection".
+    - 20 in the warfront zones (the warfront quests, Arathi Highlands and Darkshore), 8 "Paragon of
+      …" and 6 "WANTED".
+    - 8 others: three pet battle quests, Alterac Valley's anniversary quests, "The Stench of
+      Revenge" and "Rearm, Reuse, Recycle". The last two now match their holiday's other quests.
 
-- **326 typed daily or weekly that the game calls Normal**, the rest of #44's set. Most recur by
-  nature and stay: emissaries, paragon caches and "Supplies from…", Special Assignments,
-  "Conquest's Reward" (retired, and flagged unavailable in #154), warfronts, crafting orders,
-  Delves and tracking quests. Still unsure:
-  - Legion raid quests in four copies (The Nighthold, Tomb of Sargeras, Antorus);
-  - recent raid quests (Manaforge Omega, Liberation of Undermine, The Voidspire);
-  - warfront intro quests, and a few pet battle quests;
-  - "Let's Fish!" (Mechagon) and "Moments of Reflection" (Antoran Wastes).
+Only the type field changed.
+
+## Still open
+
+Nothing, as of October 2026. A sweep's new quests go through `Retype-ProbeRecurring.ps1` after
+[the probe](../maintenance.md#in-the-game). What it leaves alone needs a review like the ones above.
