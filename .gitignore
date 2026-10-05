@@ -23,3 +23,4 @@ tools/*
 !tools/*.ps1
 !tools/Test-QuestReachability.lua
 !tools/Test-Localization.lua
+!tools/ForeverProbe/

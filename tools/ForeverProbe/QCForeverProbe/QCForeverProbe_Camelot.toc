@@ -1,0 +1,21 @@
+## Interface: 16001, 120100
+## Title: QC Forever probe
+## Notes: Gathers quest and NPC data from WoW: Forever for Quest Completist (docs/plans/forever.md).
+## SavedVariables: QCForeverProbeDB
+## X-Probe-TOC: camelot
+
+LoadTest\allow_camelot.lua [AllowLoadGameType camelot]
+LoadTest\allow_mainline.lua [AllowLoadGameType mainline]
+LoadTest\allow_standard.lua [AllowLoadGameType standard]
+LoadTest\allow_classic.lua [AllowLoadGameType classic]
+LoadTest\allow_vanilla.lua [AllowLoadGameType vanilla]
+LoadTest\allow_forever.lua [AllowLoadGameType forever]
+LoadTest\exclude_camelot.lua [ExcludeLoadGameType camelot]
+LoadTest\exclude_mainline.lua [ExcludeLoadGameType mainline]
+LoadTest\exclude_standard.lua [ExcludeLoadGameType standard]
+LoadTest\exclude_classic.lua [ExcludeLoadGameType classic]
+LoadTest\exclude_vanilla.lua [ExcludeLoadGameType vanilla]
+LoadTest\exclude_forever.lua [ExcludeLoadGameType forever]
+QuestIDs.lua
+NpcIDs.lua
+QCForeverProbe.lua
