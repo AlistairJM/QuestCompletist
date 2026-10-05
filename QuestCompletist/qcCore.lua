@@ -1633,9 +1633,18 @@ function qcQuestStatus.IconText(icon, size)
 		coords[1] * 64, coords[2] * 64, coords[3] * 64, coords[4] * 64)
 end
 
--- A progress bar on a tooltip line whose right text is the count. Its ends are round: a circle of
--- the bar's colour centred on each end, so half of it sticks out.
-local qcTooltipBar = {height = 6, done = {0.1, 0.85, 0.1}, left = {0.2, 0.2, 0.25}}
+-- A progress bar on a tooltip line whose right text is the count, filled with Blizzard's own bar
+-- fill. Its ends are round: a circle of the bar's fill or background centred on each end, so half
+-- of it sticks out.
+local qcTooltipBar = {height = 6, fill = "ui-frame-bar-fill-green", left = {0.2, 0.2, 0.25}}
+
+function qcTooltipBar.Paint(cap, filled)
+	if filled then
+		cap:SetAtlas(qcTooltipBar.fill)
+	else
+		cap:SetColorTexture(unpack(qcTooltipBar.left))
+	end
+end
 
 function qcTooltipBar.HideAll(tooltip)
 	tooltip.qcBars = tooltip.qcBars or {}
@@ -1662,8 +1671,7 @@ function qcTooltipBar.Show(tooltip, leftText, rightText, done, total)
 	if not bar then
 		bar = CreateFrame("StatusBar", nil, tooltip)
 		bar:SetHeight(qcTooltipBar.height)
-		bar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
-		bar:SetStatusBarColor(unpack(qcTooltipBar.done))
+		bar:SetStatusBarTexture(qcTooltipBar.fill)
 		local background = bar:CreateTexture(nil, "BACKGROUND")
 		background:SetAllPoints()
 		background:SetColorTexture(unpack(qcTooltipBar.left))
@@ -1676,8 +1684,8 @@ function qcTooltipBar.Show(tooltip, leftText, rightText, done, total)
 	bar:SetPoint("RIGHT", rightText, "LEFT", -8 - qcTooltipBar.height / 2, 0)
 	bar:SetMinMaxValues(0, total)
 	bar:SetValue(done)
-	bar.leftCap:SetColorTexture(unpack(done > 0 and qcTooltipBar.done or qcTooltipBar.left))
-	bar.rightCap:SetColorTexture(unpack(done >= total and qcTooltipBar.done or qcTooltipBar.left))
+	qcTooltipBar.Paint(bar.leftCap, done > 0)
+	qcTooltipBar.Paint(bar.rightCap, done >= total)
 	bar:Show()
 end
 
