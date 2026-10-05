@@ -120,8 +120,8 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
 2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`, #141): decodes the cache records, checked
    against CMaNGOS for the quests both have.
-3. **CMaNGOS importer** (tool): turns the dump into `data/forever`, with spawns converted to map
-   positions. It merges the probe, cache and recorder results, and lists every disagreement for
+3. **CMaNGOS importer** (tool, `tools/Import-ForeverData.ps1`, #142): turns the dump into
+   `data/forever`, with spawns converted to map positions. It merges the probe, cache and recorder results, and lists every disagreement for
    review, including the 83 givers and 185 positions above.
 4. **Forever TOC, menus and build** (addon), tested on the beta.
 5. **At launch:** rerun the probe on the live build, compare, and release.
@@ -195,6 +195,40 @@ seconds):
   for 1,743, and the follow-up quest for 746 of 795. The differences are Blizzard's, such as a cooking
   quest filed under Cooking, or Forever's new follow-ups such as 98298 after quest 99.
 
+### Phase 3: the importer (5 October 2026)
+
+`tools/Import-ForeverData.ps1` builds `data/forever/quests.jsonl` and `pins.jsonl` from four sources:
+the client's `QuestV2`, the quest cache file, CMaNGOS's dump and the probe's saved variables. It
+downloads the dump and any client tables it lacks.
+- **The game wins wherever it speaks.** Title, level, zone, recurrence and race restrictions come
+  from the cache, and recorded spots and NPC names from the probe.
+- **The files use retail's fields and conventions** (see the tool's header), so the existing build
+  turns them into Lua. Tried into a scratch folder, it wrote a 267 KB `qcQuestData.lua` and an 87 KB
+  `qcPinDB.lua`, both passing `luac -p`.
+
+From the beta's data (9 seconds, with the same files on a rerun):
+- **4,506 quests:** 1,810 from the game and CMaNGOS, 972 from the game only (mostly Forever's new
+  quests), and 1,724 from CMaNGOS only, which the beta doesn't serve yet. 78 with internal or test
+  titles were left out.
+- **1,541 pins on 48 maps**, 151 of them objects such as wanted posters. The recorder's spots and
+  givers count: the "WANTED: Murkdeep!" poster also offers Forever's new quest 98025.
+- **Category** is Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
+  profession and holiday quests and Forever's own headings (Camping, The High Order, Nightmare
+  Incursions). Phase 4's menu is built on these.
+- **Seasonal quests** get their holiday from CMaNGOS's events, which carry Blizzard's holiday IDs, or
+  from their heading. That gives 146 seasonal quests, 137 of them with a holiday.
+- **Skyborne** has no race bit in the addon yet. The data uses 67108864, and phase 4 adds it to
+  `qcRaceBits`.
+
+Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
+- **Not yet confirmed:** 1,674 quests the game hasn't confirmed yet, and 50 that failed on the beta
+  below level 36 (perhaps not in Forever).
+- **No known giver:** 1,137 quests. 971 are quests only the game knows, 123 start from an item, and
+  CMaNGOS gives no giver for 43.
+- **No pin:** 110 more quests whose givers aren't on a Forever map, being inside dungeons or summoned.
+- **Disagreements:** 80 old pins naming another giver, 167 more than 3 map points from it, 9 zones
+  Blizzard changed, and the 2 renamed NPCs.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -207,10 +241,13 @@ seconds):
 - The interface number at launch, and whether the `_Camelot` suffix stays.
 - Whether retail recognises the `camelot` token. That only matters for a one-TOC layout.
 - Whether Thalid83 plans a Forever version, and whether their Classic data can be compared.
+- Which old quests that only the game knows Forever really offers. They're later Classic Era
+  additions, such as a Warlock "The Binding" chain and Paladin quests numbered 78000 and up.
 
 ## Status
 
 - 2026-10-04 and 05: researched and planned.
 - 2026-10-05: phase 1's probe (#139) ran on the beta; results above.
-- 2026-10-05: phase 2's cache reader (#141) written; results above. Next: phase 3, the CMaNGOS importer, and
-  a probe rerun when the beta opens levels above 40.
+- 2026-10-05: phase 2's cache reader (#141) written; results above.
+- 2026-10-05: phase 3's importer (#142) written; results above. Next: phase 4, Forever's TOC, menus and
+  build, and a probe rerun when the beta opens levels above 40.
