@@ -480,9 +480,14 @@ too and rerun step 10.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
-opens, but leaves it alone while that window is open. If the calendar can't answer, including a day
+opens, but leaves it alone while that window is open. If the calendar can't answer, including a month
 with no events at all, the last answer stands, and until there is one every seasonal quest is shown.
-`/qc holidays` steps the calendar through the next 12 months, then sets it back to the current one.
+A day with no events, in a month that has some, means no holiday is running: retail always has some
+event on, but WoW: Forever's calendar has empty days. `/qc holidays` steps the calendar through the
+next 12 months, then sets it back to the current one.
+
+WoW: Forever's calendar uses Classic's Holidays IDs where they differ from retail's, such as 263 and
+264 for the Darkmoon Faire, so an entry in `qcHolidays` can list both games' IDs.
 
 ## In the game
 

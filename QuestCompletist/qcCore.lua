@@ -214,7 +214,7 @@ qcQuestFactionLevelBits = {
 }
 --[[ Holidays, as the game's calendar reports them ]]--
 -- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
--- calendar event can carry.
+-- calendar event can carry. WoW: Forever's Darkmoon Faire is 263 and 264, from Classic.
 local qcHolidays = {
 	{flag=1, name="Brewfest", eventIDs={372}},
 	{flag=2, name="Children's Week", eventIDs={201}},
@@ -229,7 +229,7 @@ local qcHolidays = {
 	{flag=1024, name="Pilgrim's Bounty", eventIDs={404}},
 	{flag=2048, name="Pirates' Day", eventIDs={398}},
 	{flag=4096, name="Trial of Style", eventIDs={691}},
-	{flag=8192, name="Darkmoon Faire", eventIDs={479}},
+	{flag=8192, name="Darkmoon Faire", eventIDs={479, 263, 264}},
 }
 local qcHolidayFlagByEventID = {}
 local qcKnownHolidayFlags = {}
@@ -264,13 +264,19 @@ local function qcSetCalendarMonth(month, year)
 	return true
 end
 
--- nil when the calendar can't answer. A day with no events at all means it isn't ready, not that
--- no holiday is running.
+-- nil when the calendar can't answer. A month with no events at all means it isn't ready, not that
+-- no holiday is running. A quiet day in a month that has events is a day with no holiday: retail
+-- always has some event, but WoW: Forever's calendar has empty days.
 local function qcReadActiveHolidays()
 	local now = C_DateAndTime.GetCurrentCalendarTime()
 	if not qcSetCalendarMonth(now.month, now.year) then return nil end
 	local numEvents = C_Calendar.GetNumDayEvents(0, now.monthDay)
-	if (numEvents == 0) then return nil end
+	if (numEvents == 0) then
+		for monthDay = 1, C_Calendar.GetMonthInfo(0).numDays do
+			if C_Calendar.GetNumDayEvents(0, monthDay) > 0 then return 0 end
+		end
+		return nil
+	end
 	local nowValue = qcCalendarTimeValue(now)
 	local active = 0
 	for index = 1, numEvents do
