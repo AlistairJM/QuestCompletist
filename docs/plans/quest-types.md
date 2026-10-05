@@ -92,8 +92,8 @@ reset: dailies' and weeklies' as before, and repeatables' now with the dailies'.
 
 - **326 typed daily or weekly that the game calls Normal**, the rest of #44's set. Most recur by
   nature and stay: emissaries, paragon caches and "Supplies from…", Special Assignments,
-  "Conquest's Reward" (not in the API, so maybe removed), warfronts, crafting orders, Delves and
-  tracking quests. Still unsure:
+  "Conquest's Reward" (retired, and flagged unavailable in #154), warfronts, crafting orders,
+  Delves and tracking quests. Still unsure:
   - Legion raid quests in four copies (The Nighthold, Tomb of Sargeras, Antorus);
   - recent raid quests (Manaforge Omega, Liberation of Undermine, The Voidspire);
   - warfront intro quests, and a few pet battle quests;
