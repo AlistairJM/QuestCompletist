@@ -105,7 +105,7 @@
 {"id":114,"name":"The Escape","level":7,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":112}
 {"id":115,"name":"Shadow Magic","level":23,"zone":"Redridge Mountains","category":44,"type":1,"faction":1,"race":0,"class":8191,"prereq":20}
 {"id":116,"name":"Dry Times","level":15,"zone":"Redridge Mountains","category":44,"type":1,"faction":1,"race":0,"class":8191}
-{"id":117,"name":"Thunderbrew Lager","level":15,"zone":"Westfall","category":40,"type":2,"faction":1,"race":0,"class":8191}
+{"id":117,"name":"Thunderbrew","level":15,"zone":"Westfall","category":40,"type":2,"faction":1,"race":0,"class":8191}
 {"id":118,"name":"The Price of Shoes","level":18,"zone":"Redridge Mountains","category":44,"type":1,"faction":1,"race":0,"class":8191}
 {"id":119,"name":"Return to Verner","level":18,"zone":"Redridge Mountains","category":44,"type":1,"faction":1,"race":0,"class":8191,"prereq":118}
 {"id":120,"name":"Messenger to Stormwind","level":14,"zone":"Redridge Mountains","category":44,"type":1,"faction":1,"race":0,"class":8191}
@@ -238,6 +238,7 @@
 {"id":251,"name":"Translate Abercrombie's Note","level":30,"zone":"Duskwood","category":10,"type":1,"faction":1,"race":0,"class":8191,"prereq":160}
 {"id":252,"name":"Translation to Ello","level":30,"zone":"Duskwood","category":10,"type":1,"faction":1,"race":0,"class":8191,"prereq":401}
 {"id":253,"name":"Bride of the Embalmer","level":30,"zone":"Duskwood","category":10,"type":1,"faction":1,"race":0,"class":8191,"prereq":252}
+{"id":254,"name":"Digging Through the Dirt","level":35,"zone":"Duskwood","category":10,"type":1,"faction":1,"race":0,"class":8191}
 {"id":255,"name":"Mercenaries","level":19,"zone":"Loch Modan","category":38,"type":1,"faction":1,"race":0,"class":8191}
 {"id":256,"name":"WANTED: Chok'sul","level":22,"zone":"Loch Modan","category":38,"type":1,"faction":1,"race":0,"class":8191}
 {"id":257,"name":"A Hunter's Boast","level":16,"zone":"Loch Modan","category":38,"type":1,"faction":1,"race":0,"class":8191}
@@ -584,7 +585,7 @@
 {"id":613,"name":"Cracking Maury's Foot","level":44,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"prereq":609}
 {"id":614,"name":"The Captain's Chest","level":51,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":1,"race":0,"class":8191}
 {"id":615,"name":"The Captain's Cutlass","level":51,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"prereq":8552}
-{"id":616,"name":"The Haunted Isle","level":37,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":1,"race":0,"class":8191}
+{"id":616,"name":"The Haunted Isle","level":37,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":617,"name":"Akiris by the Bundle","level":43,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191}
 {"id":618,"name":"Facing Negolash","level":50,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"prereq":615}
 {"id":619,"name":"Enticing Negolash","level":52,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191}
@@ -668,7 +669,7 @@
 {"id":699,"name":"Lack of Surplus","level":42,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":698}
 {"id":700,"name":"A King's Tribute","level":31,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"prereq":689}
 {"id":701,"name":"Guile of the Raptor","level":37,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":675}
-{"id":702,"name":"Guile of the Raptor","level":37,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":0,"class":8191,"prereq":701}
+{"id":702,"name":"Guile of the Raptor","level":37,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":701}
 {"id":703,"name":"Barbecued Buzzard Wings","level":40,"zone":"Badlands","category":3,"type":1,"faction":3,"race":0,"class":8191}
 {"id":704,"name":"Agmond's Fate","level":38,"zone":"Uldaman","category":1337,"type":1,"faction":1,"race":0,"class":8191,"prereq":739}
 {"id":705,"name":"Pearl Diving","level":37,"zone":"Badlands","category":3,"type":1,"faction":3,"race":0,"class":8191}
@@ -904,8 +905,8 @@
 {"id":957,"name":"Bashal'Aran","level":13,"zone":"Darkshore","category":148,"type":1,"faction":1,"race":0,"class":8191,"prereq":956}
 {"id":958,"name":"Tools of the Highborne","level":12,"zone":"Darkshore","category":148,"type":1,"faction":1,"race":0,"class":8191}
 {"id":959,"name":"Trouble at the Docks","level":18,"zone":"Wailing Caverns","category":718,"type":1,"faction":3,"race":0,"class":8191}
-{"id":960,"name":"Onu is meditating","level":1,"zone":"Darkshore","category":148,"type":2,"faction":3,"race":0,"class":8191,"prereq":944}
-{"id":961,"name":"Onu is meditating","level":1,"zone":"Darkshore","category":148,"type":2,"faction":1,"race":0,"class":8191,"prereq":949}
+{"id":960,"name":"Onu is Meditating","level":1,"zone":"Darkshore","category":148,"type":2,"faction":3,"race":0,"class":8191,"prereq":944}
+{"id":961,"name":"Onu is Meditating","level":1,"zone":"Darkshore","category":148,"type":2,"faction":1,"race":0,"class":8191,"prereq":949}
 {"id":962,"name":"Serpentbloom","level":18,"zone":"Wailing Caverns","category":718,"type":1,"faction":2,"race":0,"class":8191}
 {"id":963,"name":"For Love Eternal","level":16,"zone":"Darkshore","category":148,"type":1,"faction":1,"race":0,"class":8191}
 {"id":964,"name":"Skeletal Fragments","level":57,"zone":"Western Plaguelands","category":28,"type":1,"faction":2,"race":0,"class":8191,"prereq":838}
@@ -1040,6 +1041,7 @@
 {"id":1100,"name":"Lonebrow's Journal","level":34,"zone":"Thousand Needles","category":400,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":1101,"name":"The Crone of the Kraul","level":34,"zone":"Razorfen Kraul","category":491,"type":1,"faction":1,"race":0,"class":8191,"prereq":1100}
 {"id":1102,"name":"A Vengeful Fate","level":34,"zone":"Razorfen Kraul","category":491,"type":1,"faction":2,"race":0,"class":8191}
+{"id":1103,"name":"Call of Water","level":23,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":67109042,"class":64,"prereq":100}
 {"id":1104,"name":"Salt Flat Venom","level":30,"zone":"Thousand Needles","category":400,"type":1,"faction":3,"race":0,"class":8191}
 {"id":1105,"name":"Hardened Shells","level":30,"zone":"Thousand Needles","category":400,"type":1,"faction":3,"race":0,"class":8191}
 {"id":1106,"name":"Martek the Exiled","level":35,"zone":"Thousand Needles","category":400,"type":1,"faction":3,"race":0,"class":8191}
@@ -1225,7 +1227,7 @@
 {"id":1420,"name":"Report to Helgrum","level":40,"zone":"Badlands","category":3,"type":1,"faction":2,"race":0,"class":8191,"prereq":1418}
 {"id":1421,"name":"The Lost Caravan","level":35,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":1,"race":0,"class":8191,"prereq":1396}
 {"id":1422,"name":"Threat From the Sea","level":45,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":699}
-{"id":1423,"name":"The Lost Supplies","level":40,"zone":"Swamp of Sorrows","category":8,"type":2,"faction":1,"race":0,"class":8191}
+{"id":1423,"name":"The Lost Supplies","level":40,"zone":"Swamp of Sorrows","category":8,"type":2,"faction":1,"race":67108941,"class":8191}
 {"id":1424,"name":"Pool of Tears","level":43,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191}
 {"id":1425,"name":"Deliver the Shipment","level":42,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":1,"race":0,"class":8191,"prereq":1398}
 {"id":1426,"name":"Threat From the Sea","level":43,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":1422}
@@ -1243,6 +1245,7 @@
 {"id":1438,"name":"Vahlarriel's Search","level":33,"zone":"Desolace","category":405,"type":1,"faction":1,"race":0,"class":8191,"prereq":1465}
 {"id":1439,"name":"Search for Tyranis","level":33,"zone":"Desolace","category":405,"type":1,"faction":1,"race":0,"class":8191,"prereq":1438}
 {"id":1440,"name":"Return to Vahlarriel","level":33,"zone":"Desolace","category":405,"type":1,"faction":1,"race":0,"class":8191,"prereq":1439}
+{"id":1442,"name":"Seeking the Kor Gem","level":22,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2,"prereq":1653}
 {"id":1444,"name":"Return to Fel'Zerul","level":44,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"prereq":1429}
 {"id":1445,"name":"The Temple of Atal'Hakkar","level":50,"zone":"Sunken Temple","category":1417,"type":1,"faction":2,"race":0,"class":8191,"prereq":1444}
 {"id":1446,"name":"Jammal'an the Prophet","level":53,"zone":"Sunken Temple","category":1417,"type":1,"faction":3,"race":0,"class":8191}
@@ -1355,6 +1358,7 @@
 {"id":1652,"name":"The Tome of Valor","level":25,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2,"prereq":1651}
 {"id":1653,"name":"The Test of Righteousness","level":21,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2,"prereq":1652}
 {"id":1654,"name":"The Test of Righteousness","level":22,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2,"prereq":1653}
+{"id":1655,"name":"Bailor's Ore Shipment","level":22,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2}
 {"id":1656,"name":"A Task Unfinished","level":5,"zone":"Mulgore","category":215,"type":1,"faction":2,"race":0,"class":8191}
 {"id":1657,"name":"Stinking Up Southshore","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16}
 {"id":1658,"name":"Crashing the Wickerman Festival","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":16}
@@ -1419,8 +1423,10 @@
 {"id":1790,"name":"The Symbol of Life","level":12,"zone":"Paladin","category":-141,"type":2,"faction":1,"race":1,"class":2}
 {"id":1791,"name":"The Windwatcher","level":30,"zone":"Warrior","category":-81,"type":1,"faction":3,"race":0,"class":1,"prereq":1719}
 {"id":1792,"name":"Whirlwind Weapon","level":40,"zone":"Warrior","category":-81,"type":1,"faction":3,"race":0,"class":1,"prereq":1713}
+{"id":1793,"name":"The Tome of Valor","level":20,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2}
+{"id":1794,"name":"The Tome of Valor","level":20,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2}
 {"id":1795,"name":"The Binding","level":30,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256,"prereq":1805}
-{"id":1796,"name":"Components for the Enchanted Gold Bloodrobe","level":31,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256}
+{"id":1796,"name":"Components for the Enchanted Gold Bloodrobe","level":31,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256,"prereq":4736}
 {"id":1798,"name":"Seeking Strahad","level":30,"zone":"Warlock","category":-61,"type":1,"faction":1,"race":0,"class":256}
 {"id":1799,"name":"Fragments of the Orb of Orahil","level":40,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256}
 {"id":1800,"name":"Lordaeron Throne Room","level":60,"zone":"Special","category":-284,"type":1,"faction":2,"race":0,"class":8191,"prereq":172}
@@ -1968,7 +1974,7 @@
 {"id":3843,"name":"The Newest Member of the Family","level":47,"zone":"Feralas","category":357,"type":1,"faction":1,"race":0,"class":8191,"prereq":3842}
 {"id":3844,"name":"It's a Secret to Everybody","level":52,"zone":"Un'Goro Crater","category":490,"type":1,"faction":3,"race":0,"class":8191}
 {"id":3845,"name":"It's a Secret to Everybody","level":52,"zone":"Un'Goro Crater","category":490,"type":1,"faction":3,"race":0,"class":8191,"prereq":3844}
-{"id":3861,"name":"CLUCK!","level":1,"zone":"Special","category":-284,"type":2,"faction":1,"race":0,"class":8191}
+{"id":3861,"name":"CLUCK!","level":1,"zone":"Special","category":-284,"type":2,"faction":1,"race":67108941,"class":8191}
 {"id":3881,"name":"Expedition Salvation","level":53,"zone":"Un'Goro Crater","category":490,"type":1,"faction":3,"race":0,"class":8191}
 {"id":3882,"name":"Roll the Bones","level":51,"zone":"Un'Goro Crater","category":490,"type":1,"faction":3,"race":0,"class":8191}
 {"id":3883,"name":"Alien Ecology","level":52,"zone":"Un'Goro Crater","category":490,"type":1,"faction":3,"race":0,"class":8191}
@@ -2448,7 +2454,7 @@
 {"id":5406,"name":"Corruptor's Scourgestones","level":55,"zone":"Western Plaguelands","category":28,"type":2,"faction":3,"race":0,"class":8191}
 {"id":5407,"name":"Invader's Scourgestones","level":55,"zone":"Western Plaguelands","category":28,"type":2,"faction":3,"race":0,"class":8191}
 {"id":5408,"name":"Minion's Scourgestones","level":55,"zone":"Western Plaguelands","category":28,"type":2,"faction":3,"race":0,"class":8191}
-{"id":5421,"name":"Fish in a Bucket","level":1,"zone":"Desolace","category":405,"type":2,"faction":2,"race":0,"class":8191}
+{"id":5421,"name":"Fish in a Bucket","level":25,"zone":"Desolace","category":405,"type":2,"faction":2,"race":0,"class":8191}
 {"id":5441,"name":"Lazy Peons","level":4,"zone":"Durotar","category":14,"type":1,"faction":2,"race":0,"class":8191}
 {"id":5461,"name":"The Human, Ras Frostwhisper","level":60,"zone":"Western Plaguelands","category":28,"type":1,"faction":3,"race":0,"class":8191,"prereq":5384}
 {"id":5462,"name":"The Dying, Ras Frostwhisper","level":60,"zone":"Western Plaguelands","category":28,"type":1,"faction":3,"race":0,"class":8191,"prereq":5461}
@@ -2679,7 +2685,7 @@
 {"id":6136,"name":"The Corpulent One","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191}
 {"id":6141,"name":"Brother Anton","level":39,"zone":"Desolace","category":405,"type":1,"faction":1,"race":0,"class":8191}
 {"id":6142,"name":"Clam Bait","level":35,"zone":"Desolace","category":405,"type":1,"faction":2,"race":0,"class":8191}
-{"id":6143,"name":"Other Fish to Fry ","level":36,"zone":"Desolace","category":405,"type":1,"faction":2,"race":0,"class":8191}
+{"id":6143,"name":"Other Fish to Fry","level":36,"zone":"Desolace","category":405,"type":1,"faction":2,"race":0,"class":8191}
 {"id":6144,"name":"The Call to Command","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191}
 {"id":6145,"name":"The Crimson Courier","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191,"prereq":6144}
 {"id":6146,"name":"Nathanos' Ruse","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191,"prereq":6145}
@@ -3106,7 +3112,7 @@
 {"id":7835,"name":"A Donation of Mageweave","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7836,"name":"A Donation of Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7837,"name":"Additional Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"prereq":7836}
-{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810}
+{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"","category":0,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810}
 {"id":7839,"name":"Vilebranch Hooligans","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7840,"name":"Lard Lost His Lunch","level":49,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7841,"name":"Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
@@ -3176,12 +3182,16 @@
 {"id":7934,"name":"50 Tickets - Darkmoon Storage Box","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7935,"name":"10 Tickets - Last Month's Mutton","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7936,"name":"50 Tickets - Last Year's Mutton","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7937,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7938,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7939,"name":"More Dense Grinding Stones","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7940,"name":"1200 Tickets - Orb of the Darkmoon","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7941,"name":"More Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7942,"name":"More Thorium Widgets","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7943,"name":"More Bat Eyes","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7944,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7945,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7946,"name":"Spawn of Jubjub","level":1,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7961,"name":"Waskily Wabbits!","level":1,"zone":"Elwynn Forest","category":12,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7962,"name":"Wabbit Pelts","level":1,"zone":"Elwynn Forest","category":12,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7981,"name":"1200 Tickets - Amulet of the Darkmoon","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
@@ -3297,11 +3307,11 @@
 {"id":8195,"name":"Zulian, Razzashi, and Hakkari Coins","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8196,"name":"Essence Mangoes","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8201,"name":"A Collection of Heads","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8221,"name":"Rare Fish - Keefer's Angelfish","level":0,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
+{"id":8221,"name":"Rare Fish - Keefer's Angelfish","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
 {"id":8222,"name":"Glowing Scorpid Blood","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":8223,"name":"More Glowing Scorpid Blood","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":8224,"name":"Rare Fish - Dezian Queenfish","level":0,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
-{"id":8225,"name":"Rare Fish - Brownell's Blue Striped Racer","level":0,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
+{"id":8224,"name":"Rare Fish - Dezian Queenfish","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
+{"id":8225,"name":"Rare Fish - Brownell's Blue Striped Racer","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
 {"id":8227,"name":"Nat's Measuring Tape","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8228,"name":"Could I get a Fishing Flier?","level":60,"zone":"Fishing","category":-101,"type":2,"faction":2,"race":0,"class":8191,"profession":16384}
 {"id":8229,"name":"Could I get a Fishing Flier?","level":60,"zone":"Fishing","category":-101,"type":2,"faction":1,"race":0,"class":8191,"profession":16384}
@@ -3562,6 +3572,12 @@
 {"id":8560,"name":"Conqueror's Legguards","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
 {"id":8561,"name":"Conqueror's Crown","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
 {"id":8562,"name":"Conqueror's Breastplate","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
+{"id":8565,"name":"Past Victories in Arathi","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8566,"name":"Past Victories in Arathi","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8567,"name":"Past Victories in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8568,"name":"Past Victories in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8569,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8570,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8572,"name":"Veteran's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8573,"name":"Champion's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8574,"name":"Stalwart's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8800}
@@ -3830,6 +3846,13 @@
 {"id":8843,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8825}
 {"id":8844,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8818}
 {"id":8845,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8826}
+{"id":8846,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8847,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8848,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8851,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8852,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8853,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8856,"name":"Desert Survival Kits","level":0,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8857,"name":"Secrets of the Colossus - Ashi","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8858,"name":"Secrets of the Colossus - Regal","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8859,"name":"Secrets of the Colossus - Zora","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
@@ -3926,7 +3949,7 @@
 {"id":8978,"name":"Return to Mokvar","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"prereq":8928}
 {"id":8979,"name":"Fenstad's Hunch","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8904}
 {"id":8980,"name":"Zinge's Assessment","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"holiday":64,"prereq":8979}
-{"id":8981,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64}
+{"id":8981,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":64}
 {"id":8982,"name":"Tracing the Source","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8980}
 {"id":8983,"name":"Tracing the Source","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8982}
 {"id":8984,"name":"The Source Revealed","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8983}
@@ -3938,7 +3961,7 @@
 {"id":8990,"name":"The Right Piece of Lord Valthalak's Amulet","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191,"prereq":8985}
 {"id":8991,"name":"The Right Piece of Lord Valthalak's Amulet","level":60,"zone":"Stratholme","category":2017,"type":1,"faction":3,"race":0,"class":8191,"prereq":8987}
 {"id":8992,"name":"The Right Piece of Lord Valthalak's Amulet","level":60,"zone":"Scholomance","category":2057,"type":1,"faction":3,"race":0,"class":8191,"prereq":8988}
-{"id":8993,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":64}
+{"id":8993,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":64}
 {"id":8994,"name":"Final Preparations","level":60,"zone":"Blackrock Mountain","category":25,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8995,"name":"Mea Culpa, Lord Valthalak","level":60,"zone":"Blackrock Spire","category":17804,"type":1,"faction":3,"race":0,"class":8191,"prereq":8994}
 {"id":8996,"name":"Return to Bodley","level":60,"zone":"Blackrock Mountain","category":25,"type":1,"faction":3,"race":0,"class":8191,"prereq":8995}
@@ -4409,6 +4432,8 @@
 {"id":93165,"name":"Mercy Falls on Deaf Ears","level":13,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191}
 {"id":93172,"name":"Free the Hollows","level":13,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191}
 {"id":93176,"name":"My Little Friends","level":35,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":3,"race":0,"class":8191}
+{"id":93188,"name":"Return to Orgrul","level":43,"zone":"Shen'dralas","category":16651,"type":1,"faction":3,"race":0,"class":8191}
+{"id":93196,"name":"Khan Jehn","level":42,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"prereq":93188}
 {"id":93224,"name":"Carved Centaur Totems","level":40,"zone":"Desolace","category":405,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":93225,"name":"Carved Centaur Totems","level":40,"zone":"Desolace","category":405,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":93226,"name":"Buying Friendship: Magram","level":45,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191}
@@ -4711,6 +4736,7 @@
 {"id":95697,"name":"Changing Tastes","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":95737,"name":"Seeking Caitlin","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":3,"race":0,"class":8191}
 {"id":95748,"name":"The Gurubashi Legends of Old","level":40,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":2,"race":67109042,"class":8191}
+{"id":95770,"name":"Locating the Lost City","level":40,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":95771,"name":"A Taste of Darkness","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":3,"race":0,"class":8191}
 {"id":95772,"name":"Songblade Search","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":3,"race":0,"class":8191}
 {"id":95773,"name":"Enemies in the Water","level":37,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":2,"race":67109042,"class":8191}
@@ -5014,6 +5040,7 @@
 {"id":98459,"name":"A Lack of Virtue","level":21,"zone":"Wetlands","category":11,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":98461,"name":"Unrequited Love","level":21,"zone":"Wetlands","category":11,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":98463,"name":"Talk of the Town","level":33,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":1,"race":67108941,"class":8191}
+{"id":98471,"name":"Message from the Supreme Magister","level":35,"zone":"Invasion","category":-368,"type":1,"faction":1,"race":67108864,"class":8191}
 {"id":98512,"name":"Al'Aketh Assassins","level":11,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191}
 {"id":98517,"name":"Call of Fire","level":10,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":67108864,"class":64}
 {"id":98545,"name":"Leonid's Letter","level":12,"zone":"Tirisfal Glades","category":85,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":96896}
@@ -5029,6 +5056,9 @@
 {"id":98823,"name":"Earthen Echo","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":95664}
 {"id":98824,"name":"Prehistoric Prism","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":1,"race":67108941,"class":8191,"prereq":95810}
 {"id":98887,"name":"Conflict at Darkspear Islands","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
+{"id":98889,"name":"Conflict at Darkspear Islands","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
+{"id":98891,"name":"Conflict at Darkspear Islands","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
+{"id":98893,"name":"Conflict at Darkspear Islands","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
 {"id":98895,"name":"Darkspear Islands Clash","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
 {"id":98903,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
 {"id":98906,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}

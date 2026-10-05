@@ -373,6 +373,39 @@ The probe can't say whether a quest repeats: on retail, `IsRepeatableQuest` said
 quests the API flags repeatable. So a quest's type comes from CMaNGOS. The recorder notes whether a
 giver offers a quest as repeatable, though the importer doesn't read that yet.
 
+### Probe rerun (5 October 2026, evening, build 70205)
+
+The rerun asked about 4,459 quests in 6½ minutes: the 3,749 that failed the first time, and the 710
+new IDs. 138 answered (6 already in the cache) and 4,321 failed. The NPC pass named the 90 new NPCs.
+- **The beta hasn't opened more.** Only 21 of the 3,749 earlier failures answered.
+- **117 of the 710 new IDs answered:** 94 of the 573 repeatable quests and 23 of the 137 others. At
+  levels 1 to 35, 54 of 84 answered. The cut-off isn't strictly by level: all 32 Commendation Signet
+  quests and some Darkmoon Faire turn-ins answered at level 60.
+- **Failures that say something:**
+  - The 14 mount exchanges (7660–7678, level 1) fail, although the beta answers level 1 quests.
+    Forever probably doesn't have them.
+  - Every battleground quest fails, the ones in `QuestV2` included, so the battlegrounds seem to be
+    closed on the beta.
+  - The Scourge Invasion turn-ins and "Apprentice Angler" fail. They're event quests, perhaps only
+    served while their event runs.
+- **The recorder** gave Zephras Isle its first pins: 7 givers for 10 quests, such as Rorian the
+  Dayseeker and Elatrell Featherlight.
+
+Step 10 then gave **5,109 quests** (30 more) and **1,739 pins** (14 more):
+- **New quests:** 23 of the 137, now that the server answers them, such as Paladin, Shaman and
+  Darkmoon Faire quests, the Ahn'Qiraj War signets and the battleground "Past Victories"; and 7 of
+  Forever's new quests, such as "Conflict at Darkspear Islands".
+- **The server's answers replace CMaNGOS's** for the quests it now knows: titles ("Thunderbrew Lager"
+  is "Thunderbrew"), levels (the rare fish are level 60) and race limits (6 quests).
+- **7 quests have no zone in the server's record**, so they're under Uncategorized, as quest 1782
+  already was: the 6 "Past Victories" quests and "Arena Grandmaster". Each is listed for review.
+- **The review list** has 4,580 rows. "Failed on the beta below level 36" now holds 84, with the mount
+  exchanges, battleground and event quests.
+- **Found while checking the pins:** the Darkmoon Faire's givers in Mulgore are pinned on Desolace
+  (4) and Thunder Bluff (2). They have no old Classic pin, and their quests' heading isn't a zone,
+  so the last rule, the smallest frame that holds the spawn, picks a neighbour whose rectangle
+  reaches into Mulgore.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -405,7 +438,7 @@ giver offers a quest as repeatable, though the importer doesn't read that yet.
 - 2026-10-05: the importer pins quests at the client's start points and counts what Blizzard fills
   in; the sweep takes in the recorder's notes every time.
 - 2026-10-05: `QuestV2` leaves out repeatable quests, so the importer keeps CMaNGOS's 573 and the
-  probe (#139) asks about all 710 CMaNGOS quests it lacks; results above. Next: Zephras Isle's pins
-  from the recorder, a probe rerun (it can already confirm the 84 new IDs at levels 1 to 35, and
-  the rest once the beta opens levels above 40), and the importer's next pieces (breadcrumbs,
-  mutually exclusive quests, reputation rewards).
+  probe (#139) asks about all 710 CMaNGOS quests it lacks (#157); results above.
+- 2026-10-05: the probe rerun and step 10; results above. Next: the Mulgore Darkmoon Faire pins, a
+  probe rerun once the beta opens levels above 40, more of Zephras Isle from the recorder, and the
+  importer's next pieces (breadcrumbs, mutually exclusive quests, reputation rewards).
