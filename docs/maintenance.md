@@ -342,19 +342,25 @@ After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf
 
 ### 7. Quests that may no longer be obtainable
 
-`Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables
-and our pins. It's a report only; see [plans/unavailable-quests.md](plans/unavailable-quests.md).
-Its summary ends with the quests that have no sign of being live and no decision yet: those are the
-ones to review, in groups, with the user.
+`Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables,
+our pins and the type probe's saved results (whether the server knows the quest). It's a report
+only; see [plans/unavailable-quests.md](plans/unavailable-quests.md). Its summary counts the quests
+that have no sign of being live and no decision yet: those are the ones to review, in groups, with
+the user.
 
 The quests the addon hides as unavailable are the FLAG rows of
 `docs/plans/unavailable-quest-decisions.csv`. A quest reviewed and left shown gets a KEEP row, with
 the evidence, so later sweeps don't raise it again. After changing that file, run
 `Build-UnavailableQuests.ps1` to regenerate `qcUnavailableQuests.lua`; don't edit the Lua file by
-hand. Before flagging a quest as gone from the client, check the latest PTR build's `QuestV2` as
-well as retail's: a quest missing from retail may be upcoming content. Players who accept or turn in
-a flagged quest get a chat message, and the quest is recorded in their `qcFlaggedButSeen` saved
-variable. Unflag anything reported that way.
+hand. Before flagging a quest as gone from the client, check two things:
+- **That the server doesn't know it either** (`ServerKnows` 0 in the finder's CSV). `QuestV2`
+  never lists repeatable quests, so missing from it proves nothing on its own; phase 1 got this
+  wrong for 148 quests.
+- **That it's missing from the latest PTR build's `QuestV2` as well as retail's**: a quest missing
+  from retail may be upcoming content.
+
+Players who accept or turn in a flagged quest get a chat message, and the quest is recorded in their
+`qcFlaggedButSeen` saved variable. Unflag anything reported that way.
 
 ### 8. Dungeons and raids against the Dungeon Journal
 

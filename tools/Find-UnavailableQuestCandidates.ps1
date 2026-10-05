@@ -7,7 +7,11 @@ Quest titles are deliberately NOT used: Blizzard marks retired quests inconsiste
 Signals per quest (1 = present):
   ApiFound      Blizzard's quest API knows it (tools/quest_api_cache, from Audit-QuestAccuracy.ps1)
   IsTask        client task quest (world quest / bonus objective; QuestV2CliTask) - API never serves these
-  InClient      in the client's QuestV2 table
+  InClient      in the client's QuestV2 table, which never lists repeatable quests: none of the
+                500 the API flags repeatable are in it. Missing from it proves nothing on its own.
+  ServerKnows   the server sent the quest's data to the /qc typecheck probe (its saved results,
+                quest_type_probe_results.lua); 0 if it didn't, blank if the probe never asked.
+                Missing from QuestV2 with ServerKnows 0 is the one sure sign a quest is gone.
   GiverPOI      client has a quest-giver map point (QuestPOIBlob, ObjectiveIndex -1)
   AnyPOI        client has any map point for it
   InPinDB       one of our pins (data\pins.jsonl) offers it
@@ -24,6 +28,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$Decisions = (Join-Path $PSScriptRoot '..\docs\plans\unavailable-quest-decisions.csv'),
+    [string]$ProbeResults = (Join-Path $PSScriptRoot 'quest_type_probe_results.lua'),
     [string[]]$SampleIds = @(),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
@@ -56,6 +61,11 @@ $prereqOf = @{}
 foreach ($quest in $entries) { if ($quest.prereq) { $prereqOf["$($quest.prereq)"] = $true } }
 $decided = @{}
 foreach ($row in Import-Csv $Decisions) { $decided[$row.QuestID] = $row.Decision }
+$serverKnows = @{}
+if (Test-Path $ProbeResults) {
+    $probe = [System.IO.File]::ReadAllText($ProbeResults)
+    foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "\d+\|[^|]*\|\d+,[01-],([01])",?\s*$')) { $serverKnows[$m.Groups[1].Value] = $m.Groups[2].Value }
+} else { Write-Warning "No probe results at $ProbeResults, so ServerKnows is blank" }
 
 $rows = foreach ($quest in $entries) {
     $id = [string]$quest.id
@@ -64,6 +74,7 @@ $rows = foreach ($quest in $entries) {
     [PSCustomObject]@{
         QuestID = $id; Name = $quest.name; Zone = $quest.zone; Type = [string]$quest.type; Bucket = $bucket
         ApiFound = [int]$api; IsTask = [int]$isTask.ContainsKey($id); InClient = [int]$inClient.ContainsKey($id)
+        ServerKnows = [string]$serverKnows[$id]
         GiverPOI = [int]$giverPoi.ContainsKey($id); AnyPOI = [int]$anyPoi.ContainsKey($id); InPinDB = [int]$inPin.ContainsKey($id)
         InQuestLine = [int]$inLine.ContainsKey($id); InAchievement = [int]$inAch.ContainsKey($id); IsPrereq = [int]$prereqOf.ContainsKey($id)
         Decision = [string]$decided[$id]
@@ -81,7 +92,9 @@ foreach ($g in $rows | Group-Object Bucket | Sort-Object Name) {
 $nonTask404 = @($rows | Where-Object { $_.Bucket -in "nontask-inclient", "not-in-client" })
 $noSignal = @($nonTask404 | Where-Object { ($_.GiverPOI + $_.AnyPOI + $_.InPinDB + $_.InQuestLine + $_.InAchievement + $_.IsPrereq) -eq 0 })
 "Non-task quests the API 404s on: $($nonTask404.Count); with NO positive signal at all: $($noSignal.Count), of which not yet decided: $(@($noSignal | Where-Object { -not $_.Decision }).Count)"
+$notInClient = @($nonTask404 | Where-Object { $_.InClient -eq 0 })
+"Of those not in QuestV2 ($($notInClient.Count)), unknown to the server too, so surely gone: $(@($notInClient | Where-Object { $_.ServerKnows -eq '0' }).Count)"
 if ($SampleIds) {
     "Samples:"
-    $rows | Where-Object { $SampleIds -contains $_.QuestID } | Format-Table QuestID, Name, Bucket, InClient, GiverPOI, AnyPOI, InPinDB, InQuestLine, InAchievement, IsPrereq -AutoSize | Out-String -Width 200
+    $rows | Where-Object { $SampleIds -contains $_.QuestID } | Format-Table QuestID, Name, Bucket, InClient, ServerKnows, GiverPOI, AnyPOI, InPinDB, InQuestLine, InAchievement, IsPrereq -AutoSize | Out-String -Width 200
 }

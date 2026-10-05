@@ -61,6 +61,16 @@ raises suspicion but proves nothing. Two consequences:
 2. **Everything else goes through human review, in groups,** and the addon has safety nets so a
    wrong flag can never hide a quest the player is actually doing.
 
+**Correction (2026-10-05): absence from `QuestV2` isn't structural evidence on its own.**
+- The table never lists repeatable quests. None of the 500 the API flags repeatable are in it,
+  against about 98% of one-time, daily and weekly quests.
+- The sure sign is missing from it **and** unknown to the server. The `/qc typecheck` probe asked the
+  server for every quest, and couldn't load 34 of the 191 missing from `QuestV2`.
+- The other 157 include live repeatable rewards: paragon caches, renown rewards, Torghast's rescues
+  and Horrific Visions.
+- Phase 1's flags were corrected in #154 (below), and `Find-UnavailableQuestCandidates.ps1` now
+  reports what the server knows.
+
 ## Addon design
 
 ### Data file
@@ -149,6 +159,13 @@ generates the Lua file. Offline checks:
 - 18 targeted checks (exceptions, map, option, log), each shown able to fail by a deliberate
   breakage.
 
+**Corrected in #154 (2026-10-05).** The server still knew 150 of the 183 (the correction above).
+- **148 unflagged**, with KEEP rows saying why: 76 paragon and renown rewards, 33 Torghast rescues,
+  24 Horrific Visions quests, 9 contributions and 6 others.
+- **35 stay flagged:** the 33 the server doesn't know either ("Legion ### A", "Party Crashers!", the
+  Highmountain jetpack quests, Primal Obliterum, the fishing flier 8228 and others), and 2 internal
+  entries.
+
 ### Phase 2: human review of the 375 in-client, no-signal quests (reason 1), in groups
 - Review by zone/category rather than one by one. For example, all 126 Warfront quests (mostly
   BfA Warfront contribution quests like "Arathi Donations: …") are probably one decision, and
@@ -169,8 +186,9 @@ generates the Lua file. Offline checks:
 | Emissary bounties, which still rotate | 20 | KEEP |
 | Recurring content that's likely live (Special Assignments, Zskera Vaults, Endeavors) and 2 holiday quests | 61 | KEEP |
 | No pattern, no evidence either way | 80 | KEEP |
-| Battle for Azeroth warfront donations ("Arathi Donations: …") | 131 | waiting for the user's Wowhead check |
-| From Phase 1: not in the client, but with a pin or an achievement criterion (7 Legion "Supplies From …" caches, "The Bounties of Legionfall", "Could I get a Fishing Flier?" 8229) | 8 | waiting for the user |
+| Battle for Azeroth warfront donations ("Arathi Donations: …"): Wowhead shows no "no longer available" notice for any of the 8 the user looked up | 131 | KEEP |
+| From Phase 1, not in the client but with a pin or an achievement criterion: 6 Legion "Supplies From …" caches and "The Bounties of Legionfall", repeatable paragon rewards the server still knows | 7 | KEEP |
+| From Phase 1, the same: "Could I get a Fishing Flier?" 8229, which the server doesn't know either, like 8228 | 1 | FLAG (reason 2) |
 
 - Flagging a hidden tracker is safe even if it's still live. The game completes trackers without a
   turn-in, so the self-correction message never fires, and a completed flagged quest still shows as
@@ -178,7 +196,8 @@ generates the Lua file. Offline checks:
 - All 106 "Conquest's Reward" quests are flagged, not just the 8 that came up here. None is known
   to Blizzard's API, and Wowhead lists 54079 as obsolete. The other 98 have pins (Marshal Gabriel and
   High Warlord Volrath), which go too.
-- That's 182 more flags, 365 in all.
+- That's 183 more flags. With Phase 1's correction, 218 quests are flagged in all, and 447 have KEEP
+  rows.
 
 ### Phase 3: maintenance
 - Periodically review `qcFlaggedButSeen` (from players who report it, or your own characters) and
