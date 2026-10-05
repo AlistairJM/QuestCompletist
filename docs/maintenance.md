@@ -95,7 +95,7 @@ then every tool refuses to save.
 ## Before a sweep
 
 1. **Find the current retail build** at <https://wago.tools/api/builds/latest> (product `wow`).
-   The addon targets retail only. A Forever version is planned in [plans/forever.md](plans/forever.md).
+   This sweep is for retail. WoW: Forever's data has its own steps; see "WoW: Forever" below.
 2. **Pin the build.** Scripts that take `-Build` should be given the current retail build.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest
    retail build.
@@ -463,6 +463,25 @@ git diff --stat
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 
+## WoW: Forever
+
+The Forever version loads through `QuestCompletist_Camelot.toc`, with the shared code and its own
+files in `QuestCompletist\Forever\`. Its plan is [plans/forever.md](plans/forever.md). Its data is
+rebuilt, never edited by hand, in this order, with the main checkout's `tools\` as `-ToolsDir`:
+
+1. Run the beta probe (`/qcprobe quests`; probe branch #139) and log out. Copy the client's
+   `Cache\WDB\enUS\questcache.wdb` and the probe's saved variables, `QCForeverProbe.lua`, into
+   `tools\forever_probe_<build>\`.
+2. `Read-ForeverQuestCache.ps1 -Build <build>` writes `tools\forever_quest_cache_<build>.jsonl`.
+3. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl` and `pins.jsonl`, and
+   the review list, `tools\forever_import_review.csv`.
+4. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
+   and `qcUnavailableQuests.lua`. A new zone it can't place goes in its continent's "Other" group;
+   add the zone to the script's region table.
+5. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
+   both.
+6. Run the reachability check with Forever's TOC and UiMap table, as its header shows.
+
 ## One-off scripts
 
 A script written for a one-off fix or migration is deleted once its change is merged, so everything
@@ -480,3 +499,4 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not | in-game probes and runtime API calls |
+| CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns | `Import-ForeverData.ps1`, from its `Full_DB` dump |

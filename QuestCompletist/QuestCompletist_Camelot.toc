@@ -1,0 +1,26 @@
+﻿## Interface: 16001
+## Version: 111.0
+## Title: Quest Completist
+## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
+## SavedVariables: qcSettings qcWorkingDB qcWorkingLog qcFlaggedButSeen
+## SavedVariablesPerCharacter: qcCharacterCompletions QC_LastDailyReset QC_LastWeeklyReset
+
+Localization.enUS.lua
+Localization.ptBR.lua
+Localization.frFR.lua
+Localization.deDE.lua
+Localization.itIT.lua
+Localization.koKR.lua
+Localization.esMX.lua
+Localization.ruRU.lua
+Localization.zhCN.lua
+Localization.esES.lua
+Localization.zhTW.lua
+
+Forever\qcMenu.lua
+Forever\qcPinDB.lua
+Forever\qcQuest.lua
+Forever\qcQuestData.lua
+Forever\qcUnavailableQuests.lua
+qcCore.lua
+QuestCompletist.xml

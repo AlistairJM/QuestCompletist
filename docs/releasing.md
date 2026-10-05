@@ -34,12 +34,13 @@ git log origin/master..master
 
 ## 3. Version number and README
 
-On a `release/<version>` branch, change both:
+On a `release/<version>` branch, change all three:
 - `## Version:` in `QuestCompletist\QuestCompletist.toc`
+- `## Version:` in `QuestCompletist\QuestCompletist_Camelot.toc`, WoW: Forever's
 - `local QCADDON_VERSION` in `QuestCompletist\qcCore.lua`
 
-The next version is the last tag plus 0.1 (110.9 follows 110.8), unless you choose otherwise. Both
-files use Windows line endings; edit them in an editor or with perl, not Git Bash's `sed`, which
+The next version is the last tag plus 0.1 (110.9 follows 110.8), unless you choose otherwise. All
+three files use Windows line endings; edit them in an editor or with perl, not Git Bash's `sed`, which
 turns them into Unix ones.
 
 In the same pull request, bring `README.md` up to date. It's the addon's CurseForge description

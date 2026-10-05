@@ -177,9 +177,9 @@ function Test-PinRecords($pins) {
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
-function ConvertTo-LuaQuestFile($quests) {
+function ConvertTo-LuaQuestFile($quests, [string]$source = 'data') {
     $sb = New-Object System.Text.StringBuilder (4MB)
-    [void]$sb.Append("-- Generated from data\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
+    [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
     $sparse = [ordered]@{ qcQuestProfession = 'profession'; qcQuestHoliday = 'holiday'; qcQuestCovenant = 'covenant'; qcQuestPrereq = 'prereq' }
     $tables = @{}
     foreach ($table in $sparse.Keys) { $tables[$table] = New-Object System.Text.StringBuilder }
@@ -199,7 +199,7 @@ function ConvertTo-LuaQuestFile($quests) {
 }
 
 # The whole of qcPinDB.lua. Pins keep their order within a map; maps go in ascending order.
-function ConvertTo-LuaPinFile($pins) {
+function ConvertTo-LuaPinFile($pins, [string]$source = 'data') {
     $byMap = New-Object 'System.Collections.Generic.SortedDictionary[long, System.Collections.Generic.List[object]]'
     foreach ($pin in $pins) {
         $map = [long]$pin.map
@@ -207,7 +207,7 @@ function ConvertTo-LuaPinFile($pins) {
         $byMap[$map].Add($pin)
     }
     $sb = New-Object System.Text.StringBuilder (2MB)
-    [void]$sb.Append("-- Generated from data\pins.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`n")
+    [void]$sb.Append("-- Generated from $source\pins.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`n")
     [void]$sb.Append("qcPinDB = {`r`n")
     foreach ($entry in $byMap.GetEnumerator()) {
         [void]$sb.Append("`t[" + $entry.Key + "] = {`r`n")
@@ -253,10 +253,12 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
 
     $questPath = Join-Path $AddonDir 'qcQuestData.lua'
     $pinPath = Join-Path $AddonDir 'qcPinDB.lua'
+    $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+    $source = if ($DataDir.StartsWith($repoRoot + '\')) { $DataDir.Substring($repoRoot.Length + 1) } else { 'data' }
     $current = { param($path) if (Test-Path $path) { [IO.File]::ReadAllText($path) } else { '' } }
     $outputs = @(
-        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests) },
-        @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins) }
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source) },
+        @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
     )
     $differ = 0
     foreach ($output in $outputs) {
