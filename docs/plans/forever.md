@@ -118,7 +118,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
-2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`): decodes the cache records, checked
+2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`, #141): decodes the cache records, checked
    against CMaNGOS for the quests both have.
 3. **CMaNGOS importer** (tool): turns the dump into `data/forever`, with spawns converted to map
    positions. It merges the probe, cache and recorder results, and lists every disagreement for
@@ -212,5 +212,5 @@ seconds):
 
 - 2026-10-04 and 05: researched and planned.
 - 2026-10-05: phase 1's probe (#139) ran on the beta; results above.
-- 2026-10-05: phase 2's cache reader written; results above. Next: phase 3, the CMaNGOS importer, and
+- 2026-10-05: phase 2's cache reader (#141) written; results above. Next: phase 3, the CMaNGOS importer, and
   a probe rerun when the beta opens levels above 40.
