@@ -2143,17 +2143,36 @@ local function qcAcquireTooltipIcon()
     return icon
 end
 
+-- The pin tooltip's progress bar, and how many done quests fold into one line unless Shift is held.
+-- qcCore.lua is near Lua 5.1's limit of 200 file-level locals, so constants share a table.
+local QC_PIN_TOOLTIP = {barHeight = 6, barDone = {0.1, 0.85, 0.1}, barLeft = {0.2, 0.2, 0.25}, barMinWidth = 180,
+    foldDone = 2}
+
+-- A round end: a circle of the bar's colour centred on its end, so half of it sticks out.
+local function qcCreateBarCap(bar, point)
+    local cap = bar:CreateTexture(nil, "ARTWORK")
+    cap:SetSize(QC_PIN_TOOLTIP.barHeight, QC_PIN_TOOLTIP.barHeight)
+    cap:SetPoint("CENTER", bar, point)
+    local mask = bar:CreateMaskTexture()
+    mask:SetAtlas("CircleMaskScalable")
+    mask:SetAllPoints(cap)
+    cap:AddMaskTexture(mask)
+    return cap
+end
+
 local function qcAcquireTooltipBar()
     qcMapTooltip.qcBarsUsed = qcMapTooltip.qcBarsUsed + 1
     local bar = qcMapTooltip.qcBars[qcMapTooltip.qcBarsUsed]
     if not bar then
         bar = CreateFrame("StatusBar", nil, qcMapTooltip)
-        bar:SetHeight(6)
+        bar:SetHeight(QC_PIN_TOOLTIP.barHeight)
         bar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
-        bar:SetStatusBarColor(0.1, 0.85, 0.1)
+        bar:SetStatusBarColor(unpack(QC_PIN_TOOLTIP.barDone))
         local background = bar:CreateTexture(nil, "BACKGROUND")
         background:SetAllPoints()
-        background:SetColorTexture(0.2, 0.2, 0.25)
+        background:SetColorTexture(unpack(QC_PIN_TOOLTIP.barLeft))
+        bar.leftCap = qcCreateBarCap(bar, "LEFT")
+        bar.rightCap = qcCreateBarCap(bar, "RIGHT")
         qcMapTooltip.qcBars[qcMapTooltip.qcBarsUsed] = bar
     end
     return bar
@@ -2185,32 +2204,29 @@ local function qcSetMapTooltipLineIcon(leftText, icon)
 end
 
 -- Where a quest stands for this character, in the order the map tooltip lists them.
-local QC_PIN_READY, QC_PIN_PROGRESS, QC_PIN_TODO, QC_PIN_RECURRING, QC_PIN_DONE = 1, 2, 3, 4, 5
--- Done quests fold into one line from this many, unless Shift is held.
-local QC_PIN_FOLD_DONE = 2
-local QC_PIN_BAR_MIN_WIDTH = 180
+local QC_PIN_STATE = {READY = 1, PROGRESS = 2, TODO = 3, RECURRING = 4, DONE = 5}
 
 local function qcPinQuestState(questId, questData)
     if C_QuestLog.GetLogIndexForQuestID(questId) then
-        return C_QuestLog.IsComplete(questId) and QC_PIN_READY or QC_PIN_PROGRESS
+        return C_QuestLog.IsComplete(questId) and QC_PIN_STATE.READY or QC_PIN_STATE.PROGRESS
     end
-    if qcRecurringQuestIcon(questId, questData[4]) then return QC_PIN_RECURRING end
-    if qcIsQuestCompleted(questId) then return QC_PIN_DONE end
-    return QC_PIN_TODO
+    if qcRecurringQuestIcon(questId, questData[4]) then return QC_PIN_STATE.RECURRING end
+    if qcIsQuestCompleted(questId) then return QC_PIN_STATE.DONE end
+    return QC_PIN_STATE.TODO
 end
 
 -- The quest list's icon and colour for each state.
 local function qcAddPinQuestLine(questId, state)
     local icon, colour
-    if state == QC_PIN_READY then
+    if state == QC_PIN_STATE.READY then
         icon, colour = QC_ICON_READY, "ffd100"
-    elseif state == QC_PIN_PROGRESS then
+    elseif state == QC_PIN_STATE.PROGRESS then
         icon, colour = QC_ICON_PROGRESS, "949694"
-    elseif state == QC_PIN_RECURRING then
+    elseif state == QC_PIN_STATE.RECURRING then
         icon, colour = qcRecurringQuestIcon(questId, qcQuestDatabase[questId][4]), "18a0f0"
-    elseif state == QC_PIN_DONE and qcCharacterCompletions[questId] == 2 then
+    elseif state == QC_PIN_STATE.DONE and qcCharacterCompletions[questId] == 2 then
         icon, colour = QC_ICON_UNATTAINABLE, "c41f3b"
-    elseif state == QC_PIN_DONE then
+    elseif state == QC_PIN_STATE.DONE then
         icon, colour = QC_ICON_COMPLETE, "00ff00"
     else
         icon, colour = QC_ICON_NORMAL, "ffffff"
@@ -2244,10 +2260,12 @@ local function qcAddPinQuestsToTooltip(pins)
         if leftText and rightText then
             local bar = qcAcquireTooltipBar()
             bar:ClearAllPoints()
-            bar:SetPoint("LEFT", leftText, "LEFT", 0, 0)
-            bar:SetPoint("RIGHT", rightText, "LEFT", -8, 0)
+            bar:SetPoint("LEFT", leftText, "LEFT", QC_PIN_TOOLTIP.barHeight / 2, 0)
+            bar:SetPoint("RIGHT", rightText, "LEFT", -8 - QC_PIN_TOOLTIP.barHeight / 2, 0)
             bar:SetMinMaxValues(0, total)
             bar:SetValue(done)
+            bar.leftCap:SetColorTexture(unpack(done > 0 and QC_PIN_TOOLTIP.barDone or QC_PIN_TOOLTIP.barLeft))
+            bar.rightCap:SetColorTexture(unpack(done >= total and QC_PIN_TOOLTIP.barDone or QC_PIN_TOOLTIP.barLeft))
             bar:Show()
         end
     end
@@ -2267,19 +2285,19 @@ local function qcAddPinQuestsToTooltip(pins)
             end
         end
     end
-    for state = QC_PIN_READY, QC_PIN_RECURRING do
+    for state = QC_PIN_STATE.READY, QC_PIN_STATE.RECURRING do
         for _, questId in ipairs(byState[state]) do
             qcAddPinQuestLine(questId, state)
         end
     end
-    local finished = byState[QC_PIN_DONE]
-    if #finished >= QC_PIN_FOLD_DONE and not IsShiftKeyDown() then
+    local finished = byState[QC_PIN_STATE.DONE]
+    if #finished >= QC_PIN_TOOLTIP.foldDone and not IsShiftKeyDown() then
         local leftText = qcAddMapTooltipLine(string.format("    |cff7fbf7f%s|r", string.format(qcL.PINDONE, #finished)),
             "|cff808080" .. qcL.PINSHOWDONE .. "|r")
         qcSetMapTooltipLineIcon(leftText, QC_ICON_COMPLETE)
     else
         for _, questId in ipairs(finished) do
-            qcAddPinQuestLine(questId, QC_PIN_DONE)
+            qcAddPinQuestLine(questId, QC_PIN_STATE.DONE)
         end
     end
     for _, questId in ipairs(noData) do
@@ -2345,7 +2363,7 @@ function qcPinMixin:OnMouseEnter()
         qcAddPinQuestsToTooltip(others)
     end
 
-    qcMapTooltip:SetMinimumWidth(qcMapTooltip.qcBarsUsed > 0 and QC_PIN_BAR_MIN_WIDTH or 0)
+    qcMapTooltip:SetMinimumWidth(qcMapTooltip.qcBarsUsed > 0 and QC_PIN_TOOLTIP.barMinWidth or 0)
     qcMapTooltip:Show()
 end
 
