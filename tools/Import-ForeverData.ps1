@@ -38,9 +38,11 @@ Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder'
 it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
 rectangles and overlap, so a spawn goes on the first of these maps whose frame holds it:
   1. the map our old Classic pins had for that NPC (git history before #89);
-  2. a city;
-  3. the zone its giver's quests are in;
-  4. the smallest.
+  2. the map our old pins put most NPCs within 100 yards on;
+  3. a city, if the spawn stands within 50 yards of the heights of the NPCs our old pins have there;
+  4. the zone its giver's quests are in;
+  5. the one the spawn stands furthest inside, measured from the frame's nearest edge, or the
+     smallest of those within 0.05 of that.
 Only maps Classic Era (-EraBuild) already had are used, as CMaNGOS's NPCs can't stand in Forever's new
 zones, whose frames reach over old ones (Mount Hyjal's covers parts of Felwood and Winterspring).
 Givers inside dungeons get no pin.
@@ -160,13 +162,45 @@ $frames = @(Get-ClientTable 'UiMapAssignment' | Where-Object { $uiMapType[[int]$
 } | Sort-Object Area)
 
 $cityMaps = @{ 1453 = $true; 1454 = $true; 1455 = $true; 1456 = $true; 1457 = $true; 1458 = $true }
+$cityHeights = @{}
+$oldPinSpots = @{}
+
+# How far inside a frame a spawn stands: its distance to the nearest edge, as a share of the frame.
+function Get-Centrality($frame, [double]$x, [double]$y) {
+    $fx = ($frame.MaxY - $y) / ($frame.MaxY - $frame.MinY)
+    $fy = ($frame.MaxX - $x) / ($frame.MaxX - $frame.MinX)
+    return [Math]::Min([Math]::Min($fx, 1 - $fx), [Math]::Min($fy, 1 - $fy))
+}
+
+# Of the frames that hold a spawn, the map our old pins put most NPCs within 100 yards of it on.
+function Get-NearbyOldPinMap($holding, [int]$map, [double]$x, [double]$y) {
+    $votes = @{}
+    $cellX = [Math]::Floor($x / 100); $cellY = [Math]::Floor($y / 100)
+    foreach ($i in -1, 0, 1) {
+        foreach ($j in -1, 0, 1) {
+            foreach ($spot in $oldPinSpots["$map|$($cellX + $i)|$($cellY + $j)"]) {
+                if (($spot.X - $x) * ($spot.X - $x) + ($spot.Y - $y) * ($spot.Y - $y) -gt 10000) { continue }
+                foreach ($uiMap in $spot.UiMaps) { $votes[$uiMap] = 1 + [int]$votes[$uiMap] }
+            }
+        }
+    }
+    $best = $null; $bestVotes = 0
+    foreach ($frame in $holding) { if ([int]$votes[$frame.UiMap] -gt $bestVotes) { $best = $frame; $bestVotes = [int]$votes[$frame.UiMap] } }
+    return $best
+}
 
 # The map position of a CMaNGOS spawn: on -OnUiMap's frame if given. Otherwise the frames that hold
-# it, of maps Classic Era had, are tried in this order: a map -OldMaps has (our old Classic pins' maps
-# for the giver), a city, one of -Zones (the zones the giver's quests are in), then the smallest. The
-# old pins come first because the others guess wrong for a giver whose quests are filed under a
-# neighbouring zone, like Tirion Fordring's.
-function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $OldMaps = $null, [int]$OnUiMap = 0) {
+# it, of maps Classic Era had, are tried in this order:
+#   1. a map -OldMaps has (our old Classic pins' maps for the giver);
+#   2. the map our old pins put most NPCs within 100 yards on;
+#   3. a city whose old pins' NPCs stand within 50 yards of the spawn's height -Z;
+#   4. one of -Zones (the zones the giver's quests are in);
+#   5. the one the spawn stands furthest inside, with any within 0.05 of that counting as a tie that
+#      the smallest wins.
+# The old pins come first because the others guess wrong for a giver whose quests are filed under a
+# neighbouring zone, like Tirion Fordring's. A frame is a rectangle, so a city's reaches past its
+# walls: the height keeps the Darkmoon Faire at the foot of Thunder Bluff's mesa off the city's map.
+function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $OldMaps = $null, [int]$OnUiMap = 0, [double]$Z = [double]::NaN) {
     $holding = @($frames | Where-Object { $_.Map -eq $map -and $x -ge $_.MinX -and $x -le $_.MaxX -and $y -ge $_.MinY -and $y -le $_.MaxY })
     if ($OnUiMap) {
         $chosen = $holding | Where-Object { $_.UiMap -eq $OnUiMap } | Select-Object -First 1
@@ -174,9 +208,16 @@ function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $O
         $old = @($holding | Where-Object { -not $_.New })
         $chosen = $null
         if ($OldMaps) { $chosen = $old | Where-Object { $OldMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
-        if (-not $chosen) { $chosen = $old | Where-Object { $cityMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
+        if (-not $chosen) { $chosen = Get-NearbyOldPinMap $old $map $x $y }
+        if (-not $chosen) {
+            $chosen = $old | Where-Object { $cityMaps.ContainsKey($_.UiMap) -and
+                ([double]::IsNaN($Z) -or -not $cityHeights[$_.UiMap] -or ($Z -ge $cityHeights[$_.UiMap].Min - 50 -and $Z -le $cityHeights[$_.UiMap].Max + 50)) } | Select-Object -First 1
+        }
         if (-not $chosen -and $Zones) { $chosen = $old | Where-Object { $Zones.ContainsKey($_.Zone) } | Select-Object -First 1 }
-        if (-not $chosen) { $chosen = $old | Select-Object -First 1 }
+        if (-not $chosen -and $old.Count) {
+            $deepest = ($old | ForEach-Object { Get-Centrality $_ $x $y } | Measure-Object -Maximum).Maximum
+            $chosen = $old | Where-Object { (Get-Centrality $_ $x $y) -ge $deepest - 0.05 } | Select-Object -First 1
+        }
     }
     if (-not $chosen) { return $null }
     $fx = ($chosen.MaxY - $y) / ($chosen.MaxY - $chosen.MinY)
@@ -212,7 +253,7 @@ try {
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
     foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31'), @('creature_questrelation', '1,2'),
-            @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6'), @('gameobject', '1,2,3,5,6'),
+            @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'))) {
         $dump[$read[0]] = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $sql $read[0] $read[1])
@@ -244,20 +285,47 @@ $questHoliday = @{}
 foreach ($line in $dump.game_event_quest) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $questHoliday[[int]$f[0]] = $flag } }
 $spawnHoliday = @{}
 foreach ($line in $dump.game_event_creature) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $spawnHoliday[[int]$f[0]] = $flag } }
-$npcSpawns = @{}; $npcHoliday = @{}
+$oldPins = New-Object System.Collections.Generic.List[object]
+$oldPinMaps = @{}
+$mapId = 0
+foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
+    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
+    if ($mapId -lt 1411 -or $mapId -gt 1459 -or $line -notmatch '^\t\t\{\d+,(\d+),".*",([-0-9.]+),([-0-9.]+),\{([0-9,]*)\}') { continue }
+    $npc = [int]$Matches[1]
+    $oldPins.Add([pscustomobject]@{ UiMap = $mapId; Npc = $npc; X = [decimal]$Matches[2]; Y = [decimal]$Matches[3]
+        Quests = @($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ }) })
+    if (-not $oldPinMaps.ContainsKey($npc)) { $oldPinMaps[$npc] = @{} }
+    $oldPinMaps[$npc][$mapId] = $true
+}
+$npcSpawns = @{}; $npcHoliday = @{}; $oldPinNpcSpawns = @{}
 foreach ($line in $dump.creature) {
     $f = $line.Split("`t")
     $npc = [int]$f[1]
+    $spawn = [pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }
+    if ($oldPinMaps.ContainsKey($npc)) { $oldPinNpcSpawns[$npc] += @($spawn) }
     if (-not $starterNpcs[$npc]) { continue }
-    $npcSpawns[$npc] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4] })
+    $npcSpawns[$npc] += @($spawn)
     $holiday = $spawnHoliday[[int]$f[0]]
     if (-not $npcHoliday.ContainsKey($npc)) { $npcHoliday[$npc] = $holiday } elseif ($npcHoliday[$npc] -ne $holiday) { $npcHoliday[$npc] = $null }
+}
+foreach ($npc in $oldPinNpcSpawns.Keys) {
+    foreach ($spawn in $oldPinNpcSpawns[$npc]) {
+        $maps = @($frames | Where-Object { $oldPinMaps[$npc].ContainsKey($_.UiMap) -and $_.Map -eq $spawn.Map -and
+            $spawn.X -ge $_.MinX -and $spawn.X -le $_.MaxX -and $spawn.Y -ge $_.MinY -and $spawn.Y -le $_.MaxY } | Select-Object -ExpandProperty UiMap -Unique)
+        if (-not $maps.Count) { continue }
+        $oldPinSpots["$($spawn.Map)|$([Math]::Floor($spawn.X / 100))|$([Math]::Floor($spawn.Y / 100))"] += @([pscustomobject]@{ X = $spawn.X; Y = $spawn.Y; UiMaps = $maps })
+        foreach ($uiMap in ($maps | Where-Object { $cityMaps.ContainsKey($_) })) {
+            $heights = $cityHeights[$uiMap]
+            if (-not $heights) { $cityHeights[$uiMap] = [pscustomobject]@{ Min = $spawn.Z; Max = $spawn.Z }; continue }
+            $heights.Min = [Math]::Min($heights.Min, $spawn.Z); $heights.Max = [Math]::Max($heights.Max, $spawn.Z)
+        }
+    }
 }
 $objectSpawns = @{}
 foreach ($line in $dump.gameobject) {
     $f = $line.Split("`t")
     $object = [int]$f[1]
-    if ($starterObjects[$object]) { $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4] }) }
+    if ($starterObjects[$object]) { $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }) }
 }
 $cmNpcName = @{}; foreach ($line in $dump.creature_template) { $f = $line.Split("`t"); if ($starterNpcs[[int]$f[0]]) { $cmNpcName[[int]$f[0]] = $f[1] } }
 $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Split("`t"); if ($starterObjects[[int]$f[0]]) { $objectName[[int]$f[0]] = $f[1] } }
@@ -361,19 +429,6 @@ foreach ($npc in $gameNpcName.Keys) {
     if ($cmNpcName.ContainsKey($npc) -and $cmNpcName[$npc] -ne $gameNpcName[$npc]) { Add-Review 'NPC renamed' '' $npc "$($cmNpcName[$npc]) is now $($gameNpcName[$npc])" }
 }
 
-$oldPins = New-Object System.Collections.Generic.List[object]
-$oldPinMaps = @{}
-$mapId = 0
-foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
-    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
-    if ($mapId -lt 1411 -or $mapId -gt 1459 -or $line -notmatch '^\t\t\{\d+,(\d+),".*",([-0-9.]+),([-0-9.]+),\{([0-9,]*)\}') { continue }
-    $npc = [int]$Matches[1]
-    $oldPins.Add([pscustomobject]@{ UiMap = $mapId; Npc = $npc; X = [decimal]$Matches[2]; Y = [decimal]$Matches[3]
-        Quests = @($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ }) })
-    if (-not $oldPinMaps.ContainsKey($npc)) { $oldPinMaps[$npc] = @{} }
-    $oldPinMaps[$npc][$mapId] = $true
-}
-
 $giverZones = @{}
 foreach ($q in $records.Values) {
     if ($q.category -le 0) { continue }
@@ -397,7 +452,7 @@ function Get-GiverSpots([string]$kind, [int]$id) {
     $spawns = if ($kind -eq 'GameObject') { $objectSpawns[$id] } else { $npcSpawns[$id] }
     $spots = @()
     foreach ($spawn in $spawns) {
-        $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $giverZones["${kind}:$id"] $(if ($kind -ne 'GameObject') { $oldPinMaps[$id] })
+        $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $giverZones["${kind}:$id"] $(if ($kind -ne 'GameObject') { $oldPinMaps[$id] }) -Z $spawn.Z
         if (-not $spot) { continue }
         $near = $spots | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
         if (-not $near) { $spots += $spot }
