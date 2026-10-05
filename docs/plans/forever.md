@@ -76,8 +76,8 @@ The disagreements are a review list for the importer.
 - **The quest cache holds more than the functions return.** The client keeps the server's record of
   every quest it asks about in `Cache\WDB\enUS\questcache.wdb`. Quest 2561's record gives level 10,
   minimum level 3 and area 141 (Teldrassil), as CMaNGOS does, plus its title and texts. So the probe
-  also gets the zone and minimum level of the new quests. Races, flags and objectives are probably in
-  there too, still to be decoded. `creaturecache.wdb` does the same for NPCs.
+  also gets the zone and minimum level of the new quests. What else it holds, and what it doesn't, is
+  in the phase 1 results below. `creaturecache.wdb` does the same for NPCs.
 - **Beta data can change.** The run at launch is the one that counts, and comparing it with the beta
   run shows what changed.
 - **English is enough** for the database. Quest and NPC names show in the player's language from the
@@ -102,7 +102,8 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 
 - **One folder, two TOCs.** A second TOC, `QuestCompletist_Camelot.toc` (interface 16001 for now),
   loads the shared code plus Forever's data files. The retail TOC stays as it is. Each game loads
-  only its own files, and one ZIP, tag and release cover both.
+  only its own files, and one ZIP, tag and release cover both. Forever reads a `_Camelot` TOC
+  (phase 1 results).
 - **Data:** `data/forever/quests.jsonl` and `pins.jsonl`, built into `QuestCompletist/Forever/` by
   the existing build tools (`-DataDir`, `-AddonDir`).
 - **Menus and categories:** Forever's own. That means the Eastern Kingdoms and Kalimdor zones, the
@@ -114,7 +115,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 
 ## Phases (one PR each)
 
-1. **Beta probe and recorder** (probe branch, not merged): a small addon with a `_Camelot` TOC, run
+1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
 2. **Cache reader** (tool): decodes the cache records, checked against CMaNGOS for the quests both
@@ -126,6 +127,48 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 5. **At launch:** rerun the probe on the live build, compare, and release.
 6. **After launch:** keep recording the new content's givers, and look up the rest on Wowhead.
 
+### Phase 1 results (5 October 2026, beta build 70205, enUS)
+
+Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and both caches are in
+`tools/forever_probe_70205/` in the main checkout (not in git).
+
+- **TOC and load test.** Forever read `QCForeverProbe_Camelot.toc`, so the `_Camelot` suffix works.
+  Of the per-file conditions, `camelot` and `mainline` match Forever, and `standard`, `classic` and
+  `vanilla` are recognised and don't match. `forever` isn't recognised, so `[AllowLoadGameType
+  forever]` loads, as QuestieDB found. Whether retail recognises `camelot` is untested, so two TOCs
+  stay the safe design.
+- **The beta only answers quests up to about level 40.** All 6,609 quests took 9½ minutes at 4 in
+  flight: 2,860 answered (63 were already in the cache) and 3,749 failed. Failures follow the quest's
+  level: 0–4% up to level 35, rising from 36 to 45, and nearly all from level 46. Zones, dungeons and
+  raids for level 45 and up failed almost entirely. It isn't faction or class. Horde-only quests
+  answered about as often as Alliance-only ones (60% against 66%), and other classes' quests about as
+  often as everyone's. Rerun the probe when the beta opens higher levels; a plain rerun asks again
+  about everything that hasn't answered.
+- **849 of the 1,804 new quests answered**, such as "Camping 101: Cooking", "Trouble in the Valley"
+  and the dungeon quest "Horrors in the Highland".
+- **CMaNGOS agrees.** Of the 1,811 quests both have, levels match for 1,795. Titles match for 1,783.
+  The other 28 are Blizzard's capitalisation and wording (`WANTED: "Hogger"`, "Look to the Stars"),
+  and Blizzard's version wins. 201 of the 1,273 old IDs CMaNGOS lacks answered, all internal:
+  "<UNUSED>", "<TXT>", "<NYI>" and test quests.
+- **Tags and recurrence:** 129 dungeon, 115 elite, 17 PvP and 6 raid quests. The quest classification
+  calls 171 quests Recurring, while `IsRepeatableQuest` said no to every quest.
+- **All 1,460 NPCs were named**, 113 at once and the rest on the 1-second re-check, in under 6
+  minutes. No `TOOLTIP_DATA_UPDATE` named one. 1,458 names match CMaNGOS, and Forever renamed two:
+  8479 Kalaran Windblade is now Velarok Windblade, and 10776 Finkle Einhorn is Pip Quickwit.
+- **The quest cache** (2,860 records) holds the server's quest record, laid out as TrinityCore's
+  `QueryQuestInfoResponse`. Against CMaNGOS, the zone (the int32 at byte 24) matches for 1,802 of
+  1,811 quests, the level (byte 8) for 1,795 and the minimum level (byte 16) for 1,743. It also has
+  the follow-up quest, the starting item, reputation rewards, objectives and texts.
+  - The race mask (bytes 440–447) is −1, meaning no restriction, for 2,040 quests; a faction quest's
+    faction comes from its giver. It's an Alliance or Horde race set for 526 quests, and a single race
+    for the starting quests.
+  - The quest-giver field is empty in every record, so givers come from CMaNGOS, the recorder and
+    Wowhead.
+- **The recorder** saved 9 givers in Darkshore (8 NPCs and a wanted poster), 10 offers, and 10
+  accepted quests with their quest log headings ("Darkshore", and "Cooking" for a cooking quest). For
+  all 8 NPCs, CMaNGOS's spawn converted with Forever's map data is within 0.04–0.14 map points of
+  where you stood, and so are our old pins.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -135,10 +178,13 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 
 ## Open questions
 
-- The TOC suffix and interface number at launch.
-- What else the quest cache holds, and whether the beta server answers for every quest.
+- The interface number at launch, and whether the `_Camelot` suffix stays.
+- Whether retail recognises the `camelot` token. That only matters for a one-TOC layout.
+- Which race each bit of the race mask is, from Forever's `ChrRaces` (for the cache reader).
 - Whether Thalid83 plans a Forever version, and whether their Classic data can be compared.
 
 ## Status
 
-- 2026-10-04 and 05: researched and planned. Nothing built.
+- 2026-10-04 and 05: researched and planned.
+- 2026-10-05: phase 1's probe (#139) ran on the beta; results above. Next: rerun it when the beta
+  opens levels above 40, then phase 2.
