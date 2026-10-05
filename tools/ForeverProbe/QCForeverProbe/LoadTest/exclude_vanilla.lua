@@ -1,0 +1,3 @@
+local _, probe = ...
+probe.loadTest = probe.loadTest or {}
+probe.loadTest["exclude vanilla"] = true
