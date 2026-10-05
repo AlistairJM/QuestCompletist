@@ -1412,7 +1412,7 @@
 {"id":1779,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1778}
 {"id":1780,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":1,"class":2,"prereq":1644}
 {"id":1781,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":1,"class":2,"prereq":1780}
-{"id":1782,"name":"Furen's Armor","level":28,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":1,"prereq":1701}
+{"id":1782,"name":"Furen's Armor","level":28,"zone":"Warrior","category":-81,"type":1,"faction":1,"race":0,"class":1,"prereq":1701}
 {"id":1783,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1779}
 {"id":1784,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1783}
 {"id":1785,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1784}
@@ -3112,7 +3112,7 @@
 {"id":7835,"name":"A Donation of Mageweave","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7836,"name":"A Donation of Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7837,"name":"Additional Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"prereq":7836}
-{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"","category":0,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810}
+{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810}
 {"id":7839,"name":"Vilebranch Hooligans","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7840,"name":"Lard Lost His Lunch","level":49,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7841,"name":"Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
@@ -3572,12 +3572,12 @@
 {"id":8560,"name":"Conqueror's Legguards","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
 {"id":8561,"name":"Conqueror's Crown","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
 {"id":8562,"name":"Conqueror's Breastplate","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
-{"id":8565,"name":"Past Victories in Arathi","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8566,"name":"Past Victories in Arathi","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8567,"name":"Past Victories in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8568,"name":"Past Victories in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8569,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8570,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8565,"name":"Past Victories in Arathi","level":1,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8566,"name":"Past Victories in Arathi","level":1,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8567,"name":"Past Victories in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8568,"name":"Past Victories in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8569,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8570,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8572,"name":"Veteran's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8573,"name":"Champion's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8574,"name":"Stalwart's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8800}

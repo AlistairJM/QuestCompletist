@@ -21,11 +21,11 @@ out until the game answers for it. Every kept quest QuestV2 lacks is listed for 
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
-            profession, holiday and Forever's other headings; 0 for none, or for an area the
-            client's AreaTable doesn't have. A quest filed under an area named after an instance
-            (Gnomeregan in Dun Morogh) gets the instance's own area; one filed under any other
-            subzone (Valley of Trials) gets its zone, as retail's categories are zones. zone is its
-            name.
+            profession, holiday and Forever's other headings; CMaNGOS's when the game's record
+            has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
+            filed under an area named after an instance (Gnomeregan in Dun Morogh) gets the
+            instance's own area; one filed under any other subzone (Valley of Trials) gets its
+            zone, as retail's categories are zones. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
@@ -364,7 +364,8 @@ foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
     if ($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) { Add-Review 'left out: internal title' $id '' $title; continue }
-    $category = if ($c) { [int]$c.sort } else { $m.Zone }
+    $category = if ($c -and [int]$c.sort) { [int]$c.sort } elseif ($m) { $m.Zone } else { 0 }
+    if ($c -and -not [int]$c.sort -and $category) { Add-Review "no zone in the game's record, so CMaNGOS's" $id $category $title }
     if ($category -ne 0 -and -not $sortName.ContainsKey($category)) {
         Add-Review 'zone not in the client, so Uncategorized' $id $category $title
         $category = 0
