@@ -1412,7 +1412,7 @@
 {"id":1779,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1778}
 {"id":1780,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":1,"class":2,"prereq":1644}
 {"id":1781,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":1,"class":2,"prereq":1780}
-{"id":1782,"name":"Furen's Armor","level":28,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":1,"prereq":1701}
+{"id":1782,"name":"Furen's Armor","level":28,"zone":"Warrior","category":-81,"type":1,"faction":1,"race":0,"class":1,"prereq":1701}
 {"id":1783,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1779}
 {"id":1784,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1783}
 {"id":1785,"name":"The Tome of Divinity","level":13,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":4,"class":2,"prereq":1784}
@@ -3019,22 +3019,8 @@
 {"id":7657,"name":"Imperial Plate Helm","level":60,"zone":"Blacksmithing","category":-121,"type":32,"faction":3,"race":0,"class":8191,"profession":2,"prereq":7652}
 {"id":7658,"name":"Imperial Plate Leggings","level":60,"zone":"Blacksmithing","category":-121,"type":32,"faction":3,"race":0,"class":8191,"profession":2,"prereq":7652}
 {"id":7659,"name":"Imperial Plate Shoulders","level":60,"zone":"Blacksmithing","category":-121,"type":32,"faction":3,"race":0,"class":8191,"profession":2,"prereq":7652}
-{"id":7660,"name":"Wolf Swapping - Arctic Wolf","level":1,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191}
-{"id":7661,"name":"Wolf Swapping - Red Wolf","level":1,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191}
-{"id":7662,"name":"New Kodo - Teal","level":1,"zone":"Thunder Bluff","category":1638,"type":2,"faction":2,"race":0,"class":8191}
-{"id":7663,"name":"New Kodo - Green","level":1,"zone":"Thunder Bluff","category":1638,"type":2,"faction":2,"race":0,"class":8191}
-{"id":7664,"name":"Ivory Raptor Replacement","level":1,"zone":"Durotar","category":14,"type":2,"faction":2,"race":0,"class":8191}
-{"id":7665,"name":"Red Raptor Replacement","level":1,"zone":"Durotar","category":14,"type":2,"faction":2,"race":0,"class":8191}
 {"id":7666,"name":"Again Into the Great Ossuary","level":60,"zone":"Paladin","category":-141,"type":2,"faction":1,"race":5,"class":2,"prereq":7647}
 {"id":7667,"name":"Material Assistance","level":60,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64}
-{"id":7671,"name":"Frostsaber Replacement","level":1,"zone":"Darnassus","category":1657,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7672,"name":"Nightsaber Replacement","level":1,"zone":"Darnassus","category":1657,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7673,"name":"Frost Ram Exchange","level":1,"zone":"Dun Morogh","category":1,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7674,"name":"Black Ram Exchange","level":1,"zone":"Dun Morogh","category":1,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7675,"name":"Icy Blue Mechanostrider Replacement","level":1,"zone":"Dun Morogh","category":1,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7676,"name":"White Mechanostrider Replacement","level":1,"zone":"Dun Morogh","category":1,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7677,"name":"White Stallion Exchange","level":1,"zone":"Elwynn Forest","category":12,"type":2,"faction":1,"race":0,"class":8191}
-{"id":7678,"name":"Palomino Exchange","level":1,"zone":"Elwynn Forest","category":12,"type":2,"faction":1,"race":0,"class":8191}
 {"id":7701,"name":"WANTED: Overseer Maltorius","level":50,"zone":"Searing Gorge","category":51,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7703,"name":"Unfinished Gordok Business","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7704,"name":"Look at the Size of It!","level":50,"zone":"Searing Gorge","category":51,"type":1,"faction":3,"race":0,"class":8191}
@@ -3112,7 +3098,7 @@
 {"id":7835,"name":"A Donation of Mageweave","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7836,"name":"A Donation of Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7837,"name":"Additional Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"prereq":7836}
-{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"","category":0,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810}
+{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810}
 {"id":7839,"name":"Vilebranch Hooligans","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7840,"name":"Lard Lost His Lunch","level":49,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7841,"name":"Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191}
@@ -3146,7 +3132,6 @@
 {"id":7884,"name":"Crocolisk Boy and the Bearded Murloc","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7885,"name":"Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7886,"name":"Talismans of Merit","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7873}
-{"id":7887,"name":"Talismans of Merit","level":35,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7871}
 {"id":7888,"name":"Talismans of Merit","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7872}
 {"id":7889,"name":"Coarse Weightstone","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7890,"name":"Heavy Grinding Stone","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
@@ -3166,11 +3151,8 @@
 {"id":7905,"name":"The Darkmoon Faire","level":60,"zone":"Ironforge","category":1537,"type":64,"faction":1,"race":0,"class":8191,"holiday":8192}
 {"id":7907,"name":"Darkmoon Beast Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7908,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191}
-{"id":7921,"name":"Talismans of Merit","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7788}
 {"id":7922,"name":"Mark of Honor","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7876}
 {"id":7923,"name":"Mark of Honor","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7875}
-{"id":7924,"name":"Mark of Honor","level":35,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7874}
-{"id":7925,"name":"Mark of Honor","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7789}
 {"id":7926,"name":"The Darkmoon Faire","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7927,"name":"Darkmoon Portals Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7928,"name":"Darkmoon Warlords Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
@@ -3276,14 +3258,10 @@
 {"id":8155,"name":"Arathi Basin Resources!","level":25,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
 {"id":8156,"name":"Arathi Basin Resources!","level":35,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
 {"id":8157,"name":"More Resource Crates","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8154}
-{"id":8158,"name":"More Resource Crates","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8155}
-{"id":8159,"name":"More Resource Crates","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8156}
 {"id":8160,"name":"Cut Arathor Supply Lines","level":45,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8161,"name":"Cut Arathor Supply Lines","level":35,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8162,"name":"Cut Arathor Supply Lines","level":25,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8163,"name":"More Resource Crates","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8160}
-{"id":8164,"name":"More Resource Crates","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8161}
-{"id":8165,"name":"More Resource Crates","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8162}
 {"id":8166,"name":"The Battle for Arathi Basin!","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191}
 {"id":8167,"name":"The Battle for Arathi Basin!","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191}
 {"id":8168,"name":"The Battle for Arathi Basin!","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191}
@@ -3430,13 +3408,9 @@
 {"id":8381,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":384,"prereq":8315}
 {"id":8382,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":512,"prereq":8315}
 {"id":8383,"name":"Remember Alterac Valley!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"prereq":8375}
-{"id":8384,"name":"Claiming Arathi Basin","level":29,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8374}
 {"id":8385,"name":"Concerted Efforts","level":60,"zone":"Ironforge","category":1537,"type":2,"faction":1,"race":0,"class":8191,"prereq":8371}
-{"id":8386,"name":"Fight for Warsong Gulch","level":19,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8372}
 {"id":8387,"name":"Invaders of Alterac Valley","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"prereq":8369}
 {"id":8388,"name":"For Great Honor","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"prereq":8367}
-{"id":8389,"name":"Battle of Warsong Gulch","level":19,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8368}
-{"id":8390,"name":"Conquering Arathi Basin","level":29,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8370}
 {"id":8391,"name":"Claiming Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8393}
 {"id":8392,"name":"Claiming Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8394}
 {"id":8393,"name":"Claiming Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
@@ -3450,7 +3424,6 @@
 {"id":8401,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
 {"id":8402,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
 {"id":8403,"name":"Fight for Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8404,"name":"Fight for Warsong Gulch","level":29,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8399}
 {"id":8405,"name":"Fight for Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8400}
 {"id":8406,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8401}
 {"id":8407,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8402}
@@ -3477,7 +3450,6 @@
 {"id":8428,"name":"Battle of Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8429,"name":"Battle of Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8430,"name":"Battle of Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8431,"name":"Battle of Warsong Gulch","level":29,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8426}
 {"id":8432,"name":"Battle of Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8427}
 {"id":8433,"name":"Battle of Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8428}
 {"id":8434,"name":"Battle of Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8429}
@@ -3572,12 +3544,12 @@
 {"id":8560,"name":"Conqueror's Legguards","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
 {"id":8561,"name":"Conqueror's Crown","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
 {"id":8562,"name":"Conqueror's Breastplate","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
-{"id":8565,"name":"Past Victories in Arathi","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8566,"name":"Past Victories in Arathi","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8567,"name":"Past Victories in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8568,"name":"Past Victories in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8569,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8570,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"","category":0,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8565,"name":"Past Victories in Arathi","level":1,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8566,"name":"Past Victories in Arathi","level":1,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8567,"name":"Past Victories in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8568,"name":"Past Victories in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8569,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8570,"name":"Past Efforts in Warsong Gulch","level":1,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
 {"id":8572,"name":"Veteran's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8573,"name":"Champion's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8574,"name":"Stalwart's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8800}

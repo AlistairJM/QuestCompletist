@@ -440,7 +440,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    The client's `QuestV2` isn't a list of every quest. It lists the quests the game records as
    completed, so it leaves out repeatable ones. The importer keeps CMaNGOS's repeatable quests
    without it; any other CMaNGOS quest it lacks comes in once the probe gets an answer for it. The
-   review list names each kept quest `QuestV2` lacks.
+   review list names each kept quest `QuestV2` lacks. A quest `QuestV2` lacks that the beta refused
+   at level 1 to 35, where it answers nearly everything, is left out until the server answers it.
    A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
@@ -590,7 +591,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673
-  pins for retail, and 5,109 quests and 1,739 pins for Forever.
+  pins for retail, and 5,081 quests and 1,732 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.

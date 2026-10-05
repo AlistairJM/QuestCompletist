@@ -20,12 +20,9 @@
 {"map":1411,"icon":9,"npc":3294,"name":"Ophek","x":54.37,"y":41.29,"quests":[1506]}
 {"map":1411,"icon":1,"npc":3304,"name":"Master Vornal","x":55.94,"y":74.39,"quests":[818]}
 {"map":1411,"icon":1,"npc":3336,"name":"Takrin Pathseeker","x":50.84,"y":43.59,"quests":[840]}
-{"map":1411,"icon":9,"npc":3484,"name":"Kil'hala","x":13.33,"y":66.32,"quests":[1946]}
 {"map":1411,"icon":9,"npc":3706,"name":"Tai'jin","x":54.26,"y":42.93,"quests":[5648,5655,5660]}
 {"map":1411,"icon":9,"npc":3707,"name":"Ken'jai","x":42.36,"y":68.81,"quests":[5649,5657]}
 {"map":1411,"icon":9,"npc":5765,"name":"Ruzan","x":42.59,"y":69,"quests":[1485,1499]}
-{"map":1411,"icon":1,"npc":5767,"name":"Nalpak","x":1.41,"y":73.9,"quests":[1486]}
-{"map":1411,"icon":1,"npc":5768,"name":"Ebru","x":1.45,"y":74.06,"quests":[1487]}
 {"map":1411,"icon":9,"npc":5880,"name":"Un'Thuwa","x":56.31,"y":75.11,"quests":[1884]}
 {"map":1411,"icon":9,"npc":5887,"name":"Canaga Earthcaller","x":42.4,"y":69.17,"quests":[1463,1516,1517]}
 {"map":1411,"icon":9,"npc":5891,"name":"Minor Manifestation of Earth","x":44.03,"y":76.2,"quests":[1518,1521]}
@@ -33,19 +30,12 @@
 {"map":1411,"icon":9,"npc":6408,"name":"Ula'elek","x":56.31,"y":74.33,"quests":[1842,1843]}
 {"map":1411,"icon":1,"npc":6786,"name":"Ukor","x":52.06,"y":68.31,"quests":[2161]}
 {"map":1411,"icon":9,"npc":7233,"name":"Taskmaster Fizzule","x":19.52,"y":16.21,"quests":[2478]}
-{"map":1411,"icon":1,"npc":7952,"name":"Zjolnir","x":55.23,"y":75.65,"quests":[7664,7665]}
-{"map":1411,"icon":3,"npc":8738,"name":"Vazario Linkgrease","x":33.43,"y":75.04,"quests":[3646]}
 {"map":1411,"icon":1,"npc":9796,"name":"Galgar","x":42.73,"y":67.23,"quests":[4402]}
 {"map":1411,"icon":1,"npc":10176,"name":"Kaltunk","x":43.29,"y":68.53,"quests":[4641]}
 {"map":1411,"icon":1,"npc":11378,"name":"Foreman Thazz'ril","x":44.63,"y":68.65,"quests":[5441,6394]}
 {"map":1411,"icon":5,"npc":15012,"name":"Javnir Nashak","x":46.1,"y":13.77,"quests":[8150]}
 {"map":1411,"icon":5,"npc":15572,"name":"Elder Runetotem","x":53.2,"y":43.68,"quests":[8670]}
-{"map":1411,"icon":5,"npc":15582,"name":"Elder Windtotem","x":33.43,"y":75.96,"quests":[8680]}
-{"map":1411,"icon":5,"npc":15597,"name":"Elder Moonwarden","x":11.83,"y":64.43,"quests":[8717]}
 {"map":1411,"icon":5,"npc":15732,"name":"Wonderform Operator","x":49.99,"y":13.59,"quests":[8827,8828,8860,8861]}
-{"map":1411,"icon":1,"name":"Flawed Power Stone","x":32.75,"y":43.95,"quests":[926]}
-{"map":1411,"icon":1,"name":"Flawed Power Stones","x":32.76,"y":43.96,"quests":[926]}
-{"map":1411,"icon":1,"name":"Flawed Power Stones","x":32.75,"y":43.96,"quests":[926]}
 {"map":1411,"icon":9,"name":"Brazier of the Dormant Flame","x":38.96,"y":58.22,"quests":[1527]}
 {"map":1412,"icon":1,"npc":2947,"name":"Harken Windtotem","x":47.67,"y":62.69,"quests":[761]}
 {"map":1412,"icon":1,"npc":2948,"name":"Mull Thunderhorn","x":47.52,"y":63.58,"quests":[748,754,756,758,759,760]}
@@ -68,13 +58,17 @@
 {"map":1412,"icon":9,"npc":3066,"name":"Narm Skychaser","x":47.4,"y":62.54,"quests":[2984,2986]}
 {"map":1412,"icon":1,"npc":3209,"name":"Brave Windfeather","x":44.18,"y":77.03,"quests":[3376]}
 {"map":1412,"icon":1,"npc":3233,"name":"Lorekeeper Raintotem","x":56.98,"y":34.55,"quests":[833]}
-{"map":1412,"icon":1,"npc":3685,"name":"Harb Clawhoof","x":46.66,"y":62.08,"quests":[7662,7663]}
 {"map":1412,"icon":9,"npc":5888,"name":"Seer Ravenfeather","x":44.35,"y":76.76,"quests":[1462,1519,1520]}
 {"map":1412,"icon":9,"npc":5891,"name":"Minor Manifestation of Earth","x":52,"y":80.4,"quests":[1518,1521]}
 {"map":1412,"icon":1,"npc":6775,"name":"Antur Fallow","x":39.17,"y":81.24,"quests":[1656]}
 {"map":1412,"icon":9,"npc":11407,"name":"Var'jun","x":46.21,"y":62.27,"quests":[5654]}
+{"map":1412,"icon":5,"npc":14828,"name":"Gelvas Grimegate","x":38.15,"y":44.65,"quests":[7930,7931,7932,7933,7934,7935,7936,7940,7981]}
+{"map":1412,"icon":5,"npc":14829,"name":"Yebb Neblegear","x":38.35,"y":46.24,"quests":[7899,7900,7901,7902,7903,7943,8222,8223]}
+{"map":1412,"icon":5,"npc":14832,"name":"Kerri Hicks","x":38.62,"y":46.41,"quests":[7889,7890,7891,7892,7893,7939]}
+{"map":1412,"icon":5,"npc":14833,"name":"Chronos","x":37.19,"y":42.53,"quests":[7881,7882,7883,7884,7885,7941]}
+{"map":1412,"icon":5,"npc":14841,"name":"Rinling","x":37.99,"y":44.31,"quests":[7894,7895,7896,7897,7898,7942]}
+{"map":1412,"icon":5,"npc":14871,"name":"Morja","x":36.95,"y":42.58,"quests":[7946]}
 {"map":1412,"icon":5,"npc":15575,"name":"Elder Bloodhoof","x":47.53,"y":57.81,"quests":[8673]}
-{"map":1412,"icon":5,"npc":15587,"name":"Elder Mistwalker","x":22.53,"y":99.17,"quests":[8685]}
 {"map":1412,"icon":1,"name":"Sealed Supply Crate","x":51.87,"y":53.38,"quests":[751]}
 {"map":1413,"icon":1,"npc":620,"name":"Chicken","x":61.63,"y":23.74,"quests":[3861]}
 {"map":1413,"icon":1,"npc":620,"name":"Chicken","x":61.76,"y":53.64,"quests":[3861]}
@@ -105,12 +99,15 @@
 {"map":1413,"icon":1,"npc":3464,"name":"Gazrog","x":51.93,"y":30.32,"quests":[869,1510,3281]}
 {"map":1413,"icon":1,"npc":3465,"name":"Gilthares Firebough","x":61.96,"y":54.96,"quests":[898]}
 {"map":1413,"icon":1,"npc":3483,"name":"Jahan Hawkwing","x":51.21,"y":29.05,"quests":[6361]}
+{"map":1413,"icon":9,"npc":3484,"name":"Kil'hala","x":52.2,"y":31.7,"quests":[1946]}
 {"map":1413,"icon":1,"npc":3489,"name":"Zargh","x":52.62,"y":29.84,"quests":[6365]}
 {"map":1413,"icon":3,"npc":3494,"name":"Tinkerwiz","x":62.67,"y":36.31,"quests":[3633,3634,3637]}
 {"map":1413,"icon":1,"npc":3521,"name":"Ak'Zeloth","x":62.34,"y":20.07,"quests":[924]}
 {"map":1413,"icon":1,"npc":3615,"name":"Devrak","x":51.5,"y":30.34,"quests":[6362,6384]}
 {"map":1413,"icon":1,"npc":3665,"name":"Crane Operator Bigglefuzz","x":63.09,"y":37.61,"quests":[959]}
 {"map":1413,"icon":1,"npc":4049,"name":"Seereth Stonebreak","x":35.26,"y":27.88,"quests":[1062,1063,1068]}
+{"map":1413,"icon":1,"npc":5767,"name":"Nalpak","x":45.99,"y":35.66,"quests":[1486]}
+{"map":1413,"icon":1,"npc":5768,"name":"Ebru","x":46.01,"y":35.74,"quests":[1487]}
 {"map":1413,"icon":9,"npc":5810,"name":"Uzzek","x":61.38,"y":21.12,"quests":[1498,1502]}
 {"map":1413,"icon":9,"npc":5878,"name":"Thun'grim Firegaze","x":57.23,"y":30.34,"quests":[1503,1838,1839,1840,1841,1848]}
 {"map":1413,"icon":9,"npc":5899,"name":"Brine","x":43.42,"y":77.41,"quests":[220,1534,1535,1536]}
@@ -130,13 +127,21 @@
 {"map":1413,"icon":1,"npc":8418,"name":"Falla Sagewind","x":48.18,"y":32.78,"quests":[3369,3370]}
 {"map":1413,"icon":1,"npc":8496,"name":"Liv Rizzlefix","x":62.45,"y":38.73,"quests":[4146,4502]}
 {"map":1413,"icon":1,"npc":8582,"name":"Kadrak","x":48.12,"y":5.42,"quests":[3514,6543]}
+{"map":1413,"icon":3,"npc":8738,"name":"Vazario Linkgrease","x":62.69,"y":36.25,"quests":[3646]}
 {"map":1413,"icon":1,"npc":9316,"name":"Wenikee Boltbucket","x":49.05,"y":11.17,"quests":[3922,3923]}
 {"map":1413,"icon":1,"npc":11857,"name":"Makaba Flathoof","x":35.19,"y":27.76,"quests":[6401,6548,6629]}
 {"map":1413,"icon":1,"npc":12866,"name":"Myriam Moonsinger","x":49.01,"y":94.94,"quests":[6626]}
-{"map":1413,"icon":1,"npc":15350,"name":"Horde Warbringer","x":46.71,"y":8.68,"quests":[8367,8368,8369,8370,8387,8388,8389,8390,8426,8427,8428,8429,8430,8431,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1413,"icon":1,"npc":14754,"name":"Kelm Hargunth","x":46.65,"y":8.38,"quests":[7866,7867,7868]}
+{"map":1413,"icon":1,"npc":15350,"name":"Horde Warbringer","x":46.71,"y":8.68,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1413,"icon":5,"npc":15582,"name":"Elder Windtotem","x":62.7,"y":36.73,"quests":[8680]}
+{"map":1413,"icon":5,"npc":15588,"name":"Elder High Mountain","x":45.09,"y":57.92,"quests":[8686]}
+{"map":1413,"icon":5,"npc":15597,"name":"Elder Moonwarden","x":51.42,"y":30.71,"quests":[8717]}
 {"map":1413,"icon":1,"npc":16418,"name":"Mupsi Shacklefridd","x":61.21,"y":37.85,"quests":[9267]}
 {"map":1413,"icon":1,"name":"WANTED","x":62.59,"y":37.47,"quests":[895]}
 {"map":1413,"icon":1,"name":"Control Console","x":52.4,"y":11.65,"quests":[900,901,902]}
+{"map":1413,"icon":1,"name":"Flawed Power Stone","x":62.34,"y":20.03,"quests":[926]}
+{"map":1413,"icon":1,"name":"Flawed Power Stones","x":62.34,"y":20.03,"quests":[926]}
+{"map":1413,"icon":1,"name":"Flawed Power Stones","x":62.34,"y":20.04,"quests":[926]}
 {"map":1416,"icon":1,"npc":2316,"name":"Gol'dir","x":59.96,"y":43.74,"quests":[506]}
 {"map":1416,"icon":1,"npc":2317,"name":"Elysa","x":39.3,"y":14.31,"quests":[508]}
 {"map":1416,"icon":1,"npc":2333,"name":"Henchman Valik","x":57.17,"y":69.51,"quests":[535]}
@@ -155,8 +160,8 @@
 {"map":1416,"icon":1,"npc":13817,"name":"Voggah Deathgrip","x":63.84,"y":60.47,"quests":[7142,8272]}
 {"map":1416,"icon":1,"npc":13840,"name":"Warmaster Laggrond","x":62.27,"y":58.89,"quests":[7161,7163,7164,7165,7166,7167]}
 {"map":1416,"icon":1,"npc":13841,"name":"Lieutenant Haggerdin","x":39.46,"y":81.23,"quests":[7162,7168,7169,7170,7171,7172]}
-{"map":1416,"icon":1,"npc":15350,"name":"Horde Warbringer","x":63.09,"y":59.87,"quests":[8367,8368,8369,8370,8387,8388,8389,8390,8426,8427,8428,8429,8430,8431,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
-{"map":1416,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":39.29,"y":82.33,"quests":[8371,8372,8374,8375,8383,8384,8385,8386,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8404,8405,8406,8407,8408]}
+{"map":1416,"icon":1,"npc":15350,"name":"Horde Warbringer","x":63.09,"y":59.87,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1416,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":39.29,"y":82.33,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
 {"map":1416,"icon":1,"name":"Syndicate Documents","x":58.32,"y":67.92,"quests":[510,511]}
 {"map":1416,"icon":9,"name":"Bath'rah's Cauldron","x":79.32,"y":66.8,"quests":[1714]}
 {"map":1416,"icon":5,"name":"Fragrant Cauldron","x":89.58,"y":75.66,"quests":[9029]}
@@ -185,8 +190,9 @@
 {"map":1417,"icon":1,"npc":15021,"name":"Deathmaster Dwire","x":73.25,"y":29.73,"quests":[8120,8121,8122,8169,8170,8171]}
 {"map":1417,"icon":1,"npc":15126,"name":"Rutherford Twing","x":73.37,"y":29.67,"quests":[8263,8264,8265]}
 {"map":1417,"icon":1,"npc":15127,"name":"Samuel Hawke","x":45.97,"y":45.21,"quests":[8260,8261,8262]}
-{"map":1417,"icon":1,"npc":15350,"name":"Horde Warbringer","x":73.5,"y":29.13,"quests":[8367,8368,8369,8370,8387,8388,8389,8390,8426,8427,8428,8429,8430,8431,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
-{"map":1417,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":45.65,"y":45.75,"quests":[8371,8372,8374,8375,8383,8384,8385,8386,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8404,8405,8406,8407,8408]}
+{"map":1417,"icon":1,"npc":15350,"name":"Horde Warbringer","x":73.5,"y":29.13,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1417,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":45.65,"y":45.75,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
+{"map":1417,"icon":1,"name":"Ebenezer Rustlocke's Corpse","x":45.66,"y":93.08,"quests":[632]}
 {"map":1417,"icon":1,"name":"Keystone","x":36.08,"y":58.09,"quests":[653,688]}
 {"map":1417,"icon":1,"name":"Iridescent Shards","x":84.31,"y":30.95,"quests":[651]}
 {"map":1417,"icon":1,"name":"Stone of Inner Binding","x":36.23,"y":57.38,"quests":[652]}
@@ -216,6 +222,8 @@
 {"map":1418,"icon":1,"name":"Crumpled Map","x":53.03,"y":33.94,"quests":[720]}
 {"map":1418,"icon":1,"name":"Battered Dwarven Skeleton","x":50.89,"y":62.4,"quests":[739]}
 {"map":1418,"icon":1,"name":"Seal of the Earth","x":81.52,"y":49.94,"quests":[779,795]}
+{"map":1418,"icon":1,"name":"WANTED","x":3.74,"y":47.43,"quests":[4081]}
+{"map":1418,"icon":1,"name":"KILL ON SIGHT","x":3.94,"y":46.73,"quests":[4082]}
 {"map":1419,"icon":1,"npc":7363,"name":"Kum'isha the Collector","x":51.98,"y":35.65,"quests":[2521,2522,3501,3502]}
 {"map":1419,"icon":1,"npc":7505,"name":"Bloodmage Drazial","x":50.55,"y":14.2,"quests":[2581,2582,2583,2584,2585,2586]}
 {"map":1419,"icon":1,"npc":7506,"name":"Bloodmage Lynnore","x":50.64,"y":14.3,"quests":[2601,2602,2603,2604]}
@@ -253,12 +261,14 @@
 {"map":1420,"icon":1,"npc":10665,"name":"Junior Apothecary Holland","x":57.44,"y":48.85,"quests":[5482]}
 {"map":1420,"icon":1,"npc":10666,"name":"Gordo","x":43.06,"y":54.69,"quests":[5481]}
 {"map":1420,"icon":1,"npc":10837,"name":"High Executor Derrington","x":83.13,"y":68.94,"quests":[105,838,5096,5098,5228,5238,5511]}
+{"map":1420,"icon":1,"npc":10839,"name":"Argent Officer Garush","x":83.19,"y":68.45,"quests":[5405,5406,5407,5408]}
 {"map":1420,"icon":1,"npc":10856,"name":"Argent Quartermaster Hasana","x":83.26,"y":68.14,"quests":[5504,5524]}
 {"map":1420,"icon":1,"npc":11022,"name":"Alexi Barov","x":83.06,"y":71.6,"quests":[5341,5342]}
 {"map":1420,"icon":1,"npc":11055,"name":"Shadow Priestess Vandis","x":83.04,"y":71.91,"quests":[5229,5231,5233,5235]}
 {"map":1420,"icon":1,"npc":11057,"name":"Apothecary Dithers","x":83.28,"y":69.23,"quests":[964,5514,5804]}
 {"map":1420,"icon":1,"npc":11615,"name":"Mickey Levine","x":83.29,"y":72.34,"quests":[5901,5902]}
 {"map":1420,"icon":5,"npc":15197,"name":"Darkcaller Yanka","x":55.58,"y":69.9,"quests":[1657,8322]}
+{"map":1420,"icon":5,"npc":15568,"name":"Elder Graveborn","x":61.87,"y":53.84,"quests":[8652]}
 {"map":1420,"icon":5,"npc":15732,"name":"Wonderform Operator","x":61.03,"y":59.36,"quests":[8827,8828,8860,8861]}
 {"map":1420,"icon":5,"npc":16003,"name":"Deathguard Tor","x":60.66,"y":59.48,"quests":[8902]}
 {"map":1420,"icon":1,"name":"Wanted!","x":60.74,"y":51.5,"quests":[398]}
@@ -287,7 +297,6 @@
 {"map":1422,"icon":1,"npc":10739,"name":"Mulgris Deepriver","x":53.73,"y":64.66,"quests":[4984,4985,4986,4987]}
 {"map":1422,"icon":1,"npc":10778,"name":"Janice Felstone","x":38.4,"y":54.05,"quests":[5021,5051]}
 {"map":1422,"icon":1,"npc":10838,"name":"Commander Ashlam Valorfist","x":42.7,"y":84.03,"quests":[211,5092,5097,5215,5237,5533,8414,8418]}
-{"map":1422,"icon":1,"npc":10839,"name":"Argent Officer Garush","x":26.57,"y":55.51,"quests":[5405,5406,5407,5408]}
 {"map":1422,"icon":1,"npc":10840,"name":"Argent Officer Pureheart","x":42.97,"y":83.55,"quests":[5401,5402,5403,5404]}
 {"map":1422,"icon":1,"npc":10857,"name":"Argent Quartermaster Lightspark","x":42.84,"y":83.72,"quests":[5507,5521]}
 {"map":1422,"icon":1,"npc":10927,"name":"Marlene Redpath","x":49.17,"y":78.57,"quests":[5142,5153]}
@@ -302,8 +311,7 @@
 {"map":1422,"icon":1,"npc":11872,"name":"Myranda the Hag","x":50.79,"y":77.85,"quests":[5862,6569,6570]}
 {"map":1422,"icon":1,"npc":11936,"name":"Artist Renfray","x":65.77,"y":75.37,"quests":[5848]}
 {"map":1422,"icon":1,"npc":12425,"name":"Flint Shadowmore","x":43.61,"y":84.51,"quests":[6185,6186]}
-{"map":1422,"icon":5,"npc":15568,"name":"Elder Graveborn","x":4.17,"y":40.16,"quests":[8652]}
-{"map":1422,"icon":5,"npc":15592,"name":"Elder Windrun","x":96.24,"y":52.77,"quests":[8688]}
+{"map":1422,"icon":5,"npc":15594,"name":"Elder Moonstrike","x":69.18,"y":73.45,"quests":[8714]}
 {"map":1422,"icon":5,"npc":15602,"name":"Elder Meadowrun","x":65.97,"y":47.82,"quests":[8722]}
 {"map":1422,"icon":1,"name":"Janice's Parcel","x":38.73,"y":55.24,"quests":[5022,5023]}
 {"map":1422,"icon":1,"name":"Locked Cabinet","x":47.35,"y":49.63,"quests":[5060]}
@@ -332,6 +340,7 @@
 {"map":1423,"icon":1,"npc":12384,"name":"Augustus the Touched","x":11.35,"y":26.37,"quests":[6164]}
 {"map":1423,"icon":9,"npc":14494,"name":"Eris Havenfire","x":17.21,"y":12.79,"quests":[7621,7622]}
 {"map":1423,"icon":5,"npc":15566,"name":"Elder Snowcrown","x":71.69,"y":50.71,"quests":[8650]}
+{"map":1423,"icon":5,"npc":15592,"name":"Elder Windrun","x":34.06,"y":64.11,"quests":[8688]}
 {"map":1423,"icon":1,"npc":16016,"name":"Anthion Harmon","x":26.12,"y":11.3,"quests":[8945,8947,8948,8951,8952,8953,8954,8955,8956,8957,8958,8959,9016,9017,9018,9019,9020,9021,9022]}
 {"map":1423,"icon":1,"npc":16112,"name":"Korfax, Champion of the Light","x":71.95,"y":48.51,"quests":[9131,9132,9229,9230]}
 {"map":1423,"icon":1,"npc":16115,"name":"Commander Eligor Dawnbringer","x":71.72,"y":48.59,"quests":[9033]}
@@ -399,7 +408,6 @@
 {"map":1425,"icon":1,"npc":14741,"name":"Huntsman Markhor","x":79.16,"y":79.53,"quests":[7828,7829,7830,7849]}
 {"map":1425,"icon":1,"npc":14757,"name":"Elder Torntusk","x":59.69,"y":77.84,"quests":[7846,7847]}
 {"map":1425,"icon":5,"npc":15559,"name":"Elder Highpeak","x":50,"y":48.05,"quests":[8643]}
-{"map":1425,"icon":5,"npc":15594,"name":"Elder Moonstrike","x":25.54,"y":8.01,"quests":[8714]}
 {"map":1425,"icon":1,"name":"Rin'ji's Secret","x":86.3,"y":59.01,"quests":[2782]}
 {"map":1425,"icon":1,"name":"Venom Bottle","x":23.54,"y":58.8,"quests":[2933]}
 {"map":1425,"icon":1,"name":"Venom Bottle","x":23.21,"y":58.65,"quests":[2933]}
@@ -431,7 +439,6 @@
 {"map":1426,"icon":9,"npc":1234,"name":"Hogral Bakkan","x":47.56,"y":52.61,"quests":[2218,2299]}
 {"map":1426,"icon":1,"npc":1252,"name":"Senir Whitebeard","x":46.73,"y":53.83,"quests":[287,291]}
 {"map":1426,"icon":1,"npc":1254,"name":"Foreman Stonebrow","x":69.08,"y":56.33,"quests":[432]}
-{"map":1426,"icon":1,"npc":1261,"name":"Veron Amberstill","x":63.47,"y":50.56,"quests":[7673,7674]}
 {"map":1426,"icon":1,"npc":1265,"name":"Rudra Amberstill","x":63.08,"y":49.85,"quests":[314]}
 {"map":1426,"icon":1,"npc":1266,"name":"Tundra MacGrann","x":34.57,"y":51.65,"quests":[312]}
 {"map":1426,"icon":1,"npc":1267,"name":"Ragnar Thunderbrew","x":46.83,"y":52.36,"quests":[384,4126]}
@@ -452,7 +459,6 @@
 {"map":1426,"icon":9,"npc":6181,"name":"Jordan Stilwell","x":52.49,"y":36.92,"quests":[1654,1806]}
 {"map":1426,"icon":1,"npc":6782,"name":"Hands Springsprocket","x":33.85,"y":72.24,"quests":[2160]}
 {"map":1426,"icon":9,"npc":6886,"name":"Onin MacHammar","x":25.16,"y":44.45,"quests":[2239]}
-{"map":1426,"icon":1,"npc":7955,"name":"Milli Featherwhistle","x":49.13,"y":47.95,"quests":[7675,7676]}
 {"map":1426,"icon":1,"npc":8416,"name":"Felix Whindlebolt","x":28.55,"y":67.64,"quests":[3361]}
 {"map":1426,"icon":1,"npc":12738,"name":"Nori Pridedrift","x":24.98,"y":75.96,"quests":[3364]}
 {"map":1426,"icon":5,"npc":15011,"name":"Wagner Hammerstrike","x":52.6,"y":36.03,"quests":[8149]}
@@ -469,15 +475,10 @@
 {"map":1427,"icon":3,"npc":8439,"name":"Nilith Lokrav","x":40.99,"y":74.95,"quests":[3379,3385,3402]}
 {"map":1427,"icon":1,"npc":8479,"name":"Velarok Windblade","x":39.06,"y":38.99,"quests":[3441,3442,3443,3452,3453,3454,3462]}
 {"map":1427,"icon":1,"npc":8509,"name":"Squire Maltrake","x":39.17,"y":39,"quests":[3463]}
-{"map":1427,"icon":1,"npc":14387,"name":"Lothos Riftwaker","x":32.13,"y":94.7,"quests":[7848]}
 {"map":1427,"icon":1,"npc":14624,"name":"Master Smith Burninate","x":38.8,"y":28.51,"quests":[7722,7736,7737,8241,8242]}
 {"map":1427,"icon":1,"npc":14627,"name":"Hansel Heavyhands","x":38.58,"y":27.81,"quests":[7723,7724,7727]}
 {"map":1427,"icon":5,"npc":15567,"name":"Elder Ironband","x":21.46,"y":78.97,"quests":[8651]}
-{"map":1427,"icon":5,"npc":15585,"name":"Elder Dawnstrider","x":82.1,"y":94.04,"quests":[8683]}
-{"map":1427,"icon":1,"npc":16033,"name":"Bodley","x":39.87,"y":96.46,"quests":[8961,8962,8963,8964,8965,8966,8967,8968,8969,8970,8985,8986,8987,8988,8989,8990,8991,8992,8994,8995,8997,8998]}
 {"map":1427,"icon":1,"name":"Hoard of the Black Dragonflight","x":38.85,"y":38.99,"quests":[3481]}
-{"map":1427,"icon":1,"name":"WANTED","x":82.89,"y":38.73,"quests":[4081]}
-{"map":1427,"icon":1,"name":"KILL ON SIGHT","x":83.11,"y":37.95,"quests":[4082]}
 {"map":1427,"icon":1,"name":"Wooden Outhouse","x":65.59,"y":62.17,"quests":[4449,4450]}
 {"map":1427,"icon":1,"name":"Singed Letter","x":74.45,"y":19.29,"quests":[3368]}
 {"map":1427,"icon":1,"name":"Wanted/Missing/Lost & Found","x":37.65,"y":26.47,"quests":[7701,7728,7729]}
@@ -495,9 +496,12 @@
 {"map":1428,"icon":1,"npc":9836,"name":"Mathredis Firestar","x":64.99,"y":23.58,"quests":[4463,4481,4482,4483,4484]}
 {"map":1428,"icon":1,"npc":10260,"name":"Kibler","x":65.89,"y":21.92,"quests":[4729,4862]}
 {"map":1428,"icon":1,"npc":10267,"name":"Tinkee Steamboil","x":65.24,"y":24,"quests":[4726,4734,4735,4808,5522]}
+{"map":1428,"icon":1,"npc":14387,"name":"Lothos Riftwaker","x":26.4,"y":24.45,"quests":[7848]}
 {"map":1428,"icon":9,"npc":14436,"name":"Mor'zul Bloodbringer","x":12.69,"y":31.64,"quests":[7563,7564,7626,7627,7628,7631]}
 {"map":1428,"icon":9,"npc":14437,"name":"Gorzeeki Wildeyes","x":12.44,"y":31.63,"quests":[7623,7629,7630]}
 {"map":1428,"icon":5,"npc":15557,"name":"Elder Rumblerock","x":83.13,"y":47.37,"quests":[8636]}
+{"map":1428,"icon":5,"npc":15585,"name":"Elder Dawnstrider","x":64.46,"y":23.95,"quests":[8683]}
+{"map":1428,"icon":1,"npc":16033,"name":"Bodley","x":32.29,"y":25.8,"quests":[8961,8962,8963,8964,8965,8966,8967,8968,8969,8970,8985,8986,8987,8988,8989,8990,8991,8992,8994,8995,8997,8998]}
 {"map":1429,"icon":1,"npc":196,"name":"Eagan Peltskinner","x":48.94,"y":40.16,"quests":[33]}
 {"map":1429,"icon":1,"npc":197,"name":"Marshal McBride","x":48.92,"y":41.61,"quests":[7,15,21,54,3100,3101,3102,3103,3104,3105]}
 {"map":1429,"icon":1,"npc":240,"name":"Marshal Dughan","x":42.11,"y":65.93,"quests":[35,59,62,76,109,147,239]}
@@ -518,7 +522,6 @@
 {"map":1429,"icon":9,"npc":328,"name":"Zaldimar Wefhellt","x":43.25,"y":66.19,"quests":[1860,1919]}
 {"map":1429,"icon":9,"npc":375,"name":"Priestess Anetta","x":49.81,"y":39.49,"quests":[5623]}
 {"map":1429,"icon":9,"npc":377,"name":"Priestess Josetta","x":43.28,"y":65.72,"quests":[5624,5628,5637]}
-{"map":1429,"icon":1,"npc":384,"name":"Katie Hunter","x":84.15,"y":65.49,"quests":[7677,7678]}
 {"map":1429,"icon":9,"npc":459,"name":"Drusilla La Salle","x":49.87,"y":42.65,"quests":[1598]}
 {"map":1429,"icon":1,"npc":514,"name":"Smith Argus","x":41.71,"y":65.54,"quests":[119,1097]}
 {"map":1429,"icon":1,"npc":620,"name":"Chicken","x":6.46,"y":84.59,"quests":[3861]}
@@ -768,7 +771,6 @@
 {"map":1437,"icon":1,"name":"Half-buried Barrel","x":13.94,"y":34.81,"quests":[286]}
 {"map":1437,"icon":1,"name":"Damaged Crate","x":13.52,"y":41.38,"quests":[284]}
 {"map":1437,"icon":1,"name":"Dragonmaw Catapult","x":47.46,"y":47.01,"quests":[474]}
-{"map":1437,"icon":1,"name":"Ebenezer Rustlocke's Corpse","x":51.28,"y":7.95,"quests":[632]}
 {"map":1437,"icon":1,"name":"Waterlogged Chest","x":12.11,"y":64.19,"quests":[324]}
 {"map":1437,"icon":1,"name":"Intrepid's Locked Strongbox","x":14.38,"y":24.04,"quests":[292]}
 {"map":1437,"icon":1,"name":"Sealed Barrel","x":13.6,"y":38.22,"quests":[285]}
@@ -836,6 +838,7 @@
 {"map":1439,"icon":1,"npc":10219,"name":"Gwennyth Bly'Leggonde","x":36.62,"y":45.59,"quests":[3524,4681]}
 {"map":1439,"icon":1,"npc":11218,"name":"Kerlonian Evershade","x":44.4,"y":76.43,"quests":[5321]}
 {"map":1439,"icon":1,"npc":11711,"name":"Sentinel Aynasha","x":45.94,"y":90.29,"quests":[5713]}
+{"map":1439,"icon":5,"npc":15601,"name":"Elder Starweave","x":36.81,"y":46.77,"quests":[8721]}
 {"map":1439,"icon":1,"name":"Twilight Tome","x":38.54,"y":86.05,"quests":[950]}
 {"map":1439,"icon":1,"name":"Buzzbox 827","x":36.64,"y":46.26,"quests":[1001]}
 {"map":1439,"icon":1,"name":"Buzzbox 411","x":41.96,"y":28.62,"quests":[1002]}
@@ -885,8 +888,8 @@
 {"map":1440,"icon":1,"npc":12864,"name":"Warsong Outrider","x":81.83,"y":53.51,"quests":[6546]}
 {"map":1440,"icon":1,"npc":12867,"name":"Kuray'bin","x":71.11,"y":68.12,"quests":[6503]}
 {"map":1440,"icon":1,"npc":14753,"name":"Illiyana Moonblaze","x":61.49,"y":83.86,"quests":[7863,7864,7865]}
-{"map":1440,"icon":1,"npc":14754,"name":"Kelm Hargunth","x":65.97,"y":94.34,"quests":[7866,7867,7868]}
-{"map":1440,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":61.94,"y":83.83,"quests":[8371,8372,8374,8375,8383,8384,8385,8386,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8404,8405,8406,8407,8408]}
+{"map":1440,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":61.94,"y":83.83,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
+{"map":1440,"icon":5,"npc":15605,"name":"Elder Riversong","x":34.65,"y":48.48,"quests":[8725]}
 {"map":1440,"icon":1,"name":"Hidden Shrine","x":56.35,"y":49.2,"quests":[1055]}
 {"map":1441,"icon":1,"npc":2986,"name":"Dorn Plainstalker","x":53.95,"y":41.49,"quests":[1149,1150,1151,1152]}
 {"map":1441,"icon":1,"npc":4452,"name":"Kravel Koalbeard","x":77.79,"y":77.27,"quests":[1110,1111,1114,1115,1118,1120,1121,1122,5762]}
@@ -911,7 +914,6 @@
 {"map":1441,"icon":1,"npc":10941,"name":"Wizlo Bearingshiner","x":21.43,"y":32.55,"quests":[5151]}
 {"map":1441,"icon":5,"npc":15584,"name":"Elder Skyseer","x":45.29,"y":50,"quests":[8682]}
 {"map":1441,"icon":5,"npc":15604,"name":"Elder Morningdew","x":79.74,"y":77.31,"quests":[8724]}
-{"map":1441,"icon":1,"name":"Musty Scroll","x":49.42,"y":13.01,"quests":[626]}
 {"map":1441,"icon":1,"name":"Rizzle's Unguarded Plans","x":77.21,"y":77.39,"quests":[1194]}
 {"map":1441,"icon":1,"name":"Wanted Poster - Arnak Grimtotem","x":46,"y":50.86,"quests":[5147]}
 {"map":1442,"icon":1,"npc":3994,"name":"Keeper Albagorm","x":37.1,"y":8.1,"quests":[1057,1059]}
@@ -930,7 +932,6 @@
 {"map":1442,"icon":1,"npc":11862,"name":"Tsunaman","x":47.36,"y":64.25,"quests":[6393,6562]}
 {"map":1442,"icon":1,"npc":11864,"name":"Tammra Windfield","x":47.46,"y":58.38,"quests":[6301,6381]}
 {"map":1442,"icon":1,"npc":12816,"name":"Xen'Zilla","x":71.25,"y":95.02,"quests":[6461]}
-{"map":1442,"icon":5,"npc":15605,"name":"Elder Riversong","x":72.58,"y":3.29,"quests":[8725]}
 {"map":1442,"icon":1,"name":"Wanted Poster: Besseleth","x":59.06,"y":75.71,"quests":[6284]}
 {"map":1443,"icon":1,"npc":1182,"name":"Brother Anton","x":66.52,"y":7.91,"quests":[261,1052]}
 {"map":1443,"icon":1,"npc":4498,"name":"Maurin Bonesplitter","x":52.25,"y":53.44,"quests":[1435,1481,1482,1484]}
@@ -964,10 +965,6 @@
 {"map":1443,"icon":1,"npc":13698,"name":"Keeper Marandis","x":63.83,"y":10.67,"quests":[7065]}
 {"map":1443,"icon":1,"npc":13699,"name":"Selendra","x":26.87,"y":77.67,"quests":[7064]}
 {"map":1443,"icon":1,"npc":13717,"name":"Centaur Pariah","x":50.42,"y":86.65,"quests":[7067]}
-{"map":1443,"icon":5,"npc":14828,"name":"Gelvas Grimegate","x":91.24,"y":67.28,"quests":[7930,7931,7932,7933,7934,7935,7936,7940,7981]}
-{"map":1443,"icon":5,"npc":14829,"name":"Yebb Neblegear","x":91.51,"y":69.46,"quests":[7899,7900,7901,7902,7903,7943,8222,8223]}
-{"map":1443,"icon":5,"npc":14832,"name":"Kerri Hicks","x":91.89,"y":69.69,"quests":[7889,7890,7891,7892,7893,7939]}
-{"map":1443,"icon":5,"npc":14841,"name":"Rinling","x":91.02,"y":66.81,"quests":[7894,7895,7896,7897,7898,7942]}
 {"map":1443,"icon":1,"name":"Karnitol's Chest","x":36.11,"y":30.45,"quests":[1455]}
 {"map":1443,"icon":1,"name":"Malem Chest","x":56.52,"y":17.84,"quests":[1465]}
 {"map":1443,"icon":1,"name":"Rackmore's Log","x":36.07,"y":30.41,"quests":[6161]}
@@ -1002,6 +999,7 @@
 {"map":1444,"icon":1,"npc":14374,"name":"Scholar Runethorn","x":31.17,"y":43.92,"quests":[7482]}
 {"map":1444,"icon":1,"npc":14637,"name":"Zorbin Fandazzle","x":44.81,"y":43.42,"quests":[7003,7721,7725,7726]}
 {"map":1444,"icon":5,"npc":15581,"name":"Elder Grimtotem","x":76.72,"y":37.9,"quests":[8679]}
+{"map":1444,"icon":5,"npc":15587,"name":"Elder Mistwalker","x":62.58,"y":30.96,"quests":[8685]}
 {"map":1444,"icon":1,"name":"Solarsal Gazebo","x":26.31,"y":52.34,"quests":[2867]}
 {"map":1444,"icon":1,"name":"Woodpaw Battle Map","x":71.63,"y":55.92,"quests":[2903]}
 {"map":1444,"icon":1,"name":"Equinex Monolith","x":38.83,"y":13.17,"quests":[2942]}
@@ -1038,7 +1036,7 @@
 {"map":1445,"icon":1,"npc":10321,"name":"Emberstrife","x":56.66,"y":87.72,"quests":[6582,6583,6584,6585,6601]}
 {"map":1445,"icon":3,"npc":12919,"name":"Nat Pagle","x":58.61,"y":60.06,"quests":[6607]}
 {"map":1445,"icon":3,"npc":12939,"name":"Doctor Gustaf VanHowzen","x":67.76,"y":48.97,"quests":[6624]}
-{"map":1445,"icon":5,"npc":15588,"name":"Elder High Mountain","x":18.5,"y":7.64,"quests":[8686]}
+{"map":1445,"icon":1,"name":"Musty Scroll","x":31.1,"y":66.14,"quests":[626]}
 {"map":1445,"icon":1,"name":"Loose Dirt","x":55.44,"y":25.92,"quests":[1219,1238,1239]}
 {"map":1445,"icon":1,"name":"Black Shield","x":29.63,"y":48.62,"quests":[1251,1253]}
 {"map":1445,"icon":1,"name":"Theramore Guard Badge","x":29.83,"y":48.24,"quests":[1252,1269]}
@@ -1116,7 +1114,6 @@
 {"map":1448,"icon":9,"npc":14469,"name":"Niby the Almighty","x":41.56,"y":45.06,"quests":[7601]}
 {"map":1448,"icon":9,"npc":14470,"name":"Impsy","x":41.54,"y":45,"quests":[7602,7603,8420,8421,8422]}
 {"map":1448,"icon":1,"npc":15395,"name":"Nafien","x":64.77,"y":8.13,"quests":[8461,8465,8467]}
-{"map":1448,"icon":5,"npc":15601,"name":"Elder Starweave","x":19.32,"y":21.98,"quests":[8721]}
 {"map":1448,"icon":5,"npc":15603,"name":"Elder Nightwind","x":37.64,"y":53,"quests":[8723]}
 {"map":1448,"icon":1,"name":"Corrupted Night Dragon","x":40.72,"y":78.26,"quests":[4119]}
 {"map":1448,"icon":1,"name":"Corrupted Songflower","x":52.9,"y":87.83,"quests":[2523]}
@@ -1319,7 +1316,7 @@
 {"map":1453,"icon":5,"npc":14450,"name":"Orphan Matron Nightingale","x":56.32,"y":53.99,"quests":[1468]}
 {"map":1453,"icon":1,"npc":14722,"name":"Clavicus Knavingham","x":53.93,"y":81.69,"quests":[7791,7793,7794,7795,7796]}
 {"map":1453,"icon":5,"npc":15310,"name":"Jesper","x":56.53,"y":51.76,"quests":[8311]}
-{"map":1453,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":81.22,"y":38.5,"quests":[8371,8372,8374,8375,8383,8384,8385,8386,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8404,8405,8406,8407,8408]}
+{"map":1453,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":81.22,"y":38.5,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
 {"map":1453,"icon":5,"npc":15562,"name":"Elder Hammershout","x":36.27,"y":66.14,"quests":[8646]}
 {"map":1453,"icon":1,"npc":15708,"name":"Master Sergeant Maclure","x":61.52,"y":70.61,"quests":[8796]}
 {"map":1453,"icon":5,"npc":15732,"name":"Wonderform Operator","x":67.87,"y":71.43,"quests":[8827,8828,8860,8861]}
@@ -1349,7 +1346,6 @@
 {"map":1454,"icon":3,"npc":3332,"name":"Lumak","x":69.8,"y":29.21,"quests":[6608]}
 {"map":1454,"icon":9,"npc":3344,"name":"Kardris Dreamseeker","x":38.8,"y":36.37,"quests":[8410]}
 {"map":1454,"icon":9,"npc":3354,"name":"Sorek","x":80.39,"y":32.38,"quests":[1505,1718,1823,8417]}
-{"map":1454,"icon":1,"npc":3362,"name":"Ogunaro Wolfrunner","x":69.38,"y":12.24,"quests":[7660,7661]}
 {"map":1454,"icon":3,"npc":3373,"name":"Arnok","x":34.18,"y":84.58,"quests":[6623]}
 {"map":1454,"icon":3,"npc":3399,"name":"Zamja","x":57.4,"y":53.96,"quests":[6611]}
 {"map":1454,"icon":9,"npc":3401,"name":"Shenthul","x":43.05,"y":53.74,"quests":[2379,2458,2460,2479]}
@@ -1402,7 +1398,7 @@
 {"map":1454,"icon":3,"npc":15116,"name":"Grinkle","x":52.49,"y":72.83,"quests":[8229]}
 {"map":1454,"icon":1,"npc":15188,"name":"Cenarion Emissary Blackhoof","x":47.64,"y":65.76,"quests":[8276]}
 {"map":1454,"icon":5,"npc":15309,"name":"Spoops","x":71.44,"y":22.81,"quests":[8312]}
-{"map":1454,"icon":1,"npc":15350,"name":"Horde Warbringer","x":80.68,"y":30.51,"quests":[8367,8368,8369,8370,8387,8388,8389,8390,8426,8427,8428,8429,8430,8431,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1454,"icon":1,"npc":15350,"name":"Horde Warbringer","x":80.68,"y":30.51,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
 {"map":1454,"icon":1,"npc":15459,"name":"Miner Cromwell","x":31.63,"y":66.66,"quests":[8532,8533]}
 {"map":1454,"icon":1,"npc":15460,"name":"Grunt Maug","x":31.15,"y":65.01,"quests":[8542,8543]}
 {"map":1454,"icon":1,"npc":15469,"name":"Senior Sergeant T'kelah","x":31.27,"y":66.08,"quests":[8545,8546]}
@@ -1510,7 +1506,7 @@
 {"map":1455,"icon":5,"npc":14842,"name":"Melnan Darkstone","x":31.64,"y":78.36,"quests":[7905]}
 {"map":1455,"icon":3,"npc":15119,"name":"Barrus","x":28.17,"y":74.95,"quests":[8228]}
 {"map":1455,"icon":1,"npc":15187,"name":"Cenarion Emissary Jademoon","x":58.54,"y":47.32,"quests":[8275]}
-{"map":1455,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":69.69,"y":89.7,"quests":[8371,8372,8374,8375,8383,8384,8385,8386,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8404,8405,8406,8407,8408]}
+{"map":1455,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":69.69,"y":89.7,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
 {"map":1455,"icon":1,"npc":15383,"name":"Sergeant Stonebrow","x":64.4,"y":67.31,"quests":[8492,8493]}
 {"map":1455,"icon":1,"npc":15431,"name":"Corporal Carnes","x":65,"y":65.38,"quests":[8494,8495]}
 {"map":1455,"icon":1,"npc":15432,"name":"Dame Twinbraid","x":63.89,"y":68.43,"quests":[8499,8500]}
@@ -1588,9 +1584,7 @@
 {"map":1456,"icon":1,"npc":10881,"name":"Bluff Runner Windstrider","x":44.33,"y":58.76,"quests":[742,1000,5095]}
 {"map":1456,"icon":1,"npc":11833,"name":"Rahauro","x":70.14,"y":29.52,"quests":[5722,5723]}
 {"map":1456,"icon":1,"npc":14728,"name":"Rumstag Proudstrider","x":43.05,"y":42.72,"quests":[7820,7821,7822,7823,7825]}
-{"map":1456,"icon":5,"npc":14833,"name":"Chronos","x":31.26,"y":90.24,"quests":[7881,7882,7883,7884,7885,7941]}
-{"map":1456,"icon":5,"npc":14871,"name":"Morja","x":29.84,"y":90.54,"quests":[7946]}
-{"map":1456,"icon":1,"npc":15350,"name":"Horde Warbringer","x":57.84,"y":76.33,"quests":[8367,8368,8369,8370,8387,8388,8389,8390,8426,8427,8428,8429,8430,8431,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1456,"icon":1,"npc":15350,"name":"Horde Warbringer","x":57.84,"y":76.33,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
 {"map":1456,"icon":5,"npc":15580,"name":"Elder Proudhorn","x":72.98,"y":23.37,"quests":[8678]}
 {"map":1456,"icon":1,"npc":15702,"name":"Senior Sergeant Taiga","x":39.9,"y":51.68,"quests":[8792]}
 {"map":1456,"icon":1,"npc":15767,"name":"Officer Thunderstrider","x":42.39,"y":56.98,"quests":[8817,8825,8842,8843]}
@@ -1620,7 +1614,6 @@
 {"map":1457,"icon":9,"npc":4218,"name":"Denatharion","x":34.77,"y":7.37,"quests":[5925,9063]}
 {"map":1457,"icon":9,"npc":4219,"name":"Fylerian Nightwing","x":33.51,"y":8.35,"quests":[5924]}
 {"map":1457,"icon":1,"npc":4241,"name":"Mydrannul","x":70.68,"y":45.38,"quests":[6344]}
-{"map":1457,"icon":1,"npc":4730,"name":"Lelanai","x":38.28,"y":15.36,"quests":[7671,7672]}
 {"map":1457,"icon":1,"npc":4784,"name":"Argent Guard Manados","x":55.24,"y":23.99,"quests":[1199]}
 {"map":1457,"icon":1,"npc":4786,"name":"Dawnwatcher Shaedlass","x":55.36,"y":25.03,"quests":[1198]}
 {"map":1457,"icon":3,"npc":6034,"name":"Lotherias","x":64.4,"y":22.22,"quests":[1582]}
@@ -1634,7 +1627,7 @@
 {"map":1457,"icon":1,"npc":10878,"name":"Herald Moonstalker","x":47.81,"y":81.97,"quests":[1047,5091,7494]}
 {"map":1457,"icon":9,"npc":11401,"name":"Priestess Alathea","x":39.52,"y":81.2,"quests":[5627,8254]}
 {"map":1457,"icon":1,"npc":14725,"name":"Raedon Duskstriker","x":64.02,"y":23,"quests":[7792,7798,7799,7800,7801]}
-{"map":1457,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":58,"y":34.18,"quests":[8371,8372,8374,8375,8383,8384,8385,8386,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8404,8405,8406,8407,8408]}
+{"map":1457,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":58,"y":34.18,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
 {"map":1457,"icon":5,"npc":15598,"name":"Elder Bladeswift","x":33.49,"y":14.3,"quests":[8718]}
 {"map":1457,"icon":1,"npc":15709,"name":"Master Sergeant Moonshadow","x":41.96,"y":41.54,"quests":[8797]}
 {"map":1457,"icon":1,"npc":15762,"name":"Officer Lunalight","x":38.23,"y":38.65,"quests":[8813,8821,8836,8837]}
@@ -1689,7 +1682,7 @@
 {"map":1458,"icon":1,"npc":10879,"name":"Harbinger Balthazad","x":63.9,"y":44.08,"quests":[1004,5094]}
 {"map":1458,"icon":5,"npc":13429,"name":"Nardstrum Copperpinch","x":68.24,"y":38.86,"quests":[7022,7023,7024]}
 {"map":1458,"icon":1,"npc":14729,"name":"Ralston Farnsley","x":71.66,"y":29.23,"quests":[7813,7814,7817,7818,7819]}
-{"map":1458,"icon":1,"npc":15350,"name":"Horde Warbringer","x":58.3,"y":97.88,"quests":[8367,8368,8369,8370,8387,8388,8389,8390,8426,8427,8428,8429,8430,8431,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
+{"map":1458,"icon":1,"npc":15350,"name":"Horde Warbringer","x":58.3,"y":97.88,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
 {"map":1458,"icon":5,"npc":15564,"name":"Elder Darkcore","x":66.63,"y":38.22,"quests":[8648]}
 {"map":1458,"icon":1,"npc":15703,"name":"Senior Sergeant Grimsford","x":62.59,"y":47.71,"quests":[8793]}
 {"map":1458,"icon":1,"npc":15768,"name":"Officer Gothena","x":61.91,"y":45.31,"quests":[8816,8824,8840,8841]}
