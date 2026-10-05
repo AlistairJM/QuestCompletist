@@ -303,6 +303,7 @@ The beta test found Felwood and Winterspring quest givers drawn at the edge of t
     filed under a neighbouring zone are the misses: Tirion Fordring, the Bulwark's NPCs, Cairne
     Bloodhoof.
   - So the old pins come first, and the rules only decide for NPCs without one.
+  - The rules changed again after the probe rerun: see "Three importer fixes" below.
 - **New zones get pins only from the recorder** (or a lookup). CMaNGOS's NPCs are vanilla, and the
   quest cache names no quest giver. Mount Hyjal has no quests yet: the beta answered none filed
   there. Riverglades has one, "Remember That I Love You", started by an item, so it has no giver.
@@ -406,6 +407,44 @@ Step 10 then gave **5,109 quests** (30 more) and **1,739 pins** (14 more):
   so the last rule, the smallest frame that holds the spawn, picks a neighbour whose rectangle
   reaches into Mulgore.
 
+### Three importer fixes (5 October 2026)
+
+All three came out of the rerun (user's decision: do all three).
+
+1. **Which map a spawn goes on.** Measured as #144 was, on the 884 NPCs with an old pin whose spawn
+   several Era frames hold, with each NPC's own pin left out:
+
+   | Rule after the NPC's own old pin | Right |
+   |---|---|
+   | City, zone, smallest (before) | 796 (90.0%) |
+   | City, zone, then the frame the spawn stands furthest inside | 819 (92.6%) |
+   | Old pins within 100 yards, then city, zone, furthest inside | 867 (98.1%) |
+   | The same, with near-ties (within 0.05) going to the smallest | 868 (98.2%) |
+
+   - The importer uses the last. The old pins within 100 yards are a human answer: Ravenholdt's
+     guards stay on Alterac Mountains, with Fahrad's and Lord Jorach Ravenholdt's old pins.
+   - The near-tie rule keeps the two guards furthest out there, and Golhine the Hooded in Felwood's
+     Talonbranch Glade. Each stands about as far inside a neighbouring zone's frame.
+   - A city also needs the spawn's height: within 50 yards of the heights its old-pinned NPCs stand
+     at. That keeps the Darkmoon Faire at the foot of Thunder Bluff's mesa (height about −8) off the
+     city's map (62 to 177). A margin from the city frame's edge doesn't work instead: at 10% it
+     moves 19 genuine Ironforge, Darnassus and Undercity NPCs out.
+   - **Result:** 31 pins moved, none added or lost. All six Mulgore faire givers go to Mulgore.
+     Kargath's "WANTED" and "KILL ON SIGHT" posters go from Searing Gorge's edge to the Badlands, and
+     the Bulwark's Argent Officer Garush to Tirisfal. Lunar Festival elders go to their towns.
+2. **Zones.** When the server's record names no zone, CMaNGOS's is used. 8 quests leave
+   Uncategorized for Arathi Basin, Warsong Gulch, Stranglethorn Vale and Warrior, each listed for
+   review. Uncategorized keeps 9 quests that neither source places, among them "REUSE ME" (98338),
+   an internal title the junk filter misses.
+3. **Quests the beta refuses.** A quest `QuestV2` lacks rests on CMaNGOS alone. When the beta
+   refused it at level 1 to 35, where it answers nearly everything, it's left out, and it comes back
+   once the server answers it.
+   - That's 28 of #157's repeatable quests: the 14 mount exchanges and 14 battleground turn-ins.
+   - The battleground ones may return when the battlegrounds answer.
+   - The 7 mount vendors' pins go with them.
+
+The result: **5,081 quests** and **1,732 pins**. The review list has 4,580 rows.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -439,6 +478,8 @@ Step 10 then gave **5,109 quests** (30 more) and **1,739 pins** (14 more):
   in; the sweep takes in the recorder's notes every time.
 - 2026-10-05: `QuestV2` leaves out repeatable quests, so the importer keeps CMaNGOS's 573 and the
   probe (#139) asks about all 710 CMaNGOS quests it lacks (#157); results above.
-- 2026-10-05: the probe rerun and step 10; results above. Next: the Mulgore Darkmoon Faire pins, a
-  probe rerun once the beta opens levels above 40, more of Zephras Isle from the recorder, and the
-  importer's next pieces (breadcrumbs, mutually exclusive quests, reputation rewards).
+- 2026-10-05: the probe rerun and step 10 (#159); results above.
+- 2026-10-05: three importer fixes: spawns' maps by nearby old pins and height, CMaNGOS's zone where
+  the game gives none, and quests the beta refuses left out; results above. Next: a probe rerun once
+  the beta opens levels above 40, more of Zephras Isle from the recorder, and the importer's next
+  pieces (breadcrumbs, mutually exclusive quests, reputation rewards).
