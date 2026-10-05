@@ -136,5 +136,5 @@ pins, and a rerun still leaves them byte-identical.
 
 ## Possible future extensions (explicitly not this plan)
 
-- **Forever**: wago.tools tracks a `wow_classic_beta` build (`1.60.1.69913`) that matches Forever's own `/dump GetBuildInfo()` output exactly. If that build's client files include the same `QuestPOIBlob`/`QuestPOIPoint` tables, the same pipeline might work for Forever specifically — worth a quick check later, not part of this plan.
+- **Forever**: checked in October 2026 on beta build `1.60.1.70205` (wago.tools product `wow_classic_beta`). Its `QuestPOIBlob` has only 54 rows (23 start points), so this pipeline can't build Forever's pins. The plan for a Forever version, with other sources, is [forever.md](forever.md).
 - **Classic Era / Anniversary / MoP Progression**: unlike Blizzard's REST API (which has zero quest data for any Classic flavor), wago.tools archives builds for these too. If their client files contain the same DB2 tables, this could be a real path to Classic support that we previously ruled out. Separate investigation, separate plan.

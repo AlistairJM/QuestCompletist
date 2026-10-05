@@ -179,11 +179,8 @@ Switch the text language to `deDE` (Game Menu → System → Languages, or `SET 
 
 ## Out of scope (for later)
 
-- **NPC names in pin tooltips** (`pinData[3]`) are English too. Planned in `localized-npc-names.md`.
-- **The addon's own text:** "Search Results", "%d Quests Found", "x/y Complete", "Quest details not
-  available from the game", "You are on this quest" and others are hard-coded English in
-  `qcCore.lua`, not in the `Localization.*.lua` files. Moving them is easy; translating them needs
-  translators.
+- **NPC names in pin tooltips**: done, they come from the game in the player's language since #114 (`localized-npc-names.md`).
+- **The addon's own text** ("Search Results", "%d Quests Found" and the rest): done, moved into the `Localization.*.lua` files and translated in #134 (2026-10-04). See "Text in other languages" in `docs/maintenance.md`.
 - **Fixing `qcQuestDatabase` names** from the phase 1 mismatch report: done for all 338 names that differed from Blizzard's API, with `tools/Sync-QuestNamesFromApi.ps1` (2026-10-03).
 
 ## Status
