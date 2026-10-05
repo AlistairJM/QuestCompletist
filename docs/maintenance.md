@@ -551,7 +551,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -C
 git diff --stat
 ```
 
-- The syntax check must be silent.
+- The syntax check must be silent. If it says "main function has more than 200 local variables",
+  `qcCore.lua` has hit Lua 5.1's limit on locals declared at the top of a file, and WoW wouldn't load
+  it. 5 were left in October 2026. Put new constants in a table, as `QC_PIN_TOOLTIP` does.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673
