@@ -9,3 +9,6 @@ QuestCompletist/qcQuest.lua -text
 
 # The data files they're built from.
 data/*.jsonl text eol=lf
+
+# Forever's data files, built by tools/Import-ForeverData.ps1.
+data/forever/*.jsonl text eol=lf
