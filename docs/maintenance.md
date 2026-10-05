@@ -145,7 +145,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | [the Forever probe](#in-the-game) → `Read-ForeverQuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-ForeverQuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
 
 Steps 1 to 9 are retail's. Blizzard's API has no Forever data, so Forever has a step of its own,
 which rebuilds its data from the game, the client's tables and CMaNGOS's database. It gets its own
@@ -156,9 +156,9 @@ After each step that edits the addon, bring the data files up to date as describ
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
 ordinary sweep. When step 6 adds quests, those have never been probed. Run
-[the probe](#in-the-game) after step 6, then step 3 again. Step 10 needs a new run of the Forever
-probe when Forever has a new build, or when the beta opens higher levels; otherwise the last run's
-results stand.
+[the probe](#in-the-game) after step 6, then step 3 again. Step 10 always takes in the Forever
+probe's recorder notes, but only needs a new probe run when Forever has a new build, or when the
+beta opens higher levels; otherwise the last run's results stand.
 
 ### 1. Faction, race and class
 
@@ -405,22 +405,30 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
 [plans/forever.md](plans/forever.md). Run these in order, with the main checkout's `tools\` as
 `-ToolsDir` and Forever's build as `-Build`:
 
-1. **The probe**, when Forever has a new build or the beta opens higher levels: see
+1. **The recorder's notes, every time.** Copy the probe's saved variables, `QCForeverProbe.lua`,
+   from the Forever client into the newest `tools\forever_probe_<build number>\` (see
+   [In the game](#in-the-game), step 5). The recorder adds to that file whenever you play, so this
+   brings in the quest givers you've met since the last sweep. Log out or `/reload` first, so the
+   game has written it.
+2. **The probe**, when Forever has a new build or the beta opens higher levels: see
    [In the game](#in-the-game). Otherwise the last run's results stand.
-2. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
+3. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
    `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
    nothing: Blizzard has changed the record's layout, and the reader needs updating.
-3. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl` and `pins.jsonl`, and
+4. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl` and `pins.jsonl`, and
    the review list, `tools\forever_import_review.csv`. It downloads the client tables and the CMaNGOS
    dump it doesn't have. Compare its summary with the last run's in the plan, and look through the
    review list for new rows: quests the game hasn't confirmed, quests with no known giver or no pin,
    and places where CMaNGOS and our old Classic pins disagree.
-4. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
+   A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
+   one. The summary counts those start points, and the quest records that name their giver. Both
+   are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
+5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
    and `qcUnavailableQuests.lua`. A new zone it can't place goes in its continent's "Other" group;
    add the zone to the script's region table.
-5. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
+6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
    both.
-6. The reachability check (step 9), with Forever's TOC and its client's map table:
+7. The reachability check (step 9), with Forever's TOC and its client's map table:
    ```powershell
    & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua QuestCompletist tools QuestCompletist_Camelot.toc tools\UiMap-<build>.csv
    ```
@@ -532,7 +540,8 @@ It's pull request #139, which stays open and isn't for merging; its files are in
 After Forever's launch, use its live client's folder in place of `_classic_beta_`.
 
 Leave the probe installed while you play Forever. Its recorder notes which quests each NPC or object
-offers and where it stands, and that's the only source of quest givers in Forever's new zones.
+offers and where it stands. For most of Forever's new quests that's the only source of where they
+start, so step 10 copies its file on every sweep.
 
 ## Checking a change before its pull request
 
@@ -546,7 +555,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673
-  pins for retail, and 4,506 quests and 1,541 pins for Forever.
+  pins for retail, and 4,506 quests and 1,545 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
@@ -573,6 +582,6 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal; for Forever, which quests exist, its maps, zones, headings and races | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal; for Forever, which quests exist, its maps, zones, headings and races, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits and recurrence, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns | `Import-ForeverData.ps1`, from its `Full_DB` dump |

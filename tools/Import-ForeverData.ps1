@@ -2,7 +2,8 @@
 Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from four sources
 (docs/plans/forever.md, phase 3):
 
-  - the client's QuestV2 table for -Build: which quests exist;
+  - the client's tables for -Build: which quests exist (QuestV2), and where some start
+    (QuestPOIBlob and QuestPOIPoint);
   - the quest cache file Read-ForeverQuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
@@ -40,6 +41,11 @@ rectangles and overlap, so a spawn goes on the first of these maps whose frame h
 Only maps Classic Era (-EraBuild) already had are used, as CMaNGOS's NPCs can't stand in Forever's new
 zones, whose frames reach over old ones (Mount Hyjal's covers parts of Felwood and Winterspring).
 Givers inside dungeons get no pin.
+A quest with no giver on a map gets a pin at its start point in the client's tables, if it has one,
+with no giver named: the tables don't say who stands there. A quest that has a giver's pin keeps it,
+and a start point more than 3 map points from all its pins on that map is listed for review. The
+summary counts the client's start points, and the quests whose record in the cache names a giver
+(none so far), so a rerun shows when Blizzard fills in more of either.
 
 Anything worth a look goes to -ReviewFile, one row per finding; the summary counts them. With -WhatIf,
 only the review is written.
@@ -177,6 +183,21 @@ function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $O
         Y = [decimal][Math]::Round(100 * ($chosen.U1 + $fy * ($chosen.V1 - $chosen.U1)), 2) }
 }
 
+# Quest start points from the client's tables: a blob with objective index -1 marks where the quest is
+# picked up. Its first point is used, as retail's pin tool does.
+$firstPoint = @{}
+foreach ($row in Get-ClientTable 'QuestPOIPoint') { if (-not $firstPoint.ContainsKey([int]$row.QuestPOIBlobID)) { $firstPoint[[int]$row.QuestPOIBlobID] = $row } }
+$startSpots = @{}; $startOffMap = 0
+foreach ($blob in (Get-ClientTable 'QuestPOIBlob' | Where-Object { $_.ObjectiveIndex -eq '-1' })) {
+    $point = $firstPoint[[int]$blob.ID]
+    if (-not $point) { continue }
+    $spot = Convert-ToMapSpot ([int]$blob.MapID) ([double]$point.X) ([double]$point.Y) -OnUiMap ([int]$blob.UiMapID)
+    if (-not $spot) { $startOffMap++; continue }
+    $quest = [int]$blob.QuestID
+    $near = $startSpots[$quest] | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
+    if (-not $near) { $startSpots[$quest] += @($spot) }
+}
+
 $outputEncoding = [Console]::OutputEncoding
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 $sql = [IO.Path]::GetTempFileName()
@@ -267,6 +288,7 @@ function Add-Review([string]$kind, $quest, $other, [string]$detail) {
 $ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] }) | Sort-Object -Unique)
 $records = @{}
 $refiled = 0
+$gameGivers = 0
 foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
@@ -285,6 +307,10 @@ foreach ($id in $ids) {
     if (-not $c) {
         if ($probeResult[$id] -eq 'fail' -and $m.Level -le 35) { Add-Review 'failed on the beta below level 36' $id '' $title }
         else { Add-Review 'not confirmed by the game yet' $id '' $title }
+    }
+    if ($c -and $c.giver) {
+        $gameGivers++
+        Add-Review 'giver named by the game' $id $c.giver "$title (CMaNGOS: $($creatureStarters[$id] -join ', '))"
     }
 
     $faction = 3; $race = 0
@@ -374,6 +400,19 @@ function Get-GiverSpots([string]$kind, [int]$id) {
 
 $pins = @{}
 $spotCache = @{}
+$startPinned = 0
+
+function Add-StartPins([int]$id) {
+    foreach ($spot in $startSpots[$id]) {
+        $pinKey = "$($spot.UiMap)|Start|$($spot.X)|$($spot.Y)"
+        if (-not $pins.ContainsKey($pinKey)) {
+            $pins[$pinKey] = [pscustomobject]@{ map = $spot.UiMap; icon = 1; npc = 0; name = $null; x = $spot.X; y = $spot.Y
+                quests = (New-Object System.Collections.Generic.List[int]); note = $null; Kind = 'Start'; GiverId = 0 }
+        }
+        $pins[$pinKey].quests.Add($id)
+    }
+}
+
 foreach ($id in ($records.Keys | Sort-Object)) {
     $givers = New-Object System.Collections.Generic.List[string]
     foreach ($key in $recordedOffers[$id]) { if (-not $givers.Contains($key)) { $givers.Add($key) } }
@@ -390,10 +429,16 @@ foreach ($id in ($records.Keys | Sort-Object)) {
     }
     if ($givers.Count -eq 0) {
         $source = if (-not $cmQuest.ContainsKey($id)) { 'only the game knows it' } elseif ($itemStart.ContainsKey($id)) { "starts from item $($itemStart[$id])" } else { 'CMaNGOS has no giver' }
-        Add-Review 'no giver' $id '' "$($records[$id].name) ($source)"
+        if ($startSpots[$id]) {
+            Add-StartPins $id
+            $startPinned++
+            Add-Review 'no giver: pin at its start point' $id '' "$($records[$id].name) ($source)"
+        } else {
+            Add-Review 'no giver' $id '' "$($records[$id].name) ($source)"
+        }
         continue
     }
-    $placed = $false
+    $placed = New-Object System.Collections.Generic.List[object]
     foreach ($key in $givers) {
         $kind, $giverId = $key.Split(':')
         $giverId = [int]$giverId
@@ -409,10 +454,27 @@ foreach ($id in ($records.Keys | Sort-Object)) {
                     quests = (New-Object System.Collections.Generic.List[int]); note = $null; Kind = $kind; GiverId = $giverId }
             }
             $pins[$pinKey].quests.Add($id)
-            $placed = $true
+            $placed.Add($pins[$pinKey])
         }
     }
-    if (-not $placed) { Add-Review 'no pin: giver not on a Forever map' $id '' "$($records[$id].name) ($($givers -join ', '))" }
+    if (-not $placed.Count) {
+        if ($startSpots[$id]) {
+            Add-StartPins $id
+            $startPinned++
+            Add-Review 'giver not on a Forever map: pin at its start point' $id '' "$($records[$id].name) ($($givers -join ', '))"
+        } else {
+            Add-Review 'no pin: giver not on a Forever map' $id '' "$($records[$id].name) ($($givers -join ', '))"
+        }
+        continue
+    }
+    foreach ($spot in $startSpots[$id]) {
+        $distances = @($placed | Where-Object { $_.map -eq $spot.UiMap } |
+            ForEach-Object { [Math]::Sqrt([double](($_.x - $spot.X) * ($_.x - $spot.X) + ($_.y - $spot.Y) * ($_.y - $spot.Y))) })
+        $closest = if ($distances.Count) { ($distances | Measure-Object -Minimum).Minimum } else { $null }
+        if ($null -ne $closest -and $closest -le 3) { continue }
+        $howFar = if ($null -eq $closest) { 'no pin of it on that map' } else { '{0:0.0} map points from its nearest pin' -f $closest }
+        Add-Review "start point far from its giver's pin" $id '' ("{0}: start point on map {1} at {2} {3}, {4}" -f $records[$id].name, $spot.UiMap, $spot.X, $spot.Y, $howFar)
+    }
 }
 
 foreach ($pin in $pins.Values) {
@@ -460,6 +522,8 @@ $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $c
 Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, {3} from CMaNGOS only. {4} pins on {5} maps." -f
     $questList.Count, $fromBoth, $fromGame, ($questList.Count - $fromBoth - $fromGame), $pinList.Count, @($pinList | Select-Object -ExpandProperty map -Unique).Count)
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
+Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; pinned there: {2}). Start points off their map: {3}. Quest records that name a giver: {4}." -f
+    $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
 if ($WhatIf) { return }

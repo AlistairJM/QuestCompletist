@@ -33,7 +33,8 @@ refreshes that data along with retail's ([maintenance.md](../maintenance.md), st
   holiday headings, with three new ones: The High Order, Camping and Night Elf).
 - **Not there:** quest names, levels, quest givers and requirements, which come from the server. The
   data retail's start points and storylines are built from is nearly empty: `QuestPOIBlob` has 54
-  rows (23 start points) and `QuestLine` has 3.
+  rows (23 start points) and `QuestLine` has 3. The importer uses the start points even so (see
+  "Start points" below).
 
 Our retail database doesn't help much: it has only 555 of the 4,805 old quests, because Cataclysm
 replaced most of them.
@@ -299,6 +300,31 @@ The beta test found Felwood and Winterspring quest givers drawn at the edge of t
   quest cache names no quest giver. Mount Hyjal has no quests yet: the beta answered none filed
   there. Riverglades has one, "Remember That I Love You", started by an item, so it has no giver.
 
+### Start points, and watching for more client data (5 October 2026)
+
+Zephras Isle's 112 quests had no pins, which raised the question of whether a sweep would notice
+if Blizzard filled in more of the client's data. It downloads every table for each new build, but
+the importer didn't read all the ones that could place a quest:
+- **Start points** (`QuestPOIBlob` and `QuestPOIPoint`, the tables retail's pins come from): 23 of
+  them, for 22 quests.
+  - 11 of those quests are ours: new quests in Westfall, Stormwind and Elwynn Forest with no known
+    giver, such as "Testing the Wells" and "Murloc Gills".
+  - They now have 4 pins at those points, with no giver named, as the tables don't say who stands
+    there.
+  - The other 11, in Tanaris and Mount Hyjal, aren't in our data yet: the beta hasn't answered
+    them.
+  - A quest that has a giver's pin keeps it. A start point more than 3 map points from its pins
+    goes on the review list.
+- **The quest-giver field** of the game's quest records is empty in all 2,860. The cache reader now
+  keeps it, and the importer counts the quests that have it and lists them for review.
+- **The record's map point** is set for 21 old quests, and marks where the quest is handed in. For
+  "The Defias Brotherhood" (quest 65) it's exactly where CMaNGOS has the hand-in NPC in Lakeshire.
+  It doesn't say where a quest starts, so it isn't used.
+- **The recorder's notes:** a sweep now copies the probe's saved variables every time, not only
+  after a probe run, as the recorder adds to them whenever you play.
+
+The importer's summary prints the start point and giver counts, so a sweep shows when either grows.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -323,5 +349,8 @@ The beta test found Felwood and Winterspring quest givers drawn at the edge of t
 - 2026-10-05: phase 4's addon files merged (#143); results above. The beta test found indented
   subzones in the menus (fixed in #143) and pins on the wrong maps (fixed in #144).
 - 2026-10-05: the full sweep covers Forever: maintenance.md's step 10 rebuilds its data, and the
-  probe's steps are under "In the game". Next: a probe rerun when the beta opens levels above 40,
-  and the importer's next pieces (breadcrumbs, mutually exclusive quests, reputation rewards).
+  probe's steps are under "In the game" (#145).
+- 2026-10-05: the importer pins quests at the client's start points and counts what Blizzard fills
+  in; the sweep takes in the recorder's notes every time. Next: Zephras Isle's pins from the
+  recorder, a probe rerun when the beta opens levels above 40, and the importer's next pieces
+  (breadcrumbs, mutually exclusive quests, reputation rewards).
