@@ -30,9 +30,16 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   type      64 seasonal, 4 daily, 128 weekly, 32 profession, 2 repeatable or 1, the first that
             applies. holiday and profession hold the addon's flags.
   prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache.
-Pins are CMaNGOS's spawns of each quest's NPC or object givers, converted to map positions with the
-client's UiMapAssignment (the smallest zone frame that holds the spot), or the recorder's spots for the
-givers it saw. Givers inside dungeons get no pin.
+Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
+it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
+rectangles and overlap, so a spawn goes on the first of these maps whose frame holds it:
+  1. the map our old Classic pins had for that NPC (git history before #89);
+  2. a city;
+  3. the zone its giver's quests are in;
+  4. the smallest.
+Only maps Classic Era (-EraBuild) already had are used, as CMaNGOS's NPCs can't stand in Forever's new
+zones, whose frames reach over old ones (Mount Hyjal's covers parts of Felwood and Winterspring).
+Givers inside dungeons get no pin.
 
 Anything worth a look goes to -ReviewFile, one row per finding; the summary counts them. With -WhatIf,
 only the review is written.
@@ -41,6 +48,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data\forever'),
     [string]$Build = "1.60.1.70205",
+    [string]$EraBuild = "1.15.9.70003",
     [string]$CacheFile = "",
     [string]$ProbeFile = "",
     [string]$CmangosDump = "",
@@ -62,10 +70,10 @@ if (-not $ProbeFile) {
 }
 if (-not $ReviewFile) { $ReviewFile = "$ToolsDir\forever_import_review.csv" }
 
-function Get-ClientTable([string]$table) {
-    $path = "$ToolsDir\$table-$Build.csv"
+function Get-ClientTable([string]$table, [string]$tableBuild = $Build) {
+    $path = "$ToolsDir\$table-$tableBuild.csv"
     if (-not (Test-Path $path)) {
-        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$table/csv?build=$Build" -OutFile $path
+        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$table/csv?build=$tableBuild" -OutFile $path
         Start-Sleep -Milliseconds 300
     }
     return Import-Csv $path
@@ -132,23 +140,41 @@ $storylineOf = @{}
 foreach ($row in Get-ClientTable 'QuestLineXQuest') { $storylineOf[[int]$row.QuestID] = [int]$row.QuestLineID }
 $uiMapType = @{}
 foreach ($row in Get-ClientTable 'UiMap') { $uiMapType[[int]$row.ID] = [int]$row.Type }
+$eraUiMaps = @{}
+foreach ($row in Get-ClientTable 'UiMap' $EraBuild) { $eraUiMaps[[int]$row.ID] = $true }
 $frames = @(Get-ClientTable 'UiMapAssignment' | Where-Object { $uiMapType[[int]$_.UiMapID] -ge 3 } | ForEach-Object {
     $minX = [double]$_.Region_0; $minY = [double]$_.Region_1; $maxX = [double]$_.Region_3; $maxY = [double]$_.Region_4
-    [pscustomobject]@{ UiMap = [int]$_.UiMapID; Map = [int]$_.MapID; MinX = $minX; MinY = $minY; MaxX = $maxX; MaxY = $maxY
+    [pscustomobject]@{ UiMap = [int]$_.UiMapID; Map = [int]$_.MapID; Zone = [int]$_.AreaID; New = -not $eraUiMaps[[int]$_.UiMapID]
+        MinX = $minX; MinY = $minY; MaxX = $maxX; MaxY = $maxY
         U0 = [double]$_.UiMin_0; U1 = [double]$_.UiMin_1; V0 = [double]$_.UiMax_0; V1 = [double]$_.UiMax_1
         Area = ($maxX - $minX) * ($maxY - $minY) }
 } | Sort-Object Area)
 
-function Convert-ToMapSpot([int]$map, [double]$x, [double]$y) {
-    foreach ($frame in $frames) {
-        if ($frame.Map -ne $map -or $x -lt $frame.MinX -or $x -gt $frame.MaxX -or $y -lt $frame.MinY -or $y -gt $frame.MaxY) { continue }
-        $fx = ($frame.MaxY - $y) / ($frame.MaxY - $frame.MinY)
-        $fy = ($frame.MaxX - $x) / ($frame.MaxX - $frame.MinX)
-        return [pscustomobject]@{ UiMap = $frame.UiMap
-            X = [decimal][Math]::Round(100 * ($frame.U0 + $fx * ($frame.V0 - $frame.U0)), 2)
-            Y = [decimal][Math]::Round(100 * ($frame.U1 + $fy * ($frame.V1 - $frame.U1)), 2) }
+$cityMaps = @{ 1453 = $true; 1454 = $true; 1455 = $true; 1456 = $true; 1457 = $true; 1458 = $true }
+
+# The map position of a CMaNGOS spawn: on -OnUiMap's frame if given. Otherwise the frames that hold
+# it, of maps Classic Era had, are tried in this order: a map -OldMaps has (our old Classic pins' maps
+# for the giver), a city, one of -Zones (the zones the giver's quests are in), then the smallest. The
+# old pins come first because the others guess wrong for a giver whose quests are filed under a
+# neighbouring zone, like Tirion Fordring's.
+function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $OldMaps = $null, [int]$OnUiMap = 0) {
+    $holding = @($frames | Where-Object { $_.Map -eq $map -and $x -ge $_.MinX -and $x -le $_.MaxX -and $y -ge $_.MinY -and $y -le $_.MaxY })
+    if ($OnUiMap) {
+        $chosen = $holding | Where-Object { $_.UiMap -eq $OnUiMap } | Select-Object -First 1
+    } else {
+        $old = @($holding | Where-Object { -not $_.New })
+        $chosen = $null
+        if ($OldMaps) { $chosen = $old | Where-Object { $OldMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
+        if (-not $chosen) { $chosen = $old | Where-Object { $cityMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
+        if (-not $chosen -and $Zones) { $chosen = $old | Where-Object { $Zones.ContainsKey($_.Zone) } | Select-Object -First 1 }
+        if (-not $chosen) { $chosen = $old | Select-Object -First 1 }
     }
-    return $null
+    if (-not $chosen) { return $null }
+    $fx = ($chosen.MaxY - $y) / ($chosen.MaxY - $chosen.MinY)
+    $fy = ($chosen.MaxX - $x) / ($chosen.MaxX - $chosen.MinX)
+    return [pscustomobject]@{ UiMap = $chosen.UiMap
+        X = [decimal][Math]::Round(100 * ($chosen.U0 + $fx * ($chosen.V0 - $chosen.U0)), 2)
+        Y = [decimal][Math]::Round(100 * ($chosen.U1 + $fy * ($chosen.V1 - $chosen.U1)), 2) }
 }
 
 $outputEncoding = [Console]::OutputEncoding
@@ -302,6 +328,29 @@ foreach ($npc in $gameNpcName.Keys) {
     if ($cmNpcName.ContainsKey($npc) -and $cmNpcName[$npc] -ne $gameNpcName[$npc]) { Add-Review 'NPC renamed' '' $npc "$($cmNpcName[$npc]) is now $($gameNpcName[$npc])" }
 }
 
+$oldPins = New-Object System.Collections.Generic.List[object]
+$oldPinMaps = @{}
+$mapId = 0
+foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
+    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
+    if ($mapId -lt 1411 -or $mapId -gt 1459 -or $line -notmatch '^\t\t\{\d+,(\d+),".*",([-0-9.]+),([-0-9.]+),\{([0-9,]*)\}') { continue }
+    $npc = [int]$Matches[1]
+    $oldPins.Add([pscustomobject]@{ UiMap = $mapId; Npc = $npc; X = [decimal]$Matches[2]; Y = [decimal]$Matches[3]
+        Quests = @($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ }) })
+    if (-not $oldPinMaps.ContainsKey($npc)) { $oldPinMaps[$npc] = @{} }
+    $oldPinMaps[$npc][$mapId] = $true
+}
+
+$giverZones = @{}
+foreach ($q in $records.Values) {
+    if ($q.category -le 0) { continue }
+    $keys = @($creatureStarters[$q.id] | ForEach-Object { "Creature:$_" }) + @($objectStarters[$q.id] | ForEach-Object { "GameObject:$_" })
+    foreach ($key in $keys) {
+        if (-not $giverZones.ContainsKey($key)) { $giverZones[$key] = @{} }
+        $giverZones[$key][$q.category] = $true
+    }
+}
+
 function Get-GiverSpots([string]$kind, [int]$id) {
     $recorded = $recordedSpots["${kind}:$id"]
     if ($recorded) {
@@ -315,7 +364,7 @@ function Get-GiverSpots([string]$kind, [int]$id) {
     $spawns = if ($kind -eq 'GameObject') { $objectSpawns[$id] } else { $npcSpawns[$id] }
     $spots = @()
     foreach ($spawn in $spawns) {
-        $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y
+        $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $giverZones["${kind}:$id"] $(if ($kind -ne 'GameObject') { $oldPinMaps[$id] })
         if (-not $spot) { continue }
         $near = $spots | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
         if (-not $near) { $spots += $spot }
@@ -378,29 +427,24 @@ foreach ($key in $recordedSpots.Keys) {
     $kind, $giverId = $key.Split(':')
     $spawns = if ($kind -eq 'GameObject') { $objectSpawns[[int]$giverId] } else { $npcSpawns[[int]$giverId] }
     if (-not $spawns) { continue }
-    $cmSpots = @($spawns | ForEach-Object { Convert-ToMapSpot $_.Map $_.X $_.Y } | Where-Object { $_ })
     foreach ($spot in $recordedSpots[$key]) {
-        $same = @($cmSpots | Where-Object { $_.UiMap -eq $spot.UiMap })
+        $same = @($spawns | ForEach-Object { Convert-ToMapSpot $_.Map $_.X $_.Y -OnUiMap $spot.UiMap } | Where-Object { $_ })
         if (-not $same) { continue }
         $closest = ($same | ForEach-Object { [Math]::Sqrt([double](($_.X - $spot.X) * ($_.X - $spot.X) + ($_.Y - $spot.Y) * ($_.Y - $spot.Y))) } | Measure-Object -Minimum).Minimum
         if ($closest -gt 1) { Add-Review 'recorded spot far from CMaNGOS' '' $key ("{0} at {1} {2}: {3:0.0} map points from CMaNGOS's spawn" -f $recordedName[$key], $spot.X, $spot.Y, $closest) }
     }
 }
 
-$oldPins = git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua"
-$mapId = 0
-foreach ($line in $oldPins) {
-    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
-    if ($mapId -lt 1411 -or $mapId -gt 1459 -or $line -notmatch '^\t\t\{\d+,(\d+),".*",([-0-9.]+),([-0-9.]+),\{([0-9,]*)\}') { continue }
-    $npc = [int]$Matches[1]; $x = [decimal]$Matches[2]; $y = [decimal]$Matches[3]
-    foreach ($quest in ($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ })) {
+foreach ($old in $oldPins) {
+    $npc = $old.Npc; $x = $old.X; $y = $old.Y; $mapId = $old.UiMap
+    foreach ($quest in $old.Quests) {
         if (-not $records.ContainsKey($quest) -or -not $creatureStarters[$quest]) { continue }
         if ($creatureStarters[$quest] -notcontains $npc) {
             Add-Review 'old pin names another giver' $quest $npc "old pin: $npc; CMaNGOS: $($creatureStarters[$quest] -join ', ')"
         }
     }
     if (-not $npcSpawns[$npc]) { continue }
-    $spots = @($npcSpawns[$npc] | ForEach-Object { Convert-ToMapSpot $_.Map $_.X $_.Y } | Where-Object { $_ -and $_.UiMap -eq $mapId })
+    $spots = @($npcSpawns[$npc] | ForEach-Object { Convert-ToMapSpot $_.Map $_.X $_.Y -OnUiMap $mapId } | Where-Object { $_ })
     if (-not $spots) { continue }
     $closest = ($spots | ForEach-Object { [Math]::Sqrt([double](($_.X - $x) * ($_.X - $x) + ($_.Y - $y) * ($_.Y - $y))) } | Measure-Object -Minimum).Minimum
     if ($closest -gt 3) { Add-Review 'old pin far from the giver' '' $npc ("{0} on map {1} at {2} {3}: {4:0.0} map points from CMaNGOS's spawn" -f $cmNpcName[$npc], $mapId, $x, $y, $closest) }

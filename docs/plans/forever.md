@@ -267,6 +267,35 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
     both in area 16550.
 - **The beta test:** a copy of `QuestCompletist` goes into `_classic_beta_\Interface\AddOns\`.
 
+### Pins on the right map (5 October 2026)
+
+The beta test found Felwood and Winterspring quest givers drawn at the edge of the Mount Hyjal map.
+- **The cause:** a CMaNGOS spawn is a position in the world, and the importer placed it on the
+  smallest UiMapAssignment frame that held it. Frames are rectangles that overlap their neighbours,
+  so 276 pins were on the wrong map. Forever's new Mount Hyjal frame overlaps parts of Felwood and
+  Winterspring, and among old zones:
+  - Auberdine was on Felwood, Darkshire on Deadwind Pass;
+  - the Crossroads and Ratchet were on Durotar;
+  - Brill and the Bulwark were on Western Plaguelands, Southshore on Alterac Mountains.
+- **The fix:** the importer now tries, in order, the frames that hold the spawn:
+  1. the map our old Classic pin had for the NPC;
+  2. a city;
+  3. the zone the giver's quests are in;
+  4. the smallest.
+  It only uses maps Classic Era already had, so a vanilla NPC is never put in one of Forever's new
+  zones.
+- **How the order was chosen:** on 884 NPCs whose spawn several frames hold, the old pins' maps
+  served as the answer key.
+  - The smallest frame matched them for 73%, the quests' zone for 89%, and a city first, then the
+    quests' zone, for 90%.
+  - In the cases checked, the old pins were right where the rules weren't. Givers whose quests are
+    filed under a neighbouring zone are the misses: Tirion Fordring, the Bulwark's NPCs, Cairne
+    Bloodhoof.
+  - So the old pins come first, and the rules only decide for NPCs without one.
+- **New zones get pins only from the recorder** (or a lookup). CMaNGOS's NPCs are vanilla, and the
+  quest cache names no quest giver. Mount Hyjal has no quests yet: the beta answered none filed
+  there. Riverglades has one, "Remember That I Love You", started by an item, so it has no giver.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
