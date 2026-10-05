@@ -55,12 +55,12 @@ without the changelogs, and step 7 publishes it as it is:
 Then check:
 
 ```powershell
-& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p (Get-ChildItem QuestCompletist\*.lua).FullName
+& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p (Get-ChildItem QuestCompletist\*.lua, QuestCompletist\Forever\*.lua).FullName
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -Check
 ```
 
-The syntax check must be silent, and `-Check` must say both generated files are up to date. Open
-the pull request and merge it.
+The syntax check must be silent, and `-Check` must say all four generated files are up to date,
+two for each game. Open the pull request and merge it.
 
 ## 4. ZIP
 

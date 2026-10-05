@@ -1,11 +1,13 @@
 # Maintaining the quest data
 
 How to refresh and re-check the addon's data after a WoW patch: quests, quest types, reputation
-rewards, storylines, category names and map pins. Everything here is run from the repository root
-in PowerShell, using the scripts in `tools/`.
+rewards, storylines, category names and map pins, for both games the addon runs on, retail and
+WoW: Forever. Everything here is run from the repository root in PowerShell, using the scripts in
+`tools/`.
 
-If you're working with Claude Code in this repository, **"do a full sweep"** runs all of this for
-you. It will tell you up front which steps need you in the game.
+If you're working with Claude Code in this repository, **"do a full sweep"** (or "refresh the data")
+runs all of this for you, for both games. It will tell you up front which steps need you in the
+game.
 
 Releasing a new version is covered in [releasing.md](releasing.md).
 
@@ -28,18 +30,21 @@ Releasing a new version is covered in [releasing.md](releasing.md).
   Rename-Item "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\QuestCompletist" "QuestCompletist.installed"
   New-Item -ItemType Junction -Path "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\QuestCompletist" -Target "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist"
   ```
-  Then move `QuestCompletist.installed` out of the `AddOns` folder. **Don't let CurseForge update,
-  reinstall or uninstall Quest Completist while the link is in place.** Reinstalling through it is
-  what broke the link last time, and depending on how it clears the folder, it could delete files
-  in the repository.
+  Then move `QuestCompletist.installed` out of the `AddOns` folder. Do the same for WoW: Forever, in
+  its client's folder (`_classic_beta_` during the beta). Both links point at the same folder:
+  retail reads `QuestCompletist.toc` and Forever reads `QuestCompletist_Camelot.toc`, so the branch
+  checked out decides what both games run. **Don't let CurseForge update, reinstall or uninstall
+  Quest Completist while a link is in place.** Reinstalling through it is what broke the link last
+  time, and depending on how it clears the folder, it could delete files in the repository.
 
   It happened again on 2026-10-03: CurseForge's 110.7 update replaced the link with a plain copy,
   deleting the repository's `QuestCompletist/Images` on the way, and in-game tests ran the released
   copy without anyone noticing. The fix was to uninstall Quest Completist in the CurseForge app (safe
   while the folder is a plain copy), then create the link again. **Before every in-game test**, check
-  both:
+  the links and the branch:
   ```powershell
   (Get-Item "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\QuestCompletist").LinkType   # must be Junction
+  (Get-Item "C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\QuestCompletist").LinkType   # must be Junction
   git -C "C:\Users\alist\RiderProjects\QuestCompletist" status -sb   # the branch under test, no deleted files
   ```
 
@@ -60,9 +65,13 @@ categories, the zone table, reputation rewards, storylines and so on).
   `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
   `npc` is left out when it's 0, and `name` and `note` when the pin has none.
 
-`tools\Build-AddonData.ps1` checks them and writes both Lua files. With `-Check` it writes nothing
-and only says whether the Lua matches. It names any problem by file and line, e.g.
-`quests.jsonl line 3 (id 53665): 'level' is missing`.
+WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
+`QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
+change goes into the importer or its sources, and the next import keeps it.
+
+`tools\Build-AddonData.ps1` checks the data files and writes the Lua files, for both games. With
+`-Check` it writes nothing and only says whether the Lua matches. It names any problem by file and
+line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
 In `qcQuestData.lua` a quest's row in `qcQuestDatabase` is `{name, level, category, type, faction,
 race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant and
@@ -94,17 +103,25 @@ then every tool refuses to save.
 
 ## Before a sweep
 
-1. **Find the current retail build** at <https://wago.tools/api/builds/latest> (product `wow`).
-   This sweep is for retail. WoW: Forever's data has its own steps; see "WoW: Forever" below.
-2. **Pin the build.** Scripts that take `-Build` should be given the current retail build.
-   Downloading a table from wago.tools without a build number does *not* reliably return the latest
-   retail build.
+1. **Find the current builds** at <https://wago.tools/api/builds/latest>: retail is product `wow`,
+   and WoW: Forever is `wow_classic_beta` (version 1.60) during its beta. Check which product carries
+   Forever after its launch on 4 November 2026.
+2. **Pin the builds.** Scripts that take `-Build` should be given their game's current build:
+   retail's for steps 1 to 9, Forever's for step 10. The Forever tools default to the beta build
+   they were written on, so always pass it. Downloading a table from wago.tools without a build
+   number does *not* reliably return the latest build.
 3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
    ```powershell
    Rename-Item tools\quest_api_cache "quest_api_cache.$(Get-Date -Format yyyyMMdd)"
    ```
    The audit reuses whatever is cached, forever. A cached `.json` or `.404` for a quest is never
    fetched again.
+4. **Move CMaNGOS's database aside** too, so step 10 downloads its latest dump:
+   ```powershell
+   Get-Item tools\ClassicDB_*.sql.gz | Rename-Item -NewName { "$($_.Name).$(Get-Date -Format yyyyMMdd)" }
+   ```
+   The Forever tools take the `ClassicDB_*.sql.gz` already in `tools\`, and only download one when
+   there's none.
 
 Run a script with:
 ```powershell
@@ -128,13 +145,20 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
+| 10 | WoW: Forever's quests and pins | [the Forever probe](#in-the-game) → `Read-ForeverQuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
+
+Steps 1 to 9 are retail's. Blizzard's API has no Forever data, so Forever has a step of its own,
+which rebuilds its data from the game, the client's tables and CMaNGOS's database. It gets its own
+pull request, like each kind of retail change.
 
 After each step that edits the addon, bring the data files up to date as described in
 [The quest and pin data files](#the-quest-and-pin-data-files).
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
 ordinary sweep. When step 6 adds quests, those have never been probed. Run
-[the probe](#in-the-game) after step 6, then step 3 again.
+[the probe](#in-the-game) after step 6, then step 3 again. Step 10 needs a new run of the Forever
+probe when Forever has a new build, or when the beta opens higher levels; otherwise the last run's
+results stand.
 
 ### 1. Faction, race and class
 
@@ -372,6 +396,40 @@ quest search finds every quest by name whatever this reports. Some results are e
 quests aren't in the database stay hidden while "hide quests with no data" is on. A map missing
 from `UiMap.csv` can't be opened on retail; a newer build than the downloaded one may add it.
 
+This checks retail's files. Step 10 runs it on Forever's.
+
+### 10. WoW: Forever
+
+The Forever version loads through `QuestCompletist_Camelot.toc`, with the shared code and its own
+files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, is
+[plans/forever.md](plans/forever.md). Run these in order, with the main checkout's `tools\` as
+`-ToolsDir` and Forever's build as `-Build`:
+
+1. **The probe**, when Forever has a new build or the beta opens higher levels: see
+   [In the game](#in-the-game). Otherwise the last run's results stand.
+2. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
+   `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
+   nothing: Blizzard has changed the record's layout, and the reader needs updating.
+3. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl` and `pins.jsonl`, and
+   the review list, `tools\forever_import_review.csv`. It downloads the client tables and the CMaNGOS
+   dump it doesn't have. Compare its summary with the last run's in the plan, and look through the
+   review list for new rows: quests the game hasn't confirmed, quests with no known giver or no pin,
+   and places where CMaNGOS and our old Classic pins disagree.
+4. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
+   and `qcUnavailableQuests.lua`. A new zone it can't place goes in its continent's "Other" group;
+   add the zone to the script's region table.
+5. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
+   both.
+6. The reachability check (step 9), with Forever's TOC and its client's map table:
+   ```powershell
+   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua QuestCompletist tools QuestCompletist_Camelot.toc tools\UiMap-<build>.csv
+   ```
+   It writes `tools\reachability-report-QuestCompletist_Camelot.txt`. Every count in its summary was
+   0 in October 2026, so anything else is new.
+
+With the same sources, a rerun writes the same files byte for byte. So whatever changes comes from
+the game, the client's tables or CMaNGOS, and is for review before its pull request.
+
 ## Text in other languages
 
 Names come from the game in the player's language: quests, NPCs, factions, maps, and the categories
@@ -408,7 +466,9 @@ database to the IDs of the game's Holidays table that its calendar event carries
 `/qc holidays` in game lists what the filter sees: which holidays are running, each one's next dates,
 and any calendar holiday that isn't tied to a quest. A holiday there that should match one of ours,
 under a new ID, means an entry in `qcHolidays` needs that ID adding. A new holiday with quests
-needs a new flag, an entry, and its quests' `holiday` set in `data\quests.jsonl`.
+needs a new flag, an entry, and its quests' `holiday` set in `data\quests.jsonl`. Forever's quests
+get theirs from the importer, through its own table from Holidays IDs to flags, so add the ID there
+too and rerun step 10.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
@@ -442,45 +502,61 @@ results are enough.
 
 `Retype-ProbeRecurring.ps1` reads that copy.
 
+**Forever probe (`/qcprobe`).** A small addon of its own for the Forever client. It asks the server
+about every quest the client has, names the quest givers, and records quest givers while you play.
+It's pull request #139, which stays open and isn't for merging; its files are in
+`tools\ForeverProbe\` on the branch `tools/forever-probe`. Step 10 reads what it gathers.
+
+1. The first time, check the branch out into a folder of its own beside the repository, so the main
+   checkout, which both games load the addon from, stays where it is:
+   ```powershell
+   git fetch origin tools/forever-probe
+   git worktree add ..\QuestCompletist-probe origin/tools/forever-probe
+   ```
+2. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`) and of NPCs:
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File ..\QuestCompletist-probe\tools\ForeverProbe\Build-ProbeLists.ps1 -Build <build> -ToolsDir tools
+   ```
+3. Copy `..\QuestCompletist-probe\tools\ForeverProbe\QCForeverProbe` into
+   `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\`, replacing any copy
+   there, and restart the game fully.
+4. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
+   time; all 6,609 took about 10 minutes on the beta. Then `/qcprobe npcs`, outside any instance,
+   as instances hide names. `/qcprobe status` says what's been gathered.
+5. Log out fully, so the game writes the results and its caches. Then copy these from
+   `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
+   `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
+   - `Cache\WDB\enUS\questcache.wdb` and `creaturecache.wdb`;
+   - `WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua`.
+
+After Forever's launch, use its live client's folder in place of `_classic_beta_`.
+
+Leave the probe installed while you play Forever. Its recorder notes which quests each NPC or object
+offers and where it stands, and that's the only source of quest givers in Forever's new zones.
+
 ## Checking a change before its pull request
 
 ```powershell
-& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p QuestCompletist\qcQuest.lua QuestCompletist\qcQuestData.lua QuestCompletist\qcPinDB.lua QuestCompletist\qcCore.lua
+& "C:\Program Files (x86)\Lua\5.1\luac.exe" -p (Get-ChildItem QuestCompletist\*.lua, QuestCompletist\Forever\*.lua).FullName
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Build-AddonData.ps1 -Check
 git diff --stat
 ```
 
 - The syntax check must be silent.
-- `Build-AddonData.ps1 -Check` must say both files are up to date. Its last line gives the quest and
-  pin counts, which should only change when quests or pins were meant to be added or removed. As
-  of October 2026 they're 35,023 quests and 14,673 pins.
+- `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
+  The last line for each game gives its quest and pin counts, which should only change when quests
+  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673
+  pins for retail, and 4,506 quests and 1,541 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
-  `.gitattributes` stores `qcQuest.lua`, `qcQuestData.lua` and `qcPinDB.lua` exactly as written.
-- For filter or data changes, run `Test-QuestReachability.lua` (step 9) before and after, and compare
-  the summaries it prints.
+  `.gitattributes` stores `qcQuest.lua`, `qcQuestData.lua`, `qcPinDB.lua` and everything in
+  `QuestCompletist\Forever\` exactly as written.
+- For filter or data changes, run `Test-QuestReachability.lua` before and after, and compare the
+  summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
+  step 10 for Forever.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
-
-## WoW: Forever
-
-The Forever version loads through `QuestCompletist_Camelot.toc`, with the shared code and its own
-files in `QuestCompletist\Forever\`. Its plan is [plans/forever.md](plans/forever.md). Its data is
-rebuilt, never edited by hand, in this order, with the main checkout's `tools\` as `-ToolsDir`:
-
-1. Run the beta probe (`/qcprobe quests`; probe branch #139) and log out. Copy the client's
-   `Cache\WDB\enUS\questcache.wdb` and the probe's saved variables, `QCForeverProbe.lua`, into
-   `tools\forever_probe_<build>\`.
-2. `Read-ForeverQuestCache.ps1 -Build <build>` writes `tools\forever_quest_cache_<build>.jsonl`.
-3. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl` and `pins.jsonl`, and
-   the review list, `tools\forever_import_review.csv`.
-4. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
-   and `qcUnavailableQuests.lua`. A new zone it can't place goes in its continent's "Other" group;
-   add the zone to the script's region table.
-5. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
-   both.
-6. Run the reachability check with Forever's TOC and UiMap table, as its header shows.
 
 ## One-off scripts
 
@@ -496,7 +572,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 
 | Source | Used for | How |
 |---|---|---|
-| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not | in-game probes and runtime API calls |
+| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal; for Forever, which quests exist, its maps, zones, headings and races | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits and recurrence, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns | `Import-ForeverData.ps1`, from its `Full_DB` dump |
