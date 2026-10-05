@@ -4,7 +4,8 @@
 
 A version of the addon for WoW: Forever, running alongside retail: one folder, one release, and our
 own Forever quest and pin database. It's a longer-term project, and the retail plan comes first.
-Nothing is built yet.
+Phases 1 to 4 are done: the addon runs on the Forever beta with its own data, and the full sweep
+refreshes that data along with retail's ([maintenance.md](../maintenance.md), step 10).
 
 ## What Forever is (checked October 2026)
 
@@ -125,7 +126,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
    `data/forever`, with spawns converted to map positions. It merges the probe, cache and recorder results, and lists every disagreement for
    review, including the 83 givers and 185 positions above.
 4. **Forever TOC, menus and build** (addon), tested on the beta.
-5. **At launch:** rerun the probe on the live build, compare, and release.
+5. **At launch:** rerun the probe on the live build (a full sweep's step 10), compare, and release.
 6. **After launch:** keep recording the new content's givers, and look up the rest on Wowhead.
 
 ### Phase 1 results (5 October 2026, beta build 70205, enUS)
@@ -265,7 +266,9 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
     stay in it: Sunken Temple's map names the outdoor temple as its area.
   - **Quests in a zone the client's AreaTable lacks go under Uncategorized.** Two quests are affected,
     both in area 16550.
-- **The beta test:** a copy of `QuestCompletist` goes into `_classic_beta_\Interface\AddOns\`.
+- **The beta test:** the beta's `Interface\AddOns\QuestCompletist` is a link to the repository's
+  folder, like retail's, so both games run the branch checked out (maintenance.md, "One-time
+  setup").
 
 ### Pins on the right map (5 October 2026)
 
@@ -317,6 +320,8 @@ The beta test found Felwood and Winterspring quest givers drawn at the edge of t
 - 2026-10-05: phase 1's probe (#139) ran on the beta; results above.
 - 2026-10-05: phase 2's cache reader (#141) written; results above.
 - 2026-10-05: phase 3's importer (#142) written; results above.
-- 2026-10-05: phase 4's addon files written; results above. Next: the in-game test on the beta, a
-  probe rerun when the beta opens levels above 40, and the importer's next pieces (breadcrumbs,
-  mutually exclusive quests, reputation rewards).
+- 2026-10-05: phase 4's addon files merged (#143); results above. The beta test found indented
+  subzones in the menus (fixed in #143) and pins on the wrong maps (fixed in #144).
+- 2026-10-05: the full sweep covers Forever: maintenance.md's step 10 rebuilds its data, and the
+  probe's steps are under "In the game". Next: a probe rerun when the beta opens levels above 40,
+  and the importer's next pieces (breadcrumbs, mutually exclusive quests, reputation rewards).

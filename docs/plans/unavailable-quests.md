@@ -125,8 +125,8 @@ it catches mistakes that no offline data can.
     the option is on;
   - a completed flagged quest still shows;
   - counts change as expected.
-- (The "WoW: Forever" check originally listed here no longer applies: the addon is retail-only
-  since #87.)
+- (The "WoW: Forever" check originally listed here was dropped when #87 made the addon retail-only.
+  Forever came back in #143 with its own `qcUnavailableQuests.lua`, which flags nothing yet.)
 - Check offline first: the scratch list/map simulations must give identical output with an empty
   flag list, and the expected differences with test flags.
 
