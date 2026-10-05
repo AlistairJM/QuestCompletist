@@ -105,10 +105,12 @@ it catches mistakes that no offline data can.
 ## Tooling
 
 - **`tools/Find-UnavailableQuestCandidates.ps1`** (added with this plan): report-only signal
-  gathering. Re-run it after the database or the client tables change.
-- **`tools/Build-UnavailableQuests.ps1`** (to write): generates `qcUnavailableQuests.lua` from a
+  gathering. Re-run it after the database or the client tables change. Its CSV gives each quest's
+  decision, if it has one, and its summary counts the no-signal quests still to review.
+- **`tools/Build-UnavailableQuests.ps1`**: generates `qcUnavailableQuests.lua` from a
   reviewed decisions file, `docs/plans/unavailable-quest-decisions.csv`
-  (`QuestID, Name, Reason(1|2), Evidence, ReviewedBy`). This is the same pattern as the
+  (`QuestID, Name, Zone, Reason, Decision, Evidence`). `FLAG` rows, with reason 1 or 2, are the
+  quests it hides; `KEEP` rows record quests reviewed and left shown. This is the same pattern as the
   accuracy-cleanup decisions CSVs, so every flag carries its reason.
   - The file is generated in quest ID order, one entry per line, with a header comment saying
     it's generated.
@@ -155,6 +157,28 @@ generates the Lua file. Offline checks:
   Automated browsing gets blocked by Wowhead after about 11 pages, and its terms forbid scraping.
 - Anything uncertain stays unflagged. The cost of wrongly hiding a live quest is higher than
   showing an obsolete one.
+
+**Done with the user (2026-10-05, #154).** 376 quests by then, grouped by kind:
+
+| Group | Quests | Decision |
+|---|---|---|
+| Internal and test entries ([DNT], placeholder and test names) | 25 | FLAG |
+| Hidden trackers (Bronze to Platinum Tracker, Talador's "… Tracking", Venari Rep Token Tracking, N'Zoth assault trackers) | 44 | FLAG |
+| Retired: The Arts of a Druid, Mage and Shaman (Wowhead lists 24760 as obsolete), Legion's pre-launch "Invasion: …", a Shadowlands Season 1 reward, "Armies of Legionfall [DEPRECATED]" | 7 | FLAG |
+| "Conquest's Reward", Battle for Azeroth's weekly PvP rewards | 8 | FLAG, with the other 98 of that name (below) |
+| Emissary bounties, which still rotate | 20 | KEEP |
+| Recurring content that's likely live (Special Assignments, Zskera Vaults, Endeavors) and 2 holiday quests | 61 | KEEP |
+| No pattern, no evidence either way | 80 | KEEP |
+| Battle for Azeroth warfront donations ("Arathi Donations: …") | 131 | waiting for the user's Wowhead check |
+| From Phase 1: not in the client, but with a pin or an achievement criterion (7 Legion "Supplies From …" caches, "The Bounties of Legionfall", "Could I get a Fishing Flier?" 8229) | 8 | waiting for the user |
+
+- Flagging a hidden tracker is safe even if it's still live. The game completes trackers without a
+  turn-in, so the self-correction message never fires, and a completed flagged quest still shows as
+  done.
+- All 106 "Conquest's Reward" quests are flagged, not just the 8 that came up here. None is known
+  to Blizzard's API, and Wowhead lists 54079 as obsolete. The other 98 have pins (Marshal Gabriel and
+  High Warlord Volrath), which go too.
+- That's 182 more flags, 365 in all.
 
 ### Phase 3: maintenance
 - Periodically review `qcFlaggedButSeen` (from players who report it, or your own characters) and

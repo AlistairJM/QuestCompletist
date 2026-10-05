@@ -202,3 +202,4 @@ stays unflagged.
 ## Status
 
 - 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Phase 2 skipped (all 227 unknown to the API; see above). Phase 3 in #107. Phase 4 on `feat/unavailable-quests` (183 flagged). Next: phase 5, the review with the user.
+- 2026-10-05: phase 5, the review with the user, in #154: 182 more flagged (365 in all) and 161 kept, with each decision in `unavailable-quest-decisions.csv`. See Phase 2 of `unavailable-quests.md`.

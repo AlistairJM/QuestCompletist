@@ -344,9 +344,12 @@ After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf
 
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables
 and our pins. It's a report only; see [plans/unavailable-quests.md](plans/unavailable-quests.md).
+Its summary ends with the quests that have no sign of being live and no decision yet: those are the
+ones to review, in groups, with the user.
 
 The quests the addon hides as unavailable are the FLAG rows of
-`docs/plans/unavailable-quest-decisions.csv`. After changing that file, run
+`docs/plans/unavailable-quest-decisions.csv`. A quest reviewed and left shown gets a KEEP row, with
+the evidence, so later sweeps don't raise it again. After changing that file, run
 `Build-UnavailableQuests.ps1` to regenerate `qcUnavailableQuests.lua`; don't edit the Lua file by
 hand. Before flagging a quest as gone from the client, check the latest PTR build's `QuestV2` as
 well as retail's: a quest missing from retail may be upcoming content. Players who accept or turn in
