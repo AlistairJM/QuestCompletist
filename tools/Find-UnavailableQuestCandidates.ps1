@@ -15,12 +15,15 @@ Signals per quest (1 = present):
   InAchievement an achievement criterion requires completing it (Criteria Type 27)
   IsPrereq      another of our quests lists it as its prereq
 Bucket: task / api-found / nontask-inclient / not-in-client
+Decision: the quest's row in docs\plans\unavailable-quest-decisions.csv (FLAG or KEEP), if reviewed.
 
-Output: quest_availability_signals.csv (every quest) plus a summary on stdout.
+Output: quest_availability_signals.csv (every quest) plus a summary on stdout, which counts the
+quests with no positive signal that have no decision yet: the ones to review.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
+    [string]$Decisions = (Join-Path $PSScriptRoot '..\docs\plans\unavailable-quest-decisions.csv'),
     [string[]]$SampleIds = @(),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
@@ -51,6 +54,8 @@ foreach ($pin in (Read-PinData $DataDir)) { foreach ($q in $pin.quests) { $inPin
 $entries = @(Read-QuestData $DataDir)
 $prereqOf = @{}
 foreach ($quest in $entries) { if ($quest.prereq) { $prereqOf["$($quest.prereq)"] = $true } }
+$decided = @{}
+foreach ($row in Import-Csv $Decisions) { $decided[$row.QuestID] = $row.Decision }
 
 $rows = foreach ($quest in $entries) {
     $id = [string]$quest.id
@@ -61,6 +66,7 @@ $rows = foreach ($quest in $entries) {
         ApiFound = [int]$api; IsTask = [int]$isTask.ContainsKey($id); InClient = [int]$inClient.ContainsKey($id)
         GiverPOI = [int]$giverPoi.ContainsKey($id); AnyPOI = [int]$anyPoi.ContainsKey($id); InPinDB = [int]$inPin.ContainsKey($id)
         InQuestLine = [int]$inLine.ContainsKey($id); InAchievement = [int]$inAch.ContainsKey($id); IsPrereq = [int]$prereqOf.ContainsKey($id)
+        Decision = [string]$decided[$id]
     }
 }
 $rows | Export-Csv "$ToolsDir\quest_availability_signals.csv" -NoTypeInformation -Encoding utf8
@@ -73,7 +79,8 @@ foreach ($g in $rows | Group-Object Bucket | Sort-Object Name) {
     "{0,-18}{1,7}  {2}" -f $g.Name, $n, (($signals | ForEach-Object { $s = $_; "{0,12:P0} " -f ((@($g.Group | Where-Object { $_.$s -eq 1 }).Count) / $n) }) -join "")
 }
 $nonTask404 = @($rows | Where-Object { $_.Bucket -in "nontask-inclient", "not-in-client" })
-"Non-task quests the API 404s on: $($nonTask404.Count); with NO positive signal at all: $(@($nonTask404 | Where-Object { ($_.GiverPOI + $_.AnyPOI + $_.InPinDB + $_.InQuestLine + $_.InAchievement + $_.IsPrereq) -eq 0 }).Count)"
+$noSignal = @($nonTask404 | Where-Object { ($_.GiverPOI + $_.AnyPOI + $_.InPinDB + $_.InQuestLine + $_.InAchievement + $_.IsPrereq) -eq 0 })
+"Non-task quests the API 404s on: $($nonTask404.Count); with NO positive signal at all: $($noSignal.Count), of which not yet decided: $(@($noSignal | Where-Object { -not $_.Decision }).Count)"
 if ($SampleIds) {
     "Samples:"
     $rows | Where-Object { $SampleIds -contains $_.QuestID } | Format-Table QuestID, Name, Bucket, InClient, GiverPOI, AnyPOI, InPinDB, InQuestLine, InAchievement, IsPrereq -AutoSize | Out-String -Width 200
