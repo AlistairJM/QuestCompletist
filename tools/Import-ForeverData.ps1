@@ -17,7 +17,9 @@ from the probe. A quest's givers are CMaNGOS's and the recorder's together. Ques
 titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out.
 QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
 row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
-out until the game answers for it. Every kept quest QuestV2 lacks is listed for review.
+out until the game answers for it. With no row, a quest the probe asked about that failed at level 1
+to 35, where the beta answers nearly every quest, is left out too, until the game answers for it.
+Every kept quest QuestV2 lacks is listed for review.
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
@@ -364,6 +366,10 @@ foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
     if ($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) { Add-Review 'left out: internal title' $id '' $title; continue }
+    if (-not $c -and -not $inClient[$id] -and $probeResult[$id] -eq 'fail' -and $m.Level -ge 1 -and $m.Level -le 35) {
+        Add-Review 'left out: failed on the beta below level 36' $id '' "$title (not in QuestV2)"
+        continue
+    }
     $category = if ($c -and [int]$c.sort) { [int]$c.sort } elseif ($m) { $m.Zone } else { 0 }
     if ($c -and -not [int]$c.sort -and $category) { Add-Review "no zone in the game's record, so CMaNGOS's" $id $category $title }
     if ($category -ne 0 -and -not $sortName.ContainsKey($category)) {
