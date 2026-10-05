@@ -201,10 +201,12 @@ as one-time; since October 2026 no quest has it.
 
 - `Retype-FlaggedWorldQuests.ps1` moves 128 to daily or repeatable when the API flags the quest that
   way and it isn't a world quest.
-- `Retype-ProbeRecurring.ps1` moves a quest typed one-time (1, 0 or 16) to daily or 128 when the
-  in-game probe (below) says the quest recurs **and** the API flags it daily or weekly. It reads the
-  probe's saved results in `tools\quest_type_probe_results.lua`, which only cover quests that were
-  in the database when the probe ran.
+- `Retype-ProbeRecurring.ps1` moves a quest typed one-time (1, 0 or 16) to a recurring type, from
+  the in-game probe (below) and the API's flags. The API's flag chooses daily, 128 or repeatable,
+  unless the probe's answer contradicts it, and a quest the probe says recurs that the API doesn't
+  flag daily or weekly gets 128. The table is in the script's header. It reads the probe's saved
+  results in `tools\quest_type_probe_results.lua`, which only cover quests that were in the
+  database when the probe ran.
 
 What's been checked and decided, and the quests still open, are in
 [plans/quest-types.md](plans/quest-types.md).

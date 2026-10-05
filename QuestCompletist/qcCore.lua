@@ -699,11 +699,12 @@ QC_LastDailyReset = QC_LastDailyReset or 0
 QC_LastWeeklyReset = QC_LastWeeklyReset or 0
 qcCharacterCompletions = qcCharacterCompletions or {}
 
--- Clears completions of a given type flag (4 = daily, 128 = weekly); unattainable marks (2) never expire
-local function ResetQCCompletedQuests(flag)
+-- Clears completions of quests with any of the given type flags (2 = repeatable, 4 = daily,
+-- 128 = weekly); unattainable marks (2) never expire
+local function ResetQCCompletedQuests(flags)
     for questId, mark in pairs(qcCharacterCompletions) do
         local questData = qcQuestDatabase[questId]
-        if questData and mark ~= 2 and bit.band(questData[4], flag) ~= 0 then
+        if questData and mark ~= 2 and bit.band(questData[4], flags) ~= 0 then
             qcCharacterCompletions[questId] = nil
         end
     end
@@ -733,10 +734,11 @@ frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
     local now = time()
 
-    -- Daily reset
+    -- Daily reset. Repeatables have no reset of their own, and the list never shows them done, so
+    -- their completions (mostly left from when a quest was typed one-time) go with the dailies'.
     if now > QC_LastDailyReset then
         QC_LastDailyReset = now + GetQuestResetTime()
-        ResetQCCompletedQuests(4)
+        ResetQCCompletedQuests(4 + 2)
     end
 
     -- Weekly reset
