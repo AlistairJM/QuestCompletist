@@ -25,18 +25,19 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 **Clear icons at a glance**
 
 - Different icons for normal, daily, weekly, repeatable, holiday, class and profession quests.
-- Quests in your log show a grey **?** (in progress) or a yellow **?** (ready to hand in).
+- Quests in your log show a grey **?** (in progress) or a yellow **?** (ready to hand in), in the list and in its tooltips.
 - Dailies and repeatables are never marked "done", so you can see at a glance which dailies each zone has.
 
 **Quest givers on your world map**
 
 - Pins show where to pick up the quests you haven't done yet.
 - Hover a pin to see who gives which quests, with the quest givers' names in your game's language.
+- A progress bar shows how many of each quest giver's quests you've done. The ones still to do come first, and done quests fold into one line: hold **Shift** to list them.
 - Holiday quest pins follow the in-game calendar. Brewfest, Hallow's End, Winter Veil, the Darkmoon Faire and the rest appear only while they're running. Type **/qc holidays** to see what's on now and what's coming up.
 
 **Detailed quest tooltips**
 
-- Where the quest giver is, the quest's storyline and your place in it, and the quests you need to do first.
+- Where the quest giver is, the quest's storyline with your progress through it and your place in it, and the quests you need to do first.
 - Renown or reputation requirements, and the reputation it rewards.
 - Warnings for breadcrumb quests, and for quests that lock out others ("you can only complete one of these").
 
