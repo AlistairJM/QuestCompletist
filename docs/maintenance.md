@@ -427,8 +427,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    [In the game](#in-the-game), step 5). The recorder adds to that file whenever you play, so this
    brings in the quest givers you've met since the last sweep. Log out or `/reload` first, so the
    game has written it.
-2. **The probe**, when Forever has a new build or the beta opens higher levels: see
-   [In the game](#in-the-game). Otherwise the last run's results stand.
+2. **The probe**, when Forever has a new build, the beta opens higher levels, or the probe's quest
+   list has grown: see [In the game](#in-the-game). Otherwise the last run's results stand.
 3. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
    `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
    nothing: Blizzard has changed the record's layout, and the reader needs updating.
@@ -437,6 +437,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    dump it doesn't have. Compare its summary with the last run's in the plan, and look through the
    review list for new rows: quests the game hasn't confirmed, quests with no known giver or no pin,
    and places where CMaNGOS and our old Classic pins disagree.
+   The client's `QuestV2` isn't a list of every quest. It lists the quests the game records as
+   completed, so it leaves out repeatable ones. The importer keeps CMaNGOS's repeatable quests
+   without it; any other CMaNGOS quest it lacks comes in once the probe gets an answer for it. The
+   review list names each kept quest `QuestV2` lacks.
    A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
@@ -533,7 +537,8 @@ results are enough.
 `Retype-ProbeRecurring.ps1` reads that copy.
 
 **Forever probe (`/qcprobe`).** A small addon of its own for the Forever client. It asks the server
-about every quest the client has, names the quest givers, and records quest givers while you play.
+about every quest in the client's `QuestV2` and every CMaNGOS quest `QuestV2` lacks, as it leaves out
+repeatable quests. It names the quest givers, and records quest givers while you play.
 It's pull request #139, which stays open and isn't for merging; its files are in
 `tools\ForeverProbe\` on the branch `tools/forever-probe`. Step 10 reads what it gathers.
 
@@ -543,7 +548,8 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    git fetch origin tools/forever-probe
    git worktree add ..\QuestCompletist-probe origin/tools/forever-probe
    ```
-2. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`) and of NPCs:
+2. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`, and the CMaNGOS
+   quests it lacks) and of NPCs:
    ```powershell
    powershell -NoProfile -ExecutionPolicy Bypass -File ..\QuestCompletist-probe\tools\ForeverProbe\Build-ProbeLists.ps1 -Build <build> -ToolsDir tools
    ```
@@ -551,7 +557,8 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\`, replacing any copy
    there, and restart the game fully.
 4. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
-   time; all 6,609 took about 10 minutes on the beta. Then `/qcprobe npcs`, outside any instance,
+   time; the first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
+   Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered.
 5. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
@@ -583,7 +590,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673
-  pins for retail, and 4,506 quests and 1,545 pins for Forever.
+  pins for retail, and 5,079 quests and 1,725 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
