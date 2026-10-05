@@ -20,11 +20,15 @@ local function readFile(path)
 	return text
 end
 
--- Keys the code uses. qcL[...] with a computed key is listed by hand.
+-- Keys the code uses, in every Lua file the retail TOC loads apart from the translations themselves.
+-- qcL[...] with a computed key is listed by hand.
 local used = {UNAVAILABLEACCEPTED = true, UNAVAILABLETURNEDIN = true}
-for _, file in ipairs({"qcCore.lua", "qcMenu.lua"}) do
-	for line in readFile(ADDON_DIR .. "/" .. file):gmatch("[^\n]+") do
-		for key in line:gsub("%-%-.*$", ""):gmatch("qcL%.([A-Z0-9_]+)") do used[key] = true end
+for tocLine in readFile(ADDON_DIR .. "/QuestCompletist.toc"):gmatch("[^\r\n]+") do
+	local file = tocLine:match("^%s*([^#%s][^%s]*%.lua)%s*$")
+	if file and not file:match("^Localization%.") then
+		for line in readFile(ADDON_DIR .. "/" .. file):gmatch("[^\n]+") do
+			for key in line:gsub("%-%-.*$", ""):gmatch("qcL%.([A-Z0-9_]+)") do used[key] = true end
+		end
 	end
 end
 

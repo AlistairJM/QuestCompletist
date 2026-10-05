@@ -23,4 +23,6 @@ qcQuest.lua
 qcQuestData.lua
 qcUnavailableQuests.lua
 qcCore.lua
+qcTooltips.lua
+qcMapPins.lua
 QuestCompletist.xml

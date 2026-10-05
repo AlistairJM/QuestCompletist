@@ -23,4 +23,6 @@ Forever\qcQuest.lua
 Forever\qcQuestData.lua
 Forever\qcUnavailableQuests.lua
 qcCore.lua
+qcTooltips.lua
+qcMapPins.lua
 QuestCompletist.xml

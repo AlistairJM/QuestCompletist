@@ -132,21 +132,28 @@ local function readFile(path)
 	return text
 end
 
+-- The addon's own table, which WoW gives every file of the addon as its second argument.
+local ADDON_TABLE = {}
+
 local function runFile(name, trailer)
 	local path = ADDON_DIR .. "/" .. name
 	local chunk = assert(loadstring(readFile(path) .. (trailer or ""), "@" .. path))
 	setfenv(chunk, env)
-	return chunk()
+	return chunk("QuestCompletist", ADDON_TABLE)
 end
 
 --[[ Load the addon in TOC order, reaching the core's file-local helpers through a trailing return ]]--
+local core
 for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
-	if file and file ~= "qcCore.lua" then runFile(file) end
+	if file == "qcCore.lua" then
+		core = runFile(file,
+			"\nreturn {BuildQuestFilter = function() return qcBuildQuestFilter(QC_LIST_FILTER) end, Holidays = qcHolidays}")
+	elseif file then
+		runFile(file)
+	end
 end
-local core = runFile("qcCore.lua",
-	"\nreturn {BuildQuestFilter = function() return qcBuildQuestFilter(QC_LIST_FILTER) end, Holidays = qcHolidays}")
-assert(type(core.BuildQuestFilter) == "function", "qcBuildQuestFilter not found in qcCore.lua")
+assert(core and type(core.BuildQuestFilter) == "function", "qcBuildQuestFilter not found in qcCore.lua")
 
 local QUESTS = env.qcQuestDatabase
 local PIN_DB = env.qcPinDB
