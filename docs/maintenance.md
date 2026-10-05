@@ -204,19 +204,25 @@ as one-time; since October 2026 no quest has it.
 - `Retype-ProbeRecurring.ps1` moves a quest typed one-time (1, 0 or 16) to a recurring type, from
   the in-game probe (below) and the API's flags. The API's flag chooses daily, 128 or repeatable,
   unless the probe's answer contradicts it, and a quest the probe says recurs that the API doesn't
-  flag daily or weekly gets 128. The table is in the script's header. It reads the probe's saved
-  results in `tools\quest_type_probe_results.lua`, which only cover quests that were in the
-  database when the probe ran.
+  flag daily or weekly gets 128. The table is in the script's header.
+  - **A quest the server knows that the client's `QuestV2` table leaves out becomes repeatable.**
+    That table lists only quests the game can record as done.
+  - **Inputs:** the probe's saved results in `tools\quest_type_probe_results.lua`, which only cover
+    quests that were in the database when the probe ran, and `QuestV2` for the probe's build. The
+    script downloads that table when it isn't there.
 
 What's been checked and decided, and the quests still open, are in
 [plans/quest-types.md](plans/quest-types.md).
 
 Both only pick up new cases, so they're safe to rerun. Before changing any type by hand, know that
-neither source proves a quest is one-time:
+neither the API nor the game proves a quest is one-time:
 - The API leaves many weeklies unflagged, such as Shadowlands' "Trading Favors" and Dragonflight's
   profession weeklies.
 - The game calls paragon caches, emissary bounties, Special Assignments and "Conquest's Reward"
   *Normal*, even though they recur.
+- `QuestV2` comes closest. A quest it lists isn't repeatable. If the API also flags nothing and the
+  game says Normal, the quest is one-time, unless it recurs by a system of its own, like emissary
+  bounties or Special Assignments.
 
 ### 4. Storylines
 
