@@ -12,3 +12,7 @@ data/*.jsonl text eol=lf
 
 # Forever's data files, built by tools/Import-ForeverData.ps1.
 data/forever/*.jsonl text eol=lf
+
+# Forever's generated Lua, written by tools\Build-AddonData.ps1 and tools\Build-ForeverMenu.ps1 and stored exactly as
+# written, so their -Check sees the same bytes.
+QuestCompletist/Forever/*.lua -text

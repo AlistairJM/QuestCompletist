@@ -24,11 +24,15 @@ Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua
 Writes the full report to tools\reachability-report.txt and a summary to the console.
 tools\UiMap.csv, if present, is used to flag pins on map IDs the client doesn't have.
+For WoW: Forever, name its TOC and its client's UiMap table (the report gets the TOC's name):
+  & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua QuestCompletist tools QuestCompletist_Camelot.toc tools\UiMap-1.60.1.70205.csv
 ]]
 
 local ADDON_DIR = arg and arg[1] or "QuestCompletist"
 local TOOLS_DIR = arg and arg[2] or "tools"
-local REPORT_FILE = TOOLS_DIR .. "/reachability-report.txt"
+local TOC_FILE = arg and arg[3] or "QuestCompletist.toc"
+local UIMAP_FILE = arg and arg[4] or (TOOLS_DIR .. "/UiMap.csv")
+local REPORT_FILE = TOOLS_DIR .. "/reachability-report" .. (TOC_FILE == "QuestCompletist.toc" and "" or ("-" .. TOC_FILE:gsub("%.toc$", ""))) .. ".txt"
 local realPrint = print
 
 --[[ Lua 5.1 has no bit library; WoW's masks here are all non-negative and under 2^32. ]]--
@@ -136,7 +140,7 @@ local function runFile(name, trailer)
 end
 
 --[[ Load the addon in TOC order, reaching the core's file-local helpers through a trailing return ]]--
-for line in readFile(ADDON_DIR .. "/QuestCompletist.toc"):gmatch("[^\r\n]+") do
+for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file and file ~= "qcCore.lua" then runFile(file) end
 end
@@ -487,7 +491,7 @@ end
 --[[ Static checks ]]--
 local knownMaps
 do
-	local handle = io.open(TOOLS_DIR .. "/UiMap.csv", "rb")
+	local handle = io.open(UIMAP_FILE, "rb")
 	if handle then
 		knownMaps = {}
 		handle:read("*l")

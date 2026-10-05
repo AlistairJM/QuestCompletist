@@ -18,7 +18,8 @@ CMaNGOS quests the client doesn't have.
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
-            profession, holiday and Forever's other headings; 0 for none. zone is its name.
+            profession, holiday and Forever's other headings; 0 for none, or for an area the
+            client's AreaTable doesn't have. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
@@ -212,6 +213,10 @@ foreach ($id in $ids) {
     $title = if ($c) { $c.title } else { $m.Title }
     if ($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) { Add-Review 'left out: internal title' $id '' $title; continue }
     $category = if ($c) { [int]$c.sort } else { $m.Zone }
+    if ($category -ne 0 -and -not $sortName.ContainsKey($category)) {
+        Add-Review 'zone not in the client, so Uncategorized' $id $category $title
+        $category = 0
+    }
     if ($c -and $m -and $m.Zone -ne $category) { Add-Review 'zone differs from CMaNGOS' $id $m.Zone "$($sortName[$category]) / CMaNGOS: $($sortName[$m.Zone])" }
     if (-not $c) {
         if ($probeResult[$id] -eq 'fail' -and $m.Level -le 35) { Add-Review 'failed on the beta below level 36' $id '' $title }

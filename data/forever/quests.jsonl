@@ -4142,7 +4142,7 @@
 {"id":95772,"name":"Songblade Search","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":3,"race":0,"class":8191}
 {"id":95773,"name":"Enemies in the Water","level":37,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":95774,"name":"Her Name Is Olgra","level":20,"zone":"The Barrens","category":17,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":4921}
-{"id":95775,"name":"The Drowned City","level":40,"zone":"","category":16550,"type":1,"faction":2,"race":67109042,"class":8191}
+{"id":95775,"name":"The Drowned City","level":40,"zone":"","category":0,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":95795,"name":"Fallen in the Fen","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":3,"race":0,"class":8191}
 {"id":95803,"name":"A Token of Good Faith","level":12,"zone":"Paladin","category":-141,"type":1,"faction":2,"race":16,"class":2}
 {"id":95805,"name":"Grace of An'she and Mu'sha","level":4,"zone":"Red Cloud Mesa","category":220,"type":1,"faction":2,"race":67109042,"class":8191}
@@ -4213,7 +4213,7 @@
 {"id":96659,"name":"The Adventurer","level":6,"zone":"Camping","category":-666,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":96661,"name":"Camping 101: Cooking","level":6,"zone":"Camping","category":-666,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":96735,"name":"Toast!?","level":0,"zone":"","category":0,"type":1,"faction":3,"race":0,"class":8191}
-{"id":96774,"name":"Ancient Gurubashi Idol","level":40,"zone":"","category":16550,"type":1,"faction":2,"race":67109042,"class":8191}
+{"id":96774,"name":"Ancient Gurubashi Idol","level":40,"zone":"","category":0,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":96779,"name":"Syndicate Sabotage","level":24,"zone":"Rogue","category":-162,"type":1,"faction":3,"race":0,"class":8}
 {"id":96781,"name":"What's the Big Idea?","level":36,"zone":"Rogue","category":-162,"type":1,"faction":3,"race":0,"class":8}
 {"id":96782,"name":"Covert Extraction","level":36,"zone":"Rogue","category":-162,"type":1,"faction":3,"race":0,"class":8,"prereq":96781}
