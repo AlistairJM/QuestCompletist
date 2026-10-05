@@ -1,9 +1,11 @@
 --[[ Forever beta probe for Quest Completist (docs/plans/forever.md, phase 1). A separate addon, not
 part of Quest Completist: copy this folder to _classic_beta_\Interface\AddOns\QCForeverProbe.
 
-/qcprobe quests [in flight]   asks the server about every quest in Forever's client (QuestIDs.lua)
-                              that hasn't answered yet on this build. The beta only answers quests up
-                              to about level 40, so rerun it when the beta opens higher levels.
+/qcprobe quests [in flight]   asks the server about every quest in QuestIDs.lua that hasn't
+                              answered yet on this build: the client's quest list, which leaves out
+                              repeatable quests, and the CMaNGOS quests it lacks. The beta only
+                              answers quests up to about level 40, so rerun it when the beta opens
+                              higher levels.
 /qcprobe quests all           asks about every quest again
 /qcprobe npcs [in flight]     names the quest givers from CMaNGOS and our old Classic pins (NpcIDs.lua)
 /qcprobe npcs all             names every NPC again
