@@ -1,12 +1,16 @@
 # Quest Completist
 
-See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. Quest Completist knows over 35,000 quests and places nearly 15,000 quest-giver pins on your world map.
+See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places nearly 15,000 quest-giver pins on your world map.
 
 Type **/qc** (or **/questc**) to open it, or set a key binding.
 
 ## Game versions
 
-Quest Completist's main releases are made for **Retail**. The **Files** tab also has versions for other editions of the game, such as Classic, created and maintained by **Thalid83** (Thanks!). If you play one of those, pick the file for your game version there. They're built separately, so some features on this page may work differently or not be available.
+Quest Completist's main releases are made for **Retail** and, since 111.1, **WoW: Forever**. One download covers both: each game loads its own quest list, menus and map pins.
+
+On **WoW: Forever**, it knows around 4,500 quests and places around 1,500 quest-giver pins. Its list was built from the Forever beta, so it's still growing: Forever's new quests above level 40, and the quest givers in its new zones, will follow in updates. Retail-only features, like covenants, renown, the Warband and world quests, don't apply there.
+
+The **Files** tab also has versions for other editions of the game, such as Classic, created and maintained by **Thalid83** (Thanks!). If you play one of those, pick the file for your game version there. They're built separately, so some features on this page may work differently or not be available.
 
 ## Features
 
