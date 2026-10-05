@@ -552,9 +552,12 @@ git diff --stat
 ```
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
-  `qcCore.lua` has hit Lua 5.1's limit on locals declared at the top of a file, and WoW wouldn't load
-  it. 7 were left in October 2026. Put new helpers and constants in a table, as `qcQuestStatus` and
-  `qcTooltipBar` do.
+  a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
+  has its own 200: in October 2026, `qcCore.lua` had 31 left, `qcTooltips.lua` 173 and
+  `qcMapPins.lua` 155. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
+  as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
+  `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
+  TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673

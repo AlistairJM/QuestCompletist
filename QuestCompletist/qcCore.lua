@@ -1,3 +1,8 @@
+-- The addon's own table, which every file of it is given. qcTooltips.lua and qcMapPins.lua take
+-- what they need from this file through it (the end of this file), and each has its own share of
+-- Lua 5.1's limit of 200 file-level locals.
+local QC = select(2, ...)
+
 local TableInsert = table.insert;
 local StringFormat = string.format;
 local ToString = tostring;
@@ -12,13 +17,9 @@ local qcCategoryQuests = {}
 
 --[[ Vars ]]--
 local qcCurrentScrollPosition = 1
-local qcTooltipIndex = nil
-local qcTooltipQuestId = nil
 -- Quests the server has already answered for. Without this a redraw would request again, get
 -- another QUEST_DATA_LOAD_RESULT, and redraw forever.
 local qcQuestDataLoaded = {}
-local qcMapTooltip = nil
-local qcQuestInformationTooltip = nil
 local qcToastTooltip = nil
 local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
@@ -442,7 +443,6 @@ local qcClientNameUpperCache = nil
 -- Quests whose names an open tooltip is still waiting for, so it can be redrawn when they load.
 local qcQuestTooltipWaiting = {}
 local qcMapTooltipWaiting = {}
-local qcMapTooltipPin = nil
 
 local function qcClientQuestName(questId)
 	local title = C_TaskQuest.GetQuestInfoByQuestID(questId)
@@ -972,12 +972,12 @@ local qcNameRedrawPin = false
 local function qcRedrawLoadedNames()
 	local tooltip, pin = qcNameRedrawTooltip, qcNameRedrawPin
 	qcNameRedrawScheduled, qcNameRedrawTooltip, qcNameRedrawPin = false, false, false
-	-- The list may have scrolled since the tooltip opened.
-	if tooltip and qcTooltipIndex and _G["qcMenuButton" .. qcTooltipIndex].QuestID == qcTooltipQuestId then
-		qcUpdateTooltip(qcTooltipIndex)
+	-- The list may have scrolled since the tooltip opened; qcTooltips.lua checks.
+	if tooltip then
+		QC.RedrawQuestTooltip()
 	end
-	if pin and qcMapTooltipPin and qcMapTooltip:IsShown() then
-		qcMapTooltipPin:OnMouseEnter()
+	if pin then
+		QC.RedrawMapTooltip()
 	end
 end
 
@@ -1005,7 +1005,7 @@ local function qcQuestDataArrived(questId, success)
 			break
 		end
 	end
-	if questId == qcTooltipQuestId or qcQuestTooltipWaiting[questId] then qcNameRedrawTooltip = true end
+	if QC.IsTooltipQuest(questId) or qcQuestTooltipWaiting[questId] then qcNameRedrawTooltip = true end
 	if qcMapTooltipWaiting[questId] then qcNameRedrawPin = true end
 	qcScheduleNameRedraw()
 end
@@ -1593,314 +1593,6 @@ local function qcFindPinForQuest(questId)
 	return bestMap, bestPin
 end
 
-local QC_STORYLINE_WINDOW = 15
-
---[[ Shared by the quest list's tooltip and the map's. qcCore.lua is near Lua 5.1's limit of 200
-file-level locals, so these helpers live in two tables. ]]--
-
--- How a quest stands for this character, with the quest list's order, icons and colours.
-local qcQuestStatus = {READY = 1, PROGRESS = 2, TODO = 3, RECURRING = 4, DONE = 5}
-
-function qcQuestStatus.Of(questId, questData)
-	if C_QuestLog.GetLogIndexForQuestID(questId) then
-		return C_QuestLog.IsComplete(questId) and qcQuestStatus.READY or qcQuestStatus.PROGRESS
-	end
-	if qcRecurringQuestIcon(questId, questData[4]) then return qcQuestStatus.RECURRING end
-	if qcIsQuestCompleted(questId) then return qcQuestStatus.DONE end
-	return qcQuestStatus.TODO
-end
-
-function qcQuestStatus.Look(questId, state)
-	if state == qcQuestStatus.READY then return QC_ICON_READY, "ffd100" end
-	if state == qcQuestStatus.PROGRESS then return QC_ICON_PROGRESS, "949694" end
-	if state == qcQuestStatus.RECURRING then
-		return qcRecurringQuestIcon(questId, qcQuestDatabase[questId][4]), "18a0f0"
-	end
-	if state == qcQuestStatus.DONE then
-		if qcCharacterCompletions[questId] == 2 then return QC_ICON_UNATTAINABLE, "c41f3b" end
-		return QC_ICON_COMPLETE, "00ff00"
-	end
-	return QC_ICON_NORMAL, "ffffff"
-end
-
--- An icon written into a line's text: an atlas by name, a file with its texture coordinates.
-function qcQuestStatus.IconText(icon, size)
-	if icon.atlas then
-		return string.format("|A:%s:%d:%d|a", icon.atlas, size, size)
-	end
-	local coords = icon.coords or QC_FULL_TEXCOORDS
-	return string.format("|T%s:%d:%d:0:0:64:64:%d:%d:%d:%d|t", icon.file, size, size,
-		coords[1] * 64, coords[2] * 64, coords[3] * 64, coords[4] * 64)
-end
-
--- A progress bar on a tooltip line whose right text is the count, filled with Blizzard's own bar
--- fill. Its ends are round: a circle of the bar's fill or background centred on each end, so half
--- of it sticks out.
-local qcTooltipBar = {height = 6, fill = "ui-frame-bar-fill-green", left = {0.2, 0.2, 0.25}}
-
-function qcTooltipBar.Paint(cap, filled)
-	if filled then
-		cap:SetAtlas(qcTooltipBar.fill)
-	else
-		cap:SetColorTexture(unpack(qcTooltipBar.left))
-	end
-end
-
-function qcTooltipBar.HideAll(tooltip)
-	tooltip.qcBars = tooltip.qcBars or {}
-	for _, bar in ipairs(tooltip.qcBars) do
-		bar:Hide()
-	end
-	tooltip.qcBarsUsed = 0
-end
-
-function qcTooltipBar.Cap(bar, point)
-	local cap = bar:CreateTexture(nil, "ARTWORK")
-	cap:SetSize(qcTooltipBar.height, qcTooltipBar.height)
-	cap:SetPoint("CENTER", bar, point)
-	local mask = bar:CreateMaskTexture()
-	mask:SetAtlas("CircleMaskScalable")
-	mask:SetAllPoints(cap)
-	cap:AddMaskTexture(mask)
-	return cap
-end
-
-function qcTooltipBar.Show(tooltip, leftText, rightText, done, total)
-	tooltip.qcBarsUsed = tooltip.qcBarsUsed + 1
-	local bar = tooltip.qcBars[tooltip.qcBarsUsed]
-	if not bar then
-		bar = CreateFrame("StatusBar", nil, tooltip)
-		bar:SetHeight(qcTooltipBar.height)
-		bar:SetStatusBarTexture(qcTooltipBar.fill)
-		local background = bar:CreateTexture(nil, "BACKGROUND")
-		background:SetAllPoints()
-		background:SetColorTexture(unpack(qcTooltipBar.left))
-		bar.leftCap = qcTooltipBar.Cap(bar, "LEFT")
-		bar.rightCap = qcTooltipBar.Cap(bar, "RIGHT")
-		tooltip.qcBars[tooltip.qcBarsUsed] = bar
-	end
-	bar:ClearAllPoints()
-	bar:SetPoint("LEFT", leftText, "LEFT", qcTooltipBar.height / 2, 0)
-	bar:SetPoint("RIGHT", rightText, "LEFT", -8 - qcTooltipBar.height / 2, 0)
-	bar:SetMinMaxValues(0, total)
-	bar:SetValue(done)
-	qcTooltipBar.Paint(bar.leftCap, done > 0)
-	qcTooltipBar.Paint(bar.rightCap, done >= total)
-	bar:Show()
-end
-
--- The faction's name in the player's language, or the English one from qcFactions.
-local function qcFactionName(factionId)
-	local data = C_Reputation.GetFactionDataByID(factionId)
-	if data and data.name and data.name ~= "" then return data.name end
-	return qcFactions[factionId]
-end
-
--- Function to update the quest tooltip
-function qcUpdateTooltip(index)
-    local stringFormat = string.format
-    local questId = _G["qcMenuButton" .. index].QuestID
-    local att_HookBackup
-
-    if questId then
-        -- SetHyperlink below renders nothing until the server has sent the quest's data, so ask
-        -- for it and redraw when it lands (see qcQuestDataArrived).
-        qcTooltipIndex = index
-        qcTooltipQuestId = questId
-        wipe(qcQuestTooltipWaiting)
-        wipe(qcNpcTooltipWaiting)
-        qcRequestQuestData(questId)
-
-        -- Temporarily disable ATT's quest tooltip hook so it can't add its own ID
-        if C_AddOns.IsAddOnLoaded("AllTheThings") and GameTooltip.OnTooltipSetQuest then
-            att_HookBackup = GameTooltip.OnTooltipSetQuest
-            GameTooltip.OnTooltipSetQuest = function() end
-        end
-
-        -- Setup tooltip
-        qcQuestInformationTooltip:SetOwner(qcQuestCompletistUI, "ANCHOR_BOTTOMRIGHT", -30, 500)
-        qcQuestInformationTooltip:ClearLines()
-        qcTooltipBar.HideAll(qcQuestInformationTooltip)
-        -- Without the quest's data, SetHyperlink leaves the tooltip unable to show at all, even the
-        -- lines added after it, so name the quest ourselves until the data arrives.
-        if HaveQuestData(questId) then
-            qcQuestInformationTooltip:SetHyperlink(stringFormat("quest:%d", questId))
-        else
-            qcQuestInformationTooltip:AddLine(qcQuestName(questId), 1, 1, 1)
-            qcQuestInformationTooltip:AddLine(qcL.NODETAILS, 0.5, 0.5, 0.5)
-        end
-        qcQuestInformationTooltip:AddLine(" ")
-        qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("|cFF69CCF0%d|r", questId))
-        qcQuestInformationTooltip:AddLine(" ")
-
-        -- Restore ATT hook if we temporarily replaced it
-        if att_HookBackup then
-            GameTooltip.OnTooltipSetQuest = att_HookBackup
-            att_HookBackup = nil
-        end
-
-        -- Storyline information. qcQuestLines holds each storyline's quests in Blizzard's order;
-        -- a whole-zone storyline runs to 200+ quests, so only a window around this one is shown.
-        local storylineId = qcQuestDatabase[questId][8]
-        local storyline = storylineId and qcQuestLines[storylineId]
-        if storyline then
-            -- Older zones share one storyline between both factions, and a class's quests sit
-            -- beside every other class's: follow the list's faction and race/class filters. The
-            -- progress counts like the map's, leaving out recurring quests.
-            local factionFlag = (qcSettings.QC_ML_HIDE_FACTION == 1) and qcFactionBits[string.upper(UnitFactionGroup("player") or "")]
-            local raceFlag, classFlag
-            if (qcSettings.QC_ML_HIDE_RACECLASS == 1) then
-                local _, playerRace = UnitRace("player")
-                local _, playerClass = UnitClass("player")
-                raceFlag = qcRaceBits[string.upper(playerRace)]
-                classFlag = qcClassBits[string.upper(playerClass)]
-            end
-            local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
-            local lineQuests, position, done, total = {}, 1, 0, 0
-            for _, lineQuestId in ipairs(storyline.quests) do
-                local lineQuest = qcQuestDatabase[lineQuestId]
-                if lineQuest and (lineQuestId == questId or ((not factionFlag or qcMaskAllows(lineQuest[5], factionFlag))
-                        and (not raceFlag or qcMaskAllows(lineQuest[6], raceFlag))
-                        and (not classFlag or qcMaskAllows(lineQuest[7], classFlag)))) then
-                    table.insert(lineQuests, lineQuestId)
-                    if lineQuestId == questId then
-                        position = #lineQuests
-                    end
-                    if not qcRecurringQuestIcon(lineQuestId, lineQuest[4]) then
-                        total = total + 1
-                        if qcIsQuestCompleted(lineQuestId) or (countWarband and qcIsQuestCompletedOnAccount(lineQuestId)) then
-                            done = done + 1
-                        end
-                    end
-                end
-            end
-            qcQuestInformationTooltip:AddDoubleLine(qcL.STORYLINE, stringFormat("%s%s|r |cFF808080%s|r", COLOUR_HUNTER, storyline.name, stringFormat(qcL.STORYLINEPOSITION, position, #lineQuests)))
-            if total >= 2 then
-                qcQuestInformationTooltip:AddDoubleLine(" ", stringFormat("|cffc8c8c8%d/%d|r", done, total))
-                local line = qcQuestInformationTooltip:NumLines()
-                local leftText = _G["qcQuestInformationTooltipTextLeft" .. line]
-                local rightText = _G["qcQuestInformationTooltipTextRight" .. line]
-                if leftText and rightText then
-                    qcTooltipBar.Show(qcQuestInformationTooltip, leftText, rightText, done, total)
-                end
-            end
-            qcQuestInformationTooltip:AddLine(" ")
-
-            local first = math.max(1, position - math.floor(QC_STORYLINE_WINDOW / 2))
-            local last = math.min(#lineQuests, first + QC_STORYLINE_WINDOW - 1)
-            first = math.max(1, last - QC_STORYLINE_WINDOW + 1)
-            if first > 1 then
-                qcQuestInformationTooltip:AddLine("|cFF808080   " .. stringFormat(qcL.EARLIERQUESTS, first - 1) .. "|r")
-            end
-            for i = first, last do
-                local lineQuestId = lineQuests[i]
-                local icon, colour = qcQuestStatus.Look(lineQuestId, qcQuestStatus.Of(lineQuestId, qcQuestDatabase[lineQuestId]))
-                local text = stringFormat(" %s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, qcQuestName(lineQuestId, qcQuestTooltipWaiting))
-                if lineQuestId == questId then
-                    qcQuestInformationTooltip:AddDoubleLine(text, "|cff808080" .. qcL.THISQUEST .. "|r")
-                else
-                    qcQuestInformationTooltip:AddLine(text)
-                end
-            end
-            if last < #lineQuests then
-                qcQuestInformationTooltip:AddLine("|cFF808080   " .. stringFormat(qcL.LATERQUESTS, #lineQuests - last) .. "|r")
-            end
-
-            qcQuestInformationTooltip:AddLine(" ")
-        end
-
-        -- Prerequisite quest logic
-        local prereqQuestId = qcQuestPrereq[questId]
-        if prereqQuestId and prereqQuestId ~= 0 then
-            local prereqQuestName = qcQuestName(prereqQuestId, qcQuestTooltipWaiting) or qcL.UNKNOWNQUEST
-            local prereqData = qcQuestDatabase[prereqQuestId]
-            local icon, colour
-            if prereqData then
-                icon, colour = qcQuestStatus.Look(prereqQuestId, qcQuestStatus.Of(prereqQuestId, prereqData))
-            elseif C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId) then
-                icon, colour = QC_ICON_COMPLETE, "00ff00"
-            else
-                icon, colour = QC_ICON_NORMAL, "ffffff"
-            end
-            qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDQUEST, stringFormat("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, prereqQuestName))
-            qcQuestInformationTooltip:AddLine(" ")
-        end
-		-- Renown and Faction requirements Start
-        local renownInfo = qcRenownLevelRequirements[questId]
-
-        if renownInfo then
-            if type(renownInfo) == "table" then
-                local factionId = renownInfo[1]
-                local requiredRenownLevel = renownInfo[2]
-                local factionName = qcFactionName(factionId) or qcL.UNKNOWNFACTION
-                local currentRenownLevel = C_MajorFactions.GetCurrentRenownLevel(factionId)
-
-                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s", COLOUR_DRUID, factionName))
-
-                if currentRenownLevel then
-                    if currentRenownLevel >= requiredRenownLevel then
-                        qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFF00FF00" .. string.format(qcL.RENOWNMET, requiredRenownLevel) .. "|r")
-                    else
-                        qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFFFF0000" .. string.format(qcL.RENOWNNOTMET, requiredRenownLevel) .. "|r")
-                    end
-                else
-                    qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDRENOWN, "|cFFFF0000" .. qcL.DATAUNAVAILABLE .. "|r")
-                end
-            elseif type(renownInfo) == "number" then
-                local factionName = qcFactionName(renownInfo) or qcL.UNKNOWNFACTION
-                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s", COLOUR_DRUID, factionName))
-            end
-
-            qcQuestInformationTooltip:AddLine(" ")
-        end
-		-- Renown and Faction requirements End
-
-        -- Quest Giver Information from qcPinDB.lua: the pin a TomTom waypoint would go to
-        local giverMapId, giverPin = qcFindPinForQuest(questId)
-        if giverPin then
-            qcQuestInformationTooltip:AddDoubleLine(
-                qcL.QUESTGIVER,
-                string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or qcL.UNKNOWNNPC,
-                    GetZoneNameFromZoneID(giverMapId), giverPin[4] or 0, giverPin[5] or 0)
-            )
-        else
-            qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTGIVER, qcL.NOQUESTGIVER)
-        end
-
-        -- Faction and reputation information
-        local reputationEntries = qcQuestReputation[questId]
-        local hasReputation = false
-        local factionIds = {}
-
-        if reputationEntries then
-            for factionId, repValue in pairs(reputationEntries) do
-                if repValue ~= 0 then
-                    hasReputation = true
-                end
-                factionIds[#factionIds + 1] = factionId
-            end
-            table.sort(factionIds)
-        end
-
-        if hasReputation then
-            qcQuestInformationTooltip:AddLine(" ")
-            qcQuestInformationTooltip:AddLine(GetText("COMBAT_TEXT_SHOW_REPUTATION_TEXT"))
-
-            for _, factionId in ipairs(factionIds) do
-                qcQuestInformationTooltip:AddDoubleLine(
-                    "  " .. (qcFactionName(factionId) or tostring(factionId)),
-                    COLOUR_DRUID .. stringFormat(qcL.REPAMOUNT, reputationEntries[factionId])
-                )
-            end
-        end
-
-        -- Make sure the main tooltip is shown
-        qcQuestInformationTooltip:Show()
-    end
-end
-
--- End Tooltip when mouse over quest name
-
 
 function qcQuestClick(qcButtonIndex)
 	local qcQuestID = _G["qcMenuButton" .. qcButtonIndex].QuestID
@@ -1931,12 +1623,6 @@ function qcFilterButton_OnClick(self, button, down) --TWW changed
 Settings.OpenToCategory(qcInterfaceOptions.category:GetID())
 end
 
-
-function qcCloseTooltip()
-	qcTooltipIndex = nil
-	qcTooltipQuestId = nil
-	qcQuestInformationTooltip:Hide()
-end
 
 local function qcUpdateCompletedQuest(questId) -- *
 	if (qcQuestDatabase[questId]) and qcIsRecurringQuest(questId) then
@@ -2056,21 +1742,6 @@ local function qcMutuallyExclusiveChecks(qcQuestID)
 
 end
 
-function qcMapTooltipSetup() -- *
-	qcMapTooltip = CreateFrame("GameTooltip", "qcMapTooltip", UIParent, "GameTooltipTemplate")
-	qcMapTooltip:SetFrameStrata("TOOLTIP")
-	WorldMapFrame:HookScript("OnSizeChanged",
-		function(self)
-			qcMapTooltip:SetScale(1/self:GetScale())
-		end
-	)
-end
-
-function qcQuestInformationTooltipSetup() -- *
-	qcQuestInformationTooltip = CreateFrame("GameTooltip", "qcQuestInformationTooltip", qcQuestCompletistUI, "GameTooltipTemplate")
-	qcQuestInformationTooltip:SetFrameStrata("TOOLTIP")
-end
-
 function qcToastTooltipSetup() -- *
 	qcToastTooltip = CreateFrame("GameTooltip", "qcToastTooltip", qcToast, "GameTooltipTemplate")
 	qcToastTooltip:SetFrameStrata("TOOLTIP")
@@ -2161,422 +1832,10 @@ function qcMutuallyExclusiveAlert_OnLeave(self)
 
 end
 
---[[ ##### MAP PINS START ##### ]]--
--- The map's quest filter from its last refresh, for the tooltip's progress count.
-local qcPinProgressFilter
-
-qcPinMixin = CreateFromMixins(MapCanvasPinMixin)
-
-function qcPinMixin:OnLoad()
-    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
-    self:SetScalingLimits(1, 1.0, 1.0)
-end
-
-local function qcSinglePinIcon(pinData)
-    local icon = pinData[1]
-    if icon == 3 then
-        local professionMask = 0
-        for _, questId in ipairs(pinData[6]) do
-            local quest = qcQuestDatabase[questId]
-            if quest then
-                professionMask = bit.bor(professionMask, qcQuestProfession[questId] or 0)
-            end
-        end
-        return qcProfessionIcon(professionMask)
-    elseif icon == 1 then
-        return qcNormalPinIcon(pinData[6])
-    end
-    return QC_PIN_ICONS[icon] or QC_ICON_NORMAL
-end
-
-local function qcPinIcon(pinData)
-    if not pinData.stack then
-        return qcSinglePinIcon(pinData)
-    end
-    local best, bestRank
-    for _, member in ipairs(pinData.stack) do
-        local icon = qcSinglePinIcon(member)
-        local rank = QC_PIN_ICON_RANK[icon] or 1
-        if not best or rank > bestRank then
-            best, bestRank = icon, rank
-        end
-    end
-    return best
-end
-
-function qcPinMixin:OnAcquired(pinData)
-    self.PinData = pinData
-    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
-    self:SetPosition(pinData[4] / 100, pinData[5] / 100)
-    self:SetSize(24, 24)
-
-    qcSetIcon(self.Texture, qcPinIcon(pinData))
-
-    -- Initialize isGrey as true, and turn it to false if ANY quest is available
-    local isGrey = true
-    local playerLevel = UnitLevel("player")
-    for _, questId in ipairs(pinData[6]) do
-        if questId and qcQuestDatabase[questId] then
-            local prereqQuestId = qcQuestPrereq[questId] or 0
-            local requiredLevel = qcQuestDatabase[questId][2]
-            if playerLevel >= (requiredLevel or 0) then
-                if prereqQuestId == 0 or (prereqQuestId and C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId)) then
-                    isGrey = false
-                    break
-                end
-            end
-        end
-    end
-    if isGrey then
-        self.Texture:SetVertexColor(0.5, 0.5, 0.5)
-    else
-        self.Texture:SetVertexColor(1, 1, 1)
-    end
-end
-
-local function qcPinGiverName(pinData)
-    if pinData[3] then
-        return qcNpcName(pinData, qcNpcMapTooltipWaiting)
-    elseif pinData[2] ~= 0 or pinData[7] then
-        return string.format("%s |cff69ccf0%s|r", UnitName("player"), qcL.YOURSELF)
-    end
-end
-
-local function qcHideTooltipDecorations()
-    qcMapTooltip.qcIcons = qcMapTooltip.qcIcons or {}
-    for _, icon in ipairs(qcMapTooltip.qcIcons) do
-        icon:Hide()
-    end
-    qcMapTooltip.qcIconsUsed = 0
-    qcTooltipBar.HideAll(qcMapTooltip)
-end
-
-local function qcAcquireTooltipIcon()
-    qcMapTooltip.qcIconsUsed = qcMapTooltip.qcIconsUsed + 1
-    local icon = qcMapTooltip.qcIcons[qcMapTooltip.qcIconsUsed]
-    if not icon then
-        icon = qcMapTooltip:CreateTexture(nil, "OVERLAY")
-        icon:SetSize(16, 16)
-        qcMapTooltip.qcIcons[qcMapTooltip.qcIconsUsed] = icon
-    end
-    return icon
-end
-
--- The pin tooltip's width with a progress bar, and how many done quests fold into one line unless
--- Shift is held.
-local QC_PIN_TOOLTIP = {barMinWidth = 180, foldDone = 2}
-
--- Every line sets the fonts of both its sides: the tooltip reuses its lines, keeping the last font.
-local function qcAddMapTooltipLine(left, right, leftFont, wrap)
-    if right then
-        qcMapTooltip:AddDoubleLine(left, right)
-    elseif wrap then
-        qcMapTooltip:AddLine(left, nil, nil, nil, true)
-    else
-        qcMapTooltip:AddLine(left)
-    end
-    local line = qcMapTooltip:NumLines()
-    local leftText, rightText = _G["qcMapTooltipTextLeft" .. line], _G["qcMapTooltipTextRight" .. line]
-    if leftText then leftText:SetFontObject(leftFont or GameTooltipText) end
-    if rightText then rightText:SetFontObject(GameTooltipTextSmall) end
-    return leftText, rightText
-end
-
-local function qcSetMapTooltipLineIcon(leftText, icon)
-    if not leftText then return end
-    local texture = qcAcquireTooltipIcon()
-    qcSetIcon(texture, icon)
-    texture:ClearAllPoints()
-    texture:SetPoint("LEFT", leftText, "LEFT", -6, 0)
-    texture:Show()
-end
-
-local function qcAddPinQuestLine(questId, state)
-    local icon, colour = qcQuestStatus.Look(questId, state)
-    local leftText = qcAddMapTooltipLine(string.format("    |cff%s%s|r", colour, qcQuestName(questId, qcMapTooltipWaiting)),
-        string.format("|cff808080%d|r", questId))
-    qcSetMapTooltipLineIcon(leftText, icon)
-end
-
--- One giver's quests: a progress bar when there are two or more to count, then the quests to do
--- first. Recurring quests are never done, so the progress leaves them out. It counts the quests the
--- map hides for being done or in the log, as the list's total does.
-local function qcAddPinQuestsToTooltip(pins)
-    local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
-    local done, total, seen = 0, 0, {}
-    for _, pinData in ipairs(pins) do
-        for _, questId in ipairs(pinData.allQuests or pinData[6]) do
-            local questData = qcQuestDatabase[questId]
-            if questData and not seen[questId] and not qcRecurringQuestIcon(questId, questData[4])
-                    and (not qcPinProgressFilter or qcPinProgressFilter(questId, true)) then
-                seen[questId] = true
-                total = total + 1
-                if qcIsQuestCompleted(questId) or (countWarband and qcIsQuestCompletedOnAccount(questId)) then
-                    done = done + 1
-                end
-            end
-        end
-    end
-    if total >= 2 then
-        local leftText, rightText = qcAddMapTooltipLine(" ", string.format("|cffc8c8c8%d/%d|r", done, total))
-        if leftText and rightText then
-            qcTooltipBar.Show(qcMapTooltip, leftText, rightText, done, total)
-        end
-    end
-
-    local byState, noData = {{}, {}, {}, {}, {}}, {}
-    wipe(seen)
-    for _, pinData in ipairs(pins) do
-        for _, questId in ipairs(pinData[6]) do
-            if not seen[questId] then
-                seen[questId] = true
-                local questData = qcQuestDatabase[questId]
-                if questData then
-                    table.insert(byState[qcQuestStatus.Of(questId, questData)], questId)
-                else
-                    table.insert(noData, questId)
-                end
-            end
-        end
-    end
-    for state = qcQuestStatus.READY, qcQuestStatus.RECURRING do
-        for _, questId in ipairs(byState[state]) do
-            qcAddPinQuestLine(questId, state)
-        end
-    end
-    local finished = byState[qcQuestStatus.DONE]
-    if #finished >= QC_PIN_TOOLTIP.foldDone and not IsShiftKeyDown() then
-        local leftText = qcAddMapTooltipLine(string.format("    |cff7fbf7f%s|r", string.format(qcL.PINDONE, #finished)),
-            "|cff808080" .. qcL.PINSHOWDONE .. "|r")
-        qcSetMapTooltipLineIcon(leftText, QC_ICON_COMPLETE)
-    else
-        for _, questId in ipairs(finished) do
-            qcAddPinQuestLine(questId, qcQuestStatus.DONE)
-        end
-    end
-    for _, questId in ipairs(noData) do
-        qcAddMapTooltipLine("    |cff808080" .. qcL.NOTINDATABASE .. "|r", string.format("|cff808080%d|r", questId))
-    end
-
-    for _, pinData in ipairs(pins) do
-        if pinData[7] then
-            qcAddMapTooltipLine(string.format("|cffabd473%s|r", pinData[7]), nil, nil, true)
-        end
-    end
-end
-
-function qcPinMixin:OnMouseEnter()
-    local pinData = self.PinData
-    if not pinData then return end
-    qcMapTooltipPin = self
-    wipe(qcMapTooltipWaiting)
-    wipe(qcNpcMapTooltipWaiting)
-
-    local mapWidth, mapHeight = WorldMapFrame:GetCanvas():GetSize()
-    local x, y = self:GetCenter()
-    local anchorPoint = "ANCHOR_RIGHT"
-    if x and mapWidth and x > mapWidth * 0.75 then
-        anchorPoint = "ANCHOR_LEFT"
-    end
-    if y and mapHeight and y > mapHeight * 0.75 then
-        anchorPoint = "ANCHOR_BOTTOM"
-    end
-
-    qcMapTooltip:SetOwner(self, anchorPoint)
-    qcMapTooltip:ClearLines()
-    qcHideTooltipDecorations()
-
-    -- Pins with no quest giver name are listed last under one heading, as their quests needn't
-    -- belong to the giver above them; pins sharing a name are listed as one giver.
-    local givers, giverByName, others = {}, {}, {}
-    for _, member in ipairs(pinData.stack or {pinData}) do
-        local name = qcPinGiverName(member)
-        if not name then
-            table.insert(others, member)
-        elseif giverByName[name] then
-            table.insert(giverByName[name].pins, member)
-        else
-            giverByName[name] = {name = name, pins = {member}}
-            table.insert(givers, giverByName[name])
-        end
-    end
-
-    for index, giver in ipairs(givers) do
-        if index > 1 then
-            qcAddMapTooltipLine(" ")
-        end
-        local npcId = giver.pins[1][2]
-        qcAddMapTooltipLine(giver.name, npcId ~= 0 and string.format("|cff808080%d|r", npcId) or nil, GameTooltipHeaderText)
-        qcAddPinQuestsToTooltip(giver.pins)
-    end
-    if #others > 0 then
-        if #givers > 0 then
-            qcAddMapTooltipLine(" ")
-            qcAddMapTooltipLine("|cff808080" .. qcL.OTHERQUESTS .. "|r")
-        end
-        qcAddPinQuestsToTooltip(others)
-    end
-
-    qcMapTooltip:SetMinimumWidth(qcMapTooltip.qcBarsUsed > 0 and QC_PIN_TOOLTIP.barMinWidth or 0)
-    qcMapTooltip:Show()
-end
-
-function qcPinMixin:OnMouseLeave()
-    qcMapTooltipPin = nil
-    qcMapTooltip:Hide()
-    qcHideTooltipDecorations()
-end
-
--- Pressing or letting go of Shift lists or folds the done quests of the pin under the mouse.
-local qcShiftWatcher = CreateFrame("Frame")
-qcShiftWatcher:RegisterEvent("MODIFIER_STATE_CHANGED")
-qcShiftWatcher:SetScript("OnEvent", function(_, _, key)
-    if (key == "LSHIFT" or key == "RSHIFT") and qcMapTooltipPin and qcMapTooltip:IsShown() then
-        qcMapTooltipPin:OnMouseEnter()
-    end
-end)
-
--- Pins drawn within half a map point of each other overlap at any zoom, and only the top one can be
--- hovered. After the filters have run, pins within that distance of a group's first pin join it,
--- and each group gets a single pin standing in for them all. Measuring from the first pin, not any
--- member, stops a row of pins chaining into one group. qcPinDB itself keeps one pin per quest giver.
-local QC_PIN_MERGE_DISTANCE = 0.5
-local function qcMergeStackedPins(pins)
-    local merged = {}
-    local limit = QC_PIN_MERGE_DISTANCE * QC_PIN_MERGE_DISTANCE
-    for _, pinData in ipairs(pins) do
-        local stack
-        for _, candidate in ipairs(merged) do
-            local first = candidate[1]
-            if (first[4] - pinData[4]) ^ 2 + (first[5] - pinData[5]) ^ 2 <= limit then
-                stack = candidate
-                break
-            end
-        end
-        if stack then
-            table.insert(stack, pinData)
-        else
-            table.insert(merged, {pinData})
-        end
-    end
-    for i, stack in ipairs(merged) do
-        if #stack == 1 then
-            merged[i] = stack[1]
-        else
-            local first, quests = stack[1], {}
-            for _, member in ipairs(stack) do
-                for _, questId in ipairs(member[6]) do
-                    table.insert(quests, questId)
-                end
-            end
-            merged[i] = {first[1], first[2], first[3], first[4], first[5], quests, stack = stack}
-        end
-    end
-    return merged
-end
-
-local function qcIsQuestInLog(questId)
-    local logIndex = C_QuestLog.GetLogIndexForQuestID(questId)
-    return logIndex ~= nil and logIndex > 0
-end
-
--- Decides one pin quest at a time; a pin is drawn while any of its quests is kept. A quest with no
--- data passes every check that reads the database. With forProgress it ignores the filters on what
--- the character has done or has in the log, so the tooltip's progress counts those quests too.
-local function qcBuildMapQuestFilter()
-    local passesFilters = qcBuildQuestFilter(QC_MAP_FILTER)
-    local hideNoData = (qcSettings.QC_M_HIDE_NODATA == 1)
-    local hideCompleted = (qcSettings.QC_M_HIDE_COMPLETED == 1)
-    local hideInProgress = (qcSettings.QC_M_HIDE_INPROGRESS == 1)
-    local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
-    local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
-    local activeHolidays = (qcSettings.QC_M_HIDE_SEASONAL == 1) and qcUpdateActiveHolidays()
-    local playerLevel = (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == 1) and UnitLevel("player")
-
-    local overrideCompleted = {}
-    if hideCompleted or hideInProgress then
-        overrideCompleted = simulateExclusiveCompletions(qcOverrideDailyExclusiveQuest)
-        for questId in pairs(simulateExclusiveCompletions(qcOverrideWeeklyExclusiveQuest)) do
-            overrideCompleted[questId] = true
-        end
-    end
-
-    local function requirementsMet(questId, e)
-        if (e[2] or 0) > playerLevel then return false end
-        local prereqId = qcQuestPrereq[questId] or 0
-        if prereqId > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prereqId) then return false end
-        local renown = qcRenownLevelRequirements[questId]
-        if renown and C_MajorFactions.GetCurrentRenownLevel(renown[1]) < renown[2] then return false end
-        return true
-    end
-
-    return function(questId, forProgress)
-        local e = qcQuestDatabase[questId]
-        if not e and hideNoData then return false end
-        if not forProgress then
-            if hideCompleted and (qcIsQuestCompleted(questId) or overrideCompleted[questId]) then return false end
-            if hideInProgress and (qcIsQuestInLog(questId) or overrideCompleted[questId]) then return false end
-            if hideWarband and qcIsQuestCompletedOnAccount(questId) then return false end
-        end
-        if hideUnavailable and qcIsUnavailable(questId) then return false end
-        if not e then return true end
-        if not passesFilters(questId, e) then return false end
-        -- A holiday value we don't know restricts nothing, like any other field with no data.
-        local holiday = qcQuestHoliday[questId]
-        if activeHolidays and holiday and qcKnownHolidayFlags[holiday] and BitBand(activeHolidays, holiday) == 0 then return false end
-        if playerLevel and not requirementsMet(questId, e) then return false end
-        return true
-    end
-end
-
-qcMapDataProvider = CreateFromMixins(MapCanvasDataProviderMixin)
-
-function qcMapDataProvider:RemoveAllData()
-    if self:GetMap() then
-        self:GetMap():RemoveAllPinsByTemplate("qcPinTemplate")
-    end
-end
-
-function qcMapDataProvider:RefreshAllData()
-    if not self:GetMap() then return end
-    self:RemoveAllData()
-
-    if qcSettings.QC_M_SHOW_ICONS == 0 then return end
-
-    local UiMapID = self:GetMap():GetMapID()
-    if not UiMapID or not qcPinDB[UiMapID] then return end
-
-    local keepQuest = qcBuildMapQuestFilter()
-    qcPinProgressFilter = keepQuest
-    local pins = {}
-    for _, pin in ipairs(qcPinDB[UiMapID]) do
-        local quests = {}
-        for _, questId in ipairs(pin[6]) do
-            if keepQuest(questId) then TableInsert(quests, questId) end
-        end
-        if #quests > 0 then
-            local pinData = {}
-            for key, value in pairs(pin) do pinData[key] = value end
-            pinData[6] = quests
-            pinData.allQuests = pin[6]
-            TableInsert(pins, pinData)
-        end
-    end
-
-    qcRequestPinNpcNames(pins)
-    for _, pinData in ipairs(qcMergeStackedPins(pins)) do
-        self:GetMap():AcquirePin("qcPinTemplate", pinData)
-    end
-end
-
-WorldMapFrame:AddDataProvider(qcMapDataProvider)
-
 -- Ensure qcQuestCompletistUI_OnLoad is properly defined
 function qcQuestCompletistUI_OnLoad(self)
     -- Your initialization code here
 end
---[[ ##### MAP PINS END ##### ]]--
-
 --[[ ##### INTERFACE OPTIONS START ##### ]]--
 
 -- Initialize qcSettings if it is not already set
@@ -3161,3 +2420,20 @@ function qcQuestCompletistUI_OnLoad(self)
 	qcNewDataAlertTooltipSetup()
 	qcMutuallyExclusiveAlertTooltipSetup()
 end
+
+--[[ What qcTooltips.lua and qcMapPins.lua take from this file, through the addon's own table. ]]--
+QC.COLOUR_DRUID, QC.COLOUR_HUNTER = COLOUR_DRUID, COLOUR_HUNTER
+QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS = QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS
+QC.QC_ICON_COMPLETE, QC.QC_ICON_UNATTAINABLE = QC_ICON_COMPLETE, QC_ICON_UNATTAINABLE
+QC.QC_FULL_TEXCOORDS, QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK = QC_FULL_TEXCOORDS, QC_PIN_ICONS, QC_PIN_ICON_RANK
+QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon = qcSetIcon, qcProfessionIcon, qcNormalPinIcon
+QC.qcRecurringQuestIcon = qcRecurringQuestIcon
+QC.qcQuestName, QC.qcRequestQuestData, QC.qcFindPinForQuest = qcQuestName, qcRequestQuestData, qcFindPinForQuest
+QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIsQuestCompletedOnAccount
+QC.qcIsUnavailable, QC.qcMaskAllows = qcIsUnavailable, qcMaskAllows
+QC.QC_MAP_FILTER, QC.qcBuildQuestFilter = QC_MAP_FILTER, qcBuildQuestFilter
+QC.simulateExclusiveCompletions = simulateExclusiveCompletions
+QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays = qcKnownHolidayFlags, qcUpdateActiveHolidays
+QC.qcNpcName, QC.qcRequestPinNpcNames = qcNpcName, qcRequestPinNpcNames
+QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
+QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
