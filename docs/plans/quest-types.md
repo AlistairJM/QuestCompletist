@@ -20,6 +20,9 @@ does:
   Normal. Normal can't: the game also says Normal for paragon caches, emissary bounties, Special
   Assignments and PvP rewards. The client only says how often a quest recurs for quests in the
   player's log.
+- Recurring means daily or weekly, not repeatable: all 291 quests the API flags repeatable and
+  nothing else answered Normal, 100 of them typed repeatable for years. So Normal says nothing
+  against the API's repeatable flag.
 - **Blizzard's quest API**: `is_daily`, `is_weekly` and `is_repeatable`. It leaves many weeklies
   unflagged, and has no record (404) of many recent and removed quests.
 - Neither source can show a quest is one-time, so that call is judgement: the quest's name, zone
@@ -33,6 +36,7 @@ does:
 | #43 | 897 | Typed one-time, and both the game and the API say daily or weekly (`Retype-ProbeRecurring.ps1`). |
 | #44 | 132 | Typed daily or weekly, but one-time by nature: Legion profession questlines, reputation milestones, pet battle introduction, dungeon and raid story quests. Judgement, by family. It left 346 of the 478 the game calls Normal: 202 that recur on a schedule, and 144 it couldn't place. |
 | #133 | 135 | October 2026, below. |
+| #153 | 587 | October 2026 review, below. |
 
 **#133, October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
 one-time, so its 79 weeklies got a permanent tick: Wintergrasp's, Wrath raids' "… Must Die!",
@@ -62,13 +66,30 @@ the Warlords raid wings, Throne of Thunder's and "The Arena Calls".
 
 Type 16 is now gone. Only the type field changed.
 
+**#153, October 2026 review.** Every quest typed one-time that the game or the API says recurs,
+decided with the user: the 224 the game calls Recurring and the 363 only the API flags.
+`Retype-ProbeRecurring.ps1` now applies the rules for every one-time quest (its header has the table),
+so a later sweep retypes new cases the same way:
+- **245 to repeatable.** The API flags them repeatable and nothing else; the game says Normal for 191
+  and hadn't loaded 54. Ember Court restocks, the Tillers' gifts, the Argent Dawn's scourgestones,
+  Shattrath's and Nagrand's "More …" turn-ins, Iskaara's supplies, "The Horde Needs More …" and
+  Ashran's trophies.
+- **197 to daily.** The API flags them daily. The game says Recurring for 79 (also flagged
+  repeatable, which the script used to skip), and hadn't loaded 118: Korthia, the Scourge
+  invasion "Death Rising", Love is in the Air, the Maw, Ashran's artifact fragments, Nagrand's
+  trophies and fishing lunkers.
+- **145 to weekly.** The game says Recurring, and the API gives no frequency (2 of them it doesn't
+  know at all) or flags both daily and weekly ("Pet Battle Challenge: Deadmines"). The API flags
+  nearly every daily but leaves many weeklies unflagged: of the 100 quests the game calls Recurring
+  and the API doesn't flag that were already typed daily or weekly, 85 were weekly. Hallowfall,
+  Covenant Assaults, The Oasis, Archaeology, Suffusion Camps, the Forbidden Reach and Harandar's
+  "WANTED".
+
+Only the type field changed. Completions recorded while these were typed one-time go at the next
+reset: dailies' and weeklies' as before, and repeatables' now with the dailies'.
+
 ## Still open (counted October 2026)
 
-- **224 typed one-time that the game says recur.** 142 have no API flag, 79 are flagged daily and
-  repeatable, 1 daily and weekly, 2 aren't in the API. The game shows they come back, but nothing
-  says which recurring type. Families include Covenant Assaults, the Forbidden Reach, The Oasis,
-  Archaeology fragments, Dragonflight's profession quests, Ashran's artifact fragments, fishing
-  lunkers and Midnight's Harandar "WANTED" quests.
 - **326 typed daily or weekly that the game calls Normal**, the rest of #44's set. Most recur by
   nature and stay: emissaries, paragon caches and "Supplies from…", Special Assignments,
   "Conquest's Reward" (not in the API, so maybe removed), warfronts, crafting orders, Delves and
@@ -77,5 +98,3 @@ Type 16 is now gone. Only the type field changed.
   - recent raid quests (Manaforge Omega, Liberation of Undermine, The Voidspire);
   - warfront intro quests, and a few pet battle quests;
   - "Let's Fish!" (Mechagon) and "Moments of Reflection" (Antoran Wastes).
-- **358 typed one-time that the API alone flags recurring** (240 repeatable, 32 daily and
-  repeatable, 86 daily), which the game doesn't call Recurring. Not looked at yet.
