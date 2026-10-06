@@ -127,9 +127,46 @@ The quest window's breadcrumb notice counts every listed breadcrumb not yet done
 faction's too. Some of the API pairs list both factions' versions of a quest, as 6610's breadcrumbs
 already did.
 
+## Several prerequisites (6 October 2026)
+
+Decisions 3 and 4:
+- **The data:** a quest's `prereq` can be a list that all must be done. A list inside it is a
+  choice, any one of which will do, and a list inside a choice is all of it again. A single quest
+  stays a number. The Lua table follows suit.
+- **The code:** `qcPrereq` in `qcCore.lua` checks and describes them.
+  - The quest tooltip lists each required quest on a line of its own, with its icon, and a choice
+    on one line: "Step 4 or Step 5 or Step 6", in the player's language (`SERVICES_CONJUNCTION_OR`).
+  - The map greys a pin, and with its filter on hides a quest, until every requirement is met.
+    Its tooltip names what's missing: "Requires Step 3", or "Requires Step 4 or Step 5 or Step 6".
+- **A fix found on the way:** the map's renown check stopped with an error if the game gave no
+  renown level for the faction. It now counts that as met, as the pin tooltip already did.
+- **`tools/Sync-QuestPrerequisites.ps1`**, step 2c of the sweep, sets them. A second run changes
+  nothing.
+  - **Blizzard's lists:** 752 quests got the API's list, and 154 had theirs corrected.
+  - **Ours kept as well, 28 times:** the API names at most 3 quests and often leaves out the step
+    just before the quest in its storyline. Of the 29 prerequisites of ours it didn't name, 28 were
+    that step, so they stay alongside Blizzard's list.
+  - **TrinityCore's previous quest**, where it's the step just before: 2,036.
+  - **Left out:** a one-time quest's daily, weekly or repeatable requirement, since the game only
+    knows such a quest is done until the reset, but a recurring quest keeps one, as in a chain of
+    world quests. One pair that would each require the other (91587 and 91588) is left out too.
+  - **Totals:** 4,833 quests had a prerequisite before, and 7,621 now.
+
+The check then found 397 things. The prerequisite ones:
+- 26 one-time quests that require a recurring one, already in our data;
+- 3 that require a quest of the other faction, two of them where our own faction data looks wrong:
+  - the Alliance quest "Garrison Campaign: The Warlock" requires "Secrets of the Sargerei", which
+    we have as Horde;
+  - "Captured Information" and "Signs of the Struggle" share a storyline but are of different
+    factions in our data;
+- 6 that name quests outside our data;
+- 15 where TrinityCore differs.
+
 ## Status
 
 - 2026-10-06: the check written (step 2b) and run; step 2 corrects differing amounts. All 11,035 of
   our reputation rewards matched the API.
 - 2026-10-06: decisions 1 and 2 applied (above). Next: several prerequisites per quest, then
   Blizzard's lists and TrinityCore's 2,036 (decisions 3 and 4), and the review of the rest.
+- 2026-10-06: decisions 3 and 4 applied: several prerequisites per quest, step 2c (above). Next: the
+  user's check in game, then the review of what's left.

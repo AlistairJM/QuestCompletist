@@ -382,6 +382,43 @@ local function qcIsRecurringQuest(questId)
 	return bit.band(qcQuestDatabase[questId][4], qcRecurringTypes) ~= 0
 end
 
+-- A quest's prerequisites (qcQuestPrereq): the quest to do first, or a list of quests that all must
+-- be done. A list inside that list is a choice, any one of which will do, and a list inside a
+-- choice is all of it again.
+local qcPrereq = {}
+
+-- Whether a requirement is met: all of a list when all is true, one of a choice when it's false.
+function qcPrereq.Met(need, all)
+	if type(need) == "number" then return C_QuestLog.IsQuestFlaggedCompleted(need) end
+	for _, part in ipairs(need) do
+		if qcPrereq.Met(part, not all) ~= all then return not all end
+	end
+	return all
+end
+
+function qcPrereq.QuestMet(questId)
+	local need = qcQuestPrereq[questId]
+	if not need or need == 0 then return true end
+	return qcPrereq.Met(need, true)
+end
+
+-- The parts that each must be done, in order; nil when there are none.
+function qcPrereq.Parts(questId)
+	local need = qcQuestPrereq[questId]
+	if not need or need == 0 then return nil end
+	return type(need) == "table" and need or {need}
+end
+
+-- A part as text: a quest as describe(questId) gives it, a choice as its options joined by "or",
+-- and a list inside a choice as its quests in brackets.
+function qcPrereq.Text(part, describe, all)
+	if type(part) == "number" then return describe(part) end
+	local texts = {}
+	for _, item in ipairs(part) do texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
+	if all then return "(" .. table.concat(texts, ", ") .. ")" end
+	return table.concat(texts, " " .. (SERVICES_CONJUNCTION_OR or "or") .. " ")
+end
+
 local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 	if (qcMutuallyExclusive[qcQuestID]) then
 		for qcMutuallyExclusiveIndex, qcMutuallyExclusiveEntry in pairs(qcMutuallyExclusive[qcQuestID]) do
@@ -2448,7 +2485,7 @@ QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon = qcSetIcon, qcProfessionI
 QC.qcRecurringQuestIcon = qcRecurringQuestIcon
 QC.qcQuestName, QC.qcRequestQuestData, QC.qcFindPinForQuest = qcQuestName, qcRequestQuestData, qcFindPinForQuest
 QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIsQuestCompletedOnAccount
-QC.qcIsUnavailable, QC.qcMaskAllows = qcIsUnavailable, qcMaskAllows
+QC.qcIsUnavailable, QC.qcMaskAllows, QC.qcPrereq = qcIsUnavailable, qcMaskAllows, qcPrereq
 QC.QC_MAP_FILTER, QC.qcBuildQuestFilter = QC_MAP_FILTER, qcBuildQuestFilter
 QC.simulateExclusiveCompletions = simulateExclusiveCompletions
 QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays = qcKnownHolidayFlags, qcUpdateActiveHolidays

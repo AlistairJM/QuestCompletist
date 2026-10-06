@@ -86,6 +86,8 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   left off when it's 0 (half the quests have none; a missing last value costs nothing).
 - **Profession, holiday, covenant and prereq** are in `qcQuestProfession` (1,332 quests),
   `qcQuestHoliday` (911), `qcQuestCovenant` (777) and `qcQuestPrereq` (4,851), keyed by quest ID.
+  Since 6 October 2026 a prereq can also be a list, and 7,621 quests have one
+  ([quest-table-checks.md](quest-table-checks.md)).
   The code reads them as "nil means none", where it used to test for 0.
 - **The zone text isn't written to the Lua.** The game never read it; it stays in the data file for
   the tools.

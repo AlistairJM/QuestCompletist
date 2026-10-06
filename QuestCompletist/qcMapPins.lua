@@ -8,7 +8,7 @@ local QC_ICON_NORMAL, QC_ICON_COMPLETE = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE
 local QC_PIN_ICONS, QC_PIN_ICON_RANK = QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK
 local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
-local qcIsUnavailable, qcQuestName, qcMaskAllows = QC.qcIsUnavailable, QC.qcQuestName, QC.qcMaskAllows
+local qcIsUnavailable, qcQuestName, qcMaskAllows, qcPrereq = QC.qcIsUnavailable, QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq
 local qcKnownHolidayFlags, qcUpdateActiveHolidays = QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays
 local QC_MAP_FILTER, qcBuildQuestFilter, simulateExclusiveCompletions = QC.QC_MAP_FILTER, QC.qcBuildQuestFilter, QC.simulateExclusiveCompletions
 local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
@@ -86,13 +86,10 @@ function qcPinMixin:OnAcquired(pinData)
     local playerLevel = UnitLevel("player")
     for _, questId in ipairs(pinData[6]) do
         if questId and qcQuestDatabase[questId] then
-            local prereqQuestId = qcQuestPrereq[questId] or 0
             local requiredLevel = qcQuestDatabase[questId][2]
-            if playerLevel >= (requiredLevel or 0) then
-                if prereqQuestId == 0 or (prereqQuestId and C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId)) then
-                    isGrey = false
-                    break
-                end
+            if playerLevel >= (requiredLevel or 0) and qcPrereq.QuestMet(questId) then
+                isGrey = false
+                break
             end
         end
     end
@@ -216,6 +213,10 @@ local function qcMaskNames(mask, bits, nameOf)
     return table.concat(names, ", ")
 end
 
+local function qcPrereqName(questId)
+    return qcQuestName(questId, qcMapTooltipWaiting) or qcL.UNKNOWNQUEST
+end
+
 -- What stands between the character and a quest, in the words of Blizzard's item tooltips; nil when
 -- nothing does. The map hides these quests unless the filters for them are off.
 local function qcPinQuestNeeds(questId)
@@ -240,9 +241,13 @@ local function qcPinQuestNeeds(questId)
     if (e[2] or 0) > UnitLevel("player") then
         needs[#needs + 1] = string.format(ITEM_MIN_LEVEL, e[2])
     end
-    local prereqId = qcQuestPrereq[questId] or 0
-    if prereqId > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prereqId) then
-        needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcQuestName(prereqId, qcMapTooltipWaiting) or qcL.UNKNOWNQUEST)
+    local prereqParts = qcPrereq.Parts(questId)
+    if prereqParts then
+        for _, part in ipairs(prereqParts) do
+            if not qcPrereq.Met(part, false) then
+                needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcPrereq.Text(part, qcPrereqName, false))
+            end
+        end
     end
     local renown = qcRenownLevelRequirements[questId]
     local renownLevel = type(renown) == "table" and C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel(renown[1])
@@ -488,10 +493,10 @@ local function qcBuildMapQuestFilter()
 
     local function requirementsMet(questId, e)
         if (e[2] or 0) > playerLevel then return false end
-        local prereqId = qcQuestPrereq[questId] or 0
-        if prereqId > 0 and not C_QuestLog.IsQuestFlaggedCompleted(prereqId) then return false end
+        if not qcPrereq.QuestMet(questId) then return false end
         local renown = qcRenownLevelRequirements[questId]
-        if renown and C_MajorFactions.GetCurrentRenownLevel(renown[1]) < renown[2] then return false end
+        local renownLevel = renown and C_MajorFactions.GetCurrentRenownLevel(renown[1])
+        if renownLevel and renownLevel < renown[2] then return false end
         return true
     end
 
