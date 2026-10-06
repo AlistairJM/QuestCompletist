@@ -80,6 +80,20 @@ git archive --format=zip --prefix=QuestCompletist/ -o QuestCompletistv<version>.
 
 Check that it holds the same files as `QuestCompletist\` and shows the new version in the TOC.
 
+Then keep only the five newest versions' ZIPs in the repository root. This moves the older ones to
+the Recycle Bin, going by version number rather than date:
+
+```powershell
+Add-Type -AssemblyName Microsoft.VisualBasic
+Get-ChildItem QuestCompletistv*.zip |
+    Sort-Object { $v = $_.BaseName -replace '^QuestCompletistv'; [version]$(if ($v -match '\.') { $v } else { "$v.0" }) } |
+    Select-Object -SkipLast 5 |
+    ForEach-Object { [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($_.FullName, 'OnlyErrorDialogs', 'SendToRecycleBin') }
+```
+
+An older version can always be rebuilt from its tag, with the same files:
+`git archive --format=zip --prefix=QuestCompletist/ -o QuestCompletistv<version>.zip v<version>:QuestCompletist`.
+
 ## 5. Tag
 
 Tag the merge commit of the version pull request, and push the tag:
