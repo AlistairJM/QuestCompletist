@@ -124,7 +124,6 @@ qcQuestCategories={
 {722,"Razorfen Downs"},
 {491,"Razorfen Kraul"},
 {44,"Redridge Mountains"},
-{-367,"Reputation"},
 {16591,"Riverglades"},
 {-162,"Rogue"},
 {3429,"Ruins of Ahn'Qiraj"},
@@ -175,7 +174,6 @@ qcQuestCategories={
 }
 qcCategoryUiMapID={}
 qcCategoryClientName={
-[-367]={"string","REPUTATION"},
 [-364]={"string","CALENDAR_FILTER_DARKMOON"},
 [-344]={"string","ITEM_QUALITY5_DESC"},
 [-324]={"skill",129},

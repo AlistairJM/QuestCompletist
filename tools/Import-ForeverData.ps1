@@ -34,7 +34,9 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             instance's own area; one filed under any other subzone (Valley of Trials) gets its
             zone, as retail's categories are zones. A heading that isn't a place, a race's (Night
             Elf) or Treasure Map, gives way to the zone forever-quest-zones.csv gives the quest,
-            else the zone of its pins' map, else CMaNGOS's zone, else 0. zone is its name.
+            else the zone of its pins' map, else CMaNGOS's zone, else 0. The Commendation
+            Signets' turn-ins, under the Reputation heading, go under Ahn'Qiraj War: the war
+            effort's supply quests give the signets, and its officers take them. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
@@ -147,6 +149,7 @@ $holidayByEventName = [ordered]@{ '^Darkmoon Faire' = 8192; '^Fishing Extravagan
     '^AQ War Effort' = 32768 }
 $holidayBySort = @{ (-364) = 8192; (-366) = 128; (-369) = 256 }
 $seasonalSort = -22
+$reputationSort = -367; $aqWarSort = -365; $aqWarEffort = 32768
 $allianceRaces = 77
 $hordeRaces = 178
 $internalTitle = '^<|UNUSED|\[DNT\]|\(DNT\)|\[PH\]|^ZZ|\bNYI\b|DEPRECATED|\bTEST\b'
@@ -505,6 +508,10 @@ foreach ($id in $ids) {
         $flags = @(@(foreach ($npc in $creatureStarters[$id]) { if ($npcHoliday.ContainsKey($npc)) { [int]$npcHoliday[$npc] } }) +
             @(foreach ($object in $objectStarters[$id]) { if ($objectHoliday.ContainsKey($object)) { [int]$objectHoliday[$object] } }) | Sort-Object -Unique)
         if ($flags.Count -eq 1 -and $flags[0]) { $holiday = $flags[0] }
+    }
+    if ($category -eq $reputationSort -and $holiday -eq $aqWarEffort) {
+        $category = $aqWarSort
+        Add-Review 'Reputation heading, but the war effort''s: Ahn''Qiraj War' $id $category $title
     }
     $recurs = if ($c) { $c.recurs } else { $null }
     $type = if ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 } elseif ($m -and ($m.Special -band 1)) { 2 }

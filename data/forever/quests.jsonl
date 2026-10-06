@@ -3784,40 +3784,40 @@
 {"id":8808,"name":"Uniform Supplies","level":60,"zone":"Silithus","category":1377,"type":2,"faction":2,"race":0,"class":8191}
 {"id":8809,"name":"Extraordinary Materials","level":60,"zone":"Silithus","category":1377,"type":2,"faction":2,"race":0,"class":8191}
 {"id":8810,"name":"Bandages for the Field","level":60,"zone":"Silithus","category":1377,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8811,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8812,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8813,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8814,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8815,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8816,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8817,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8818,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8819,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8820,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8821,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8822,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
-{"id":8823,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8824,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8825,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
-{"id":8826,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8811,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8812,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8813,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8814,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8815,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8816,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8817,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8818,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8819,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8820,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8821,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8822,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8823,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8824,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8825,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8826,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
 {"id":8827,"name":"Winter's Presents","level":1,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":8}
 {"id":8828,"name":"Winter's Presents","level":1,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8}
-{"id":8830,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8811}
-{"id":8831,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8819}
-{"id":8832,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8815}
-{"id":8833,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8823}
-{"id":8834,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8812}
-{"id":8835,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8820}
-{"id":8836,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8813}
-{"id":8837,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8821}
-{"id":8838,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8814}
-{"id":8839,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8822}
-{"id":8840,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8816}
-{"id":8841,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8824}
-{"id":8842,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8817}
-{"id":8843,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8825}
-{"id":8844,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8818}
-{"id":8845,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8826}
+{"id":8830,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8811}
+{"id":8831,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8819}
+{"id":8832,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8815}
+{"id":8833,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8823}
+{"id":8834,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8812}
+{"id":8835,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8820}
+{"id":8836,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8813}
+{"id":8837,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8821}
+{"id":8838,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8814}
+{"id":8839,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8822}
+{"id":8840,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8816}
+{"id":8841,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8824}
+{"id":8842,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8817}
+{"id":8843,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8825}
+{"id":8844,"name":"One Commendation Signet","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8818}
+{"id":8845,"name":"Ten Commendation Signets","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8826}
 {"id":8846,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":1,"race":0,"class":8191,"holiday":32768}
 {"id":8847,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":1,"race":0,"class":8191,"holiday":32768}
 {"id":8848,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":1,"race":0,"class":8191,"holiday":32768}
