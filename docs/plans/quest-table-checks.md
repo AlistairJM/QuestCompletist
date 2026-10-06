@@ -93,9 +93,43 @@ range. So the check takes what each source offers:
 
 ## Decisions
 
-None yet: the first run is for review with the user.
+The user, 2026-10-06, taking each recommendation:
+1. **Fix the mistakes**, all of them.
+2. **Add Blizzard's 30 pairs**, as breadcrumbs of the quest that closes the others: the quest window
+   then warns before closing them, and ticks them once it's done.
+3. **TrinityCore's prerequisites:** take only the 2,036 that are the step just before the quest in
+   Blizzard's own storyline, where both sources agree.
+4. **Let a quest hold several prerequisites**, show them all in the tooltip and check them all on the
+   map, then take Blizzard's lists.
+
+## Fixes (6 October 2026)
+
+Decisions 1 and 2:
+- **18 prerequisites removed:** the 7 reputation amounts, and 11 naming quests the API doesn't know.
+  The 3 naming quests outside our data that the API hasn't been asked about stay, for review.
+- **14 repeated lines merged.** The 6 lost breadcrumbs are back.
+- **24 pairs naming quests not in our data removed.**
+- **30 API pairs added**, as 20 lines in `qcBreadcrumbQuests`. One went into an existing line, 29907's.
+- **5 faction names** now match the client's.
+
+The check then found 5,246 things, 95 fewer. One finding is new: TrinityCore doesn't list the
+restored Horde breadcrumb "The Wavespeaker" (26057) for "Free Wil'hai" (26065), though it may only be
+missing there.
+
+Two refinements to the check came out of this:
+- **"One of these" requirements.** A quest the API requires as one of several alternatives no longer
+  counts as contradicting a pair. Quest 10995 requires one of three intro quests that close once
+  it's done.
+- **The API outranks TrinityCore.** TrinityCore no longer disagrees with a pair Blizzard's API
+  asserts.
+
+The quest window's breadcrumb notice counts every listed breadcrumb not yet done, the other
+faction's too. Some of the API pairs list both factions' versions of a quest, as 6610's breadcrumbs
+already did.
 
 ## Status
 
 - 2026-10-06: the check written (step 2b) and run; step 2 corrects differing amounts. All 11,035 of
   our reputation rewards matched the API.
+- 2026-10-06: decisions 1 and 2 applied (above). Next: several prerequisites per quest, then
+  Blizzard's lists and TrinityCore's 2,036 (decisions 3 and 4), and the review of the rest.

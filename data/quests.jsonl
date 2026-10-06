@@ -6132,7 +6132,7 @@
 {"id":25429,"name":"Zukk'ash Infestation","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":525}
 {"id":25430,"name":"Emerald Allies","level":30,"zone":"Mount Hyjal","category":139,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":542}
 {"id":25431,"name":"Stinglasher","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":25432,"name":"It's Not \"Ogre\" Yet","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":525,"prereq":150}
+{"id":25432,"name":"It's Not \"Ogre\" Yet","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":525}
 {"id":25433,"name":"Sasquatch Sighting","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":525}
 {"id":25434,"name":"Taming The Tamers","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":525}
 {"id":25436,"name":"Spiteful Sisters","level":15,"zone":"Feralas","category":77,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":525}
@@ -9286,7 +9286,7 @@
 {"id":29034,"name":"They Grow Up So Fast","level":15,"zone":"Winterspring","category":274,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":29035,"name":"A Cub's Cravings","level":15,"zone":"Winterspring","category":274,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":29036,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
-{"id":29037,"name":"'Borrowing' From the Winterfall","level":15,"zone":"Winterspring","category":274,"type":4,"faction":1,"race":64175181,"class":8191,"prereq":1500}
+{"id":29037,"name":"'Borrowing' From the Winterfall","level":15,"zone":"Winterspring","category":274,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":29038,"name":"Hunting Practice","level":15,"zone":"Winterspring","category":274,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":29040,"name":"Cub's First Toy","level":15,"zone":"Winterspring","category":274,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":29054,"name":"Stink Bombs Away!","level":10,"zone":"Hallow's End","category":90,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":16}
@@ -9520,7 +9520,7 @@
 {"id":29359,"name":"An Old Favorite","level":10,"zone":"Fishing","category":80,"type":4,"faction":1,"race":64175181,"class":8191,"profession":16384}
 {"id":29360,"name":"Would You Like Some Flies With That?","level":10,"zone":"Cooking","category":42,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
 {"id":29361,"name":"Moat Monster!","level":10,"zone":"Fishing","category":80,"type":32,"faction":2,"race":61658034,"class":8191,"profession":16384}
-{"id":29362,"name":"\"Magic\" Mushrooms","level":10,"zone":"Cooking","category":42,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192,"prereq":250}
+{"id":29362,"name":"\"Magic\" Mushrooms","level":10,"zone":"Cooking","category":42,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
 {"id":29363,"name":"Mulgore Spice Bread","level":10,"zone":"Cooking","category":42,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
 {"id":29364,"name":"Corn Mash","level":10,"zone":"Cooking","category":42,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
 {"id":29365,"name":"Perfectly Picked Portions","level":10,"zone":"Cooking","category":42,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
@@ -11124,9 +11124,9 @@
 {"id":31933,"name":"Okrut Dragonwaste","level":1,"zone":"Battle Pets","category":19,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31934,"name":"Gutretch","level":1,"zone":"Battle Pets","category":19,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31935,"name":"Grand Master Payne","level":1,"zone":"Battle Pets","category":19,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":31936,"name":"The \"Jinyu Princess\" Irrigation System","level":15,"zone":"Valley of the Four Winds","category":262,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":250}
-{"id":31937,"name":"\"Thunder King\" Pest Repellers","level":15,"zone":"Valley of the Four Winds","category":262,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":250}
-{"id":31938,"name":"The \"Earth-Slasher\" Master Plow","level":15,"zone":"Valley of the Four Winds","category":262,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":250}
+{"id":31936,"name":"The \"Jinyu Princess\" Irrigation System","level":15,"zone":"Valley of the Four Winds","category":262,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":31937,"name":"\"Thunder King\" Pest Repellers","level":15,"zone":"Valley of the Four Winds","category":262,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":31938,"name":"The \"Earth-Slasher\" Master Plow","level":15,"zone":"Valley of the Four Winds","category":262,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31941,"name":"Squash Those Foul Odors","level":15,"zone":"Valley of the Four Winds","category":262,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31942,"name":"It's Melon Time","level":15,"zone":"Valley of the Four Winds","category":262,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31943,"name":"Which Berries? Witchberries.","level":15,"zone":"Valley of the Four Winds","category":262,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -13760,7 +13760,7 @@
 {"id":38036,"name":"Supplies From the Skies","level":10,"zone":"Stormheim","category":1006,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":128}
 {"id":38040,"name":"Bleeding the Bleeding Hollow","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":38043,"name":"Bleeding the Bleeding Hollow","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":38044,"name":"Bleeding the Bleeding Hollow","level":40,"zone":"Tanaan Jungle","category":306,"type":4,"faction":2,"race":61658034,"class":8191,"prereq":500}
+{"id":38044,"name":"Bleeding the Bleeding Hollow","level":40,"zone":"Tanaan Jungle","category":306,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":38045,"name":"Bleeding the Bleeding Hollow","level":40,"zone":"Tanaan Jungle","category":306,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":38046,"name":"Battle At The Iron Front","level":40,"zone":"Tanaan Jungle","category":306,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":38047,"name":"Battle At The Iron Front","level":40,"zone":"Tanaan Jungle","category":306,"type":4,"faction":2,"race":61658034,"class":8191}
@@ -24642,16 +24642,16 @@
 {"id":60342,"name":"Cut 'Em Down to Size","level":60,"zone":"Abominable Stitching","category":1230,"type":128,"faction":3,"race":67108863,"class":8191,"covenant":16}
 {"id":60343,"name":"Welcome to Orgrimmar","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1107,"prereq":60174}
 {"id":60344,"name":"Finding Your Way","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1107,"prereq":60343}
-{"id":60346,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":672,"class":512,"storyline":1107,"prereq":60345}
-{"id":60347,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":4,"storyline":1107,"prereq":60345}
-{"id":60348,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":128,"storyline":1107,"prereq":60345}
-{"id":60349,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":1024,"storyline":1107,"prereq":60345}
-{"id":60350,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":544,"class":2,"storyline":1107,"prereq":60345}
-{"id":60351,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":16,"storyline":1107,"prereq":60345}
-{"id":60352,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8,"storyline":1107,"prereq":60345}
-{"id":60353,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":64,"storyline":1107,"prereq":60345}
-{"id":60355,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":256,"storyline":1107,"prereq":60345}
-{"id":60357,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":1,"storyline":1107,"prereq":60345}
+{"id":60346,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":672,"class":512,"storyline":1107}
+{"id":60347,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":4,"storyline":1107}
+{"id":60348,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":128,"storyline":1107}
+{"id":60349,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":1024,"storyline":1107}
+{"id":60350,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":544,"class":2,"storyline":1107}
+{"id":60351,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":16,"storyline":1107}
+{"id":60352,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8,"storyline":1107}
+{"id":60353,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":64,"storyline":1107}
+{"id":60355,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":256,"storyline":1107}
+{"id":60357,"name":"What's Your Specialty?","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":1,"storyline":1107}
 {"id":60358,"name":"Gildenite Grab","level":60,"zone":"Kyrian Callings","category":1220,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":2}
 {"id":60359,"name":"Home Is Where the Hearth Is","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1107,"prereq":60357}
 {"id":60360,"name":"An Urgent Meeting","level":7,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
@@ -33449,7 +33449,7 @@
 {"id":91848,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91847}
 {"id":91849,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91848}
 {"id":91955,"name":"Just Between Us","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":92331,"name":"Turbo-Boost: Trade Must Flow","level":80,"zone":"Meta Quests","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5572,"prereq":91205}
+{"id":92331,"name":"Turbo-Boost: Trade Must Flow","level":80,"zone":"Meta Quests","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5572}
 {"id":92430,"name":"Embracing the Infinite Chaos","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91612}
 {"id":92439,"name":"Infinite Research: Combat Studies, Felrunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":92440,"name":"Infinite Research: Combat Studies, Stormrunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
