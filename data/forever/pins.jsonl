@@ -71,7 +71,6 @@
 {"map":1412,"icon":5,"npc":15575,"name":"Elder Bloodhoof","x":47.53,"y":57.81,"quests":[8673]}
 {"map":1412,"icon":1,"name":"Sealed Supply Crate","x":51.87,"y":53.38,"quests":[751]}
 {"map":1413,"icon":1,"npc":620,"name":"Chicken","x":61.63,"y":23.74,"quests":[3861]}
-{"map":1413,"icon":1,"npc":620,"name":"Chicken","x":61.76,"y":53.64,"quests":[3861]}
 {"map":1413,"icon":1,"npc":3292,"name":"Brewmaster Drohn","x":62.26,"y":38.39,"quests":[821,822]}
 {"map":1413,"icon":1,"npc":3337,"name":"Kargal Battlescar","x":62.26,"y":19.38,"quests":[842]}
 {"map":1413,"icon":1,"npc":3338,"name":"Sergra Darkthorn","x":52.23,"y":31.01,"quests":[844,845,881,903,905,3261]}
@@ -148,9 +147,6 @@
 {"map":1416,"icon":1,"npc":2543,"name":"Archmage Ansirem Runeweaver","x":18.84,"y":78.49,"quests":[603]}
 {"map":1416,"icon":9,"npc":6176,"name":"Bath'rah the Windwatcher","x":80.5,"y":66.92,"quests":[1712,1713,1792,8411,8412,8413]}
 {"map":1416,"icon":9,"npc":6707,"name":"Fahrad","x":84.45,"y":80.32,"quests":[8249]}
-{"map":1416,"icon":9,"npc":6766,"name":"Ravenholdt Guard","x":78.15,"y":81.9,"quests":[6701]}
-{"map":1416,"icon":9,"npc":6766,"name":"Ravenholdt Guard","x":81.45,"y":76.86,"quests":[6701]}
-{"map":1416,"icon":9,"npc":6766,"name":"Ravenholdt Guard","x":82.41,"y":73.83,"quests":[6701]}
 {"map":1416,"icon":9,"npc":6766,"name":"Ravenholdt Guard","x":85.27,"y":79.56,"quests":[6701]}
 {"map":1416,"icon":9,"npc":6768,"name":"Lord Jorach Ravenholdt","x":86.02,"y":78.88,"quests":[8234]}
 {"map":1416,"icon":5,"npc":13636,"name":"Strange Snowman","x":35.44,"y":72.46,"quests":[6983,7043]}
@@ -233,8 +229,6 @@
 {"map":1419,"icon":9,"npc":14463,"name":"Daio the Decrepit","x":34.13,"y":50.14,"quests":[7581,7582,7583]}
 {"map":1419,"icon":5,"npc":15563,"name":"Elder Bellowrage","x":57.92,"y":54.93,"quests":[8647]}
 {"map":1420,"icon":1,"npc":620,"name":"Chicken","x":38.04,"y":48.91,"quests":[3861]}
-{"map":1420,"icon":1,"npc":620,"name":"Chicken","x":52.17,"y":56.23,"quests":[3861]}
-{"map":1420,"icon":1,"npc":620,"name":"Chicken","x":60.26,"y":51.27,"quests":[3861]}
 {"map":1420,"icon":1,"npc":1495,"name":"Deathguard Linnea","x":65.49,"y":60.25,"quests":[356,360]}
 {"map":1420,"icon":1,"npc":1496,"name":"Deathguard Dillinger","x":58.2,"y":51.45,"quests":[404,426,1819,1820]}
 {"map":1420,"icon":1,"npc":1497,"name":"Gunther Arcanus","x":68.2,"y":41.92,"quests":[409,411]}
@@ -357,12 +351,7 @@
 {"map":1423,"icon":1,"npc":17069,"name":"Emmisary Whitebeard","x":71.51,"y":49.66,"quests":[9664]}
 {"map":1423,"icon":1,"npc":17072,"name":"Emmisary Gormok","x":70.37,"y":47.94,"quests":[9665]}
 {"map":1423,"icon":1,"name":"Torn Scroll","x":22.9,"y":72.95,"quests":[6024]}
-{"map":1424,"icon":1,"npc":620,"name":"Chicken","x":29.87,"y":40.46,"quests":[3861]}
-{"map":1424,"icon":1,"npc":620,"name":"Chicken","x":33.18,"y":41.23,"quests":[3861]}
-{"map":1424,"icon":1,"npc":620,"name":"Chicken","x":34.98,"y":47.13,"quests":[3861]}
 {"map":1424,"icon":1,"npc":620,"name":"Chicken","x":52.6,"y":56.95,"quests":[3861]}
-{"map":1424,"icon":1,"npc":620,"name":"Chicken","x":63.31,"y":61.35,"quests":[3861]}
-{"map":1424,"icon":1,"npc":620,"name":"Chicken","x":78.93,"y":42.47,"quests":[3861]}
 {"map":1424,"icon":1,"npc":2214,"name":"Deathstalker Lesh","x":20.79,"y":47.4,"quests":[494]}
 {"map":1424,"icon":1,"npc":2215,"name":"High Executor Darthalia","x":62.33,"y":20.45,"quests":[527,528,529,532,539,541,550]}
 {"map":1424,"icon":1,"npc":2216,"name":"Apothecary Lydon","x":61.44,"y":19.06,"quests":[496,499,501,502,509,513,517,524,1066,1067,2934,2935,2938]}
@@ -524,11 +513,6 @@
 {"map":1429,"icon":9,"npc":377,"name":"Priestess Josetta","x":43.28,"y":65.72,"quests":[5624,5628,5637]}
 {"map":1429,"icon":9,"npc":459,"name":"Drusilla La Salle","x":49.87,"y":42.65,"quests":[1598]}
 {"map":1429,"icon":1,"npc":514,"name":"Smith Argus","x":41.71,"y":65.54,"quests":[119,1097]}
-{"map":1429,"icon":1,"npc":620,"name":"Chicken","x":6.46,"y":84.59,"quests":[3861]}
-{"map":1429,"icon":1,"npc":620,"name":"Chicken","x":9.47,"y":94.58,"quests":[3861]}
-{"map":1429,"icon":1,"npc":620,"name":"Chicken","x":13.43,"y":94.2,"quests":[3861]}
-{"map":1429,"icon":1,"npc":620,"name":"Chicken","x":36.02,"y":60.55,"quests":[3861]}
-{"map":1429,"icon":1,"npc":620,"name":"Chicken","x":40.52,"y":64.27,"quests":[3861]}
 {"map":1429,"icon":1,"npc":620,"name":"Chicken","x":79.08,"y":67.74,"quests":[3861]}
 {"map":1429,"icon":1,"npc":823,"name":"Deputy Willem","x":48.17,"y":42.94,"quests":[6,18,783,3903,5261]}
 {"map":1429,"icon":9,"npc":913,"name":"Lyria Du Lac","x":41.09,"y":65.77,"quests":[1638]}
@@ -567,11 +551,7 @@
 {"map":1431,"icon":1,"npc":302,"name":"Blind Mary","x":81.99,"y":59.09,"quests":[154,177]}
 {"map":1431,"icon":1,"npc":311,"name":"Sven Yorgen","x":7.78,"y":34.07,"quests":[55,95,262,269,323]}
 {"map":1431,"icon":1,"npc":576,"name":"Watcher Ladimore","x":74.02,"y":47.82,"quests":[231]}
-{"map":1431,"icon":1,"npc":620,"name":"Chicken","x":36.33,"y":12.54,"quests":[3861]}
-{"map":1431,"icon":1,"npc":620,"name":"Chicken","x":72.73,"y":54.34,"quests":[3861]}
 {"map":1431,"icon":1,"npc":620,"name":"Chicken","x":77.16,"y":55.54,"quests":[3861]}
-{"map":1431,"icon":1,"npc":620,"name":"Chicken","x":77.87,"y":44.25,"quests":[3861]}
-{"map":1431,"icon":1,"npc":620,"name":"Chicken","x":78.01,"y":48.04,"quests":[3861]}
 {"map":1431,"icon":1,"npc":633,"name":"Elaine Carevin","x":75.34,"y":48.75,"quests":[163,164,165]}
 {"map":1431,"icon":1,"npc":661,"name":"Jonathan Carevin","x":75.32,"y":49.02,"quests":[1043,1044]}
 {"map":1431,"icon":1,"npc":663,"name":"Calor","x":75.75,"y":47.57,"quests":[173,221,222,223]}
@@ -726,9 +706,7 @@
 {"map":1436,"icon":1,"npc":467,"name":"The Defias Traitor","x":55.68,"y":47.5,"quests":[155]}
 {"map":1436,"icon":1,"npc":491,"name":"Quartermaster Lewis","x":57,"y":47.17,"quests":[6181]}
 {"map":1436,"icon":1,"npc":523,"name":"Thor","x":56.55,"y":52.64,"quests":[6281]}
-{"map":1436,"icon":1,"npc":620,"name":"Chicken","x":38.23,"y":57.08,"quests":[3861]}
-{"map":1436,"icon":1,"npc":620,"name":"Chicken","x":45.34,"y":69.59,"quests":[3861]}
-{"map":1436,"icon":1,"npc":620,"name":"Chicken","x":45.68,"y":39.19,"quests":[3861]}
+{"map":1436,"icon":1,"npc":620,"name":"Chicken","x":55.64,"y":30.85,"quests":[3861]}
 {"map":1436,"icon":1,"npc":820,"name":"Scout Riell","x":56.67,"y":47.35,"quests":[214]}
 {"map":1436,"icon":1,"npc":821,"name":"Captain Danuvin","x":56.42,"y":47.62,"quests":[102]}
 {"map":1436,"icon":1,"npc":878,"name":"Scout Galiaan","x":53.98,"y":52.98,"quests":[153]}
@@ -741,8 +719,6 @@
 {"map":1436,"icon":1,"name":"Old Footlocker","x":41.51,"y":66.73,"quests":[68]}
 {"map":1436,"icon":1,"x":38.68,"y":83.7,"quests":[92753,92819]}
 {"map":1436,"icon":1,"x":52.48,"y":52.97,"quests":[92742,92744,92745,92747,92752]}
-{"map":1437,"icon":1,"npc":620,"name":"Chicken","x":17.24,"y":72.18,"quests":[3861]}
-{"map":1437,"icon":1,"npc":620,"name":"Chicken","x":20.97,"y":70.13,"quests":[3861]}
 {"map":1437,"icon":1,"npc":620,"name":"Chicken","x":25.56,"y":68.64,"quests":[3861]}
 {"map":1437,"icon":1,"npc":1071,"name":"Longbraid the Grim","x":49.8,"y":18.26,"quests":[304]}
 {"map":1437,"icon":1,"npc":1073,"name":"Ashlan Stonesmirk","x":50.05,"y":18.17,"quests":[274]}
@@ -1006,8 +982,6 @@
 {"map":1444,"icon":1,"name":"Wrecked Row Boat","x":45.44,"y":64.96,"quests":[4127]}
 {"map":1444,"icon":1,"name":"Large Leather Backpacks","x":73.32,"y":56.31,"quests":[4135]}
 {"map":1444,"icon":1,"name":"Zukk'ash Pod","x":72.07,"y":63.72,"quests":[4265]}
-{"map":1445,"icon":1,"npc":620,"name":"Chicken","x":48.75,"y":2.95,"quests":[3861]}
-{"map":1445,"icon":1,"npc":620,"name":"Chicken","x":52.22,"y":5.42,"quests":[3861]}
 {"map":1445,"icon":1,"npc":620,"name":"Chicken","x":66.42,"y":48.52,"quests":[3861]}
 {"map":1445,"icon":1,"npc":4456,"name":"Fiora Longears","x":66.46,"y":45.15,"quests":[1133,1135]}
 {"map":1445,"icon":1,"npc":4500,"name":"Overlord Mok'Morokk","x":36.29,"y":31.41,"quests":[1166,1171,1173]}

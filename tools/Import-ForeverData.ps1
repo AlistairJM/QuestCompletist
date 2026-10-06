@@ -44,7 +44,8 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
 Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
 it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
 rectangles and overlap, so a spawn goes on the first of these maps whose frame holds it:
-  1. the map our old Classic pins had for that NPC (git history before #89);
+  1. the map our old Classic pins had for that NPC (git history before #89), or the one whose old
+     pin stands nearest the spawn when the NPC has old pins on several of them;
   2. the map our old pins put most NPCs within 100 yards on;
   3. a city, if the spawn stands within 50 yards of the heights of the NPCs our old pins have there;
   4. the zone its giver's quests are in;
@@ -52,7 +53,9 @@ rectangles and overlap, so a spawn goes on the first of these maps whose frame h
      smallest of those within 0.05 of that.
 Only maps Classic Era (-EraBuild) already had are used, as CMaNGOS's NPCs can't stand in Forever's new
 zones, whose frames reach over old ones (Mount Hyjal's covers parts of Felwood and Winterspring).
-Givers inside dungeons get no pin.
+Givers inside dungeons get no pin. A giver found in more than 3 places on one map, like the chickens
+that start CLUCK!, gets one pin on each of its maps, at its biggest group of spawns, when all its
+quests recur and none is a holiday's: those pins show all year. A holiday's givers keep every pin.
 A quest with no giver on a map gets a pin at its start point in the client's tables, if it has one,
 with no giver named: the tables don't say who stands there. A quest that has a giver's pin keeps it,
 and a start point more than 3 map points from all its pins on that map is listed for review. The
@@ -216,9 +219,26 @@ function Get-NearbyOldPinMap($holding, [int]$map, [double]$x, [double]$y) {
     return $best
 }
 
+# Of a giver's old pin maps whose frames hold a spawn, the one whose old pin stands nearest it. A
+# giver found in several zones, such as the chickens, has an old pin in each, and their frames
+# overlap: one in Westfall can be inside Elwynn Forest's too. The first map wins when no pin has a
+# position.
+function Select-NearestOldPinMap([int[]]$uiMaps, $pinsByMap, [int]$map, [double]$x, [double]$y) {
+    $best = $uiMaps[0]; $bestDistance = [double]::MaxValue
+    foreach ($uiMap in $uiMaps) {
+        foreach ($point in $pinsByMap[$uiMap]) {
+            if ($point.Map -ne $map) { continue }
+            $distance = ($point.X - $x) * ($point.X - $x) + ($point.Y - $y) * ($point.Y - $y)
+            if ($distance -lt $bestDistance) { $best = $uiMap; $bestDistance = $distance }
+        }
+    }
+    return $best
+}
+
 # The map position of a CMaNGOS spawn: on -OnUiMap's frame if given. Otherwise the frames that hold
 # it, of maps Classic Era had, are tried in this order:
-#   1. a map -OldMaps has (our old Classic pins' maps for the giver);
+#   1. a map -OldMaps has (our old Classic pins' maps for the giver), the one whose old pin stands
+#      nearest the spawn when several do;
 #   2. the map our old pins put most NPCs within 100 yards on;
 #   3. a city whose old pins' NPCs stand within 50 yards of the spawn's height -Z;
 #   4. one of -Zones (the zones the giver's quests are in);
@@ -234,7 +254,15 @@ function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $O
     } else {
         $old = @($holding | Where-Object { -not $_.New })
         $chosen = $null
-        if ($OldMaps) { $chosen = $old | Where-Object { $OldMaps.ContainsKey($_.UiMap) } | Select-Object -First 1 }
+        if ($OldMaps) {
+            $oldPinned = @($old | Where-Object { $OldMaps.ContainsKey($_.UiMap) })
+            if ($oldPinned.Count -gt 1) {
+                $nearest = Select-NearestOldPinMap @($oldPinned | ForEach-Object { $_.UiMap }) $OldMaps $map $x $y
+                $chosen = $oldPinned | Where-Object { $_.UiMap -eq $nearest } | Select-Object -First 1
+            } else {
+                $chosen = $oldPinned | Select-Object -First 1
+            }
+        }
         if (-not $chosen) { $chosen = Get-NearbyOldPinMap $old $map $x $y }
         if (-not $chosen) {
             $chosen = $old | Where-Object { $cityMaps.ContainsKey($_.UiMap) -and
@@ -321,6 +349,7 @@ foreach ($line in $dump.game_event_creature) { $f = $line.Split("`t"); $flag = $
 $objectSpawnHoliday = @{}
 foreach ($line in $dump.game_event_gameobject) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $objectSpawnHoliday[[int]$f[0]] = $flag } }
 $oldPins = New-Object System.Collections.Generic.List[object]
+# Each NPC's old pin maps, with where in the world each pin stands, from its map's frame.
 $oldPinMaps = @{}
 $mapId = 0
 foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
@@ -330,7 +359,14 @@ foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")
     $oldPins.Add([pscustomobject]@{ UiMap = $mapId; Npc = $npc; X = [decimal]$Matches[2]; Y = [decimal]$Matches[3]
         Quests = @($Matches[4].Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ }) })
     if (-not $oldPinMaps.ContainsKey($npc)) { $oldPinMaps[$npc] = @{} }
-    $oldPinMaps[$npc][$mapId] = $true
+    if (-not $oldPinMaps[$npc].ContainsKey($mapId)) { $oldPinMaps[$npc][$mapId] = @() }
+    $frame = $frames | Where-Object { $_.UiMap -eq $mapId -and -not $_.New } | Select-Object -First 1
+    if ($frame) {
+        $fx = ([double]$Matches[2] / 100 - $frame.U0) / ($frame.V0 - $frame.U0)
+        $fy = ([double]$Matches[3] / 100 - $frame.U1) / ($frame.V1 - $frame.U1)
+        $oldPinMaps[$npc][$mapId] += @([pscustomobject]@{ Map = $frame.Map
+            X = $frame.MaxX - $fy * ($frame.MaxX - $frame.MinX); Y = $frame.MaxY - $fx * ($frame.MaxY - $frame.MinY) })
+    }
 }
 $npcSpawns = @{}; $npcHoliday = @{}; $oldPinNpcSpawns = @{}
 foreach ($line in $dump.creature) {
@@ -348,6 +384,7 @@ foreach ($npc in $oldPinNpcSpawns.Keys) {
         $maps = @($frames | Where-Object { $oldPinMaps[$npc].ContainsKey($_.UiMap) -and $_.Map -eq $spawn.Map -and
             $spawn.X -ge $_.MinX -and $spawn.X -le $_.MaxX -and $spawn.Y -ge $_.MinY -and $spawn.Y -le $_.MaxY } | Select-Object -ExpandProperty UiMap -Unique)
         if (-not $maps.Count) { continue }
+        if ($maps.Count -gt 1) { $maps = @(Select-NearestOldPinMap $maps $oldPinMaps[$npc] $spawn.Map $spawn.X $spawn.Y) }
         $oldPinSpots["$($spawn.Map)|$([Math]::Floor($spawn.X / 100))|$([Math]::Floor($spawn.Y / 100))"] += @([pscustomobject]@{ X = $spawn.X; Y = $spawn.Y; UiMaps = $maps })
         foreach ($uiMap in ($maps | Where-Object { $cityMaps.ContainsKey($_) })) {
             $heights = $cityHeights[$uiMap]
@@ -513,10 +550,14 @@ foreach ($npc in $gameNpcName.Keys) {
 }
 
 $giverZones = @{}
+# Givers whose every quest recurs and isn't a holiday's: their pins show all year, done or not.
+$everydayGivers = @{}
 foreach ($q in $records.Values) {
-    if ($q.category -le 0) { continue }
     $keys = @($creatureStarters[$q.id] | ForEach-Object { "Creature:$_" }) + @($objectStarters[$q.id] | ForEach-Object { "GameObject:$_" })
     foreach ($key in $keys) {
+        $everyday = ($q.type -band (2 + 4 + 128)) -and -not $q.holiday
+        $everydayGivers[$key] = $everyday -and (-not $everydayGivers.ContainsKey($key) -or $everydayGivers[$key])
+        if ($q.category -le 0) { continue }
         if (-not $giverZones.ContainsKey($key)) { $giverZones[$key] = @{} }
         $giverZones[$key][$q.category] = $true
     }
@@ -537,8 +578,11 @@ function Get-GiverSpots([string]$kind, [int]$id) {
     foreach ($spawn in $spawns) {
         $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $giverZones["${kind}:$id"] $(if ($kind -ne 'GameObject') { $oldPinMaps[$id] }) -Z $spawn.Z
         if (-not $spot) { continue }
-        $near = $spots | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
-        if (-not $near) { $spots += $spot }
+        $near = $spots | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 } | Select-Object -First 1
+        if ($near) { $near.Spawns++ } else { $spots += ($spot | Add-Member -NotePropertyName Spawns -NotePropertyValue 1 -PassThru) }
+    }
+    if ($everydayGivers["${kind}:$id"] -and @($spots | Group-Object UiMap | Where-Object { $_.Count -gt 3 }).Count) {
+        $spots = @($spots | Group-Object UiMap | ForEach-Object { $_.Group | Sort-Object { -$_.Spawns }, X, Y | Select-Object -First 1 })
     }
     return $spots
 }
