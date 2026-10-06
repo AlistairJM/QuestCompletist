@@ -229,7 +229,9 @@ with a count for each kind.
   quests: its breadcrumbs, groups and previous quests. It only speaks for quests it has a row for,
   and has few after Mists of Pandaria. Of the previous quests it offers where we have none, only
   those that are the step just before in the quest's own storyline are listed, as step 2c only
-  takes those; the rest are counted.
+  takes those; the rest are counted. Its groups of which only one can be done are counted, not
+  listed: it also groups quests one character can do all of, such as Darrowshire's three in the
+  Eastern Plaguelands.
 
 Review the new findings, and fix the data where it's wrong. For a finding that's right as it is,
 add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and `Other` copied from

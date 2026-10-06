@@ -11,7 +11,8 @@ prerequisites in data\quests.jsonl, against every source that can speak to them:
   - TrinityCore's world database, the newest tools\tdb\TDB_full_world_*.sql, for older quests:
     breadcrumbs (BreadcrumbForQuestId), groups of which only one can be done (a positive
     ExclusiveGroup) and previous quests (a positive PrevQuestID). It only speaks for a quest it has a
-    row for, and has few rows for quests after Mists of Pandaria.
+    row for, and has few rows for quests after Mists of Pandaria. Its groups we lack are counted,
+    not listed: it also groups quests one character can do all of.
 
 The tables it checks:
   qcBreadcrumbQuests     [quest] = {breadcrumbs}: quests that lead to it and close once it's done.
@@ -185,15 +186,15 @@ foreach ($crumb in ($tc.Keys | Sort-Object)) {
     if ((Test-Recurring $crumb) -or (Test-Recurring $target) -or $unavailable.ContainsKey($crumb) -or $unavailable.ContainsKey($target) -or $closes["$target>$crumb"]) { continue }
     Add-Finding 'breadcrumb: TrinityCore has, we don''t' $target $crumb "$(Get-QuestName $crumb) -> $(Get-QuestName $target)"
 }
+# TrinityCore's groups are counted, not taken: it also groups quests one character can do all of,
+# such as Darrowshire's three in the Eastern Plaguelands (decided with the user, 2026-10-06).
+$tcGroupsLacked = 0; $tcPairsLacked = 0
 foreach ($group in ($tcGroups.Keys | Sort-Object)) {
     $members = @($tcGroups[$group] | Where-Object { -not (Test-Recurring $_) -and -not $unavailable.ContainsKey($_) } | Sort-Object)
     if ($members.Count -lt 2) { continue }
     $missing = 0
     foreach ($a in $members) { foreach ($b in $members) { if ($a -ne $b -and -not $closes["$a>$b"]) { $missing++ } } }
-    if ($missing) {
-        Add-Finding 'exclusive: TrinityCore group we lack' $group '' ("{0} of {1} pairs missing: {2}" -f $missing, ($members.Count * ($members.Count - 1)),
-            (($members | ForEach-Object { "$_ $(Get-QuestName $_)" }) -join ' | '))
-    }
+    if ($missing) { $tcGroupsLacked++; $tcPairsLacked += $missing }
 }
 
 # Prerequisites, from data\quests.jsonl: a quest, or a list of them (see AddonData.ps1). As
@@ -297,6 +298,7 @@ $findings | Sort-Object Kind, { [int]("0" + $_.Quest) }, { [int]("0" + $_.Other)
 "Sources: the API names required quests for {0} quests and closing ones for {1}; TrinityCore has {2} rows{3}." -f
     $requires.Count, $closedBy.Count, $tc.Count, $(if ($TdbFile) { " ($(Split-Path -Leaf $TdbFile))" } else { ': no TDB_full_world_*.sql in tools\tdb, so its checks were skipped' })
 "TrinityCore offers previous quests for $tcNotTaken more quests we have none for, but none that's the step just before in the quest's storyline, so they aren't taken."
+"TrinityCore has $tcGroupsLacked groups of which only one can be done that we lack ($tcPairsLacked pairs). They aren't taken: it also groups quests one character can do all of."
 $findings | Group-Object Kind | Sort-Object Name | ForEach-Object {
     $new = @($_.Group | Where-Object { -not $_.Kept }).Count
     "  {0}: {1}{2}" -f $_.Name, $_.Count, $(if ($new -ne $_.Count) { " ($new new)" } else { '' })

@@ -653,7 +653,7 @@
 {"id":96004,"name":"Prey: A Slithering Threat","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6296}
 {"id":98515,"name":"Vaults of Atal'Utek: A Toxic Tour","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6232}
 {"id":88769,"name":"The Battle of the Bridge","level":90,"zone":"","category":1503,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5796}
-{"id":2,"name":"Sharptalon's Claw","level":7,"zone":"Ashenvale","category":12,"type":1,"faction":2,"race":5454925,"class":4095,"prereq":11}
+{"id":2,"name":"Sharptalon's Claw","level":7,"zone":"Ashenvale","category":12,"type":1,"faction":2,"race":5454925,"class":4095}
 {"id":11,"name":"Riverpaw Gnoll Bounty","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566,"prereq":76}
 {"id":16,"name":"Give Gerard a Drink","level":7,"zone":"Elwynn Forest","category":70,"type":2,"faction":1,"race":64175181,"class":8191}
 {"id":23,"name":"Ursangous' Paw","level":7,"zone":"Ashenvale","category":12,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -2812,7 +2812,7 @@
 {"id":11506,"name":"Spirits of Auchindoun","level":15,"zone":"Terokkar Forest","category":207,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":11507,"name":"Elder Atuik and Kamagua","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528,"prereq":11504}
 {"id":11508,"name":"Grezzix Spindlesnap","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528,"prereq":11507}
-{"id":11509,"name":"Street \"Cred\"","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528,"prereq":25}
+{"id":11509,"name":"Street \"Cred\"","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528,"prereq":11508}
 {"id":11510,"name":"\"Scoodles\"","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528}
 {"id":11511,"name":"The Staff of Storm's Fury","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528}
 {"id":11512,"name":"The Frozen Heart of Isuldof","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528}
@@ -23610,7 +23610,7 @@
 {"id":57114,"name":"Aerial Reconnaissance","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":57113}
 {"id":57115,"name":"Sacred Scrolls of Humility","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":57114}
 {"id":57116,"name":"Succumbing to Pride","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":57115}
-{"id":57117,"name":"Fallen to Their Vices","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":[[57118,57115,57116,57120]]}
+{"id":57117,"name":"Fallen to Their Vices","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":[57118,57115,57116,57120]}
 {"id":57118,"name":"Distorted by the Maw","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":[57115,57116,57120]}
 {"id":57120,"name":"Compassion, Blade of Humility","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":57116}
 {"id":57121,"name":"The Power of the Maw","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1094,"prereq":57207}
@@ -23671,7 +23671,7 @@
 {"id":57442,"name":"Lost in the Desiccation","level":10,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":998,"prereq":[57426,57427,57428]}
 {"id":57443,"name":"Dirty Job: Demolition Detail","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":57444,"name":"An Inspired Moral Inventory","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1186}
-{"id":57446,"name":"The Enemy You Know","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1056,"prereq":[[60292,57719,57037,59147]]}
+{"id":57446,"name":"The Enemy You Know","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1056,"prereq":[60292,57719,57037,59147]}
 {"id":57447,"name":"Purity's Prerogative","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1056,"prereq":57269}
 {"id":57454,"name":"Silence in the Stalks","level":60,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1006}
 {"id":57455,"name":"Mushroom For Improvement","level":60,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1006,"prereq":57454}
@@ -23949,9 +23949,9 @@
 {"id":58406,"name":"Mirror to Maldraxxus","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1018}
 {"id":58407,"name":"The Medallion of Dominion","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1018,"prereq":58406}
 {"id":58421,"name":"Special Access","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1024,"prereq":[58372,58326,58337]}
-{"id":58424,"name":"An Eye for an Amulet","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1024,"prereq":[[58421,58372,58326,58337]]}
+{"id":58424,"name":"An Eye for an Amulet","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1024,"prereq":[58421,58372,58326,58337]}
 {"id":58426,"name":"In the Shadow of our Failures","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1017,"prereq":58383}
-{"id":58428,"name":"Crypt Crashers","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1024,"prereq":[[58424,58372,58326,58337]]}
+{"id":58428,"name":"Crypt Crashers","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1024,"prereq":[58424,58372,58326,58337]}
 {"id":58431,"name":"Pool of Potions","level":10,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1158,"prereq":59430}
 {"id":58432,"name":"Something Old, Something Used","level":60,"zone":"Abominable Stitching","category":1230,"type":128,"faction":3,"race":67108863,"class":8191,"covenant":16}
 {"id":58433,"name":"Anima Attrition","level":10,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":985,"prereq":56955}
@@ -23989,7 +23989,7 @@
 {"id":58559,"name":"Eyes of the Master","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":58558}
 {"id":58560,"name":"Gothic Fashion","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":58559}
 {"id":58561,"name":"Shards of the Countess","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":[58558,58559,58560]}
-{"id":58562,"name":"Collecting Dust","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":[[58561,58558,58559,58560]]}
+{"id":58562,"name":"Collecting Dust","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":[58561,58558,58559,58560]}
 {"id":58563,"name":"Through Glass","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":58562}
 {"id":58564,"name":"Sins of the Past","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":58563}
 {"id":58565,"name":"Land of Light","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1092,"prereq":58564}
@@ -24012,7 +24012,7 @@
 {"id":58599,"name":"Drive A Dredge Between Them","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1121,"prereq":58523}
 {"id":58600,"name":"A Perfect Circle","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1026,"prereq":[58584,58585,58586]}
 {"id":58601,"name":"Web of Information","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":58603,"name":"Phaestus, Genesis of Aeons","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1026,"prereq":[[58600,58586,58585,58584]]}
+{"id":58603,"name":"Phaestus, Genesis of Aeons","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1026,"prereq":[58600,58586,58585,58584]}
 {"id":58605,"name":"Amateur Night","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":58608,"name":"It's Treason, Then","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1121,"prereq":58472}
 {"id":58609,"name":"Taking The Seat","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1240}
@@ -24482,7 +24482,7 @@
 {"id":60050,"name":"Trouble on the Western Front","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":61412}
 {"id":60051,"name":"A Master of Their Craft","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":60052,"name":"Double Tap","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1066,"prereq":[60007,60008,60009]}
-{"id":60053,"name":"Clear as Crystal","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1066,"prereq":[[60052,60007,60008,60009]]}
+{"id":60053,"name":"Clear as Crystal","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1066,"prereq":[60052,60007,60008,60009]}
 {"id":60054,"name":"The Final Countdown","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1066,"prereq":60053}
 {"id":60055,"name":"A Time for Courage","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1066,"prereq":60054}
 {"id":60056,"name":"Follow the Path","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1133}
@@ -24813,7 +24813,7 @@
 {"id":60574,"name":"Shaking 'Shrooms","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60575,"name":"Belly Full of Fae","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1008,"prereq":60563}
 {"id":60577,"name":"Hungry for Animacones","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1008,"prereq":60575}
-{"id":60578,"name":"Visions of the Dreamer: The Betrayal","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1027,"prereq":[[58590,58589,58591,58592]]}
+{"id":60578,"name":"Visions of the Dreamer: The Betrayal","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1027,"prereq":[58590,58589,58591,58592]}
 {"id":60585,"name":"Spriggan Riot","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60594,"name":"One Special Spirit","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1008,"prereq":60577}
 {"id":60597,"name":"Trouble at the Gormling Corral","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -24849,7 +24849,7 @@
 {"id":60645,"name":"Gargantuan Seeker","level":50,"zone":"The Maw","category":1206,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":60646,"name":"Misery Business","level":60,"zone":"The Maw","category":1206,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":60647,"name":"Recovering the Animacones","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1125,"prereq":[60638,60637,60639]}
-{"id":60648,"name":"Survivors of Heartwood Grove","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1125,"prereq":[[60647,60638,60637,60639]]}
+{"id":60648,"name":"Survivors of Heartwood Grove","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1125,"prereq":[60647,60638,60637,60639]}
 {"id":60649,"name":"A Thorn In Their Side","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60651,"name":"Champion: Meatball","level":50,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":60653,"name":"Mirror Restoration","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -25025,7 +25025,7 @@
 {"id":61173,"name":"RSVP: Mikanikos","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":4}
 {"id":61174,"name":"RSVP: Baroness Vashj","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":4}
 {"id":61179,"name":"Forge Ahead","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":61180,"name":"Burn Before Reading","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":[[60510,59916,60043,61396]]}
+{"id":61180,"name":"Burn Before Reading","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":[60510,59916,60043,61396]}
 {"id":61182,"name":"Pollen Your Weight","level":60,"zone":"Covenant Sanctum","category":1247,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":61189,"name":"Further Gelatinous Research","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":61190,"name":"Wake of Ashes","level":10,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1062,"prereq":59973}
@@ -25125,7 +25125,7 @@
 {"id":61407,"name":"Ember Court: Atoning Rituals","level":60,"zone":"Ember Court","category":1231,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4}
 {"id":61408,"name":"Ember Court: Glimpse of the Wilds","level":60,"zone":"Ember Court","category":1231,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":4}
 {"id":61411,"name":"Our Heart Will Go On","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61412,"name":"An Early End","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":[[61180,59916,60043,61396]]}
+{"id":61412,"name":"An Early End","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":[61180,59916,60043,61396]}
 {"id":61414,"name":"Faulty Fireworks (+Safe)","level":60,"zone":"Revendreth","category":1205,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":61421,"name":"Champion: Blisswing","level":50,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":61422,"name":"Champion: Duskleaf","level":50,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -25313,8 +25313,8 @@
 {"id":61771,"name":"Justice from Above","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":61770}
 {"id":61772,"name":"Dark Developments","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":61771}
 {"id":61773,"name":"Descended","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":[61770,61771,61772]}
-{"id":61774,"name":"Burn Before Reading","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":[[61773,61770,61771,61772]]}
-{"id":61775,"name":"An Early End","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":[[61774,61770,61771,61772]]}
+{"id":61774,"name":"Burn Before Reading","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":[61773,61770,61771,61772]}
+{"id":61775,"name":"An Early End","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":[61774,61770,61771,61772]}
 {"id":61776,"name":"Trouble on the Western Front","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":[61773,61774,61775]}
 {"id":61777,"name":"Charging The Blade","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":61776}
 {"id":61778,"name":"Aerial Advantage","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":61777}
@@ -25865,7 +25865,7 @@
 {"id":62840,"name":"Into the Reservoir","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1202,"prereq":62839}
 {"id":62843,"name":"The Soul Contact","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1202,"prereq":62840}
 {"id":62844,"name":"Return to Draka","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1202,"prereq":62843}
-{"id":62845,"name":"Bringing It All Together","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1202,"prereq":[[62844,62837,58609,62840]]}
+{"id":62845,"name":"Bringing It All Together","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1202,"prereq":[62844,62837,58609,62840]}
 {"id":62846,"name":"Sanctum Improvements","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1202,"prereq":62845}
 {"id":62848,"name":"Conduits, What Are They For?","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1240,"prereq":62846}
 {"id":62849,"name":"Paragon of the Court of Harvesters","level":60,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -26595,7 +26595,7 @@
 {"id":64838,"name":"Where There's a Pilgrim, There's a Way","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":64834}
 {"id":64839,"name":"Root of the Problem","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":64836}
 {"id":64840,"name":"Unchecked Growth","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":[64835,64836,64839]}
-{"id":64841,"name":"Take Charge","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":[[64840,64835,64836,64839]]}
+{"id":64841,"name":"Take Charge","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":[64840,64835,64836,64839]}
 {"id":64842,"name":"Flora Frenzy","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":[64840,64841,65331]}
 {"id":64843,"name":"Key Crafting","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":64842}
 {"id":64844,"name":"The Pilgrimage Ends","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":64843}
@@ -26756,7 +26756,7 @@
 {"id":65327,"name":"Schematic Reassimilation: Ambystan Darter","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":65328,"name":"Arbiter in the Making","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1264,"prereq":65237}
 {"id":65329,"name":"Safe Haven","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":65331,"name":"Herbal Remedies","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":[[64841,64835,64836,64839]]}
+{"id":65331,"name":"Herbal Remedies","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1262,"prereq":[64841,64835,64836,64839]}
 {"id":65332,"name":"Schematic Reassimilation: Fierce Scarabid","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":65333,"name":"Schematic Reassimilation: Multichicken","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":65334,"name":"Schematic Reassimilation: Violent Poultrid","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -27049,7 +27049,7 @@
 {"id":65845,"name":"Echoes of the Fallen","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":66210}
 {"id":65846,"name":"Ley Litter","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":65845}
 {"id":65847,"name":"Realignment","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":65846}
-{"id":65848,"name":"Tome-ward Bound","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":[[65847,65844,65845,65846]]}
+{"id":65848,"name":"Tome-ward Bound","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":[65847,65844,65845,65846]}
 {"id":65849,"name":"To Iskaara","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":65848}
 {"id":65850,"name":"The Cycle of the Sea","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1316,"prereq":65849}
 {"id":65852,"name":"Straight to the Top","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1314,"prereq":65709}
@@ -27117,7 +27117,7 @@
 {"id":65957,"name":"No Time for Heroes","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1301,"prereq":65956}
 {"id":65958,"name":"Primal Power","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1315,"prereq":[65944,65943,66647]}
 {"id":65962,"name":"The Never-Final Countdown","level":40,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1324,"prereq":65938}
-{"id":65977,"name":"Kirin Tor Recovery","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1315,"prereq":[[65958,65943,65944,66647]]}
+{"id":65977,"name":"Kirin Tor Recovery","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1315,"prereq":[65958,65943,65944,66647]}
 {"id":65989,"name":"Invader Djaradin","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1299,"prereq":65760}
 {"id":65990,"name":"Deliver Whelps From Evil","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1299,"prereq":65989}
 {"id":65991,"name":"Time for a Reckoning","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1299,"prereq":65990}
@@ -27433,7 +27433,7 @@
 {"id":66588,"name":"Swog the Elder","level":10,"zone":"The Waking Shores","category":1305,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":66589,"name":"Expeditionary Coordination","level":10,"zone":"Dragon Isles","category":1322,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":6021,"prereq":66577}
 {"id":66595,"name":"Dormant Discovery","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1363,"prereq":66582}
-{"id":66596,"name":"Whispers on the Winds","level":10,"zone":"Dragon Isles","category":1322,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":6021,"prereq":72240}
+{"id":66596,"name":"Whispers on the Winds","level":10,"zone":"Dragon Isles","category":1322,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":6021,"prereq":66589}
 {"id":66597,"name":"This Old Stone","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1363,"prereq":66595}
 {"id":66598,"name":"Nightborne Know-How","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1363,"prereq":66597}
 {"id":66611,"name":"Clearing the Skies","level":10,"zone":"The Waking Shores","category":1305,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -28856,7 +28856,7 @@
 {"id":72857,"name":"Boom Weed","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":72856}
 {"id":72858,"name":"Acid Beats Paper","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":72857}
 {"id":72859,"name":"A Proper Disguise","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":[72856,72857,72858]}
-{"id":72860,"name":"Fear is Our Weapon","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":[[72859,72856,72857,72858]]}
+{"id":72860,"name":"Fear is Our Weapon","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":[72859,72856,72857,72858]}
 {"id":72861,"name":"The Scarlet Spy","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":72860}
 {"id":72862,"name":"Among Us","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":72861}
 {"id":72863,"name":"The Flight of the Banshee","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1391,"prereq":72862}
@@ -30853,7 +30853,7 @@
 {"id":78530,"name":"Slay the Saboteurs","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":78529}
 {"id":78531,"name":"Urgent Recovery","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":78530}
 {"id":78532,"name":"Erratic Artifacts","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":78531}
-{"id":78533,"name":"Secure the Beach","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":[[80334,78530,78531,78532]]}
+{"id":78533,"name":"Secure the Beach","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":[80334,78530,78531,78532]}
 {"id":78534,"name":"To Dornogal","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":78533}
 {"id":78535,"name":"They Come from Below","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":78534}
 {"id":78536,"name":"Impossible Odds","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5539,"prereq":78535}
@@ -30896,7 +30896,7 @@
 {"id":78635,"name":"Death and Waxes","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":78634}
 {"id":78636,"name":"Retaking the Mines","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":78638}
 {"id":78637,"name":"Cracking Cogchewer","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":[78634,78635,78839]}
-{"id":78638,"name":"Engineering Destruction","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":[[78637,78839,78634,78635]]}
+{"id":78638,"name":"Engineering Destruction","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":[78637,78839,78634,78635]}
 {"id":78639,"name":"Ko-boldening","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":78640}
 {"id":78640,"name":"Manifesto Destiny","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":78636}
 {"id":78641,"name":"Tackling Torchsnarl","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":[78639,78640,79205]}
@@ -31099,7 +31099,7 @@
 {"id":79264,"name":"These Strong Hands","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5598,"prereq":79263}
 {"id":79265,"name":"Fearbreaker","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5598,"prereq":79264}
 {"id":79266,"name":"The Bronzebeard Legacy","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5598,"prereq":79265}
-{"id":79267,"name":"Wax On, Pot Off","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":[[78641,78639,78640,79205]]}
+{"id":79267,"name":"Wax On, Pot Off","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5533,"prereq":[78641,78639,78640,79205]}
 {"id":79282,"name":"The Grand Debut","level":80,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":79295,"name":"Hose 'Em Down - Activate","level":80,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":79297,"name":"Nightwatch","level":75,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5526,"prereq":78613}
@@ -33010,7 +33010,7 @@
 {"id":85239,"name":"A New Devouring","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5715,"prereq":85238}
 {"id":85240,"name":"Only Hunger Remains","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5715,"prereq":85239}
 {"id":85241,"name":"A Once-Proud Priest","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5715,"prereq":85240}
-{"id":85249,"name":"A Bee Test","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5693,"prereq":[[85084,85082]]}
+{"id":85249,"name":"A Bee Test","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5693,"prereq":[85084,85082]}
 {"id":85255,"name":"Tranquila-Bee","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5693,"prereq":85257}
 {"id":85256,"name":"Botany, Finally","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5693,"prereq":85255}
 {"id":85257,"name":"Primus Buzzness","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5693,"prereq":89348}
@@ -33255,7 +33255,7 @@
 {"id":90773,"name":"Meat My Business","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5941,"prereq":90747}
 {"id":90776,"name":"Ancient Curiosity: Combat","level":70,"zone":"Delvers Headquarters","category":1430,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":90778,"name":"Ancient Curiosity: Utility","level":70,"zone":"Delvers Headquarters","category":1430,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":90781,"name":"Sparks of War: K'aresh","level":70,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":90781,"name":"Sparks of War: K'aresh","level":70,"zone":"K'aresh","category":1410,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":90869,"name":"It's All in the Image","level":1,"zone":"Kezan","category":118,"type":1,"faction":2,"race":256,"class":8191,"storyline":5439,"prereq":28349}
 {"id":90870,"name":"Gathering the Grub","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":90938,"name":"A Skip Through the Void","level":80,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -33581,7 +33581,7 @@
 {"id":86530,"name":"First, The Shells","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":86531}
 {"id":86531,"name":"Work Disruption","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":89249}
 {"id":86536,"name":"Reliable Enemies","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729}
-{"id":86537,"name":"Network Insecurity","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":[[86538,86531,86530,86528]]}
+{"id":86537,"name":"Network Insecurity","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":[86538,86531,86530,86528]}
 {"id":86538,"name":"Second, The Fuel","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":[86531,86530,86528]}
 {"id":86539,"name":"A Naaru!","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":86545}
 {"id":86540,"name":"Third, Blow It Up","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5729,"prereq":88768}
@@ -33735,7 +33735,7 @@
 {"id":86884,"name":"Cull and Burn","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5727,"prereq":86883}
 {"id":86885,"name":"Stem the Tides","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5727,"prereq":86884}
 {"id":86887,"name":"Expeditious Retreat","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5727,"prereq":86885}
-{"id":86890,"name":"Tell the People What You Have Seen","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5726,"prereq":[[86867,86881,86880,86877]]}
+{"id":86890,"name":"Tell the People What You Have Seen","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5726,"prereq":[86867,86881,86880,86877]}
 {"id":86891,"name":"A Last Resort","level":83,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5727,"prereq":86887}
 {"id":86892,"name":"Survive","level":83,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5727,"prereq":86891}
 {"id":86894,"name":"The Gift of Aln'hara","level":83,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5727,"prereq":86892}
@@ -33850,7 +33850,7 @@
 {"id":88995,"name":"Aln'hara's Bloom","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6015,"prereq":88994}
 {"id":88996,"name":"The Echoless Flame","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6015,"prereq":88995}
 {"id":88997,"name":"Russula's Outreach","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6015,"prereq":88996}
-{"id":89012,"name":"A Safe Path","level":80,"zone":"Isle of Quel'Danas","category":1503,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5811,"prereq":[[86805,86780,86770,89271]]}
+{"id":89012,"name":"A Safe Path","level":80,"zone":"Isle of Quel'Danas","category":1503,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5811,"prereq":[86805,86780,86770,89271]}
 {"id":89032,"name":"Renowned with The Singularity","level":80,"zone":"Voidstorm","category":1508,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":89034,"name":"Burning Bitterblooms","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5725,"prereq":86930}
 {"id":89035,"name":"Renowned with the Hara'ti","level":80,"zone":"Harandar","category":1502,"type":2,"faction":3,"race":67108863,"class":8191}
@@ -34297,8 +34297,8 @@
 {"id":91583,"name":"Voidscar Arena: The Bastion of Valor","level":88,"zone":"Voidstorm","category":1748,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5964,"prereq":91565}
 {"id":91585,"name":"Fresh from the Garden","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966}
 {"id":91586,"name":"Soil-Based Alternatives","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966,"prereq":91585}
-{"id":91587,"name":"Carcass Cuisine","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966,"prereq":91588}
-{"id":91588,"name":"Harandar's Kitchen","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966,"prereq":91589}
+{"id":91587,"name":"Carcass Cuisine","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966}
+{"id":91588,"name":"Harandar's Kitchen","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966,"prereq":[91589,91585,91586,91587]}
 {"id":91589,"name":"Root Dash Delivery","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5966,"prereq":91586}
 {"id":91590,"name":"Prey: Concealed Threat","level":80,"zone":"Prey","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954,"prereq":91523}
 {"id":91591,"name":"Prey: Concealed Threat","level":80,"zone":"Prey","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954,"prereq":91590}
@@ -34356,7 +34356,7 @@
 {"id":91823,"name":"Lines Cut, Tongues Silenced","level":80,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":91822}
 {"id":91824,"name":"The Thieves' Trail","level":80,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":91823}
 {"id":91825,"name":"Dead Men Keep No Secrets","level":80,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":91830}
-{"id":91826,"name":"Tripwire Tango","level":80,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":[[91831,91823,91824,91825]]}
+{"id":91826,"name":"Tripwire Tango","level":80,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":[91831,91823,91824,91825]}
 {"id":91827,"name":"No Loose Ends","level":80,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":91826}
 {"id":91828,"name":"A Favor for the Lion","level":90,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":91827}
 {"id":91829,"name":"One by One","level":90,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5974,"prereq":91828}

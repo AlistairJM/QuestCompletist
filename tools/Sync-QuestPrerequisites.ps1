@@ -128,7 +128,7 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
         $apiQuests = Get-PrereqQuests $value
         $ourQuests = if ($q.prereq) { Get-PrereqQuests $q.prereq } else { @() }
         $kept = @($ourQuests | Where-Object { $apiQuests -notcontains $_ -and (Test-StepJustBefore $id $_) })
-        if ($kept.Count) { $value = , (@($kept) + @($value)); $counts.keptOurs++ }
+        if ($kept.Count) { $value = @($kept) + @($value); $counts.keptOurs++ }
         $text = ConvertTo-PrereqText $value '[' ']'
         if ($text -eq $ours) { $counts.fromApiSame++; continue }
         $new[$id] = $value
