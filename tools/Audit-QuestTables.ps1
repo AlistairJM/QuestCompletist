@@ -5,7 +5,8 @@ prerequisites in data\quests.jsonl, against every source that can speak to them:
     (qcUnavailableQuests.lua) and, in breadcrumbs and "only one of these" pairs, not recurring,
     since the addon never ticks a daily, weekly or repeatable quest;
   - Blizzard's API, from the cache Audit-QuestAccuracy.ps1 fills (tools\quest_api_cache): the
-    quests a quest requires done, and the ones it requires not done, which close it;
+    quests a quest requires done (all of them, or one of several), and the ones it requires not
+    done, which close it. Where it speaks, it outranks TrinityCore;
   - the client's Faction table for -Build: which factions have renown, and their English names;
   - TrinityCore's world database, the newest tools\tdb\TDB_full_world_*.sql, for older quests:
     breadcrumbs (BreadcrumbForQuestId), groups of which only one can be done (a positive
@@ -83,23 +84,27 @@ $closes = @{}
 foreach ($id in $breadcrumbs.Keys) { foreach ($b in $breadcrumbs[$id]) { $closes["$id>$b"] = $true } }
 foreach ($id in $exclusive.Keys) { foreach ($o in $exclusive[$id]) { $closes["$id>$o"] = $true } }
 
-# Blizzard's API: each quest's required quests, as leaves of an AND/OR tree; a leaf that must be
+# Blizzard's API: each quest's required quests, as leaves of an AND/OR tree. A leaf under an OR is
+# one of several that will do; one reached through ANDs only is a must. A leaf that must be
 # incomplete is a quest that closes this one.
-$requires = @{}; $closedBy = @{}
+$requires = @{}; $mustDo = @{}; $closedBy = @{}
 $cache = Join-Path $ToolsDir 'quest_api_cache'
 foreach ($file in (Get-ChildItem $cache -Filter *.json | Select-String -Pattern '"quests":\{"operator"' -List | Select-Object -ExpandProperty Path)) {
     $json = [IO.File]::ReadAllText($file) | ConvertFrom-Json
     $id = [int]$json.id
     $stack = New-Object System.Collections.Stack
-    $stack.Push($json.requirements.quests)
+    $stack.Push(@($json.requirements.quests, $true))
     while ($stack.Count) {
-        $node = $stack.Pop()
+        $node, $allAnd = $stack.Pop()
         if ($node.target) {
-            if ($node.must_be_incomplete) { $closedBy[$id] += @([int]$node.target.id) } else { $requires[$id] += @([int]$node.target.id) }
-        } else { foreach ($child in $node.conditions) { $stack.Push($child) } }
+            $other = [int]$node.target.id
+            if ($node.must_be_incomplete) { $closedBy[$id] += @($other) }
+            else { $requires[$id] += @($other); if ($allAnd) { $mustDo[$id] += @($other) } }
+        } else { foreach ($child in $node.conditions) { $stack.Push(@($child, ($allAnd -and $node.operator.type -eq 'AND'))) } }
     }
 }
-function Test-Requires([int]$a, [int]$b) { return $requires.ContainsKey($a) -and $requires[$a] -contains $b }
+function Test-MustDo([int]$a, [int]$b) { return $mustDo.ContainsKey($a) -and $mustDo[$a] -contains $b }
+function Test-ApiCloses([int]$done, [int]$closed) { return $closedBy.ContainsKey($closed) -and $closedBy[$closed] -contains $done }
 
 # TrinityCore's quest_template_addon: ID, PrevQuestID, ExclusiveGroup, BreadcrumbForQuestId.
 $tc = @{}
@@ -135,11 +140,11 @@ foreach ($target in ($breadcrumbs.Keys | Sort-Object)) {
         }
         if ($crumb -eq $target) { Add-Finding 'breadcrumb: leads to itself' $target $crumb '' }
         if (Test-OtherFaction $target $crumb) { Add-Finding 'breadcrumb: other faction' $target $crumb "$(Get-QuestName $crumb) -> $(Get-QuestName $target)" }
-        if ((Test-Requires $target $crumb) -or (Test-Requires $crumb $target)) {
+        if ((Test-MustDo $target $crumb) -or (Test-MustDo $crumb $target)) {
             Add-Finding "breadcrumb: the API requires one for the other" $target $crumb "$(Get-QuestName $crumb) -> $(Get-QuestName $target)"
         }
         $row = $tc[$crumb]
-        if ($row -and $tc.ContainsKey($target) -and -not (Test-TcCloses $target $crumb)) {
+        if ($row -and $tc.ContainsKey($target) -and -not (Test-TcCloses $target $crumb) -and -not (Test-ApiCloses $target $crumb)) {
             Add-Finding 'breadcrumb: TrinityCore disagrees' $target $crumb ("TrinityCore: {0} is {1}" -f $crumb, $(if ($row.BreadcrumbFor) { "a breadcrumb for $($row.BreadcrumbFor)" } else { 'no breadcrumb' }))
         }
     }
@@ -154,11 +159,11 @@ foreach ($id in ($exclusive.Keys | Sort-Object)) {
             elseif (Test-Recurring $q) { Add-Finding 'exclusive: recurring quest' $id $other "$q $(Get-QuestName $q) is type $($quests[$q].type)" }
         }
         if ($other -eq $id) { Add-Finding 'exclusive: shuts itself out' $id $other '' }
-        if ((Test-Requires $id $other) -or (Test-Requires $other $id)) {
+        if ((Test-MustDo $id $other) -or (Test-MustDo $other $id)) {
             Add-Finding 'exclusive: the API requires one for the other' $id $other "$(Get-QuestName $id) / $(Get-QuestName $other)"
         }
         $a = $tc[$id]; $b = $tc[$other]
-        if ($a -and $b -and -not (Test-TcCloses $id $other)) {
+        if ($a -and $b -and -not (Test-TcCloses $id $other) -and -not (Test-ApiCloses $id $other)) {
             Add-Finding 'exclusive: TrinityCore disagrees' $id $other ("TrinityCore groups: {0} and {1}; breadcrumb for: {2} and {3}" -f $a.Group, $b.Group, $a.BreadcrumbFor, $b.BreadcrumbFor)
         }
     }
