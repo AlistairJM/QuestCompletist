@@ -19,7 +19,7 @@ if (Test-Path $DecisionsCsv) {
 }
 
 $toolsDir = Split-Path $AuditCsv
-$classNames = "Warrior","Paladin","Hunter","Rogue","Priest","DeathKnight","Shaman","Mage","Warlock","Druid","Monk","DemonHunter","Evoker"
+$classNames = "Warrior","Paladin","Hunter","Rogue","Priest","DeathKnight","Shaman","Mage","Warlock","Monk","Druid","DemonHunter","Evoker"
 $raceNames = "Human","Orc","Dwarf","NightElf","Undead","Tauren","Gnome","Troll","Goblin","BloodElf","Draenei","Worgen",
     "Pandaren","VoidElf","Nightborne","HighmountainTauren","LightforgedDraenei","DarkIronDwarf","MagharOrc",
     "ZandalariTroll","KulTiran","Vulpera","Mechagnome","Dracthyr","EarthenDwarf","Harronir"

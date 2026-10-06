@@ -61,6 +61,10 @@ categories, the zone table, reputation rewards, storylines and so on).
 - `data\quests.jsonl`, one quest per line:
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
+  `class` is the game's own class mask, 1 shifted left by the class ID less one (Warrior 1,
+  Paladin 2, … Monk 512, Druid 1024, Evoker 4096), so masks from Blizzard's API, the client
+  tables and CMaNGOS are used as they are; `race` and the other masks are the addon's own bits,
+  listed in `qcCore.lua`.
   `prereq` is the quest to do first, or a list of quests that all must be done. A list inside that
   list is a choice, any one of which will do, and a list inside a choice is all of it again:
   `[57115,57116]` needs both, `[[10983,10989,11057]]` any one of the three. A quest the character
