@@ -1085,10 +1085,6 @@ qcFactions = {
 	[2526] = "Winterpelt Furbolg",
 	[2542] = "Clan Ukhel",
 	[2544] = "Artisan's Consortium - Dragon Isles Branch",
-	[2545] = "Maruuk Centaur (Renown)",
-	[2546] = "Iskaara Tuskarr (Renown)",
-	[2547] = "Dragonscale Expedition (Renown)",
-	[2548] = "Valdrakken Accord (Renown)",
 	[2550] = "Cobalt Assembly",
 	[2551] = "Iskaara Tuskarr (Paragon)",
 	[2552] = "Valdrakken Accord (Paragon)",
@@ -13782,12 +13778,11 @@ qcBreadcrumbQuests = { --Done First second unavailable --
 	[25999] = {25945,28532},
 	[9372] = {10442,10443},
 	[25945] = {28532},
-	[24504] = {26069,28549,28550,28551},
+	[24504] = {26069,28549},
 	[8280] = {28527,28528,28856,28859},
 	[35033] = {33533,35556,36632,49564},
 	[24719] = {24854},
 	[26653] = {26627},
-	[43738] = {26785},
 	[9340] = {9499,9498},
 	[14339] = {14338},
 	[25487] = {28504,25356,25478},
@@ -13973,7 +13968,6 @@ qcBreadcrumbQuests = { --Done First second unavailable --
 	[52443]={53055}, --A
 	[52147]={53069}, --A
 	[57486]={58214}, --A
-	[58887]={58879}, --B Uldum
 	[52154]={53070}, --A Boralus
 	[55519]={56261,55522}, -- A Chamber of heart; H Chamber of heart
 	[55732]={56262,55739}, -- A Chamber of heart; H Chamber of heart
@@ -14025,6 +14019,35 @@ qcBreadcrumbQuests = { --Done First second unavailable --
 	[66719] = {65890},
 	[85083] = {85249},
 	[85084] = {85249},
+	-- TrinityCore's breadcrumbs (BreadcrumbForQuestId), reviewed with the user 2026-10-06
+	[749] = {24459},
+	[6341] = {6344},
+	[6622] = {6623},
+	[8889] = {8888},
+	[9280] = {9279},
+	[9549] = {10063},
+	[9704] = {8347},
+	[10189] = {11039},
+	[11176] = {11175},
+	[11269] = {11406},
+	[11984] = {12208,12210},
+	[11999] = {11996},
+	[12000] = {11995,12440},
+	[12188] = {12182,12189},
+	[12195] = {12451},
+	[12292] = {12511},
+	[12328] = {12161,12425},
+	[12545] = {12542},
+	[12930] = {12885},
+	[13036] = {13226,13227},
+	[24540] = {24550},
+	[24983] = {24982},
+	[25003] = {25031},
+	[25167] = {25073},
+	[25724] = {26373},
+	[25932] = {25882},
+	[25978] = {25986},
+	[29682] = {11481,11482},
 }
 
 qcMutuallyExclusive = {
@@ -14415,7 +14438,7 @@ qcOverrideWeeklyQuestTypesBasedOnStorylineId = { -- Quest that is member of an w
 }
 
 qcOverrideDailyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible daily quests, once the number is accepted/done  
-{ max = 1, quests = {26442,26536,26488,26420,26414,29342,29344,6609,29347,29343,29350} }, --If/Sw Daily Fishing
+{ max = 1, quests = {26442,26536,26488,26420,26414,29342,29344,29347,29343,29350} }, --If/Sw Daily Fishing
 { max = 1, quests = {26190,26177,26192,26153,26183,29356,29355,29353,29352,29351} },--If/Sw Daily Cocking
 { max = 1, quests = {25105,25157,25156,25155,25154} } -- Sw Daily Jewelcrafting
 }

@@ -165,6 +165,50 @@ The check then found 397 things. The prerequisite ones:
 - 6 that name quests outside our data;
 - 15 where TrinityCore differs.
 
+## Review of what was left (6 October 2026)
+
+The check listed 397 findings after the prerequisites came in. Reviewed with the user, who took
+each recommendation:
+1. **Clear mistakes, fixed:**
+   - "Sharptalon's Claw" (Horde) no longer requires the Alliance "Riverpaw Gnoll Bounty".
+   - "Street 'Cred'" required quest 25, an Ashenvale quest: now TrinityCore's "Grezzix Spindlesnap",
+     earlier in the same storyline.
+   - "Whispers on the Winds" required a quest that comes after it: now the step just before,
+     "Expeditionary Coordination".
+   - "Carcass Cuisine" no longer requires "Harandar's Kitchen", which Blizzard says comes after it.
+     The Kitchen now has Blizzard's list.
+   - The Alliance's "Hero's Call: Southern Barrens!" quests are no longer breadcrumbs for the Horde
+     quest "Clear the High Road".
+   - A stray line made the Legion world quest "Coastal Gloom" a target of a Duskwood breadcrumb.
+   - The daily "Alpaca It Up" was the breadcrumb for "Alpaca It In", so the quest window always
+     said a breadcrumb was available.
+   - "I Got Nothin' Left!" left the fishing dailies' limit, not being a daily.
+   - "Sparks of War: K'aresh" is weekly, like its five siblings.
+   - The four "(Renown)" faction names the game doesn't have are gone.
+2. **A requirement this character can't take counts as met**, as 59 quests both factions can take
+   require one faction's version of a quest, such as "Blessings Be Upon You" (a code change, in its
+   own pull request).
+3. **The 26 one-time quests that require a weekly or daily are kept:** the map shows them in weeks
+   the weekly is done, which is likely how Blizzard gates them.
+4. **TrinityCore:** its 34 breadcrumbs are taken. Its 223 groups aren't, as it also groups quests one
+   character can do all of, such as Darrowshire's three in the Eastern Plaguelands, Deepholm's
+   pairs and the Twilight Highlands' Dunwald quests. The check now counts them rather than listing
+   them.
+
+**Kept, with KEEP rows in `quest-table-decisions.csv` (120):**
+- TrinityCore's disagreements on 43 breadcrumbs and 31 pairs;
+- the 12 previous quests where ours fits Blizzard's storyline at least as well;
+- the 6 prerequisites naming quests outside our data;
+- the 26 weekly and daily requirements;
+- the 2 other-faction quests in Blizzard's own lists.
+
+**A bug found on the way:** step 2c's first run stored the 28 quests that keep ours alongside
+Blizzard's list as a choice (any one) instead of a list (all), through a stray comma in
+PowerShell. Fixed, with a test of that case, and rerun: they need all their quests now.
+
+The check now lists 123 findings, all decided but 3. The Weaver and The General use friendship
+ranks rather than renown, and the code change shows those.
+
 ## Status
 
 - 2026-10-06: the check written (step 2b) and run; step 2 corrects differing amounts. All 11,035 of
@@ -173,3 +217,5 @@ The check then found 397 things. The prerequisite ones:
   Blizzard's lists and TrinityCore's 2,036 (decisions 3 and 4), and the review of the rest.
 - 2026-10-06: decisions 3 and 4 applied: several prerequisites per quest, step 2c (above). Next: the
   user's check in game, then the review of what's left.
+- 2026-10-06: #163 to #165 merged; the review of what was left (above): its data, then the code
+  for other factions' requirements and friendship ranks.
