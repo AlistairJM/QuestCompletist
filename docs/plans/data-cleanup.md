@@ -186,6 +186,37 @@ stays unflagged.
   of that area is in, as for the 199 already in Midnight's Eversong Woods), which placed exactly these
   three. Its 2,000-quest accuracy check puts 1,702 back where they were (was 1,695), with 33 left
   unfiled (was 41).
+- **Legendary filed by zone** (2026-10-06). The user wants retail and WoW: Forever to agree, and
+  Forever's Epic and Legendary quests now go by zone (`forever.md`). Retail's Epic was already empty
+  and not in the menu. Its Legendary held 58 quests, none with an area in Blizzard's API.
+  `Place-UncategorisedQuests.ps1 -Refile 123` placed 41 by their givers' pin maps:
+  - the Warlords legendary ring chain under Talador (16) and Nagrand - Draenor (1);
+  - Nasz'uro under Valdrakken (4);
+  - Fyr'alath under Thaldraszus (2) and The Waking Shores (2), and its crafting tests under
+    Ohn'ahran Plains (9) and The Azure Span (4);
+  - Thunderfury under Silithus (2), as on Forever.
+
+  Its name-prefix rule put "Hunter: Hunted", a ring quest for every class, under Hunter. It now
+  sits under Talador, where Cordana Felsong gives it. The other 17 had no pin, area or storyline, so
+  they were placed by hand from Wowhead's pages, with TrinityCore's quest givers and hand-ins where
+  Wowhead shows none:
+
+  | Quests | Category | Why |
+  |---|---|---|
+  | "Rise, Thunderfury!" (7787) | Silithus | Starts from an item, is handed in to Highlord Demitrian, and happens entirely in Silithus |
+  | "We're Not Finished..." (36018) | Talador | Archmage Khadgar there |
+  | "Call of the Archmage" (39018, 39019, 39022) | Talador | No giver; it happens entirely in Talador, at Khadgar's tower |
+  | "Call of the Archmage" (39023, 39024) | Talador | Wowhead has nothing; TrinityCore has them handed in to the same Khadgar as the other three |
+  | "The Shadow War" (37835) | Shadowmoon Valley - Draenor | No giver, and handed in to Khadgar in several places; its objectives are there |
+  | "Light Be With You", "Draenor's Blessing", "We Don't Need No Library Card", "Cooking the Books" (37839, 37840, 39000, 39003) | Garrison Support | Khadgar in the player's garrison, whose maps file under Garrison Support |
+  | "Darkness Incarnate", "Command of the Seas", "Master vs. Commander" (39004, 39057, 39697) | Garrison Support | TrinityCore gives them the same garrison Khadgar (NPC 92213) |
+  | "Temporal Gossamer" (76158) | Valdrakken | Starts from an item, is handed in to Nozdormu there, and helps Nasz'uro |
+  | "Tattered Dreamleaf" (77838) | Ohn'ahran Plains | Starts from an item and is handed in to Erden there, as the Dreamleaf crafting quests are |
+
+  The empty Legendary entry left the menu through `Remove-EmptyMenuEntries.ps1`. The empty
+  "Garrison" category (317) isn't in the menu, so it wasn't used. Seen along the way: Wowhead calls
+  "Call of the Archmage" 39019 both factions' and 39022 the Alliance's, the other way round from our
+  faction data. Left for the next accuracy sweep.
 
 ## Decisions (agreed 2026-09-30)
 
@@ -203,3 +234,4 @@ stays unflagged.
 
 - 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Phase 2 skipped (all 227 unknown to the API; see above). Phase 3 in #107. Phase 4 on `feat/unavailable-quests` (183 flagged). Next: phase 5, the review with the user.
 - 2026-10-05: phase 5, the review with the user, in #154: 183 more flagged, and 148 of phase 4's 183 unflagged, because the client's `QuestV2` never lists repeatable quests, so missing from it wasn't evidence. 218 flagged in all and 447 kept, each decision in `unavailable-quest-decisions.csv`. See `unavailable-quests.md`.
+- 2026-10-06: the Legendary category filed by zone, 41 quests by their pins and 17 by hand (#193). See "Found later".

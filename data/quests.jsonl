@@ -960,9 +960,9 @@
 {"id":7782,"name":"The Lord of Blackrock","level":30,"zone":"Stormwind City","category":194,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":7783,"name":"The Lord of Blackrock","level":30,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":7784,"name":"The Lord of Blackrock","level":30,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":7785,"name":"Examine the Vessel","level":30,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":7786,"name":"Thunderaan the Windseeker","level":30,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":7787,"name":"Rise, Thunderfury!","level":30,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":7785,"name":"Examine the Vessel","level":30,"zone":"Legendary","category":186,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":7786,"name":"Thunderaan the Windseeker","level":30,"zone":"Legendary","category":186,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":7787,"name":"Rise, Thunderfury!","level":30,"zone":"Legendary","category":186,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":7810,"name":"Arena Master","level":10,"zone":"The Cape of Stranglethorn","category":214,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":7838,"name":"Arena Grandmaster","level":10,"zone":"Northern Stranglethorn","category":147,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":7848,"name":"Attunement to the Core","level":30,"zone":"Molten Core","category":135,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -12771,20 +12771,20 @@
 {"id":35974,"name":"Assault on Darktide Roost","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":35977,"name":"Assault on Darktide Roost","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":35985,"name":"Garrison Campaign: The Broken Precipice","level":40,"zone":"Garrison Campaign","category":289,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":105}
-{"id":35997,"name":"Empire's Fall","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":35998,"name":"Legacy of the Sorcerer Kings","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36004,"name":"Power Unleashed","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36005,"name":"The Scrying Game","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36006,"name":"Hunter: Hunted","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36007,"name":"Touch of the Kirin-Tor","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36009,"name":"Heart of the Fury","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36010,"name":"Flamebender's Tome","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36012,"name":"Reverse Piracy","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36013,"name":"Might of the Elemental Lords","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36014,"name":"Blackhand's Secret","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[36009,36010,36012]}
-{"id":36016,"name":"The Unbroken Circle","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36017,"name":"Prisoner of the Mind","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36018,"name":"We're Not Finished...","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":35997,"name":"Empire's Fall","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":35998,"name":"Legacy of the Sorcerer Kings","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36004,"name":"Power Unleashed","level":40,"zone":"Legendary","category":314,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36005,"name":"The Scrying Game","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36006,"name":"Hunter: Hunted","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36007,"name":"Touch of the Kirin-Tor","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36009,"name":"Heart of the Fury","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36010,"name":"Flamebender's Tome","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36012,"name":"Reverse Piracy","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36013,"name":"Might of the Elemental Lords","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36014,"name":"Blackhand's Secret","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[36009,36010,36012]}
+{"id":36016,"name":"The Unbroken Circle","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36017,"name":"Prisoner of the Mind","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36018,"name":"We're Not Finished...","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":36022,"name":"Extrinsic Motivation","level":30,"zone":"Spires of Arak","category":301,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":48}
 {"id":36023,"name":"Extrinsic Motivation","level":30,"zone":"Spires of Arak","category":301,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":49}
 {"id":36024,"name":"A Few Artifact Fragments","level":40,"zone":"Ashran","category":280,"type":2,"faction":2,"race":61658034,"class":8191}
@@ -13675,13 +13675,13 @@
 {"id":37817,"name":"Death to Tremor!","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":37818,"name":"Death to Hivelord Ik'rix!","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":37819,"name":"Welcome to the Darkmoon Races","level":1,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8192}
-{"id":37834,"name":"Orb of Dominion","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37835,"name":"The Shadow War","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37836,"name":"Breaking Badness","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37837,"name":"An Inside Job","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37839,"name":"Light Be With You","level":40,"zone":"Legendary","category":123,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":37840,"name":"Draenor's Blessing","level":40,"zone":"Legendary","category":123,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":37841,"name":"The Final Assault","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37834,"name":"Orb of Dominion","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37835,"name":"The Shadow War","level":40,"zone":"Legendary","category":315,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37836,"name":"Breaking Badness","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37837,"name":"An Inside Job","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37839,"name":"Light Be With You","level":40,"zone":"Legendary","category":290,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":37840,"name":"Draenor's Blessing","level":40,"zone":"Legendary","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":37841,"name":"The Final Assault","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":37848,"name":"Treasure Contract: Amulet of Rukhmar","level":40,"zone":"Spires of Arak","category":301,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":37849,"name":"Amulet of Rukhmar: The First Key","level":40,"zone":"Spires of Arak","category":301,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":37850,"name":"Amulet of Rukhmar: The Second Key","level":40,"zone":"Spires of Arak","category":301,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -13733,7 +13733,7 @@
 {"id":37960,"name":"Leyline Abuse","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5748}
 {"id":37961,"name":"Bringing the Bass","level":40,"zone":"Garrison","category":291,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":37963,"name":"Those Beyond Redemption","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37964,"name":"To Gul'dan!","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37964,"name":"To Gul'dan!","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":37965,"name":"A Tainted Vintage","level":10,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":37966,"name":"Assault on the Temple of Sha'naar","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":37968,"name":"Assault on the Temple of Sha'naar","level":40,"zone":"Tanaan Jungle","category":306,"type":4,"faction":1,"race":64175181,"class":8191}
@@ -14144,18 +14144,18 @@
 {"id":38975,"name":"Inspire Me!","level":45,"zone":"Tailoring","category":202,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":96}
 {"id":38989,"name":"Your Orders, General?","level":40,"zone":"Tanaan Jungle","category":306,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":38990,"name":"The Call of Icecrown","level":10,"zone":"Artifact","category":1003,"type":1,"faction":3,"race":67108863,"class":32,"storyline":168}
-{"id":39000,"name":"We Don't Need No Library Card","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":39003,"name":"Cooking the Books","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":0}
-{"id":39004,"name":"Darkness Incarnate","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":0}
+{"id":39000,"name":"We Don't Need No Library Card","level":40,"zone":"Legendary","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":39003,"name":"Cooking the Books","level":40,"zone":"Legendary","category":290,"type":1,"faction":3,"race":67108863,"class":0}
+{"id":39004,"name":"Darkness Incarnate","level":40,"zone":"Legendary","category":290,"type":1,"faction":3,"race":67108863,"class":0}
 {"id":39011,"name":"Black Rook Invasion","level":10,"zone":"Val'sharah","category":1008,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":39015,"name":"Grumpy","level":10,"zone":"Tanaan Jungle","category":306,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":39018,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":123,"type":1,"faction":0,"race":67108863,"class":8191}
-{"id":39019,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":123,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":39018,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":305,"type":1,"faction":0,"race":67108863,"class":8191}
+{"id":39019,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":305,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":39020,"name":"A Burning Path Through Time","level":40,"zone":"Weekend Event","category":1735,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":39021,"name":"A Frozen Path Through Time","level":40,"zone":"Weekend Event","category":1735,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":39022,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":0}
-{"id":39023,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":0}
-{"id":39024,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":0}
+{"id":39022,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":0}
+{"id":39023,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":0}
+{"id":39024,"name":"Call of the Archmage","level":40,"zone":"Legendary","category":305,"type":1,"faction":3,"race":67108863,"class":0}
 {"id":39025,"name":"Grasp of the Underking","level":10,"zone":"Highmountain","category":1005,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":89}
 {"id":39026,"name":"The Drogbar","level":10,"zone":"Highmountain","category":1005,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":89}
 {"id":39027,"name":"Dargrul and the Hammer","level":10,"zone":"Highmountain","category":1005,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":89}
@@ -14174,7 +14174,7 @@
 {"id":39054,"name":"Shipbuilding","level":40,"zone":"Shadowmoon Valley - Draenor","category":315,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":140}
 {"id":39055,"name":"Ship Shape","level":40,"zone":"Shadowmoon Valley - Draenor","category":315,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":140}
 {"id":39056,"name":"Naval Commander","level":40,"zone":"Shadowmoon Valley - Draenor","category":315,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":140}
-{"id":39057,"name":"Command of the Seas","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":39057,"name":"Command of the Seas","level":40,"zone":"Legendary","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":39059,"name":"To Catch a Banshee","level":10,"zone":"Stormheim","category":1006,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":136}
 {"id":39060,"name":"Combustible Contagion","level":10,"zone":"Stormheim","category":1006,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":136}
 {"id":39061,"name":"Whispers from the Dark","level":10,"zone":"Stormheim","category":1006,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":136}
@@ -14444,7 +14444,7 @@
 {"id":39691,"name":"The Call of War","level":8,"zone":"Demon Hunter","category":194,"type":1,"faction":1,"race":64175181,"class":2048,"storyline":259}
 {"id":39692,"name":"The Call of War","level":8,"zone":"Demon Hunter","category":1020,"type":1,"faction":2,"race":67108863,"class":2048}
 {"id":39694,"name":"Between Us and Freedom","level":8,"zone":"Vault of the Wardens","category":1035,"type":1,"faction":2,"race":61658034,"class":2048,"storyline":150}
-{"id":39697,"name":"Master vs. Commander","level":40,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":39697,"name":"Master vs. Commander","level":40,"zone":"Legendary","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":39698,"name":"Making the Rounds","level":10,"zone":"Stormheim","category":1006,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":130}
 {"id":39699,"name":"Ironhorn Leysmithing","level":10,"zone":"Blacksmithing","category":25,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":94}
 {"id":39702,"name":"Legend of Black Rook Hold","level":10,"zone":"Blacksmithing","category":25,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":94}
@@ -29329,10 +29329,10 @@
 {"id":74909,"name":"New Catches","level":70,"zone":"The Forbidden Reach","category":1304,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":74910,"name":"New Foes","level":70,"zone":"The Forbidden Reach","category":1304,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":74911,"name":"New Horizons","level":70,"zone":"The Forbidden Reach","category":1304,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":74912,"name":"Neltharion's Legacy","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352}
-{"id":74913,"name":"Memories of an Artifact","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352,"prereq":74912}
-{"id":74923,"name":"It Takes a Village to Make an Artifact","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352,"prereq":74913}
-{"id":74924,"name":"Nasz'uro, the Unbound Legacy","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352,"prereq":74923}
+{"id":74912,"name":"Neltharion's Legacy","level":70,"zone":"Legendary","category":1306,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352}
+{"id":74913,"name":"Memories of an Artifact","level":70,"zone":"Legendary","category":1306,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352,"prereq":74912}
+{"id":74923,"name":"It Takes a Village to Make an Artifact","level":70,"zone":"Legendary","category":1306,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352,"prereq":74913}
+{"id":74924,"name":"Nasz'uro, the Unbound Legacy","level":70,"zone":"Legendary","category":1306,"type":1,"faction":3,"race":67108863,"class":4096,"storyline":5352,"prereq":74923}
 {"id":74925,"name":"Caldera Cruise - Reverse","level":10,"zone":"Zaralek Cavern","category":1307,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":74939,"name":"Brimstone Scramble","level":10,"zone":"Zaralek Cavern","category":1307,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":74942,"name":"Grime Lies Where You're Killing Slimes","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -29884,7 +29884,7 @@
 {"id":76146,"name":"Dawn of the Infinite: Chrono-Lord Deios","level":70,"zone":"Dungeon","category":1723,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5408,"prereq":76145}
 {"id":76147,"name":"Rewind and Reconcile","level":70,"zone":"Dawn Of The Infinite","category":1723,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5408,"prereq":76146}
 {"id":76155,"name":"A Wolf Among Sheep","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":76410}
-{"id":76158,"name":"Temporal Gossamer","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":76158,"name":"Temporal Gossamer","level":70,"zone":"Legendary","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76159,"name":"Report to the Trading Post","level":1,"zone":"Trading Post","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76161,"name":"Conversation Testing [DNT]","level":1,"zone":"Jrztest","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76162,"name":"Missing Mojo","level":70,"zone":"Thaldraszus","category":1302,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -30125,7 +30125,7 @@
 {"id":76991,"name":"Carpe Diem","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":76992,"name":"Fickle Judgment","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":76993,"name":"Turtle Power","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":77093,"name":"The Shadowflame Axe","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5462}
+{"id":77093,"name":"The Shadowflame Axe","level":70,"zone":"Legendary","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5462}
 {"id":77094,"name":"Basic Kill Quest [DNT]","level":1,"zone":"Content Playground","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77095,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77096,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -30152,9 +30152,9 @@
 {"id":77171,"name":"Coilfang Caper - Reverse","level":10,"zone":"Zangarmarsh","category":275,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77176,"name":"I Can See Through Time!","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5466,"prereq":77166}
 {"id":77178,"name":"Tactical Withdrawal","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5472,"prereq":76347}
-{"id":77191,"name":"Handling It","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5462,"prereq":77093}
-{"id":77192,"name":"An Axe Tempered","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5462,"prereq":77191}
-{"id":77193,"name":"The Power of Temptation","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5462,"prereq":77192}
+{"id":77191,"name":"Handling It","level":70,"zone":"Legendary","category":1302,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5462,"prereq":77093}
+{"id":77192,"name":"An Axe Tempered","level":70,"zone":"Legendary","category":1305,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5462,"prereq":77191}
+{"id":77193,"name":"The Power of Temptation","level":70,"zone":"Legendary","category":1305,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5462,"prereq":77192}
 {"id":77194,"name":"Free Knot!","level":1,"zone":"Dire Maul","category":1740,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":77195,"name":"A Dragon's Eye View","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5474,"prereq":76463}
 {"id":77197,"name":"A Whelping Hand","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5474,"prereq":77195}
@@ -30315,7 +30315,7 @@
 {"id":77787,"name":"Stormsunder Crater Circuit - Storm Gryphon","level":10,"zone":"The Forbidden Reach","category":1304,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77788,"name":"Ashphodel Research Notes","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77789,"name":"Severing Ties","level":30,"zone":"Krokuun","category":1041,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5482,"prereq":77411}
-{"id":77791,"name":"Handling It: Symbiotic Glowspore Grip","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483}
+{"id":77791,"name":"Handling It: Symbiotic Glowspore Grip","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483}
 {"id":77793,"name":"Crystal Circuit - Storm Gryphon","level":10,"zone":"Zaralek Cavern","category":1307,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77794,"name":"Waking Dream Reward","level":70,"zone":"The Waking Shores","category":1305,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":77795,"name":"Scavenged Artifacts","level":30,"zone":"Krokuun","category":1041,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5482,"prereq":77412}
@@ -30327,9 +30327,9 @@
 {"id":77829,"name":"Reforging a Legend","level":10,"zone":"Valdrakken","category":1306,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77831,"name":"A Key To Reforg(ing)","level":10,"zone":"Valdrakken","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77832,"name":"Shadows upon shadows","level":10,"zone":"Jrztest","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77833,"name":"Handling It: Concentrated Sophic Vellum","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484}
-{"id":77835,"name":"Handling It: Rune of Shadowbinding","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485}
-{"id":77838,"name":"Tattered Dreamleaf","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77833,"name":"Handling It: Concentrated Sophic Vellum","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484}
+{"id":77835,"name":"Handling It: Rune of Shadowbinding","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485}
+{"id":77838,"name":"Tattered Dreamleaf","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77839,"name":"The Eastern Kingdoms Cup Circuit","level":30,"zone":"Eastern Kingdoms Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77840,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":77841,"name":"Ysera Invitational","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -30349,7 +30349,7 @@
 {"id":77881,"name":"There is Another","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":128,"class":8191,"storyline":5504,"prereq":77879}
 {"id":77882,"name":"Stolen but Not Forgotten","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":128,"class":8191,"storyline":5504,"prereq":77877}
 {"id":77885,"name":"Dream Wardens","level":10,"zone":"Eastern Kingdoms","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":77886,"name":"Handling It: Shadowed Dreamleaf","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":77791}
+{"id":77886,"name":"Handling It: Shadowed Dreamleaf","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":77791}
 {"id":77889,"name":"A Fiery Proposal","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
 {"id":77891,"name":"Fixing The Dream","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
 {"id":77892,"name":"Pearls Of Great Value","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
@@ -30402,8 +30402,8 @@
 {"id":77998,"name":"Viridescent Venture - Reverse","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77999,"name":"Viridescent Venture - Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78000,"name":"Viridescent Venture - Reverse Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":78002,"name":"To The Test: Concentrated Sophic Vellum","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":78156}
-{"id":78003,"name":"Handling It: Taut Tethercoil","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":77835}
+{"id":78002,"name":"To The Test: Concentrated Sophic Vellum","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":78156}
+{"id":78003,"name":"Handling It: Taut Tethercoil","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":77835}
 {"id":78015,"name":"Firebrand Fystia","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":78016,"name":"Shoreline Switchback","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78017,"name":"Shoreline Switchback - Advanced","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -30450,12 +30450,12 @@
 {"id":78118,"name":"Emerald Amble - Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78119,"name":"Emerald Amble - Reverse Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78131,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":78153,"name":"Handling It: Prototype Rune","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":78003}
-{"id":78154,"name":"To the Test: Rune of Shadowbinding","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":78153}
-{"id":78155,"name":"Handling It: Radiant Fleck of Ash","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":77833}
-{"id":78156,"name":"Handling It: Radiant Vellum","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":78155}
-{"id":78159,"name":"Handling It: Glowspore Grip","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":77886}
-{"id":78160,"name":"To the Test: Symbiotic Glowspore Grip","level":70,"zone":"Legendary","category":123,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":78159}
+{"id":78153,"name":"Handling It: Prototype Rune","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":78003}
+{"id":78154,"name":"To the Test: Rune of Shadowbinding","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":78153}
+{"id":78155,"name":"Handling It: Radiant Fleck of Ash","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":77833}
+{"id":78156,"name":"Handling It: Radiant Vellum","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":78155}
+{"id":78159,"name":"Handling It: Glowspore Grip","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":77886}
+{"id":78160,"name":"To the Test: Symbiotic Glowspore Grip","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":78159}
 {"id":78162,"name":"Q'onzu's Distraction","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":78163,"name":"Q'onzu's Qualification","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":78170,"name":"Nurturing Ageless Seeds","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -30578,7 +30578,7 @@
 {"id":78645,"name":"Excavation: Buried in the Riverbed","level":70,"zone":"Azerothian Archives","category":1343,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5514,"prereq":78931}
 {"id":78646,"name":"Fire Watch","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5460,"prereq":76328}
 {"id":78649,"name":"Excavation: Something Big Beneath the Riverbed","level":70,"zone":"Azerothian Archives","category":1343,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5514,"prereq":78661}
-{"id":78655,"name":"Adaptive Cooling Salve","level":70,"zone":"Legendary","category":123,"type":4,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":78160}
+{"id":78655,"name":"Adaptive Cooling Salve","level":70,"zone":"Legendary","category":1301,"type":4,"faction":3,"race":67108863,"class":35,"storyline":5483,"prereq":78160}
 {"id":78661,"name":"Excavation: Treasures in the Cliffside","level":70,"zone":"Azerothian Archives","category":1343,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5514,"prereq":78662}
 {"id":78662,"name":"Excavation: A Cliffside Full of Caches","level":70,"zone":"Azerothian Archives","category":1343,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5514,"prereq":78645}
 {"id":78663,"name":"Excavation: Scattered Around the Tower","level":70,"zone":"Azerothian Archives","category":1343,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5514,"prereq":78649}
