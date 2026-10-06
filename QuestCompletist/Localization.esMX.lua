@@ -55,7 +55,6 @@ qcLocalize = setmetatable({
 	STRANGLETHORNVALE = "Vega de Tuercespina", -- Needs review
 	THEZANDALARI = "Los Zandalari", -- Needs review
 	TOURNAMENT = "Torneo", -- Needs review
-	TREASUREMAP = "Mapa de tesoro",
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
 	WEEKLYEVENTS = "Eventos semanales", -- Needs review
 	WORLDEVENTS = "Eventos del Mundo", -- Needs review

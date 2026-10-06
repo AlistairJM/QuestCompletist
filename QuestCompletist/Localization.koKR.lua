@@ -55,7 +55,6 @@ qcLocalize = setmetatable({
 	STRANGLETHORNVALE = "가시덤불 골짜기",
 	THEZANDALARI = "잔달라", -- Needs review
 	TOURNAMENT = "토너먼트", -- Needs review
-	TREASUREMAP = "보물 지도",
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
 	WEEKLYEVENTS = "주간 이벤트", -- Needs review
 	WORLDEVENTS = "월드 이벤트", -- Needs review

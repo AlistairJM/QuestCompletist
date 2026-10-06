@@ -157,7 +157,6 @@ qcQuestCategories={
 {400,"Thousand Needles"},
 {1638,"Thunder Bluff"},
 {85,"Tirisfal Glades"},
-{-221,"Treasure Map"},
 {1337,"Uldaman"},
 {0,"Uncategorized"},
 {1497,"Undercity"},

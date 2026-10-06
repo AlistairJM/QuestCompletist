@@ -1690,7 +1690,7 @@
 {"id":2879,"name":"The Stave of Equinex","level":50,"zone":"Feralas","category":357,"type":1,"faction":1,"race":0,"class":8191,"prereq":2943}
 {"id":2880,"name":"Troll Necklace Bounty","level":45,"zone":"The Hinterlands","category":47,"type":1,"faction":1,"race":0,"class":8191}
 {"id":2881,"name":"Troll Necklace Bounty","level":45,"zone":"The Hinterlands","category":47,"type":2,"faction":1,"race":0,"class":8191,"prereq":2880}
-{"id":2882,"name":"Cuergo's Gold","level":45,"zone":"Treasure Map","category":-221,"type":2,"faction":3,"race":0,"class":8191}
+{"id":2882,"name":"Cuergo's Gold","level":45,"zone":"Tanaris","category":440,"type":2,"faction":3,"race":0,"class":8191}
 {"id":2902,"name":"Woodpaw Investigation","level":43,"zone":"Feralas","category":357,"type":1,"faction":2,"race":0,"class":8191,"prereq":2863}
 {"id":2903,"name":"The Battle Plans","level":43,"zone":"Feralas","category":357,"type":1,"faction":2,"race":0,"class":8191,"prereq":2902}
 {"id":2904,"name":"A Fine Mess","level":30,"zone":"Gnomeregan","category":721,"type":1,"faction":3,"race":0,"class":8191}
