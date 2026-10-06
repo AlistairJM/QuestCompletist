@@ -617,8 +617,11 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   stays ours.
 - **Categories:** `Build-ForeverMenu.ps1` also names a category by a race (Night Elf), or by one of
   the client's in-game UI strings with the same English name: Darkmoon Faire, Epic, Legendary,
-  Reputation and Special. Seven stay ours: Lunar Festival and Seasonal, which we translate, and
-  Ahn'Qiraj War, Camping, Invasion, Midsummer and Treasure Map, in English.
+  Reputation and Special. Seven stay ours: Lunar Festival, Midsummer and Seasonal, which we
+  translate, and Ahn'Qiraj War, Camping, Invasion and Treasure Map, in English.
+- **Midsummer's** translations are the client's own names for its quest log heading (`QuestSort`
+  369). The key had been "Midsummer Fire Festival", which no category was called, so Forever's
+  Midsummer showed in English.
 
 ## Decisions
 

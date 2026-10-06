@@ -1572,8 +1572,8 @@ local function InitializeCategoryDropDownMenu(self, level, menuList)
     local menu = menuList or qcMenu
     
     for _, item in ipairs(menu) do
-        -- A numeric arg1 is a category id; its name comes from qcCategoryName rather than the
-        -- qcL string baked into qcMenu. Headings may be named by the client too.
+        -- A numeric arg1 is a category id, named by qcCategoryName; the entry's text only gives
+        -- its indent. Headings may be named by the client too.
         local categoryName = type(item.arg1) == "number" and qcCategoryName(item.arg1)
         info.text = categoryName and ((item.text or ""):match("^%s*") .. categoryName) or qcMenuHeadingText(item)
         info.arg1 = item.arg1
