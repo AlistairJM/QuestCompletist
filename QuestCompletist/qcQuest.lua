@@ -757,7 +757,6 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[114]={"area",5974},	-- Jade Temple Grounds
 	[115]={"skill",755},	-- Jewelcrafting
 	[122]={"skill",165},	-- Leatherworking
-	[123]={"string","ITEM_QUALITY5_DESC"},	-- Legendary
 	[126]={"achievementcategory",187},	-- Love is in the Air
 	[127]={"achievementcategory",160},	-- Lunar Festival
 	[128]={"class",8},	-- Mage

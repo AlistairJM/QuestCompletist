@@ -418,7 +418,8 @@ and for category 0, it adds a hand-written list in the script that maps the ques
 `-Refile 123` did the same for "Legendary" in October 2026, as its quests all belong to zones, like
 Forever's: the pins placed 41 and the other 17 were placed by hand (see
 [plans/data-cleanup.md](plans/data-cleanup.md)). Check what a refile files by name: the prefix rule
-put "Hunter: Hunted", a quest for every class, under Hunter. Then run `Remove-EmptyMenuEntries.ps1`.
+put "Hunter: Hunted", a quest for every class, under Hunter. Then run `Remove-EmptyMenuEntries.ps1`,
+and `Build-CategoryClientNames.ps1` (step 5), which drops the name of a category the refile emptied.
 
 A quest nothing can place stays in category 0, which the menu lists as Uncategorized under
 Miscellaneous. A quest in a category that isn't defined is moved there too.
