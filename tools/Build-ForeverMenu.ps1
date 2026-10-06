@@ -22,9 +22,9 @@ The Settings entries are copied from retail's QuestCompletist\qcMenu.lua.
 qcQuest.lua holds what the core reads:
   - which map is which category (qcAreaIDToCategoryID);
   - each category's English name (qcQuestCategories);
-  - where the client names it (qcCategoryClientName: the area, class or profession, else a race or
-    one of the client's in-game strings with the category's English name, so the name is in the
-    player's language);
+  - where the client names it (qcCategoryClientName: the area, class or profession, else one of the
+    client's in-game strings with the category's English name, so the name is in the player's
+    language);
   - Forever's storylines (qcQuestLines);
   - the reputation each quest rewards (qcQuestReputation), from reputation.jsonl, and those
     factions' English names (qcFactions), for when the game doesn't name one;
@@ -86,18 +86,14 @@ $maps = @{}; foreach ($row in Get-ClientTable 'Map') { $maps[[int]$row.ID] = $ro
 $sortName = @{}; foreach ($row in Get-ClientTable 'QuestSort') { $sortName[-[int]$row.ID] = $row.SortName_lang }
 $uiMapType = @{}; $uiMapName = @{}
 foreach ($row in Get-ClientTable 'UiMap') { $uiMapType[[int]$row.ID] = [int]$row.Type; $uiMapName[[int]$row.ID] = $row.Name_lang }
-# The client's UI strings loaded in game (flag 1; the rest are the login screen's), and its races,
-# by their English names, matched exactly, the lowest ID first.
+# The client's UI strings loaded in game (flag 1; the rest are the login screen's), by their English
+# text, matched exactly, the lowest ID first.
 $stringText = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
 $stringByText = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
 foreach ($row in (Get-ClientTable 'GlobalStrings' | Sort-Object { [int]$_.ID })) {
     if (-not ([int]"0$($row.Flags)" -band 1)) { continue }
     $stringText[$row.BaseTag] = $row.TagText_lang
     if ($row.TagText_lang -and -not $stringByText.ContainsKey($row.TagText_lang)) { $stringByText[$row.TagText_lang] = $row.BaseTag }
-}
-$raceByName = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
-foreach ($row in (Get-ClientTable 'ChrRaces' | Sort-Object { [int]$_.ID })) {
-    if ($row.Name_lang -and -not $raceByName.ContainsKey($row.Name_lang)) { $raceByName[$row.Name_lang] = [int]$row.ID }
 }
 $english = @{}
 foreach ($m in [regex]::Matches([IO.File]::ReadAllText($LocaleFile), '(?m)^\s*([A-Z0-9]+)\s*=\s*"((?:[^"\\]|\\.)*)"')) {
@@ -240,7 +236,6 @@ foreach ($id in (@($categories.Keys) | Sort-Object)) {
     $name = [string](Get-EnglishName $id)
     $source = if ($id -eq 0) { '{"string","STABLE_PET_UNCATEGORIZED"}' } elseif ($id -gt 0) { "{`"area`",$id}" }
         elseif ($classIdBySort.ContainsKey($id)) { "{`"class`",$($classIdBySort[$id])}" } elseif ($skillBySort.ContainsKey($id)) { "{`"skill`",$($skillBySort[$id])}" }
-        elseif ($name -and $raceByName.ContainsKey($name)) { "{`"race`",$($raceByName[$name])}" }
         elseif ($name -and $stringByText.ContainsKey($name)) { "{`"string`",`"$($stringByText[$name])`"}" }
     if ($source) { [void]$quest.Append("[$id]=$source,`r`n") } else { $ourNames.Add($name) }
 }

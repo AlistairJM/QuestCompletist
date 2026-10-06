@@ -1579,9 +1579,6 @@ local function qcClientName(source)
 	elseif (kind == "class") then
 		local info = C_CreatureInfo.GetClassInfo(id)
 		name = info and info.className
-	elseif (kind == "race") then
-		local info = C_CreatureInfo.GetRaceInfo(id)
-		name = info and info.raceName
 	elseif (kind == "covenant") then
 		local data = C_Covenants.GetCovenantData(id)
 		name = data and data.name

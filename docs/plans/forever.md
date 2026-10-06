@@ -618,9 +618,10 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   come from the client too, like the continents and "Miscellaneous". Forever's client has no
   achievement categories, so "Dungeons & Raids" is the Group Finder's title, and "World Events"
   stays ours.
-- **Categories:** `Build-ForeverMenu.ps1` also names a category by a race (Night Elf), or by one of
-  the client's in-game UI strings with the same English name: Darkmoon Faire, Epic, Legendary,
-  Reputation and Special. Seven stay ours, as the game has no way to be asked for them: Ahn'Qiraj
+- **Categories:** `Build-ForeverMenu.ps1` also names a category by one of the client's in-game UI
+  strings with the same English name: Darkmoon Faire, Epic, Legendary, Reputation and Special. (It
+  named Night Elf by its race, until race headings stopped being categories: see "Race headings"
+  below.) Seven stay ours, as the game has no way to be asked for them: Ahn'Qiraj
   War, Camping, Invasion, Lunar Festival, Midsummer, Seasonal and Treasure Map. Their translations
   are the client's own names for those quest log headings (`QuestSort` 365, 666, 368, 366, 369, 22
   and 221) in each language. "Seasonal" also names a retail category: its Simplified Chinese is
@@ -651,6 +652,9 @@ the zone it's given in.
   list. The pin now has the normal icon, as the quest is for any class; her Priest quest alone gave
   it the class icon. The menu has 117 categories instead of 118, and the review's "no giver" rows go
   from 1,226 to 1,225. Nothing else in the data changes, and a rerun writes the same files.
+- **Naming by race went too.** `Build-ForeverMenu.ps1` named such a category by its race, and the
+  addon asked the game for the race's name. With no race categories left in either game, neither
+  is used.
 
 ## Decisions
 
