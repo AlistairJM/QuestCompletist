@@ -410,11 +410,20 @@ function qcPrereq.Parts(questId)
 end
 
 -- A part as text: a quest as describe(questId) gives it, a choice as its options joined by "or",
--- and a list inside a choice as its quests in brackets.
+-- and a list inside a choice as its quests in brackets. A choice leaves out the quests this
+-- character couldn't take, such as another faction's version, unless that's all of them.
 function qcPrereq.Text(part, describe, all)
 	if type(part) == "number" then return describe(part) end
+	local items = part
+	if not all then
+		local open = {}
+		for _, item in ipairs(part) do
+			if type(item) ~= "number" or qcPrereq.CanTake(item) then open[#open + 1] = item end
+		end
+		if #open > 0 then items = open end
+	end
 	local texts = {}
-	for _, item in ipairs(part) do texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
+	for _, item in ipairs(items) do texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
 	if all then return "(" .. table.concat(texts, ", ") .. ")" end
 	return table.concat(texts, " " .. (SERVICES_CONJUNCTION_OR or "or") .. " ")
 end
@@ -595,6 +604,19 @@ end
 -- 0 means the database has no data for the field, so it restricts nothing.
 local function qcMaskAllows(mask, flag)
 	return mask == 0 or bit.band(mask, flag) ~= 0
+end
+
+-- Whether this character's faction, race and class let it take a quest.
+function qcPrereq.CanTake(questId)
+	local e = qcQuestDatabase[questId]
+	if not e then return true end
+	local faction = qcFactionBits[string.upper(UnitFactionGroup("player") or "")]
+	local _, race = UnitRace("player")
+	local _, class = UnitClass("player")
+	local raceFlag = race and qcRaceBits[string.upper(race)]
+	local classFlag = class and qcClassBits[class]
+	return (not faction or qcMaskAllows(e[5], faction)) and (not raceFlag or qcMaskAllows(e[6], raceFlag))
+		and (not classFlag or qcMaskAllows(e[7], classFlag))
 end
 
 -- GetProfessions returns both primaries, then Archaeology, Fishing and Cooking; any can be nil.
