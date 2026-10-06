@@ -583,8 +583,8 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 31 left, `qcTooltips.lua` 173 and
-  `qcMapPins.lua` 155. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
+  has its own 200: in October 2026, `qcCore.lua` had 29 left, `qcTooltips.lua` 170 and
+  `qcMapPins.lua` 144. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.

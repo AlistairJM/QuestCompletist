@@ -1027,6 +1027,10 @@ local QC_MAX_NPC_LOADS = 16
 local QC_NPC_LOAD_TIMEOUT = 5
 
 local qcNpcNames = {}
+-- A creature's subtitle, such as "Innkeeper": the tooltip line after its name, unless that line is
+-- its level. false when it has none.
+local qcNpcSubtitles = {}
+local QC_LEVEL_LINE_START = (TOOLTIP_UNIT_LEVEL or "Level %s"):match("^(.-)%%") or ""
 local qcNpcLoadQueue = {}
 local qcNpcLoadQueued = {}
 local qcNpcLoadInFlight = {}
@@ -1043,6 +1047,12 @@ local function qcClientNpcName(npcId)
 	local name = line and line.leftText
 	if name and not (issecretvalue and issecretvalue(name)) and name ~= "" then
 		qcNpcNames[npcId] = name
+		local subtitle = data.lines[2] and data.lines[2].leftText
+		if not subtitle or (issecretvalue and issecretvalue(subtitle)) or subtitle == ""
+				or subtitle:sub(1, #QC_LEVEL_LINE_START) == QC_LEVEL_LINE_START then
+			subtitle = false
+		end
+		qcNpcSubtitles[npcId] = subtitle
 		return name
 	end
 end
@@ -2442,6 +2452,6 @@ QC.qcIsUnavailable, QC.qcMaskAllows = qcIsUnavailable, qcMaskAllows
 QC.QC_MAP_FILTER, QC.qcBuildQuestFilter = QC_MAP_FILTER, qcBuildQuestFilter
 QC.simulateExclusiveCompletions = simulateExclusiveCompletions
 QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays = qcKnownHolidayFlags, qcUpdateActiveHolidays
-QC.qcNpcName, QC.qcRequestPinNpcNames = qcNpcName, qcRequestPinNpcNames
+QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
