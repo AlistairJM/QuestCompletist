@@ -676,3 +676,5 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   map (#176); results above.
 - 2026-10-06: a giver in several zones goes on the map of its nearest old pin, and a repeatable giver
   in many places gets one pin per map (#177); results above.
+- 2026-10-06: the menu's headings, and more of its categories, take the client's names, as retail's
+  do, and Midsummer is translated (#179); results above.
