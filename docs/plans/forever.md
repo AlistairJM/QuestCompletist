@@ -536,5 +536,5 @@ as `C_Reputation.GetFactionDataByID` and "Reputation Changes".
   pieces (breadcrumbs, mutually exclusive quests, reputation rewards).
 - 2026-10-06: beta build 70235 has the same quest and map tables as 70205, so it needs no rerun.
   Breadcrumbs and "only one of these" groups from CMaNGOS, and reputation from the game's records
-  (Classic Era's amounts, not CMaNGOS's mostly TBC ones); results above. Next: a probe rerun once
+  (Classic Era's amounts, not CMaNGOS's mostly TBC ones) (#162); results above. Next: a probe rerun once
   the beta opens levels above 40, and more of Zephras Isle from the recorder.
