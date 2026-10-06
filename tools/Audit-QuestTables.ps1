@@ -7,7 +7,8 @@ prerequisites in data\quests.jsonl, against every source that can speak to them:
   - Blizzard's API, from the cache Audit-QuestAccuracy.ps1 fills (tools\quest_api_cache): the
     quests a quest requires done (all of them, or one of several), and the ones it requires not
     done, which close it. Where it speaks, it outranks TrinityCore;
-  - the client's Faction table for -Build: which factions have renown, and their English names;
+  - the client's Faction table for -Build: which factions have renown or friendship ranks (as The
+    Weaver has), and their English names;
   - TrinityCore's world database, the newest tools\tdb\TDB_full_world_*.sql, for older quests:
     breadcrumbs (BreadcrumbForQuestId), groups of which only one can be done (a positive
     ExclusiveGroup) and previous quests (a positive PrevQuestID). It only speaks for a quest it has a
@@ -262,7 +263,9 @@ foreach ($line in (Get-TableLines 'qcRenownLevelRequirements')) {
     $renown[$id] = $faction
     if (-not $quests.ContainsKey($id)) { Add-Finding 'renown: quest not in the data' $id $faction '' }
     if (-not $clientFaction.ContainsKey($faction)) { Add-Finding 'renown: faction not in the client' $id $faction '' }
-    elseif (-not [int]$clientFaction[$faction].RenownCurrencyID) { Add-Finding 'renown: faction has no renown' $id $faction $clientFaction[$faction].Name_lang }
+    elseif (-not [int]$clientFaction[$faction].RenownCurrencyID -and -not [int]$clientFaction[$faction].FriendshipRepID) {
+        Add-Finding 'renown: faction has neither renown nor ranks' $id $faction $clientFaction[$faction].Name_lang
+    }
 }
 foreach ($table in @(@('qcOverrideDailyExclusiveQuest', 4, 'daily'), @('qcOverrideWeeklyExclusiveQuest', 128, 'weekly'))) {
     foreach ($line in (Get-TableLines $table[0])) {

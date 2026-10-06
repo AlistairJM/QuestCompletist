@@ -136,9 +136,10 @@ Decisions 3 and 4:
 - **The code:** `qcPrereq` in `qcCore.lua` checks and describes them.
   - The quest tooltip lists each required quest on a line of its own, with its icon, and a choice
     on one line: "Step 4 or Step 5 or Step 6", in the player's language (`SERVICES_CONJUNCTION_OR`).
-  - A choice leaves out the quests this character couldn't take, unless that's all of them. Of the
-    144 choices, 10 offer the Alliance's and the Horde's versions of a quest, and 29 repeat a
-    quest's name, mostly versions for another faction, race or class.
+  - A choice leaves out the quests this character couldn't take, unless that's all of them (since
+    the review below, such a choice counts as met). Of the 144 choices, 10 offer the Alliance's and
+    the Horde's versions of a quest, and 29 repeat a quest's name, mostly versions for another
+    faction, race or class.
   - The map greys a pin, and with its filter on hides a quest, until every requirement is met.
     Its tooltip names what's missing: "Requires Step 3", or "Requires Step 4 or Step 5 or Step 6".
 - **A fix found on the way:** the map's renown check stopped with an error if the game gave no
@@ -209,6 +210,27 @@ PowerShell. Fixed, with a test of that case, and rerun: they need all their ques
 The check now lists 123 findings, all decided but 3. The Weaver and The General use friendship
 ranks rather than renown, and the code change shows those.
 
+## Other characters' quests and friendship ranks (6 October 2026)
+
+The review's code change, decision 2 and the last 3 findings:
+- **A quest this character couldn't take doesn't count,** whether for its faction, race or class.
+  - A required quest like that is met, and the tooltip and the map's pins leave it out.
+  - In a choice it's no option, and a choice of only such quests is met.
+  - This changes what 97 quests require for some characters: 94 require such a quest, 2 offer a
+    choice of only such quests, and 1 has one in a list inside a choice. It's down to faction for 54
+    of them, race for 21 and class for 34 (some for more than one). The rest of the prerequisites
+    are as before.
+- **Friendship ranks.** The Weaver and The General have friendship ranks, Stranger to Mastermind (1
+  to 9), rather than the renown the addon asked the game for. Now:
+  - the tooltip says "Required Rank: ✓ 7";
+  - the map's pin says "Requires The Weaver - Rank 7";
+  - the map's filter hides the quest until the rank is reached, as it does for renown.
+
+  The rank comes from the same calls as Blizzard's reputation bar
+  (`C_GossipInfo.GetFriendshipReputationRanks`). There are two new texts, "Required Rank:" and
+  "Rank %d", in every language and marked for review.
+- **The check** accepts a faction with friendship ranks, so it now lists 120 findings, all decided.
+
 ## Status
 
 - 2026-10-06: the check written (step 2b) and run; step 2 corrects differing amounts. All 11,035 of
@@ -219,3 +241,5 @@ ranks rather than renown, and the code change shows those.
   user's check in game, then the review of what's left.
 - 2026-10-06: #163 to #165 merged; the review of what was left (above): its data, then the code
   for other factions' requirements and friendship ranks.
+- 2026-10-06: the review's data in #166, and its code (above) stacked on it. Next: the user's check
+  in game, then release 111.5.
