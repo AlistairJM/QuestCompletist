@@ -540,6 +540,9 @@ events were pinned all year.
   Invasion and the War Effort in a section of their own; every other count is still 0. A test with
   stand-ins for the calendar showed the fishing pins on a Sunday afternoon and the keg during
   Hallow's End, and none of the 81 pins on any day.
+- **Checked on the beta** by the user: the Darnassus pins are gone. Officer Lunalight, who takes
+  signets once the war is over, isn't at her spot in Darnassus, so Forever's war effort isn't over,
+  and all of its pins stay hidden.
 
 ## Decisions
 
@@ -556,9 +559,9 @@ events were pinned all year.
 - Which old quests that only the game knows Forever really offers. They're later Classic Era
   additions, such as a Warlock "The Binding" chain and Paladin quests numbered 78000 and up.
 - Whether Forever will run the Scourge Invasion or the Ahn'Qiraj War Effort, and how. In Classic Era
-  the war is long over, and the officers who take signets stand in the capitals for good; if
-  Forever's world is like that, their pins should show. If either event comes to Forever's calendar,
-  `/qc holidays` lists it among the calendar holidays not tied to a quest.
+  the war is long over, and the officers who take signets stand in the capitals for good. On the
+  beta it isn't over: Officer Lunalight isn't in Darnassus (6 October). If either event comes to
+  Forever's calendar, `/qc holidays` lists it among the calendar holidays not tied to a quest.
 - Whether the 39 quests CMaNGOS calls repeatable that `QuestV2` does list really repeat. No quest
   retail's API flags repeatable is in retail's `QuestV2`, but Forever's lists "Junkboxes Needed"
   (8249), which retail's API calls repeatable. They keep CMaNGOS's type until the recorder sees them
