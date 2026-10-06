@@ -546,7 +546,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    another giver offer the quest. A quest filed under a heading that isn't a place, a race's (Night
    Elf) or Treasure Map, goes under a zone instead: the one `docs\plans\forever-quest-zones.csv`
    gives it by hand (quest, zone's `AreaTable` ID, name, note), else its pins' zone, else
-   CMaNGOS's. The review list says which, and flags a listed zone that isn't used.
+   CMaNGOS's. The review list says which, and flags a listed zone that isn't used. The Commendation
+   Signets' turn-ins, which CMaNGOS files under Reputation, go under Ahn'Qiraj War with the rest of
+   the war effort: its supply quests give the signets, and its officers take them.
 5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
    and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl`, `reputation.jsonl` and
    `skills.jsonl`, with the factions' English names from the client's `Faction` table. A new zone

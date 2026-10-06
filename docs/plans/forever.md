@@ -621,7 +621,8 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   achievement categories, so "Dungeons & Raids" is the Group Finder's title, and "World Events"
   stays ours.
 - **Categories:** `Build-ForeverMenu.ps1` also names a category by one of the client's in-game UI
-  strings with the same English name: Darkmoon Faire, Epic, Legendary, Reputation and Special. (It
+  strings with the same English name: Darkmoon Faire, Epic, Legendary, Reputation (until its quests
+  moved: see "Commendation Signets" below) and Special. (It
   named Night Elf by its race, until race headings stopped being categories: see "Race headings"
   below.) Seven stay ours, as the game has no way to be asked for them: Ahn'Qiraj
   War, Camping, Invasion, Lunar Festival, Midsummer, Seasonal and Treasure Map. Their translations
@@ -665,7 +666,8 @@ The menu's "Treasure Map" category held one quest, "Cuergo's Gold" (2882): level
 started from a treasure map (item 9254) and handed in at a "Pirate's Treasure!" chest (object
 142194). The beta hasn't answered it, so its heading is CMaNGOS's `QuestSort` 221. Like a race's,
 that heading isn't a place, and retail has no Treasure Map category (nor the quest). Epic,
-Legendary, Reputation and Special stay: retail has those categories too.
+Legendary and Special stay: retail has those categories too. (So did Reputation, until its quests
+moved the same day: see "Commendation Signets" below.)
 
 - **The rule** now covers every heading that isn't a place: a race's, and Treasure Map. Such a
   quest goes under the zone `docs/plans/forever-quest-zones.csv` gives it, else the zone of its
@@ -679,6 +681,29 @@ Legendary, Reputation and Special stay: retail has those categories too.
   of categories named by our own strings is down to six. The `TREASUREMAP` text went from all 11
   language files, as nothing shows it now: each translation file holds 122 keys. Nothing else in
   the data changes, and a rerun writes the same files.
+
+### Commendation Signets (6 October 2026)
+
+The menu's "Reputation" category held only the 32 Commendation Signet turn-ins, "One Commendation
+Signet" and "Ten Commendation Signets" for each capital's reputation. They belong to the Ahn'Qiraj
+War Effort:
+
+- **The signets** are what the war effort's supply quests give: all 30 of the Alliance's "The
+  Alliance Needs ...!" quests give Alliance Commendation Signets, and the Horde's 30 give Horde
+  ones, 3 to 10 at a time (Wowhead's Forever pages).
+- **The officers who take them** stand only during CMaNGOS's war effort events: each capital's
+  commendation officer, gathered in Ironforge's Military Ward and Orgrimmar's Valley of Strength,
+  during the collection phase (event 120); and an officer in each capital (Lunalight, Maloof,
+  Gothena and the rest) from then until after the war (events 120 to 124). So the importer already
+  gave all 32 the war effort's flag, which keeps their pins off the map.
+- **Only their heading said otherwise:** CMaNGOS files them under `QuestSort` 367, Reputation, the
+  old quest log heading for them; the beta hasn't answered level 60 quests. The importer now files
+  a quest under Reputation that has the war effort's flag under Ahn'Qiraj War (365). Event quests
+  filed under a zone stay there: four war effort quests in Silithus, and two Darkmoon Faire quests
+  in Orgrimmar and Ironforge.
+- **Result:** Ahn'Qiraj War holds 104 quests, and the menu has 115 categories, with no
+  Reputation. Nothing else in the data changes, and a rerun writes the same files. Retail has none
+  of these quests, and its Reputation category is empty and not in its menu.
 
 ## Decisions
 
@@ -741,3 +766,5 @@ Legendary, Reputation and Special stay: retail has those categories too.
   Teldrassil, on Shanda's pin, from a new list of givers looked up by hand (#188); results above.
 - 2026-10-06: Treasure Map is no longer a category either. "Cuergo's Gold" goes under Tanaris, from
   a new list of zones looked up by hand (#189); results above.
+- 2026-10-06: the Commendation Signets' turn-ins moved from Reputation to Ahn'Qiraj War, as the war
+  effort's supply quests give the signets and its officers take them (#190); results above.
