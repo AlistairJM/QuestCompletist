@@ -546,8 +546,11 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    it can't place goes in its continent's "Other" group; add the zone to the script's region table.
    Categories and headings take the client's names where it has them: areas, classes, professions,
    races and its in-game UI strings (the script's `$headingSources` for headings). It lists the
-   categories still named by our own strings. If it names one our text covered, run
-   `Remove-ConvertedLocaleKeys.ps1` (step 5).
+   categories still named by our own strings: quest log headings such as "Lunar Festival", which
+   the game can't be asked for. Each has a key in every `Localization` file, made from its English
+   name as for any category, with the client's name for that heading in each language: its
+   `QuestSort` table, downloaded with `&locale=` from wago.tools. The script names any that lack a
+   key. If it names a category our text covered, run `Remove-ConvertedLocaleKeys.ps1` (step 5).
 6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
    both.
 7. The reachability check (step 9), with Forever's TOC and its client's map table:
@@ -596,10 +599,10 @@ reports text to remove. `Remove-ConvertedLocaleKeys.ps1` (step 5) removes all bu
 - a label on a category's entry in a menu, which never shows;
 - a key a translation has that English doesn't.
 
-Still in English: the `/qc holidays` output, which is for maintainers, and some category names the
-game has no name for. On retail that's about 20, mostly Blizzard content such as "Timerunning" and
-"The Harbinger", whose official translations we don't have. On WoW: Forever it's "Ahn'Qiraj War",
-"Camping", "Invasion" and "Treasure Map", which the game names only as quest log headings.
+Still in English: the `/qc holidays` output, which is for maintainers, and about 20 of retail's
+category names the game has no name for, mostly Blizzard content such as "Timerunning" and "The
+Harbinger", whose official translations we don't have. WoW: Forever's are all translated, with the
+game's own names for those quest log headings (step 10).
 
 ## Holidays
 

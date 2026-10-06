@@ -262,7 +262,7 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
   - **Classes, battlegrounds, professions, world events** and Forever's other headings.
   - **Names:** the menu's names come from the client in the player's language where it has them
     (areas, classes, professions, races and its UI strings; see "Menu names from the client"
-    below). The rest are our translations, or English.
+    below). The rest are ours, translated with the client's own names for its quest log headings.
   - **Storylines** come from `QuestLine`. Breadcrumbs, mutually exclusive quests and reputation
     rewards were left empty; they came on 6 October (see below).
   - **The new zones:** Riverglades lies east of Burning Steppes and Redridge, so it's with the
@@ -617,8 +617,11 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   stays ours.
 - **Categories:** `Build-ForeverMenu.ps1` also names a category by a race (Night Elf), or by one of
   the client's in-game UI strings with the same English name: Darkmoon Faire, Epic, Legendary,
-  Reputation and Special. Seven stay ours: Lunar Festival, Midsummer and Seasonal, which we
-  translate, and Ahn'Qiraj War, Camping, Invasion and Treasure Map, in English.
+  Reputation and Special. Seven stay ours, as the game has no way to be asked for them: Ahn'Qiraj
+  War, Camping, Invasion, Lunar Festival, Midsummer, Seasonal and Treasure Map. Their translations
+  are the client's own names for those quest log headings (`QuestSort` 365, 666, 368, 366, 369, 22
+  and 221) in each language. "Seasonal" also names a retail category: its Simplified Chinese is
+  retail's "季节活动", not Forever's "季节性".
 - **Midsummer's** translations are the client's own names for its quest log heading (`QuestSort`
   369). The key had been "Midsummer Fire Festival", which no category was called, so Forever's
   Midsummer showed in English.
@@ -678,3 +681,5 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   in many places gets one pin per map (#177); results above.
 - 2026-10-06: the menu's headings, and more of its categories, take the client's names, as retail's
   do, and Midsummer is translated (#179); results above.
+- 2026-10-06: the other six quest log categories take the client's own names in each language,
+  and four of them no longer show in English everywhere (#183); results above.

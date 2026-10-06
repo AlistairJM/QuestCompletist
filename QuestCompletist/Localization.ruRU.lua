@@ -1,6 +1,8 @@
 if GetLocale() == "ruRU" then
 qcLocalize = setmetatable({
+	AHNQIRAJWAR = "Ан'киражская война",
 	ASSAULTONTHEDARKPORTAL = "Штурм Темного портала",
+	CAMPING = "Отдых в лагере",
 	CENTRALKALIMDOR = "Центральный Калимдор",
 	CLASSES = "Классы",
 	CLASSQUESTS = "Классовые задания",
@@ -28,6 +30,7 @@ qcLocalize = setmetatable({
 	HIDENODATA = "Скрывать метки без данных о задании", -- Needs review
 	HIDEREPEATABLEQUEST = "Скрывать повторяемые задания", -- Needs review
 	HIDEWORLDQUEST = "Скрывать локальные и еженедельные задания", -- Needs review
+	INVASION = "Вторжение",
 	KHAZMODAN = "Каз Модан",
 	LANDFALL = "Высадка",
 	LORDAERON = "Лордерон",
@@ -52,6 +55,7 @@ qcLocalize = setmetatable({
 	STRANGLETHORNVALE = "Тернистая долина",
 	THEZANDALARI = "Зандаларские",
 	TOURNAMENT = "Турнирные",
+	TREASUREMAP = "Поиск кладов",
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
 	WEEKLYEVENTS = "Еженедельные события", -- Needs review
 	WORLDEVENTS = "Игровые события",

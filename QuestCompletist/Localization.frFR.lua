@@ -1,6 +1,8 @@
 if GetLocale() == "frFR" then
 qcLocalize = setmetatable({
+	AHNQIRAJWAR = "Guerre d'Ahn'Qiraj",
 	ASSAULTONTHEDARKPORTAL = "Assaut sur la Porte des ténèbres",
+	CAMPING = "Campement",
 	CENTRALKALIMDOR = "Centre de Kalimdor",
 	CLASSES = "Classes",
 	CLASSQUESTS = "Quêtes de classes",
@@ -28,6 +30,7 @@ qcLocalize = setmetatable({
 	HIDENODATA = "Cacher les marqueurs sans données de quête", -- Needs review
 	HIDEREPEATABLEQUEST = "Cacher les quêtes répétables", -- Needs review
 	HIDEWORLDQUEST = "Cacher les expéditions et les quêtes hebdomadaires", -- Needs review
+	INVASION = "Invasion",
 	KHAZMODAN = "Khaz Modan",
 	LANDFALL = "Accostage",
 	LORDAERON = "Lordaeron",
@@ -52,6 +55,7 @@ qcLocalize = setmetatable({
 	STRANGLETHORNVALE = "Vallée de Strangleronce",
 	THEZANDALARI = "Les zandalari",
 	TOURNAMENT = "Tournoi",
+	TREASUREMAP = "Carte au trésor",
 	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
 	WEEKLYEVENTS = "Évènements hebdomadaires", -- Needs review
 	WORLDEVENTS = "Évènements mondiaux",
