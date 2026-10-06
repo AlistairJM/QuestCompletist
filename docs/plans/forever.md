@@ -575,6 +575,8 @@ lacks is greyed with its reason, as another class's quests are.
 - **Checked** with stand-ins for the skill API: "Gaffer Jacks" is greyed and filtered until Fishing
   reaches 30, bonuses included, and Wizbang's pin stays bright for "Buzzbox 827". The reachability
   check is unchanged, as its character has every profession at the highest skill.
+- **Checked on the beta** by the user: the quest tooltip shows "Required Skill:". Whether the game
+  counts skill bonuses as the addon does is still to check.
 
 ## Decisions
 
