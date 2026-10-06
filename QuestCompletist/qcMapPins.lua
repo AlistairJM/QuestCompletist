@@ -14,6 +14,7 @@ local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcReque
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
 local qcQuestStatus, qcTooltipBar, qcTooltipDivider = QC.qcQuestStatus, QC.qcTooltipBar, QC.qcTooltipDivider
 local qcFactionName, qcFactionLevel = QC.qcFactionName, QC.qcFactionLevel
+local qcSkillRank, qcSkillName = QC.qcSkillRank, QC.qcSkillName
 
 local qcMapTooltip
 -- The pin under the mouse, so names arriving later can redraw its tooltip.
@@ -232,6 +233,14 @@ local function qcPinQuestNeeds(questId, state, anything)
         if anything then return true end
         needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or qcL.UNKNOWNFACTION,
             string.format(isRank and qcL.RANKLEVEL or RENOWN_LEVEL_LABEL, renown[2]))
+    end
+    -- A level of 1 asks only for the profession: "Requires Fishing" rather than "Requires Fishing (1)".
+    local skill = qcQuestSkillRequirements[questId]
+    local rank = skill and qcSkillRank(skill[1])
+    if rank and rank < skill[2] then
+        if anything then return true end
+        needs[#needs + 1] = skill[2] > 1 and string.format(ITEM_MIN_SKILL, qcSkillName(skill[1]), skill[2])
+            or string.format(ITEM_REQ_SKILL, qcSkillName(skill[1]))
     end
     if #needs > 0 then return anything or table.concat(needs, ", ") end
 end

@@ -269,6 +269,7 @@ qcLocalize = setmetatable({
 	REQUIREDFACTION = "필요 세력:", -- Needs review
 	REQUIREDRENOWN = "필요 명성 레벨:", -- Needs review
 	REQUIREDRANK = "필요 등급:", -- Needs review
+	REQUIREDSKILL = "필요 기술:", -- Needs review
 	RANKLEVEL = "%d등급", -- Needs review
 	DATAUNAVAILABLE = "데이터 없음", -- Needs review
 	QUESTGIVER = "퀘스트 제공자:", -- Needs review

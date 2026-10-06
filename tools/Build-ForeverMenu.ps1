@@ -24,6 +24,8 @@ qcQuest.lua holds what the core reads:
   - Forever's storylines (qcQuestLines);
   - the reputation each quest rewards (qcQuestReputation), from reputation.jsonl, and those
     factions' English names (qcFactions), for when the game doesn't name one;
+  - the profession, and the skill level in it, each quest needs (qcQuestSkillRequirements), from
+    skills.jsonl;
   - each quest's breadcrumbs (qcBreadcrumbQuests) and the quests it shuts out
     (qcMutuallyExclusive), from links.jsonl;
   - empty tables for retail-only features.
@@ -220,6 +222,7 @@ foreach ($m in (Read-DataLines 'reputation.jsonl' '^\{"quest":(\d+),"faction":(\
     $factions[[int]$m[2]] = $true
 }
 $links = @(Read-DataLines 'links.jsonl' '^\{"quest":(\d+)(?:,"breadcrumbs":\[(\d+(?:,\d+)*)\])?(?:,"exclusiveWith":\[(\d+(?:,\d+)*)\])?\}$')
+$skills = @(Read-DataLines 'skills.jsonl' '^\{"quest":(\d+),"skill":(\d+),"level":(\d+)\}$')
 $factionName = @{}
 if ($factions.Count) { foreach ($row in Get-ClientTable 'Faction') { $factionName[[int]$row.ID] = $row.Name_lang } }
 [void]$quest.Append("}`r`nqcFactions={`r`n")
@@ -227,7 +230,9 @@ foreach ($faction in ($factions.Keys | Sort-Object)) {
     if (-not $factionName[$faction]) { throw "Faction $faction, which quests reward, has no name in the client's Faction table for build $Build." }
     [void]$quest.Append("[$faction]=$(Format-LuaString $factionName[$faction]),`r`n")
 }
-[void]$quest.Append("}`r`nqcRenownLevelRequirements={}`r`nqcQuestReputation={`r`n")
+[void]$quest.Append("}`r`nqcRenownLevelRequirements={}`r`nqcQuestSkillRequirements={`r`n")
+foreach ($m in $skills) { [void]$quest.Append("[$($m[1])]={$($m[2]),$($m[3])},`r`n") }
+[void]$quest.Append("}`r`nqcQuestReputation={`r`n")
 foreach ($id in ($rewards.Keys | Sort-Object)) { [void]$quest.Append("[$id]={$($rewards[$id] -join ',')},`r`n") }
 [void]$quest.Append("}`r`nqcQuestLines={`r`n")
 $lineQuests = @{}
