@@ -4,6 +4,7 @@ local QC = select(2, ...)
 local TableInsert = table.insert
 local BitBand = bit.band
 local qcL = qcLocalize
+local COLOUR_HUNTER, COLOUR_MAGE = QC.COLOUR_HUNTER, QC.COLOUR_MAGE
 local QC_ICON_NORMAL, QC_ICON_COMPLETE = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE
 local QC_PIN_ICONS, QC_PIN_ICON_RANK = QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK
 local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon
@@ -77,7 +78,7 @@ local function qcPinGiverName(pinData)
     if pinData[3] then
         return qcNpcName(pinData, qcNpcMapTooltipWaiting)
     elseif pinData[2] ~= 0 or pinData[7] then
-        return string.format("%s |cff69ccf0%s|r", UnitName("player"), qcL.YOURSELF)
+        return string.format("%s %s%s|r", UnitName("player"), COLOUR_MAGE, qcL.YOURSELF)
     end
 end
 
@@ -340,7 +341,7 @@ local function qcAddPinQuestsToTooltip(pins)
 
     for _, pinData in ipairs(pins) do
         if pinData[7] then
-            qcAddMapTooltipLine(string.format("|cffabd473%s|r", pinData[7]), nil, nil, true)
+            qcAddMapTooltipLine(string.format("%s%s|r", COLOUR_HUNTER, pinData[7]), nil, nil, true)
         end
     end
 end

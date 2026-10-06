@@ -2,7 +2,7 @@
 pins' tooltip in qcMapPins.lua. What it needs from qcCore.lua comes through the addon's own table. ]]--
 local QC = select(2, ...)
 local qcL = qcLocalize
-local COLOUR_DRUID, COLOUR_HUNTER = QC.COLOUR_DRUID, QC.COLOUR_HUNTER
+local COLOUR_DRUID, COLOUR_HUNTER, COLOUR_MAGE = QC.COLOUR_DRUID, QC.COLOUR_HUNTER, QC.COLOUR_MAGE
 local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS
 local QC_ICON_COMPLETE, QC_ICON_UNATTAINABLE = QC.QC_ICON_COMPLETE, QC.QC_ICON_UNATTAINABLE
 local QC_FULL_TEXCOORDS = QC.QC_FULL_TEXCOORDS
@@ -214,7 +214,7 @@ function qcUpdateTooltip(index)
             qcQuestInformationTooltip:AddLine(qcL.NODETAILS, 0.5, 0.5, 0.5)
         end
         qcAddQuestTooltipDivider()
-        qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("|cFF69CCF0%d|r", questId))
+        qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("%s%d|r", COLOUR_MAGE, questId))
         qcAddQuestTooltipDivider()
 
         -- Restore ATT hook if we temporarily replaced it
