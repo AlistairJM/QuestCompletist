@@ -570,7 +570,12 @@ and menu headings of step 5. The addon's own text is in `QuestCompletist\Localiz
 ```
 
 It loads the files as the game does, for each language, and reports keys the code uses that have
-no text, placeholders that differ from the English, and translations that don't format.
+no text, placeholders that differ from the English, and translations that don't format. It also
+reports keys nothing uses, to be removed from every file:
+- an English key that no code names, in either game, and that isn't a category's name. A category
+  the client can't name falls back to the key made of its English name's letters and digits,
+  upper-cased, such as `STRANGLETHORNVALE`;
+- a key a translation has that English doesn't.
 
 Still in English: the `/qc holidays` output, which is for maintainers, and about 20 category names
 the game has no name for, mostly Blizzard content such as "Timerunning" and "The Harbinger", whose

@@ -4,7 +4,10 @@ client language, and reports:
   - a key the code uses (qcL.KEY) that has no text, even in English;
   - a translation whose placeholders (%d, %s) differ from the English: string.format stops with an
     error when a translation asks for more values than the code passes;
-  - a translation that doesn't format, and a missing key that doesn't fall back to English.
+  - a translation that doesn't format, and a missing key that doesn't fall back to English;
+  - a key English has that nothing uses: no code names it, either game's, and it isn't a category's
+    name, which a category the client can't name falls back to;
+  - a key a translation has that English doesn't.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Localization.lua
@@ -20,15 +23,33 @@ local function readFile(path)
 	return text
 end
 
--- Keys the code uses, in every Lua file the retail TOC loads apart from the translations themselves.
--- qcL[...] with a computed key is listed by hand.
+-- Keys the code uses, in every Lua file either game's TOC loads apart from the translations
+-- themselves. qcL[...] with a computed key is listed by hand. The strings in the code count as uses
+-- too, as a computed key comes from one, such as a settings row's text.
 local used = {UNAVAILABLEACCEPTED = true, UNAVAILABLETURNEDIN = true}
-for tocLine in readFile(ADDON_DIR .. "/QuestCompletist.toc"):gmatch("[^\r\n]+") do
-	local file = tocLine:match("^%s*([^#%s][^%s]*%.lua)%s*$")
-	if file and not file:match("^Localization%.") then
-		for line in readFile(ADDON_DIR .. "/" .. file):gmatch("[^\n]+") do
-			for key in line:gsub("%-%-.*$", ""):gmatch("qcL%.([A-Z0-9_]+)") do used[key] = true end
+local quoted = {}
+for _, toc in ipairs({"QuestCompletist.toc", "QuestCompletist_Camelot.toc"}) do
+	for tocLine in readFile(ADDON_DIR .. "/" .. toc):gmatch("[^\r\n]+") do
+		local file = tocLine:match("^%s*([^#%s][^%s]*%.lua)%s*$")
+		if file and not file:match("^Localization%.") then
+			local code = readFile(ADDON_DIR .. "/" .. (file:gsub("\\", "/")))
+			code = code:gsub("%-%-%[(=*)%[.-%]%1%]", ""):gsub("%-%-[^\n]*", "")
+			for key in code:gmatch("qcL%.([A-Z0-9_]+)") do used[key] = true end
+			for key in code:gmatch("\"([A-Z][A-Z0-9_]*)\"") do quoted[key] = true end
 		end
+	end
+end
+
+-- A category the client can't name falls back to the key made of its English name's letters and
+-- digits, upper-cased (qcCategoryName in qcCore.lua).
+local categoryKeys = {}
+for _, file in ipairs({"qcQuest.lua", "Forever/qcQuest.lua"}) do
+	local data = {}
+	local chunk = assert(loadstring(readFile(ADDON_DIR .. "/" .. file), "@" .. file))
+	setfenv(chunk, data)
+	chunk()
+	for _, category in ipairs(data.qcQuestCategories) do
+		categoryKeys[(category[2]:gsub("[^%a%d]", "")):upper()] = true
 	end
 end
 
@@ -62,6 +83,15 @@ for _, client in ipairs(locales) do
 	local L, own = qcLocalize, 0
 	for key in pairs(used) do
 		if type(L[key]) ~= "string" then problem(client .. ": " .. key .. " has no text") end
+	end
+	for key in pairs(L) do
+		if L == english then
+			if not (used[key] or quoted[key] or categoryKeys[key]) then
+				problem(client .. ": " .. key .. " isn't used: no code names it, and no category has its name")
+			end
+		elseif english[key] == nil then
+			problem(client .. ": " .. key .. " isn't in English")
+		end
 	end
 	for key, value in pairs(english) do
 		local translated = rawget(L, key)
