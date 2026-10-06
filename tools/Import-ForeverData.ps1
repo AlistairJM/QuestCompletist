@@ -1,5 +1,5 @@
 <#
-Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from four sources
+Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from five sources
 (docs/plans/forever.md, phase 3):
 
   - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
@@ -9,11 +9,15 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
     quests the beta didn't answer, and who starts each quest and where they stand;
   - the beta probe's saved variables: which quests failed, the game's NPC names, and the recorder's
-    quest givers and spots.
+    quest givers and spots;
+  - -GiverFile, docs\plans\forever-quest-givers.csv: givers looked up by hand on Wowhead's Forever
+    pages, for new quests the other sources have no giver for. A listed NPC stands where CMaNGOS or
+    the recorder puts it.
 
 The game wins wherever it speaks. Title, level, zone, recurrence and race restrictions come from the
 cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC names come
-from the probe. A quest's givers are CMaNGOS's and the recorder's together. Quests with internal
+from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
+listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out. Quests with internal
 titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out.
 QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
 row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
@@ -27,7 +31,9 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
             filed under an area named after an instance (Gnomeregan in Dun Morogh) gets the
             instance's own area; one filed under any other subzone (Valley of Trials) gets its
-            zone, as retail's categories are zones. zone is its name.
+            zone, as retail's categories are zones. A race's heading (Night Elf) isn't a place,
+            so a quest filed under one gets the zone of its pins' map, else CMaNGOS's zone, else
+            0. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
@@ -89,6 +95,7 @@ param(
     [string]$CacheFile = "",
     [string]$ProbeFile = "",
     [string]$CmangosDump = "",
+    [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
     [string]$ReviewFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [switch]$WhatIf
@@ -151,7 +158,12 @@ foreach ($row in Get-ClientTable 'AreaTable') {
     $areaParent[[int]$row.ID] = [int]$row.ParentAreaID
     $areaMap[[int]$row.ID] = [int]$row.ContinentID
 }
-foreach ($row in Get-ClientTable 'QuestSort') { $sortName[-[int]$row.ID] = $row.SortName_lang }
+$raceName = @{}; foreach ($row in Get-ClientTable 'ChrRaces') { if ($row.Name_lang) { $raceName[$row.Name_lang] = $true } }
+$raceSort = @{}
+foreach ($row in Get-ClientTable 'QuestSort') {
+    $sortName[-[int]$row.ID] = $row.SortName_lang
+    if ($raceName[$row.SortName_lang]) { $raceSort[-[int]$row.ID] = $true }
+}
 $zoneAreas = @{}
 foreach ($row in Get-ClientTable 'UiMapAssignment') { if ([int]$row.AreaID) { $zoneAreas[[int]$row.AreaID] = $true } }
 $instanceMaps = @{}; $instanceArea = @{}
@@ -190,6 +202,7 @@ $frames = @(Get-ClientTable 'UiMapAssignment' | Where-Object { $uiMapType[[int]$
         U0 = [double]$_.UiMin_0; U1 = [double]$_.UiMin_1; V0 = [double]$_.UiMax_0; V1 = [double]$_.UiMax_1
         Area = ($maxX - $minX) * ($maxY - $minY) }
 } | Sort-Object Area)
+$uiMapArea = @{}; foreach ($frame in $frames) { if ($frame.Zone) { $uiMapArea[$frame.UiMap] = $frame.Zone } }
 
 $cityMaps = @{ 1453 = $true; 1454 = $true; 1455 = $true; 1456 = $true; 1457 = $true; 1458 = $true }
 $cityHeights = @{}
@@ -332,6 +345,8 @@ $creatureStarters = @{}; $objectStarters = @{}
 foreach ($line in $dump.creature_questrelation) { $f = $line.Split("`t"); $creatureStarters[[int]$f[1]] += @([int]$f[0]) }
 foreach ($line in $dump.gameobject_questrelation) { $f = $line.Split("`t"); $objectStarters[[int]$f[1]] += @([int]$f[0]) }
 $starterNpcs = @{}; foreach ($list in $creatureStarters.Values) { foreach ($npc in $list) { $starterNpcs[$npc] = $true } }
+$handStarters = @{}
+foreach ($row in Import-Csv $GiverFile) { $handStarters[[int]$row.Quest] += @([int]$row.Npc); $starterNpcs[[int]$row.Npc] = $true }
 $starterObjects = @{}; foreach ($list in $objectStarters.Values) { foreach ($object in $list) { $starterObjects[$object] = $true } }
 $itemStart = @{}
 foreach ($line in $dump.item_template) { $f = $line.Split("`t"); if ($f[1] -ne '0') { $itemStart[[int]$f[1]] = [int]$f[0] } }
@@ -553,7 +568,8 @@ $giverZones = @{}
 # Givers whose every quest recurs and isn't a holiday's: their pins show all year, done or not.
 $everydayGivers = @{}
 foreach ($q in $records.Values) {
-    $keys = @($creatureStarters[$q.id] | ForEach-Object { "Creature:$_" }) + @($objectStarters[$q.id] | ForEach-Object { "GameObject:$_" })
+    $keys = @($creatureStarters[$q.id] | ForEach-Object { "Creature:$_" }) + @($handStarters[$q.id] | Where-Object { $_ } | ForEach-Object { "Creature:$_" }) +
+        @($objectStarters[$q.id] | ForEach-Object { "GameObject:$_" })
     foreach ($key in $keys) {
         $everyday = ($q.type -band (2 + 4 + 128)) -and -not $q.holiday
         $everydayGivers[$key] = $everyday -and (-not $everydayGivers.ContainsKey($key) -or $everydayGivers[$key])
@@ -612,6 +628,15 @@ foreach ($id in ($records.Keys | Sort-Object)) {
         }
         if (-not $givers.Contains($key)) { $givers.Add($key) }
     }
+    foreach ($npc in $handStarters[$id]) {
+        $key = "Creature:$npc"
+        if ($recordedOffers[$id] -and $recordedOffers[$id] -notcontains $key -and $recordedOffers[$id] -notcontains "Vehicle:$npc") {
+            Add-Review 'recorder saw another giver than the hand list' $id $npc "listed: $($cmNpcName[$npc]); recorded: $($recordedOffers[$id] -join ', ')"
+            continue
+        }
+        if ($creatureStarters[$id] -or $objectStarters[$id]) { Add-Review "hand list adds to CMaNGOS's givers" $id $npc "$($records[$id].name): $($cmNpcName[$npc])" }
+        if (-not $givers.Contains($key)) { $givers.Add($key) }
+    }
     foreach ($object in $objectStarters[$id]) {
         $key = "GameObject:$object"
         if (-not $givers.Contains($key)) { $givers.Add($key) }
@@ -664,6 +689,21 @@ foreach ($id in ($records.Keys | Sort-Object)) {
         $howFar = if ($null -eq $closest) { 'no pin of it on that map' } else { '{0:0.0} map points from its nearest pin' -f $closest }
         Add-Review "start point far from its giver's pin" $id '' ("{0}: start point on map {1} at {2} {3}, {4}" -f $records[$id].name, $spot.UiMap, $spot.X, $spot.Y, $howFar)
     }
+}
+foreach ($quest in $handStarters.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-listed quest not imported' $quest ($handStarters[$quest] -join ', ') '' } }
+
+# A race's heading isn't a place: the zone of the quest's pins' map, the most pins first, else CMaNGOS's zone.
+foreach ($q in @($records.Values | Where-Object { $raceSort[$_.category] } | Sort-Object id)) {
+    $heading = $sortName[$q.category]
+    $zones = @($pins.Values | Where-Object { $_.quests.Contains($q.id) } | ForEach-Object { $uiMapArea[$_.map] } | Where-Object { $_ } |
+        Group-Object | Sort-Object { -$_.Count }, { [int]$_.Name })
+    $m = $cmQuest[$q.id]
+    if ($zones.Count) { $zone = [int]$zones[0].Name; $kind = "race's heading, so its pins' zone" }
+    elseif ($m -and $m.Zone -and $sortName.ContainsKey($m.Zone) -and -not $raceSort[$m.Zone]) { $zone = $m.Zone; $kind = "race's heading and no pin, so CMaNGOS's zone" }
+    else { $zone = 0; $kind = "race's heading and no pin, so Uncategorized" }
+    $q.category = Resolve-Category $zone
+    $q.zone = if ($sortName.ContainsKey($q.category)) { $sortName[$q.category] } else { '' }
+    Add-Review $kind $q.id $q.category "$($q.name): $heading -> $(if ($q.zone) { $q.zone } else { 'Uncategorized' })"
 }
 
 foreach ($pin in $pins.Values) {

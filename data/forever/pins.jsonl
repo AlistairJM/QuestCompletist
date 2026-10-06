@@ -765,7 +765,7 @@
 {"map":1438,"icon":1,"npc":3519,"name":"Sentinel Arynia Cloudsbreak","x":38.32,"y":34.36,"quests":[937,940]}
 {"map":1438,"icon":1,"npc":3567,"name":"Tallonkai Swiftroot","x":55.57,"y":56.95,"quests":[932,2438,2459]}
 {"map":1438,"icon":1,"npc":3568,"name":"Mist","x":31.54,"y":31.61,"quests":[938]}
-{"map":1438,"icon":9,"npc":3595,"name":"Shanda","x":59.17,"y":40.44,"quests":[5622]}
+{"map":1438,"icon":1,"npc":3595,"name":"Shanda","x":59.17,"y":40.44,"quests":[5622,97979]}
 {"map":1438,"icon":9,"npc":3596,"name":"Ayanna Everstride","x":58.66,"y":40.45,"quests":[6072]}
 {"map":1438,"icon":9,"npc":3598,"name":"Kyra Windblade","x":56.22,"y":59.2,"quests":[1684]}
 {"map":1438,"icon":9,"npc":3599,"name":"Jannok Breezesong","x":56.38,"y":60.14,"quests":[2241,2259]}
