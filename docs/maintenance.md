@@ -67,7 +67,12 @@ categories, the zone table, reputation rewards, storylines and so on).
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
-change goes into the importer or its sources, and the next import keeps it.
+change goes into the importer or its sources, and the next import keeps it. Two more files there
+hold what retail keeps in `qcQuest.lua` by hand, and go into Forever's `qcQuest.lua`:
+- `data\forever\links.jsonl`, one line for each quest with breadcrumbs or quests it shuts out:
+  `{"quest":6383,"breadcrumbs":[235,742,6382]}`, `{"quest":235,"exclusiveWith":[742,6382]}`.
+- `data\forever\reputation.jsonl`, one line for each reputation reward:
+  `{"quest":189,"faction":87,"amount":-500}`.
 
 `tools\Build-AddonData.ps1` checks the data files and writes the Lua files, for both games. With
 `-Check` it writes nothing and only says whether the Lua matches. It names any problem by file and
@@ -432,11 +437,16 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
 3. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
    `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
    nothing: Blizzard has changed the record's layout, and the reader needs updating.
-4. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl` and `pins.jsonl`, and
-   the review list, `tools\forever_import_review.csv`. It downloads the client tables and the CMaNGOS
-   dump it doesn't have. Compare its summary with the last run's in the plan, and look through the
-   review list for new rows: quests the game hasn't confirmed, quests with no known giver or no pin,
-   and places where CMaNGOS and our old Classic pins disagree.
+4. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl`, `pins.jsonl`,
+   `links.jsonl` and `reputation.jsonl`, and the review list, `tools\forever_import_review.csv`. It
+   downloads the client tables and the CMaNGOS dump it doesn't have. Compare its summary with the
+   last run's in the plan, and look through the review list for new rows: quests the game hasn't
+   confirmed, quests with no known giver or no pin, and places where CMaNGOS and our old Classic pins
+   disagree.
+   Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
+   recurring quests. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
+   Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
+   that reward reputation in CMaNGOS; they get theirs once it answers.
    The client's `QuestV2` isn't a list of every quest. It lists the quests the game records as
    completed, so it leaves out repeatable ones. The importer keeps CMaNGOS's repeatable quests
    without it; any other CMaNGOS quest it lacks comes in once the probe gets an answer for it. The
@@ -446,8 +456,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
 5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
-   and `qcUnavailableQuests.lua`. A new zone it can't place goes in its continent's "Other" group;
-   add the zone to the script's region table.
+   and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl` and `reputation.jsonl`, with
+   the factions' English names from the client's `Faction` table. A new zone it can't place goes in
+   its continent's "Other" group; add the zone to the script's region table.
 6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
    both.
 7. The reachability check (step 9), with Forever's TOC and its client's map table:
@@ -618,6 +629,6 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal; for Forever, which quests exist, its maps, zones, headings and races, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits and recurrence, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
-| CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns | `Import-ForeverData.ps1`, from its `Full_DB` dump |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
+| CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |

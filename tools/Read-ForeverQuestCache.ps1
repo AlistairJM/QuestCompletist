@@ -11,12 +11,16 @@ A line holds the quest's id, title, level, minLevel and sort (its zone, or a neg
 class, profession and holiday quests), and when they apply: questInfo (1 group, 41 PvP, 62 raid,
 81 dungeon), groupSize, recurs (daily or weekly), nextQuest (the follow-up offered on hand-in),
 startItem, giver (the quest giver's creature ID, empty in every record so far), flags, reputation
-(the factions it rewards), and races with their faction. races lists
+(each faction it rewards, with the amount), and races with their faction. races lists
 the races playable in Forever that may take the quest; it's left out when every race may, as for
 most quests of one faction, whose giver decides. The quest texts other than the title are left out.
 
-Race bits come from the client's ChrRaces table for -Build (wago.tools), whose build must be the
-cache's.
+A record gives each reputation reward as a step in the client's QuestFactionReward table (a gain or,
+when negative, a loss), or as its own amount in hundredths, which wins when it's set. The amounts
+are worked out as the game does.
+
+Race bits and reputation steps come from the client's ChrRaces and QuestFactionReward tables for
+-Build (wago.tools), whose build must be the cache's.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -48,6 +52,13 @@ $playable = @(Import-Csv $racesCsv | Where-Object { ([long]$_.Flags -band 0x4000
     ForEach-Object { [pscustomobject]@{ Id = [int]$_.ID; Bit = [int]$_.PlayableRaceBit; Horde = [int]$_.Alliance -eq 1 } } |
     Sort-Object Id)
 if ($playable.Count -lt 8) { throw "ChrRaces for $Build has only $($playable.Count) races playable in Forever." }
+$rewardCsv = "$ToolsDir\QuestFactionReward-$Build.csv"
+if (-not (Test-Path $rewardCsv)) {
+    Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/QuestFactionReward/csv?build=$Build" -OutFile $rewardCsv
+}
+$rewardSteps = @{}
+foreach ($row in Import-Csv $rewardCsv) { $rewardSteps[[int]$row.ID] = @(0..9 | ForEach-Object { [int]$row."Difficulty_$_" }) }
+if (-not ($rewardSteps.ContainsKey(1) -and $rewardSteps.ContainsKey(2))) { throw "QuestFactionReward for $Build lacks its gain and loss rows, 1 and 2." }
 
 function Get-JsonString([string]$text) {
     $escaped = $text.Replace('\', '\\').Replace('"', '\"')
@@ -59,7 +70,7 @@ $textBits = 9, 12, 12, 9, 10, 8, 10, 8, 11
 $fields = New-Object 'int[]' 122
 $lines = New-Object System.Collections.Generic.List[string]
 $failed = New-Object System.Collections.Generic.List[string]
-$counts = @{ alliance = 0; horde = 0; someRaces = 0; noRace = 0; daily = 0; weekly = 0; startItem = 0; nextQuest = 0; giver = 0 }
+$counts = @{ alliance = 0; horde = 0; someRaces = 0; noRace = 0; daily = 0; weekly = 0; startItem = 0; nextQuest = 0; giver = 0; reputation = 0 }
 $offset = 24
 while ($offset + 8 -le $bytes.Length) {
     $id = [BitConverter]::ToUInt32($bytes, $offset)
@@ -114,8 +125,14 @@ while ($offset + 8 -le $bytes.Length) {
     if ($fields[24]) { $line += ',"startItem":' + $fields[24]; $counts.startItem++ }
     if ($fields[117]) { $line += ',"giver":' + $fields[117]; $counts.giver++ }
     if ($flags) { $line += ',"flags":' + $flags }
-    $factions = @(75, 79, 83, 87, 91 | Where-Object { $fields[$_] } | ForEach-Object { $fields[$_] })
-    if ($factions.Count) { $line += ',"reputation":[' + ($factions -join ',') + ']' }
+    $rewards = foreach ($slot in 75, 79, 83, 87, 91) {
+        $faction = $fields[$slot]; $step = $fields[$slot + 1]; $own = $fields[$slot + 2]
+        if (-not $faction) { continue }
+        if ([Math]::Abs($step) -gt 9) { throw "Quest $id rewards reputation step $step, outside QuestFactionReward's 0 to 9." }
+        $amount = if ($own) { [Math]::Truncate($own / 100) } elseif ($step -gt 0) { $rewardSteps[1][$step] } else { $rewardSteps[2][-$step] }
+        if ($amount) { "[$faction,$amount]" }
+    }
+    if ($rewards) { $line += ',"reputation":[' + (@($rewards) -join ',') + ']'; $counts.reputation++ }
     $low = [BitConverter]::ToUInt32($bytes, $start + 440)
     $high = [BitConverter]::ToUInt32($bytes, $start + 444)
     if ($low -ne [uint32]::MaxValue -or $high -ne [uint32]::MaxValue) {
@@ -138,5 +155,5 @@ if (-not $OutFile) { $OutFile = "$ToolsDir\forever_quest_cache_$Build.jsonl" }
 $sorted = $lines | Sort-Object { [int]($_ -replace '^\{"id":(\d+),.*$', '$1') }
 [System.IO.File]::WriteAllText($OutFile, (($sorted -join "`n") + "`n"), (New-Object System.Text.UTF8Encoding $false))
 Write-Host ("{0} quests from build {1} ({2}) written to {3}." -f $lines.Count, $cacheBuild, $locale, $OutFile)
-Write-Host ("Races: {0} Alliance only, {1} Horde only, {2} other sets, {3} no race playable in Forever. Recurring: {4} daily, {5} weekly. {6} start from an item, {7} offer a follow-up, {8} name their quest giver." -f
-    $counts.alliance, $counts.horde, $counts.someRaces, $counts.noRace, $counts.daily, $counts.weekly, $counts.startItem, $counts.nextQuest, $counts.giver)
+Write-Host ("Races: {0} Alliance only, {1} Horde only, {2} other sets, {3} no race playable in Forever. Recurring: {4} daily, {5} weekly. {6} start from an item, {7} offer a follow-up, {8} name their quest giver, {9} reward reputation." -f
+    $counts.alliance, $counts.horde, $counts.someRaces, $counts.noRace, $counts.daily, $counts.weekly, $counts.startItem, $counts.nextQuest, $counts.giver, $counts.reputation)

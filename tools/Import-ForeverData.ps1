@@ -54,6 +54,19 @@ and a start point more than 3 map points from all its pins on that map is listed
 summary counts the client's start points, and the quests whose record in the cache names a giver
 (none so far), so a rerun shows when Blizzard fills in more of either.
 
+Two more files hold what Build-ForeverMenu.ps1 turns into the quest tooltip's reputation and the
+quest window's warnings:
+  links.jsonl       a line for each quest with links: its breadcrumbs, the quests that lead to it
+                    and close once it's done (CMaNGOS's BreadcrumbForQuestId), and the quests it
+                    shuts out, the rest of its CMaNGOS ExclusiveGroup when that's positive, as only
+                    one quest of such a group can be done. Recurring quests are left out of both:
+                    CMaNGOS also groups repeatable quests that only shut each other out while one is
+                    in the quest log.
+  reputation.jsonl  a line for each reputation reward, from the game's records only. CMaNGOS's
+                    amounts are mostly The Burning Crusade's, which raised most quests' rewards (a
+                    city's 100 became 250), so a quest the game hasn't answered gets its reputation
+                    once it does.
+
 Anything worth a look goes to -ReviewFile, one row per finding; the summary counts them. With -WhatIf,
 only the review is written.
 #>
@@ -254,7 +267,7 @@ try {
     $gzip.CopyTo($target)
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
-    foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31'), @('creature_questrelation', '1,2'),
+    foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89'), @('creature_questrelation', '1,2'),
             @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'))) {
@@ -272,7 +285,7 @@ $cmQuest = @{}
 foreach ($line in $dump.quest_template) {
     $f = $line.Split("`t")
     $cmQuest[[int]$f[0]] = [pscustomobject]@{ Zone = [int]$f[1]; MinLevel = [int]$f[2]; Level = [int]$f[3]; Classes = [int]$f[4]
-        Races = [int]$f[5]; Skill = [int]$f[6]; Special = [int]$f[7]; Prev = [int]$f[8]; Title = $f[9] }
+        Races = [int]$f[5]; Skill = [int]$f[6]; Special = [int]$f[7]; Prev = [int]$f[8]; Title = $f[9]; Group = [int]$f[10]; BreadcrumbFor = [int]$f[11]; Reputation = [int]$f[12] -ne 0 }
 }
 $creatureStarters = @{}; $objectStarters = @{}
 foreach ($line in $dump.creature_questrelation) { $f = $line.Split("`t"); $creatureStarters[[int]$f[1]] += @([int]$f[0]) }
@@ -431,6 +444,40 @@ foreach ($q in $records.Values) {
     if ($m -and $m.Prev -gt 0 -and $records.ContainsKey($m.Prev)) { $q.prereq = $m.Prev }
     elseif ($previousByNext[$q.id].Count -eq 1 -and $records.ContainsKey($previousByNext[$q.id][0])) { $q.prereq = $previousByNext[$q.id][0] }
 }
+
+$linkable = @{}
+foreach ($q in $records.Values) { if (-not ($q.type -band (2 + 4 + 128))) { $linkable[$q.id] = $true } }
+$breadcrumbs = @{}; $groups = @{}
+foreach ($id in ($cmQuest.Keys | Sort-Object)) {
+    if (-not $linkable[$id]) { continue }
+    $m = $cmQuest[$id]
+    if ($m.BreadcrumbFor -gt 0 -and $linkable[$m.BreadcrumbFor]) { $breadcrumbs[$m.BreadcrumbFor] += @($id) }
+    if ($m.Group -gt 0) { $groups[$m.Group] += @($id) }
+}
+$exclusiveWith = @{}
+$exclusiveGroups = 0
+foreach ($members in $groups.Values) {
+    if ($members.Count -lt 2) { continue }
+    $exclusiveGroups++
+    foreach ($id in $members) { $exclusiveWith[$id] = @($members | Where-Object { $_ -ne $id }) }
+}
+$linkLines = @(foreach ($id in (@($breadcrumbs.Keys) + @($exclusiveWith.Keys) | Sort-Object -Unique)) {
+    $line = '{"quest":' + $id
+    if ($breadcrumbs[$id]) { $line += ',"breadcrumbs":[' + ($breadcrumbs[$id] -join ',') + ']' }
+    if ($exclusiveWith[$id]) { $line += ',"exclusiveWith":[' + ($exclusiveWith[$id] -join ',') + ']' }
+    $line + '}'
+})
+$rewarding = 0; $cmangosOnlyReputation = 0
+$reputationLines = @(foreach ($id in ($records.Keys | Sort-Object)) {
+    $c = $cache[$id]
+    if (-not $c) { if ($cmQuest[$id].Reputation) { $cmangosOnlyReputation++ }; continue }
+    if ($null -eq $c.reputation) { continue }
+    $rewarding++
+    foreach ($reward in $c.reputation) {
+        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-ForeverQuestCache.ps1." }
+        '{"quest":' + $id + ',"faction":' + $reward[0] + ',"amount":' + $reward[1] + '}'
+    }
+})
 
 foreach ($npc in $gameNpcName.Keys) {
     if ($cmNpcName.ContainsKey($npc) -and $cmNpcName[$npc] -ne $gameNpcName[$npc]) { Add-Review 'NPC renamed' '' $npc "$($cmNpcName[$npc]) is now $($gameNpcName[$npc])" }
@@ -593,6 +640,10 @@ Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, 
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
 Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; pinned there: {2}). Start points off their map: {3}. Quest records that name a giver: {4}." -f
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
+Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} groups of which only one can be done." -f
+    @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $exclusiveWith.Count, $exclusiveGroups)
+Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
+    $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
 if ($WhatIf) { return }
@@ -605,4 +656,8 @@ $pinPath = Join-Path $DataDir 'pins.jsonl'
 $problems = @(Find-UnknownFields $questPath $QuestFields) + @(Test-QuestRecords (Read-JsonLines $questPath)) +
     @(Find-UnknownFields $pinPath $PinFields) + @(Test-PinRecords (Read-JsonLines $pinPath))
 if ($problems.Count) { throw "The written files don't pass AddonData.ps1's checks: $(($problems | Select-Object -First 5) -join '; ')" }
-Write-Host "Written: $questPath, $pinPath"
+$linkPath = Join-Path $DataDir 'links.jsonl'
+$reputationPath = Join-Path $DataDir 'reputation.jsonl'
+[IO.File]::WriteAllText($linkPath, (($linkLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
+[IO.File]::WriteAllText($reputationPath, (($reputationLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
+Write-Host "Written: $questPath, $pinPath, $linkPath, $reputationPath"
