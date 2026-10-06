@@ -64,7 +64,6 @@ qcLocalize = {
 	THEMAELSTROM = "The Maelstrom",
 	THEZANDALARI = "The Zandalari",
 	TOURNAMENT = "Tournament",
-	TREASUREMAP = "Treasure Map",
 	VASHJIR = "Vashj'ir",
 	WEEKLYEVENTS = "Weekly Events",
 	WORLDEVENTS = "World Events",

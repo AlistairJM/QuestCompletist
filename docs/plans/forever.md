@@ -95,7 +95,8 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
   the quest log heading, each time a quest is offered or accepted. You send in the file, and a tool
   merges it. It can run on the beta too.
 - **Wowhead** has a Forever section, for lookups by hand as on retail. Since 6 October they go in
-  `forever-quest-givers.csv`, which the importer reads (see "Race headings" below).
+  `forever-quest-givers.csv` and `forever-quest-zones.csv`, which the importer reads (see "Race
+  headings" and "Treasure Map" below).
 
 ### Not used
 
@@ -218,7 +219,8 @@ seconds):
 `tools/Import-ForeverData.ps1` builds `data/forever/quests.jsonl` and `pins.jsonl` from four sources:
 the client's `QuestV2`, the quest cache file, CMaNGOS's dump and the probe's saved variables. It
 downloads the dump and any client tables it lacks. Since 6 October a fifth source,
-`forever-quest-givers.csv`, adds givers looked up by hand (see "Race headings" below).
+`forever-quest-givers.csv` and `forever-quest-zones.csv`, adds givers and zones looked up by hand
+(see "Race headings" and "Treasure Map" below).
 - **The game wins wherever it speaks.** Title, level, zone, recurrence and race restrictions come
   from the cache, and recorded spots and NPC names from the probe.
 - **The files use retail's fields and conventions** (see the tool's header), so the existing build
@@ -233,8 +235,8 @@ From the beta's data (9 seconds, with the same files on a rerun):
   givers count: the "WANTED: Murkdeep!" poster also offers Forever's new quest 98025.
 - **Category** is Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
   profession and holiday quests and Forever's own headings (Camping, The High Order, Nightmare
-  Incursions). Phase 4's menu is built on these. (Since 6 October, a race's heading isn't used: see
-  "Race headings" below.)
+  Incursions). Phase 4's menu is built on these. (Since 6 October, a race's heading and Treasure
+  Map aren't used: see "Race headings" and "Treasure Map" below.)
 - **Seasonal quests** get their holiday from CMaNGOS's events, which carry Blizzard's holiday IDs, or
   from their heading. That gives 146 seasonal quests, 137 of them with a holiday. (Since 6 October,
   also from the events all their givers stand during: see "Event quests" below.)
@@ -624,7 +626,8 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   below.) Seven stay ours, as the game has no way to be asked for them: Ahn'Qiraj
   War, Camping, Invasion, Lunar Festival, Midsummer, Seasonal and Treasure Map. Their translations
   are the client's own names for those quest log headings (`QuestSort` 365, 666, 368, 366, 369, 22
-  and 221) in each language. "Seasonal" also names a retail category: its Simplified Chinese is
+  and 221) in each language. (Treasure Map stopped being a category the same day, and its text
+  went: see "Treasure Map" below.) "Seasonal" also names a retail category: its Simplified Chinese is
   retail's "季节活动", not Forever's "季节性".
 - **Midsummer's** translations are the client's own names for its quest log heading (`QuestSort`
   369). The key had been "Midsummer Fire Festival", which no category was called, so Forever's
@@ -655,6 +658,27 @@ the zone it's given in.
 - **Naming by race went too.** `Build-ForeverMenu.ps1` named such a category by its race, and the
   addon asked the game for the race's name. With no race categories left in either game, neither
   is used.
+
+### Treasure Map (6 October 2026)
+
+The menu's "Treasure Map" category held one quest, "Cuergo's Gold" (2882): level 45, repeatable,
+started from a treasure map (item 9254) and handed in at a "Pirate's Treasure!" chest (object
+142194). The beta hasn't answered it, so its heading is CMaNGOS's `QuestSort` 221. Like a race's,
+that heading isn't a place, and retail has no Treasure Map category (nor the quest). Epic,
+Legendary, Reputation and Special stay: retail has those categories too.
+
+- **The rule** now covers every heading that isn't a place: a race's, and Treasure Map. Such a
+  quest goes under the zone `docs/plans/forever-quest-zones.csv` gives it, else the zone of its
+  pins' map, else CMaNGOS's zone, else Uncategorized.
+- **The zone list** is the giver list's partner, for quests no source can place: Quest, Zone (an
+  `AreaTable` ID), Name and Note, looked up by hand. "Cuergo's Gold" has no giver to pin, and a
+  script spawns its chest, so CMaNGOS has no spot for that either. Wowhead's Forever pages say it
+  ends in Tanaris (440). A listed zone that isn't an area in the client, belongs to a quest that
+  isn't imported, or goes unused because the quest's heading is a place, gets a review row.
+- **Result:** the quest is under Tanaris. The menu has 116 categories, and Build-ForeverMenu's list
+  of categories named by our own strings is down to six. The `TREASUREMAP` text went from all 11
+  language files, as nothing shows it now: each translation file holds 122 keys. Nothing else in
+  the data changes, and a rerun writes the same files.
 
 ## Decisions
 
@@ -715,3 +739,5 @@ the zone it's given in.
   and four of them no longer show in English everywhere (#183); results above.
 - 2026-10-06: a race's quest log heading is no longer a category. "The Goddess Provides" goes under
   Teldrassil, on Shanda's pin, from a new list of givers looked up by hand (#188); results above.
+- 2026-10-06: Treasure Map is no longer a category either. "Cuergo's Gold" goes under Tanaris, from
+  a new list of zones looked up by hand (#189); results above.

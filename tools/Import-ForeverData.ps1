@@ -10,15 +10,16 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     quests the beta didn't answer, and who starts each quest and where they stand;
   - the beta probe's saved variables: which quests failed, the game's NPC names, and the recorder's
     quest givers and spots;
-  - -GiverFile, docs\plans\forever-quest-givers.csv: givers looked up by hand on Wowhead's Forever
-    pages, for new quests the other sources have no giver for. A listed NPC stands where CMaNGOS or
-    the recorder puts it.
+  - -GiverFile and -ZoneFile, docs\plans\forever-quest-givers.csv and forever-quest-zones.csv:
+    givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
+    can't place. A listed NPC stands where CMaNGOS or the recorder puts it.
 
 The game wins wherever it speaks. Title, level, zone, recurrence and race restrictions come from the
 cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC names come
 from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
-listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out. Quests with internal
-titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows) are left out.
+listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out.
+Quests with internal titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows)
+are left out.
 QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
 row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
 out until the game answers for it. With no row, a quest the probe asked about that failed at level 1
@@ -31,9 +32,9 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
             filed under an area named after an instance (Gnomeregan in Dun Morogh) gets the
             instance's own area; one filed under any other subzone (Valley of Trials) gets its
-            zone, as retail's categories are zones. A race's heading (Night Elf) isn't a place,
-            so a quest filed under one gets the zone of its pins' map, else CMaNGOS's zone, else
-            0. zone is its name.
+            zone, as retail's categories are zones. A heading that isn't a place, a race's (Night
+            Elf) or Treasure Map, gives way to the zone forever-quest-zones.csv gives the quest,
+            else the zone of its pins' map, else CMaNGOS's zone, else 0. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
@@ -96,6 +97,7 @@ param(
     [string]$ProbeFile = "",
     [string]$CmangosDump = "",
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
+    [string]$ZoneFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-zones.csv'),
     [string]$ReviewFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [switch]$WhatIf
@@ -159,10 +161,10 @@ foreach ($row in Get-ClientTable 'AreaTable') {
     $areaMap[[int]$row.ID] = [int]$row.ContinentID
 }
 $raceName = @{}; foreach ($row in Get-ClientTable 'ChrRaces') { if ($row.Name_lang) { $raceName[$row.Name_lang] = $true } }
-$raceSort = @{}
+$placelessSort = @{ (-221) = $true }
 foreach ($row in Get-ClientTable 'QuestSort') {
     $sortName[-[int]$row.ID] = $row.SortName_lang
-    if ($raceName[$row.SortName_lang]) { $raceSort[-[int]$row.ID] = $true }
+    if ($raceName[$row.SortName_lang]) { $placelessSort[-[int]$row.ID] = $true }
 }
 $zoneAreas = @{}
 foreach ($row in Get-ClientTable 'UiMapAssignment') { if ([int]$row.AreaID) { $zoneAreas[[int]$row.AreaID] = $true } }
@@ -347,6 +349,7 @@ foreach ($line in $dump.gameobject_questrelation) { $f = $line.Split("`t"); $obj
 $starterNpcs = @{}; foreach ($list in $creatureStarters.Values) { foreach ($npc in $list) { $starterNpcs[$npc] = $true } }
 $handStarters = @{}
 foreach ($row in Import-Csv $GiverFile) { $handStarters[[int]$row.Quest] += @([int]$row.Npc); $starterNpcs[[int]$row.Npc] = $true }
+$handZone = @{}; foreach ($row in Import-Csv $ZoneFile) { $handZone[[int]$row.Quest] = [int]$row.Zone }
 $starterObjects = @{}; foreach ($list in $objectStarters.Values) { foreach ($object in $list) { $starterObjects[$object] = $true } }
 $itemStart = @{}
 foreach ($line in $dump.item_template) { $f = $line.Split("`t"); if ($f[1] -ne '0') { $itemStart[[int]$f[1]] = [int]$f[0] } }
@@ -692,18 +695,28 @@ foreach ($id in ($records.Keys | Sort-Object)) {
 }
 foreach ($quest in $handStarters.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-listed quest not imported' $quest ($handStarters[$quest] -join ', ') '' } }
 
-# A race's heading isn't a place: the zone of the quest's pins' map, the most pins first, else CMaNGOS's zone.
-foreach ($q in @($records.Values | Where-Object { $raceSort[$_.category] } | Sort-Object id)) {
+# A heading that isn't a place gives way to the hand-kept zone, else the zone of the quest's pins' map,
+# the most pins first, else CMaNGOS's zone.
+$refiledQuests = @{}
+foreach ($q in @($records.Values | Where-Object { $placelessSort[$_.category] } | Sort-Object id)) {
+    $refiledQuests[$q.id] = $true
     $heading = $sortName[$q.category]
     $zones = @($pins.Values | Where-Object { $_.quests.Contains($q.id) } | ForEach-Object { $uiMapArea[$_.map] } | Where-Object { $_ } |
         Group-Object | Sort-Object { -$_.Count }, { [int]$_.Name })
     $m = $cmQuest[$q.id]
-    if ($zones.Count) { $zone = [int]$zones[0].Name; $kind = "race's heading, so its pins' zone" }
-    elseif ($m -and $m.Zone -and $sortName.ContainsKey($m.Zone) -and -not $raceSort[$m.Zone]) { $zone = $m.Zone; $kind = "race's heading and no pin, so CMaNGOS's zone" }
-    else { $zone = 0; $kind = "race's heading and no pin, so Uncategorized" }
+    $listed = $handZone[$q.id]
+    if ($listed -gt 0 -and $sortName.ContainsKey($listed)) { $zone = $listed; $kind = "heading isn't a place: hand-kept zone" }
+    elseif ($zones.Count) { $zone = [int]$zones[0].Name; $kind = "heading isn't a place: its pins' zone" }
+    elseif ($m -and $m.Zone -and $sortName.ContainsKey($m.Zone) -and -not $placelessSort[$m.Zone]) { $zone = $m.Zone; $kind = "heading isn't a place, no pin: CMaNGOS's zone" }
+    else { $zone = 0; $kind = "heading isn't a place, no pin: Uncategorized" }
+    if ($listed -and $zone -ne $listed) { Add-Review "hand-kept zone isn't an area in the client" $q.id $listed $q.name }
     $q.category = Resolve-Category $zone
     $q.zone = if ($sortName.ContainsKey($q.category)) { $sortName[$q.category] } else { '' }
     Add-Review $kind $q.id $q.category "$($q.name): $heading -> $(if ($q.zone) { $q.zone } else { 'Uncategorized' })"
+}
+foreach ($quest in $handZone.Keys) {
+    if (-not $records.ContainsKey($quest)) { Add-Review 'hand-kept zone for a quest not imported' $quest $handZone[$quest] '' }
+    elseif (-not $refiledQuests[$quest]) { Add-Review "hand-kept zone not used: the quest's heading is a place" $quest $handZone[$quest] $records[$quest].name }
 }
 
 foreach ($pin in $pins.Values) {
