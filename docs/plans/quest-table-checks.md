@@ -136,6 +136,9 @@ Decisions 3 and 4:
 - **The code:** `qcPrereq` in `qcCore.lua` checks and describes them.
   - The quest tooltip lists each required quest on a line of its own, with its icon, and a choice
     on one line: "Step 4 or Step 5 or Step 6", in the player's language (`SERVICES_CONJUNCTION_OR`).
+  - A choice leaves out the quests this character couldn't take, unless that's all of them. Of the
+    144 choices, 10 offer the Alliance's and the Horde's versions of a quest, and 29 repeat a
+    quest's name, mostly versions for another faction, race or class.
   - The map greys a pin, and with its filter on hides a quest, until every requirement is met.
     Its tooltip names what's missing: "Requires Step 3", or "Requires Step 4 or Step 5 or Step 6".
 - **A fix found on the way:** the map's renown check stopped with an error if the game gave no
