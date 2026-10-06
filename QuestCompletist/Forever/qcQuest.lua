@@ -2671,7 +2671,5 @@ qcMutuallyExclusive={
 [9270]={9257,9269,9271},
 [9271]={9257,9269,9270},
 }
-qcUnavailableWhenLearnedProfDF={}
-qcOverrideWeeklyQuestTypesBasedOnStorylineId={}
 qcOverrideDailyExclusiveQuest={}
 qcOverrideWeeklyExclusiveQuest={}

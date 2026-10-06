@@ -14419,26 +14419,6 @@ qcMutuallyExclusive = {
 
 }
 
-qcUnavailableWhenLearnedProfDF = {
---[366261]={ },-- Dragon Isles Alchemy
---[365677]={ },-- Dragon Isles Blacksmithing
---[366255]={ },-- Dragon Isles Enchanting
---[366254]={ },-- Dragon Isles Enginering
---[366242]={ },-- Dragon Isles Herbalism
---[366251]={ },-- Dragon Isles Inscription
---[366250]={ },-- Dragon Isles Jewelcrafting
---[366249]={ },-- Dragon Isles Leatherworking
---[366264]={ },-- Dragon Isles Mining
---[366263]={ },-- Dragon Isles Skinning
---[366258]={ },-- Dragon Isles Tailoring
-}
-
-qcOverrideWeeklyQuestTypesBasedOnStorylineId = { -- Quest that is member of an weekly storyline will be given the correct pin icon, even if they are marked as normal in qcQuestDatabase={
-
---[5767]
---[5711]
-}
-
 qcOverrideDailyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible daily quests, once the number is accepted/done  
 { max = 1, quests = {26442,26536,26488,26420,26414,29342,29344,29347,29343,29350} }, --If/Sw Daily Fishing
 { max = 1, quests = {26190,26177,26192,26153,26183,29356,29355,29353,29352,29351} },--If/Sw Daily Cocking

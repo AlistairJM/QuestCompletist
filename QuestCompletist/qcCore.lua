@@ -1495,14 +1495,12 @@ end
 
 -- Function to handle the dropdown button click
 function qcCategoryDropdownButton_OnClick(self, button, down)
-    local dropdown = CreateFrame("Frame", "qcCategoryDropDownMenu", UIParent, "UIDropDownMenuTemplate")
-    UIDropDownMenu_Initialize(dropdown, InitializeCategoryDropDownMenu, "MENU")
+    local dropdown = qcCategoryDropDownMenu
+    if not dropdown then
+        dropdown = CreateFrame("Frame", "qcCategoryDropDownMenu", UIParent, "UIDropDownMenuTemplate")
+        UIDropDownMenu_Initialize(dropdown, InitializeCategoryDropDownMenu, "MENU")
+    end
     ToggleDropDownMenu(1, nil, dropdown, self, 0, 0)
-end
-
--- Function to load the dropdown menu
-function qcCategoryDropdown_OnLoad(self)
-    UIDropDownMenu_Initialize(self, InitializeCategoryDropDownMenu)
 end
 
 -- Function to process menu actions
@@ -2144,8 +2142,6 @@ local function qcEventHandler(self, event, ...)
 		if (... == "QuestCompletist") then
 			if not (qcCharacterCompletions) then qcCharacterCompletions = {} end
 			qcMigrateCompletions()
-			if not (qcWorkingDB) then qcWorkingDB = {} end
-			if not (qcWorkingLog) then qcWorkingLog = {} end
 			if not (qcFlaggedButSeen) then qcFlaggedButSeen = {} end
 			qcCheckSettings()
 			qcApplySettings()
