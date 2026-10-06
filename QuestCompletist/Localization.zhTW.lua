@@ -189,7 +189,7 @@ qcLocalize = setmetatable({
 	ZERETHMORTISCAMPAIGN = "Zereth Mortis Campaign",
 -- Dragonflight Code
 	AZEROTHIANARCHIVES = "Azerothian Archives",
-	AZMERLOTH = "Azmerloh",
+	AZMERLOTH = "Azmerloth",
 	DRAGONISLE = "Dragon Isle",
 	DRAGONFLIGHT = "巨龍崛起",
 	DRAGONSCALEEXPEDITION = "Dragonscale Expedition",
