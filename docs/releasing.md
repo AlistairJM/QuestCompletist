@@ -43,6 +43,13 @@ The next version is the last tag plus 0.1 (110.9 follows 110.8), unless you choo
 three files use Windows line endings; edit them in an editor or with perl, not Git Bash's `sed`, which
 turns them into Unix ones.
 
+Check `## Interface:` in `QuestCompletist\QuestCompletist.toc` too. The game calls an addon out of
+date unless that line lists the client's interface number, which goes up with retail patches, minor
+ones included: 12.1.5 is 120105. Each patch's page on
+[warcraft.wiki.gg](https://warcraft.wiki.gg/wiki/Patch_12.1.5) gives its number. When a patch is due,
+list both numbers, the live one first (`## Interface: 120100, 120105`), so the release works before
+and after it. WoW: Forever's TOC has its own number.
+
 In the same pull request, bring `README.md` up to date. It's the addon's CurseForge description
 without the changelogs, and step 7 publishes it as it is:
 - Start from the live page, <https://www.curseforge.com/wow/addons/quest-completist>, not the
@@ -112,7 +119,8 @@ The whole description is `README.md` as merged in step 3, then, after a `---`, t
 - If the description needs a change at this point, change the README too, in a pull request of its
   own, so the two stay the same.
 
-Upload the ZIP to CurseForge with the changelog, and paste in the refreshed description.
+Upload the ZIP to CurseForge with the changelog, tick every game version the two TOCs list, and paste
+in the refreshed description.
 
 ## 8. Delete merged branches
 
