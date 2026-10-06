@@ -655,4 +655,4 @@ and chickens stand in 9 zones; our old Classic pins had one in 8 of them.
 - 2026-10-06: the profession, and the skill level in it, a quest needs, in its tooltip and on the
   map (#176); results above.
 - 2026-10-06: a giver in several zones goes on the map of its nearest old pin, and a repeatable giver
-  in many places gets one pin per map; results above.
+  in many places gets one pin per map (#177); results above.
