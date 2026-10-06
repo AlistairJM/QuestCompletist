@@ -287,8 +287,7 @@ foreach ($m in ($links | Where-Object { $_[2] })) { [void]$quest.Append("[$($m[1
 [void]$quest.Append("}`r`nqcMutuallyExclusive={`r`n")
 foreach ($m in ($links | Where-Object { $_[3] })) { [void]$quest.Append("[$($m[1])]={$($m[3])},`r`n") }
 [void]$quest.Append("}`r`n")
-foreach ($table in 'qcUnavailableWhenLearnedProfDF', 'qcOverrideWeeklyQuestTypesBasedOnStorylineId',
-        'qcOverrideDailyExclusiveQuest', 'qcOverrideWeeklyExclusiveQuest') { [void]$quest.Append("$table={}`r`n") }
+foreach ($table in 'qcOverrideDailyExclusiveQuest', 'qcOverrideWeeklyExclusiveQuest') { [void]$quest.Append("$table={}`r`n") }
 $unavailable = "$header`r`nqcUnavailableQuests = {`r`n}`r`n"
 
 $utf8 = New-Object System.Text.UTF8Encoding $false
