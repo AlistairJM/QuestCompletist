@@ -2142,8 +2142,6 @@ local function qcEventHandler(self, event, ...)
 		if (... == "QuestCompletist") then
 			if not (qcCharacterCompletions) then qcCharacterCompletions = {} end
 			qcMigrateCompletions()
-			if not (qcWorkingDB) then qcWorkingDB = {} end
-			if not (qcWorkingLog) then qcWorkingLog = {} end
 			if not (qcFlaggedButSeen) then qcFlaggedButSeen = {} end
 			qcCheckSettings()
 			qcApplySettings()
