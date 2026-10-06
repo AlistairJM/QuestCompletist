@@ -1572,8 +1572,8 @@ local function InitializeCategoryDropDownMenu(self, level, menuList)
     local menu = menuList or qcMenu
     
     for _, item in ipairs(menu) do
-        -- A numeric arg1 is a category id; its name comes from qcCategoryName rather than the
-        -- qcL string baked into qcMenu. Headings may be named by the client too.
+        -- A numeric arg1 is a category id, named by qcCategoryName; the entry's text only gives
+        -- its indent. Headings may be named by the client too.
         local categoryName = type(item.arg1) == "number" and qcCategoryName(item.arg1)
         info.text = categoryName and ((item.text or ""):match("^%s*") .. categoryName) or qcMenuHeadingText(item)
         info.arg1 = item.arg1
@@ -1651,9 +1651,9 @@ end
 local qcAreaIDToCategoryID = qcAreaIDToCategoryID or {} -- Maps zone ID to internal category ID
 local qcQuestCategories = qcQuestCategories or {} -- Maps internal category ID to zone name
 
--- Category names come from the client where qcCategoryUiMapID knows a map for them, so they need
--- no translation of ours. Everything else falls back to qcLocalize, then to the English name in
--- qcQuestCategories.
+-- Category names come from the client where qcCategoryUiMapID or qcCategoryClientName says how,
+-- so they need no translation of ours. Everything else falls back to qcLocalize, then to the
+-- English name in qcQuestCategories.
 local qcCategoryLocaleKey, qcCategoryEnglishName = {}, {}
 for _, categoryData in ipairs(qcQuestCategories) do
 	qcCategoryLocaleKey[categoryData[1]] = (categoryData[2]:gsub("[^%a%d]", "")):upper()
@@ -1673,6 +1673,9 @@ local function qcClientName(source)
 	elseif (kind == "class") then
 		local info = C_CreatureInfo.GetClassInfo(id)
 		name = info and info.className
+	elseif (kind == "race") then
+		local info = C_CreatureInfo.GetRaceInfo(id)
+		name = info and info.raceName
 	elseif (kind == "covenant") then
 		local data = C_Covenants.GetCovenantData(id)
 		name = data and data.name

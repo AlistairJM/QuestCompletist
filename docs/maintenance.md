@@ -157,12 +157,12 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2c | Prerequisites from Blizzard's API and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
+| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-ForeverQuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-ForeverQuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
 
 Steps 1 to 9 are retail's. Blizzard's API has no Forever data, so Forever has a step of its own,
 which rebuilds its data from the game, the client's tables and CMaNGOS's database. It gets its own
@@ -318,16 +318,21 @@ listed (a dungeon's other floors), or when its name is exactly that of one categ
 yet. It never adds continent-level maps, and never changes an existing entry. Run
 `Build-CategoryUiMapIDs.ps1` again afterwards, without `-Refresh`, so it sees the new maps.
 
-`Remove-ConvertedLocaleKeys.ps1` then deletes the translations that became redundant. Run it with
-`-WhatIf` first.
-
 Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
 other client tables: classes, professions, covenants, dungeons, achievement categories (the world
 events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
 `qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
-If the game returns no name for a category, our translation is used.
 The same tool writes `clientName` into `qcMenu.lua` for the menu headings it lists (continents,
 expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
+
+`Remove-ConvertedLocaleKeys.ps1` then deletes the text the client has made redundant, in both
+games. Run it with `-WhatIf` first.
+- The key of a category the client names goes from every locale file, unless code or a heading
+  uses it. Should the game ever return no name, the category's English name shows.
+- A heading the client names keeps its English, as the fallback, but not its translations.
+- A category's entry in `qcMenu.lua` loses its label: the menu names categories through
+  `qcCategoryName`, so the label never shows. An indented entry keeps its indent, as
+  `text="   "`.
 
 ### 6. Map pins
 
@@ -539,6 +544,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl`, `reputation.jsonl` and
    `skills.jsonl`, with the factions' English names from the client's `Faction` table. A new zone
    it can't place goes in its continent's "Other" group; add the zone to the script's region table.
+   Categories and headings take the client's names where it has them: areas, classes, professions,
+   races and its in-game UI strings (the script's `$headingSources` for headings). It lists the
+   categories still named by our own strings. If it names one our text covered, run
+   `Remove-ConvertedLocaleKeys.ps1` (step 5).
 6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
    both.
 7. The reachability check (step 9), with Forever's TOC and its client's map table:
@@ -555,7 +564,8 @@ the game, the client's tables or CMaNGOS, and is for review before its pull requ
 ## Text in other languages
 
 Names come from the game in the player's language: quests, NPCs, factions, maps, and the categories
-and menu headings of step 5. The addon's own text is in `QuestCompletist\Localization.<language>.lua`.
+and menu headings of steps 5 and 10. The addon's own text is in
+`QuestCompletist\Localization.<language>.lua`.
 
 - `Localization.enUS.lua` has every key in English. Each other file sets the keys it translates,
   and any key it lacks shows in English.
@@ -574,15 +584,19 @@ and menu headings of step 5. The addon's own text is in `QuestCompletist\Localiz
 
 It loads the files as the game does, for each language, and reports keys the code uses that have
 no text, placeholders that differ from the English, and translations that don't format. It also
-reports keys nothing uses, to be removed from every file:
-- an English key that no code names, in either game, and that isn't a category's name. A category
-  the client can't name falls back to the key made of its English name's letters and digits,
-  upper-cased, such as `STRANGLETHORNVALE`;
+reports text to remove. `Remove-ConvertedLocaleKeys.ps1` (step 5) removes all but the last:
+- an English key nothing uses, in either game: no code names it, no menu heading shows it, and no
+  category falls back to it. A category the client can't name falls back to the key made of its
+  English name's letters and digits, upper-cased, such as `STRANGLETHORNVALE`; one it names needs
+  no key;
+- a translation of a key that only headings the client names show;
+- a label on a category's entry in a menu, which never shows;
 - a key a translation has that English doesn't.
 
-Still in English: the `/qc holidays` output, which is for maintainers, and about 20 category names
-the game has no name for, mostly Blizzard content such as "Timerunning" and "The Harbinger", whose
-official translations we don't have.
+Still in English: the `/qc holidays` output, which is for maintainers, and some category names the
+game has no name for. On retail that's about 20, mostly Blizzard content such as "Timerunning" and
+"The Harbinger", whose official translations we don't have. On WoW: Forever it's "Ahn'Qiraj War",
+"Camping", "Invasion" and "Treasure Map", which the game names only as quest log headings.
 
 ## Holidays
 

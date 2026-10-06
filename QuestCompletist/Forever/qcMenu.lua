@@ -48,7 +48,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=38,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=51,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=11,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.AZEROTH),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.AZEROTH),clientName={"map",947},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=25,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=4,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=46,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -61,8 +61,8 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=8,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=40,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=16593,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{text=qcL.DUNGEONSANDRAIDS,isTitle=true,notCheckable=true,hasArrow=false},
-{text=stringformat("   %s",qcL.DUNGEONS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=qcL.DUNGEONSANDRAIDS,clientName={"string","GROUP_FINDER"},isTitle=true,notCheckable=true,hasArrow=false},
+{text=stringformat("   %s",qcL.DUNGEONS),clientName={"string","DUNGEONS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=719,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=17803,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=17804,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -86,7 +86,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1337,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=718,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1176,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.RAIDS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.RAIDS),clientName={"string","RAIDS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=3428,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=2677,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=2717,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -106,12 +106,12 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-61,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-81,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=qcL.MISCELLANEOUS,clientName={"string","MISCELLANEOUS"},isTitle=true,notCheckable=true,hasArrow=false},
-{text=stringformat("   %s",qcL.BATTLEGROUNDS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.BATTLEGROUNDS),clientName={"string","BATTLEGROUNDS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=2597,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=3358,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=16606,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=3277,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text=stringformat("   %s",qcL.PROFESSIONS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{text=stringformat("   %s",qcL.PROFESSIONS),clientName={"string","TRADE_SKILLS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-181,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-121,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-304,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -137,7 +137,7 @@ qcMenu={
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-367,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-284,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-221,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{text=stringformat("   %s",qcL.UNCATEGORIZED),isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=GetText("SETTINGS"),isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s%s|r","|cFFFF7D0A",GetText("SETTINGS")),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=stringformat("%s%s|r","|cFFFF7D0A",qcL.PERFORMSERVERQUERY),isTitle=false,notCheckable=false,hasArrow=false,arg1="PERFORMSERVERQUERY";func=function(button,arg1)qcProcessMenuAction(button, arg1);end},
