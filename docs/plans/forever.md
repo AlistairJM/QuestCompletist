@@ -589,4 +589,4 @@ events were pinned all year.
   the beta opens levels above 40, and more of Zephras Isle from the recorder.
 - 2026-10-06: quests whose givers only stand during an event follow it. The Scourge Invasion's and
   the Ahn'Qiraj War Effort's, which the calendar doesn't show, stay off the map, and recurring
-  holiday quests keep their type; results above.
+  holiday quests keep their type (#172); results above.
