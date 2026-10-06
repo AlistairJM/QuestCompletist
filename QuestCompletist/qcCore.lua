@@ -637,42 +637,61 @@ local function qcPlayerProfessionMask()
 	return mask
 end
 
--- The list and the map each have their own low-level and profession settings; only the list hides
--- quests by type. Faction, race/class and covenant are shared.
-local QC_LIST_FILTER = {lowLevel = "QC_L_HIDE_LOWLEVEL", profession = "QC_L_HIDE_PROFESSION", types = true}
-local QC_MAP_FILTER = {lowLevel = "QC_M_HIDE_LOWLEVEL", profession = "QC_M_HIDE_PROFESSION"}
+-- The filters, a row each in the settings, where M and L are the map's and the quest list's
+-- defaults, saved as qcSettings.QC_M_HIDE_<key> and QC_L_HIDE_<key>. The last two are the map's
+-- alone: the list keeps holiday quests in their own categories, and lists no quest it has no data
+-- for.
+local QC_FILTERS = {
+	{key = "COMPLETED", text = "HIDECOMPLETEDQUESTS", M = 1, L = 0},
+	{key = "INPROGRESS", text = "HIDEINPROGRESSQUESTS", M = 1, L = 0},
+	{key = "LOWLEVEL", text = "HIDELOWLEVELQUESTS", M = 0, L = 0},
+	{key = "REQUIREMENTSNOTMET", text = "HIDEREQUIREMENTSNOTMET", M = 0, L = 0},
+	{key = "PROFESSION", text = "HIDEOTHERPROFESSIONQUESTS", M = 1, L = 1},
+	{key = "DAILYQUEST", text = "HIDEDAILYQUEST", M = 0, L = 1},
+	{key = "REPEATABLEQUEST", text = "HIDEREPEATABLEQUEST", M = 0, L = 1},
+	{key = "WORLDQUEST", text = "HIDEWORLDQUEST", M = 0, L = 1},
+	{key = "FACTION", text = "HIDEOTHERFACTIONQUESTS", M = 1, L = 1},
+	{key = "RACECLASS", text = "HIDEOTHERRACEANDCLASSQUESTS", M = 1, L = 1},
+	{key = "COVENANTS", text = "HIDEOTHERCOVENANTQUESTS", M = 1, L = 1},
+	{key = "WARBANDS", text = "HIDEWARBANDS", M = 0, L = 0},
+	{key = "UNAVAILABLE", text = "HIDEUNAVAILABLE", M = 1, L = 1},
+	{key = "SEASONAL", text = "HIDENONACTIVESEASONALQUESTS", M = 1},
+	{key = "NODATA", text = "HIDENODATA", M = 1},
+}
 
--- Every quest filter that reads only the quest's data, not whether it's done. The completion
--- counter shares the list's, so the counter's total is always the quests the list can show.
-local function qcBuildQuestFilter(scope)
+-- Whether the map ("M") or the quest list ("L") hides quests by a filter.
+local function qcHides(view, key)
+	return qcSettings["QC_" .. view .. "_HIDE_" .. key] == 1
+end
+
+-- Every quest filter that reads only the quest's data, not whether it's done.
+local function qcBuildQuestFilter(view)
 	local BitBand = bit.band
 	local stringUpper = string.upper
 
 	local hiddenTypes = 0
-	if scope.types then
-		if (qcSettings.QC_L_HIDE_DAILYQUEST == 1) then hiddenTypes = hiddenTypes + 4 end
-		if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == 1) then hiddenTypes = hiddenTypes + 2 end
-		if (qcSettings.QC_L_HIDE_WORLDQUEST == 1) then hiddenTypes = hiddenTypes + 128 end
-	end
+	if qcHides(view, "DAILYQUEST") then hiddenTypes = hiddenTypes + 4 end
+	if qcHides(view, "REPEATABLEQUEST") then hiddenTypes = hiddenTypes + 2 end
+	if qcHides(view, "WORLDQUEST") then hiddenTypes = hiddenTypes + 128 end
 
 	local greenCutoff
-	if (qcSettings[scope.lowLevel] == 1) then
+	if qcHides(view, "LOWLEVEL") then
 		greenCutoff = UnitLevel("player") - UnitQuestTrivialLevelRange("player")
 	end
 
 	local professionBitmask
-	if (qcSettings[scope.profession] == 1) then
+	if qcHides(view, "PROFESSION") then
 		professionBitmask = qcPlayerProfessionMask()
 	end
 
 	local factionFlag
-	if (qcSettings.QC_ML_HIDE_FACTION == 1) then
+	if qcHides(view, "FACTION") then
 		local playerFaction = UnitFactionGroup("player")
 		factionFlag = qcFactionBits[stringUpper(playerFaction)]
 	end
 
 	local raceFlag, classFlag
-	if (qcSettings.QC_ML_HIDE_RACECLASS == 1) then
+	if qcHides(view, "RACECLASS") then
 		local _, playerRace = UnitRace("player")
 		local _, playerClass = UnitClass("player")
 		raceFlag = qcRaceBits[stringUpper(playerRace)]
@@ -680,7 +699,7 @@ local function qcBuildQuestFilter(scope)
 	end
 
 	local covenantBit
-	if (qcSettings.QC_ML_HIDE_COVENANTS == 1) then
+	if qcHides(view, "COVENANTS") then
 		covenantBit = qcCovenantsBits[C_Covenants.GetActiveCovenantID()] or 0
 	end
 
@@ -695,6 +714,105 @@ local function qcBuildQuestFilter(scope)
 		if classFlag and not qcMaskAllows(e[7], classFlag) then return false end
 		local covenant = covenants[questId]
 		if covenantBit and covenant and BitBand(covenant, covenantBit) == 0 then return false end
+		return true
+	end
+end
+
+local function simulateExclusiveCompletions(groupTable)
+    local simulatedCompleted = {}
+
+    for _, group in ipairs(groupTable) do
+        local completedCount = 0
+        local remaining = {}
+
+        for _, questID in ipairs(group.quests) do
+            local qID = tonumber(questID)
+            if qID then
+                local isCompleted = qcIsQuestCompleted(qID)
+                local isAccepted = C_QuestLog.GetLogIndexForQuestID(qID) and C_QuestLog.GetLogIndexForQuestID(qID) > 0
+
+                if isCompleted or isAccepted then
+                    completedCount = completedCount + 1
+                else
+                    table.insert(remaining, qID)
+                end
+            end
+        end
+
+        if completedCount >= group.max then
+            for _, qID in ipairs(remaining) do
+                simulatedCompleted[qID] = true
+                -- Debug print
+               -- print("Override completed quest:", qID)
+            end
+        end
+    end
+
+    return simulatedCompleted
+end
+
+local function qcIsQuestInLog(questId)
+	local logIndex = C_QuestLog.GetLogIndexForQuestID(questId)
+	return logIndex ~= nil and logIndex > 0
+end
+
+-- The character's renown with a faction, or its rank with a friendship faction such as The Weaver,
+-- and whether it's a rank; nil when the game knows the faction as neither.
+local function qcFactionLevel(factionId)
+	if C_Reputation.IsMajorFaction(factionId) then
+		return C_MajorFactions.GetCurrentRenownLevel(factionId), false
+	end
+	local friendship = C_GossipInfo.GetFriendshipReputation(factionId)
+	if friendship and friendship.friendshipFactionID > 0 then
+		return C_GossipInfo.GetFriendshipReputationRanks(factionId).currentLevel, true
+	end
+end
+
+-- Whether the character has the level, the quests to do first, and the renown or rank a quest
+-- needs. A renown level the game doesn't give counts as met.
+local function qcRequirementsMet(questId, e, playerLevel)
+	if (e[2] or 0) > playerLevel then return false end
+	if not qcPrereq.QuestMet(questId) then return false end
+	local renown = qcRenownLevelRequirements[questId]
+	local level = renown and qcFactionLevel(renown[1])
+	return not (level and level < renown[2])
+end
+
+-- Decides one quest at a time for the map ("M") or the quest list ("L"). A quest with no data passes
+-- every check that reads the database. With forCount it ignores the filters on what the character
+-- has done or has in the log, so the list's zone counter and the map's progress bars count those
+-- quests too.
+local function qcBuildViewFilter(view)
+	local passesFilters = qcBuildQuestFilter(view)
+	local hideNoData = qcHides(view, "NODATA")
+	local hideCompleted, hideInProgress = qcHides(view, "COMPLETED"), qcHides(view, "INPROGRESS")
+	local hideWarband, hideUnavailable = qcHides(view, "WARBANDS"), qcHides(view, "UNAVAILABLE")
+	local activeHolidays = qcHides(view, "SEASONAL") and qcUpdateActiveHolidays()
+	local playerLevel = qcHides(view, "REQUIREMENTSNOTMET") and UnitLevel("player")
+
+	local overrideCompleted = {}
+	if hideCompleted or hideInProgress then
+		overrideCompleted = simulateExclusiveCompletions(qcOverrideDailyExclusiveQuest)
+		for questId in pairs(simulateExclusiveCompletions(qcOverrideWeeklyExclusiveQuest)) do
+			overrideCompleted[questId] = true
+		end
+	end
+
+	return function(questId, forCount)
+		local e = qcQuestDatabase[questId]
+		if not e and hideNoData then return false end
+		if not forCount then
+			if hideCompleted and (qcIsQuestCompleted(questId) or overrideCompleted[questId]) then return false end
+			if hideInProgress and (qcIsQuestInLog(questId) or overrideCompleted[questId]) then return false end
+			if hideWarband and qcIsQuestCompletedOnAccount(questId) then return false end
+		end
+		if hideUnavailable and qcIsUnavailable(questId) then return false end
+		if not e then return true end
+		if not passesFilters(questId, e) then return false end
+		-- A holiday value we don't know restricts nothing, like any other field with no data.
+		local holiday = qcQuestHoliday[questId]
+		if activeHolidays and holiday and qcKnownHolidayFlags[holiday] and bit.band(activeHolidays, holiday) == 0 then return false end
+		if playerLevel and not qcRequirementsMet(questId, e, playerLevel) then return false end
 		return true
 	end
 end
@@ -724,15 +842,9 @@ local function qcGetCategoryQuests(categoryId, searchText)
         qcBuildQuestIndexes()
     end
 
-    local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
-    local hideCompleted = (qcSettings.QC_L_HIDE_COMPLETED == 1)
-    local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
-    local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
+    local keepQuest = qcBuildViewFilter("L")
     for _, questId in ipairs(qcCategoryIndex[categoryId] or {}) do
-        if passesFilters(questId, qcQuestDatabase[questId])
-            and not (hideCompleted and qcIsQuestCompleted(questId))
-            and not (hideWarband and qcIsQuestCompletedOnAccount(questId))
-            and not (hideUnavailable and qcIsUnavailable(questId)) then
+        if keepQuest(questId) then
             tableInsert(holdingTable, questId)
         end
     end
@@ -815,39 +927,6 @@ frame:SetScript("OnEvent", function(self, event)
     end
 end)
 
-local function simulateExclusiveCompletions(groupTable)
-    local simulatedCompleted = {}
-
-    for _, group in ipairs(groupTable) do
-        local completedCount = 0
-        local remaining = {}
-
-        for _, questID in ipairs(group.quests) do
-            local qID = tonumber(questID)
-            if qID then
-                local isCompleted = qcIsQuestCompleted(qID)
-                local isAccepted = C_QuestLog.GetLogIndexForQuestID(qID) and C_QuestLog.GetLogIndexForQuestID(qID) > 0
-
-                if isCompleted or isAccepted then
-                    completedCount = completedCount + 1
-                else
-                    table.insert(remaining, qID)
-                end
-            end
-        end
-
-        if completedCount >= group.max then
-            for _, qID in ipairs(remaining) do
-                simulatedCompleted[qID] = true
-                -- Debug print
-               -- print("Override completed quest:", qID)
-            end
-        end
-    end
-
-    return simulatedCompleted
-end
-
 --Beta Reset Daily and Weekly End
 
 
@@ -863,12 +942,12 @@ function qcGetZoneCompletionStats(areaId)
 		qcBuildQuestIndexes()
 	end
 
-	local passesFilters = qcBuildQuestFilter(QC_LIST_FILTER)
-	local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
-	-- A quest nobody can get would hold the percentage below 100 for ever.
-	local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
+	-- Counting still leaves out what the list can't show at all, such as a quest nobody can get,
+	-- which would hold the percentage below 100 for ever.
+	local keepQuest = qcBuildViewFilter("L")
+	local countWarband = qcHides("L", "WARBANDS")
 	for _, questId in ipairs(qcCategoryIndex[areaId] or {}) do
-		if passesFilters(questId, qcQuestDatabase[questId]) and not (hideUnavailable and qcIsUnavailable(questId)) then
+		if keepQuest(questId, true) then
 			total = total + 1
 			if qcIsQuestCompleted(questId) or (countWarband and qcIsQuestCompletedOnAccount(questId)) then
 				completed = completed + 1
@@ -1930,6 +2009,21 @@ qcSettings = qcSettings or {}
 function qcCheckSettings()
     qcSettings = qcSettings or {}
 
+    -- Until 111.5 the map and the list shared five filters, saved as QC_ML_HIDE_<key>; each view now
+    -- has its own, starting from the shared one. Older versions also saved two map settings nothing
+    -- read, one under the name the map's world quest filter now has.
+    if not qcSettings.QC_SETTINGS_VERSION then
+        for _, key in ipairs({"FACTION", "RACECLASS", "COVENANTS", "WARBANDS", "UNAVAILABLE"}) do
+            local shared = qcSettings["QC_ML_HIDE_" .. key]
+            if shared ~= nil then
+                qcSettings["QC_M_HIDE_" .. key], qcSettings["QC_L_HIDE_" .. key] = shared, shared
+                qcSettings["QC_ML_HIDE_" .. key] = nil
+            end
+        end
+        qcSettings.QC_M_HIDE_WORLDQUEST, qcSettings.QC_M_HIDE_DAILYREPEATABLE = nil, nil
+        qcSettings.QC_SETTINGS_VERSION = 2
+    end
+
     if (qcSettings.SORT == nil) then
         qcSettings.SORT = 1
     end
@@ -1939,161 +2033,24 @@ function qcCheckSettings()
     if (qcSettings.QC_M_SHOW_ICONS == nil) then
         qcSettings.QC_M_SHOW_ICONS = 1
     end
-    if (qcSettings.QC_M_HIDE_COMPLETED == nil) then
-        qcSettings.QC_M_HIDE_COMPLETED = 1
-    end
-    if (qcSettings.QC_M_HIDE_LOWLEVEL == nil) then
-        qcSettings.QC_M_HIDE_LOWLEVEL = 0
-    end
-    if (qcSettings.QC_M_HIDE_PROFESSION == nil) then
-        qcSettings.QC_M_HIDE_PROFESSION = 1
-    end
-    if (qcSettings.QC_M_HIDE_SEASONAL == nil) then
-        qcSettings.QC_M_HIDE_SEASONAL = 1
-    end
-    if (qcSettings.QC_M_HIDE_INPROGRESS == nil) then
-        qcSettings.QC_M_HIDE_INPROGRESS = 1
-    end
-    if (qcSettings.QC_M_HIDE_NODATA == nil) then
-        qcSettings.QC_M_HIDE_NODATA = 1
-    end
-    if (qcSettings.QC_L_HIDE_COMPLETED == nil) then
-        qcSettings.QC_L_HIDE_COMPLETED = 0
-    end
-    if (qcSettings.QC_L_HIDE_LOWLEVEL == nil) then
-        qcSettings.QC_L_HIDE_LOWLEVEL = 0
-    end
-    if (qcSettings.QC_L_HIDE_PROFESSION == nil) then
-        qcSettings.QC_L_HIDE_PROFESSION = 1
-    end
-    if (qcSettings.QC_L_HIDE_DAILYQUEST == nil) then
-        qcSettings.QC_L_HIDE_DAILYQUEST = 1
-    end
-    if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == nil) then
-        qcSettings.QC_L_HIDE_REPEATABLEQUEST = 1
-    end
-    if (qcSettings.QC_L_HIDE_WORLDQUEST == nil) then
-        qcSettings.QC_L_HIDE_WORLDQUEST = 1
-    end
-    if (qcSettings.QC_ML_HIDE_FACTION == nil) then
-        qcSettings.QC_ML_HIDE_FACTION = 1
-    end
-    if (qcSettings.QC_ML_HIDE_RACECLASS == nil) then
-        qcSettings.QC_ML_HIDE_RACECLASS = 1
-    end
-    if (qcSettings.QC_ML_HIDE_COVENANTS == nil) then
-        qcSettings.QC_ML_HIDE_COVENANTS = 1
-    end
-	if (qcSettings.QC_ML_HIDE_WARBANDS == nil) then
-        qcSettings.QC_ML_HIDE_WARBANDS = 0
-    end
-    if (qcSettings.QC_ML_HIDE_UNAVAILABLE == nil) then
-        qcSettings.QC_ML_HIDE_UNAVAILABLE = 1
-    end
-	if (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == nil) then
-        qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 0
+    for _, filter in ipairs(QC_FILTERS) do
+        for _, view in ipairs({"M", "L"}) do
+            local key = "QC_" .. view .. "_HIDE_" .. filter.key
+            if filter[view] and qcSettings[key] == nil then qcSettings[key] = filter[view] end
+        end
     end
     if (qcSettings.QC_SERVER_QUERY_COMPLETE == nil) then
         qcSettings.QC_SERVER_QUERY_COMPLETE = 0
     end
 end
 
+-- The filters' checkboxes, by the setting each one sets.
+local qcFilterBoxes = {}
+
 function qcApplySettings()
-    if (qcSettings.QC_M_SHOW_ICONS == 0) then
-        qcIO_M_SHOW_ICONS:SetChecked(false)
-    else
-        qcIO_M_SHOW_ICONS:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_COMPLETED == 0) then
-        qcIO_M_HIDE_COMPLETED:SetChecked(false)
-    else
-        qcIO_M_HIDE_COMPLETED:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_LOWLEVEL == 0) then
-        qcIO_M_HIDE_LOWLEVEL:SetChecked(false)
-    else
-        qcIO_M_HIDE_LOWLEVEL:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_PROFESSION == 0) then
-        qcIO_M_HIDE_PROFESSION:SetChecked(false)
-    else
-        qcIO_M_HIDE_PROFESSION:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_SEASONAL == 0) then
-        qcIO_M_HIDE_SEASONAL:SetChecked(false)
-    else
-        qcIO_M_HIDE_SEASONAL:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_INPROGRESS == 0) then
-        qcIO_M_HIDE_INPROGRESS:SetChecked(false)
-    else
-        qcIO_M_HIDE_INPROGRESS:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_NODATA == 0) then
-        qcIO_M_HIDE_NODATA:SetChecked(false)
-    else
-        qcIO_M_HIDE_NODATA:SetChecked(true)
-    end
-    if (qcSettings.QC_L_HIDE_COMPLETED == 0) then
-        qcIO_L_HIDE_COMPLETED:SetChecked(false)
-    else
-        qcIO_L_HIDE_COMPLETED:SetChecked(true)
-    end
-    if (qcSettings.QC_L_HIDE_LOWLEVEL == 0) then
-        qcIO_L_HIDE_LOWLEVEL:SetChecked(false)
-    else
-        qcIO_L_HIDE_LOWLEVEL:SetChecked(true)
-    end
-    if (qcSettings.QC_L_HIDE_PROFESSION == 0) then
-        qcIO_L_HIDE_PROFESSION:SetChecked(false)
-    else
-        qcIO_L_HIDE_PROFESSION:SetChecked(true)
-    end
-    if (qcSettings.QC_L_HIDE_DAILYQUEST == 0) then
-        qcIO_L_HIDE_DAILYQUEST:SetChecked(false)
-    else
-        qcIO_L_HIDE_DAILYQUEST:SetChecked(true)
-    end
-    if (qcSettings.QC_L_HIDE_REPEATABLEQUEST == 0) then
-        qcIO_L_HIDE_REPEATABLEQUEST:SetChecked(false)
-    else
-        qcIO_L_HIDE_REPEATABLEQUEST:SetChecked(true)
-    end
-
-    if (qcSettings.QC_L_HIDE_WORLDQUEST == 0) then
-        qcIO_L_HIDE_WORLDQUEST:SetChecked(false)
-    else
-        qcIO_L_HIDE_WORLDQUEST:SetChecked(true)
-    end
-
-    if (qcSettings.QC_ML_HIDE_COVENANTS == 0) then
-        qcIO_ML_HIDE_COVENANTS:SetChecked(false)
-    else
-        qcIO_ML_HIDE_COVENANTS:SetChecked(true)
-    end
-
-    if (qcSettings.QC_ML_HIDE_WARBANDS == 0) then
-        qcIO_ML_HIDE_WARBANDS:SetChecked(false)
-    else
-        qcIO_ML_HIDE_WARBANDS:SetChecked(true)
-    end
-
-    qcIO_ML_HIDE_UNAVAILABLE:SetChecked(qcSettings.QC_ML_HIDE_UNAVAILABLE ~= 0)
-
-    if (qcSettings.QC_ML_HIDE_FACTION == 0) then
-        qcIO_ML_HIDE_FACTION:SetChecked(false)
-    else
-        qcIO_ML_HIDE_FACTION:SetChecked(true)
-    end
-    if (qcSettings.QC_ML_HIDE_RACECLASS == 0) then
-        qcIO_ML_HIDE_RACECLASS:SetChecked(false)
-    else
-        qcIO_ML_HIDE_RACECLASS:SetChecked(true)
-    end
-    if (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == 0) then
-        qcIO_M_HIDE_REQUIREMENTSNOTMET:SetChecked(false)
-    else
-        qcIO_M_HIDE_REQUIREMENTSNOTMET:SetChecked(true)
+    qcIO_M_SHOW_ICONS:SetChecked(qcSettings.QC_M_SHOW_ICONS ~= 0)
+    for key, box in pairs(qcFilterBoxes) do
+        box:SetChecked(qcSettings[key] == 1)
     end
 end
 
@@ -2140,242 +2097,46 @@ function qcInterfaceOptions_OnShow(self)
     qcConfigSubtitle:SetJustifyV("TOP")
     qcConfigSubtitle:SetText(qcL.CONFIGSUBTITLE)
 
-    qcMapFiltersTitle = self:CreateFontString("qcMapFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcMapFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -4)
-    qcMapFiltersTitle:SetText(qcL.MAPFILTERS)
-
     qcIO_M_SHOW_ICONS = CreateFrame("CheckButton", "qcIO_M_SHOW_ICONS", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_SHOW_ICONS:SetPoint("TOPLEFT", qcMapFiltersTitle, "BOTTOMLEFT", 16, -6)
+    qcIO_M_SHOW_ICONS:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -4)
     _G[qcIO_M_SHOW_ICONS:GetName().."Text"]:SetText(qcL.SHOWMAPICONS)
     qcIO_M_SHOW_ICONS:SetScript("OnClick", function(self)
-        if (qcIO_M_SHOW_ICONS:GetChecked() == false) then
-            qcSettings.QC_M_SHOW_ICONS = 0
-        else
-            qcSettings.QC_M_SHOW_ICONS = 1
-        end
-    qcApplyFilterChange()
+        qcSettings.QC_M_SHOW_ICONS = self:GetChecked() and 1 or 0
+        qcApplyFilterChange()
     end)
 
-    qcIO_M_HIDE_COMPLETED = CreateFrame("CheckButton", "qcIO_M_HIDE_COMPLETED", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_COMPLETED:SetPoint("TOPLEFT", qcIO_M_SHOW_ICONS, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_COMPLETED:GetName().."Text"]:SetText(qcL.HIDECOMPLETEDQUESTS)
-    qcIO_M_HIDE_COMPLETED:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_COMPLETED:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_COMPLETED = 0
-        else
-            qcSettings.QC_M_HIDE_COMPLETED = 1
+    -- A row for each filter: its label, then a box for each view it applies to, under the view's
+    -- name. The boxes line up after the longest label, which depends on the language.
+    local labels, labelWidth = {}, 0
+    for i, filter in ipairs(QC_FILTERS) do
+        local label = self:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+        label:SetPoint("TOPLEFT", qcIO_M_SHOW_ICONS, "BOTTOMLEFT", 4, -32 - (i - 1) * 24)
+        label:SetText(qcL[filter.text])
+        labels[i] = label
+        labelWidth = math.max(labelWidth, label:GetStringWidth())
+    end
+    local headers = {}
+    for view, text in pairs({M = WORLD_MAP, L = qcL.QUESTLIST}) do
+        headers[view] = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        headers[view]:SetText(text)
+    end
+    -- Far enough apart that the views' names don't overlap.
+    local columnGap = math.max(60, (headers.M:GetStringWidth() + headers.L:GetStringWidth()) / 2 + 16)
+    for column, view in ipairs({"M", "L"}) do
+        for i, filter in ipairs(QC_FILTERS) do
+            if filter[view] then
+                local key = "QC_" .. view .. "_HIDE_" .. filter.key
+                local box = CreateFrame("CheckButton", "qcIO_" .. view .. "_HIDE_" .. filter.key, self, "InterfaceOptionsCheckButtonTemplate")
+                box:SetPoint("LEFT", labels[i], "LEFT", labelWidth + 24 + (column - 1) * columnGap, 0)
+                box:SetScript("OnClick", function(self)
+                    qcSettings[key] = self:GetChecked() and 1 or 0
+                    qcApplyFilterChange()
+                end)
+                qcFilterBoxes[key] = box
+                if i == 1 then headers[view]:SetPoint("BOTTOM", box, "TOP", 0, 2) end
+            end
         end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_M_HIDE_LOWLEVEL = CreateFrame("CheckButton", "qcIO_M_HIDE_LOWLEVEL", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_LOWLEVEL:SetPoint("TOPLEFT", qcIO_M_HIDE_COMPLETED, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_LOWLEVEL:GetName().."Text"]:SetText(qcL.HIDELOWLEVELQUESTS)
-    qcIO_M_HIDE_LOWLEVEL:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_LOWLEVEL:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_LOWLEVEL = 0
-        else
-            qcSettings.QC_M_HIDE_LOWLEVEL = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_M_HIDE_PROFESSION = CreateFrame("CheckButton", "qcIO_M_HIDE_PROFESSION", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_PROFESSION:SetPoint("TOPLEFT", qcIO_M_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_PROFESSION:GetName().."Text"]:SetText(qcL.HIDEOTHERPROFESSIONQUESTS)
-    qcIO_M_HIDE_PROFESSION:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_PROFESSION:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_PROFESSION = 0
-        else
-            qcSettings.QC_M_HIDE_PROFESSION = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_M_HIDE_SEASONAL = CreateFrame("CheckButton", "qcIO_M_HIDE_SEASONAL", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_SEASONAL:SetPoint("TOPLEFT", qcIO_M_HIDE_PROFESSION, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_SEASONAL:GetName().."Text"]:SetText(qcL.HIDENONACTIVESEASONALQUESTS)
-    qcIO_M_HIDE_SEASONAL:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_SEASONAL:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_SEASONAL = 0
-        else
-            qcSettings.QC_M_HIDE_SEASONAL = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_M_HIDE_INPROGRESS = CreateFrame("CheckButton", "qcIO_M_HIDE_INPROGRESS", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_INPROGRESS:SetPoint("TOPLEFT", qcIO_M_HIDE_SEASONAL, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_INPROGRESS:GetName().."Text"]:SetText(qcL.HIDEINPROGRESSQUESTS)
-    qcIO_M_HIDE_INPROGRESS:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_INPROGRESS:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_INPROGRESS = 0
-        else
-            qcSettings.QC_M_HIDE_INPROGRESS = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_M_HIDE_NODATA = CreateFrame("CheckButton", "qcIO_M_HIDE_NODATA", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_NODATA:SetPoint("TOPLEFT", qcIO_M_HIDE_INPROGRESS, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_NODATA:GetName().."Text"]:SetText(qcL.HIDENODATA)
-    qcIO_M_HIDE_NODATA:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_NODATA:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_NODATA = 0
-        else
-            qcSettings.QC_M_HIDE_NODATA = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_M_HIDE_REQUIREMENTSNOTMET = CreateFrame("CheckButton", "qcIO_M_HIDE_REQUIREMENTSNOTMET", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_M_HIDE_REQUIREMENTSNOTMET:SetPoint("TOPLEFT", qcIO_M_HIDE_NODATA, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_M_HIDE_REQUIREMENTSNOTMET:GetName().."Text"]:SetText(qcL.HIDEREQUIREMENTSNOTMET)
-    qcIO_M_HIDE_REQUIREMENTSNOTMET:SetScript("OnClick", function(self)
-        if (qcIO_M_HIDE_REQUIREMENTSNOTMET:GetChecked() == false) then
-            qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 0
-        else
-            qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 1
-        end
-    qcApplyFilterChange()
-    end)	
-
-    --- Quest List Filters Start ---
-    qcListFiltersTitle = self:CreateFontString("qcListFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcListFiltersTitle:SetPoint("TOPLEFT", qcMapFiltersTitle, "TOPLEFT", 380, 0)
-    qcListFiltersTitle:SetText(qcL.QUESTLISTFILTERS)
-
-    qcIO_L_HIDE_COMPLETED = CreateFrame("CheckButton", "qcIO_L_HIDE_COMPLETED", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_L_HIDE_COMPLETED:SetPoint("TOPLEFT", qcListFiltersTitle, "BOTTOMLEFT", 16, -6)
-    _G[qcIO_L_HIDE_COMPLETED:GetName().."Text"]:SetText(qcL.HIDECOMPLETEDQUESTS)
-    qcIO_L_HIDE_COMPLETED:SetScript("OnClick", function(self)
-        if (qcIO_L_HIDE_COMPLETED:GetChecked() == false) then
-            qcSettings.QC_L_HIDE_COMPLETED = 0
-        else
-            qcSettings.QC_L_HIDE_COMPLETED = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_L_HIDE_LOWLEVEL = CreateFrame("CheckButton", "qcIO_L_HIDE_LOWLEVEL", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_L_HIDE_LOWLEVEL:SetPoint("TOPLEFT", qcIO_L_HIDE_COMPLETED, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_L_HIDE_LOWLEVEL:GetName().."Text"]:SetText(qcL.HIDELOWLEVELQUESTS)
-    qcIO_L_HIDE_LOWLEVEL:SetScript("OnClick", function(self)
-        if (qcIO_L_HIDE_LOWLEVEL:GetChecked() == false) then
-            qcSettings.QC_L_HIDE_LOWLEVEL = 0
-        else
-            qcSettings.QC_L_HIDE_LOWLEVEL = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_L_HIDE_PROFESSION = CreateFrame("CheckButton", "qcIO_L_HIDE_PROFESSION", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_L_HIDE_PROFESSION:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_L_HIDE_PROFESSION:GetName().."Text"]:SetText(qcL.HIDEOTHERPROFESSIONQUESTS)
-    qcIO_L_HIDE_PROFESSION:SetScript("OnClick", function(self)
-        if (qcIO_L_HIDE_PROFESSION:GetChecked() == false) then
-            qcSettings.QC_L_HIDE_PROFESSION = 0
-        else
-            qcSettings.QC_L_HIDE_PROFESSION = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_L_HIDE_DAILYQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_DAILYQUEST", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_L_HIDE_DAILYQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, -25)
-    _G[qcIO_L_HIDE_DAILYQUEST:GetName().."Text"]:SetText(qcL.HIDEDAILYQUEST .. COLOUR_DEATHKNIGHT .. " ")
-    qcIO_L_HIDE_DAILYQUEST:SetScript("OnClick", function(self)
-        if (qcIO_L_HIDE_DAILYQUEST:GetChecked() == false) then
-            qcSettings.QC_L_HIDE_DAILYQUEST = 0
-        else
-            qcSettings.QC_L_HIDE_DAILYQUEST = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_L_HIDE_REPEATABLEQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_REPEATABLEQUEST", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_L_HIDE_REPEATABLEQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, -50)
-    _G[qcIO_L_HIDE_REPEATABLEQUEST:GetName().."Text"]:SetText(qcL.HIDEREPEATABLEQUEST .. COLOUR_DEATHKNIGHT .. " ")
-    qcIO_L_HIDE_REPEATABLEQUEST:SetScript("OnClick", function(self)
-        if (qcIO_L_HIDE_REPEATABLEQUEST:GetChecked() == false) then
-            qcSettings.QC_L_HIDE_REPEATABLEQUEST = 0
-        else
-            qcSettings.QC_L_HIDE_REPEATABLEQUEST = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-	qcIO_L_HIDE_WORLDQUEST = CreateFrame("CheckButton", "qcIO_L_HIDE_WORLDQUEST", self, "InterfaceOptionsCheckButtonTemplate")
-	qcIO_L_HIDE_WORLDQUEST:SetPoint("TOPLEFT", qcIO_L_HIDE_LOWLEVEL, "BOTTOMLEFT", 0, -75)
-	_G[qcIO_L_HIDE_WORLDQUEST:GetName().."Text"]:SetText(qcL.HIDEWORLDQUEST .. COLOUR_DEATHKNIGHT .. " ")
-	qcIO_L_HIDE_WORLDQUEST:SetScript("OnClick", function(self)
-		if (qcIO_L_HIDE_WORLDQUEST:GetChecked() == false) then
-			qcSettings.QC_L_HIDE_WORLDQUEST = 0
-		else
-			qcSettings.QC_L_HIDE_WORLDQUEST = 1
-		end
-	qcApplyFilterChange()
-	end)
-
-    qcCombinedFiltersTitle = self:CreateFontString("qcCombinedFiltersTitle", "ARTWORK", "GameFontNormal")
-    qcCombinedFiltersTitle:SetPoint("TOPLEFT", qcConfigSubtitle, "BOTTOMLEFT", 16, -235)
-    qcCombinedFiltersTitle:SetText(qcL.COMBINEDMAPANDQUESTFILTERS)
-
-    qcIO_ML_HIDE_FACTION = CreateFrame("CheckButton", "qcIO_ML_HIDE_FACTION", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_ML_HIDE_FACTION:SetPoint("TOPLEFT", qcCombinedFiltersTitle, "BOTTOMLEFT", 16, -6)
-    _G[qcIO_ML_HIDE_FACTION:GetName().."Text"]:SetText(qcL.HIDEOTHERFACTIONQUESTS)
-    qcIO_ML_HIDE_FACTION:SetScript("OnClick", function(self)
-        if (qcIO_ML_HIDE_FACTION:GetChecked() == false) then
-            qcSettings.QC_ML_HIDE_FACTION = 0
-        else
-            qcSettings.QC_ML_HIDE_FACTION = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-    qcIO_ML_HIDE_RACECLASS = CreateFrame("CheckButton", "qcIO_ML_HIDE_RACECLASS", self, "InterfaceOptionsCheckButtonTemplate")
-    qcIO_ML_HIDE_RACECLASS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, 0)
-    _G[qcIO_ML_HIDE_RACECLASS:GetName().."Text"]:SetText(qcL.HIDEOTHERRACEANDCLASSQUESTS)
-    qcIO_ML_HIDE_RACECLASS:SetScript("OnClick", function(self)
-        if (qcIO_ML_HIDE_RACECLASS:GetChecked() == false) then
-            qcSettings.QC_ML_HIDE_RACECLASS = 0
-        else
-            qcSettings.QC_ML_HIDE_RACECLASS = 1
-        end
-    qcApplyFilterChange()
-    end)
-
-	qcIO_ML_HIDE_COVENANTS = CreateFrame("CheckButton", "qcIO_ML_HIDE_COVENANTS", self, "InterfaceOptionsCheckButtonTemplate")
-	qcIO_ML_HIDE_COVENANTS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -25)
-	_G[qcIO_ML_HIDE_COVENANTS:GetName().."Text"]:SetText(qcL.HIDEOTHERCOVENANTQUESTS)
-	qcIO_ML_HIDE_COVENANTS:SetScript("OnClick", function(self)
-		if (qcIO_ML_HIDE_COVENANTS:GetChecked() == false) then
-			qcSettings.QC_ML_HIDE_COVENANTS = 0
-		else
-			qcSettings.QC_ML_HIDE_COVENANTS = 1
-		end
-		qcApplyFilterChange()
-	end)
-
-	qcIO_ML_HIDE_WARBANDS = CreateFrame("CheckButton", "qcIO_ML_HIDE_WARBANDS", self, "InterfaceOptionsCheckButtonTemplate")
-	qcIO_ML_HIDE_WARBANDS:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -50)
-	_G[qcIO_ML_HIDE_WARBANDS:GetName().."Text"]:SetText(qcL.HIDEWARBANDS)
-	qcIO_ML_HIDE_WARBANDS:SetScript("OnClick", function(self)
-		if (qcIO_ML_HIDE_WARBANDS:GetChecked() == false) then
-			qcSettings.QC_ML_HIDE_WARBANDS = 0
-		else
-			qcSettings.QC_ML_HIDE_WARBANDS = 1
-		end
-		qcApplyFilterChange()
-	end)
-
-	qcIO_ML_HIDE_UNAVAILABLE = CreateFrame("CheckButton", "qcIO_ML_HIDE_UNAVAILABLE", self, "InterfaceOptionsCheckButtonTemplate")
-	qcIO_ML_HIDE_UNAVAILABLE:SetPoint("TOPLEFT", qcIO_ML_HIDE_FACTION, "BOTTOMLEFT", 0, -75)
-	_G[qcIO_ML_HIDE_UNAVAILABLE:GetName().."Text"]:SetText(qcL.HIDEUNAVAILABLE)
-	qcIO_ML_HIDE_UNAVAILABLE:SetScript("OnClick", function(self)
-		qcSettings.QC_ML_HIDE_UNAVAILABLE = self:GetChecked() and 1 or 0
-		qcApplyFilterChange()
-	end)
+    end
 
     self:SetScript("OnShow", qcConfigRefresh)
     qcConfigRefresh(self)
@@ -2516,9 +2277,7 @@ QC.qcRecurringQuestIcon = qcRecurringQuestIcon
 QC.qcQuestName, QC.qcRequestQuestData, QC.qcFindPinForQuest = qcQuestName, qcRequestQuestData, qcFindPinForQuest
 QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIsQuestCompletedOnAccount
 QC.qcIsUnavailable, QC.qcMaskAllows, QC.qcPrereq = qcIsUnavailable, qcMaskAllows, qcPrereq
-QC.QC_MAP_FILTER, QC.qcBuildQuestFilter = QC_MAP_FILTER, qcBuildQuestFilter
-QC.simulateExclusiveCompletions = simulateExclusiveCompletions
-QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays = qcKnownHolidayFlags, qcUpdateActiveHolidays
+QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides, qcFactionLevel
 QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting

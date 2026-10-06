@@ -8,9 +8,8 @@ local QC_ICON_NORMAL, QC_ICON_COMPLETE = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE
 local QC_PIN_ICONS, QC_PIN_ICON_RANK = QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK
 local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
-local qcIsUnavailable, qcQuestName, qcMaskAllows, qcPrereq = QC.qcIsUnavailable, QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq
-local qcKnownHolidayFlags, qcUpdateActiveHolidays = QC.qcKnownHolidayFlags, QC.qcUpdateActiveHolidays
-local QC_MAP_FILTER, qcBuildQuestFilter, simulateExclusiveCompletions = QC.QC_MAP_FILTER, QC.qcBuildQuestFilter, QC.simulateExclusiveCompletions
+local qcQuestName, qcMaskAllows, qcPrereq = QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq
+local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
 local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
 local qcQuestStatus, qcTooltipBar, qcTooltipDivider = QC.qcQuestStatus, QC.qcTooltipBar, QC.qcTooltipDivider
@@ -274,7 +273,7 @@ end
 -- first. Recurring quests are never done, so the progress leaves them out. It counts the quests the
 -- map hides for being done or in the log, as the list's total does.
 local function qcAddPinQuestsToTooltip(pins)
-    local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+    local countWarband = qcHides("M", "WARBANDS")
     local done, total, seen = 0, 0, {}
     for _, pinData in ipairs(pins) do
         for _, questId in ipairs(pinData.allQuests or pinData[6]) do
@@ -466,60 +465,6 @@ local function qcMergeStackedPins(pins)
     return merged
 end
 
-local function qcIsQuestInLog(questId)
-    local logIndex = C_QuestLog.GetLogIndexForQuestID(questId)
-    return logIndex ~= nil and logIndex > 0
-end
-
--- Decides one pin quest at a time; a pin is drawn while any of its quests is kept. A quest with no
--- data passes every check that reads the database. With forProgress it ignores the filters on what
--- the character has done or has in the log, so the tooltip's progress counts those quests too.
-local function qcBuildMapQuestFilter()
-    local passesFilters = qcBuildQuestFilter(QC_MAP_FILTER)
-    local hideNoData = (qcSettings.QC_M_HIDE_NODATA == 1)
-    local hideCompleted = (qcSettings.QC_M_HIDE_COMPLETED == 1)
-    local hideInProgress = (qcSettings.QC_M_HIDE_INPROGRESS == 1)
-    local hideWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
-    local hideUnavailable = (qcSettings.QC_ML_HIDE_UNAVAILABLE == 1)
-    local activeHolidays = (qcSettings.QC_M_HIDE_SEASONAL == 1) and qcUpdateActiveHolidays()
-    local playerLevel = (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == 1) and UnitLevel("player")
-
-    local overrideCompleted = {}
-    if hideCompleted or hideInProgress then
-        overrideCompleted = simulateExclusiveCompletions(qcOverrideDailyExclusiveQuest)
-        for questId in pairs(simulateExclusiveCompletions(qcOverrideWeeklyExclusiveQuest)) do
-            overrideCompleted[questId] = true
-        end
-    end
-
-    local function requirementsMet(questId, e)
-        if (e[2] or 0) > playerLevel then return false end
-        if not qcPrereq.QuestMet(questId) then return false end
-        local renown = qcRenownLevelRequirements[questId]
-        local renownLevel = renown and qcFactionLevel(renown[1])
-        if renownLevel and renownLevel < renown[2] then return false end
-        return true
-    end
-
-    return function(questId, forProgress)
-        local e = qcQuestDatabase[questId]
-        if not e and hideNoData then return false end
-        if not forProgress then
-            if hideCompleted and (qcIsQuestCompleted(questId) or overrideCompleted[questId]) then return false end
-            if hideInProgress and (qcIsQuestInLog(questId) or overrideCompleted[questId]) then return false end
-            if hideWarband and qcIsQuestCompletedOnAccount(questId) then return false end
-        end
-        if hideUnavailable and qcIsUnavailable(questId) then return false end
-        if not e then return true end
-        if not passesFilters(questId, e) then return false end
-        -- A holiday value we don't know restricts nothing, like any other field with no data.
-        local holiday = qcQuestHoliday[questId]
-        if activeHolidays and holiday and qcKnownHolidayFlags[holiday] and BitBand(activeHolidays, holiday) == 0 then return false end
-        if playerLevel and not requirementsMet(questId, e) then return false end
-        return true
-    end
-end
-
 qcMapDataProvider = CreateFromMixins(MapCanvasDataProviderMixin)
 
 function qcMapDataProvider:RemoveAllData()
@@ -537,7 +482,7 @@ function qcMapDataProvider:RefreshAllData()
     local UiMapID = self:GetMap():GetMapID()
     if not UiMapID or not qcPinDB[UiMapID] then return end
 
-    local keepQuest = qcBuildMapQuestFilter()
+    local keepQuest = qcBuildViewFilter("M")
     qcPinProgressFilter = keepQuest
     local pins = {}
     for _, pin in ipairs(qcPinDB[UiMapID]) do
