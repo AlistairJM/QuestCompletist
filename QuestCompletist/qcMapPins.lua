@@ -141,6 +141,8 @@ end
 local QC_PIN_TOOLTIP = {barMinWidth = 180, foldDone = 2}
 
 -- Every line sets the fonts of both its sides: the tooltip reuses its lines, keeping the last font.
+-- A different font brings its own colour, white, so the line then gets back the gold that adding it
+-- gave, which the giver's name has no colour code of its own to override.
 local function qcAddMapTooltipLine(left, right, leftFont, wrap)
     if right then
         qcMapTooltip:AddDoubleLine(left, right)
@@ -151,8 +153,14 @@ local function qcAddMapTooltipLine(left, right, leftFont, wrap)
     end
     local line = qcMapTooltip:NumLines()
     local leftText, rightText = _G["qcMapTooltipTextLeft" .. line], _G["qcMapTooltipTextRight" .. line]
-    if leftText then leftText:SetFontObject(leftFont or GameTooltipText) end
-    if rightText then rightText:SetFontObject(GameTooltipTextSmall) end
+    if leftText then
+        leftText:SetFontObject(leftFont or GameTooltipText)
+        leftText:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
+    end
+    if rightText then
+        rightText:SetFontObject(GameTooltipTextSmall)
+        rightText:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
+    end
     return leftText, rightText
 end
 
