@@ -10,8 +10,8 @@ judgement calls, not conversions.
 Where several mapped ids carry the matching name, the lowest is stored.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$QuestFile = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist\qcQuest.lua",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua'),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
 )

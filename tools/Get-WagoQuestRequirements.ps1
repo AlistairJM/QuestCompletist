@@ -16,11 +16,11 @@ Output: quest_wago_requirements.csv (QuestID, WagoFaction, WagoRace, WagoClass, 
 empty value = wago says nothing about that field.
 #>
 param(
+    [string]$ToolsDir = $PSScriptRoot,
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
 )
 
-$toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
 $ProgressPreference = "SilentlyContinue"
 
 foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "ChrClasses", "QuestPOIBlob") {

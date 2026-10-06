@@ -20,8 +20,8 @@ isn't defined; and a map that another category's name comes from (qcCategoryUiMa
 Entries already in the table are never changed. Safe to rerun: it only finds new cases.
 #>
 param(
-    [string]$ToolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools",
-    [string]$AddonDir = "C:\Users\alist\RiderProjects\QuestCompletist\QuestCompletist",
+    [string]$ToolsDir = $PSScriptRoot,
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [switch]$WhatIf
 )
 $ErrorActionPreference = "Stop"

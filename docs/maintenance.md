@@ -143,6 +143,12 @@ Run a script with:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\<Script>.ps1 [parameters]
 ```
 
+Every script works on the checkout it's in by default: its own `tools\`, `data\` and
+`QuestCompletist\`. The caches, downloaded tables and `tools\.env` are only in the main checkout,
+so a script run from another copy of the repository, such as a worktree, needs them pointed at the
+main checkout's `tools\`: `-ToolsDir` in most scripts, or the input file's own parameter
+(`-AuditCsv`, `-CandidatesCsv`) in the two accuracy scripts.
+
 ## The sweep
 
 Run the report-only steps first, then make one branch and pull request per kind of change.
