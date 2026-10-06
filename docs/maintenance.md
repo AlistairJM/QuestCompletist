@@ -127,6 +127,10 @@ then every tool refuses to save.
    ```
    The Forever tools take the `ClassicDB_*.sql.gz` already in `tools\`, and only download one when
    there's none.
+5. **Get TrinityCore's latest world database** for step 2b. Download the newest `TDB_full_*.7z`
+   from [TrinityCore's releases](https://github.com/TrinityCore/TrinityCore/releases), extract its
+   `TDB_full_world_*.sql` into `tools\tdb\` with 7-Zip, and move the older one aside. Step 2b reads
+   the newest one there and names it in its summary.
 
 Run a script with:
 ```powershell
@@ -143,6 +147,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1b | Second source for race and class | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
+| 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
@@ -187,8 +192,40 @@ KEPT rather than raising it again, unless our value changes.
 ### 2. Reputation rewards
 
 `Compare-QuestReputation.ps1` compares `qcQuestReputation` against the API cache from step 1 and
-writes `quest_reputation_compare.csv`. `Apply-ReputationBackfill.ps1` only adds rewards the API
-lists and we don't have. It never changes existing ones.
+writes `quest_reputation_compare.csv`. Then `Apply-ReputationBackfill.ps1` adds the rewards the API
+lists and we don't have, and corrects the ones whose amounts differ from the API's. It leaves a
+reward only we list alone and counts it: check those by hand, as the API may simply not list a
+reward the game gives. In October 2026 all 11,035 of our rewards matched the API.
+
+### 2b. The tables kept by hand
+
+`Audit-QuestTables.ps1` checks what no other step does:
+- in `qcQuest.lua`: the breadcrumbs (`qcBreadcrumbQuests`), the quests that close others once
+  they're done (`qcMutuallyExclusive`), the renown requirements, the daily and weekly limits and
+  the faction names;
+- in `data\quests.jsonl`: the prerequisites.
+
+It needs the API cache from step 1, and writes `tools\quest_table_audit.csv`, one row per finding,
+with a count for each kind.
+
+- **Against our own data:**
+  - a quest that isn't in `quests.jsonl`, or is flagged unavailable;
+  - a daily, weekly or repeatable quest in a breadcrumb or "only one of these" pair, since the
+    addon never ticks those;
+  - a breadcrumb or prerequisite for the other faction;
+  - a quest listed twice in a table, as Lua keeps only the last line.
+- **Against Blizzard's API:** the quests it says a quest requires, and the ones it says close a
+  quest (a requirement that they're not done). It names at most 3 required quests, so one of ours
+  it doesn't name may still be right.
+- **Against the client's tables:** which factions have renown, and the factions' English names.
+- **Against TrinityCore's database** (the newest `tools\tdb\TDB_full_world_*.sql`), for older
+  quests: its breadcrumbs, groups and previous quests. It only speaks for quests it has a row for,
+  and has few after Mists of Pandaria.
+
+Review the new findings, and fix the data where it's wrong. For a finding that's right as it is,
+add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and `Other` copied from
+the report, then `Decision` and `Reason`. Later runs mark it kept and count only the rest as new. The
+first run's findings and what was decided are in [plans/quest-table-checks.md](plans/quest-table-checks.md).
 
 ### 3. Quest types
 
@@ -628,7 +665,8 @@ git log --diff-filter=D --name-only --oneline -- tools
 
 | Source | Used for | How |
 |---|---|---|
-| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal, faction names and which have renown; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
+| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests | `Audit-QuestTables.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
