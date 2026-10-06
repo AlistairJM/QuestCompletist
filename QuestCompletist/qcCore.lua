@@ -1575,6 +1575,8 @@ local function InitializeCategoryDropDownMenu(self, level, menuList)
         -- A numeric arg1 is a category id, named by qcCategoryName; the entry's text only gives
         -- its indent. Headings may be named by the client too.
         local categoryName = type(item.arg1) == "number" and qcCategoryName(item.arg1)
+        local classColor = categoryName and qcCategoryClassColor(item.arg1)
+        if (classColor) then categoryName = classColor:WrapTextInColorCode(categoryName) end
         info.text = categoryName and ((item.text or ""):match("^%s*") .. categoryName) or qcMenuHeadingText(item)
         info.arg1 = item.arg1
         info.func = item.func
@@ -1729,6 +1731,13 @@ function qcCategoryName(categoryId)
 	if (key and qcL[key]) then return qcL[key] end
 
 	return qcCategoryEnglishName[categoryId]
+end
+
+-- The colour of the class that names a category, as the client has it, or nil.
+function qcCategoryClassColor(categoryId)
+	local source = qcCategoryClientName and qcCategoryClientName[categoryId]
+	local info = source and source[1] == "class" and C_CreatureInfo.GetClassInfo(source[2])
+	return info and C_ClassColor.GetClassColor(info.classFile)
 end
 
 -- Function to get the zone name from a zone ID with enhanced handling for array-style lookup
