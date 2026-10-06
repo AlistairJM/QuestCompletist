@@ -3047,9 +3047,9 @@
 {"id":7782,"name":"The Lord of Blackrock","level":60,"zone":"Stormwind City","category":1519,"type":1,"faction":1,"race":0,"class":8191,"prereq":7781}
 {"id":7783,"name":"The Lord of Blackrock","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
 {"id":7784,"name":"The Lord of Blackrock","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"prereq":7783}
-{"id":7785,"name":"Examine the Vessel","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":8191}
-{"id":7786,"name":"Thunderaan the Windseeker","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":8191,"prereq":7785}
-{"id":7787,"name":"Rise, Thunderfury!","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":8191,"prereq":7786}
+{"id":7785,"name":"Examine the Vessel","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
+{"id":7786,"name":"Thunderaan the Windseeker","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":7785}
+{"id":7787,"name":"Rise, Thunderfury!","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":7786}
 {"id":7788,"name":"Vanquish the Invaders!","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191}
 {"id":7789,"name":"Quell the Silverwing Usurpers","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191}
 {"id":7791,"name":"A Donation of Wool","level":60,"zone":"Stormwind City","category":1519,"type":1,"faction":1,"race":0,"class":8191}
@@ -3462,8 +3462,8 @@
 {"id":8441,"name":"Conquering Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8437}
 {"id":8442,"name":"Conquering Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8438}
 {"id":8443,"name":"Conquering Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8439}
-{"id":8446,"name":"Shrouded in Nightmare","level":60,"zone":"Epic","category":-1,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8447,"name":"Waking Legends","level":60,"zone":"Epic","category":-1,"type":1,"faction":3,"race":0,"class":8191,"prereq":8446}
+{"id":8446,"name":"Shrouded in Nightmare","level":60,"zone":"Moonglade","category":493,"type":1,"faction":3,"race":0,"class":8191}
+{"id":8447,"name":"Waking Legends","level":60,"zone":"Moonglade","category":493,"type":1,"faction":3,"race":0,"class":8191,"prereq":8446}
 {"id":8460,"name":"Timbermaw Ally","level":48,"zone":"Felwood","category":361,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8461,"name":"Deadwood of the North","level":55,"zone":"Felwood","category":361,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8462,"name":"Speak to Nafien","level":55,"zone":"Felwood","category":361,"type":1,"faction":3,"race":0,"class":8191,"prereq":8460}
@@ -4052,9 +4052,9 @@
 {"id":9246,"name":"Icy Scale Breastplate","level":60,"zone":"Naxxramas","category":3456,"type":1,"faction":3,"race":0,"class":8191,"prereq":9233}
 {"id":9247,"name":"The Keeper's Call","level":60,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9248,"name":"A Humble Offering","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
-{"id":9250,"name":"Frame of Atiesh","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":8191}
-{"id":9251,"name":"Atiesh, the Befouled Greatstaff","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":8191,"prereq":9250}
-{"id":9257,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":16,"prereq":9251}
+{"id":9250,"name":"Frame of Atiesh","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191}
+{"id":9251,"name":"Atiesh, the Befouled Greatstaff","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":9250}
+{"id":9257,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":16,"prereq":9251}
 {"id":9259,"name":"Traitor to the Bloodsail","level":60,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9260,"name":"Investigate the Scourge of Stormwind","level":6,"zone":"Invasion","category":-368,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":16384}
 {"id":9261,"name":"Investigate the Scourge of Ironforge","level":10,"zone":"Invasion","category":-368,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":16384}
@@ -4065,9 +4065,9 @@
 {"id":9266,"name":"Making Amends","level":60,"zone":"Winterspring","category":618,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9267,"name":"Mending Old Wounds","level":60,"zone":"The Barrens","category":17,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9268,"name":"War at Sea","level":60,"zone":"Tanaris","category":440,"type":2,"faction":3,"race":0,"class":8191}
-{"id":9269,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":512,"prereq":9251}
-{"id":9270,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":128,"prereq":9251}
-{"id":9271,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":256,"prereq":9251}
+{"id":9269,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":512,"prereq":9251}
+{"id":9270,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":128,"prereq":9251}
+{"id":9271,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":256,"prereq":9251}
 {"id":9272,"name":"Dressing the Part","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9292,"name":"Cracked Necrotic Crystal","level":60,"zone":"Invasion","category":-368,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":9295,"name":"Letter from the Front","level":60,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
