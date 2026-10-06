@@ -62,11 +62,11 @@
 {"map":1412,"icon":9,"npc":5891,"name":"Minor Manifestation of Earth","x":52,"y":80.4,"quests":[1518,1521]}
 {"map":1412,"icon":1,"npc":6775,"name":"Antur Fallow","x":39.17,"y":81.24,"quests":[1656]}
 {"map":1412,"icon":9,"npc":11407,"name":"Var'jun","x":46.21,"y":62.27,"quests":[5654]}
-{"map":1412,"icon":5,"npc":14828,"name":"Gelvas Grimegate","x":38.15,"y":44.65,"quests":[7930,7931,7932,7933,7934,7935,7936,7940,7981]}
-{"map":1412,"icon":5,"npc":14829,"name":"Yebb Neblegear","x":38.35,"y":46.24,"quests":[7899,7900,7901,7902,7903,7943,8222,8223]}
-{"map":1412,"icon":5,"npc":14832,"name":"Kerri Hicks","x":38.62,"y":46.41,"quests":[7889,7890,7891,7892,7893,7939]}
-{"map":1412,"icon":5,"npc":14833,"name":"Chronos","x":37.19,"y":42.53,"quests":[7881,7882,7883,7884,7885,7941]}
-{"map":1412,"icon":5,"npc":14841,"name":"Rinling","x":37.99,"y":44.31,"quests":[7894,7895,7896,7897,7898,7942]}
+{"map":1412,"icon":1,"npc":14828,"name":"Gelvas Grimegate","x":38.15,"y":44.65,"quests":[7930,7931,7932,7933,7934,7935,7936,7940,7981]}
+{"map":1412,"icon":1,"npc":14829,"name":"Yebb Neblegear","x":38.35,"y":46.24,"quests":[7899,7900,7901,7902,7903,7943,8222,8223]}
+{"map":1412,"icon":1,"npc":14832,"name":"Kerri Hicks","x":38.62,"y":46.41,"quests":[7889,7890,7891,7892,7893,7939]}
+{"map":1412,"icon":1,"npc":14833,"name":"Chronos","x":37.19,"y":42.53,"quests":[7881,7882,7883,7884,7885,7941]}
+{"map":1412,"icon":1,"npc":14841,"name":"Rinling","x":37.99,"y":44.31,"quests":[7894,7895,7896,7897,7898,7942]}
 {"map":1412,"icon":5,"npc":14871,"name":"Morja","x":36.95,"y":42.58,"quests":[7946]}
 {"map":1412,"icon":5,"npc":15575,"name":"Elder Bloodhoof","x":47.53,"y":57.81,"quests":[8673]}
 {"map":1412,"icon":1,"name":"Sealed Supply Crate","x":51.87,"y":53.38,"quests":[751]}
@@ -350,7 +350,7 @@
 {"map":1423,"icon":1,"npc":16133,"name":"Mataus the Wrathcaster","x":71.58,"y":48.65,"quests":[9211,9213]}
 {"map":1423,"icon":1,"npc":16135,"name":"Rayne","x":71.42,"y":49.34,"quests":[9136,9137]}
 {"map":1423,"icon":1,"npc":16212,"name":"Dispatch Commander Metz","x":71.28,"y":48.04,"quests":[9141,9142]}
-{"map":1423,"icon":1,"npc":16361,"name":"Commander Thomas Helleran","x":71.15,"y":50.61,"quests":[9085,9153]}
+{"map":1423,"icon":5,"npc":16361,"name":"Commander Thomas Helleran","x":71.15,"y":50.61,"quests":[9085,9153]}
 {"map":1423,"icon":1,"npc":16376,"name":"Craftsman Wilhelm","x":71.25,"y":49.9,"quests":[9232,9234,9235,9236,9237,9238,9239,9240,9241,9242,9243,9244,9245,9246]}
 {"map":1423,"icon":1,"npc":16786,"name":"Argent Quartermaster","x":71.27,"y":50.02,"quests":[9094,9317,9318,9321,9337,9341]}
 {"map":1423,"icon":1,"npc":16787,"name":"Argent Outfitter","x":71.06,"y":49.81,"quests":[9320,9333,9334,9335,9336,9343]}
@@ -464,7 +464,7 @@
 {"map":1426,"icon":5,"npc":15011,"name":"Wagner Hammerstrike","x":52.6,"y":36.03,"quests":[8149]}
 {"map":1426,"icon":5,"npc":15569,"name":"Elder Goldwell","x":46.7,"y":51.58,"quests":[8653]}
 {"map":1426,"icon":5,"npc":15732,"name":"Wonderform Operator","x":53.16,"y":35.62,"quests":[8827,8828,8860,8861]}
-{"map":1426,"icon":1,"npc":16484,"name":"Lieutenant Nevell","x":52.98,"y":35.03,"quests":[9261]}
+{"map":1426,"icon":5,"npc":16484,"name":"Lieutenant Nevell","x":52.98,"y":35.03,"quests":[9261]}
 {"map":1426,"icon":1,"name":"Guarded Thunder Ale Barrel","x":47.72,"y":52.7,"quests":[403]}
 {"map":1426,"icon":1,"name":"Unguarded Thunder Ale Barrel","x":47.72,"y":52.7,"quests":[311]}
 {"map":1426,"icon":1,"name":"A Dwarven Corpse","x":79.67,"y":36.17,"quests":[417]}
@@ -541,11 +541,11 @@
 {"map":1429,"icon":1,"npc":6774,"name":"Falkhaan Isenstrider","x":45.56,"y":47.74,"quests":[2158]}
 {"map":1429,"icon":1,"npc":9296,"name":"Milly Osworth","x":50.69,"y":39.35,"quests":[3904,3905]}
 {"map":1429,"icon":1,"npc":10616,"name":"Supervisor Raelen","x":81.38,"y":66.11,"quests":[5545]}
-{"map":1429,"icon":5,"npc":14828,"name":"Gelvas Grimegate","x":41.5,"y":68.87,"quests":[7930,7931,7932,7933,7934,7935,7936,7940,7981]}
-{"map":1429,"icon":5,"npc":14829,"name":"Yebb Neblegear","x":40.17,"y":69.53,"quests":[7899,7900,7901,7902,7903,7943,8222,8223]}
-{"map":1429,"icon":5,"npc":14832,"name":"Kerri Hicks","x":40.49,"y":69.93,"quests":[7889,7890,7891,7892,7893,7939]}
-{"map":1429,"icon":5,"npc":14833,"name":"Chronos","x":43.61,"y":70.84,"quests":[7881,7882,7883,7884,7885,7941]}
-{"map":1429,"icon":5,"npc":14841,"name":"Rinling","x":41.71,"y":70.72,"quests":[7894,7895,7896,7897,7898,7942]}
+{"map":1429,"icon":1,"npc":14828,"name":"Gelvas Grimegate","x":41.5,"y":68.87,"quests":[7930,7931,7932,7933,7934,7935,7936,7940,7981]}
+{"map":1429,"icon":1,"npc":14829,"name":"Yebb Neblegear","x":40.17,"y":69.53,"quests":[7899,7900,7901,7902,7903,7943,8222,8223]}
+{"map":1429,"icon":1,"npc":14832,"name":"Kerri Hicks","x":40.49,"y":69.93,"quests":[7889,7890,7891,7892,7893,7939]}
+{"map":1429,"icon":1,"npc":14833,"name":"Chronos","x":43.61,"y":70.84,"quests":[7881,7882,7883,7884,7885,7941]}
+{"map":1429,"icon":1,"npc":14841,"name":"Rinling","x":41.71,"y":70.72,"quests":[7894,7895,7896,7897,7898,7942]}
 {"map":1429,"icon":5,"npc":14871,"name":"Morja","x":43.34,"y":70.28,"quests":[7946]}
 {"map":1429,"icon":5,"npc":15565,"name":"Elder Stormbrow","x":40.13,"y":62.73,"quests":[8649]}
 {"map":1429,"icon":1,"name":"A half-eaten body","x":72.66,"y":60.34,"quests":[45]}
@@ -1198,9 +1198,9 @@
 {"map":1451,"icon":5,"npc":15599,"name":"Elder Bladesing","x":48.96,"y":37.66,"quests":[8719]}
 {"map":1451,"icon":1,"npc":15612,"name":"Krug Skullsplit","x":52.21,"y":68.43,"quests":[8732]}
 {"map":1451,"icon":1,"npc":15693,"name":"Jonathan the Revelator","x":25.94,"y":90.96,"quests":[8745]}
-{"map":1451,"icon":1,"npc":15797,"name":"Colossus Researcher Sophia","x":49.49,"y":37.36,"quests":[8859]}
-{"map":1451,"icon":1,"npc":15798,"name":"Colossus Researcher Nestor","x":49.5,"y":37.27,"quests":[8857]}
-{"map":1451,"icon":1,"npc":15799,"name":"Colossus Researcher Eazel","x":49.55,"y":37.31,"quests":[8858]}
+{"map":1451,"icon":5,"npc":15797,"name":"Colossus Researcher Sophia","x":49.49,"y":37.36,"quests":[8859]}
+{"map":1451,"icon":5,"npc":15798,"name":"Colossus Researcher Nestor","x":49.5,"y":37.27,"quests":[8857]}
+{"map":1451,"icon":5,"npc":15799,"name":"Colossus Researcher Eazel","x":49.55,"y":37.31,"quests":[8858]}
 {"map":1451,"icon":1,"npc":16091,"name":"Dirk Thunderwood","x":52.13,"y":39.14,"quests":[9023]}
 {"map":1451,"icon":1,"npc":17079,"name":"General Kirika","x":50.75,"y":69.54,"quests":[9422]}
 {"map":1451,"icon":1,"npc":17080,"name":"Marshal Bluewall","x":33.29,"y":51.06,"quests":[9419]}
@@ -1209,7 +1209,7 @@
 {"map":1451,"icon":1,"name":"Wanted Poster: Deathclasp","x":51.35,"y":38.27,"quests":[8283]}
 {"map":1451,"icon":3,"name":"Sandy Cookbook","x":37.94,"y":45.31,"quests":[8313]}
 {"map":1451,"icon":1,"name":"Crystalline Tear","x":28.68,"y":89.14,"quests":[8519]}
-{"map":1451,"icon":1,"name":"The Scarab Gong","x":25.72,"y":90.86,"quests":[8743]}
+{"map":1451,"icon":5,"name":"The Scarab Gong","x":25.72,"y":90.86,"quests":[8743]}
 {"map":1452,"icon":1,"npc":9298,"name":"Donova Snowden","x":31.27,"y":45.16,"quests":[3909,3912,4842,5082,5084,5086,5087,5121,5128]}
 {"map":1452,"icon":1,"npc":10300,"name":"Ranshalla","x":63.07,"y":59.48,"quests":[4901]}
 {"map":1452,"icon":1,"npc":10301,"name":"Jaron Stoneshaper","x":52.14,"y":30.43,"quests":[4861,5245]}
@@ -1318,18 +1318,18 @@
 {"map":1453,"icon":5,"npc":15310,"name":"Jesper","x":56.53,"y":51.76,"quests":[8311]}
 {"map":1453,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":81.22,"y":38.5,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
 {"map":1453,"icon":5,"npc":15562,"name":"Elder Hammershout","x":36.27,"y":66.14,"quests":[8646]}
-{"map":1453,"icon":1,"npc":15708,"name":"Master Sergeant Maclure","x":61.52,"y":70.61,"quests":[8796]}
+{"map":1453,"icon":5,"npc":15708,"name":"Master Sergeant Maclure","x":61.52,"y":70.61,"quests":[8796]}
 {"map":1453,"icon":5,"npc":15732,"name":"Wonderform Operator","x":67.87,"y":71.43,"quests":[8827,8828,8860,8861]}
 {"map":1453,"icon":1,"npc":15766,"name":"Officer Maloof","x":62.42,"y":74.53,"quests":[8811,8819,8830,8831]}
 {"map":1453,"icon":5,"npc":15892,"name":"Lunar Festival Emissary","x":37.12,"y":64.71,"quests":[8870,8871,8872]}
 {"map":1453,"icon":5,"npc":15892,"name":"Lunar Festival Emissary","x":61.73,"y":75.73,"quests":[8870,8871,8872]}
 {"map":1453,"icon":5,"npc":15895,"name":"Lunar Festival Harbinger","x":37.65,"y":65.63,"quests":[8867,8883]}
 {"map":1453,"icon":5,"npc":16005,"name":"Lieutenant Jocryn Heldric","x":63.83,"y":70.56,"quests":[8897]}
-{"map":1453,"icon":5,"npc":16075,"name":"Kwee Q. Peddlefeet","x":80.55,"y":37.94,"quests":[8981,8993]}
+{"map":1453,"icon":1,"npc":16075,"name":"Kwee Q. Peddlefeet","x":80.55,"y":37.94,"quests":[8981,8993]}
 {"map":1453,"icon":5,"npc":16105,"name":"Aristan Mottar","x":61.92,"y":74.96,"quests":[8903,9024,9026]}
 {"map":1453,"icon":5,"npc":16106,"name":"Evert Sorisam","x":50.79,"y":60.09,"quests":[9028]}
-{"map":1453,"icon":1,"npc":16241,"name":"Argent Recruiter","x":62.17,"y":72.26,"quests":[9154]}
-{"map":1453,"icon":1,"npc":16478,"name":"Lieutenant Orrin","x":69.04,"y":82.83,"quests":[9260]}
+{"map":1453,"icon":5,"npc":16241,"name":"Argent Recruiter","x":62.17,"y":72.26,"quests":[9154]}
+{"map":1453,"icon":5,"npc":16478,"name":"Lieutenant Orrin","x":69.04,"y":82.83,"quests":[9260]}
 {"map":1453,"icon":1,"npc":16786,"name":"Argent Quartermaster","x":62.08,"y":72.51,"quests":[9094,9317,9318,9321,9337,9341]}
 {"map":1453,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":49.39,"y":71.86,"quests":[9319,9322,9323]}
 {"map":1453,"icon":5,"npc":16817,"name":"Festival Loremaster","x":50.03,"y":71.95,"quests":[9365,9367,9388,9389]}
@@ -1394,7 +1394,7 @@
 {"map":1454,"icon":5,"npc":14451,"name":"Orphan Matron Battlewail","x":70.72,"y":25.19,"quests":[172]}
 {"map":1454,"icon":1,"npc":14726,"name":"Rashona Straglash","x":63.6,"y":51.23,"quests":[7824,7826,7827,7831,7832]}
 {"map":1454,"icon":1,"npc":14727,"name":"Vehena","x":37.7,"y":87.9,"quests":[7833,7834,7835,7836,7837]}
-{"map":1454,"icon":1,"npc":14843,"name":"Kruban Darkblade","x":49.41,"y":59.94,"quests":[7926]}
+{"map":1454,"icon":5,"npc":14843,"name":"Kruban Darkblade","x":49.41,"y":59.94,"quests":[7926]}
 {"map":1454,"icon":3,"npc":15116,"name":"Grinkle","x":52.49,"y":72.83,"quests":[8229]}
 {"map":1454,"icon":1,"npc":15188,"name":"Cenarion Emissary Blackhoof","x":47.64,"y":65.76,"quests":[8276]}
 {"map":1454,"icon":5,"npc":15309,"name":"Spoops","x":71.44,"y":22.81,"quests":[8312]}
@@ -1415,8 +1415,8 @@
 {"map":1454,"icon":1,"npc":15534,"name":"Fisherman Lin'do","x":29.13,"y":68.86,"quests":[8613,8614]}
 {"map":1454,"icon":1,"npc":15535,"name":"Chief Sharpclaw","x":28.83,"y":68.39,"quests":[8615,8616]}
 {"map":1454,"icon":5,"npc":15579,"name":"Elder Darkhorn","x":41.13,"y":33.84,"quests":[8677]}
-{"map":1454,"icon":1,"npc":15700,"name":"Warlord Gorchuk","x":29.79,"y":67.35,"quests":[8851,8852,8853]}
-{"map":1454,"icon":1,"npc":15704,"name":"Senior Sergeant Kai'jin","x":51.56,"y":66.37,"quests":[8794]}
+{"map":1454,"icon":5,"npc":15700,"name":"Warlord Gorchuk","x":29.79,"y":67.35,"quests":[8851,8852,8853]}
+{"map":1454,"icon":5,"npc":15704,"name":"Senior Sergeant Kai'jin","x":51.56,"y":66.37,"quests":[8794]}
 {"map":1454,"icon":1,"npc":15736,"name":"Orgrimmar Commendation Officer","x":30.82,"y":73.67,"quests":[8815,8823]}
 {"map":1454,"icon":1,"npc":15737,"name":"Darkspear Commendation Officer","x":30.03,"y":70.07,"quests":[8816,8824]}
 {"map":1454,"icon":1,"npc":15738,"name":"Undercity Commendation Officer","x":30.43,"y":65.59,"quests":[8817,8826]}
@@ -1428,9 +1428,9 @@
 {"map":1454,"icon":5,"npc":15895,"name":"Lunar Festival Harbinger","x":41.66,"y":31.98,"quests":[8867,8883]}
 {"map":1454,"icon":5,"npc":16007,"name":"Orok Deathbane","x":51.29,"y":70.19,"quests":[8900]}
 {"map":1454,"icon":1,"npc":16012,"name":"Mokvar","x":34.95,"y":38.29,"quests":[8913,8914,8915,8916,8917,8918,8919,8920,8923,8927,8930,8938,8939,8940,8941,8942,8943,8944,9007,9008,9009,9010,9011,9012,9013,9014,9032]}
-{"map":1454,"icon":5,"npc":16075,"name":"Kwee Q. Peddlefeet","x":32.57,"y":36.81,"quests":[8981,8993]}
-{"map":1454,"icon":1,"npc":16255,"name":"Argent Scout","x":52.46,"y":73.69,"quests":[9154]}
-{"map":1454,"icon":1,"npc":16493,"name":"Lieutenant Dagel","x":51.56,"y":81.41,"quests":[9263]}
+{"map":1454,"icon":1,"npc":16075,"name":"Kwee Q. Peddlefeet","x":32.57,"y":36.81,"quests":[8981,8993]}
+{"map":1454,"icon":5,"npc":16255,"name":"Argent Scout","x":52.46,"y":73.69,"quests":[9154]}
+{"map":1454,"icon":5,"npc":16493,"name":"Lieutenant Dagel","x":51.56,"y":81.41,"quests":[9263]}
 {"map":1454,"icon":1,"npc":16787,"name":"Argent Outfitter","x":53.09,"y":73.51,"quests":[9320,9333,9334,9335,9336,9343]}
 {"map":1454,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":42.61,"y":34.21,"quests":[9319,9322,9323]}
 {"map":1454,"icon":5,"npc":16818,"name":"Festival Talespinner","x":42.77,"y":34.95,"quests":[9339,9368,9388,9389]}
@@ -1522,8 +1522,8 @@
 {"map":1455,"icon":1,"npc":15455,"name":"Slicky Gastronome","x":71.02,"y":69.89,"quests":[8524,8525]}
 {"map":1455,"icon":1,"npc":15456,"name":"Sarah Sadwhistle","x":71.35,"y":70.35,"quests":[8526,8527]}
 {"map":1455,"icon":1,"npc":15457,"name":"Huntress Swiftriver","x":71.53,"y":69.1,"quests":[8528,8529]}
-{"map":1455,"icon":1,"npc":15701,"name":"Field Marshal Snowfall","x":58.66,"y":84.45,"quests":[8846,8847,8848]}
-{"map":1455,"icon":1,"npc":15707,"name":"Master Sergeant Fizzlebolt","x":27.52,"y":73.32,"quests":[8795]}
+{"map":1455,"icon":5,"npc":15701,"name":"Field Marshal Snowfall","x":58.66,"y":84.45,"quests":[8846,8847,8848]}
+{"map":1455,"icon":5,"npc":15707,"name":"Master Sergeant Fizzlebolt","x":27.52,"y":73.32,"quests":[8795]}
 {"map":1455,"icon":1,"npc":15731,"name":"Darnassus Commendation Officer","x":61.23,"y":69.36,"quests":[8811,8819]}
 {"map":1455,"icon":1,"npc":15733,"name":"Gnomeregan Commendation Officer","x":58.61,"y":72.65,"quests":[8812,8820]}
 {"map":1455,"icon":1,"npc":15734,"name":"Ironforge Commendation Officer","x":61.11,"y":76.97,"quests":[8813,8821]}
@@ -1536,9 +1536,9 @@
 {"map":1455,"icon":5,"npc":15895,"name":"Lunar Festival Harbinger","x":28.85,"y":16.23,"quests":[8867,8883]}
 {"map":1455,"icon":5,"npc":16009,"name":"Tormek Stoneriver","x":32.64,"y":66.23,"quests":[8898]}
 {"map":1455,"icon":1,"npc":16013,"name":"Deliana","x":43.53,"y":52.64,"quests":[8905,8906,8907,8908,8909,8910,8911,8912,8922,8926,8929,8931,8932,8933,8934,8935,8936,8937,8960,8999,9000,9001,9002,9003,9004,9005,9006]}
-{"map":1455,"icon":5,"npc":16075,"name":"Kwee Q. Peddlefeet","x":40.3,"y":56.6,"quests":[8981,8993]}
-{"map":1455,"icon":1,"npc":16241,"name":"Argent Recruiter","x":29.82,"y":61.65,"quests":[9154]}
-{"map":1455,"icon":1,"npc":16241,"name":"Argent Recruiter","x":34.07,"y":68.14,"quests":[9154]}
+{"map":1455,"icon":1,"npc":16075,"name":"Kwee Q. Peddlefeet","x":40.3,"y":56.6,"quests":[8981,8993]}
+{"map":1455,"icon":5,"npc":16241,"name":"Argent Recruiter","x":29.82,"y":61.65,"quests":[9154]}
+{"map":1455,"icon":5,"npc":16241,"name":"Argent Recruiter","x":34.07,"y":68.14,"quests":[9154]}
 {"map":1455,"icon":1,"npc":16786,"name":"Argent Quartermaster","x":29.59,"y":61.42,"quests":[9094,9317,9318,9321,9337,9341]}
 {"map":1455,"icon":1,"npc":16786,"name":"Argent Quartermaster","x":33.91,"y":67.8,"quests":[9094,9317,9318,9321,9337,9341]}
 {"map":1455,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":63.54,"y":24.67,"quests":[9319,9322,9323]}
@@ -1586,15 +1586,15 @@
 {"map":1456,"icon":1,"npc":14728,"name":"Rumstag Proudstrider","x":43.05,"y":42.72,"quests":[7820,7821,7822,7823,7825]}
 {"map":1456,"icon":1,"npc":15350,"name":"Horde Warbringer","x":57.84,"y":76.33,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
 {"map":1456,"icon":5,"npc":15580,"name":"Elder Proudhorn","x":72.98,"y":23.37,"quests":[8678]}
-{"map":1456,"icon":1,"npc":15702,"name":"Senior Sergeant Taiga","x":39.9,"y":51.68,"quests":[8792]}
+{"map":1456,"icon":5,"npc":15702,"name":"Senior Sergeant Taiga","x":39.9,"y":51.68,"quests":[8792]}
 {"map":1456,"icon":1,"npc":15767,"name":"Officer Thunderstrider","x":42.39,"y":56.98,"quests":[8817,8825,8842,8843]}
 {"map":1456,"icon":5,"npc":15891,"name":"Lunar Festival Herald","x":38.37,"y":63.42,"quests":[8873,8874,8875]}
 {"map":1456,"icon":5,"npc":15891,"name":"Lunar Festival Herald","x":71.89,"y":26.78,"quests":[8873,8874,8875]}
 {"map":1456,"icon":5,"npc":15895,"name":"Lunar Festival Harbinger","x":71.12,"y":28.2,"quests":[8867,8883]}
 {"map":1456,"icon":5,"npc":16008,"name":"Temma of the Wells","x":44.77,"y":60.13,"quests":[8901]}
-{"map":1456,"icon":5,"npc":16075,"name":"Kwee Q. Peddlefeet","x":60.88,"y":50.3,"quests":[8981,8993]}
-{"map":1456,"icon":1,"npc":16255,"name":"Argent Scout","x":43,"y":58.73,"quests":[9154]}
-{"map":1456,"icon":1,"npc":16490,"name":"Lieutenant Lisande","x":31.08,"y":71.38,"quests":[9264]}
+{"map":1456,"icon":1,"npc":16075,"name":"Kwee Q. Peddlefeet","x":60.88,"y":50.3,"quests":[8981,8993]}
+{"map":1456,"icon":5,"npc":16255,"name":"Argent Scout","x":43,"y":58.73,"quests":[9154]}
+{"map":1456,"icon":5,"npc":16490,"name":"Lieutenant Lisande","x":31.08,"y":71.38,"quests":[9264]}
 {"map":1456,"icon":1,"npc":16787,"name":"Argent Outfitter","x":43.07,"y":58.34,"quests":[9320,9333,9334,9335,9336,9343]}
 {"map":1456,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":21.55,"y":26.18,"quests":[9319,9322,9323]}
 {"map":1456,"icon":5,"npc":16818,"name":"Festival Talespinner","x":21.55,"y":27.16,"quests":[9339,9368,9388,9389]}
@@ -1629,15 +1629,15 @@
 {"map":1457,"icon":1,"npc":14725,"name":"Raedon Duskstriker","x":64.02,"y":23,"quests":[7792,7798,7799,7800,7801]}
 {"map":1457,"icon":1,"npc":15351,"name":"Alliance Brigadier General","x":58,"y":34.18,"quests":[8371,8372,8374,8375,8383,8385,8391,8392,8393,8394,8395,8396,8397,8398,8399,8400,8401,8402,8403,8405,8406,8407,8408]}
 {"map":1457,"icon":5,"npc":15598,"name":"Elder Bladeswift","x":33.49,"y":14.3,"quests":[8718]}
-{"map":1457,"icon":1,"npc":15709,"name":"Master Sergeant Moonshadow","x":41.96,"y":41.54,"quests":[8797]}
+{"map":1457,"icon":5,"npc":15709,"name":"Master Sergeant Moonshadow","x":41.96,"y":41.54,"quests":[8797]}
 {"map":1457,"icon":1,"npc":15762,"name":"Officer Lunalight","x":38.23,"y":38.65,"quests":[8813,8821,8836,8837]}
 {"map":1457,"icon":5,"npc":15892,"name":"Lunar Festival Emissary","x":31.22,"y":12.54,"quests":[8870,8871,8872]}
 {"map":1457,"icon":5,"npc":15892,"name":"Lunar Festival Emissary","x":42.16,"y":43.97,"quests":[8870,8871,8872]}
 {"map":1457,"icon":5,"npc":15895,"name":"Lunar Festival Harbinger","x":33.89,"y":13.87,"quests":[8867,8883]}
 {"map":1457,"icon":5,"npc":16001,"name":"Aldris Fourclouds","x":41.95,"y":42.34,"quests":[8899]}
-{"map":1457,"icon":5,"npc":16075,"name":"Kwee Q. Peddlefeet","x":38.12,"y":80.49,"quests":[8981,8993]}
-{"map":1457,"icon":1,"npc":16241,"name":"Argent Recruiter","x":39.47,"y":45.34,"quests":[9154]}
-{"map":1457,"icon":1,"npc":16495,"name":"Lieutenant Beitha","x":77.85,"y":42.36,"quests":[9262]}
+{"map":1457,"icon":1,"npc":16075,"name":"Kwee Q. Peddlefeet","x":38.12,"y":80.49,"quests":[8981,8993]}
+{"map":1457,"icon":5,"npc":16241,"name":"Argent Recruiter","x":39.47,"y":45.34,"quests":[9154]}
+{"map":1457,"icon":5,"npc":16495,"name":"Lieutenant Beitha","x":77.85,"y":42.36,"quests":[9262]}
 {"map":1457,"icon":1,"npc":16786,"name":"Argent Quartermaster","x":39.11,"y":45.43,"quests":[9094,9317,9318,9321,9337,9341]}
 {"map":1458,"icon":1,"npc":1498,"name":"Bethor Iceshard","x":84.07,"y":17.45,"quests":[357,366,446]}
 {"map":1458,"icon":1,"npc":2050,"name":"Raleigh Andrean","x":62.01,"y":42.75,"quests":[530]}
@@ -1684,16 +1684,16 @@
 {"map":1458,"icon":1,"npc":14729,"name":"Ralston Farnsley","x":71.66,"y":29.23,"quests":[7813,7814,7817,7818,7819]}
 {"map":1458,"icon":1,"npc":15350,"name":"Horde Warbringer","x":58.3,"y":97.88,"quests":[8367,8368,8369,8370,8387,8388,8426,8427,8428,8429,8430,8432,8433,8434,8435,8436,8437,8438,8439,8440,8441,8442,8443]}
 {"map":1458,"icon":5,"npc":15564,"name":"Elder Darkcore","x":66.63,"y":38.22,"quests":[8648]}
-{"map":1458,"icon":1,"npc":15703,"name":"Senior Sergeant Grimsford","x":62.59,"y":47.71,"quests":[8793]}
+{"map":1458,"icon":5,"npc":15703,"name":"Senior Sergeant Grimsford","x":62.59,"y":47.71,"quests":[8793]}
 {"map":1458,"icon":1,"npc":15768,"name":"Officer Gothena","x":61.91,"y":45.31,"quests":[8816,8824,8840,8841]}
 {"map":1458,"icon":5,"npc":15891,"name":"Lunar Festival Herald","x":66.01,"y":37.49,"quests":[8873,8874,8875]}
 {"map":1458,"icon":5,"npc":15891,"name":"Lunar Festival Herald","x":66.73,"y":43.37,"quests":[8873,8874,8875]}
 {"map":1458,"icon":5,"npc":15895,"name":"Lunar Festival Harbinger","x":65.62,"y":36,"quests":[8867,8883]}
-{"map":1458,"icon":5,"npc":16075,"name":"Kwee Q. Peddlefeet","x":55.2,"y":89.95,"quests":[8981,8993]}
+{"map":1458,"icon":1,"npc":16075,"name":"Kwee Q. Peddlefeet","x":55.2,"y":89.95,"quests":[8981,8993]}
 {"map":1458,"icon":5,"npc":16108,"name":"Fenstad Argyle","x":66.67,"y":44.72,"quests":[8904,8979,8982]}
 {"map":1458,"icon":5,"npc":16109,"name":"Mara Rennick","x":71.26,"y":28.31,"quests":[8984]}
-{"map":1458,"icon":1,"npc":16255,"name":"Argent Scout","x":66.15,"y":46.72,"quests":[9154]}
-{"map":1458,"icon":1,"npc":16494,"name":"Lieutenant Rukag","x":66.05,"y":22.04,"quests":[9265]}
+{"map":1458,"icon":5,"npc":16255,"name":"Argent Scout","x":66.15,"y":46.72,"quests":[9154]}
+{"map":1458,"icon":5,"npc":16494,"name":"Lieutenant Rukag","x":66.05,"y":22.04,"quests":[9265]}
 {"map":1458,"icon":1,"npc":16787,"name":"Argent Outfitter","x":65.46,"y":46.57,"quests":[9320,9333,9334,9335,9336,9343]}
 {"map":1458,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":65.6,"y":35.99,"quests":[9319,9322,9323]}
 {"map":1458,"icon":5,"npc":16818,"name":"Festival Talespinner","x":66.47,"y":37.76,"quests":[9339,9368,9388,9389]}

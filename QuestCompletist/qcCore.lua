@@ -214,7 +214,9 @@ qcQuestFactionLevelBits = {
 }
 --[[ Holidays, as the game's calendar reports them ]]--
 -- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
--- calendar event can carry. WoW: Forever's Darkmoon Faire is 263 and 264, from Classic.
+-- calendar event can carry. WoW: Forever's Darkmoon Faire is 263 and 264, from Classic. The Scourge
+-- Invasion and the Ahn'Qiraj War Effort aren't on the calendar, so the seasonal filter always hides
+-- their quests.
 local qcHolidays = {
 	{flag=1, name="Brewfest", eventIDs={372}},
 	{flag=2, name="Children's Week", eventIDs={201}},
@@ -230,6 +232,9 @@ local qcHolidays = {
 	{flag=2048, name="Pirates' Day", eventIDs={398}},
 	{flag=4096, name="Trial of Style", eventIDs={691}},
 	{flag=8192, name="Darkmoon Faire", eventIDs={479, 263, 264}},
+	{flag=16384, name="Scourge Invasion", eventIDs={}},
+	{flag=32768, name="Ahn'Qiraj War Effort", eventIDs={}},
+	{flag=65536, name="Stranglethorn Fishing Extravaganza", eventIDs={301}},
 }
 local qcHolidayFlagByEventID = {}
 local qcKnownHolidayFlags = {}
@@ -296,9 +301,16 @@ local function qcUpdateActiveHolidays()
 	return qcActiveHolidays
 end
 
+-- The holiday flags this game's quests have, so /qc holidays lists only its own.
+local function qcHolidayFlagsInUse()
+	local inUse = 0
+	for _, holiday in pairs(qcQuestHoliday) do inUse = bit.bor(inUse, holiday) end
+	return inUse
+end
+
 -- /qc holidays: what the seasonal filter sees, and when each holiday next runs. Reading ahead
 -- steps the calendar through the months, then sets it back to the current one.
-local function qcScanCalendarHolidays()
+local function qcScanCalendarHolidays(inUse)
 	local now = C_DateAndTime.GetCurrentCalendarTime()
 	local nextByFlag, untracked = {}, {}
 	for step = 0, 12 do
@@ -310,7 +322,7 @@ local function qcScanCalendarHolidays()
 				local event = C_Calendar.GetDayEvent(0, monthDay, index)
 				if event and event.calendarType == "HOLIDAY" then
 					local flag = qcHolidayFlagByEventID[event.eventID]
-					if flag then
+					if flag and bit.band(inUse, flag) ~= 0 then
 						nextByFlag[flag] = nextByFlag[flag] or event
 					elseif not untracked[event.eventID] then
 						untracked[event.eventID] = event.title
@@ -329,7 +341,8 @@ local function qcPrintHolidays()
 		return
 	end
 	local active = qcUpdateActiveHolidays()
-	local ok, nextByFlag, untracked = pcall(qcScanCalendarHolidays)
+	local inUse = qcHolidayFlagsInUse()
+	local ok, nextByFlag, untracked = pcall(qcScanCalendarHolidays, inUse)
 	if not ok then
 		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(nextByFlag))
 		return
@@ -344,7 +357,7 @@ local function qcPrintHolidays()
 		if event then
 			print(string.format("  %s%s (%d): %s to %s", running and "|cff00ff00Running|r " or "", event.title,
 				event.eventID, qcFormatCalendarTime(event.startTime), qcFormatCalendarTime(event.endTime)))
-		else
+		elseif bit.band(inUse, holiday.flag) ~= 0 then
 			print(string.format("  %s: not on the calendar in the next 12 months", holiday.name))
 		end
 	end

@@ -3126,57 +3126,57 @@
 {"id":7875,"name":"Quell the Silverwing Usurpers","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191}
 {"id":7876,"name":"Quell the Silverwing Usurpers","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191}
 {"id":7877,"name":"The Treasure of the Shen'dralar","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":2,"race":0,"class":8191,"prereq":7461}
-{"id":7881,"name":"Carnival Boots","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7882,"name":"Carnival Jerkins","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7883,"name":"The World's Largest Gnome!","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7884,"name":"Crocolisk Boy and the Bearded Murloc","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7885,"name":"Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7881,"name":"Carnival Boots","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7882,"name":"Carnival Jerkins","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7883,"name":"The World's Largest Gnome!","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7884,"name":"Crocolisk Boy and the Bearded Murloc","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7885,"name":"Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7886,"name":"Talismans of Merit","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7873}
 {"id":7888,"name":"Talismans of Merit","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7872}
-{"id":7889,"name":"Coarse Weightstone","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7890,"name":"Heavy Grinding Stone","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7891,"name":"Green Iron Bracers","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7892,"name":"Big Black Mace","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7893,"name":"Rituals of Strength","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7894,"name":"Copper Modulator","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7895,"name":"Whirring Bronze Gizmo","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7896,"name":"Green Fireworks","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7897,"name":"Mechanical Repair Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7898,"name":"Thorium Widget","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7899,"name":"Small Furry Paws","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7900,"name":"Torn Bear Pelts","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7901,"name":"Soft Bushy Tails","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7902,"name":"Vibrant Plumes","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7903,"name":"Evil Bat Eyes","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7889,"name":"Coarse Weightstone","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7890,"name":"Heavy Grinding Stone","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7891,"name":"Green Iron Bracers","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7892,"name":"Big Black Mace","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7893,"name":"Rituals of Strength","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7894,"name":"Copper Modulator","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7895,"name":"Whirring Bronze Gizmo","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7896,"name":"Green Fireworks","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7897,"name":"Mechanical Repair Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7898,"name":"Thorium Widget","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7899,"name":"Small Furry Paws","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7900,"name":"Torn Bear Pelts","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7901,"name":"Soft Bushy Tails","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7902,"name":"Vibrant Plumes","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7903,"name":"Evil Bat Eyes","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7905,"name":"The Darkmoon Faire","level":60,"zone":"Ironforge","category":1537,"type":64,"faction":1,"race":0,"class":8191,"holiday":8192}
-{"id":7907,"name":"Darkmoon Beast Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7907,"name":"Darkmoon Beast Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7908,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7922,"name":"Mark of Honor","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7876}
 {"id":7923,"name":"Mark of Honor","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7875}
-{"id":7926,"name":"The Darkmoon Faire","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191}
-{"id":7927,"name":"Darkmoon Portals Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7928,"name":"Darkmoon Warlords Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7929,"name":"Darkmoon Elementals Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7930,"name":"5 Tickets - Darkmoon Flower","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7931,"name":"5 Tickets - Minor Darkmoon Prize","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7932,"name":"12 Tickets - Lesser Darkmoon Prize","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7933,"name":"40 Tickets - Greater Darkmoon Prize","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7934,"name":"50 Tickets - Darkmoon Storage Box","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7935,"name":"10 Tickets - Last Month's Mutton","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7936,"name":"50 Tickets - Last Year's Mutton","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7926,"name":"The Darkmoon Faire","level":60,"zone":"Orgrimmar","category":1637,"type":64,"faction":2,"race":0,"class":8191,"holiday":8192}
+{"id":7927,"name":"Darkmoon Portals Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7928,"name":"Darkmoon Warlords Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7929,"name":"Darkmoon Elementals Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7930,"name":"5 Tickets - Darkmoon Flower","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7931,"name":"5 Tickets - Minor Darkmoon Prize","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7932,"name":"12 Tickets - Lesser Darkmoon Prize","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7933,"name":"40 Tickets - Greater Darkmoon Prize","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7934,"name":"50 Tickets - Darkmoon Storage Box","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7935,"name":"10 Tickets - Last Month's Mutton","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7936,"name":"50 Tickets - Last Year's Mutton","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7937,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7938,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7939,"name":"More Dense Grinding Stones","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7940,"name":"1200 Tickets - Orb of the Darkmoon","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7941,"name":"More Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7942,"name":"More Thorium Widgets","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7943,"name":"More Bat Eyes","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":7944,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7939,"name":"More Dense Grinding Stones","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7940,"name":"1200 Tickets - Orb of the Darkmoon","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7941,"name":"More Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7942,"name":"More Thorium Widgets","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7943,"name":"More Bat Eyes","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7944,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7945,"name":"Your Fortune Awaits You...","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7946,"name":"Spawn of Jubjub","level":1,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":7961,"name":"Waskily Wabbits!","level":1,"zone":"Elwynn Forest","category":12,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7962,"name":"Wabbit Pelts","level":1,"zone":"Elwynn Forest","category":12,"type":1,"faction":3,"race":0,"class":8191}
-{"id":7981,"name":"1200 Tickets - Amulet of the Darkmoon","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":7981,"name":"1200 Tickets - Amulet of the Darkmoon","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
 {"id":8041,"name":"Strength of Mount Mugamba","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1}
 {"id":8042,"name":"Strength of Mount Mugamba","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1,"prereq":8041}
 {"id":8043,"name":"Strength of Mount Mugamba","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1,"prereq":8042}
@@ -3280,19 +3280,19 @@
 {"id":8190,"name":"Hoodoo Hex","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8191,"name":"Prophetic Aura","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8192,"name":"Animist's Caress","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
-{"id":8193,"name":"Master Angler","level":60,"zone":"Fishing","category":-101,"type":128,"faction":3,"race":0,"class":8191,"profession":16384}
-{"id":8194,"name":"Apprentice Angler","level":0,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
+{"id":8193,"name":"Master Angler","level":60,"zone":"Fishing","category":-101,"type":128,"faction":3,"race":0,"class":8191,"profession":16384,"holiday":65536}
+{"id":8194,"name":"Apprentice Angler","level":0,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384,"holiday":65536}
 {"id":8195,"name":"Zulian, Razzashi, and Hakkari Coins","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8196,"name":"Essence Mangoes","level":60,"zone":"Zul'Gurub","category":1977,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8201,"name":"A Collection of Heads","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8221,"name":"Rare Fish - Keefer's Angelfish","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
-{"id":8222,"name":"Glowing Scorpid Blood","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":8223,"name":"More Glowing Scorpid Blood","level":60,"zone":"Darkmoon Faire","category":-364,"type":64,"faction":3,"race":0,"class":8191,"holiday":8192}
-{"id":8224,"name":"Rare Fish - Dezian Queenfish","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
-{"id":8225,"name":"Rare Fish - Brownell's Blue Striped Racer","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384}
+{"id":8221,"name":"Rare Fish - Keefer's Angelfish","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384,"holiday":65536}
+{"id":8222,"name":"Glowing Scorpid Blood","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":8223,"name":"More Glowing Scorpid Blood","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192}
+{"id":8224,"name":"Rare Fish - Dezian Queenfish","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384,"holiday":65536}
+{"id":8225,"name":"Rare Fish - Brownell's Blue Striped Racer","level":60,"zone":"Fishing","category":-101,"type":2,"faction":3,"race":0,"class":8191,"profession":16384,"holiday":65536}
 {"id":8227,"name":"Nat's Measuring Tape","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8228,"name":"Could I get a Fishing Flier?","level":60,"zone":"Fishing","category":-101,"type":2,"faction":2,"race":0,"class":8191,"profession":16384}
-{"id":8229,"name":"Could I get a Fishing Flier?","level":60,"zone":"Fishing","category":-101,"type":2,"faction":1,"race":0,"class":8191,"profession":16384}
+{"id":8228,"name":"Could I get a Fishing Flier?","level":60,"zone":"Fishing","category":-101,"type":2,"faction":2,"race":0,"class":8191,"profession":16384,"holiday":65536}
+{"id":8229,"name":"Could I get a Fishing Flier?","level":60,"zone":"Fishing","category":-101,"type":2,"faction":1,"race":0,"class":8191,"profession":16384,"holiday":65536}
 {"id":8231,"name":"Wavethrashing","level":52,"zone":"Hunter","category":-261,"type":1,"faction":3,"race":0,"class":4,"prereq":8153}
 {"id":8232,"name":"The Green Drake","level":52,"zone":"Hunter","category":-261,"type":1,"faction":3,"race":0,"class":4,"prereq":8231}
 {"id":8233,"name":"A Simple Request","level":52,"zone":"Rogue","category":-162,"type":1,"faction":3,"race":0,"class":8}
@@ -3428,7 +3428,7 @@
 {"id":8406,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8401}
 {"id":8407,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8402}
 {"id":8408,"name":"Fight for Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8403}
-{"id":8409,"name":"Ruined Kegs","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"prereq":8322}
+{"id":8409,"name":"Ruined Kegs","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"prereq":8322}
 {"id":8410,"name":"Elemental Mastery","level":50,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64}
 {"id":8411,"name":"Mastering the Elements","level":50,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64}
 {"id":8412,"name":"Spirit Totem","level":52,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64,"prereq":8410}
@@ -3477,46 +3477,46 @@
 {"id":8481,"name":"The Root of All Evil","level":60,"zone":"Felwood","category":361,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8484,"name":"The Brokering of Peace","level":60,"zone":"Felwood","category":361,"type":1,"faction":1,"race":0,"class":8191}
 {"id":8485,"name":"The Brokering of Peace","level":60,"zone":"Felwood","category":361,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8492,"name":"The Alliance Needs Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8493,"name":"The Alliance Needs More Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8492}
-{"id":8494,"name":"The Alliance Needs Iron Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8495,"name":"The Alliance Needs More Iron Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8494}
+{"id":8492,"name":"The Alliance Needs Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8493,"name":"The Alliance Needs More Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8492}
+{"id":8494,"name":"The Alliance Needs Iron Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8495,"name":"The Alliance Needs More Iron Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8494}
 {"id":8496,"name":"Bandages for the Field","level":60,"zone":"Silithus","category":1377,"type":2,"faction":1,"race":0,"class":8191}
 {"id":8497,"name":"Desert Survival Kits","level":60,"zone":"Silithus","category":1377,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8499,"name":"The Alliance Needs Thorium Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8500,"name":"The Alliance Needs More Thorium Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"prereq":8499}
+{"id":8499,"name":"The Alliance Needs Thorium Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8500,"name":"The Alliance Needs More Thorium Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8499}
 {"id":8501,"name":"Target: Hive'Ashi Stingers","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8502,"name":"Target: Hive'Ashi Workers","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
-{"id":8503,"name":"The Alliance Needs Stranglekelp!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8504,"name":"The Alliance Needs More Stranglekelp!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8503}
-{"id":8505,"name":"The Alliance Needs Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8506,"name":"The Alliance Needs More Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8505}
+{"id":8503,"name":"The Alliance Needs Stranglekelp!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8504,"name":"The Alliance Needs More Stranglekelp!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8503}
+{"id":8505,"name":"The Alliance Needs Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8506,"name":"The Alliance Needs More Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8505}
 {"id":8507,"name":"Field Duty","level":60,"zone":"Silithus","category":1377,"type":2,"faction":1,"race":0,"class":8191}
 {"id":8508,"name":"Field Duty Papers","level":60,"zone":"Silithus","category":1377,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8509,"name":"The Alliance Needs Arthas' Tears!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8510,"name":"The Alliance Needs More Arthas' Tears!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8509}
-{"id":8511,"name":"The Alliance Needs Light Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8512,"name":"The Alliance Needs Light Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8511}
-{"id":8513,"name":"The Alliance Needs Medium Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8514,"name":"The Alliance Needs More Medium Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8513}
-{"id":8515,"name":"The Alliance Needs Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8516,"name":"The Alliance Needs More Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8515}
-{"id":8517,"name":"The Alliance Needs Linen Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8518,"name":"The Alliance Needs More Linen Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8517}
+{"id":8509,"name":"The Alliance Needs Arthas' Tears!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8510,"name":"The Alliance Needs More Arthas' Tears!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8509}
+{"id":8511,"name":"The Alliance Needs Light Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8512,"name":"The Alliance Needs Light Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8511}
+{"id":8513,"name":"The Alliance Needs Medium Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8514,"name":"The Alliance Needs More Medium Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8513}
+{"id":8515,"name":"The Alliance Needs Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8516,"name":"The Alliance Needs More Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8515}
+{"id":8517,"name":"The Alliance Needs Linen Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8518,"name":"The Alliance Needs More Linen Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8517}
 {"id":8519,"name":"A Pawn on the Eternal Board","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8305}
-{"id":8520,"name":"The Alliance Needs Silk Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8521,"name":"The Alliance Needs More Silk Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8520}
-{"id":8522,"name":"The Alliance Needs Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8523,"name":"The Alliance Needs More Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8522}
-{"id":8524,"name":"The Alliance Needs Rainbow Fin Albacore!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8525,"name":"The Alliance Needs More Rainbow Fin Albacore!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8524}
-{"id":8526,"name":"The Alliance Needs Roast Raptor!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8527,"name":"The Alliance Needs More Roast Raptor!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8526}
-{"id":8528,"name":"The Alliance Needs Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8529,"name":"The Alliance Needs More Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8528}
+{"id":8520,"name":"The Alliance Needs Silk Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8521,"name":"The Alliance Needs More Silk Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8520}
+{"id":8522,"name":"The Alliance Needs Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8523,"name":"The Alliance Needs More Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8522}
+{"id":8524,"name":"The Alliance Needs Rainbow Fin Albacore!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8525,"name":"The Alliance Needs More Rainbow Fin Albacore!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8524}
+{"id":8526,"name":"The Alliance Needs Roast Raptor!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8527,"name":"The Alliance Needs More Roast Raptor!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8526}
+{"id":8528,"name":"The Alliance Needs Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8529,"name":"The Alliance Needs More Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8528}
 {"id":8530,"name":"The Alliance Needs Singed Corestones!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8532,"name":"The Horde Needs Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8533,"name":"The Horde Needs More Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8532}
+{"id":8532,"name":"The Horde Needs Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8533,"name":"The Horde Needs More Copper Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8532}
 {"id":8534,"name":"Hive'Zora Scout Report","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8535,"name":"Hoary Templar","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8537,"name":"Crimson Templar","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
@@ -3524,14 +3524,14 @@
 {"id":8539,"name":"Target: Hive'Zora Hive Sisters","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8540,"name":"Boots for the Guard","level":60,"zone":"Silithus","category":1377,"type":2,"faction":1,"race":0,"class":8191}
 {"id":8541,"name":"Grinding Stones for the Guard","level":60,"zone":"Silithus","category":1377,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8542,"name":"The Horde Needs Tin Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8543,"name":"The Horde Needs More Tin Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8542}
+{"id":8542,"name":"The Horde Needs Tin Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8543,"name":"The Horde Needs More Tin Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8542}
 {"id":8544,"name":"Conqueror's Spaulders","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":1,"prereq":8579}
-{"id":8545,"name":"The Horde Needs Mithril Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8546,"name":"The Horde Needs More Mithril Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8545}
+{"id":8545,"name":"The Horde Needs Mithril Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8546,"name":"The Horde Needs More Mithril Bars!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8545}
 {"id":8548,"name":"Volunteer's Battlegear","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
-{"id":8549,"name":"The Horde Needs Peacebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8550,"name":"The Horde Needs Peacebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8549}
+{"id":8549,"name":"The Horde Needs Peacebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8550,"name":"The Horde Needs Peacebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8549}
 {"id":8551,"name":"The Captain's Chest","level":47,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8552,"name":"The Monogrammed Sash","level":50,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8553,"name":"The Captain's Cutlass","level":50,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"prereq":8552}
@@ -3558,18 +3558,18 @@
 {"id":8577,"name":"Stewvul, Ex-B.F.F.","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8576}
 {"id":8578,"name":"Scrying Goggles? No Problem!","level":60,"zone":"Molten Core","category":2717,"type":1,"faction":3,"race":0,"class":8191,"prereq":8577}
 {"id":8579,"name":"Mortal Champions","level":60,"zone":"Ahn'Qiraj","category":3428,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8580,"name":"The Horde Needs Firebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8581,"name":"The Horde Needs More Firebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8580}
-{"id":8582,"name":"The Horde Needs Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8583,"name":"The Horde Needs More Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8582}
+{"id":8580,"name":"The Horde Needs Firebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8581,"name":"The Horde Needs More Firebloom!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8580}
+{"id":8582,"name":"The Horde Needs Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8583,"name":"The Horde Needs More Purple Lotus!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8582}
 {"id":8584,"name":"Never Ask Me About My Business","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8576}
 {"id":8585,"name":"The Isle of Dread!","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8584}
 {"id":8586,"name":"Dirge's Kickin' Chimaerok Chops","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8585}
 {"id":8587,"name":"Return to Narain","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8586}
-{"id":8588,"name":"The Horde Needs Heavy Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8589,"name":"The Horde Needs More Heavy Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8588}
-{"id":8590,"name":"The Horde Needs Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8591,"name":"The Horde Needs More Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8590}
+{"id":8588,"name":"The Horde Needs Heavy Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8589,"name":"The Horde Needs More Heavy Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8588}
+{"id":8590,"name":"The Horde Needs Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8591,"name":"The Horde Needs More Thick Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8590}
 {"id":8592,"name":"Tiara of the Oracle","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":16,"prereq":8579}
 {"id":8593,"name":"Trousers of the Oracle","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":16,"prereq":8579}
 {"id":8594,"name":"Mantle of the Oracle","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":16,"prereq":8579}
@@ -3578,23 +3578,23 @@
 {"id":8597,"name":"Draconic for Dummies","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8576}
 {"id":8598,"name":"rAnS0m","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8597}
 {"id":8599,"name":"Love Song for Narain","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8600,"name":"The Horde Needs Rugged Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8601,"name":"The Horde Needs More Rugged Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8600}
+{"id":8600,"name":"The Horde Needs Rugged Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8601,"name":"The Horde Needs More Rugged Leather!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8600}
 {"id":8602,"name":"Stormcaller's Pauldrons","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":2,"race":0,"class":64,"prereq":8579}
 {"id":8603,"name":"Vestments of the Oracle","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":16,"prereq":8579}
-{"id":8604,"name":"The Horde Needs Wool Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8605,"name":"The Horde Needs More Wool Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8604}
+{"id":8604,"name":"The Horde Needs Wool Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8605,"name":"The Horde Needs More Wool Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8604}
 {"id":8606,"name":"Decoy!","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8598}
-{"id":8607,"name":"The Horde Needs Mageweave Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8608,"name":"The Horde Needs More Mageweave Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8607}
-{"id":8609,"name":"The Horde Needs Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8610,"name":"The Horde Needs More Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8609}
-{"id":8611,"name":"The Horde Needs Lean Wolf Steaks!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8612,"name":"The Horde Needs More Lean Wolf Steaks!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8611}
-{"id":8613,"name":"The Horde Needs Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8614,"name":"The Horde Needs More Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8613}
-{"id":8615,"name":"The Horde Needs Baked Salmon!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8616,"name":"The Horde Needs More Baked Salmon!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"prereq":8615}
+{"id":8607,"name":"The Horde Needs Mageweave Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8608,"name":"The Horde Needs More Mageweave Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8607}
+{"id":8609,"name":"The Horde Needs Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8610,"name":"The Horde Needs More Runecloth Bandages!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8609}
+{"id":8611,"name":"The Horde Needs Lean Wolf Steaks!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8612,"name":"The Horde Needs More Lean Wolf Steaks!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8611}
+{"id":8613,"name":"The Horde Needs Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8614,"name":"The Horde Needs More Spotted Yellowtail!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8613}
+{"id":8615,"name":"The Horde Needs Baked Salmon!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8616,"name":"The Horde Needs More Baked Salmon!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":2,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8615}
 {"id":8617,"name":"The Horde Needs Singed Corestones!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8619,"name":"Morndeep the Elder","level":60,"zone":"Lunar Festival","category":-366,"type":64,"faction":3,"race":0,"class":8191,"holiday":128}
 {"id":8620,"name":"The Only Prescription","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8606}
@@ -3720,7 +3720,7 @@
 {"id":8740,"name":"Twilight Marauders","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8741,"name":"The Champion Returns","level":60,"zone":"Moonglade","category":493,"type":1,"faction":3,"race":0,"class":8191,"prereq":8736}
 {"id":8742,"name":"The Might of Kalimdor","level":60,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8743,"name":"Bang a Gong!","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8742}
+{"id":8743,"name":"Bang a Gong!","level":60,"zone":"Silithus","category":1377,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768,"prereq":8742}
 {"id":8744,"name":"A Carefully Wrapped Present","level":1,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"holiday":8}
 {"id":8745,"name":"Treasure of the Timeless One","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8742}
 {"id":8746,"name":"Metzen the Reindeer","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":8}
@@ -3769,12 +3769,12 @@
 {"id":8789,"name":"Imperial Qiraji Armaments","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8790,"name":"Imperial Qiraji Regalia","level":60,"zone":"Ahn'Qiraj","category":3428,"type":2,"faction":3,"race":0,"class":8191}
 {"id":8791,"name":"The Fall of Ossirian","level":60,"zone":"Ruins of Ahn'Qiraj","category":3429,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8792,"name":"The Horde Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8793,"name":"The Horde Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8794,"name":"The Horde Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8795,"name":"The Alliance Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8796,"name":"The Alliance Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8797,"name":"The Alliance Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":3,"race":0,"class":8191}
+{"id":8792,"name":"The Horde Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8793,"name":"The Horde Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8794,"name":"The Horde Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8795,"name":"The Alliance Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8796,"name":"The Alliance Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8797,"name":"The Alliance Needs Your Help!","level":60,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
 {"id":8798,"name":"A Yeti of Your Own","level":60,"zone":"Winterspring","category":618,"type":32,"faction":3,"race":0,"class":8191,"profession":8,"prereq":5163}
 {"id":8799,"name":"The Hero of the Day","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"profession":8192,"holiday":8,"prereq":8746}
 {"id":8800,"name":"Cenarion Battlegear","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
@@ -3784,50 +3784,50 @@
 {"id":8808,"name":"Uniform Supplies","level":60,"zone":"Silithus","category":1377,"type":2,"faction":2,"race":0,"class":8191}
 {"id":8809,"name":"Extraordinary Materials","level":60,"zone":"Silithus","category":1377,"type":2,"faction":2,"race":0,"class":8191}
 {"id":8810,"name":"Bandages for the Field","level":60,"zone":"Silithus","category":1377,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8811,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8812,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8813,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8814,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8815,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8816,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8817,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8818,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8819,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8820,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8821,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8822,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8823,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8824,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8825,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8826,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191}
+{"id":8811,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8812,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8813,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8814,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8815,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8816,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8817,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8818,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8819,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8820,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8821,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8822,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8823,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8824,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8825,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8826,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768}
 {"id":8827,"name":"Winter's Presents","level":1,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":8}
 {"id":8828,"name":"Winter's Presents","level":1,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8}
-{"id":8830,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8811}
-{"id":8831,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8819}
-{"id":8832,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8815}
-{"id":8833,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8823}
-{"id":8834,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8812}
-{"id":8835,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8820}
-{"id":8836,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8813}
-{"id":8837,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8821}
-{"id":8838,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8814}
-{"id":8839,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"prereq":8822}
-{"id":8840,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8816}
-{"id":8841,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8824}
-{"id":8842,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8817}
-{"id":8843,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8825}
-{"id":8844,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8818}
-{"id":8845,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"prereq":8826}
-{"id":8846,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8847,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8848,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8851,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8852,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8853,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":1,"faction":2,"race":0,"class":8191}
+{"id":8830,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8811}
+{"id":8831,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8819}
+{"id":8832,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8815}
+{"id":8833,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8823}
+{"id":8834,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8812}
+{"id":8835,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8820}
+{"id":8836,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8813}
+{"id":8837,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8821}
+{"id":8838,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8814}
+{"id":8839,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":1,"race":0,"class":8191,"holiday":32768,"prereq":8822}
+{"id":8840,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8816}
+{"id":8841,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8824}
+{"id":8842,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8817}
+{"id":8843,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8825}
+{"id":8844,"name":"One Commendation Signet","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8818}
+{"id":8845,"name":"Ten Commendation Signets","level":60,"zone":"Reputation","category":-367,"type":2,"faction":2,"race":0,"class":8191,"holiday":32768,"prereq":8826}
+{"id":8846,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8847,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8848,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":1,"race":0,"class":8191,"holiday":32768}
+{"id":8851,"name":"Five Signets for War Supplies","level":19,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8852,"name":"Ten Signets for War Supplies","level":29,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":2,"race":0,"class":8191,"holiday":32768}
+{"id":8853,"name":"Fifteen Signets for War Supplies","level":39,"zone":"Ahn'Qiraj War","category":-365,"type":64,"faction":2,"race":0,"class":8191,"holiday":32768}
 {"id":8856,"name":"Desert Survival Kits","level":0,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8857,"name":"Secrets of the Colossus - Ashi","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8858,"name":"Secrets of the Colossus - Regal","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
-{"id":8859,"name":"Secrets of the Colossus - Zora","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
+{"id":8857,"name":"Secrets of the Colossus - Ashi","level":60,"zone":"Silithus","category":1377,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8858,"name":"Secrets of the Colossus - Regal","level":60,"zone":"Silithus","category":1377,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
+{"id":8859,"name":"Secrets of the Colossus - Zora","level":60,"zone":"Silithus","category":1377,"type":64,"faction":3,"race":0,"class":8191,"holiday":32768}
 {"id":8860,"name":"New Year Celebrations!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":8}
 {"id":8861,"name":"New Year Celebrations!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8}
 {"id":8862,"name":"Elune's Candle","level":60,"zone":"Lunar Festival","category":-366,"type":64,"faction":3,"race":0,"class":8191,"holiday":128}
@@ -3921,7 +3921,7 @@
 {"id":8978,"name":"Return to Mokvar","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"prereq":8928}
 {"id":8979,"name":"Fenstad's Hunch","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8904}
 {"id":8980,"name":"Zinge's Assessment","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"holiday":64,"prereq":8979}
-{"id":8981,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":64}
+{"id":8981,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":2,"faction":2,"race":67109042,"class":8191,"holiday":64}
 {"id":8982,"name":"Tracing the Source","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8980}
 {"id":8983,"name":"Tracing the Source","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8982}
 {"id":8984,"name":"The Source Revealed","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":64,"prereq":8983}
@@ -3933,7 +3933,7 @@
 {"id":8990,"name":"The Right Piece of Lord Valthalak's Amulet","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191,"prereq":8985}
 {"id":8991,"name":"The Right Piece of Lord Valthalak's Amulet","level":60,"zone":"Stratholme","category":2017,"type":1,"faction":3,"race":0,"class":8191,"prereq":8987}
 {"id":8992,"name":"The Right Piece of Lord Valthalak's Amulet","level":60,"zone":"Scholomance","category":2057,"type":1,"faction":3,"race":0,"class":8191,"prereq":8988}
-{"id":8993,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":64}
+{"id":8993,"name":"Gift Giving","level":60,"zone":"Seasonal","category":-22,"type":2,"faction":1,"race":67108941,"class":8191,"holiday":64}
 {"id":8994,"name":"Final Preparations","level":60,"zone":"Blackrock Mountain","category":25,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8995,"name":"Mea Culpa, Lord Valthalak","level":60,"zone":"Blackrock Spire","category":17804,"type":1,"faction":3,"race":0,"class":8191,"prereq":8994}
 {"id":8996,"name":"Return to Bodley","level":60,"zone":"Blackrock Mountain","category":25,"type":1,"faction":3,"race":0,"class":8191,"prereq":8995}
@@ -3969,15 +3969,15 @@
 {"id":9026,"name":"Tracing the Source","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"holiday":64,"prereq":9025}
 {"id":9027,"name":"Tracing the Source","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":64,"prereq":9026}
 {"id":9028,"name":"The Source Revealed","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":64,"prereq":9027}
-{"id":9029,"name":"A Bubbling Cauldron","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"prereq":9028}
+{"id":9029,"name":"A Bubbling Cauldron","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"holiday":64,"prereq":9028}
 {"id":9032,"name":"Bodley's Unfortunate Fate","level":60,"zone":"Blackrock Mountain","category":25,"type":1,"faction":2,"race":0,"class":8191}
 {"id":9033,"name":"Echoes of War","level":60,"zone":"Naxxramas","category":3456,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9051,"name":"Toxic Test","level":52,"zone":"Druid","category":-263,"type":1,"faction":3,"race":0,"class":512,"prereq":9052}
 {"id":9052,"name":"Bloodpetal Poison","level":52,"zone":"Druid","category":-263,"type":1,"faction":3,"race":0,"class":512}
 {"id":9053,"name":"A Better Ingredient","level":52,"zone":"Druid","category":-263,"type":1,"faction":3,"race":0,"class":512,"prereq":9051}
 {"id":9063,"name":"Torwa Pathfinder","level":52,"zone":"Druid","category":-263,"type":1,"faction":3,"race":0,"class":512}
-{"id":9085,"name":"Shadows of Doom","level":60,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
-{"id":9094,"name":"Argent Dawn Gloves","level":60,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"prereq":9153}
+{"id":9085,"name":"Shadows of Doom","level":60,"zone":"Invasion","category":-368,"type":64,"faction":3,"race":0,"class":8191,"holiday":16384}
+{"id":9094,"name":"Argent Dawn Gloves","level":60,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"holiday":16384,"prereq":9153}
 {"id":9120,"name":"The Fall of Kel'Thuzad","level":60,"zone":"Naxxramas","category":3456,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9121,"name":"The Dread Citadel - Naxxramas","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9122,"name":"The Dread Citadel - Naxxramas","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":3,"race":0,"class":8191}
@@ -3994,8 +3994,8 @@
 {"id":9137,"name":"Savage Fronds","level":60,"zone":"Eastern Plaguelands","category":139,"type":2,"faction":3,"race":0,"class":8191,"prereq":9136}
 {"id":9141,"name":"They Call Me \"The Rooster\"","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9142,"name":"Craftsman's Writ","level":60,"zone":"Eastern Plaguelands","category":139,"type":2,"faction":3,"race":0,"class":8191,"prereq":9141}
-{"id":9153,"name":"Under the Shadow","level":60,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
-{"id":9154,"name":"Light's Hope Chapel","level":0,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
+{"id":9153,"name":"Under the Shadow","level":60,"zone":"Invasion","category":-368,"type":64,"faction":3,"race":0,"class":8191,"holiday":16384}
+{"id":9154,"name":"Light's Hope Chapel","level":0,"zone":"Invasion","category":-368,"type":64,"faction":3,"race":0,"class":8191,"holiday":16384}
 {"id":9178,"name":"Craftsman's Writ - Dense Weightstone","level":60,"zone":"Eastern Plaguelands","category":139,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9179,"name":"Craftsman's Writ - Imperial Plate Chest","level":60,"zone":"Eastern Plaguelands","category":139,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9181,"name":"Craftsman's Writ - Volcanic Hammer","level":60,"zone":"Eastern Plaguelands","category":139,"type":2,"faction":3,"race":0,"class":8191}
@@ -4056,12 +4056,12 @@
 {"id":9251,"name":"Atiesh, the Befouled Greatstaff","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":8191,"prereq":9250}
 {"id":9257,"name":"Atiesh, Greatstaff of the Guardian","level":60,"zone":"Legendary","category":-344,"type":1,"faction":3,"race":0,"class":16,"prereq":9251}
 {"id":9259,"name":"Traitor to the Bloodsail","level":60,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191}
-{"id":9260,"name":"Investigate the Scourge of Stormwind","level":6,"zone":"Invasion","category":-368,"type":1,"faction":1,"race":67108941,"class":8191}
-{"id":9261,"name":"Investigate the Scourge of Ironforge","level":10,"zone":"Invasion","category":-368,"type":1,"faction":1,"race":67108941,"class":8191}
-{"id":9262,"name":"Investigate the Scourge of Darnassus","level":10,"zone":"Invasion","category":-368,"type":1,"faction":1,"race":67108941,"class":8191}
-{"id":9263,"name":"Investigate the Scourge of Orgrimmar","level":10,"zone":"Invasion","category":-368,"type":1,"faction":2,"race":67109042,"class":8191}
-{"id":9264,"name":"Investigate the Scourge of Thunder Bluff","level":10,"zone":"Invasion","category":-368,"type":1,"faction":2,"race":67109042,"class":8191}
-{"id":9265,"name":"Investigate the Scourge of the Undercity","level":8,"zone":"Invasion","category":-368,"type":1,"faction":2,"race":67109042,"class":8191}
+{"id":9260,"name":"Investigate the Scourge of Stormwind","level":6,"zone":"Invasion","category":-368,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":16384}
+{"id":9261,"name":"Investigate the Scourge of Ironforge","level":10,"zone":"Invasion","category":-368,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":16384}
+{"id":9262,"name":"Investigate the Scourge of Darnassus","level":10,"zone":"Invasion","category":-368,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":16384}
+{"id":9263,"name":"Investigate the Scourge of Orgrimmar","level":10,"zone":"Invasion","category":-368,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":16384}
+{"id":9264,"name":"Investigate the Scourge of Thunder Bluff","level":10,"zone":"Invasion","category":-368,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":16384}
+{"id":9265,"name":"Investigate the Scourge of the Undercity","level":8,"zone":"Invasion","category":-368,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":16384}
 {"id":9266,"name":"Making Amends","level":60,"zone":"Winterspring","category":618,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9267,"name":"Mending Old Wounds","level":60,"zone":"The Barrens","category":17,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9268,"name":"War at Sea","level":60,"zone":"Tanaris","category":440,"type":2,"faction":3,"race":0,"class":8191}
@@ -4077,11 +4077,11 @@
 {"id":9302,"name":"Missive from the Front","level":60,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9304,"name":"Document from the Front","level":60,"zone":"Invasion","category":-368,"type":1,"faction":3,"race":0,"class":8191}
 {"id":9310,"name":"Faint Necrotic Crystal","level":60,"zone":"Invasion","category":-368,"type":1,"faction":2,"race":67109042,"class":8191}
-{"id":9317,"name":"Consecrated Sharpening Stones","level":60,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"prereq":9153}
-{"id":9318,"name":"Blessed Wizard Oil","level":0,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"prereq":9153}
+{"id":9317,"name":"Consecrated Sharpening Stones","level":60,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9318,"name":"Blessed Wizard Oil","level":0,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"holiday":16384,"prereq":9153}
 {"id":9319,"name":"A Light in Dark Places","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":1,"race":0,"class":8191,"holiday":256}
-{"id":9320,"name":"Major Mana Potion","level":60,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"prereq":9153}
-{"id":9321,"name":"Major Healing Potion","level":-1,"zone":"","category":0,"type":2,"faction":1,"race":0,"class":8191,"prereq":9153}
+{"id":9320,"name":"Major Mana Potion","level":60,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9321,"name":"Major Healing Potion","level":-1,"zone":"","category":0,"type":2,"faction":1,"race":0,"class":8191,"holiday":16384,"prereq":9153}
 {"id":9322,"name":"Wild Fires in Kalimdor","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":3,"race":0,"class":8191,"holiday":256}
 {"id":9323,"name":"Wild Fires in the Eastern Kingdoms","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":3,"race":0,"class":8191,"holiday":256}
 {"id":9324,"name":"Stealing Orgrimmar's Flame","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":1,"race":0,"class":8191,"holiday":256}
@@ -4090,15 +4090,15 @@
 {"id":9330,"name":"Stealing Stormwind's Flame","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":2,"race":0,"class":8191,"holiday":256}
 {"id":9331,"name":"Stealing Ironforge's Flame","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":2,"race":0,"class":8191,"holiday":256}
 {"id":9332,"name":"Stealing Darnassus's Flame","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":2,"race":0,"class":8191,"holiday":256}
-{"id":9333,"name":"Argent Dawn Gloves","level":60,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"prereq":9153}
-{"id":9334,"name":"Blessed Wizard Oil","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"prereq":9153}
-{"id":9335,"name":"Consecrated Sharpening Stones","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"prereq":9153}
-{"id":9336,"name":"Major Healing Potion","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"prereq":9153}
-{"id":9337,"name":"Major Mana Potion","level":0,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"prereq":9153}
+{"id":9333,"name":"Argent Dawn Gloves","level":60,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9334,"name":"Blessed Wizard Oil","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9335,"name":"Consecrated Sharpening Stones","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9336,"name":"Major Healing Potion","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9337,"name":"Major Mana Potion","level":0,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"holiday":16384,"prereq":9153}
 {"id":9338,"name":"Allegiance to Cenarion Circle","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191}
 {"id":9339,"name":"A Thief's Reward","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":2,"race":0,"class":8191,"holiday":256}
-{"id":9341,"name":"Tabard of the Argent Dawn","level":0,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"prereq":9153}
-{"id":9343,"name":"Tabard of the Argent Dawn","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"prereq":9153}
+{"id":9341,"name":"Tabard of the Argent Dawn","level":0,"zone":"Invasion","category":-368,"type":2,"faction":1,"race":0,"class":8191,"holiday":16384,"prereq":9153}
+{"id":9343,"name":"Tabard of the Argent Dawn","level":0,"zone":"Invasion","category":-368,"type":2,"faction":2,"race":0,"class":8191,"holiday":16384,"prereq":9153}
 {"id":9362,"name":"Warlord Krellian","level":60,"zone":"Mage","category":-161,"type":1,"faction":3,"race":0,"class":128}
 {"id":9364,"name":"Fragmented Magic","level":60,"zone":"Mage","category":-161,"type":1,"faction":3,"race":0,"class":128,"prereq":9362}
 {"id":9365,"name":"A Thief's Reward","level":60,"zone":"Midsummer","category":-369,"type":64,"faction":1,"race":0,"class":8191,"holiday":256}

@@ -479,6 +479,8 @@ It writes `tools\reachability-report.txt`, a report only, listing:
   race/class, profession, covenant, seasonal, no-data, requirements-not-met), and which filter
   hides each one. This is where contradictory data turns up, such as an Alliance quest whose race
   mask only holds Horde races.
+- Pins of events the calendar doesn't show, such as the Scourge Invasion, which the seasonal filter
+  hides from everyone, as it should. Retail has none.
 - Quests in categories the list can't browse to, pin maps missing from `tools\UiMap.csv`, and
   holiday values that aren't in `qcHolidays`.
 
@@ -524,6 +526,12 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
+   A quest whose givers, NPCs and objects, all stand only during one of CMaNGOS's game events gets
+   that event's holiday, so its pins follow the calendar. Events with no holiday of their own go by
+   their description: the Darkmoon Faire's building days, the fishing contest's announcers and
+   judges, and the Scourge Invasion and Ahn'Qiraj War Effort, which the calendar doesn't show, so
+   their quests stay off the map. Recurring quests keep their type: a repeatable holiday quest is
+   repeatable, as on retail.
 5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
    and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl` and `reputation.jsonl`, with
    the factions' English names from the client's `Faction` table. A new zone it can't place goes in
@@ -535,7 +543,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua QuestCompletist tools QuestCompletist_Camelot.toc tools\UiMap-<build>.csv
    ```
    It writes `tools\reachability-report-QuestCompletist_Camelot.txt`. Every count in its summary was
-   0 in October 2026, so anything else is new.
+   0 in October 2026, so anything else is new, apart from the 81 pins of events the calendar doesn't
+   show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's.
 
 With the same sources, a rerun writes the same files byte for byte. So whatever changes comes from
 the game, the client's tables or CMaNGOS, and is for review before its pull request.
@@ -573,12 +582,17 @@ Seasonal quests need no yearly upkeep. The map's seasonal filter asks the game's
 holidays are running, and `qcHolidays` in `qcCore.lua` ties each holiday value in the quest
 database to the IDs of the game's Holidays table that its calendar event carries.
 
-`/qc holidays` in game lists what the filter sees: which holidays are running, each one's next dates,
-and any calendar holiday that isn't tied to a quest. A holiday there that should match one of ours,
-under a new ID, means an entry in `qcHolidays` needs that ID adding. A new holiday with quests
-needs a new flag, an entry, and its quests' `holiday` set in `data\quests.jsonl`. Forever's quests
-get theirs from the importer, through its own table from Holidays IDs to flags, so add the ID there
-too and rerun step 10.
+`/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
+running, each one's next dates, and any calendar holiday that isn't tied to a quest. A holiday there
+that should match one of ours, under a new ID, means an entry in `qcHolidays` needs that ID adding. A
+new holiday with quests needs a new flag, an entry, and its quests' `holiday` set in
+`data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table from
+Holidays IDs to flags, so add the ID there too and rerun step 10.
+
+Some events aren't on the calendar at all. WoW: Forever's Scourge Invasion and Ahn'Qiraj War Effort
+have entries in `qcHolidays` with no IDs, so the seasonal filter always hides their quests on the map;
+the quest list still has them. `/qc holidays` says they're not on the calendar. If Blizzard ever adds
+one to the Holidays table, it shows up there as a calendar holiday not tied to a quest: add its ID.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it

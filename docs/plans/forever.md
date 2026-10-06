@@ -233,7 +233,8 @@ From the beta's data (9 seconds, with the same files on a rerun):
   profession and holiday quests and Forever's own headings (Camping, The High Order, Nightmare
   Incursions). Phase 4's menu is built on these.
 - **Seasonal quests** get their holiday from CMaNGOS's events, which carry Blizzard's holiday IDs, or
-  from their heading. That gives 146 seasonal quests, 137 of them with a holiday.
+  from their heading. That gives 146 seasonal quests, 137 of them with a holiday. (Since 6 October,
+  also from the events all their givers stand during: see "Event quests" below.)
 - **Skyborne** has no race bit in the addon yet. The data uses 67108864, and phase 4 adds it to
   `qcRaceBits`.
 
@@ -502,6 +503,44 @@ as `C_Reputation.GetFactionDataByID` and "Reputation Changes".
   Three broken copies of the tables (no groups, breadcrumbs the wrong way round, TBC's amounts)
   each failed it. The reachability check is still clean.
 
+### Event quests (6 October 2026)
+
+The user found pins in Darnassus for the Scourge Invasion's "Light's Hope Chapel" and "Investigate
+the Scourge of Darnassus", though the event isn't running. The importer only gave a quest a holiday
+when CMaNGOS tied its event to one of the client's holidays, so givers who stand only during other
+events were pinned all year.
+
+- **What was pinned all year,** by CMaNGOS's `game_event_creature` and `game_event_gameobject`:
+  - the Scourge Invasion's 23 givers in the six capitals, Dun Morogh and the Eastern Plaguelands;
+  - the Ahn'Qiraj War Effort's 58: the collectors and commendation officers of the collection
+    phase, the ten-hour war's sergeants, the officers who take signets once the war is over, and
+    the Colossus researchers and the Scarab Gong in Silithus. Its phases can't run together, so
+    some of these were wrong whatever state Forever's world is in;
+  - the fishing contest's 5 announcers and judges in Booty Bay, Orgrimmar and Ironforge;
+  - Kruban Darkblade in Orgrimmar, who stands there while the Darkmoon Faire is being built;
+  - two objects only there during a holiday, whose quests were seasonal with no holiday: Hallow's
+    End's kegs ("Ruined Kegs") and Love is in the Air's cauldron ("A Bubbling Cauldron").
+- **The importer** gives a quest the holiday or event all its givers, NPCs and objects, stand only
+  during. One giver who's always there means the quest is always there. CMaNGOS's events with no
+  holiday of their own go by their description: the faire's building days are the faire's, the
+  contest's announcers and judges the contest's (Holidays ID 301, on Forever's calendar every Sunday
+  from 14:00 for two hours), and the Scourge Invasion and the War Effort get flags of their own.
+- **The Scourge Invasion and the War Effort aren't in Forever's Holidays table** (build 70205), so
+  its calendar can't show them. Their entries in `qcHolidays` have no IDs, and the seasonal filter,
+  on for the map by default, always hides their pins. The quest list keeps their quests.
+- **Recurring quests keep their type.** Seasonal came before daily, weekly and repeatable, so a
+  repeatable holiday quest was seasonal, and stayed ticked off once handed in. Recurrence now comes
+  first, as on retail: the Darkmoon Faire's 40 turn-ins and Love is in the Air's 2 "Gift Giving"
+  quests are repeatable, as are the event quests above that repeat.
+- **`/qc holidays`** lists only the holidays the game's quests have, so Forever's no longer lists
+  retail's, and retail's doesn't list Forever's events.
+- **The result:** 139 quests gained a holiday (21 of the Scourge Invasion, 108 of the War Effort, 7
+  of the fishing contest, the faire's one and the 2 objects'), and 42 holiday quests are repeatable.
+  Still 5,081 quests and 1,732 pins. The reachability check lists the 81 pins of the Scourge
+  Invasion and the War Effort in a section of their own; every other count is still 0. A test with
+  stand-ins for the calendar showed the fishing pins on a Sunday afternoon and the keg during
+  Hallow's End, and none of the 81 pins on any day.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -516,6 +555,10 @@ as `C_Reputation.GetFactionDataByID` and "Reputation Changes".
 - Whether Thalid83 plans a Forever version, and whether their Classic data can be compared.
 - Which old quests that only the game knows Forever really offers. They're later Classic Era
   additions, such as a Warlock "The Binding" chain and Paladin quests numbered 78000 and up.
+- Whether Forever will run the Scourge Invasion or the Ahn'Qiraj War Effort, and how. In Classic Era
+  the war is long over, and the officers who take signets stand in the capitals for good; if
+  Forever's world is like that, their pins should show. If either event comes to Forever's calendar,
+  `/qc holidays` lists it among the calendar holidays not tied to a quest.
 - Whether the 39 quests CMaNGOS calls repeatable that `QuestV2` does list really repeat. No quest
   retail's API flags repeatable is in retail's `QuestV2`, but Forever's lists "Junkboxes Needed"
   (8249), which retail's API calls repeatable. They keep CMaNGOS's type until the recorder sees them
@@ -544,3 +587,6 @@ as `C_Reputation.GetFactionDataByID` and "Reputation Changes".
   Breadcrumbs and "only one of these" groups from CMaNGOS, and reputation from the game's records
   (Classic Era's amounts, not CMaNGOS's mostly TBC ones) (#162); results above. Next: a probe rerun once
   the beta opens levels above 40, and more of Zephras Isle from the recorder.
+- 2026-10-06: quests whose givers only stand during an event follow it. The Scourge Invasion's and
+  the Ahn'Qiraj War Effort's, which the calendar doesn't show, stay off the map, and recurring
+  holiday quests keep their type; results above.
