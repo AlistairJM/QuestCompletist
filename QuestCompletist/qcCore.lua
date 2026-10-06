@@ -1008,7 +1008,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			qcCurrentSearchText = searchText
 			qcGetCategoryQuests(nil, searchText)
 			qcCurrentCategoryQuestCount = (#qcCategoryQuests)
-			qcQuestCompletistUI.qcSelectedCategory:SetText(qcL.SEARCHRESULTS)
+			qcQuestCompletistUI.qcSelectedCategory:SetText(SPELLBOOK_SEARCH_HEADER_RESULTS)
 			if (qcCurrentCategoryQuestCount < 16) then
 				qcMenuSlider:SetMinMaxValues(1, 1)
 			else
@@ -1749,7 +1749,7 @@ function GetZoneNameFromZoneID(zoneId)
     if zoneName and zoneName ~= "" then return zoneName end
     local info = C_Map.GetMapInfo(zoneId)
     if info and info.name and info.name ~= "" then return info.name end
-    return qcL.UNKNOWNZONE
+    return UNKNOWN
 end
 
 -- Every pin that offers a quest, with its map, found on first use. An index of all quests would

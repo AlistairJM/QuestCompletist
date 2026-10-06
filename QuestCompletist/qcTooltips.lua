@@ -176,7 +176,7 @@ local function qcPrereqQuestText(questId)
     else
         icon, colour = QC_ICON_NORMAL, "ffffff"
     end
-    return string.format("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, qcQuestName(questId, qcQuestTooltipWaiting) or qcL.UNKNOWNQUEST)
+    return string.format("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, qcQuestName(questId, qcQuestTooltipWaiting) or UNKNOWN)
 end
 
 -- Function to update the quest tooltip
@@ -258,7 +258,7 @@ function qcUpdateTooltip(index)
                     end
                 end
             end
-            qcQuestInformationTooltip:AddDoubleLine(qcL.STORYLINE, stringFormat("%s%s|r |cFF808080%s|r", COLOUR_HUNTER, storyline.name, stringFormat(qcL.STORYLINEPOSITION, position, #lineQuests)))
+            qcQuestInformationTooltip:AddDoubleLine(stringFormat(STAT_FORMAT, QUEST_CLASSIFICATION_QUESTLINE), stringFormat("%s%s|r |cFF808080%s|r", COLOUR_HUNTER, storyline.name, stringFormat(qcL.STORYLINEPOSITION, position, #lineQuests)))
             if total >= 2 then
                 qcQuestInformationTooltip:AddDoubleLine(" ", stringFormat("|cffc8c8c8%d/%d|r", done, total))
                 local line = qcQuestInformationTooltip:NumLines()
@@ -308,7 +308,7 @@ function qcUpdateTooltip(index)
             if type(renownInfo) == "table" then
                 local factionId = renownInfo[1]
                 local requiredRenownLevel = renownInfo[2]
-                local factionName = qcFactionName(factionId) or qcL.UNKNOWNFACTION
+                local factionName = qcFactionName(factionId) or UNKNOWN
                 local currentRenownLevel, isRank = qcFactionLevel(factionId)
                 local levelLabel = isRank and qcL.REQUIREDRANK or qcL.REQUIREDRENOWN
 
@@ -319,10 +319,10 @@ function qcUpdateTooltip(index)
                     qcQuestInformationTooltip:AddDoubleLine(levelLabel, string.format("|A:%s:14:14|a |cff%s%d|r",
                         met and "common-icon-checkmark" or "common-icon-redx", met and "00ff00" or "ff2020", requiredRenownLevel))
                 else
-                    qcQuestInformationTooltip:AddDoubleLine(levelLabel, "|cFFFF0000" .. qcL.DATAUNAVAILABLE .. "|r")
+                    qcQuestInformationTooltip:AddDoubleLine(levelLabel, tostring(requiredRenownLevel))
                 end
             elseif type(renownInfo) == "number" then
-                local factionName = qcFactionName(renownInfo) or qcL.UNKNOWNFACTION
+                local factionName = qcFactionName(renownInfo) or UNKNOWN
                 qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s%s", qcFactionIconText(renownInfo), COLOUR_DRUID, factionName))
             end
 
@@ -350,7 +350,7 @@ function qcUpdateTooltip(index)
         if giverPin then
             qcQuestInformationTooltip:AddDoubleLine(
                 qcL.QUESTGIVER,
-                string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or qcL.UNKNOWNNPC,
+                string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or UNKNOWN,
                     GetZoneNameFromZoneID(giverMapId), giverPin[4] or 0, giverPin[5] or 0)
             )
         else

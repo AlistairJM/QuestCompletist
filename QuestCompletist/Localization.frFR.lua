@@ -85,28 +85,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d terminées (%d%%)", -- Needs review
-	SEARCHRESULTS = "Résultats de la recherche", -- Needs review
 	SERVERQUERYRESULT = "Le serveur signale %d quêtes terminées connues de Quest Completist, dont %d nouvellement marquées comme terminées.", -- Needs review
 	CACHECLEARED = "Cache vidé.", -- Needs review
 	CLEARINGCACHE = "Vidage de votre cache de mise à jour...", -- Needs review
 	NODETAILS = "Le jeu ne fournit pas les détails de la quête", -- Needs review
 	QUESTID = "ID de quête :", -- Needs review
-	STORYLINE = "Suite de quêtes :", -- Needs review
 	STORYLINEPOSITION = "(%d sur %d)", -- Needs review
 	EARLIERQUESTS = "... %d précédentes", -- Needs review
 	LATERQUESTS = "... %d de plus", -- Needs review
 	THISQUEST = "cette quête", -- Needs review
-	UNKNOWNQUEST = "Quête inconnue", -- Needs review
 	REQUIREDQUEST = "Quête requise :", -- Needs review
-	UNKNOWNFACTION = "Faction inconnue", -- Needs review
 	REQUIREDFACTION = "Faction requise :", -- Needs review
 	REQUIREDRENOWN = "Niveau de renom requis :", -- Needs review
 	REQUIREDRANK = "Rang requis :", -- Needs review
 	REQUIREDSKILL = "Compétence requise :", -- Needs review
 	RANKLEVEL = "Rang %d", -- Needs review
-	DATAUNAVAILABLE = "Données indisponibles", -- Needs review
 	QUESTGIVER = "Donneur de quête :", -- Needs review
-	UNKNOWNNPC = "PNJ inconnu", -- Needs review
 	NOQUESTGIVER = "Inconnu, ou quête acceptée automatiquement", -- Needs review
 	REPAMOUNT = "%d de réputation", -- Needs review
 	NEWDATAINTRO = "Quest Completist ignorait les informations suivantes. Aidez à améliorer la précision de l'addon en les signalant sur CurseForge.", -- Needs review
@@ -129,7 +123,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "La quête %d « %s » est indiquée comme n'étant plus disponible, mais vous venez de l'accepter. Elle s'affiche normalement pour vous ; signalez-le pour que la liste soit corrigée.", -- Needs review
 	UNAVAILABLETURNEDIN = "La quête %d « %s » est indiquée comme n'étant plus disponible, mais vous venez de la rendre. Elle s'affiche normalement pour vous ; signalez-le pour que la liste soit corrigée.", -- Needs review
 	TOGGLEFRAME = "Afficher/masquer la fenêtre", -- Needs review
-	UNKNOWNZONE = "Zone inconnue", -- Needs review
 	}, {__index = qcLocalize})
 
 end

@@ -187,7 +187,7 @@ local function qcMaskNames(mask, bits, nameOf)
 end
 
 local function qcPrereqName(questId)
-    return qcQuestName(questId, qcMapTooltipWaiting) or qcL.UNKNOWNQUEST
+    return qcQuestName(questId, qcMapTooltipWaiting) or UNKNOWN
 end
 
 -- What stands between the character and a quest still to do, in the words of Blizzard's item
@@ -231,7 +231,7 @@ local function qcPinQuestNeeds(questId, state, anything)
     if type(renown) == "table" then level, isRank = qcFactionLevel(renown[1]) end
     if level and level < renown[2] then
         if anything then return true end
-        needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or qcL.UNKNOWNFACTION,
+        needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or UNKNOWN,
             string.format(isRank and qcL.RANKLEVEL or RENOWN_LEVEL_LABEL, renown[2]))
     end
     -- A level of 1 asks only for the profession: "Requires Fishing" rather than "Requires Fishing (1)".

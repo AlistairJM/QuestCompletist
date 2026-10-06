@@ -86,28 +86,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d abgeschlossen (%d%%)", -- Needs review
-	SEARCHRESULTS = "Suchergebnisse", -- Needs review
 	SERVERQUERYRESULT = "Der Server meldet %d abgeschlossene Quests, die Quest Completist kennt, davon %d neu als abgeschlossen markiert.", -- Needs review
 	CACHECLEARED = "Cache geleert.", -- Needs review
 	CLEARINGCACHE = "Dein Update-Cache wird geleert...", -- Needs review
 	NODETAILS = "Das Spiel liefert keine Questdetails", -- Needs review
 	QUESTID = "Quest-ID:", -- Needs review
-	STORYLINE = "Questreihe:", -- Needs review
 	STORYLINEPOSITION = "(%d von %d)", -- Needs review
 	EARLIERQUESTS = "... %d frühere", -- Needs review
 	LATERQUESTS = "... %d weitere", -- Needs review
 	THISQUEST = "diese Quest", -- Needs review
-	UNKNOWNQUEST = "Unbekannte Quest", -- Needs review
 	REQUIREDQUEST = "Benötigte Quest:", -- Needs review
-	UNKNOWNFACTION = "Unbekannte Fraktion", -- Needs review
 	REQUIREDFACTION = "Benötigte Fraktion:", -- Needs review
 	REQUIREDRENOWN = "Benötigte Ruhmstufe:", -- Needs review
 	REQUIREDRANK = "Benötigter Rang:", -- Needs review
 	REQUIREDSKILL = "Benötigte Fertigkeit:", -- Needs review
 	RANKLEVEL = "Rang %d", -- Needs review
-	DATAUNAVAILABLE = "Daten nicht verfügbar", -- Needs review
 	QUESTGIVER = "Questgeber:", -- Needs review
-	UNKNOWNNPC = "Unbekannter NSC", -- Needs review
 	NOQUESTGIVER = "Unbekannt, oder automatisch angenommene Quest", -- Needs review
 	REPAMOUNT = "%d Ruf", -- Needs review
 	NEWDATAINTRO = "Quest Completist kannte die folgenden Informationen noch nicht. Bitte hilf, das Addon genauer zu machen, indem du sie auf CurseForge meldest.", -- Needs review
@@ -130,7 +124,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "Quest %d \"%s\" ist als nicht mehr verfügbar eingetragen, aber du hast sie gerade angenommen. Bei dir wird sie normal angezeigt; bitte melde es, damit die Liste korrigiert werden kann.", -- Needs review
 	UNAVAILABLETURNEDIN = "Quest %d \"%s\" ist als nicht mehr verfügbar eingetragen, aber du hast sie gerade abgegeben. Bei dir wird sie normal angezeigt; bitte melde es, damit die Liste korrigiert werden kann.", -- Needs review
 	TOGGLEFRAME = "Fenster ein-/ausblenden", -- Needs review
-	UNKNOWNZONE = "Unbekannte Zone", -- Needs review
 	}, {__index = qcLocalize})
 
 end

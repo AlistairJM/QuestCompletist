@@ -85,28 +85,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "Выполнено %d/%d (%d%%)", -- Needs review
-	SEARCHRESULTS = "Результаты поиска", -- Needs review
 	SERVERQUERYRESULT = "Сервер сообщает о %d выполненных заданиях, известных Quest Completist; %d из них отмечены как выполненные впервые.", -- Needs review
 	CACHECLEARED = "Кэш очищен.", -- Needs review
 	CLEARINGCACHE = "Очистка кэша обновлений...", -- Needs review
 	NODETAILS = "Игра не предоставила сведений о задании", -- Needs review
 	QUESTID = "ID задания:", -- Needs review
-	STORYLINE = "Цепочка заданий:", -- Needs review
 	STORYLINEPOSITION = "(%d из %d)", -- Needs review
 	EARLIERQUESTS = "... %d предыдущих", -- Needs review
 	LATERQUESTS = "... ещё %d", -- Needs review
 	THISQUEST = "это задание", -- Needs review
-	UNKNOWNQUEST = "Неизвестное задание", -- Needs review
 	REQUIREDQUEST = "Требуется задание:", -- Needs review
-	UNKNOWNFACTION = "Неизвестная фракция", -- Needs review
 	REQUIREDFACTION = "Требуемая фракция:", -- Needs review
 	REQUIREDRENOWN = "Требуемый уровень известности:", -- Needs review
 	REQUIREDRANK = "Требуемый ранг:", -- Needs review
 	REQUIREDSKILL = "Требуемый навык:", -- Needs review
 	RANKLEVEL = "Ранг %d", -- Needs review
-	DATAUNAVAILABLE = "Данные недоступны", -- Needs review
 	QUESTGIVER = "Выдаёт задание:", -- Needs review
-	UNKNOWNNPC = "Неизвестный НИП", -- Needs review
 	NOQUESTGIVER = "Неизвестно, или задание принимается автоматически", -- Needs review
 	REPAMOUNT = "%d репутации", -- Needs review
 	NEWDATAINTRO = "Quest Completist не знал следующих сведений. Помогите сделать аддон точнее: сообщите о них на CurseForge.", -- Needs review
@@ -129,7 +123,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "Задание %d «%s» отмечено как недоступное, но вы только что его взяли. Для вас оно показывается как обычно; сообщите об этом, чтобы список исправили.", -- Needs review
 	UNAVAILABLETURNEDIN = "Задание %d «%s» отмечено как недоступное, но вы только что его сдали. Для вас оно показывается как обычно; сообщите об этом, чтобы список исправили.", -- Needs review
 	TOGGLEFRAME = "Показать/скрыть окно", -- Needs review
-	UNKNOWNZONE = "Неизвестная зона", -- Needs review
 	}, {__index = qcLocalize})
 
 end

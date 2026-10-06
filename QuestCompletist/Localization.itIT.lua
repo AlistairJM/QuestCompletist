@@ -86,28 +86,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d completate (%d%%)", -- Needs review
-	SEARCHRESULTS = "Risultati della ricerca", -- Needs review
 	SERVERQUERYRESULT = "Il server segnala %d missioni completate note a Quest Completist, di cui %d appena segnate come completate.", -- Needs review
 	CACHECLEARED = "Cache svuotata.", -- Needs review
 	CLEARINGCACHE = "Svuotamento della cache degli aggiornamenti...", -- Needs review
 	NODETAILS = "Il gioco non fornisce i dettagli della missione", -- Needs review
 	QUESTID = "ID missione:", -- Needs review
-	STORYLINE = "Catena di missioni:", -- Needs review
 	STORYLINEPOSITION = "(%d di %d)", -- Needs review
 	EARLIERQUESTS = "... %d precedenti", -- Needs review
 	LATERQUESTS = "... altre %d", -- Needs review
 	THISQUEST = "questa missione", -- Needs review
-	UNKNOWNQUEST = "Missione sconosciuta", -- Needs review
 	REQUIREDQUEST = "Missione richiesta:", -- Needs review
-	UNKNOWNFACTION = "Fazione sconosciuta", -- Needs review
 	REQUIREDFACTION = "Fazione richiesta:", -- Needs review
 	REQUIREDRENOWN = "Livello di fama richiesto:", -- Needs review
 	REQUIREDRANK = "Grado richiesto:", -- Needs review
 	REQUIREDSKILL = "Abilità richiesta:", -- Needs review
 	RANKLEVEL = "Grado %d", -- Needs review
-	DATAUNAVAILABLE = "Dati non disponibili", -- Needs review
 	QUESTGIVER = "Assegnata da:", -- Needs review
-	UNKNOWNNPC = "PNG sconosciuto", -- Needs review
 	NOQUESTGIVER = "Sconosciuto, o missione accettata automaticamente", -- Needs review
 	REPAMOUNT = "%d reputazione", -- Needs review
 	NEWDATAINTRO = "Quest Completist non conosceva le seguenti informazioni. Aiuta a migliorare la precisione dell'addon segnalandole su CurseForge.", -- Needs review
@@ -130,7 +124,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "La missione %d \"%s\" risulta non più disponibile, ma l'hai appena accettata. Per te viene mostrata normalmente; segnalalo così che l'elenco possa essere corretto.", -- Needs review
 	UNAVAILABLETURNEDIN = "La missione %d \"%s\" risulta non più disponibile, ma l'hai appena consegnata. Per te viene mostrata normalmente; segnalalo così che l'elenco possa essere corretto.", -- Needs review
 	TOGGLEFRAME = "Mostra/nascondi finestra", -- Needs review
-	UNKNOWNZONE = "Zona sconosciuta", -- Needs review
 	}, {__index = qcLocalize})
 
 end

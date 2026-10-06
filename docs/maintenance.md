@@ -569,8 +569,11 @@ and menu headings of steps 5 and 10. The addon's own text is in
 
 - `Localization.enUS.lua` has every key in English. Each other file sets the keys it translates,
   and any key it lacks shows in English.
-- Text the game already has in the same words comes from the game, such as "Search" (`SEARCH`), and
-  "Categories" and "Filters" on the window's buttons.
+- Text the game already has comes from the game, in its words: "Search" (`SEARCH`), "Search Results"
+  (`SPELLBOOK_SEARCH_HEADER_RESULTS`), the quest tooltip's "Storyline" (`QUEST_CLASSIFICATION_QUESTLINE`),
+  "Unknown" for a name the game hasn't sent (`UNKNOWN`), and "Categories" and "Filters" on the
+  window's buttons. A label's colon comes from `STAT_FORMAT` ("%s:"), which French spaces and
+  Chinese writes full-width.
 - `-- Needs review` marks a translation no native speaker has checked: most of them, including those
   written in October 2026. `-- Requires localization` marks text still in English.
 - A translation must keep the English placeholders (`%d`, `%s`) in the same order: `string.format`

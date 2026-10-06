@@ -86,28 +86,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d 완료 (%d%%)", -- Needs review
-	SEARCHRESULTS = "검색 결과", -- Needs review
 	SERVERQUERYRESULT = "서버에 Quest Completist가 아는 완료한 퀘스트가 %d개 있으며, 그중 %d개를 새로 완료로 표시했습니다.", -- Needs review
 	CACHECLEARED = "캐시를 비웠습니다.", -- Needs review
 	CLEARINGCACHE = "업데이트 캐시를 비우는 중...", -- Needs review
 	NODETAILS = "게임에서 퀘스트 정보를 받지 못했습니다", -- Needs review
 	QUESTID = "퀘스트 ID:", -- Needs review
-	STORYLINE = "퀘스트 라인:", -- Needs review
 	STORYLINEPOSITION = "(%d/%d)", -- Needs review
 	EARLIERQUESTS = "... 이전 %d개", -- Needs review
 	LATERQUESTS = "... %d개 더", -- Needs review
 	THISQUEST = "이 퀘스트", -- Needs review
-	UNKNOWNQUEST = "알 수 없는 퀘스트", -- Needs review
 	REQUIREDQUEST = "필요 퀘스트:", -- Needs review
-	UNKNOWNFACTION = "알 수 없는 세력", -- Needs review
 	REQUIREDFACTION = "필요 세력:", -- Needs review
 	REQUIREDRENOWN = "필요 명성 레벨:", -- Needs review
 	REQUIREDRANK = "필요 등급:", -- Needs review
 	REQUIREDSKILL = "필요 기술:", -- Needs review
 	RANKLEVEL = "%d등급", -- Needs review
-	DATAUNAVAILABLE = "데이터 없음", -- Needs review
 	QUESTGIVER = "퀘스트 제공자:", -- Needs review
-	UNKNOWNNPC = "알 수 없는 NPC", -- Needs review
 	NOQUESTGIVER = "알 수 없음 또는 자동 수락 퀘스트", -- Needs review
 	REPAMOUNT = "평판 %d", -- Needs review
 	NEWDATAINTRO = "Quest Completist가 다음 정보를 알지 못했습니다. CurseForge에 알려 주시면 애드온의 정확도를 높이는 데 도움이 됩니다.", -- Needs review
@@ -130,7 +124,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "퀘스트 %d \"%s\"은(는) 더 이상 받을 수 없는 퀘스트로 표시되어 있지만 방금 수락했습니다. 당신에게는 정상적으로 표시됩니다. 목록을 바로잡을 수 있도록 알려 주세요.", -- Needs review
 	UNAVAILABLETURNEDIN = "퀘스트 %d \"%s\"은(는) 더 이상 받을 수 없는 퀘스트로 표시되어 있지만 방금 완료했습니다. 당신에게는 정상적으로 표시됩니다. 목록을 바로잡을 수 있도록 알려 주세요.", -- Needs review
 	TOGGLEFRAME = "창 표시/숨기기", -- Needs review
-	UNKNOWNZONE = "알 수 없는 지역", -- Needs review
 	}, {__index = qcLocalize})
 
 end
