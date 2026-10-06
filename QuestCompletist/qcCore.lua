@@ -3,9 +3,6 @@
 -- Lua 5.1's limit of 200 file-level locals.
 local QC = select(2, ...)
 
-local TableInsert = table.insert;
-local StringFormat = string.format;
-local ToString = tostring;
 local BitBand = bit.band
 
 local qcL = qcLocalize
@@ -26,21 +23,12 @@ local qcMutuallyExclusiveAlertTooltip = nil
 
 --[[ Constants ]]--
 local QCADDON_VERSION = "111.7"
-local QCADDON_PURGE = true
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
-local COLOUR_DEATHKNIGHT = "|cFFC41F3B"
-local COLOUR_DEMONHUNTER = "|cFFA330C9"
-local COLOUR_DRUID = "|cFFFF7D0A"
-local COLOUR_HUNTER = "|cFFABD473"
-local COLOUR_MAGE = "|cFF69CCF0"
-local COLOUR_PALADIN = "|cFFF58CBA"
-local COLOUR_PRIEST = "|cFFFFFFFF"
-local COLOUR_ROGUE = "|cFFFFF569"
-local COLOUR_SHAMAN = "|cFF0070DE"
-local COLOUR_WARLOCK = "|cFF9482C9"
-local COLOUR_WARRIOR = "|cFFC79C6E"
+local COLOUR_DRUID = C_ClassColor.GetClassColor("DRUID"):GenerateHexColorMarkup()
+local COLOUR_HUNTER = C_ClassColor.GetClassColor("HUNTER"):GenerateHexColorMarkup()
+local COLOUR_MAGE = C_ClassColor.GetClassColor("MAGE"):GenerateHexColorMarkup()
 
 local QC_ICON_NORMAL = {atlas="QuestNormal"}
 local QC_ICON_READY = {atlas="QuestTurnin"}
@@ -151,8 +139,6 @@ local function qcSetIcon(texture, icon)
 	end
 end
 
-local qcCategoryDropDownMenu = CreateFrame("Frame", "qcCategoryDropDownMenu")
-
 --[[ Bitwise Values ]]--
 qcFactionBits = {
 	["ALLIANCE"]=1,["HORDE"]=2,["NEUTRAL"]=4,
@@ -197,20 +183,6 @@ qcCovenantsBits = {
 	[2]=4,		-- Venthyr
 	[3]=8,		-- NightFae
 	[4]=16,		-- Necrolord
-}
-qcSubQuestCatagoryBits = {
-	["Warfront"]=1,
-	["Bonus"]=2,
-	["Legion Assault"]=4,
-	["Assault"]=8,
-}
-qcQuestFactionLevelBits = {
-	["Hated"]=1,
-	["NEUTRAL"]=2,
-	["Friendly"]=4,
-	["Honored"]=8,
-	["Revered"]=16,
-	["Exalted"]=32,
 }
 --[[ Holidays, as the game's calendar reports them ]]--
 -- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
@@ -755,8 +727,6 @@ local function simulateExclusiveCompletions(groupTable)
         if completedCount >= group.max then
             for _, qID in ipairs(remaining) do
                 simulatedCompleted[qID] = true
-                -- Debug print
-               -- print("Override completed quest:", qID)
             end
         end
     end
@@ -1493,14 +1463,6 @@ local function qcClearUpdateCache()
 	qcRequestRefresh(QC_REBUILD_LIST, true)
 end
 
-local function qcPurgeCollectedCache()
-	if (qcCollectedQuests == nil) then qcCollectedQuests = {} end
-	if (qcProgressComplete == nil) then qcProgressComplete = {} end
-	wipe(qcCollectedQuests)
-	wipe(qcProgressComplete)
-	print(string.format("%sCollected Cache Purged.",QCADDON_CHAT_TITLE))
-end
-
 function qcMenuMouseWheel(self, delta) -- *
 	local position = qcMenuSlider:GetValue()
 	if (delta < 0) and (position < qcCurrentCategoryQuestCount) then
@@ -1753,7 +1715,6 @@ function qcQuestClick(qcButtonIndex)
 		-- Unattainable becomes marked not done (0); anything else becomes unattainable.
 		qcCharacterCompletions[qcQuestID] = (qcCharacterCompletions[qcQuestID] == 2) and 0 or 2
   else
-		-- print(string.format("%sLooking for Tom Tom.",QCADDON_CHAT_TITLE))
     if (C_AddOns.IsAddOnLoaded('TomTom')) then
         local mapId, pin = qcFindPinForQuest(qcQuestID)
         if (mapId) then
@@ -1982,10 +1943,6 @@ function qcMutuallyExclusiveAlert_OnLeave(self)
 
 end
 
--- Ensure qcQuestCompletistUI_OnLoad is properly defined
-function qcQuestCompletistUI_OnLoad(self)
-    -- Your initialization code here
-end
 --[[ ##### INTERFACE OPTIONS START ##### ]]--
 
 -- Initialize qcSettings if it is not already set
@@ -2013,9 +1970,6 @@ function qcCheckSettings()
     if (qcSettings.SORT == nil) then
         qcSettings.SORT = 1
     end
-    if (qcSettings.PURGED == nil) then
-        qcSettings.PURGED = 0
-    end
     if (qcSettings.QC_M_SHOW_ICONS == nil) then
         qcSettings.QC_M_SHOW_ICONS = 1
     end
@@ -2024,9 +1978,6 @@ function qcCheckSettings()
             local key = "QC_" .. view .. "_HIDE_" .. filter.key
             if filter[view] and qcSettings[key] == nil then qcSettings[key] = filter[view] end
         end
-    end
-    if (qcSettings.QC_SERVER_QUERY_COMPLETE == nil) then
-        qcSettings.QC_SERVER_QUERY_COMPLETE = 0
     end
 end
 
@@ -2046,8 +1997,6 @@ end
 
 function qcInterfaceOptions_OnLoad(self)
     self.name = "Quest Completist"
-    self.okay = function(self) qcInterfaceOptions_Okay(self) end
-    self.cancel = function(self) qcInterfaceOptions_Cancel(self) end
 
     local category = Settings.RegisterCanvasLayoutCategory(self, self.name)
     Settings.RegisterAddOnCategory(category)
@@ -2057,14 +2006,6 @@ end
 function qcApplyFilterChange()
     qcRefreshQuestList()
     qcMapDataProvider:RefreshAllData()
-end
-
-function qcInterfaceOptions_Okay(self)
-    qcApplyFilterChange()
-end
-
-function qcInterfaceOptions_Cancel(self)
-    -- Do nothing for now
 end
 
 function qcInterfaceOptions_OnShow(self)
@@ -2224,7 +2165,6 @@ function qcQuestCompletistUI_OnShow(self)
 end
 
 function qcQuestCompletistUI_OnLoad(self)
---SetPortraitToTexture(self.qcPortrait, "Interface\\ICONS\\TRADE_ARCHAEOLOGY_DRAENEI_TOME")
 	self.qcTitleText:SetText(string.format("Quest Completist v%s", QCADDON_VERSION))
 	self.qcCategoryDropdownButton:SetText(GetText("CATEGORIES"))
 	self.qcOptionsButton:SetText(GetText("FILTERS"))
@@ -2254,7 +2194,7 @@ function qcQuestCompletistUI_OnLoad(self)
 end
 
 --[[ What qcTooltips.lua and qcMapPins.lua take from this file, through the addon's own table. ]]--
-QC.COLOUR_DRUID, QC.COLOUR_HUNTER = COLOUR_DRUID, COLOUR_HUNTER
+QC.COLOUR_DRUID, QC.COLOUR_HUNTER, QC.COLOUR_MAGE = COLOUR_DRUID, COLOUR_HUNTER, COLOUR_MAGE
 QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS = QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS
 QC.QC_ICON_COMPLETE, QC.QC_ICON_UNATTAINABLE = QC_ICON_COMPLETE, QC_ICON_UNATTAINABLE
 QC.QC_FULL_TEXCOORDS, QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK = QC_FULL_TEXCOORDS, QC_PIN_ICONS, QC_PIN_ICON_RANK
