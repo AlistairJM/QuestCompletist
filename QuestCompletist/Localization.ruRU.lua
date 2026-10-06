@@ -268,6 +268,7 @@ qcLocalize = setmetatable({
 	REQUIREDFACTION = "Требуемая фракция:", -- Needs review
 	REQUIREDRENOWN = "Требуемый уровень известности:", -- Needs review
 	REQUIREDRANK = "Требуемый ранг:", -- Needs review
+	REQUIREDSKILL = "Требуемый навык:", -- Needs review
 	RANKLEVEL = "Ранг %d", -- Needs review
 	DATAUNAVAILABLE = "Данные недоступны", -- Needs review
 	QUESTGIVER = "Выдаёт задание:", -- Needs review

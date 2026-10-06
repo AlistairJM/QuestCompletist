@@ -269,6 +269,7 @@ qcLocalize = setmetatable({
 	REQUIREDFACTION = "所需陣營：", -- Needs review
 	REQUIREDRENOWN = "所需名望等級：", -- Needs review
 	REQUIREDRANK = "所需聲望等級：", -- Needs review
+	REQUIREDSKILL = "所需技能：", -- Needs review
 	RANKLEVEL = "等級 %d", -- Needs review
 	DATAUNAVAILABLE = "資料無法取得", -- Needs review
 	QUESTGIVER = "任務提供者：", -- Needs review

@@ -544,6 +544,38 @@ events were pinned all year.
   signets once the war is over, isn't at her spot in Darnassus, so Forever's war effort isn't over,
   and all of its pins stay hidden.
 
+### Profession skill requirements (6 October 2026)
+
+The user noticed that Wizbang Cranktoggle only offers "Gaffer Jacks" (1579) to a character with
+enough Fishing. The addon knew a quest's profession, for "Hide Other Profession Quests", but not the
+skill level it needs. The user's decisions: Forever only, and a quest whose profession the character
+lacks is greyed with its reason, as another class's quests are.
+
+- **Where the levels come from:**
+  - **Not Blizzard.** The game's quest records, and its API, only give the skill a quest rewards.
+  - **CMaNGOS's** `RequiredSkill` and `RequiredSkillValue`: 141 of our quests need a profession,
+    102 of them a level above 1, and 98 of those have pins. "Gaffer Jacks" needs Fishing 30, and
+    "Electropellers" any Fishing at all. In 85, the skill asks far more than the quest's own level
+    does: Gnome Engineering's 200, Nat Pagle's Fishing 225, "Triage"'s First Aid 225.
+  - **Retail is left out.** TrinityCore has 78 levels, all for old quests, and retail splits each
+    profession by expansion, so the old levels' meaning there is unclear.
+- **The character's skill:** Forever's client has `C_SkillInfo.GetSkillLineInfoByID`, a skill's
+  rank and its bonuses. Retail's and Classic Era's API documentation have only a stub of it. The
+  addon counts the bonuses, as the skill list shows them; whether the game does is still to check.
+- **What changed:** the importer writes `data/forever/skills.jsonl`, and `Build-ForeverMenu.ps1`
+  turns it into `qcQuestSkillRequirements` in Forever's `qcQuest.lua`; retail's is empty. A quest
+  whose skill the character lacks, or hasn't enough of:
+  - its quest tooltip says "Required Skill: ✗ Fishing (30)", with a ✓ once the skill is there;
+  - the map greys it with "Requires Fishing (30)", or "Requires Fishing" when any skill will do, in
+    the game's own words;
+  - "Hide quests with unfinished requirements" hides it.
+
+  "Beer Basted Boar Ribs", under Cooking with no skill to its name, isn't greyed. "Hide Other
+  Profession Quests" still hides it from characters without Cooking.
+- **Checked** with stand-ins for the skill API: "Gaffer Jacks" is greyed and filtered until Fishing
+  reaches 30, bonuses included, and Wizbang's pin stays bright for "Buzzbox 827". The reachability
+  check is unchanged, as its character has every profession at the highest skill.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -593,3 +625,5 @@ events were pinned all year.
 - 2026-10-06: quests whose givers only stand during an event follow it. The Scourge Invasion's and
   the Ahn'Qiraj War Effort's, which the calendar doesn't show, stay off the map, and recurring
   holiday quests keep their type (#172); results above.
+- 2026-10-06: the profession, and the skill level in it, a quest needs, in its tooltip and on the
+  map; results above.

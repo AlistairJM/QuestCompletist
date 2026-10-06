@@ -269,6 +269,7 @@ qcLocalize = setmetatable({
 	REQUIREDFACTION = "Facção necessária:", -- Needs review
 	REQUIREDRENOWN = "Nível de renome necessário:", -- Needs review
 	REQUIREDRANK = "Grau necessário:", -- Needs review
+	REQUIREDSKILL = "Habilidade necessária:", -- Needs review
 	RANKLEVEL = "Grau %d", -- Needs review
 	DATAUNAVAILABLE = "Dados indisponíveis", -- Needs review
 	QUESTGIVER = "Oferecida por:", -- Needs review

@@ -40,6 +40,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 
 - Where the quest giver is, the quest's storyline with your progress through it and your place in it, and the quests you need to do first.
 - Renown and friendship rank requirements, with a ✓ or ✗, and the reputation it rewards.
+- On WoW: Forever, the profession and skill level a quest needs, like *Fishing (30)*, with a ✓ or ✗.
 - Warnings for breadcrumb quests, and for quests that lock out others ("you can only complete one of these").
 
 **Filters to show only what matters to you**

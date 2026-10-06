@@ -59,8 +59,8 @@ and a start point more than 3 map points from all its pins on that map is listed
 summary counts the client's start points, and the quests whose record in the cache names a giver
 (none so far), so a rerun shows when Blizzard fills in more of either.
 
-Two more files hold what Build-ForeverMenu.ps1 turns into the quest tooltip's reputation and the
-quest window's warnings:
+Three more files hold what Build-ForeverMenu.ps1 turns into the quest tooltip's reputation and
+profession skill, and the quest window's warnings:
   links.jsonl       a line for each quest with links: its breadcrumbs, the quests that lead to it
                     and close once it's done (CMaNGOS's BreadcrumbForQuestId), and the quests it
                     shuts out, the rest of its CMaNGOS ExclusiveGroup when that's positive, as only
@@ -71,6 +71,9 @@ quest window's warnings:
                     amounts are mostly The Burning Crusade's, which raised most quests' rewards (a
                     city's 100 became 250), so a quest the game hasn't answered gets its reputation
                     once it does.
+  skills.jsonl      a line for each quest that needs a profession, and the skill level it needs:
+                    CMaNGOS's RequiredSkill and RequiredSkillValue, as the game's records don't say.
+                    A level of 1 asks only that the character has learned the profession.
 
 Anything worth a look goes to -ReviewFile, one row per finding; the summary counts them. With -WhatIf,
 only the review is written.
@@ -276,7 +279,7 @@ try {
     $gzip.CopyTo($target)
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
-    foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89'), @('creature_questrelation', '1,2'),
+    foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89,11'), @('creature_questrelation', '1,2'),
             @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5,7'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'), @('game_event_gameobject', '1,2'))) {
@@ -294,7 +297,8 @@ $cmQuest = @{}
 foreach ($line in $dump.quest_template) {
     $f = $line.Split("`t")
     $cmQuest[[int]$f[0]] = [pscustomobject]@{ Zone = [int]$f[1]; MinLevel = [int]$f[2]; Level = [int]$f[3]; Classes = [int]$f[4]
-        Races = [int]$f[5]; Skill = [int]$f[6]; Special = [int]$f[7]; Prev = [int]$f[8]; Title = $f[9]; Group = [int]$f[10]; BreadcrumbFor = [int]$f[11]; Reputation = [int]$f[12] -ne 0 }
+        Races = [int]$f[5]; Skill = [int]$f[6]; Special = [int]$f[7]; Prev = [int]$f[8]; Title = $f[9]; Group = [int]$f[10]; BreadcrumbFor = [int]$f[11]; Reputation = [int]$f[12] -ne 0
+        SkillLevel = [int]$f[13] }
 }
 $creatureStarters = @{}; $objectStarters = @{}
 foreach ($line in $dump.creature_questrelation) { $f = $line.Split("`t"); $creatureStarters[[int]$f[1]] += @([int]$f[0]) }
@@ -498,6 +502,11 @@ $reputationLines = @(foreach ($id in ($records.Keys | Sort-Object)) {
         '{"quest":' + $id + ',"faction":' + $reward[0] + ',"amount":' + $reward[1] + '}'
     }
 })
+# A required skill with no level (0) asks only that the character has learned it, as 1 does.
+$skillLines = @(foreach ($id in ($records.Keys | Sort-Object)) {
+    $m = $cmQuest[$id]
+    if ($m -and $m.Skill) { '{"quest":' + $id + ',"skill":' + $m.Skill + ',"level":' + [Math]::Max(1, $m.SkillLevel) + '}' }
+})
 
 foreach ($npc in $gameNpcName.Keys) {
     if ($cmNpcName.ContainsKey($npc) -and $cmNpcName[$npc] -ne $gameNpcName[$npc]) { Add-Review 'NPC renamed' '' $npc "$($cmNpcName[$npc]) is now $($gameNpcName[$npc])" }
@@ -664,6 +673,8 @@ Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} gr
     @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $exclusiveWith.Count, $exclusiveGroups)
 Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
+Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f
+    $skillLines.Count, @($skillLines | Where-Object { $_ -notmatch '"level":1\}$' }).Count)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
 if ($WhatIf) { return }
@@ -678,6 +689,8 @@ $problems = @(Find-UnknownFields $questPath $QuestFields) + @(Test-QuestRecords 
 if ($problems.Count) { throw "The written files don't pass AddonData.ps1's checks: $(($problems | Select-Object -First 5) -join '; ')" }
 $linkPath = Join-Path $DataDir 'links.jsonl'
 $reputationPath = Join-Path $DataDir 'reputation.jsonl'
+$skillPath = Join-Path $DataDir 'skills.jsonl'
 [IO.File]::WriteAllText($linkPath, (($linkLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
 [IO.File]::WriteAllText($reputationPath, (($reputationLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
-Write-Host "Written: $questPath, $pinPath, $linkPath, $reputationPath"
+[IO.File]::WriteAllText($skillPath, (($skillLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
+Write-Host "Written: $questPath, $pinPath, $linkPath, $reputationPath, $skillPath"

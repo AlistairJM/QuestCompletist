@@ -781,14 +781,26 @@ local function qcFactionLevel(factionId)
 	end
 end
 
--- Whether the character has the level, the quests to do first, and the renown or rank a quest
--- needs. A renown level the game doesn't give counts as met.
+-- The character's skill in a profession, bonuses included, as its skill list shows it: 0 when it
+-- hasn't learned the profession, nil when the client can't say. Only WoW: Forever's client can.
+local function qcSkillRank(skillLine)
+	if not (C_SkillInfo and C_SkillInfo.GetSkillLineInfoByID) then return nil end
+	local info = C_SkillInfo.GetSkillLineInfoByID(skillLine)
+	if not info then return 0 end
+	return (info.rank or 0) + (info.modifier or 0)
+end
+
+-- Whether the character has the level, the quests to do first, the renown or rank, and the skill in
+-- a profession a quest needs. A renown level or skill the game doesn't give counts as met.
 local function qcRequirementsMet(questId, e, playerLevel)
 	if (e[2] or 0) > playerLevel then return false end
 	if not qcPrereq.QuestMet(questId) then return false end
 	local renown = qcRenownLevelRequirements[questId]
 	local level = renown and qcFactionLevel(renown[1])
-	return not (level and level < renown[2])
+	if level and level < renown[2] then return false end
+	local skill = qcQuestSkillRequirements[questId]
+	local rank = skill and qcSkillRank(skill[1])
+	return not (rank and rank < skill[2])
 end
 
 -- Decides one quest at a time for the map ("M") or the quest list ("L"). A quest with no data passes
@@ -1694,6 +1706,11 @@ function qcClientCategoryName(categoryId)
 	return source and qcClientName(source)
 end
 
+-- A profession's name in the player's language.
+local function qcSkillName(skillLine)
+	return qcClientName({"skill", skillLine}) or UNKNOWN
+end
+
 -- A menu heading's text, from the client where qcMenu says how (clientName), keeping its indent.
 function qcMenuHeadingText(item)
 	local name = item.clientName and item.text and qcClientName(item.clientName)
@@ -2291,6 +2308,7 @@ QC.qcQuestName, QC.qcRequestQuestData, QC.qcFindPinForQuest = qcQuestName, qcReq
 QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIsQuestCompletedOnAccount
 QC.qcIsUnavailable, QC.qcMaskAllows, QC.qcPrereq = qcIsUnavailable, qcMaskAllows, qcPrereq
 QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides, qcFactionLevel
+QC.qcSkillRank, QC.qcSkillName = qcSkillRank, qcSkillName
 QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting

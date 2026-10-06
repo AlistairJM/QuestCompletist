@@ -11,7 +11,7 @@ Two settings tiers are checked:
                      requirements-not-met on; everything else off. Anything hidden here is hidden
                      from every possible character, which means contradictory data.
 Progress is best case: max level, every prerequisite done, max renown, nothing completed, and the
-character has every profession.
+character has every profession, at the highest skill.
 
 The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn. An event the calendar
 never shows, such as the Scourge Invasion, can't be on, so its pins get a section of their own.
@@ -107,6 +107,7 @@ local env = {
 	GetProfessionInfo = function(index) return nil, nil, nil, nil, nil, nil, PROFESSION_SKILLS[index] end,
 	C_Covenants = stubTable({GetActiveCovenantID = function() return P.covenant end}),
 	C_MajorFactions = stubTable({GetCurrentRenownLevel = function() return 1000 end}),
+	C_SkillInfo = stubTable({GetSkillLineInfoByID = function() return {rank = 1000, modifier = 0} end}),
 	C_QuestLog = stubTable({
 		GetLogIndexForQuestID = function() return nil end,
 		IsQuestFlaggedCompleted = function() return true end,

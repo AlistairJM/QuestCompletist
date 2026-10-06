@@ -269,6 +269,7 @@ qcLocalize = setmetatable({
 	REQUIREDFACTION = "Benötigte Fraktion:", -- Needs review
 	REQUIREDRENOWN = "Benötigte Ruhmstufe:", -- Needs review
 	REQUIREDRANK = "Benötigter Rang:", -- Needs review
+	REQUIREDSKILL = "Benötigte Fertigkeit:", -- Needs review
 	RANKLEVEL = "Rang %d", -- Needs review
 	DATAUNAVAILABLE = "Daten nicht verfügbar", -- Needs review
 	QUESTGIVER = "Questgeber:", -- Needs review

@@ -269,6 +269,7 @@ qcLocalize = {
 	REQUIREDFACTION = "Required Faction:",
 	REQUIREDRENOWN = "Required Renown Level:",
 	REQUIREDRANK = "Required Rank:",
+	REQUIREDSKILL = "Required Skill:",
 	RANKLEVEL = "Rank %d",
 	DATAUNAVAILABLE = "Data Unavailable",
 	QUESTGIVER = "Quest Giver:",

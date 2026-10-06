@@ -1216,6 +1216,8 @@ qcRenownLevelRequirements = {  -- QuestId FactionId RenownLevel
 	
 }
 
+qcQuestSkillRequirements = {}  -- QuestId -> {SkillLineId, SkillLevel}; only WoW: Forever's quests have them yet
+
 qcQuestReputation = {  -- QuestId -> {[FactionId]=RepValue}
 
 	[2]={[76]=250},

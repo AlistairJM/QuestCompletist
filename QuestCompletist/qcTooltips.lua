@@ -11,6 +11,7 @@ local qcMaskAllows, qcQuestName, qcRequestQuestData, qcPrereq = QC.qcMaskAllows,
 local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
 local qcQuestTooltipWaiting, qcNpcTooltipWaiting = QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting
 local qcHides, qcFactionLevel = QC.qcHides, QC.qcFactionLevel
+local qcSkillRank, qcSkillName = QC.qcSkillRank, QC.qcSkillName
 
 local qcQuestInformationTooltip
 -- The list row the tooltip belongs to, and its quest, so names arriving later can redraw it.
@@ -328,6 +329,21 @@ function qcUpdateTooltip(index)
             qcAddQuestTooltipDivider()
         end
 		-- Renown and Faction requirements End
+
+        -- The profession a quest needs, and the skill in it unless any will do.
+        local skill = qcQuestSkillRequirements[questId]
+        if skill then
+            local skillText = skill[2] > 1 and string.format("%s (%d)", qcSkillName(skill[1]), skill[2]) or qcSkillName(skill[1])
+            local rank = qcSkillRank(skill[1])
+            if rank then
+                local met = rank >= skill[2]
+                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDSKILL, string.format("|A:%s:14:14|a |cff%s%s|r",
+                    met and "common-icon-checkmark" or "common-icon-redx", met and "00ff00" or "ff2020", skillText))
+            else
+                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDSKILL, skillText)
+            end
+            qcAddQuestTooltipDivider()
+        end
 
         -- Quest Giver Information from qcPinDB.lua: the pin a TomTom waypoint would go to
         local giverMapId, giverPin = qcFindPinForQuest(questId)

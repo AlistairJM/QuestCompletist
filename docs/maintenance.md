@@ -509,15 +509,18 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
    nothing: Blizzard has changed the record's layout, and the reader needs updating.
 4. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl`, `pins.jsonl`,
-   `links.jsonl` and `reputation.jsonl`, and the review list, `tools\forever_import_review.csv`. It
-   downloads the client tables and the CMaNGOS dump it doesn't have. Compare its summary with the
-   last run's in the plan, and look through the review list for new rows: quests the game hasn't
-   confirmed, quests with no known giver or no pin, and places where CMaNGOS and our old Classic pins
-   disagree.
+   `links.jsonl`, `reputation.jsonl` and `skills.jsonl`, and the review list,
+   `tools\forever_import_review.csv`. It downloads the client tables and the CMaNGOS dump it doesn't
+   have. Compare its summary with the last run's in the plan, and look through the review list for
+   new rows: quests the game hasn't confirmed, quests with no known giver or no pin, and places
+   where CMaNGOS and our old Classic pins disagree.
    Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
    recurring quests. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
    Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
    that reward reputation in CMaNGOS; they get theirs once it answers.
+   The profession a quest needs, and the skill level in it, come from CMaNGOS too: the game's
+   records only say what skill a quest rewards. The summary's "Skills:" line counts them, 141
+   quests, 102 of them with a level above 1, in October 2026.
    The client's `QuestV2` isn't a list of every quest. It lists the quests the game records as
    completed, so it leaves out repeatable ones. The importer keeps CMaNGOS's repeatable quests
    without it; any other CMaNGOS quest it lacks comes in once the probe gets an answer for it. The
@@ -533,9 +536,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    their quests stay off the map. Recurring quests keep their type: a repeatable holiday quest is
    repeatable, as on retail.
 5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
-   and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl` and `reputation.jsonl`, with
-   the factions' English names from the client's `Faction` table. A new zone it can't place goes in
-   its continent's "Other" group; add the zone to the script's region table.
+   and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl`, `reputation.jsonl` and
+   `skills.jsonl`, with the factions' English names from the client's `Faction` table. A new zone
+   it can't place goes in its continent's "Other" group; add the zone to the script's region table.
 6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
    both.
 7. The reachability check (step 9), with Forever's TOC and its client's map table:
@@ -682,8 +685,8 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 23 left, `qcTooltips.lua` 166 and
-  `qcMapPins.lua` 147. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
+  has its own 200: in October 2026, `qcCore.lua` had 20 left, `qcTooltips.lua` 164 and
+  `qcMapPins.lua` 144. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
