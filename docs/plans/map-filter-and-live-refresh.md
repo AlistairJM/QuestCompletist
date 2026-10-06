@@ -1,6 +1,6 @@
 # Map pin filtering and live refresh
 
-> Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
+> Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written. Since 111.5 each filter also has its own setting for the map and the list, and both views use one filter (see [settings-grid.md](settings-grid.md)).
 
 ## Goal
 

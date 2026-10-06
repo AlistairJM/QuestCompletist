@@ -2,8 +2,8 @@
 Checks that every quest and map pin in the addon can actually be displayed by some character.
 
 Loads the addon's own files with stand-ins for the WoW API, then drives the real list filter
-(qcBuildQuestFilter) and the real map pin pipeline (qcMapDataProvider:RefreshAllData). Nothing is
-re-implemented here, so the check can't drift from what the addon does.
+(qcBuildViewFilter("L")) and the real map pin pipeline (qcMapDataProvider:RefreshAllData). Nothing
+is re-implemented here, so the check can't drift from what the addon does.
 
 Two settings tiers are checked:
   all filters off  - anything hidden here can never be displayed, whatever the settings.
@@ -148,12 +148,12 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file == "qcCore.lua" then
 		core = runFile(file,
-			"\nreturn {BuildQuestFilter = function() return qcBuildQuestFilter(QC_LIST_FILTER) end, Holidays = qcHolidays}")
+			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, Holidays = qcHolidays}")
 	elseif file then
 		runFile(file)
 	end
 end
-assert(core and type(core.BuildQuestFilter) == "function", "qcBuildQuestFilter not found in qcCore.lua")
+assert(core and type(core.BuildListFilter) == "function", "qcBuildViewFilter not found in qcCore.lua")
 
 local QUESTS = env.qcQuestDatabase
 local PIN_DB = env.qcPinDB
@@ -220,13 +220,15 @@ for _, covenant in ipairs(covenants) do covenantProfiles[#covenantProfiles + 1] 
 for _, eventID in ipairs(holidayEvents) do holidayProfiles[#holidayProfiles + 1] = profile({holiday = eventID}) end
 
 local FILTER_GROUPS = {
-	{name = "faction/race/class", filters = {"QC_ML_HIDE_FACTION", "QC_ML_HIDE_RACECLASS"},
-		profiles = identityProfiles, reads = {"race", "faction", "class"}},
-	{name = "covenant", filters = {"QC_ML_HIDE_COVENANTS"}, profiles = covenantProfiles, reads = {"covenant"}},
+	{name = "faction/race/class", filters = {"QC_M_HIDE_FACTION", "QC_L_HIDE_FACTION", "QC_M_HIDE_RACECLASS",
+		"QC_L_HIDE_RACECLASS"}, profiles = identityProfiles, reads = {"race", "faction", "class"}},
+	{name = "covenant", filters = {"QC_M_HIDE_COVENANTS", "QC_L_HIDE_COVENANTS"}, profiles = covenantProfiles,
+		reads = {"covenant"}},
 	{name = "seasonal", filters = {"QC_M_HIDE_SEASONAL"}, profiles = holidayProfiles, reads = {"holiday"}},
 	{name = "profession", filters = {"QC_L_HIDE_PROFESSION", "QC_M_HIDE_PROFESSION"}, profiles = {profile()}, reads = {}},
 	{name = "no data", filters = {"QC_M_HIDE_NODATA"}, profiles = {profile()}, reads = {}},
-	{name = "requirements not met", filters = {"QC_M_HIDE_REQUIREMENTSNOTMET"}, profiles = {profile()}, reads = {}},
+	{name = "requirements not met", filters = {"QC_M_HIDE_REQUIREMENTSNOTMET", "QC_L_HIDE_REQUIREMENTSNOTMET"},
+		profiles = {profile()}, reads = {}},
 }
 
 --[[ Where each quest can be browsed to in the list: the category menu or the zone auto-switch ]]--
@@ -332,12 +334,12 @@ local function sweep(keepOn, candidates, profiles)
 		if not next(remainingList) and not pinDb then break end
 		for key, value in pairs(current) do P[key] = value end
 		if next(remainingList) then
-			local ok, filter = pcall(core.BuildQuestFilter)
+			local ok, filter = pcall(core.BuildListFilter)
 			if not ok then
 				recordError(filter, "list filter, " .. profileText())
 			else
 				for id in pairs(remainingList) do
-					local passed, result = pcall(filter, id, QUESTS[id])
+					local passed, result = pcall(filter, id)
 					if not passed then
 						recordError(result, "list quest " .. id .. ", " .. profileText())
 					elseif result then

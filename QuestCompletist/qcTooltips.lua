@@ -10,6 +10,7 @@ local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC
 local qcMaskAllows, qcQuestName, qcRequestQuestData, qcPrereq = QC.qcMaskAllows, QC.qcQuestName, QC.qcRequestQuestData, QC.qcPrereq
 local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
 local qcQuestTooltipWaiting, qcNpcTooltipWaiting = QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting
+local qcHides, qcFactionLevel = QC.qcHides, QC.qcFactionLevel
 
 local qcQuestInformationTooltip
 -- The list row the tooltip belongs to, and its quest, so names arriving later can redraw it.
@@ -145,18 +146,6 @@ local function qcFactionName(factionId)
 	return qcFactions[factionId]
 end
 
--- The character's renown with a faction, or its rank with a friendship faction such as The Weaver,
--- and whether it's a rank; nil when the game knows the faction as neither.
-local function qcFactionLevel(factionId)
-	if C_Reputation.IsMajorFaction(factionId) then
-		return C_MajorFactions.GetCurrentRenownLevel(factionId), false
-	end
-	local friendship = C_GossipInfo.GetFriendshipReputation(factionId)
-	if friendship and friendship.friendshipFactionID > 0 then
-		return C_GossipInfo.GetFriendshipReputationRanks(factionId).currentLevel, true
-	end
-end
-
 -- A renown faction's emblem, written into a line's text and followed by a space; empty for other
 -- factions, and in a game without renown.
 local function qcFactionIconText(factionId)
@@ -241,15 +230,15 @@ function qcUpdateTooltip(index)
             -- Older zones share one storyline between both factions, and a class's quests sit
             -- beside every other class's: follow the list's faction and race/class filters. The
             -- progress counts like the map's, leaving out recurring quests.
-            local factionFlag = (qcSettings.QC_ML_HIDE_FACTION == 1) and qcFactionBits[string.upper(UnitFactionGroup("player") or "")]
+            local factionFlag = qcHides("L", "FACTION") and qcFactionBits[string.upper(UnitFactionGroup("player") or "")]
             local raceFlag, classFlag
-            if (qcSettings.QC_ML_HIDE_RACECLASS == 1) then
+            if qcHides("L", "RACECLASS") then
                 local _, playerRace = UnitRace("player")
                 local _, playerClass = UnitClass("player")
                 raceFlag = qcRaceBits[string.upper(playerRace)]
                 classFlag = qcClassBits[string.upper(playerClass)]
             end
-            local countWarband = (qcSettings.QC_ML_HIDE_WARBANDS == 1)
+            local countWarband = qcHides("L", "WARBANDS")
             local lineQuests, position, done, total = {}, 1, 0, 0
             for _, lineQuestId in ipairs(storyline.quests) do
                 local lineQuest = qcQuestDatabase[lineQuestId]
@@ -411,4 +400,4 @@ end
 
 QC.qcQuestStatus = qcQuestStatus
 QC.qcTooltipBar, QC.qcTooltipDivider = qcTooltipBar, qcTooltipDivider
-QC.qcFactionName, QC.qcFactionLevel = qcFactionName, qcFactionLevel
+QC.qcFactionName = qcFactionName

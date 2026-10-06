@@ -45,10 +45,10 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 **Filters to show only what matters to you**
 
 - Hide quests for the other faction, other races and classes, professions you don't have, or other covenants.
-- Hide completed, in-progress, low-level, daily, weekly, repeatable or world quests.
+- Hide completed, in-progress, low-level, daily, weekly, repeatable or world quests, or ones you can't take yet.
 - Hide quests you've already done on another character in your Warband.
 - Hide quests you can no longer get, like Battle for Azeroth's old PvP rewards and hidden tracking quests (on by default).
-- Map and list filters are set separately.
+- Every filter can be set separately for the map and the quest list.
 
 **Keeps itself up to date**
 
