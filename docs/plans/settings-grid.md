@@ -100,3 +100,4 @@ The defaults are the user's own settings (#168), plus the new boxes off:
 
 - 2026-10-06: #168 (the defaults) and this change in pull requests. Next: the user's look in game,
   then release 111.5.
+- 2026-10-06: #168 and #169 merged, and released in 111.5.

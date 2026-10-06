@@ -243,3 +243,4 @@ The review's code change, decision 2 and the last 3 findings:
   for other factions' requirements and friendship ranks.
 - 2026-10-06: the review's data in #166, and its code (above) stacked on it. Next: the user's check
   in game, then release 111.5.
+- 2026-10-06: #166 and #167 merged after the user's check in game, and released in 111.5.

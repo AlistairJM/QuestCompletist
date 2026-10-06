@@ -25,7 +25,7 @@ local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
 
 --[[ Constants ]]--
-local QCADDON_VERSION = "111.4"
+local QCADDON_VERSION = "111.5"
 local QCADDON_PURGE = true
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
