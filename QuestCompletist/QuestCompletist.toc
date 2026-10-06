@@ -1,5 +1,5 @@
 ﻿## Interface: 120100, 120105
-## Version: 111.9
+## Version: 112.0
 ## Title: Quest Completist
 ## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
 ## SavedVariables: qcSettings qcFlaggedButSeen
