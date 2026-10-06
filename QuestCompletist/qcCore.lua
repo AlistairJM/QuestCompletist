@@ -154,10 +154,11 @@ qcRaceBits = {
 	["VULPERA"]=2097152,["MECHAGNOME"]=4194304,["DRACTHYR"]=8388608,["EARTHENDWARF"]=16777216,
 	["HARRONIR"]=33554432,["SKYBORNE"]=67108864,
 }
+-- The game's own class mask: 1 shifted left by the class ID less one, so Blizzard's masks need no conversion.
 qcClassBits = {
 	["WARRIOR"]=1,["PALADIN"]=2,["HUNTER"]=4,["ROGUE"]=8,["PRIEST"]=16,
-	["DEATHKNIGHT"]=32,["SHAMAN"]=64,["MAGE"]=128,["WARLOCK"]=256,["DRUID"]=512,
-	["MONK"]=1024,["DEMONHUNTER"]=2048,["EVOKER"]=4096
+	["DEATHKNIGHT"]=32,["SHAMAN"]=64,["MAGE"]=128,["WARLOCK"]=256,["MONK"]=512,
+	["DRUID"]=1024,["DEMONHUNTER"]=2048,["EVOKER"]=4096
 }
 qcProfessionBits = {
 	[171]=1,		-- Alchemy

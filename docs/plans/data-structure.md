@@ -120,6 +120,17 @@ every one (15 in all).
   one field is readable in a diff. PowerShell 5.1 reads all 35,023 quests in about a second.
 - **Fields that are usually empty are left out** of a record rather than written as 0: a quest's
   profession, holiday, covenant, storyline and prereq; a pin's npc, name and note.
+- **The class mask is the game's; the race mask stays the addon's own** (2026-10-06). Blizzard's
+  class mask is 1 shifted left by the class ID less one, and ours differed only in Monk and Druid,
+  which were swapped; now class masks from the API, the client tables and CMaNGOS are used as they
+  are. Blizzard's race mask wasn't copied: it is 34 bits wide (Kul Tiran is bit 31, Skyborne bits
+  32 and 33), beyond the 32 bits WoW's `bit` library handles, it spends several bits per playable
+  race to say which faction's version a race is (three for Pandaren, two each for Dracthyr, Earthen,
+  Harronir and Skyborne), which our faction field already says, and no API gives a character's race
+  bit, so the addon would still need a race table. Our first eleven race bits are Blizzard's
+  anyway, so Forever's CMaNGOS masks import as they are. Professions, holidays and quest types have
+  no Blizzard bitmask to match: the game stores a skill line ID, a Holidays ID, and a quest type
+  plus a frequency.
 - **Records keep the order the Lua has them in.** The order of the rows decides the order the game
   walks the table in, and search results come out in that order.
 - **Comments among the quest rows were dropped** (the user's call). The tables that stay hand-edited

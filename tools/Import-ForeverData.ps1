@@ -41,7 +41,8 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
-  class     the addon's class bits, from CMaNGOS or a class heading; 8191 for any.
+  class     the game's class mask (1 shifted left by the class ID less one), as CMaNGOS stores
+            it, or from a class heading; 8191 for any.
   type      4 daily, 128 weekly, 2 repeatable, 64 seasonal, 32 profession or 1, the first that
             applies, so a repeatable holiday or profession quest is repeatable, as on retail. holiday
             and profession hold the addon's flags.
@@ -139,7 +140,7 @@ if (-not $CmangosDump) {
 }
 
 $raceBit = @{ 1 = 1; 2 = 2; 3 = 4; 4 = 8; 5 = 16; 6 = 32; 7 = 64; 8 = 128; 95 = 67108864; 96 = 67108864 }
-$classBySort = @{ (-81) = 1; (-141) = 2; (-261) = 4; (-162) = 8; (-262) = 16; (-82) = 64; (-161) = 128; (-61) = 256; (-263) = 512 }
+$classBySort = @{ (-81) = 1; (-141) = 2; (-261) = 4; (-162) = 8; (-262) = 16; (-82) = 64; (-161) = 128; (-61) = 256; (-263) = 1024 }
 $skillBySort = @{ (-24) = 182; (-101) = 356; (-121) = 164; (-181) = 171; (-182) = 165; (-201) = 202; (-264) = 197; (-304) = 185; (-324) = 129 }
 $professionBySkill = @{ 171 = 1; 164 = 2; 333 = 4; 202 = 8; 165 = 64; 197 = 128; 182 = 256; 186 = 512; 393 = 1024; 129 = 4096; 185 = 8192; 356 = 16384 }
 $holidayByHolidayId = @{ 372 = 1; 201 = 2; 409 = 4; 141 = 8; 324 = 16; 1405 = 16; 321 = 32; 423 = 64; 335 = 64; 327 = 128
@@ -507,7 +508,7 @@ foreach ($id in $ids) {
         if (-not $c -and $races -ne $allianceRaces -and $races -ne $hordeRaces) { $race = $races }
     }
     $class = 8191
-    if ($m -and $m.Classes) { $class = ($m.Classes -band 511) -bor $(if ($m.Classes -band 1024) { 512 } else { 0 }) }
+    if ($m -and $m.Classes) { $class = $m.Classes -band 8191 }
     elseif ($classBySort.ContainsKey($category)) { $class = $classBySort[$category] }
     $skill = if ($m -and $m.Skill) { $m.Skill } elseif ($skillBySort.ContainsKey($category)) { $skillBySort[$category] } else { 0 }
     $profession = if ($professionBySkill.ContainsKey($skill)) { $professionBySkill[$skill] } else { 0 }

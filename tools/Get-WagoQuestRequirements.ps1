@@ -1,7 +1,8 @@
 <#
 Extracts the quest race/class restrictions that Blizzard ships in the game client
-(via wago.tools DB2 exports) and converts them to the addon's own bit layout, as an
-independent second source alongside Blizzard's Data API for Audit-QuestAccuracy.ps1.
+(via wago.tools DB2 exports), as an independent second source alongside Blizzard's Data API
+for Audit-QuestAccuracy.ps1. Race masks are converted to the addon's own race bits; class
+masks are the game's layout already (1 << (ClassID-1)) and are kept as they are.
 
 Most quest requirements are server-side and not in the client at all, so coverage
 is partial by nature:
@@ -23,7 +24,7 @@ param(
 
 $ProgressPreference = "SilentlyContinue"
 
-foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "ChrClasses", "QuestPOIBlob") {
+foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "QuestPOIBlob") {
     $path = "$toolsDir\$t.csv"
     if ($Refresh -or -not (Test-Path $path)) {
         Write-Output "Downloading $t..."
@@ -39,28 +40,20 @@ $raceBits = @{
     "MAGHARORC"=262144;"ZANDALARITROLL"=524288;"KULTIRAN"=1048576;"VULPERA"=2097152;
     "MECHAGNOME"=4194304;"DRACTHYR"=8388608;"EARTHENDWARF"=16777216;"HARRONIR"=33554432
 }
-$classBits = @{
-    "WARRIOR"=1;"PALADIN"=2;"HUNTER"=4;"ROGUE"=8;"PRIEST"=16;"DEATHKNIGHT"=32;"SHAMAN"=64;
-    "MAGE"=128;"WARLOCK"=256;"DRUID"=512;"MONK"=1024;"DEMONHUNTER"=2048;"EVOKER"=4096
-}
+$ALL_CLASSES = 8191
 $ALLIANCE_RACES = 64175181
 $HORDE_RACES = 61658034
 $NEUTRAL_RACES = $ALLIANCE_RACES -band $HORDE_RACES
 
 # Client race masks index by ChrRaces.PlayableRaceBit; several race IDs (e.g. Pandaren
-# neutral/Alliance/Horde) share one addon bit. Client class masks are 1 << (ClassID-1).
+# neutral/Alliance/Horde) share one addon bit.
 $raceByBit = @{}
 foreach ($r in Import-Csv "$toolsDir\ChrRaces.csv") {
     $key = ($r.ClientFileString -replace "[^a-zA-Z]", "").ToUpper()
     if ($r.PlayableRaceBit -ne "-1" -and $raceBits.ContainsKey($key)) { $raceByBit[[int]$r.PlayableRaceBit] = $raceBits[$key] }
 }
-$classById = @{}
-foreach ($c in Import-Csv "$toolsDir\ChrClasses.csv") {
-    $key = ($c.Filename -replace "[^a-zA-Z]", "").ToUpper()
-    if ($classBits.ContainsKey($key)) { $classById[[int]$c.ID] = $classBits[$key] }
-}
 $missingRaces = @($raceBits.Values | Where-Object { $raceByBit.Values -notcontains $_ })
-if ($missingRaces.Count -or $classById.Count -ne 13) { throw "ChrRaces/ChrClasses mapping incomplete (races missing: $missingRaces, classes: $($classById.Count)/13)" }
+if ($missingRaces.Count) { throw "ChrRaces mapping incomplete (races missing: $missingRaces)" }
 
 function Convert-RaceMask($lo, $hi) {
     $m = ([long]$hi -shl 32) -bor ([long]$lo -band 0xFFFFFFFFL)
@@ -69,9 +62,7 @@ function Convert-RaceMask($lo, $hi) {
     return $out
 }
 function Convert-ClassMask($m) {
-    $out = 0
-    foreach ($id in $classById.Keys) { if ([long]$m -band ([long]1 -shl ($id - 1))) { $out = $out -bor $classById[$id] } }
-    return $out
+    return [long]$m -band $ALL_CLASSES
 }
 function Get-FactionFromRaces($race) {
     if (-not $race) { return "" }
