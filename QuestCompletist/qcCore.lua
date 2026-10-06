@@ -26,9 +26,9 @@ local QCADDON_VERSION = "111.7"
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
-local COLOUR_DRUID = "|cFFFF7D0A"
-local COLOUR_HUNTER = "|cFFABD473"
-local COLOUR_MAGE = "|cFF69CCF0"
+local COLOUR_DRUID = C_ClassColor.GetClassColor("DRUID"):GenerateHexColorMarkup()
+local COLOUR_HUNTER = C_ClassColor.GetClassColor("HUNTER"):GenerateHexColorMarkup()
+local COLOUR_MAGE = C_ClassColor.GetClassColor("MAGE"):GenerateHexColorMarkup()
 
 local QC_ICON_NORMAL = {atlas="QuestNormal"}
 local QC_ICON_READY = {atlas="QuestTurnin"}
