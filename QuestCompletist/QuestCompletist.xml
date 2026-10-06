@@ -497,13 +497,6 @@
           <OnClick>qcFilterButton_OnClick(self, button, down)</OnClick>
         </Scripts>
       </Button>
-      <Frame name="qcCategoryDropdownMenu" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN_DIALOG">
-        <Scripts>
-          <OnLoad>
-            qcCategoryDropdown_OnLoad(self)
-          </OnLoad>
-        </Scripts>
-      </Frame>
 <EditBox name="qcSearchBox" inherits="SearchBoxTemplate" parentKey="qcSearchBox" letters="40">
     <Size x="160" y="22"/>
     <Anchors>
