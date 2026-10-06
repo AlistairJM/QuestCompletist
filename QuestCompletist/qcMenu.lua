@@ -535,7 +535,6 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=401,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=202,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=stringformat("   %s",qcL.SPECIALS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=123,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=69,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=78,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=239,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
