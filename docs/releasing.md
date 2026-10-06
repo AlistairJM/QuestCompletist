@@ -51,6 +51,7 @@ without the changelogs, and step 7 publishes it as it is:
   and the "Viduus, Frostmane EU" heading.
 - Change the description only when a release adds something big enough to mention. Check its
   numbers against the data: `Build-AddonData.ps1 -Check` prints the quest and pin counts.
+- Like the changelog, it says what the addon does, not where its data comes from (see step 6).
 
 Then check:
 
@@ -90,6 +91,8 @@ not developers:
   changed in the code.
 - No pull request numbers, file or function names, field numbers, bitmasks, API names, tool
   changes, or counts that mean nothing in game.
+- Don't go into where the data comes from: not Blizzard's API or the game's tables, other
+  projects' databases, or the Forever beta. Say what changed, not how it was found.
 - Leave out changes players can't see (docs, tools, tidying up), or fold them into one plain line
   such as "Smaller download and lower memory use".
 - Short bullets under plain headings such as **New**, **Fixed** and **Improved**. Name the zones,
