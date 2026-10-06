@@ -7,7 +7,7 @@ local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC
 local QC_ICON_COMPLETE, QC_ICON_UNATTAINABLE = QC.QC_ICON_COMPLETE, QC.QC_ICON_UNATTAINABLE
 local QC_FULL_TEXCOORDS = QC.QC_FULL_TEXCOORDS
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
-local qcMaskAllows, qcQuestName, qcRequestQuestData = QC.qcMaskAllows, QC.qcQuestName, QC.qcRequestQuestData
+local qcMaskAllows, qcQuestName, qcRequestQuestData, qcPrereq = QC.qcMaskAllows, QC.qcQuestName, QC.qcRequestQuestData, QC.qcPrereq
 local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
 local qcQuestTooltipWaiting, qcNpcTooltipWaiting = QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting
 
@@ -163,6 +163,20 @@ local function qcAddQuestTooltipDivider()
 	end
 end
 
+-- A quest to do first, with the icon and colour the storyline would give it.
+local function qcPrereqQuestText(questId)
+    local data = qcQuestDatabase[questId]
+    local icon, colour
+    if data then
+        icon, colour = qcQuestStatus.Look(questId, qcQuestStatus.Of(questId, data))
+    elseif C_QuestLog.IsQuestFlaggedCompleted(questId) then
+        icon, colour = QC_ICON_COMPLETE, "00ff00"
+    else
+        icon, colour = QC_ICON_NORMAL, "ffffff"
+    end
+    return string.format("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, qcQuestName(questId, qcQuestTooltipWaiting) or qcL.UNKNOWNQUEST)
+end
+
 -- Function to update the quest tooltip
 function qcUpdateTooltip(index)
     local stringFormat = string.format
@@ -277,20 +291,12 @@ function qcUpdateTooltip(index)
             qcAddQuestTooltipDivider()
         end
 
-        -- Prerequisite quest logic
-        local prereqQuestId = qcQuestPrereq[questId]
-        if prereqQuestId and prereqQuestId ~= 0 then
-            local prereqQuestName = qcQuestName(prereqQuestId, qcQuestTooltipWaiting) or qcL.UNKNOWNQUEST
-            local prereqData = qcQuestDatabase[prereqQuestId]
-            local icon, colour
-            if prereqData then
-                icon, colour = qcQuestStatus.Look(prereqQuestId, qcQuestStatus.Of(prereqQuestId, prereqData))
-            elseif C_QuestLog.IsQuestFlaggedCompleted(prereqQuestId) then
-                icon, colour = QC_ICON_COMPLETE, "00ff00"
-            else
-                icon, colour = QC_ICON_NORMAL, "ffffff"
+        -- The quests to do first, a line each; a choice of them shares a line.
+        local prereqParts = qcPrereq.Parts(questId)
+        if prereqParts then
+            for i, part in ipairs(prereqParts) do
+                qcQuestInformationTooltip:AddDoubleLine(i == 1 and qcL.REQUIREDQUEST or " ", qcPrereq.Text(part, qcPrereqQuestText, false))
             end
-            qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDQUEST, stringFormat("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, prereqQuestName))
             qcAddQuestTooltipDivider()
         end
 		-- Renown and Faction requirements Start

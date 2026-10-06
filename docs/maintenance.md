@@ -61,6 +61,9 @@ categories, the zone table, reputation rewards, storylines and so on).
 - `data\quests.jsonl`, one quest per line:
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
+  `prereq` is the quest to do first, or a list of quests that all must be done. A list inside that
+  list is a choice, any one of which will do, and a list inside a choice is all of it again:
+  `[57115,57116]` needs both, `[[10983,10989,11057]]` any one of the three.
 - `data\pins.jsonl`, one pin per line:
   `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
   `npc` is left out when it's 0, and `name` and `note` when the pin has none.
@@ -81,14 +84,14 @@ line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 In `qcQuestData.lua` a quest's row in `qcQuestDatabase` is `{name, level, category, type, faction,
 race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant and
 prerequisite, which most quests don't have, are in `qcQuestProfession`, `qcQuestHoliday`,
-`qcQuestCovenant` and `qcQuestPrereq`, keyed by quest ID. The zone text stays in the data file only:
-the game never reads it.
+`qcQuestCovenant` and `qcQuestPrereq`, keyed by quest ID, a list of prerequisites as a Lua table.
+The zone text stays in the data file only: the game never reads it.
 
 **Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
 `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`,
-`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Apply-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and
-`Remove-DuplicatePinQuests.ps1`.
+`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Sync-QuestPrerequisites.ps1`,
+`Apply-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
@@ -148,6 +151,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
+| 2c | Prerequisites from Blizzard's API and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-CategoryClientNames.ps1 -Refresh` | Yes |
@@ -212,20 +216,41 @@ with a count for each kind.
   - a quest that isn't in `quests.jsonl`, or is flagged unavailable;
   - a daily, weekly or repeatable quest in a breadcrumb or "only one of these" pair, since the
     addon never ticks those;
-  - a breadcrumb or prerequisite for the other faction;
+  - a one-time quest that requires a daily, weekly or repeatable one: the game only knows that one
+    is done until the next reset, so the map would hide the quest again;
+  - a breadcrumb, or a prerequisite that must be done, for the other faction;
   - a quest listed twice in a table, as Lua keeps only the last line.
 - **Against Blizzard's API:** the quests it says a quest requires, and the ones it says close a
-  quest (a requirement that they're not done). It names at most 3 required quests, so one of ours
-  it doesn't name may still be right.
+  quest (a requirement that they're not done). It names at most 3 required quests, and often leaves
+  out the step just before the quest in its storyline, so a quest of ours that's that step isn't
+  counted against it.
 - **Against the client's tables:** which factions have renown, and the factions' English names.
 - **Against TrinityCore's database** (the newest `tools\tdb\TDB_full_world_*.sql`), for older
   quests: its breadcrumbs, groups and previous quests. It only speaks for quests it has a row for,
-  and has few after Mists of Pandaria.
+  and has few after Mists of Pandaria. Of the previous quests it offers where we have none, only
+  those that are the step just before in the quest's own storyline are listed, as step 2c only
+  takes those; the rest are counted.
 
 Review the new findings, and fix the data where it's wrong. For a finding that's right as it is,
 add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and `Other` copied from
 the report, then `Decision` and `Reason`. Later runs mark it kept and count only the rest as new. The
 first run's findings and what was decided are in [plans/quest-table-checks.md](plans/quest-table-checks.md).
+
+### 2c. Prerequisites
+
+`Sync-QuestPrerequisites.ps1` sets the prerequisites step 2b checks, from the same sources. Run it
+with `-WhatIf` first to see what it would change.
+- **Where Blizzard's API names required quests,** its list replaces ours: an AND of them, with an OR
+  as a choice. As the API names at most 3, a quest of ours it leaves out stays when it's the step
+  just before in the quest's storyline.
+- **Where the API is silent and we have none,** TrinityCore's previous quest is taken when it's the
+  step just before in the quest's storyline (the client's `QuestLineXQuest` for `-Build`).
+- **A one-time quest never gets a daily, weekly or repeatable requirement,** and a choice that
+  offers one is left out whole. A recurring quest keeps one, as in a chain of world quests, which
+  the game knows within the day or week.
+- **A requirement that would make two quests each require the other** is left out, and listed.
+
+A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore changed.
 
 ### 3. Quest types
 
@@ -631,8 +656,8 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 29 left, `qcTooltips.lua` 170 and
-  `qcMapPins.lua` 144. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
+  has its own 200: in October 2026, `qcCore.lua` had 28 left, `qcTooltips.lua` 168 and
+  `qcMapPins.lua` 142. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.

@@ -43,6 +43,9 @@ $quests = @{}
 foreach ($q in (Read-QuestData $DataDir)) { $quests[[int]$q.id] = $q }
 function Get-QuestName([int]$id) { if ($quests.ContainsKey($id)) { return $quests[$id].name } return '?' }
 function Test-Recurring([int]$id) { return $quests.ContainsKey($id) -and ($quests[$id].type -band (2 + 4 + 128)) }
+# Whether $prereq can stand as $id's prerequisite: a quest that recurs only for one that recurs too, as
+# within a day or week the game knows it's done.
+function Test-Checkable([int]$id, [int]$prereq) { return (Test-Recurring $id) -or -not (Test-Recurring $prereq) }
 function Test-OtherFaction([int]$a, [int]$b) {
     if (-not ($quests.ContainsKey($a) -and $quests.ContainsKey($b))) { return $false }
     $fa = $quests[$a].faction; $fb = $quests[$b].faction
@@ -193,26 +196,55 @@ foreach ($group in ($tcGroups.Keys | Sort-Object)) {
     }
 }
 
-# Prerequisites, from data\quests.jsonl.
+# Prerequisites, from data\quests.jsonl: a quest, or a list of them (see AddonData.ps1). As
+# Sync-QuestPrerequisites.ps1 sets them, a quest of ours the API leaves out is fine when it's the
+# step just before in the quest's storyline, and TrinityCore's previous quest is only taken when it's
+# that step: the others it offers are counted, not listed.
+$lineCsv = "$ToolsDir\QuestLineXQuest-$Build.csv"
+if (-not (Test-Path $lineCsv)) { Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/QuestLineXQuest/csv?build=$Build" -OutFile $lineCsv }
+$order = @{}
+foreach ($row in Import-Csv $lineCsv) { $order["$($row.QuestLineID)|$($row.QuestID)"] = [int]$row.OrderIndex }
+function Test-StepJustBefore([int]$id, [int]$prev) {
+    $line = [int]$quests[$id].storyline
+    if (-not $line) { return $false }
+    $a = $order["$line|$prev"]; $b = $order["$line|$id"]
+    return ($null -ne $a) -and ($null -ne $b) -and ($b - $a -eq 1)
+}
+$tcNotTaken = 0
 foreach ($id in ($quests.Keys | Sort-Object)) {
-    $prereq = [int]$quests[$id].prereq
+    $value = $quests[$id].prereq
     $api = $requires[$id]
     $row = $tc[$id]
-    if ($prereq) {
-        if (-not $quests.ContainsKey($prereq)) { Add-Finding 'prereq: quest not in the data' $id $prereq '' }
-        if ($prereq -eq $id) { Add-Finding 'prereq: requires itself' $id $prereq '' }
-        elseif ([int]$quests[$prereq].prereq -eq $id) { Add-Finding 'prereq: each requires the other' $id $prereq '' }
-        if (Test-OtherFaction $id $prereq) { Add-Finding 'prereq: other faction' $id $prereq "$(Get-QuestName $id) requires $(Get-QuestName $prereq)" }
-        if ($api -and $api -notcontains $prereq) {
-            Add-Finding 'prereq: not one the API names' $id $prereq ("API: {0}" -f (($api | ForEach-Object { "$_ $(Get-QuestName $_)" }) -join ' | '))
+    if ($value) {
+        $ours = Get-PrereqQuests $value
+        $musts = @(if ($value -is [array]) { $value | Where-Object { $_ -isnot [array] } } else { $value })
+        foreach ($prereq in $ours) {
+            if (-not $quests.ContainsKey($prereq)) { Add-Finding 'prereq: quest not in the data' $id $prereq '' }
+            elseif (-not (Test-Checkable $id $prereq)) { Add-Finding 'prereq: recurring quest' $id $prereq "$(Get-QuestName $prereq) is type $($quests[$prereq].type), which the game doesn't keep as done" }
+            if ($prereq -eq $id) { Add-Finding 'prereq: requires itself' $id $prereq '' }
+            elseif ($quests.ContainsKey($prereq) -and $quests[$prereq].prereq) {
+                $theirs = Get-PrereqQuests $quests[$prereq].prereq
+                if ($theirs -contains $id) { Add-Finding 'prereq: each requires the other' $id $prereq '' }
+            }
+            if ($musts -contains $prereq -and (Test-OtherFaction $id $prereq)) { Add-Finding 'prereq: other faction' $id $prereq "$(Get-QuestName $id) requires $(Get-QuestName $prereq)" }
+            if ($api -and $api -notcontains $prereq -and -not (Test-StepJustBefore $id $prereq)) {
+                Add-Finding 'prereq: not one the API names' $id $prereq ("API: {0}" -f (($api | ForEach-Object { "$_ $(Get-QuestName $_)" }) -join ' | '))
+            }
         }
-        if ($row -and $row.Prev -and $row.Prev -ne $prereq -and -not ($api -and $api -contains $prereq)) {
-            Add-Finding 'prereq: TrinityCore differs' $id $prereq ("TrinityCore: {0}" -f $(if ($row.Prev -gt 0) { "$($row.Prev) $(Get-QuestName $row.Prev)" } else { "$(-$row.Prev) $(Get-QuestName (-$row.Prev)), in the quest log" }))
+        foreach ($required in @(if ($api) { $api | Where-Object { $quests.ContainsKey($_) -and (Test-Checkable $id $_) -and $ours -notcontains $_ } })) {
+            Add-Finding 'prereq: the API names one we lack' $id $required (Get-QuestName $required)
+        }
+        if (-not $api -and $row -and $row.Prev -gt 0 -and $ours -notcontains $row.Prev) {
+            Add-Finding 'prereq: TrinityCore differs' $id ($ours -join ' ') ("TrinityCore: {0} {1}" -f $row.Prev, (Get-QuestName $row.Prev))
         }
     } else {
-        $named = @(if ($api) { $api | Where-Object { $quests.ContainsKey($_) } })
+        $named = @(if ($api) { $api | Where-Object { $quests.ContainsKey($_) -and (Test-Checkable $id $_) } })
         if ($named.Count) { Add-Finding 'prereq: the API has one, we don''t' $id '' (($named | ForEach-Object { "$_ $(Get-QuestName $_)" }) -join ' | ') }
-        elseif ($row -and $row.Prev -gt 0 -and $quests.ContainsKey($row.Prev)) { Add-Finding 'prereq: TrinityCore has one, we don''t' $id $row.Prev (Get-QuestName $row.Prev) }
+        elseif (-not $api -and $row -and $row.Prev -gt 0 -and $quests.ContainsKey($row.Prev)) {
+            if ((Test-Checkable $id $row.Prev) -and -not (Test-OtherFaction $id $row.Prev) -and (Test-StepJustBefore $id $row.Prev)) {
+                Add-Finding 'prereq: TrinityCore has one, we don''t' $id $row.Prev (Get-QuestName $row.Prev)
+            } else { $tcNotTaken++ }
+        }
     }
 }
 
@@ -264,6 +296,7 @@ $findings | Sort-Object Kind, { [int]("0" + $_.Quest) }, { [int]("0" + $_.Other)
     $breadcrumbs.Count, $exclusive.Count, $renown.Count, $factionNames.Count, @($quests.Values | Where-Object { $_.prereq }).Count
 "Sources: the API names required quests for {0} quests and closing ones for {1}; TrinityCore has {2} rows{3}." -f
     $requires.Count, $closedBy.Count, $tc.Count, $(if ($TdbFile) { " ($(Split-Path -Leaf $TdbFile))" } else { ': no TDB_full_world_*.sql in tools\tdb, so its checks were skipped' })
+"TrinityCore offers previous quests for $tcNotTaken more quests we have none for, but none that's the step just before in the quest's storyline, so they aren't taken."
 $findings | Group-Object Kind | Sort-Object Name | ForEach-Object {
     $new = @($_.Group | Where-Object { -not $_.Kept }).Count
     "  {0}: {1}{2}" -f $_.Name, $_.Count, $(if ($new -ne $_.Count) { " ($new new)" } else { '' })

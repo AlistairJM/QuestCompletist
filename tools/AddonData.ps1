@@ -8,7 +8,10 @@ record per line, with named fields:
 	{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}
 	{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}
 Fields that are empty are left out: a quest's profession, holiday, covenant, storyline and prereq
-when 0, and a pin's npc when 0, its name when it has none and its note when it has none. The
+when 0, and a pin's npc when 0, its name when it has none and its note when it has none. A quest's
+prereq is the quest to do first, or a list of quests that all must be done; a list inside that
+list is a choice, any one of which will do, and a list inside a choice is all of it again:
+[57115,57116] needs both, and [[10983,10989,11057]] needs any one of the three. The
 records become the whole of QuestCompletist\qcQuestData.lua, in file order (see
 ConvertTo-LuaQuestFile for its layout), and the whole of qcPinDB.lua, map by map in ascending order.
 Both start with a line saying they're generated.
@@ -27,6 +30,26 @@ $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
 
+# A prereq that's a list, written as JSON ([1,[2,3]]) or Lua ({1,{2,3}}), and the check of its shape:
+# quest IDs above 0, and lists that aren't empty.
+function ConvertTo-PrereqText($value, [string]$open, [string]$close) {
+    if ($value -isnot [array]) { return "$value" }
+    return $open + (($value | ForEach-Object { ConvertTo-PrereqText $_ $open $close }) -join ',') + $close
+}
+function Test-PrereqValue($value) {
+    if (Test-WholeNumber $value) { return $value -gt 0 }
+    if ($value -isnot [array] -or $value.Count -eq 0) { return $false }
+    foreach ($item in $value) { if (-not (Test-PrereqValue $item)) { return $false } }
+    return $true
+}
+# The quests a prereq names, however it nests them.
+function Get-PrereqQuests($value) {
+    if ($value -isnot [array]) { return , @([int]$value) }
+    $ids = @()
+    foreach ($item in $value) { $ids += Get-PrereqQuests $item }
+    return , $ids
+}
+
 # The text of quests.jsonl and pins.jsonl. Strings go in double quotes with \ and " escaped (the
 # same in Lua and JSON; control characters are refused by the checks), and numbers are written the
 # shortest way: 47.3 rather than 47.30. Like the Lua writers further down, these do it inline: a
@@ -42,7 +65,8 @@ function ConvertTo-QuestJsonLines($quests) {
         if ($q.holiday) { [void]$sb.Append(',"holiday":' + $q.holiday) }
         if ($q.covenant) { [void]$sb.Append(',"covenant":' + $q.covenant) }
         if ($q.storyline) { [void]$sb.Append(',"storyline":' + $q.storyline) }
-        if ($q.prereq) { [void]$sb.Append(',"prereq":' + $q.prereq) }
+        $prereq = $q.prereq
+        if ($prereq) { [void]$sb.Append(',"prereq":' + $(if ($prereq -is [array]) { ConvertTo-PrereqText $prereq '[' ']' } else { $prereq })) }
         [void]$sb.Append("}`n")
     }
     return $sb.ToString()
@@ -108,7 +132,7 @@ function Test-QuestRecords($quests) {
             ($q.race -is [int]) -and ($q.class -is [int]) -and
             ($null -eq $q.profession -or $q.profession -is [int]) -and ($null -eq $q.holiday -or $q.holiday -is [int]) -and
             ($null -eq $q.covenant -or $q.covenant -is [int]) -and ($null -eq $q.storyline -or $q.storyline -is [int]) -and
-            ($null -eq $q.prereq -or $q.prereq -is [int]) -and -not ($name -match '[\x00-\x1f]') -and -not ($zone -match '[\x00-\x1f]')
+            ($null -eq $q.prereq -or ($q.prereq -is [int] -and $q.prereq -ge 0) -or (Test-PrereqValue $q.prereq)) -and -not ($name -match '[\x00-\x1f]') -and -not ($zone -match '[\x00-\x1f]')
         if (-not $sound) {
             $what = "quests.jsonl line $n" + $(if (Test-WholeNumber $id) { " (id $id)" } else { '' })
             foreach ($field in $QuestFields) {
@@ -119,6 +143,8 @@ function Test-QuestRecords($quests) {
                     if ($value -isnot [string]) { $problems.Add("${what}: '$field' must be text") }
                     elseif ($value -match '[\x00-\x1f]') { $problems.Add("${what}: '$field' contains a control character") }
                     elseif ($field -eq 'name' -and $value -eq '') { $problems.Add("${what}: 'name' is empty") }
+                } elseif ($field -eq 'prereq') {
+                    if (-not (($value -is [int] -and $value -ge 0) -or (Test-PrereqValue $value))) { $problems.Add("${what}: 'prereq' must be a quest ID, or a list of them with no empty list") }
                 } elseif (-not (Test-WholeNumber $value)) {
                     $problems.Add("${what}: '$field' must be a whole number")
                 }
@@ -173,7 +199,8 @@ function Test-PinRecords($pins) {
 # The whole of qcQuestData.lua, each line ending in CRLF. A quest's row in qcQuestDatabase is
 # {name, level, category, type, faction, race, class, storyline}, with storyline left off when it's
 # 0; profession, holiday, covenant and prereq, which most quests don't have, go in tables of their
-# own keyed by quest ID. The zone text isn't written: the game never reads it.
+# own keyed by quest ID, a prereq list as a Lua table. The zone text isn't written: the game never
+# reads it.
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
@@ -190,6 +217,7 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data') {
         [void]$sb.Append('[' + $q.id + ']={' + $row + "},`r`n")
         foreach ($table in $sparse.Keys) {
             $value = $q.($sparse[$table])
+            if ($value -is [array]) { $value = ConvertTo-PrereqText $value '{' '}' }
             if ($value) { [void]$tables[$table].Append('[' + $q.id + ']=' + $value + ",`r`n") }
         }
     }

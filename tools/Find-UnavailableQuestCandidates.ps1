@@ -17,7 +17,7 @@ Signals per quest (1 = present):
   InPinDB       one of our pins (data\pins.jsonl) offers it
   InQuestLine   part of a client quest line (QuestLineXQuest)
   InAchievement an achievement criterion requires completing it (Criteria Type 27)
-  IsPrereq      another of our quests lists it as its prereq
+  IsPrereq      another of our quests lists it among its prerequisites
 Bucket: task / api-found / nontask-inclient / not-in-client
 Decision: the quest's row in docs\plans\unavailable-quest-decisions.csv (FLAG or KEEP), if reviewed.
 
@@ -58,7 +58,7 @@ foreach ($pin in (Read-PinData $DataDir)) { foreach ($q in $pin.quests) { $inPin
 
 $entries = @(Read-QuestData $DataDir)
 $prereqOf = @{}
-foreach ($quest in $entries) { if ($quest.prereq) { $prereqOf["$($quest.prereq)"] = $true } }
+foreach ($quest in $entries) { if ($quest.prereq) { foreach ($id in (Get-PrereqQuests $quest.prereq)) { $prereqOf["$id"] = $true } } }
 $decided = @{}
 foreach ($row in Import-Csv $Decisions) { $decided[$row.QuestID] = $row.Decision }
 $serverKnows = @{}
