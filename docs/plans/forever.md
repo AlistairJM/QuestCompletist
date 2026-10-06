@@ -260,8 +260,9 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
   - **Continents:** the Kalimdor and Eastern Kingdoms zones by retail's regions, and Zephras Isle.
   - **Dungeons and raids,** by their instance's type.
   - **Classes, battlegrounds, professions, world events** and Forever's other headings.
-  - **Names:** the menu's names come from the client in the player's language (areas, classes,
-    professions), with English as the fallback.
+  - **Names:** the menu's names come from the client in the player's language where it has them
+    (areas, classes, professions, races and its UI strings; see "Menu names from the client"
+    below). The rest are our translations, or English.
   - **Storylines** come from `QuestLine`. Breadcrumbs, mutually exclusive quests and reputation
     rewards were left empty; they came on 6 October (see below).
   - **The new zones:** Riverglades lies east of Burning Steppes and Redridge, so it's with the
@@ -604,6 +605,20 @@ and chickens stand in 9 zones; our old Classic pins had one in 8 of them.
   done.
 - **Checked on the beta** by the user: the chicken pins look right, Elwynn Forest's and Westfall's
   included.
+
+### Menu names from the client (6 October 2026)
+
+Retail's menu headings take the client's names, so they need no translation of ours. Forever's
+didn't: "Dungeons" showed in English in every language but German, which uses the same word.
+
+- **Headings:** "Dungeons", "Raids", "Battlegrounds", "Professions" and the "Azeroth" region now
+  come from the client too, like the continents and "Miscellaneous". Forever's client has no
+  achievement categories, so "Dungeons & Raids" is the Group Finder's title, and "World Events"
+  stays ours.
+- **Categories:** `Build-ForeverMenu.ps1` also names a category by a race (Night Elf), or by one of
+  the client's in-game UI strings with the same English name: Darkmoon Faire, Epic, Legendary,
+  Reputation and Special. Seven stay ours: Lunar Festival and Seasonal, which we translate, and
+  Ahn'Qiraj War, Camping, Invasion, Midsummer and Treasure Map, in English.
 
 ## Decisions
 

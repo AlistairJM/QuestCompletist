@@ -14,13 +14,17 @@ Every category in the data gets a place in the menu:
     of its own: Forever also has a dungeon called Deadwind Pass.
   - Class, profession and holiday headings, and Forever's other headings, go under their own titles;
     Uncategorized comes last.
+  - Headings the client has a name for take it ($headingSources below), as retail's do. Forever
+    has no achievement categories, so "Dungeons & Raids" is the Group Finder's title and "World
+    Events" stays ours.
 The Settings entries are copied from retail's QuestCompletist\qcMenu.lua.
 
 qcQuest.lua holds what the core reads:
   - which map is which category (qcAreaIDToCategoryID);
   - each category's English name (qcQuestCategories);
-  - where the client names it (qcCategoryClientName: the area, class or profession, so the name is
-    in the player's language);
+  - where the client names it (qcCategoryClientName: the area, class or profession, else a race or
+    one of the client's in-game strings with the category's English name, so the name is in the
+    player's language);
   - Forever's storylines (qcQuestLines);
   - the reputation each quest rewards (qcQuestReputation), from reputation.jsonl, and those
     factions' English names (qcFactions), for when the game doesn't name one;
@@ -37,6 +41,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data\forever'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist\Forever'),
+    [string]$LocaleFile = (Join-Path $PSScriptRoot '..\QuestCompletist\Localization.enUS.lua'),
     [string]$Build = "1.60.1.70205",
     [switch]$Check
 )
@@ -65,7 +70,12 @@ $regions = [ordered]@{
     }
 }
 $continentOfMap = @{ 1 = 'KALIMDOR'; 0 = 'EASTERNKINGDOMS' }
-$continentUiMap = @{ KALIMDOR = 1414; EASTERNKINGDOMS = 1415 }
+# Headings the client names, by their qcL key. Each must give the English in Localization.enUS.lua.
+$headingSources = @{
+    KALIMDOR = @('map', 1414); EASTERNKINGDOMS = @('map', 1415); AZEROTH = @('map', 947)
+    DUNGEONSANDRAIDS = @('string', 'GROUP_FINDER'); DUNGEONS = @('string', 'DUNGEONS'); RAIDS = @('string', 'RAIDS')
+    MISCELLANEOUS = @('string', 'MISCELLANEOUS'); BATTLEGROUNDS = @('string', 'BATTLEGROUNDS'); PROFESSIONS = @('string', 'TRADE_SKILLS')
+}
 $classIdBySort = @{ (-81) = 1; (-141) = 2; (-261) = 3; (-162) = 4; (-262) = 5; (-82) = 7; (-161) = 8; (-61) = 9; (-263) = 11 }
 $skillBySort = @{ (-24) = 182; (-101) = 356; (-121) = 164; (-181) = 171; (-182) = 165; (-201) = 202; (-264) = 197; (-304) = 185; (-324) = 129 }
 $eventSorts = @(-22, -364, -365, -366, -368, -369)
@@ -74,7 +84,25 @@ $professionAreas = @('Crafting')
 $areas = @{}; foreach ($row in Get-ClientTable 'AreaTable') { $areas[[int]$row.ID] = $row }
 $maps = @{}; foreach ($row in Get-ClientTable 'Map') { $maps[[int]$row.ID] = $row }
 $sortName = @{}; foreach ($row in Get-ClientTable 'QuestSort') { $sortName[-[int]$row.ID] = $row.SortName_lang }
-$uiMapType = @{}; foreach ($row in Get-ClientTable 'UiMap') { $uiMapType[[int]$row.ID] = [int]$row.Type }
+$uiMapType = @{}; $uiMapName = @{}
+foreach ($row in Get-ClientTable 'UiMap') { $uiMapType[[int]$row.ID] = [int]$row.Type; $uiMapName[[int]$row.ID] = $row.Name_lang }
+# The client's UI strings loaded in game (flag 1; the rest are the login screen's), and its races,
+# by their English names, matched exactly, the lowest ID first.
+$stringText = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
+$stringByText = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
+foreach ($row in (Get-ClientTable 'GlobalStrings' | Sort-Object { [int]$_.ID })) {
+    if (-not ([int]"0$($row.Flags)" -band 1)) { continue }
+    $stringText[$row.BaseTag] = $row.TagText_lang
+    if ($row.TagText_lang -and -not $stringByText.ContainsKey($row.TagText_lang)) { $stringByText[$row.TagText_lang] = $row.BaseTag }
+}
+$raceByName = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
+foreach ($row in (Get-ClientTable 'ChrRaces' | Sort-Object { [int]$_.ID })) {
+    if ($row.Name_lang -and -not $raceByName.ContainsKey($row.Name_lang)) { $raceByName[$row.Name_lang] = [int]$row.ID }
+}
+$english = @{}
+foreach ($m in [regex]::Matches([IO.File]::ReadAllText($LocaleFile), '(?m)^\s*([A-Z0-9]+)\s*=\s*"((?:[^"\\]|\\.)*)"')) {
+    $english[$m.Groups[1].Value] = $m.Groups[2].Value
+}
 $zoneMaps = @{}
 foreach ($row in (Get-ClientTable 'UiMapAssignment' | Sort-Object { [int]$_.UiMapID }, { [int]$_.ID })) {
     $uiMap = [int]$row.UiMapID; $area = [int]$row.AreaID
@@ -148,13 +176,20 @@ function Format-Leaf([int]$id, [string]$indent) {
     $text = if ($indent) { "text=`"$indent`"," } else { '' }
     return "{${text}isTitle=false,notCheckable=false,hasArrow=false,arg1=$id,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}"
 }
-function Format-Submenu([string]$key, [string[]]$entries, [string]$clientName = '') {
-    $client = if ($clientName) { "clientName=$clientName," } else { '' }
-    return "{text=stringformat(`"   %s`",qcL.$key),${client}isTitle=false,notCheckable=true,hasArrow=true,menuList={`r`n" + ($entries -join ",`r`n") + "}}"
+# A heading's clientName field, if the client names it ($headingSources).
+function Get-ClientField([string]$key) {
+    $source = $headingSources[$key]
+    if (-not $source) { return '' }
+    $name = if ($source[0] -eq 'map') { $uiMapName[$source[1]] } else { $stringText[$source[1]] }
+    if ($name -cne $english[$key]) { throw "Heading $key '$($english[$key])': the client for build $Build would call it '$name'." }
+    $id = if ($source[0] -eq 'map') { $source[1] } else { "`"$($source[1])`"" }
+    return "clientName={`"$($source[0])`",$id},"
 }
-function Format-Title([string]$key, [string]$clientName = '') {
-    $client = if ($clientName) { "clientName=$clientName," } else { '' }
-    return "{text=qcL.$key,${client}isTitle=true,notCheckable=true,hasArrow=false}"
+function Format-Submenu([string]$key, [string[]]$entries) {
+    return "{text=stringformat(`"   %s`",qcL.$key),$(Get-ClientField $key)isTitle=false,notCheckable=true,hasArrow=true,menuList={`r`n" + ($entries -join ",`r`n") + "}}"
+}
+function Format-Title([string]$key) {
+    return "{text=qcL.$key,$(Get-ClientField $key)isTitle=true,notCheckable=true,hasArrow=false}"
 }
 function Get-ZoneLeaves($ids) { return @(Get-Sorted $ids | ForEach-Object { Format-Leaf $_ '' }) }
 
@@ -166,7 +201,7 @@ foreach ($continent in $regions.Keys) {
         $zones = $continents[$continent][$region]
         if ($zones.Count) { $groups.Add((Format-Submenu $region @(Get-ZoneLeaves $zones))) }
     }
-    if ($groups.Count) { $menu.Add((Format-Submenu $continent $groups.ToArray() "{`"map`",$($continentUiMap[$continent])}")) }
+    if ($groups.Count) { $menu.Add((Format-Submenu $continent $groups.ToArray())) }
 }
 foreach ($id in (Get-Sorted $lands)) { $menu.Add((Format-Leaf $id '   ')) }
 if ($dungeons.Count -or $raids.Count) {
@@ -178,12 +213,12 @@ if ($classes.Count) {
     $menu.Add((Format-Title 'CLASSQUESTS'))
     $menu.Add((Format-Submenu 'CLASSES' @(Get-Sorted $classes | ForEach-Object { Format-Leaf $_ '' })))
 }
-$menu.Add((Format-Title 'MISCELLANEOUS' '{"string","MISCELLANEOUS"}'))
+$menu.Add((Format-Title 'MISCELLANEOUS'))
 if ($battlegrounds.Count) { $menu.Add((Format-Submenu 'BATTLEGROUNDS' @(Get-Sorted $battlegrounds | ForEach-Object { Format-Leaf $_ '' }))) }
 if ($professions.Count) { $menu.Add((Format-Submenu 'PROFESSIONS' @(Get-Sorted $professions | ForEach-Object { Format-Leaf $_ '' }))) }
 if ($events.Count) { $menu.Add((Format-Submenu 'WORLDEVENTS' @(Get-Sorted $events | ForEach-Object { Format-Leaf $_ '' }))) }
 foreach ($id in (Get-Sorted $others)) { $menu.Add((Format-Leaf $id '   ')) }
-$menu.Add('{text=stringformat("   %s",qcL.UNCATEGORIZED),isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}')
+$menu.Add((Format-Leaf 0 '   '))
 $retailMenu = [IO.File]::ReadAllLines((Join-Path $PSScriptRoot '..\QuestCompletist\qcMenu.lua'))
 $settingsStart = [Array]::FindIndex($retailMenu, [Predicate[string]] { param($l) $l.StartsWith('{text=GetText("SETTINGS"),isTitle=true') })
 $settingsEnd = [Array]::FindLastIndex($retailMenu, [Predicate[string]] { param($l) $l.Trim() -eq '}' })
@@ -200,10 +235,14 @@ foreach ($uiMap in ($zoneMaps.Keys | Sort-Object)) { [void]$quest.Append("[$uiMa
 [void]$quest.Append("}`r`nqcQuestCategories={`r`n")
 foreach ($id in (Get-Sorted @($categories.Keys))) { [void]$quest.Append("{$id,$(Format-LuaString (Get-EnglishName $id))},`r`n") }
 [void]$quest.Append("}`r`nqcCategoryUiMapID={}`r`nqcCategoryClientName={`r`n")
+$ourNames = New-Object System.Collections.Generic.List[string]
 foreach ($id in (@($categories.Keys) | Sort-Object)) {
+    $name = [string](Get-EnglishName $id)
     $source = if ($id -eq 0) { '{"string","STABLE_PET_UNCATEGORIZED"}' } elseif ($id -gt 0) { "{`"area`",$id}" }
         elseif ($classIdBySort.ContainsKey($id)) { "{`"class`",$($classIdBySort[$id])}" } elseif ($skillBySort.ContainsKey($id)) { "{`"skill`",$($skillBySort[$id])}" }
-    if ($source) { [void]$quest.Append("[$id]=$source,`r`n") }
+        elseif ($name -and $raceByName.ContainsKey($name)) { "{`"race`",$($raceByName[$name])}" }
+        elseif ($name -and $stringByText.ContainsKey($name)) { "{`"string`",`"$($stringByText[$name])`"}" }
+    if ($source) { [void]$quest.Append("[$id]=$source,`r`n") } else { $ourNames.Add($name) }
 }
 $inData = @{}
 foreach ($line in [IO.File]::ReadAllLines((Join-Path $DataDir 'quests.jsonl'))) { if ($line -match '^\{"id":(\d+),') { $inData[[int]$Matches[1]] = $true } }
@@ -268,4 +307,5 @@ foreach ($file in @(@{ Name = 'qcMenu.lua'; Text = $menuText }, @{ Name = 'qcQue
     $lands.Count, $dungeons.Count, $raids.Count, $battlegrounds.Count, $classes.Count, $professions.Count, $events.Count, $others.Count
 $unplaced = @($continents.Values | ForEach-Object { $_['OTHERCATEGORIES'] } | ForEach-Object { Get-EnglishName $_ })
 if ($unplaced.Count) { "Zones in no region (in their continent's Other group): $($unplaced -join ', ')" }
+if ($ourNames.Count) { "Categories still named by our own strings: $(($ourNames | Sort-Object) -join ', ')" }
 if ($outdated) { exit 1 }
