@@ -133,7 +133,13 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
    review, including the 83 givers and 185 positions above.
 4. **Forever TOC, menus and build** (addon), tested on the beta.
 5. **At launch:** rerun the probe on the live build (a full sweep's step 10), compare, and release
-   the update. Releases have carried Forever's beta data since 111.1.
+   the update. Releases have carried Forever's beta data since 111.1. Also check for Blizzard data
+   the beta didn't have, and take it over CMaNGOS's wherever it appears:
+   - a Forever namespace in Blizzard's web API, which retail's reputation rewards, requirements and
+     names come from;
+   - client tables that gain quest data, as `QuestPOIBlob` holds start points. On retail, no client
+     table holds a quest's reputation, breadcrumbs or "only one of these" groups (checked 29
+     September 2026); the server sends reputation in each quest's record, which the probe reads.
 6. **After launch:** keep recording the new content's givers, and look up the rest on Wowhead.
 
 ### Phase 1 results (5 October 2026, beta build 70205, enUS)
