@@ -72,33 +72,6 @@ local function qcPinIcon(pinData)
     return best
 end
 
-function qcPinMixin:OnAcquired(pinData)
-    self.PinData = pinData
-    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
-    self:SetPosition(pinData[4] / 100, pinData[5] / 100)
-    self:SetSize(24, 24)
-
-    qcSetIcon(self.Texture, qcPinIcon(pinData))
-
-    -- Initialize isGrey as true, and turn it to false if ANY quest is available
-    local isGrey = true
-    local playerLevel = UnitLevel("player")
-    for _, questId in ipairs(pinData[6]) do
-        if questId and qcQuestDatabase[questId] then
-            local requiredLevel = qcQuestDatabase[questId][2]
-            if playerLevel >= (requiredLevel or 0) and qcPrereq.QuestMet(questId) then
-                isGrey = false
-                break
-            end
-        end
-    end
-    if isGrey then
-        self.Texture:SetVertexColor(0.5, 0.5, 0.5)
-    else
-        self.Texture:SetVertexColor(1, 1, 1)
-    end
-end
-
 local function qcPinGiverName(pinData)
     if pinData[3] then
         return qcNpcName(pinData, qcNpcMapTooltipWaiting)
@@ -216,9 +189,12 @@ local function qcPrereqName(questId)
     return qcQuestName(questId, qcMapTooltipWaiting) or qcL.UNKNOWNQUEST
 end
 
--- What stands between the character and a quest, in the words of Blizzard's item tooltips; nil when
--- nothing does. The map hides these quests unless the filters for them are off.
-local function qcPinQuestNeeds(questId)
+-- What stands between the character and a quest still to do, in the words of Blizzard's item
+-- tooltips; nil when nothing does, or the quest is in the log or done. The map hides these quests
+-- unless the filters for them are off. With anything, it only answers whether something does,
+-- without looking up names: a quest to do first may have to ask the server for its name.
+local function qcPinQuestNeeds(questId, state, anything)
+    if state ~= qcQuestStatus.TODO and state ~= qcQuestStatus.RECURRING then return nil end
     local e = qcQuestDatabase[questId]
     if not e then return nil end
     local needs = {}
@@ -244,6 +220,7 @@ local function qcPinQuestNeeds(questId)
     if prereqParts then
         for _, part in ipairs(prereqParts) do
             if not qcPrereq.Met(part, false) then
+                if anything then return true end
                 needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcPrereq.Text(part, qcPrereqName, false))
             end
         end
@@ -252,17 +229,40 @@ local function qcPinQuestNeeds(questId)
     local level, isRank
     if type(renown) == "table" then level, isRank = qcFactionLevel(renown[1]) end
     if level and level < renown[2] then
+        if anything then return true end
         needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or qcL.UNKNOWNFACTION,
             string.format(isRank and qcL.RANKLEVEL or RENOWN_LEVEL_LABEL, renown[2]))
     end
-    if #needs > 0 then return table.concat(needs, ", ") end
+    if #needs > 0 then return anything or table.concat(needs, ", ") end
+end
+
+-- A pin is greyed when its tooltip greys all its quests: the character can't take any of them yet.
+local function qcPinGreyed(pinData)
+    for _, questId in ipairs(pinData[6]) do
+        local questData = qcQuestDatabase[questId]
+        if questData and not qcPinQuestNeeds(questId, qcQuestStatus.Of(questId, questData), true) then
+            return false
+        end
+    end
+    return true
+end
+
+function qcPinMixin:OnAcquired(pinData)
+    self.PinData = pinData
+    self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
+    self:SetPosition(pinData[4] / 100, pinData[5] / 100)
+    self:SetSize(24, 24)
+
+    qcSetIcon(self.Texture, qcPinIcon(pinData))
+    local shade = qcPinGreyed(pinData) and 0.5 or 1
+    self.Texture:SetVertexColor(shade, shade, shade)
 end
 
 -- A quest that can't be taken yet is greyed, with what stands in the way.
 local function qcAddPinQuestLine(questId, state)
     local icon, colour = qcQuestStatus.Look(questId, state)
     local name = qcQuestName(questId, qcMapTooltipWaiting)
-    local needs = (state == qcQuestStatus.TODO or state == qcQuestStatus.RECURRING) and qcPinQuestNeeds(questId)
+    local needs = qcPinQuestNeeds(questId, state)
     local text = needs and string.format("    |cff9d9d9d%s|r |cff808080(%s)|r", name, needs)
         or string.format("    |cff%s%s|r", colour, name)
     local leftText = qcAddMapTooltipLine(text, string.format("|cff808080%d|r", questId))
