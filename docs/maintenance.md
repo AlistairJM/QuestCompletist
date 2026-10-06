@@ -544,8 +544,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    Wowhead's Forever pages and added to `docs\plans\forever-quest-givers.csv` (quest, NPC, name,
    note). The NPC stands where CMaNGOS or the recorder puts it, and the recorder wins when it saw
    another giver offer the quest. A quest filed under a heading that isn't a place, a race's (Night
-   Elf) or Treasure Map, goes under a zone instead: the one `docs\plans\forever-quest-zones.csv`
-   gives it by hand (quest, zone's `AreaTable` ID, name, note), else its pins' zone, else
+   Elf), Treasure Map, Epic or Legendary, goes under a zone instead: the one
+   `docs\plans\forever-quest-zones.csv` gives it by hand (quest, zone's `AreaTable` ID, name,
+   note), else its pins' zone, else the zone of the NPC CMaNGOS has it handed in to, else
    CMaNGOS's. The review list says which, and flags a listed zone that isn't used. The Commendation
    Signets' turn-ins, which CMaNGOS files under Reputation, go under Ahn'Qiraj War with the rest of
    the war effort: its supply quests give the signets, and its officers take them.

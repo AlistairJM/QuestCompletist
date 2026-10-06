@@ -33,8 +33,9 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             filed under an area named after an instance (Gnomeregan in Dun Morogh) gets the
             instance's own area; one filed under any other subzone (Valley of Trials) gets its
             zone, as retail's categories are zones. A heading that isn't a place, a race's (Night
-            Elf) or Treasure Map, gives way to the zone forever-quest-zones.csv gives the quest,
-            else the zone of its pins' map, else CMaNGOS's zone, else 0. The Commendation
+            Elf), Treasure Map, Epic or Legendary, gives way to the zone forever-quest-zones.csv
+            gives the quest, else the zone of its pins' map, else that of the NPC CMaNGOS has it
+            handed in to, else CMaNGOS's zone, else 0. The Commendation
             Signets' turn-ins, under the Reputation heading, go under Ahn'Qiraj War: the war
             effort's supply quests give the signets, and its officers take them. zone is its name.
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
@@ -164,7 +165,7 @@ foreach ($row in Get-ClientTable 'AreaTable') {
     $areaMap[[int]$row.ID] = [int]$row.ContinentID
 }
 $raceName = @{}; foreach ($row in Get-ClientTable 'ChrRaces') { if ($row.Name_lang) { $raceName[$row.Name_lang] = $true } }
-$placelessSort = @{ (-221) = $true }
+$placelessSort = @{ (-221) = $true; (-1) = $true; (-344) = $true }
 foreach ($row in Get-ClientTable 'QuestSort') {
     $sortName[-[int]$row.ID] = $row.SortName_lang
     if ($raceName[$row.SortName_lang]) { $placelessSort[-[int]$row.ID] = $true }
@@ -326,7 +327,7 @@ try {
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
     foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89,11'), @('creature_questrelation', '1,2'),
-            @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
+            @('gameobject_questrelation', '1,2'), @('creature_involvedrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5,7'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'), @('game_event_gameobject', '1,2'))) {
         $dump[$read[0]] = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $sql $read[0] $read[1])
@@ -353,6 +354,12 @@ $starterNpcs = @{}; foreach ($list in $creatureStarters.Values) { foreach ($npc 
 $handStarters = @{}
 foreach ($row in Import-Csv $GiverFile) { $handStarters[[int]$row.Quest] += @([int]$row.Npc); $starterNpcs[[int]$row.Npc] = $true }
 $handZone = @{}; foreach ($row in Import-Csv $ZoneFile) { $handZone[[int]$row.Quest] = [int]$row.Zone }
+$creatureEnders = @{}; $enderNpcs = @{}
+foreach ($line in $dump.creature_involvedrelation) {
+    $f = $line.Split("`t")
+    if (-not $cmQuest.ContainsKey([int]$f[1]) -or -not $placelessSort[$cmQuest[[int]$f[1]].Zone]) { continue }
+    $creatureEnders[[int]$f[1]] += @([int]$f[0]); $enderNpcs[[int]$f[0]] = $true
+}
 $starterObjects = @{}; foreach ($list in $objectStarters.Values) { foreach ($object in $list) { $starterObjects[$object] = $true } }
 $itemStart = @{}
 foreach ($line in $dump.item_template) { $f = $line.Split("`t"); if ($f[1] -ne '0') { $itemStart[[int]$f[1]] = [int]$f[0] } }
@@ -389,12 +396,13 @@ foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")
             X = $frame.MaxX - $fy * ($frame.MaxX - $frame.MinX); Y = $frame.MaxY - $fx * ($frame.MaxY - $frame.MinY) })
     }
 }
-$npcSpawns = @{}; $npcHoliday = @{}; $oldPinNpcSpawns = @{}
+$npcSpawns = @{}; $npcHoliday = @{}; $oldPinNpcSpawns = @{}; $enderSpawns = @{}
 foreach ($line in $dump.creature) {
     $f = $line.Split("`t")
     $npc = [int]$f[1]
     $spawn = [pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }
     if ($oldPinMaps.ContainsKey($npc)) { $oldPinNpcSpawns[$npc] += @($spawn) }
+    if ($enderNpcs[$npc]) { $enderSpawns[$npc] += @($spawn) }
     if (-not $starterNpcs[$npc]) { continue }
     $npcSpawns[$npc] += @($spawn)
     $holiday = $spawnHoliday[[int]$f[0]]
@@ -703,17 +711,22 @@ foreach ($id in ($records.Keys | Sort-Object)) {
 foreach ($quest in $handStarters.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-listed quest not imported' $quest ($handStarters[$quest] -join ', ') '' } }
 
 # A heading that isn't a place gives way to the hand-kept zone, else the zone of the quest's pins' map,
-# the most pins first, else CMaNGOS's zone.
+# the most pins first, else that of the NPC it's handed in to, else CMaNGOS's zone.
 $refiledQuests = @{}
 foreach ($q in @($records.Values | Where-Object { $placelessSort[$_.category] } | Sort-Object id)) {
     $refiledQuests[$q.id] = $true
     $heading = $sortName[$q.category]
     $zones = @($pins.Values | Where-Object { $_.quests.Contains($q.id) } | ForEach-Object { $uiMapArea[$_.map] } | Where-Object { $_ } |
         Group-Object | Sort-Object { -$_.Count }, { [int]$_.Name })
+    $enderZones = @($(foreach ($npc in $creatureEnders[$q.id]) { foreach ($spawn in $enderSpawns[$npc]) {
+            $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $null $oldPinMaps[$npc] -Z $spawn.Z
+            if ($spot -and $uiMapArea[$spot.UiMap]) { $uiMapArea[$spot.UiMap] } } }) |
+        Group-Object | Sort-Object { -$_.Count }, { [int]$_.Name })
     $m = $cmQuest[$q.id]
     $listed = $handZone[$q.id]
     if ($listed -gt 0 -and $sortName.ContainsKey($listed)) { $zone = $listed; $kind = "heading isn't a place: hand-kept zone" }
     elseif ($zones.Count) { $zone = [int]$zones[0].Name; $kind = "heading isn't a place: its pins' zone" }
+    elseif ($enderZones.Count) { $zone = [int]$enderZones[0].Name; $kind = "heading isn't a place, no pin: hand-in NPC's zone" }
     elseif ($m -and $m.Zone -and $sortName.ContainsKey($m.Zone) -and -not $placelessSort[$m.Zone]) { $zone = $m.Zone; $kind = "heading isn't a place, no pin: CMaNGOS's zone" }
     else { $zone = 0; $kind = "heading isn't a place, no pin: Uncategorized" }
     if ($listed -and $zone -ne $listed) { Add-Review "hand-kept zone isn't an area in the client" $q.id $listed $q.name }

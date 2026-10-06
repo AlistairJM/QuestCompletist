@@ -235,8 +235,9 @@ From the beta's data (9 seconds, with the same files on a rerun):
   givers count: the "WANTED: Murkdeep!" poster also offers Forever's new quest 98025.
 - **Category** is Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
   profession and holiday quests and Forever's own headings (Camping, The High Order, Nightmare
-  Incursions). Phase 4's menu is built on these. (Since 6 October, a race's heading and Treasure
-  Map aren't used: see "Race headings" and "Treasure Map" below.)
+  Incursions). Phase 4's menu is built on these. (Since 6 October, a race's heading, Treasure Map,
+  Epic and Legendary aren't used: see "Race headings", "Treasure Map" and "Epic and Legendary"
+  below.)
 - **Seasonal quests** get their holiday from CMaNGOS's events, which carry Blizzard's holiday IDs, or
   from their heading. That gives 146 seasonal quests, 137 of them with a holiday. (Since 6 October,
   also from the events all their givers stand during: see "Event quests" below.)
@@ -621,8 +622,8 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   achievement categories, so "Dungeons & Raids" is the Group Finder's title, and "World Events"
   stays ours.
 - **Categories:** `Build-ForeverMenu.ps1` also names a category by one of the client's in-game UI
-  strings with the same English name: Darkmoon Faire, Epic, Legendary, Reputation (until its quests
-  moved: see "Commendation Signets" below) and Special. (It
+  strings with the same English name: Darkmoon Faire, Epic, Legendary and Reputation (until their
+  quests moved: see "Commendation Signets" and "Epic and Legendary" below), and Special. (It
   named Night Elf by its race, until race headings stopped being categories: see "Race headings"
   below.) Seven stay ours, as the game has no way to be asked for them: Ahn'Qiraj
   War, Camping, Invasion, Lunar Festival, Midsummer, Seasonal and Treasure Map. Their translations
@@ -665,9 +666,9 @@ the zone it's given in.
 The menu's "Treasure Map" category held one quest, "Cuergo's Gold" (2882): level 45, repeatable,
 started from a treasure map (item 9254) and handed in at a "Pirate's Treasure!" chest (object
 142194). The beta hasn't answered it, so its heading is CMaNGOS's `QuestSort` 221. Like a race's,
-that heading isn't a place, and retail has no Treasure Map category (nor the quest). Epic,
-Legendary and Special stay: retail has those categories too. (So did Reputation, until its quests
-moved the same day: see "Commendation Signets" below.)
+that heading isn't a place, and retail has no Treasure Map category (nor the quest). Special
+stays: retail has that category too. (So did Reputation, Epic and Legendary, until their quests
+moved the same day: see "Commendation Signets" and "Epic and Legendary" below.)
 
 - **The rule** now covers every heading that isn't a place: a race's, and Treasure Map. Such a
   quest goes under the zone `docs/plans/forever-quest-zones.csv` gives it, else the zone of its
@@ -704,6 +705,27 @@ War Effort:
 - **Result:** Ahn'Qiraj War holds 104 quests, and the menu has 115 categories, with no
   Reputation. Nothing else in the data changes, and a rerun writes the same files. Retail has none
   of these quests, and its Reputation category is empty and not in its menu.
+
+### Epic and Legendary (6 October 2026)
+
+Two more headings that aren't places, so their quests go by zone too, as on retail, whose Legendary
+quests are filed by zone in their own pull request (its Epic category was already empty). CMaNGOS
+files 2 quests under Epic (`QuestSort` 1) and 9 under Legendary (344); the beta hasn't answered
+these level 60 quests.
+
+- **The rule** now lists Epic and Legendary with Treasure Map and the race headings. It also gains
+  a step, after the pins' zone: the zone of the NPC CMaNGOS has the quest handed in to
+  (`creature_involvedrelation`, read only for quests under such a heading, and placed on a map the
+  way givers are). That places the four that start from an item without a hand-kept entry.
+- **Thunderfury, under Silithus:** "Thunderaan the Windseeker" by Highlord Demitrian's pin;
+  "Examine the Vessel" and "Rise, Thunderfury!", which start from items, by Demitrian as the NPC
+  they're handed in to.
+- **Epic, under Moonglade:** "Waking Legends" by Keeper Remulos's pin; "Shrouded in Nightmare",
+  from an item, as it's handed in to him.
+- **Atiesh, under Tanaris:** five by Anachronos's pin at the Caverns of Time; "Frame of Atiesh",
+  from an item, as it's handed in to him.
+- **Result:** the menu has 113 categories, with no Epic or Legendary. Nothing else in the data
+  changes, and a rerun writes the same files.
 
 ## Decisions
 
@@ -768,3 +790,6 @@ War Effort:
   a new list of zones looked up by hand (#189); results above.
 - 2026-10-06: the Commendation Signets' turn-ins moved from Reputation to Ahn'Qiraj War, as the war
   effort's supply quests give the signets and its officers take them (#190); results above.
+- 2026-10-06: Epic and Legendary are no longer categories either: their quests go under Silithus,
+  Moonglade and Tanaris, by their givers or, for those started from an item, by the NPC they're
+  handed in to (#192); results above.

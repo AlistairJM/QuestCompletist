@@ -93,7 +93,6 @@ qcQuestCategories={
 {139,"Eastern Plaguelands"},
 {12,"Elwynn Forest"},
 {-201,"Engineering"},
-{-1,"Epic"},
 {16732,"Excavation Site: Wetlands"},
 {361,"Felwood"},
 {357,"Feralas"},
@@ -106,7 +105,6 @@ qcQuestCategories={
 {-368,"Invasion"},
 {1537,"Ironforge"},
 {-182,"Leatherworking"},
-{-344,"Legendary"},
 {38,"Loch Modan"},
 {-366,"Lunar Festival"},
 {-161,"Mage"},
@@ -175,7 +173,6 @@ qcQuestCategories={
 qcCategoryUiMapID={}
 qcCategoryClientName={
 [-364]={"string","CALENDAR_FILTER_DARKMOON"},
-[-344]={"string","ITEM_QUALITY5_DESC"},
 [-324]={"skill",129},
 [-304]={"skill",185},
 [-284]={"string","SPECIAL"},
@@ -195,7 +192,6 @@ qcCategoryClientName={
 [-81]={"class",1},
 [-61]={"class",9},
 [-24]={"skill",182},
-[-1]={"string","ITEM_QUALITY4_DESC"},
 [0]={"string","STABLE_PET_UNCATEGORIZED"},
 [1]={"area",1},
 [3]={"area",3},
