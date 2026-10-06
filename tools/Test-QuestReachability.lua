@@ -13,7 +13,8 @@ Two settings tiers are checked:
 Progress is best case: max level, every prerequisite done, max renown, nothing completed, and the
 character has every profession.
 
-The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn.
+The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn. An event the calendar
+never shows, such as the Scourge Invasion, can't be on, so its pins get a section of their own.
 
 Trying every race, class, covenant and holiday together is ~28k combinations per map, far too slow.
 Each filter group only reads its own part of the character (faction and race/class read race,
@@ -612,9 +613,29 @@ note(string.format("%d pins never drawn, even with every filter off",
 		if not anyKnown then return "no quest in the database" end
 		return nil
 	end)))
+-- A pin all of whose quests only the seasonal filter hides, for events the calendar never shows, is
+-- hidden as it should be.
+local offCalendar = {}
+for _, holiday in ipairs(core.Holidays) do
+	if #holiday.eventIDs == 0 then offCalendar[holiday.flag] = true end
+end
+local hiddenPins, offCalendarPins = minus(openPins, identityPins), {}
+for key in pairs(hiddenPins) do
+	local expected = true
+	for _, pair in ipairs(pairsByPin[key]) do
+		if open.pinQuests[pair] then
+			local reasons = blame.pinQuests[pair] or {}
+			local holiday = env.qcQuestHoliday[pairInfo[pair].quest]
+			if not (#reasons == 1 and reasons[1] == "seasonal" and holiday and offCalendar[holiday]) then expected = false end
+		end
+	end
+	if expected then offCalendarPins[key] = true end
+end
 note(string.format("%d pins hidden from every possible character by the identity filters",
-	section("Pins hidden from every possible character by the identity filters", minus(openPins, identityPins), pinLabel,
+	section("Pins hidden from every possible character by the identity filters", minus(hiddenPins, offCalendarPins), pinLabel,
 		function(key) return reasonText(nil, pairsByPin[key]) end)))
+note(string.format("%d pins of events the calendar doesn't show, hidden while the seasonal filter is on",
+	section("Pins of events the calendar doesn't show, hidden while the seasonal filter is on", offCalendarPins, pinLabel)))
 
 if knownMaps then
 	local unknown = {}

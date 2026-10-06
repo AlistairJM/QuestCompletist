@@ -32,9 +32,14 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
   class     the addon's class bits, from CMaNGOS or a class heading; 8191 for any.
-  type      64 seasonal, 4 daily, 128 weekly, 2 repeatable, 32 profession or 1, the first that
-            applies, so a repeatable profession quest is repeatable, as on retail. holiday and
-            profession hold the addon's flags.
+  type      4 daily, 128 weekly, 2 repeatable, 64 seasonal, 32 profession or 1, the first that
+            applies, so a repeatable holiday or profession quest is repeatable, as on retail. holiday
+            and profession hold the addon's flags.
+  holiday   CMaNGOS's holiday for the quest, or for its heading; failing that, the holiday or event
+            all its givers, NPCs and objects, stand only during. Events with no holiday of their
+            own go by their description: the Darkmoon Faire's building days, the fishing contest's
+            announcers and judges, and the Scourge Invasion and Ahn'Qiraj War Effort, which the
+            calendar doesn't show, so the addon keeps their quests off the map.
   prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache.
 Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
 it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
@@ -120,7 +125,11 @@ $classBySort = @{ (-81) = 1; (-141) = 2; (-261) = 4; (-162) = 8; (-262) = 16; (-
 $skillBySort = @{ (-24) = 182; (-101) = 356; (-121) = 164; (-181) = 171; (-182) = 165; (-201) = 202; (-264) = 197; (-304) = 185; (-324) = 129 }
 $professionBySkill = @{ 171 = 1; 164 = 2; 333 = 4; 202 = 8; 165 = 64; 197 = 128; 182 = 256; 186 = 512; 393 = 1024; 129 = 4096; 185 = 8192; 356 = 16384 }
 $holidayByHolidayId = @{ 372 = 1; 201 = 2; 409 = 4; 141 = 8; 324 = 16; 1405 = 16; 321 = 32; 423 = 64; 335 = 64; 327 = 128
-    341 = 256; 181 = 512; 404 = 1024; 398 = 2048; 691 = 4096; 479 = 8192; 374 = 8192; 375 = 8192; 376 = 8192 }
+    341 = 256; 181 = 512; 404 = 1024; 398 = 2048; 691 = 4096; 479 = 8192; 374 = 8192; 375 = 8192; 376 = 8192; 301 = 65536 }
+# CMaNGOS's events with no holiday of their own, by their description: the Darkmoon Faire's building days, the
+# fishing contest's announcers and judges, and two world events the calendar doesn't show.
+$holidayByEventName = [ordered]@{ '^Darkmoon Faire' = 8192; '^Fishing Extravaganza' = 65536; '^Scourge Invasion' = 16384
+    '^AQ War Effort' = 32768 }
 $holidayBySort = @{ (-364) = 8192; (-366) = 128; (-369) = 256 }
 $seasonalSort = -22
 $allianceRaces = 77
@@ -270,7 +279,7 @@ try {
     foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89'), @('creature_questrelation', '1,2'),
             @('gameobject_questrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
-            @('game_event', '1,5'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'))) {
+            @('game_event', '1,5,7'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'), @('game_event_gameobject', '1,2'))) {
         $dump[$read[0]] = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $sql $read[0] $read[1])
         if ($LASTEXITCODE -ne 0) { throw "Read-SqlDump.lua failed on $($read[0])" }
     }
@@ -295,11 +304,18 @@ $starterObjects = @{}; foreach ($list in $objectStarters.Values) { foreach ($obj
 $itemStart = @{}
 foreach ($line in $dump.item_template) { $f = $line.Split("`t"); if ($f[1] -ne '0') { $itemStart[[int]$f[1]] = [int]$f[0] } }
 $eventHoliday = @{}
-foreach ($line in $dump.game_event) { $f = $line.Split("`t"); $flag = $holidayByHolidayId[[int]$f[1]]; if ($flag) { $eventHoliday[[int]$f[0]] = $flag } }
+foreach ($line in $dump.game_event) {
+    $f = $line.Split("`t")
+    $flag = $holidayByHolidayId[[int]$f[1]]
+    if (-not $flag) { foreach ($name in $holidayByEventName.Keys) { if ($f[2] -match $name) { $flag = $holidayByEventName[$name]; break } } }
+    if ($flag) { $eventHoliday[[int]$f[0]] = $flag }
+}
 $questHoliday = @{}
 foreach ($line in $dump.game_event_quest) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $questHoliday[[int]$f[0]] = $flag } }
 $spawnHoliday = @{}
 foreach ($line in $dump.game_event_creature) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $spawnHoliday[[int]$f[0]] = $flag } }
+$objectSpawnHoliday = @{}
+foreach ($line in $dump.game_event_gameobject) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $objectSpawnHoliday[[int]$f[0]] = $flag } }
 $oldPins = New-Object System.Collections.Generic.List[object]
 $oldPinMaps = @{}
 $mapId = 0
@@ -336,11 +352,14 @@ foreach ($npc in $oldPinNpcSpawns.Keys) {
         }
     }
 }
-$objectSpawns = @{}
+$objectSpawns = @{}; $objectHoliday = @{}
 foreach ($line in $dump.gameobject) {
     $f = $line.Split("`t")
     $object = [int]$f[1]
-    if ($starterObjects[$object]) { $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }) }
+    if (-not $starterObjects[$object]) { continue }
+    $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] })
+    $holiday = $objectSpawnHoliday[[int]$f[0]]
+    if (-not $objectHoliday.ContainsKey($object)) { $objectHoliday[$object] = $holiday } elseif ($objectHoliday[$object] -ne $holiday) { $objectHoliday[$object] = $null }
 }
 $cmNpcName = @{}; foreach ($line in $dump.creature_template) { $f = $line.Split("`t"); if ($starterNpcs[[int]$f[0]]) { $cmNpcName[[int]$f[0]] = $f[1] } }
 $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Split("`t"); if ($starterObjects[[int]$f[0]]) { $objectName[[int]$f[0]] = $f[1] } }
@@ -423,13 +442,14 @@ foreach ($id in $ids) {
     $skill = if ($m -and $m.Skill) { $m.Skill } elseif ($skillBySort.ContainsKey($category)) { $skillBySort[$category] } else { 0 }
     $profession = if ($professionBySkill.ContainsKey($skill)) { $professionBySkill[$skill] } else { 0 }
     $holiday = if ($questHoliday.ContainsKey($id)) { $questHoliday[$id] } elseif ($holidayBySort.ContainsKey($category)) { $holidayBySort[$category] } else { 0 }
-    if (-not $holiday -and $creatureStarters[$id]) {
-        $flags = @($creatureStarters[$id] | ForEach-Object { $npcHoliday[$_] } | Sort-Object -Unique)
+    if (-not $holiday) {
+        $flags = @(@(foreach ($npc in $creatureStarters[$id]) { if ($npcHoliday.ContainsKey($npc)) { [int]$npcHoliday[$npc] } }) +
+            @(foreach ($object in $objectStarters[$id]) { if ($objectHoliday.ContainsKey($object)) { [int]$objectHoliday[$object] } }) | Sort-Object -Unique)
         if ($flags.Count -eq 1 -and $flags[0]) { $holiday = $flags[0] }
     }
     $recurs = if ($c) { $c.recurs } else { $null }
-    $type = if ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 }
-        elseif ($m -and ($m.Special -band 1)) { 2 } elseif ($profession) { 32 } else { 1 }
+    $type = if ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 } elseif ($m -and ($m.Special -band 1)) { 2 }
+        elseif ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($profession) { 32 } else { 1 }
 
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $(if ($c) { [int]$c.level } else { $m.Level })
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
