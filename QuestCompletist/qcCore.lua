@@ -1940,7 +1940,7 @@ function qcCheckSettings()
         qcSettings.QC_M_SHOW_ICONS = 1
     end
     if (qcSettings.QC_M_HIDE_COMPLETED == nil) then
-        qcSettings.QC_M_HIDE_COMPLETED = 0
+        qcSettings.QC_M_HIDE_COMPLETED = 1
     end
     if (qcSettings.QC_M_HIDE_LOWLEVEL == nil) then
         qcSettings.QC_M_HIDE_LOWLEVEL = 0
@@ -1952,7 +1952,7 @@ function qcCheckSettings()
         qcSettings.QC_M_HIDE_SEASONAL = 1
     end
     if (qcSettings.QC_M_HIDE_INPROGRESS == nil) then
-        qcSettings.QC_M_HIDE_INPROGRESS = 0
+        qcSettings.QC_M_HIDE_INPROGRESS = 1
     end
     if (qcSettings.QC_M_HIDE_NODATA == nil) then
         qcSettings.QC_M_HIDE_NODATA = 1
@@ -1985,13 +1985,13 @@ function qcCheckSettings()
         qcSettings.QC_ML_HIDE_COVENANTS = 1
     end
 	if (qcSettings.QC_ML_HIDE_WARBANDS == nil) then
-        qcSettings.QC_ML_HIDE_WARBANDS = 1
+        qcSettings.QC_ML_HIDE_WARBANDS = 0
     end
     if (qcSettings.QC_ML_HIDE_UNAVAILABLE == nil) then
         qcSettings.QC_ML_HIDE_UNAVAILABLE = 1
     end
 	if (qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET == nil) then
-        qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 1
+        qcSettings.QC_M_HIDE_REQUIREMENTSNOTMET = 0
     end
     if (qcSettings.QC_SERVER_QUERY_COMPLETE == nil) then
         qcSettings.QC_SERVER_QUERY_COMPLETE = 0
