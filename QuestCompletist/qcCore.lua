@@ -384,21 +384,31 @@ end
 
 -- A quest's prerequisites (qcQuestPrereq): the quest to do first, or a list of quests that all must
 -- be done. A list inside that list is a choice, any one of which will do, and a list inside a
--- choice is all of it again.
+-- choice is all of it again. Blizzard's lists name both factions' versions of a quest, so a quest
+-- this character couldn't take, and a list of only such quests, doesn't count: as a quest to do
+-- first it's met, and as one of a choice it's no option.
 local qcPrereq = {}
+
+function qcPrereq.Applies(part)
+	if type(part) == "number" then return qcPrereq.CanTake(part) end
+	for _, item in ipairs(part) do
+		if qcPrereq.Applies(item) then return true end
+	end
+	return false
+end
 
 -- Whether a requirement is met: all of a list when all is true, one of a choice when it's false.
 function qcPrereq.Met(need, all)
 	if type(need) == "number" then return C_QuestLog.IsQuestFlaggedCompleted(need) end
 	for _, part in ipairs(need) do
-		if qcPrereq.Met(part, not all) ~= all then return not all end
+		if qcPrereq.Applies(part) and qcPrereq.Met(part, not all) ~= all then return not all end
 	end
 	return all
 end
 
 function qcPrereq.QuestMet(questId)
 	local need = qcQuestPrereq[questId]
-	if not need or need == 0 then return true end
+	if not need or need == 0 or not qcPrereq.Applies(need) then return true end
 	return qcPrereq.Met(need, true)
 end
 
@@ -406,24 +416,22 @@ end
 function qcPrereq.Parts(questId)
 	local need = qcQuestPrereq[questId]
 	if not need or need == 0 then return nil end
-	return type(need) == "table" and need or {need}
+	local parts = {}
+	for _, part in ipairs(type(need) == "table" and need or {need}) do
+		if qcPrereq.Applies(part) then parts[#parts + 1] = part end
+	end
+	if #parts > 0 then return parts end
 end
 
 -- A part as text: a quest as describe(questId) gives it, a choice as its options joined by "or",
--- and a list inside a choice as its quests in brackets. A choice leaves out the quests this
--- character couldn't take, such as another faction's version, unless that's all of them.
+-- and a list inside a choice as its quests in brackets.
 function qcPrereq.Text(part, describe, all)
 	if type(part) == "number" then return describe(part) end
-	local items = part
-	if not all then
-		local open = {}
-		for _, item in ipairs(part) do
-			if type(item) ~= "number" or qcPrereq.CanTake(item) then open[#open + 1] = item end
-		end
-		if #open > 0 then items = open end
-	end
 	local texts = {}
-	for _, item in ipairs(items) do texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
+	for _, item in ipairs(part) do
+		if qcPrereq.Applies(item) then texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
+	end
+	if #texts == 1 then return texts[1] end
 	if all then return "(" .. table.concat(texts, ", ") .. ")" end
 	return table.concat(texts, " " .. (SERVICES_CONJUNCTION_OR or "or") .. " ")
 end

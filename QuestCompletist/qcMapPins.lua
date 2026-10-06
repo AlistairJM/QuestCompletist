@@ -14,7 +14,7 @@ local QC_MAP_FILTER, qcBuildQuestFilter, simulateExclusiveCompletions = QC.QC_MA
 local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
 local qcQuestStatus, qcTooltipBar, qcTooltipDivider = QC.qcQuestStatus, QC.qcTooltipBar, QC.qcTooltipDivider
-local qcFactionName = QC.qcFactionName
+local qcFactionName, qcFactionLevel = QC.qcFactionName, QC.qcFactionLevel
 
 local qcMapTooltip
 -- The pin under the mouse, so names arriving later can redraw its tooltip.
@@ -250,10 +250,11 @@ local function qcPinQuestNeeds(questId)
         end
     end
     local renown = qcRenownLevelRequirements[questId]
-    local renownLevel = type(renown) == "table" and C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel(renown[1])
-    if renownLevel and renownLevel < renown[2] then
+    local level, isRank
+    if type(renown) == "table" then level, isRank = qcFactionLevel(renown[1]) end
+    if level and level < renown[2] then
         needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or qcL.UNKNOWNFACTION,
-            string.format(RENOWN_LEVEL_LABEL, renown[2]))
+            string.format(isRank and qcL.RANKLEVEL or RENOWN_LEVEL_LABEL, renown[2]))
     end
     if #needs > 0 then return table.concat(needs, ", ") end
 end
@@ -495,7 +496,7 @@ local function qcBuildMapQuestFilter()
         if (e[2] or 0) > playerLevel then return false end
         if not qcPrereq.QuestMet(questId) then return false end
         local renown = qcRenownLevelRequirements[questId]
-        local renownLevel = renown and C_MajorFactions.GetCurrentRenownLevel(renown[1])
+        local renownLevel = renown and qcFactionLevel(renown[1])
         if renownLevel and renownLevel < renown[2] then return false end
         return true
     end

@@ -39,7 +39,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 **Detailed quest tooltips**
 
 - Where the quest giver is, the quest's storyline with your progress through it and your place in it, and the quests you need to do first.
-- Renown or reputation requirements, with a ✓ or ✗ for renown, and the reputation it rewards.
+- Renown and friendship rank requirements, with a ✓ or ✗, and the reputation it rewards.
 - Warnings for breadcrumb quests, and for quests that lock out others ("you can only complete one of these").
 
 **Filters to show only what matters to you**

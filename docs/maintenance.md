@@ -63,7 +63,10 @@ categories, the zone table, reputation rewards, storylines and so on).
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
   `prereq` is the quest to do first, or a list of quests that all must be done. A list inside that
   list is a choice, any one of which will do, and a list inside a choice is all of it again:
-  `[57115,57116]` needs both, `[[10983,10989,11057]]` any one of the three.
+  `[57115,57116]` needs both, `[[10983,10989,11057]]` any one of the three. A quest the character
+  couldn't take, for its faction, race or class, doesn't count: Blizzard's lists name both
+  factions' versions of a quest, so the addon counts such a required quest as met, and leaves it out
+  of a choice.
 - `data\pins.jsonl`, one pin per line:
   `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
   `npc` is left out when it's 0, and `name` and `note` when the pin has none.
@@ -218,13 +221,15 @@ with a count for each kind.
     addon never ticks those;
   - a one-time quest that requires a daily, weekly or repeatable one: the game only knows that one
     is done until the next reset, so the map would hide the quest again;
-  - a breadcrumb, or a prerequisite that must be done, for the other faction;
+  - a breadcrumb, or a prerequisite that must be done, for the other faction: the addon counts
+    such a prerequisite as met, so it does nothing;
   - a quest listed twice in a table, as Lua keeps only the last line.
 - **Against Blizzard's API:** the quests it says a quest requires, and the ones it says close a
   quest (a requirement that they're not done). It names at most 3 required quests, and often leaves
   out the step just before the quest in its storyline, so a quest of ours that's that step isn't
   counted against it.
-- **Against the client's tables:** which factions have renown, and the factions' English names.
+- **Against the client's tables:** which factions have renown or friendship ranks (The Weaver's
+  "Rank 7"), and the factions' English names.
 - **Against TrinityCore's database** (the newest `tools\tdb\TDB_full_world_*.sql`), for older
   quests: its breadcrumbs, groups and previous quests. It only speaks for quests it has a row for,
   and has few after Mists of Pandaria. Of the previous quests it offers where we have none, only
@@ -658,8 +663,8 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 28 left, `qcTooltips.lua` 168 and
-  `qcMapPins.lua` 142. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
+  has its own 200: in October 2026, `qcCore.lua` had 28 left, `qcTooltips.lua` 167 and
+  `qcMapPins.lua` 141. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
@@ -693,7 +698,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal, faction names and which have renown; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests | `Audit-QuestTables.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
