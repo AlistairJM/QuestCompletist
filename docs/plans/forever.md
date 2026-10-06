@@ -602,6 +602,8 @@ and chickens stand in 9 zones; our old Classic pins had one in 8 of them.
 - **The result:** 5,081 quests and 1,706 pins, 26 fewer. The reachability check is unchanged.
 - **CLUCK! repeats on Forever:** it isn't in the client's `QuestV2`, so the game never records it as
   done.
+- **Checked on the beta** by the user: the chicken pins look right, Elwynn Forest's and Westfall's
+  included.
 
 ## Decisions
 
