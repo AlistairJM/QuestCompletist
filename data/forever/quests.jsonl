@@ -4922,7 +4922,7 @@
 {"id":97972,"name":"Camping 101: Tailoring","level":6,"zone":"Camping","category":-666,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":97973,"name":"Camping 101: Tailoring","level":6,"zone":"Camping","category":-666,"type":1,"faction":1,"race":67108941,"class":8191}
 {"id":97977,"name":"Nature's Call","level":3,"zone":"Teldrassil","category":141,"type":1,"faction":3,"race":0,"class":8191}
-{"id":97979,"name":"The Goddess Provides","level":1,"zone":"Night Elf","category":-676,"type":1,"faction":1,"race":8,"class":8191}
+{"id":97979,"name":"The Goddess Provides","level":1,"zone":"Teldrassil","category":141,"type":1,"faction":1,"race":8,"class":8191}
 {"id":97985,"name":"Thundering Hearts","level":33,"zone":"Undercity","category":1497,"type":1,"faction":2,"race":67109042,"class":8191}
 {"id":98013,"name":"Swelling Forces","level":20,"zone":"Darkshore","category":148,"type":1,"faction":3,"race":0,"class":8191}
 {"id":98021,"name":"Journey to Sentinel Hill","level":13,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108864,"class":8191}

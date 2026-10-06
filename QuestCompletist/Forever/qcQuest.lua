@@ -116,7 +116,6 @@ qcQuestCategories={
 {493,"Moonglade"},
 {215,"Mulgore"},
 {3456,"Naxxramas"},
-{-676,"Night Elf"},
 {2159,"Onyxia's Lair"},
 {1637,"Orgrimmar"},
 {-141,"Paladin"},
@@ -177,7 +176,6 @@ qcQuestCategories={
 }
 qcCategoryUiMapID={}
 qcCategoryClientName={
-[-676]={"race",4},
 [-367]={"string","REPUTATION"},
 [-364]={"string","CALENDAR_FILTER_DARKMOON"},
 [-344]={"string","ITEM_QUALITY5_DESC"},

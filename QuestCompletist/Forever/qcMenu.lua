@@ -133,7 +133,6 @@ qcMenu={
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=2257,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-1,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-344,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-676,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-367,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-284,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-221,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},

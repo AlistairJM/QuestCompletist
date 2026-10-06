@@ -94,7 +94,8 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 - **Record while playing.** A recorder saves the giver's NPC or object ID, the map and position, and
   the quest log heading, each time a quest is offered or accepted. You send in the file, and a tool
   merges it. It can run on the beta too.
-- **Wowhead** has a Forever section, for lookups by hand as on retail.
+- **Wowhead** has a Forever section, for lookups by hand as on retail. Since 6 October they go in
+  `forever-quest-givers.csv`, which the importer reads (see "Race headings" below).
 
 ### Not used
 
@@ -216,7 +217,8 @@ seconds):
 
 `tools/Import-ForeverData.ps1` builds `data/forever/quests.jsonl` and `pins.jsonl` from four sources:
 the client's `QuestV2`, the quest cache file, CMaNGOS's dump and the probe's saved variables. It
-downloads the dump and any client tables it lacks.
+downloads the dump and any client tables it lacks. Since 6 October a fifth source,
+`forever-quest-givers.csv`, adds givers looked up by hand (see "Race headings" below).
 - **The game wins wherever it speaks.** Title, level, zone, recurrence and race restrictions come
   from the cache, and recorded spots and NPC names from the probe.
 - **The files use retail's fields and conventions** (see the tool's header), so the existing build
@@ -231,7 +233,8 @@ From the beta's data (9 seconds, with the same files on a rerun):
   givers count: the "WANTED: Murkdeep!" poster also offers Forever's new quest 98025.
 - **Category** is Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
   profession and holiday quests and Forever's own headings (Camping, The High Order, Nightmare
-  Incursions). Phase 4's menu is built on these.
+  Incursions). Phase 4's menu is built on these. (Since 6 October, a race's heading isn't used: see
+  "Race headings" below.)
 - **Seasonal quests** get their holiday from CMaNGOS's events, which carry Blizzard's holiday IDs, or
   from their heading. That gives 146 seasonal quests, 137 of them with a holiday. (Since 6 October,
   also from the events all their givers stand during: see "Event quests" below.)
@@ -626,6 +629,29 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   369). The key had been "Midsummer Fire Festival", which no category was called, so Forever's
   Midsummer showed in English.
 
+### Race headings (6 October 2026)
+
+The menu had a "Night Elf" category under Miscellaneous, holding one quest: "The Goddess Provides"
+(97979), Forever's new level 1 quest for Night Elves. The game files it under `QuestSort` 676, "Night
+Elf", the only quest log heading named after a race, and the importer took the game's heading as the
+category, as it does for classes and professions. A race isn't a place, though: the quest belongs to
+the zone it's given in.
+
+- **The rule:** a quest the game files under a race's heading goes under the zone of its pins' map
+  (from `UiMapAssignment`, where each zone map has one area), else CMaNGOS's zone, else
+  Uncategorized. A heading is a race's when its name is one of `ChrRaces`' names.
+- **The giver:** no source had one. CMaNGOS doesn't have the quest, the game's records never name
+  givers, and the recorder wasn't running yet when it was done on the beta. Wowhead's Forever pages
+  say Shanda, the priest trainer in Shadowglen, starts and ends it, in Teldrassil. So
+  `docs/plans/forever-quest-givers.csv` now holds givers looked up by hand (quest, NPC, name, note):
+  the "Wowhead by hand" source above. A listed NPC stands where CMaNGOS or the recorder puts it.
+  The recorder wins: a listed giver it didn't see offer the quest, when it saw another giver do so,
+  is left out, with a review row.
+- **Result:** the quest joins Shanda's pin in Shadowglen (Teldrassil 59.2, 40.4) and Teldrassil's
+  list. The pin now has the normal icon, as the quest is for any class; her Priest quest alone gave
+  it the class icon. The menu has 117 categories instead of 118, and the review's "no giver" rows go
+  from 1,226 to 1,225. Nothing else in the data changes, and a rerun writes the same files.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -683,3 +709,5 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   do, and Midsummer is translated (#179); results above.
 - 2026-10-06: the other six quest log categories take the client's own names in each language,
   and four of them no longer show in English everywhere (#183); results above.
+- 2026-10-06: a race's quest log heading is no longer a category. "The Goddess Provides" goes under
+  Teldrassil, on Shanda's pin, from a new list of givers looked up by hand (#188); results above.
