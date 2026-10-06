@@ -5,9 +5,9 @@ mismatches by (current -> expected) value so recurring stale sentinels stand
 out from genuine one-off disagreements. Makes no edits to qcQuest.lua.
 #>
 param(
-    [string]$AuditCsv = "C:\Users\alist\RiderProjects\QuestCompletist\tools\quest_accuracy_audit.csv",
-    [string]$OutFile = "C:\Users\alist\RiderProjects\QuestCompletist\tools\quest_accuracy_categories.txt",
-    [string]$DecisionsCsv = "C:\Users\alist\RiderProjects\QuestCompletist\docs\plans\quest-accuracy-manual-decisions.csv",
+    [string]$AuditCsv = (Join-Path $PSScriptRoot 'quest_accuracy_audit.csv'),
+    [string]$OutFile = (Join-Path $PSScriptRoot 'quest_accuracy_categories.txt'),
+    [string]$DecisionsCsv = (Join-Path $PSScriptRoot '..\docs\plans\quest-accuracy-manual-decisions.csv'),
     [int]$MinClusterSize = 10
 )
 

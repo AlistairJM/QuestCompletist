@@ -7,8 +7,9 @@ for them show real info instead of "Quest Missing in DB".
 Each response is kept in quest_api_cache, as Audit-QuestAccuracy.ps1 keeps them, so
 Place-UncategorisedQuests.ps1 can file the new quests by their API area.
 #>
-
-$toolsDir = "C:\Users\alist\RiderProjects\QuestCompletist\tools"
+param(
+    [string]$ToolsDir = $PSScriptRoot
+)
 
 $envFile = "$toolsDir\.env"
 $envVars = @{}

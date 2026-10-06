@@ -213,8 +213,10 @@ stays unflagged.
   | "Temporal Gossamer" (76158) | Valdrakken | Starts from an item, is handed in to Nozdormu there, and helps Nasz'uro |
   | "Tattered Dreamleaf" (77838) | Ohn'ahran Plains | Starts from an item and is handed in to Erden there, as the Dreamleaf crafting quests are |
 
-  The empty Legendary entry left the menu through `Remove-EmptyMenuEntries.ps1`. The empty
-  "Garrison" category (317) isn't in the menu, so it wasn't used. Seen along the way: Wowhead calls
+  The empty Legendary entry left the menu through `Remove-EmptyMenuEntries.ps1`, and its name in
+  `qcCategoryClientName` (the game's "Legendary") through `Build-CategoryClientNames.ps1`, which
+  keeps only categories that hold quests (#194). The empty "Garrison" category (317) isn't in the
+  menu, so it wasn't used. Seen along the way: Wowhead calls
   "Call of the Archmage" 39019 both factions' and 39022 the Alliance's, the other way round from our
   faction data. Left for the next accuracy sweep.
 
