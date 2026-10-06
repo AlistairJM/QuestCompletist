@@ -578,6 +578,33 @@ lacks is greyed with its reason, as another class's quests are.
 - **Checked on the beta** by the user: the quest tooltip shows "Required Skill:". Whether the game
   counts skill bonuses as the addon does is still to check.
 
+### Givers in many places (6 October 2026)
+
+The user saw CLUCK! pins over Westfall's corner of Elwynn Forest's map. Any chicken starts CLUCK!,
+and chickens stand in 9 zones; our old Classic pins had one in 8 of them.
+
+- **The wrong map.** The importer's first rule puts a spawn on a map our old pins had for its giver.
+  With old pins in 8 zones, a chicken in Westfall that Elwynn Forest's frame also holds went to
+  whichever of the two frames came first, Elwynn's.
+  - Now, of the giver's old maps whose frames hold the spawn, the one whose old pin stands nearest it
+    wins. The old pins' world positions come from their maps' frames.
+  - The frame the spawn is deepest in isn't enough: a Horde Warbringer in the Undercity, at the edge
+    of its small frame, is deep inside Alterac Mountains', where he has another old pin.
+  - Only chickens moved. Westfall got its farms' 3 pins back from Elwynn Forest's map, the Barrens 2
+    from Dustwallow Marsh's top edge, and Elwynn Forest the Maclure Vineyards' from Duskwood's.
+- **Fewer pins** (user's decision: one per zone). A giver whose quests all recur, none of them a
+  holiday's, and that stands in more than 3 places on one map, gets one pin per map, at its biggest
+  group of spawns.
+  - Such pins show all year, done or not. A holiday's givers keep every pin, as they only show while
+    it runs.
+  - That's the chickens, 32 pins down to 9, and the Ravenholdt Guards, whose 4 pins around
+    Ravenholdt Manor for the rogues' "Syndicate Emblems" are now 1.
+- **The result:** 5,081 quests and 1,706 pins, 26 fewer. The reachability check is unchanged.
+- **CLUCK! repeats on Forever:** it isn't in the client's `QuestV2`, so the game never records it as
+  done.
+- **Checked on the beta** by the user: the chicken pins look right, Elwynn Forest's and Westfall's
+  included.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -629,3 +656,5 @@ lacks is greyed with its reason, as another class's quests are.
   holiday quests keep their type (#172); results above.
 - 2026-10-06: the profession, and the skill level in it, a quest needs, in its tooltip and on the
   map (#176); results above.
+- 2026-10-06: a giver in several zones goes on the map of its nearest old pin, and a repeatable giver
+  in many places gets one pin per map (#177); results above.
