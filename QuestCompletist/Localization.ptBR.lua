@@ -86,28 +86,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d concluídas (%d%%)", -- Needs review
-	SEARCHRESULTS = "Resultados da busca", -- Needs review
 	SERVERQUERYRESULT = "O servidor informa %d missões concluídas que o Quest Completist conhece, %d delas marcadas como concluídas agora.", -- Needs review
 	CACHECLEARED = "Cache limpo.", -- Needs review
 	CLEARINGCACHE = "Limpando seu cache de atualização...", -- Needs review
 	NODETAILS = "O jogo não fornece os detalhes da missão", -- Needs review
 	QUESTID = "ID da missão:", -- Needs review
-	STORYLINE = "Sequência de missões:", -- Needs review
 	STORYLINEPOSITION = "(%d de %d)", -- Needs review
 	EARLIERQUESTS = "... %d anteriores", -- Needs review
 	LATERQUESTS = "... mais %d", -- Needs review
 	THISQUEST = "esta missão", -- Needs review
-	UNKNOWNQUEST = "Missão desconhecida", -- Needs review
 	REQUIREDQUEST = "Missão necessária:", -- Needs review
-	UNKNOWNFACTION = "Facção desconhecida", -- Needs review
 	REQUIREDFACTION = "Facção necessária:", -- Needs review
 	REQUIREDRENOWN = "Nível de renome necessário:", -- Needs review
 	REQUIREDRANK = "Grau necessário:", -- Needs review
 	REQUIREDSKILL = "Habilidade necessária:", -- Needs review
 	RANKLEVEL = "Grau %d", -- Needs review
-	DATAUNAVAILABLE = "Dados indisponíveis", -- Needs review
 	QUESTGIVER = "Oferecida por:", -- Needs review
-	UNKNOWNNPC = "PNJ desconhecido", -- Needs review
 	NOQUESTGIVER = "Desconhecido, ou missão aceita automaticamente", -- Needs review
 	REPAMOUNT = "%d de reputação", -- Needs review
 	NEWDATAINTRO = "O Quest Completist não conhecia as informações a seguir. Ajude a melhorar a precisão do addon publicando-as no CurseForge.", -- Needs review
@@ -130,7 +124,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "A missão %d \"%s\" consta como não mais disponível, mas você acabou de aceitá-la. Ela aparece normalmente para você; informe para que a lista seja corrigida.", -- Needs review
 	UNAVAILABLETURNEDIN = "A missão %d \"%s\" consta como não mais disponível, mas você acabou de entregá-la. Ela aparece normalmente para você; informe para que a lista seja corrigida.", -- Needs review
 	TOGGLEFRAME = "Mostrar/ocultar janela", -- Needs review
-	UNKNOWNZONE = "Zona desconhecida", -- Needs review
 	}, {__index = qcLocalize})
 
 end

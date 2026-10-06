@@ -85,28 +85,22 @@ qcLocalize = setmetatable({
 	--MID
 	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d 已完成 (%d%%)", -- Needs review
-	SEARCHRESULTS = "搜索结果", -- Needs review
 	SERVERQUERYRESULT = "服务器报告了%d个Quest Completist已知的已完成任务，其中%d个是新标记为已完成的。", -- Needs review
 	CACHECLEARED = "缓存已清除。", -- Needs review
 	CLEARINGCACHE = "正在清除更新缓存……", -- Needs review
 	NODETAILS = "游戏未提供任务详情", -- Needs review
 	QUESTID = "任务ID：", -- Needs review
-	STORYLINE = "任务线：", -- Needs review
 	STORYLINEPOSITION = "(%d/%d)", -- Needs review
 	EARLIERQUESTS = "... 之前%d个", -- Needs review
 	LATERQUESTS = "... 还有%d个", -- Needs review
 	THISQUEST = "此任务", -- Needs review
-	UNKNOWNQUEST = "未知任务", -- Needs review
 	REQUIREDQUEST = "前置任务：", -- Needs review
-	UNKNOWNFACTION = "未知阵营", -- Needs review
 	REQUIREDFACTION = "所需阵营：", -- Needs review
 	REQUIREDRENOWN = "所需名望等级：", -- Needs review
 	REQUIREDRANK = "所需声望等级：", -- Needs review
 	REQUIREDSKILL = "所需技能：", -- Needs review
 	RANKLEVEL = "等级 %d", -- Needs review
-	DATAUNAVAILABLE = "数据不可用", -- Needs review
 	QUESTGIVER = "任务提供者：", -- Needs review
-	UNKNOWNNPC = "未知NPC", -- Needs review
 	NOQUESTGIVER = "未知，或自动接受的任务", -- Needs review
 	REPAMOUNT = "%d声望", -- Needs review
 	NEWDATAINTRO = "Quest Completist之前不知道以下信息。请在CurseForge上反馈，帮助提高插件的准确性。", -- Needs review
@@ -129,7 +123,6 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "任务%d“%s”被列为已无法获取，但你刚刚接受了它。它会对你正常显示；请反馈，以便修正列表。", -- Needs review
 	UNAVAILABLETURNEDIN = "任务%d“%s”被列为已无法获取，但你刚刚交付了它。它会对你正常显示；请反馈，以便修正列表。", -- Needs review
 	TOGGLEFRAME = "显示/隐藏窗口", -- Needs review
-	UNKNOWNZONE = "未知区域", -- Needs review
 	}, {__index = qcLocalize})
 
 end
