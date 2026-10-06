@@ -626,4 +626,4 @@ lacks is greyed with its reason, as another class's quests are.
   the Ahn'Qiraj War Effort's, which the calendar doesn't show, stay off the map, and recurring
   holiday quests keep their type (#172); results above.
 - 2026-10-06: the profession, and the skill level in it, a quest needs, in its tooltip and on the
-  map; results above.
+  map (#176); results above.
