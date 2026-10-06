@@ -308,4 +308,6 @@ foreach ($file in @(@{ Name = 'qcMenu.lua'; Text = $menuText }, @{ Name = 'qcQue
 $unplaced = @($continents.Values | ForEach-Object { $_['OTHERCATEGORIES'] } | ForEach-Object { Get-EnglishName $_ })
 if ($unplaced.Count) { "Zones in no region (in their continent's Other group): $($unplaced -join ', ')" }
 if ($ourNames.Count) { "Categories still named by our own strings: $(($ourNames | Sort-Object) -join ', ')" }
+$keyless = @($ourNames | Where-Object { -not $english.ContainsKey(($_ -replace '[^A-Za-z0-9]', '').ToUpperInvariant()) } | Sort-Object)
+if ($keyless.Count) { "Of those, with no key in Localization.enUS.lua, so in English in every language: $($keyless -join ', ')" }
 if ($outdated) { exit 1 }
