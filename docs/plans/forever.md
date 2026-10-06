@@ -681,3 +681,5 @@ didn't: "Dungeons" showed in English in every language but German, which uses th
   in many places gets one pin per map (#177); results above.
 - 2026-10-06: the menu's headings, and more of its categories, take the client's names, as retail's
   do, and Midsummer is translated (#179); results above.
+- 2026-10-06: the other six quest log categories take the client's own names in each language,
+  and four of them no longer show in English everywhere (#183); results above.
