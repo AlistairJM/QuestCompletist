@@ -209,3 +209,11 @@ that; it isn't a table question.
   Aggramar's Vault). Firelands' 2 didn't, as its category holds no quests, which the tool now
   never gives a map to; nor did the Stockade, named like its own category. The reachability check
   is unchanged.
+- 2026-10-07: retail category names from QuestSort (recommendation 2), through a new tool,
+  `Sync-QuestSortNames.ps1` (#207), which writes the client's heading in each of the 11 languages
+  into the Localization files for the 26 retail categories whose heading is worded exactly as the
+  category, and Forever's six, which it reproduces byte for byte from the hand-made translations
+  that came before it. 227 keys changed or were added; "Rated Pvp" and "World Pvp" took
+  Blizzard's capitalisation. Left as they are, as judgement calls for the user: "Time Rift" (the
+  game says "Time Rifts"), "Weekly Events" ("Weekly Event") and "9.1 Campaign", whose key can't
+  be a Lua name.
