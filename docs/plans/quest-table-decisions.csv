@@ -74,6 +74,7 @@
 "exclusive: TrinityCore disagrees","31679","31087","KEEP","Reviewed with the user 2026-10-06: kept. TrinityCore's groups aren't reliable: it also groups quests one character can do all of."
 "exclusive: TrinityCore disagrees","31682","31089","KEEP","Reviewed with the user 2026-10-06: kept. TrinityCore's groups aren't reliable: it also groups quests one character can do all of."
 "prereq: other faction","38561","38416","KEEP","Reviewed with the user 2026-10-06: kept. Blizzard's own list names the other faction's quest, and the addon counts a quest this character can't take as met."
+"prereq: other faction","39119","39062","KEEP","Kept as the two others are, 2026-10-07: the client's own list names the other faction's quest, and the addon counts a quest this character can't take as met."
 "prereq: other faction","90551","90549","KEEP","Reviewed with the user 2026-10-06: kept. Blizzard's own list names the other faction's quest, and the addon counts a quest this character can't take as met."
 "prereq: quest not in the data","29117","54130","KEEP","Reviewed with the user 2026-10-06: kept. The game knows the quest even though our data lacks it, and the tooltip names it from the server."
 "prereq: quest not in the data","29119","54130","KEEP","Reviewed with the user 2026-10-06: kept. The game knows the quest even though our data lacks it, and the tooltip names it from the server."
