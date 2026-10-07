@@ -587,5 +587,14 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 ## Status
 
 - 2026-10-07: review written from the `live` and `forever` branch heads and the wiki's API list;
-  nothing in the addon or tools changed. Next: the user's decisions above, then one pull request per
-  item taken, starting with the map-offers probe on the Forever beta and the recorder.
+  nothing in the addon or tools changed. Merged as #204. Next: the user's decisions above, then one
+  pull request per item taken, starting with the map-offers probe on the Forever beta and the
+  recorder.
+- 2026-10-07: the map-offers probe (recommendation 3) built, at the user's choice: `/qcprobe maps`
+  in the Forever probe (PR #139's branch, `tools/forever-probe`) asks each map for its quest
+  offers, points of interest, events, quest hubs, dungeon entrances, level range and waypoint
+  flag, and once per run for the events schedule, the experience preset and the tracking toggles;
+  `tools/Report-MapOffers.lua` reads a pass against the addon's quests and pins
+  (maintenance.md, "In the game", step 4b). Checked offline with stand-ins for the game: 16 checks
+  across maps that answer, answer late, ask for a second request, never answer or refuse. Not yet
+  run on the beta; its results go here.

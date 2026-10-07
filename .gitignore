@@ -25,3 +25,4 @@ tools/*
 !tools/Test-Localization.lua
 !tools/Read-SqlDump.lua
 !tools/Read-ForeverProbe.lua
+!tools/Report-MapOffers.lua
