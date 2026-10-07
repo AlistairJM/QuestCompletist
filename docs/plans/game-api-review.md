@@ -673,3 +673,7 @@ run, which compares the game's offers with our pins.
   function, a removed one, one with changed returns, an added event, and an addon call that had
   vanished or changed shape were each reported, the last two with exit code 1. Next: the retail
   map run and the remaining decisions.
+- 2026-10-07: the user's rule that a feature or check built for one game goes to both unless a
+  game can't support it, and the audit of where retail and Forever differ, are in
+  `game-parity.md`; the API check now names the functions one game documents and the other
+  doesn't, and fails when such a gap closes.

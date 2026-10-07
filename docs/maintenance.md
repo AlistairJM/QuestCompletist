@@ -164,6 +164,12 @@ then every tool refuses to save.
    the addon's 45 functions were all documented on Forever and 44 on live. The first systematic
    review of the API (2026-10-07) is in [plans/game-api-review.md](plans/game-api-review.md). A
    new function or event that could serve the addon is a finding to plan, as a new table is.
+   It ends with the functions the addon calls that one game documents and the other doesn't
+   (`C_SkillInfo.GetSkillLineInfoByID`, Forever's), and exits with 1 when one of those turns up on
+   the game that lacked it: that game has gained it, and the feature behind it is to be shared.
+   Which checks each game has, and why the rest differ, is
+   [plans/game-parity.md](plans/game-parity.md): a check built for one game goes to both unless a
+   game can't support it.
 3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
    ```powershell
    Rename-Item tools\quest_api_cache "quest_api_cache.$(Get-Date -Format yyyyMMdd)"
@@ -216,7 +222,8 @@ Run the report-only steps first, then make one branch and pull request per kind 
 
 Steps 1 to 9 are retail's. Blizzard's API has no Forever data, so Forever has a step of its own,
 which rebuilds its data from the game, the client's tables and CMaNGOS's database. It gets its own
-pull request, like each kind of retail change.
+pull request, like each kind of retail change. Which of retail's checks Forever has an equivalent
+of, which it lacks and why, is in [plans/game-parity.md](plans/game-parity.md).
 
 After each step that edits the addon, bring the data files up to date as described in
 [The quest and pin data files](#the-quest-and-pin-data-files).
