@@ -168,6 +168,28 @@ Nightmare, the Maw, Valdrakken) and to confirm 12 more; the two never disagreed.
 The reachability report is identical to master's. Still to do in game: hover the renamed pins and
 Exile's Reach's to see the names the client gives their IDs.
 
+**IDs from TrinityCore's quest starters (2026-10-07).** The 109 were the pins whose IDs #113 had
+cleared. 2,622 more retail pins had a name and no ID at all (3,087 have neither), most of them
+ordinary quest givers in Wrath, Burning Crusade and Draenor zones that were never given one. The
+dump's `creature_queststarter` names the creature that starts each quest, so `tools/Fill-PinNpcIds.ps1`
+(maintenance.md step 6c) gives such a pin the ID of the creature of exactly its name that starts one
+of its quests, taking the one that starts most of them, then the lowest ID, where a character has
+one per phase (80 pins). It changes no name and moves no pin:
+- **2,259 pins got an ID** (the 2,257 whose name matched to the letter, and two whose name in the
+  dump ends in a space). Retail now has 11,223 pins with an ID, 363 with a name and none.
+- **227** start at objects, so keep ID 0, as the "Out of scope" bullet says.
+- **14** start at creatures of other names, for the decisions file: three names carry our own
+  `<Remote>` suffix, Elwynn's two "Marshal McCree" pins hold quests of the other marshals, two Tol
+  Barad pins are named "CHANGE_TO_NIL" (their quests start at Kagtha), and a third "Jessup McCree"
+  pin in New Tinkertown holds Kharmarn Palegrip's quests, like the two #198 renamed.
+- **122** have no start in the dump: nearly all start from an item ("Dargol's Skull", "Captain
+  Sanders' Treasure Map"), so there is no creature to name.
+The reachability report is identical to master's but for four pins in Ashran now printed with
+their ID. `Remove-DuplicatePinQuests.ps1` finds the same 14 pairs as before. A rerun of the pin
+pipeline would merge 57 pins into a pin of the same NPC within 3 points, as its rule says (61 pairs,
+one within 1.5 points, the rest 1.6 to 3 apart); that is left for a pull request of its own.
+Forever's pins aren't touched: the importer gives them their IDs from CMaNGOS.
+
 **Filled from pins of the same name (October 2026).** 28 rows had a pin on the same map with the
 same name and an ID, which the English probe had already confirmed is that name. Their NewId is
 that pin's ID, applied, and their Note says which pin it came from.
@@ -247,7 +269,8 @@ inside an instance either; this covers them.) Then switch back to English.
 - **Objects and items** among the pins ("Hero's Call Board", "Wanted Poster"): they aren't creatures,
   so they keep their English name, and their NPC ID is 0.
 - **The 2,760 named pins with NPC ID 0:** they keep their English name until someone records their
-  real ID.
+  real ID. (Done for most on 2026-10-07 from TrinityCore's quest starters, `tools/Fill-PinNpcIds.ps1`,
+  sweep step 6c: see "IDs from TrinityCore's quest starters" under phase 2.)
 - **The addon's own text,** including "Quest Giver:" and "Unknown or Auto-Accepted Quest": that's
   the hard-coded-text item in `localized-quest-names.md`.
 
@@ -281,3 +304,7 @@ inside an instance either; this covers them.) Then switch back to English.
 - 2026-10-07: the 109 lookups done on `data/pin-npc-id-lookups` (see "Looked up" under phase 2):
   100 IDs set, 17 of those pins renamed, 9 object starts left at 0. Next: the renamed pins and
   Exile's Reach's in game.
+- 2026-10-07: 2,259 of the 2,622 pins with a name and no ID given one from TrinityCore's quest
+  starters by the new `tools/Fill-PinNpcIds.ps1`, sweep step 6c, on `data/pin-npc-ids-from-tdb`
+  (see "IDs from TrinityCore's quest starters" under phase 2). Next: the pin pipeline's 57 merges,
+  and the 14 other-name pins through the decisions file.
