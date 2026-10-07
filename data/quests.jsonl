@@ -15172,136 +15172,136 @@
 {"id":41191,"name":"Drogbar Deception","level":45,"zone":"Archaeology","category":11,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":329}
 {"id":41192,"name":"The Right Path","level":45,"zone":"Archaeology","category":11,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":333}
 {"id":41193,"name":"Laying to Rest","level":45,"zone":"Archaeology","category":11,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":333}
-{"id":41196,"name":"Leystone Basilisks","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41196,"name":"Leystone Basilisks","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41197,"name":"You've Got to Be Kitten Me Right Meow","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
-{"id":41198,"name":"Leystone Basilisks","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41199,"name":"Leystone Rumblers","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41200,"name":"Rough Leystone Outcropping","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41201,"name":"Coarse Leystone Outcropping","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41202,"name":"Crude Leystone Seams","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41203,"name":"Bright Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41204,"name":"Hard Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41205,"name":"Warm Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41206,"name":"Work Order: Leystone","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41198,"name":"Leystone Basilisks","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41199,"name":"Leystone Rumblers","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41200,"name":"Rough Leystone Outcropping","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41201,"name":"Coarse Leystone Outcropping","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41202,"name":"Crude Leystone Seams","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41203,"name":"Bright Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41204,"name":"Hard Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41205,"name":"Warm Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41206,"name":"Work Order: Leystone","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41207,"name":"Supplies Needed: Leystone","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41208,"name":"Brimstone Destroyer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41209,"name":"Brimstone Destroyer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41210,"name":"Brimstone Destroyer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41208,"name":"Brimstone Destroyer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41209,"name":"Brimstone Destroyer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41210,"name":"Brimstone Destroyer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41211,"name":"Neltharion's Lair: Neltharion's Treasure","level":45,"zone":"Neltharion's Lair ","category":1032,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":41214,"name":"Parts Unknown","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5817}
 {"id":41215,"name":"They Become The Hunted","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5819}
 {"id":41216,"name":"Survival of the Fittest","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5819}
 {"id":41217,"name":"The Future of Gnomeregan","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":64,"class":4,"storyline":5398}
 {"id":41218,"name":"Meet the High Tinker","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":4194368,"class":4,"storyline":5398}
-{"id":41219,"name":"Flourishing Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41219,"name":"Flourishing Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41220,"name":"Down to Azsuna","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5747}
 {"id":41221,"name":"Return to Mardum","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":2048,"storyline":161}
 {"id":41222,"name":"Into The Pit!","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5817}
-{"id":41223,"name":"Work Order: Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41223,"name":"Work Order: Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41224,"name":"Supplies Needed: Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41225,"name":"Felwort","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41225,"name":"Felwort","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41227,"name":"Warden Tower Assault: Cordana's Apex","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":41228,"name":"Foxflower Cluster","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41228,"name":"Foxflower Cluster","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41230,"name":"Trapping Evolved","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5819}
 {"id":41231,"name":"Apex Predator","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5819}
-{"id":41232,"name":"Thick Ironhorn Hide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41233,"name":"Bristled Bear Skin","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41234,"name":"Shaggy Saber Hide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41235,"name":"Work Order: Stonehide Leather","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41232,"name":"Thick Ironhorn Hide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41233,"name":"Bristled Bear Skin","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41234,"name":"Shaggy Saber Hide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41235,"name":"Work Order: Stonehide Leather","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41237,"name":"Supplies Needed: Stonehide Leather","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41238,"name":"Calcified Wormscales","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41239,"name":"Felhide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41240,"name":"Work Order: Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41242,"name":"Slab of Bacon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41243,"name":"Huge Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41244,"name":"Lively Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41252,"name":"Wild Northern Barracuda","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41253,"name":"Migrating Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41238,"name":"Calcified Wormscales","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41239,"name":"Felhide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41240,"name":"Work Order: Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41242,"name":"Slab of Bacon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41243,"name":"Huge Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41244,"name":"Lively Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41252,"name":"Wild Northern Barracuda","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41253,"name":"Migrating Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
 {"id":41255,"name":"Sowing The Seed","level":10,"zone":"The Dreamgrove","category":1013,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":5882}
 {"id":41256,"name":"Blast of Spice Fish","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5823}
 {"id":41257,"name":"Warden Tower Assault: Cordana's Apex","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":41258,"name":"Fruit of the Doom","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5823}
-{"id":41259,"name":"Slab of Bacon","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41260,"name":"Slab of Bacon","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41261,"name":"Slab of Bacon","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41262,"name":"Slab of Bacon","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41264,"name":"Lively Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41265,"name":"Huge Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41266,"name":"Raft Fishing","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41267,"name":"Work Order: Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41268,"name":"Queen Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41269,"name":"Lively Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41270,"name":"Huge Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41271,"name":"Into the Whirlpool","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41272,"name":"Work Order: Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41273,"name":"Buoy Fishing","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41274,"name":"Lively Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41275,"name":"Huge Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41276,"name":"Rocket Boot Fishing","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41277,"name":"Work Order: Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41278,"name":"Slippery Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41279,"name":"Lively Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41280,"name":"Huge Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41282,"name":"Work Order: Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41286,"name":"Aethril Cluster","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41287,"name":"Work Order: Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41259,"name":"Slab of Bacon","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41260,"name":"Slab of Bacon","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41261,"name":"Slab of Bacon","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41262,"name":"Slab of Bacon","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41264,"name":"Lively Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41265,"name":"Huge Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41266,"name":"Raft Fishing","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41267,"name":"Work Order: Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41268,"name":"Queen Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41269,"name":"Lively Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41270,"name":"Huge Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41271,"name":"Into the Whirlpool","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41272,"name":"Work Order: Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41273,"name":"Buoy Fishing","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41274,"name":"Lively Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41275,"name":"Huge Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41276,"name":"Rocket Boot Fishing","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41277,"name":"Work Order: Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41278,"name":"Slippery Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41279,"name":"Lively Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41280,"name":"Huge Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41282,"name":"Work Order: Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41286,"name":"Aethril Cluster","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41287,"name":"Work Order: Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41288,"name":"Supplies Needed: Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41289,"name":"Flourishing Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41290,"name":"Aqueous Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41291,"name":"Dreamleaf Cluster","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41292,"name":"Work Order: Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41289,"name":"Flourishing Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41290,"name":"Aqueous Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41291,"name":"Dreamleaf Cluster","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41292,"name":"Work Order: Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41293,"name":"Supplies Needed: Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41294,"name":"Flourishing Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41295,"name":"Dreamleaf-Covered Ancient","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41296,"name":"Fjarnskaggl Cluster","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41297,"name":"Work Order: Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41294,"name":"Flourishing Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41295,"name":"Dreamleaf-Covered Ancient","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41296,"name":"Fjarnskaggl Cluster","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41297,"name":"Work Order: Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41298,"name":"Supplies Needed: Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41299,"name":"Flourishing Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41300,"name":"Singed Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41301,"name":"Starlight Rose Cluster","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41302,"name":"Work Order: Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41299,"name":"Flourishing Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41300,"name":"Singed Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41301,"name":"Starlight Rose Cluster","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41302,"name":"Work Order: Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41303,"name":"Supplies Needed: Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41304,"name":"Flourishing Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41305,"name":"Nightborne Herb Trader","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41304,"name":"Flourishing Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41305,"name":"Nightborne Herb Trader","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41307,"name":"All That Glitters","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5822}
 {"id":41308,"name":"Border Reinforcements","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41309,"name":"Mangelrath","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5817}
-{"id":41311,"name":"Work Order: Leystone","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41312,"name":"Work Order: Leystone","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41313,"name":"Work Order: Leystone","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41314,"name":"Work Order: Felslate","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41311,"name":"Work Order: Leystone","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41312,"name":"Work Order: Leystone","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41313,"name":"Work Order: Leystone","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41314,"name":"Work Order: Felslate","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41315,"name":"Supplies Needed: Leystone","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41316,"name":"Supplies Needed: Leystone","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41317,"name":"Supplies Needed: Leystone","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41318,"name":"Supplies Needed: Felslate","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41320,"name":"Pry It From Their Cold, Feral Claws","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5822}
-{"id":41322,"name":"Unscratched Hippogryph Scale","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41323,"name":"Fatty Lion Seal Skin","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41324,"name":"Silky Prowler Fur","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41326,"name":"Work Order: Stormscales","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41322,"name":"Unscratched Hippogryph Scale","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41323,"name":"Fatty Lion Seal Skin","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41324,"name":"Silky Prowler Fur","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41326,"name":"Work Order: Stormscales","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41327,"name":"Supplies Needed: Stormscales","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41332,"name":"Ascending The Circle","level":10,"zone":"The Dreamgrove","category":1013,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":5882}
-{"id":41333,"name":"Rugged Wolf Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41334,"name":"Musky Bear Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41333,"name":"Rugged Wolf Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41334,"name":"Musky Bear Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41335,"name":"The Elements Call...","level":10,"zone":"Artifact","category":1003,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5862}
-{"id":41336,"name":"Bristly Musken Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41337,"name":"Pristine Stag Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41338,"name":"Work Order: Stonehide Leather","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41336,"name":"Bristly Musken Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41337,"name":"Pristine Stag Hide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41338,"name":"Work Order: Stonehide Leather","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41339,"name":"Supplies Needed: Stonehide Leather","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41340,"name":"Perfect Storm Drake Scale","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41342,"name":"Thick Bear Hide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41343,"name":"Solid Crabshell Fragment","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41344,"name":"Work Order: Stormscales","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41340,"name":"Perfect Storm Drake Scale","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41342,"name":"Thick Bear Hide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41343,"name":"Solid Crabshell Fragment","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41344,"name":"Work Order: Stormscales","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41345,"name":"Supplies Needed: Stormscales","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41346,"name":"Velvety Stalker Hide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41347,"name":"Extra-Rancid Felhound Hide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41349,"name":"Rock-Hard Crab Chitin","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41350,"name":"Work Order: Stonehide Leather","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41346,"name":"Velvety Stalker Hide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41347,"name":"Extra-Rancid Felhound Hide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41349,"name":"Rock-Hard Crab Chitin","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41350,"name":"Work Order: Stonehide Leather","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41351,"name":"Supplies Needed: Stonehide Leather","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41352,"name":"Felslate Basilisks","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41353,"name":"Odious Felslate Outcropping","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41354,"name":"Shattered Felslate Seams","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41357,"name":"Primordial Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41352,"name":"Felslate Basilisks","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41353,"name":"Odious Felslate Outcropping","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41354,"name":"Shattered Felslate Seams","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41357,"name":"Primordial Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41367,"name":"Priority Delivery","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":41368,"name":"Lost Mail","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":41394,"name":"Service with a Smile","level":10,"zone":"Feralas","category":77,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -15321,34 +15321,34 @@
 {"id":41426,"name":"Against Their Will","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":341}
 {"id":41427,"name":"Get Vrekt","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41428,"name":"Unstable Portal","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41432,"name":"Fiery Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41433,"name":"Massive Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41434,"name":"Glowing Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41435,"name":"Smooth Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41432,"name":"Fiery Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41433,"name":"Massive Leystone Deposits","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41434,"name":"Glowing Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41435,"name":"Smooth Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41436,"name":"In Deep Slumber","level":10,"zone":"Moonglade","category":1008,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":164}
-{"id":41437,"name":"Fine Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41438,"name":"Charged Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41439,"name":"Exquisite Leystone Deposits","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41440,"name":"Magnificent Leystone Deposits","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41441,"name":"Superior Leystone Deposits","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41442,"name":"Striking Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41443,"name":"Ancient Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41444,"name":"Dark Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41445,"name":"Stormy Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41446,"name":"Darkened Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41447,"name":"Burning Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41448,"name":"Heavy Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41437,"name":"Fine Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41438,"name":"Charged Leystone Deposits","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41439,"name":"Exquisite Leystone Deposits","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41440,"name":"Magnificent Leystone Deposits","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41441,"name":"Superior Leystone Deposits","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41442,"name":"Striking Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41443,"name":"Ancient Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41444,"name":"Dark Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41445,"name":"Stormy Leystone Deposits","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41446,"name":"Darkened Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41447,"name":"Burning Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41448,"name":"Heavy Felslate Deposits","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41449,"name":"Join the Dreamer","level":10,"zone":"The Dreamgrove","category":1013,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":164}
 {"id":41451,"name":"Assault on Hrydshal","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41452,"name":"Feline Frantic","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
 {"id":41453,"name":"Homeward Bounding","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
-{"id":41454,"name":"Luminous Leystone Outcropping","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41455,"name":"Gleaming Leystone Outcropping","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41457,"name":"Radiant Leystone Outcropping","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41458,"name":"Hardened Leystone Outcropping","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41459,"name":"Dense Leystone Outcropping","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41460,"name":"Primal Leystone Outcropping","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41461,"name":"Malevolent Felslate Outcropping","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41454,"name":"Luminous Leystone Outcropping","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41455,"name":"Gleaming Leystone Outcropping","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41457,"name":"Radiant Leystone Outcropping","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41458,"name":"Hardened Leystone Outcropping","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41459,"name":"Dense Leystone Outcropping","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41460,"name":"Primal Leystone Outcropping","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41461,"name":"Malevolent Felslate Outcropping","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41462,"name":"Trouble Has Huge Feet","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
 {"id":41463,"name":"Missing Along the Way","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":41464,"name":"Not Here, Not Now, Not Ever","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -15363,121 +15363,121 @@
 {"id":41478,"name":"The Final Blessing","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
 {"id":41479,"name":"Natural Adversaries","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
 {"id":41480,"name":"Managazer","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
-{"id":41481,"name":"Brimstone Destroyer","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41482,"name":"Brimstone Destroyer","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41483,"name":"Brimstone Destroyer","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41484,"name":"Brimstone Destroyer","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41481,"name":"Brimstone Destroyer","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41482,"name":"Brimstone Destroyer","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41483,"name":"Brimstone Destroyer","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41484,"name":"Brimstone Destroyer","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41485,"name":"Moonwhisper Rescue","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
-{"id":41486,"name":"Brimstone Destroyer","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41487,"name":"Brimstone Destroyer","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41488,"name":"Brimstone Destroyer","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41489,"name":"Brimstone Destroyer","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41490,"name":"Brimstone Destroyer","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41491,"name":"Brimstone Destroyer","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41492,"name":"Brimstone Destroyer","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41493,"name":"Brimstone Destroyer","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41486,"name":"Brimstone Destroyer","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41487,"name":"Brimstone Destroyer","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41488,"name":"Brimstone Destroyer","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41489,"name":"Brimstone Destroyer","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41490,"name":"Brimstone Destroyer","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41491,"name":"Brimstone Destroyer","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41492,"name":"Brimstone Destroyer","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41493,"name":"Brimstone Destroyer","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41494,"name":"Eminent Grow-main","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":343}
-{"id":41495,"name":"Brilliant Leystone Seams","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41496,"name":"Raw Leystone Seams","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41497,"name":"Wild Leystone Seams","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41498,"name":"Leystone Basilisks","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41495,"name":"Brilliant Leystone Seams","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41496,"name":"Raw Leystone Seams","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41497,"name":"Wild Leystone Seams","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41498,"name":"Leystone Basilisks","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41499,"name":"Squid Out of Water","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5813,"prereq":[41426,41709,41425]}
-{"id":41500,"name":"Leyworms","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41501,"name":"Leystone Basilisks","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41502,"name":"Leystone Basilisks","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41503,"name":"Leystone Basilisks","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41504,"name":"Leystone Basilisks","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41505,"name":"Leystone Basilisks","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41506,"name":"Leystone Basilisks","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41507,"name":"Leystone Basilisks","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41508,"name":"Felslate Basilisks","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41509,"name":"Felslate Basilisks","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41500,"name":"Leyworms","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41501,"name":"Leystone Basilisks","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41502,"name":"Leystone Basilisks","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41503,"name":"Leystone Basilisks","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41504,"name":"Leystone Basilisks","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41505,"name":"Leystone Basilisks","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41506,"name":"Leystone Basilisks","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41507,"name":"Leystone Basilisks","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41508,"name":"Felslate Basilisks","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":41509,"name":"Felslate Basilisks","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":41510,"name":"Azeroth Needs You","level":45,"zone":"The Heart of Azeroth","category":1014,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5862}
-{"id":41511,"name":"Felwort","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41512,"name":"Felwort","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41513,"name":"Felwort","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41514,"name":"Felwort","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41515,"name":"Felwort","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41516,"name":"Felwort","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41517,"name":"Felwort","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41518,"name":"Felwort","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41519,"name":"Felwort","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41520,"name":"Felwort","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41521,"name":"Felwort","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41522,"name":"Felwort","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41523,"name":"Felwort","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41524,"name":"Felwort","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41525,"name":"Wispy Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41526,"name":"Bushy Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41527,"name":"Lively Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41528,"name":"Iridescent Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41529,"name":"Bushy Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41530,"name":"Lively Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41531,"name":"Iridescent Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41532,"name":"Bushy Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41533,"name":"Fragrant Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41534,"name":"Brambly Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41535,"name":"Prickly Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41536,"name":"Pungent Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41537,"name":"Lively Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41538,"name":"Iridescent Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41539,"name":"Sparkling Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41511,"name":"Felwort","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41512,"name":"Felwort","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41513,"name":"Felwort","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41514,"name":"Felwort","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41515,"name":"Felwort","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41516,"name":"Felwort","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41517,"name":"Felwort","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41518,"name":"Felwort","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41519,"name":"Felwort","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41520,"name":"Felwort","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41521,"name":"Felwort","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41522,"name":"Felwort","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41523,"name":"Felwort","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41524,"name":"Felwort","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41525,"name":"Wispy Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41526,"name":"Bushy Foxflower","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41527,"name":"Lively Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41528,"name":"Iridescent Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41529,"name":"Bushy Aethril","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41530,"name":"Lively Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41531,"name":"Iridescent Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41532,"name":"Bushy Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41533,"name":"Fragrant Dreamleaf","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41534,"name":"Brambly Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41535,"name":"Prickly Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41536,"name":"Pungent Fjarnskaggl","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41537,"name":"Lively Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41538,"name":"Iridescent Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41539,"name":"Sparkling Starlight Roses","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":41540,"name":"Rendezvous with the Courier","level":10,"zone":"Trueshot Lodge","category":1016,"type":1,"faction":3,"race":67108863,"class":4,"storyline":173}
 {"id":41541,"name":"A Beastly Expedition","level":10,"zone":"Trueshot Lodge","category":1016,"type":1,"faction":3,"race":67108863,"class":4,"storyline":165}
 {"id":41542,"name":"Preparation for the Hunt","level":10,"zone":"Trueshot Lodge","category":1016,"type":1,"faction":3,"race":67108863,"class":4,"storyline":220}
-{"id":41544,"name":"Foxflower Cluster","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41545,"name":"Aethril Cluster","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41546,"name":"Dreamleaf Cluster","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41547,"name":"Fjarnskaggl Cluster","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41548,"name":"Starlight Rose Cluster","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41549,"name":"Slab of Bacon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41550,"name":"Slab of Bacon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41551,"name":"Slab of Bacon","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41552,"name":"Slab of Bacon","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41553,"name":"Slab of Bacon","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41554,"name":"Slab of Bacon","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41555,"name":"Slab of Bacon","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41556,"name":"Slab of Bacon","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41557,"name":"Slab of Bacon","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41558,"name":"Slab of Bacon","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41560,"name":"Felhide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41561,"name":"Felhide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41562,"name":"Felhide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41563,"name":"Felhide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41564,"name":"Felhide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41565,"name":"Felhide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41566,"name":"Felhide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41567,"name":"Felhide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41568,"name":"Felhide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41569,"name":"Felhide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41570,"name":"Felhide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41571,"name":"Felhide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41572,"name":"Felhide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41573,"name":"Felhide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41544,"name":"Foxflower Cluster","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41545,"name":"Aethril Cluster","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41546,"name":"Dreamleaf Cluster","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41547,"name":"Fjarnskaggl Cluster","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41548,"name":"Starlight Rose Cluster","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":41549,"name":"Slab of Bacon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41550,"name":"Slab of Bacon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41551,"name":"Slab of Bacon","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41552,"name":"Slab of Bacon","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41553,"name":"Slab of Bacon","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41554,"name":"Slab of Bacon","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41555,"name":"Slab of Bacon","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41556,"name":"Slab of Bacon","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41557,"name":"Slab of Bacon","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41558,"name":"Slab of Bacon","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":41560,"name":"Felhide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41561,"name":"Felhide","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41562,"name":"Felhide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41563,"name":"Felhide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41564,"name":"Felhide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41565,"name":"Felhide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41566,"name":"Felhide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41567,"name":"Felhide","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41568,"name":"Felhide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41569,"name":"Felhide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41570,"name":"Felhide","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41571,"name":"Felhide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41572,"name":"Felhide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41573,"name":"Felhide","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":41574,"name":"Stolen Thunder","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":4,"storyline":165,"prereq":41541}
 {"id":41575,"name":"Felsoul Teleporter Online!","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":41582,"name":"Smooth Sunrunner Hide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41596,"name":"Lively Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41597,"name":"Lively Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41598,"name":"Lively Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41599,"name":"Lively Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41600,"name":"Lively Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41601,"name":"Lively Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41602,"name":"Lively Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41603,"name":"Lively Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41604,"name":"Lively Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41605,"name":"Lively Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41582,"name":"Smooth Sunrunner Hide","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":41596,"name":"Lively Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41597,"name":"Lively Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41598,"name":"Lively Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41599,"name":"Lively Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41600,"name":"Lively Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41601,"name":"Lively Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41602,"name":"Lively Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41603,"name":"Lively Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41604,"name":"Lively Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41605,"name":"Lively Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
 {"id":41606,"name":"Finding Brytag","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5814}
 {"id":41607,"name":"Taking a Promenade","level":45,"zone":"Suramar","category":1007,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":282}
-{"id":41609,"name":"Huge Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41610,"name":"Huge Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41611,"name":"Huge Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41612,"name":"Huge Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41613,"name":"Huge Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41614,"name":"Huge Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41615,"name":"Huge Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41616,"name":"Huge Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41617,"name":"Huge Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41609,"name":"Huge Highmountain Salmon","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41610,"name":"Huge Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41611,"name":"Huge Cursed Queenfish","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41612,"name":"Huge Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41613,"name":"Huge Mossgill Perch","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41614,"name":"Huge Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41615,"name":"Huge Stormrays","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41616,"name":"Huge Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":41617,"name":"Huge Runescale Koi","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
 {"id":41618,"name":"The Seawarden","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5814}
 {"id":41622,"name":"Crawliac's Legacy","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41623,"name":"Champions of Highmountain","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -15488,54 +15488,54 @@
 {"id":41629,"name":"Harnessing the Holy Fire","level":10,"zone":"Artifact","category":29,"type":1,"faction":3,"race":67108863,"class":16,"storyline":239}
 {"id":41631,"name":"The Nexus Vault","level":10,"zone":"Artifact","category":1003,"type":1,"faction":3,"race":67108863,"class":16,"storyline":239}
 {"id":41632,"name":"A Gift of Time","level":10,"zone":"Artifact","category":1011,"type":1,"faction":3,"race":67108863,"class":16,"storyline":239}
-{"id":41633,"name":"Work Order: Leystone Greaves","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41634,"name":"Work Order: Leystone Armguards","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41635,"name":"Work Order: Leystone Boots","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41636,"name":"Work Order: Leystone Breastplate","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41637,"name":"Work Order: Leystone Pauldrons","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41638,"name":"Work Order: Leystone Gauntlets","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41639,"name":"Work Order: Battlebound Spaulders","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41640,"name":"Work Order: Warhide Mask","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41641,"name":"Work Order: Battlebound Armbands","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41642,"name":"Work Order: Warhide Footpads","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41643,"name":"Work Order: Battlebound Leggings","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41644,"name":"Work Order: Warhide Gloves","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41645,"name":"Work Order: Silkweave Epaulets","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41646,"name":"Work Order: Silkweave Gloves","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41647,"name":"Work Order: Silkweave Robe","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41648,"name":"Work Order: Silkweave Bracers","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41649,"name":"Work Order: Silkweave Slippers","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41650,"name":"Work Order: Silkweave Hood","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41651,"name":"Work Order: Azsunite Pendant","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41652,"name":"Work Order: Deep Amber Loop","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41653,"name":"Work Order: Skystone Pendant","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41654,"name":"Work Order: Queen's Opal Loop","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41655,"name":"Work Order: Queen's Opal Pendant","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41656,"name":"Work Order: Azsunite Loop","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41657,"name":"Work Order: Draughts of Raw Magic","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41658,"name":"Work Order: Sylvan Elixirs","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41659,"name":"Work Order: Avalanche Elixirs","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41660,"name":"Work Order: Skaggldrynk","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41661,"name":"Work Order: Skystep Potions","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41662,"name":"Work Order: Ancient Rejuvenation Potions","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41663,"name":"Vantus Rune Work Order: Elerethe Renferal","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41664,"name":"Vantus Rune Work Order: Dragons of Nightmare","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41665,"name":"Vantus Rune Work Order: Ursoc","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41666,"name":"Vantus Rune Work Order: Nythendra","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41667,"name":"Vantus Rune Work Order: Xavius","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41668,"name":"Vantus Rune Work Order: Il'gynoth, The Heart of Corruption","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41669,"name":"Work Order: Word of Critical Strike","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41670,"name":"Work Order: Word of Agility","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41671,"name":"Work Order: Word of Strength","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41672,"name":"Work Order: Word of Haste","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41673,"name":"Work Order: Word of Mastery","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41674,"name":"Work Order: Word of Intellect","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41675,"name":"Work Order: Blink-Trigger Headgun","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41676,"name":"Work Order: Pump-Action Bandage Gun","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41677,"name":"Work Order: Auto-Hammer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41678,"name":"Work Order: Gunpack","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41679,"name":"Work Order: Deployable Bullet Dispenser","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":41680,"name":"Work Order: Failure Detection Pylon","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":41633,"name":"Work Order: Leystone Greaves","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":41634,"name":"Work Order: Leystone Armguards","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":41635,"name":"Work Order: Leystone Boots","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":41636,"name":"Work Order: Leystone Breastplate","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":41637,"name":"Work Order: Leystone Pauldrons","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":41638,"name":"Work Order: Leystone Gauntlets","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":41639,"name":"Work Order: Battlebound Spaulders","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":41640,"name":"Work Order: Warhide Mask","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":41641,"name":"Work Order: Battlebound Armbands","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":41642,"name":"Work Order: Warhide Footpads","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":41643,"name":"Work Order: Battlebound Leggings","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":41644,"name":"Work Order: Warhide Gloves","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":41645,"name":"Work Order: Silkweave Epaulets","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":41646,"name":"Work Order: Silkweave Gloves","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":41647,"name":"Work Order: Silkweave Robe","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":41648,"name":"Work Order: Silkweave Bracers","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":41649,"name":"Work Order: Silkweave Slippers","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":41650,"name":"Work Order: Silkweave Hood","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":41651,"name":"Work Order: Azsunite Pendant","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":41652,"name":"Work Order: Deep Amber Loop","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":41653,"name":"Work Order: Skystone Pendant","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":41654,"name":"Work Order: Queen's Opal Loop","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":41655,"name":"Work Order: Queen's Opal Pendant","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":41656,"name":"Work Order: Azsunite Loop","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":41657,"name":"Work Order: Draughts of Raw Magic","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":41658,"name":"Work Order: Sylvan Elixirs","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":41659,"name":"Work Order: Avalanche Elixirs","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":41660,"name":"Work Order: Skaggldrynk","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":41661,"name":"Work Order: Skystep Potions","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":41662,"name":"Work Order: Ancient Rejuvenation Potions","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":41663,"name":"Vantus Rune Work Order: Elerethe Renferal","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":41664,"name":"Vantus Rune Work Order: Dragons of Nightmare","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":41665,"name":"Vantus Rune Work Order: Ursoc","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":41666,"name":"Vantus Rune Work Order: Nythendra","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":41667,"name":"Vantus Rune Work Order: Xavius","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":41668,"name":"Vantus Rune Work Order: Il'gynoth, The Heart of Corruption","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":41669,"name":"Work Order: Word of Critical Strike","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":41670,"name":"Work Order: Word of Agility","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":41671,"name":"Work Order: Word of Strength","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":41672,"name":"Work Order: Word of Haste","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":41673,"name":"Work Order: Word of Mastery","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":41674,"name":"Work Order: Word of Intellect","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":41675,"name":"Work Order: Blink-Trigger Headgun","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":41676,"name":"Work Order: Pump-Action Bandage Gun","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":41677,"name":"Work Order: Auto-Hammer","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":41678,"name":"Work Order: Gunpack","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":41679,"name":"Work Order: Deployable Bullet Dispenser","level":45,"zone":"Suramar","category":1007,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":41680,"name":"Work Order: Failure Detection Pylon","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
 {"id":41685,"name":"DANGER: Ala'washte","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41686,"name":"DANGER: Olokk the Shipbreaker","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":41687,"name":"Snail Fight!","level":45,"zone":"Highmountain","category":1005,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -17689,12 +17689,12 @@
 {"id":46126,"name":"Fel-Corrupted Feathers","level":45,"zone":"Broken Shore","category":1002,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":46127,"name":"Thwarting the Twins","level":45,"zone":"Artifact","category":1002,"type":1,"faction":1,"race":67108863,"class":1428}
 {"id":46128,"name":"Time for a Recharge","level":45,"zone":"Engineering","category":72,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":176}
-{"id":46134,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":46135,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":46136,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":46137,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":46138,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":46139,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":46134,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":46135,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":46136,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":46137,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":46138,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":46139,"name":"Gemcutter Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
 {"id":46145,"name":"Sterile Surroundings","level":45,"zone":"Broken Shore","category":1002,"type":1,"faction":3,"race":67108863,"class":16,"storyline":5861}
 {"id":46146,"name":"The Burning Shores","level":10,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":46159,"name":"An Urgent Message","level":45,"zone":"Demon Hunter Campaign","category":1010,"type":1,"faction":3,"race":67108863,"class":2048,"storyline":5891,"prereq":[43186,46734,43412]}
@@ -18480,11 +18480,11 @@
 {"id":48314,"name":"Creeping Death","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":608}
 {"id":48315,"name":"Hollow, Empty Eyes","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":608}
 {"id":48317,"name":"A Nose for Magic","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5403,"prereq":[50043,47235,47228]}
-{"id":48318,"name":"Work Order: Lightblood Elixirs","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48318,"name":"Work Order: Lightblood Elixirs","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
 {"id":48320,"name":"The Best Kill is Overkill","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5426}
 {"id":48321,"name":"Creative Marketing","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5426}
 {"id":48322,"name":"A Goldtusk Greeting","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5426,"prereq":[47564,48320,48321]}
-{"id":48323,"name":"Work Order: Tears of the Naaru","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48323,"name":"Work Order: Tears of the Naaru","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
 {"id":48324,"name":"Lost in Zem'lan","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5427}
 {"id":48326,"name":"This Be Mutiny","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5427}
 {"id":48327,"name":"A Strange Delivery","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5427}
@@ -18494,23 +18494,23 @@
 {"id":48332,"name":"Ranishu Are Resources","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5425}
 {"id":48334,"name":"They've Got Golems","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5425}
 {"id":48335,"name":"The Strongest Rope in Vol'dun","level":30,"zone":"Vol`dun","category":1081,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5425,"prereq":[48332,48334,49001]}
-{"id":48337,"name":"Work Order: Astral Glory","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48337,"name":"Work Order: Astral Glory","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":48338,"name":"Supplies Needed: Astral Glory","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":48344,"name":"We Have a Problem","level":45,"zone":"Mac'Aree","category":1044,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":367}
 {"id":48345,"name":"Talgath's Forces","level":45,"zone":"Mac'Aree","category":1044,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":367,"prereq":[47691,47995,47854]}
 {"id":48347,"name":"Anglepoint Wharf","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48348,"name":"Stinging Barbs","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
-{"id":48349,"name":"Work Order: Empyrium","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48349,"name":"Work Order: Empyrium","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":48352,"name":"A Cure from the Sea","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48353,"name":"Pulse of the Wharf","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592,"prereq":[48348,48352,49268]}
 {"id":48354,"name":"Tainted Shipments","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48355,"name":"Evacuate the Premises","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48356,"name":"Possessive Headgear","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48358,"name":"Supplies Needed: Empyrium","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":48359,"name":"Work Order: Fiendish Leather","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48359,"name":"Work Order: Fiendish Leather","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":48360,"name":"Supplies Needed: Fiendish Leather","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":48363,"name":"Work Order: Florid Malachite","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":48364,"name":"Work Order: Hesselian","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48363,"name":"Work Order: Florid Malachite","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":48364,"name":"Work Order: Hesselian","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
 {"id":48365,"name":"The Young Lord Stormsong","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48366,"name":"Paddle to Safety","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592,"prereq":[48356,48365,48009]}
 {"id":48367,"name":"Those Aren't Fish Eggs","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
@@ -18518,7 +18518,7 @@
 {"id":48369,"name":"Emergent Strategy","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5436,"prereq":[49465,49451,49452]}
 {"id":48370,"name":"Death in the Depths","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
 {"id":48372,"name":"Eldritch Invocations","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":592}
-{"id":48373,"name":"Work Order: Lightweave Cloth","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":48373,"name":"Work Order: Lightweave Cloth","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
 {"id":48374,"name":"Supplies Needed: Lightweave Cloth","level":45,"zone":"Krokuun","category":1041,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":48375,"name":"Primal Obliterum","level":45,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":48376,"name":"Mass Primal Obliterum","level":45,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -19754,9 +19754,9 @@
 {"id":50984,"name":"Work Order: Winter's Kiss","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":256}
 {"id":50985,"name":"Work Order: Siren's Pollen","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":256}
 {"id":50986,"name":"Work Order: Sea Stalk","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":256}
-{"id":50987,"name":"Work Order: Monelite Ore","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
+{"id":50987,"name":"Work Order: Monelite Ore","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":512}
 {"id":50988,"name":"An Economic Opportunity","level":50,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5449}
-{"id":50989,"name":"Work Order: Storm Silver Ore","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
+{"id":50989,"name":"Work Order: Storm Silver Ore","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":512}
 {"id":50990,"name":"Cutting Edge Poultry Science","level":50,"zone":"Drustvar","category":1060,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":50991,"name":"Work Order: Blood-Stained Bone","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":1024}
 {"id":50992,"name":"Work Order: Calcified Bone","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":1024}
@@ -19773,8 +19773,8 @@
 {"id":51003,"name":"Work Order: Winter's Kiss","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":256}
 {"id":51004,"name":"Work Order: Aromatic Pollen","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":256}
 {"id":51005,"name":"Work Order: Sea Stalk","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":256}
-{"id":51006,"name":"Work Order: Monelite Ore","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":51007,"name":"Work Order: Storm Silver Ore","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
+{"id":51006,"name":"Work Order: Monelite Ore","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":512}
+{"id":51007,"name":"Work Order: Storm Silver Ore","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":512}
 {"id":51008,"name":"Work Order: Blood-Stained Bone","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1024}
 {"id":51009,"name":"Work Order: Calcified Bone","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1024}
 {"id":51010,"name":"Work Order: Coarse Leather","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1024}
@@ -20684,48 +20684,48 @@
 {"id":52325,"name":"Captured Evil","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":52328,"name":"Ice Sickle","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":52330,"name":"Beehemoth","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":52331,"name":"Work Order: Demitri's Draught of Deception","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
+{"id":52331,"name":"Work Order: Demitri's Draught of Deception","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":1}
 {"id":52332,"name":"Work Order: Lightfoot Potion","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":1}
-{"id":52333,"name":"Work Order: Sea Mist Potion","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
+{"id":52333,"name":"Work Order: Sea Mist Potion","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":1}
 {"id":52334,"name":"Work Order: Potion of Concealment","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":1}
 {"id":52335,"name":"Work Order: Demitri's Draught of Deception","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1}
 {"id":52336,"name":"Work Order: Lightfoot Potion","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1}
 {"id":52337,"name":"Work Order: Sea Mist Potion","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1}
-{"id":52338,"name":"Work Order: Potion of Concealment","level":50,"zone":"Vol'dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52339,"name":"Work Order: Monel-Hardened Stirrups","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52340,"name":"Work Order: Monel-Hardened Hoofplates","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52341,"name":"Work Order: Monel-Hardened Stirrups","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52342,"name":"Work Order: Monel-Hardened Hoofplates","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
+{"id":52338,"name":"Work Order: Potion of Concealment","level":50,"zone":"Vol'dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":1}
+{"id":52339,"name":"Work Order: Monel-Hardened Stirrups","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":2}
+{"id":52340,"name":"Work Order: Monel-Hardened Hoofplates","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":2}
+{"id":52341,"name":"Work Order: Monel-Hardened Stirrups","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":2}
+{"id":52342,"name":"Work Order: Monel-Hardened Hoofplates","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":2}
 {"id":52344,"name":"Work Order: Kul Tiramisu","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52345,"name":"Work Order: Ravenberry Tarts","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52346,"name":"Work Order: Sailor's Pie","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52347,"name":"Work Order: Honey-Glazed Haunches","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52348,"name":"Work Order: Mon'Dazi","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52349,"name":"Work Order: Loa Loaf","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
-{"id":52350,"name":"Work Order: Swamp Fish 'n Chips","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":52350,"name":"Work Order: Swamp Fish 'n Chips","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52351,"name":"Work Order: Spiced Snapper","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
 {"id":52352,"name":"Zeritarj","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":52353,"name":"Work Order: Enchant Ring - Seal of Haste","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52354,"name":"Work Order: Enchant Ring - Seal of Mastery","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52355,"name":"Work Order: Enchant Weapon - Coastal Surge","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52356,"name":"Work Order: Enchant Weapon - Torrent of Elements","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52357,"name":"Work Order: Enchant Weapon - Quick Navigation","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52358,"name":"Work Order: Enchant Ring - Seal of Haste","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52359,"name":"Work Order: Enchant Ring - Seal of Mastery","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52360,"name":"Work Order: Enchant Weapon - Coastal Surge","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52361,"name":"Work Order: Enchant Weapon - Torrent of Elements","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52362,"name":"Work Order: Enchant Weapon - Quick Navigation","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52363,"name":"Work Order: Incendiary Ammunition","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52364,"name":"Work Order: Thermo-Accelerated Plague Spreader","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52365,"name":"Work Order: F.R.I.E.D.","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52367,"name":"Work Order: Electroshock Mount Motivator","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52368,"name":"Work Order: Crow's Nest Scope","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52369,"name":"Work Order: Incendiary Ammunition","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52370,"name":"Work Order: Thermo-Accelerated Plague Spreader","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52371,"name":"Work Order: F.R.I.E.D.","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52372,"name":"Work Order: XA-1000 Surface Skimmer","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52373,"name":"Work Order: Electroshock Mount Motivator","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52374,"name":"Work Order: Crow's Nest Scope","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
+{"id":52353,"name":"Work Order: Enchant Ring - Seal of Haste","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":4}
+{"id":52354,"name":"Work Order: Enchant Ring - Seal of Mastery","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":4}
+{"id":52355,"name":"Work Order: Enchant Weapon - Coastal Surge","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":4}
+{"id":52356,"name":"Work Order: Enchant Weapon - Torrent of Elements","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":4}
+{"id":52357,"name":"Work Order: Enchant Weapon - Quick Navigation","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":4}
+{"id":52358,"name":"Work Order: Enchant Ring - Seal of Haste","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":4}
+{"id":52359,"name":"Work Order: Enchant Ring - Seal of Mastery","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":4}
+{"id":52360,"name":"Work Order: Enchant Weapon - Coastal Surge","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":4}
+{"id":52361,"name":"Work Order: Enchant Weapon - Torrent of Elements","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":4}
+{"id":52362,"name":"Work Order: Enchant Weapon - Quick Navigation","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":4}
+{"id":52363,"name":"Work Order: Incendiary Ammunition","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":8}
+{"id":52364,"name":"Work Order: Thermo-Accelerated Plague Spreader","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":8}
+{"id":52365,"name":"Work Order: F.R.I.E.D.","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":8}
+{"id":52367,"name":"Work Order: Electroshock Mount Motivator","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":8}
+{"id":52368,"name":"Work Order: Crow's Nest Scope","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":8}
+{"id":52369,"name":"Work Order: Incendiary Ammunition","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":8}
+{"id":52370,"name":"Work Order: Thermo-Accelerated Plague Spreader","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":8}
+{"id":52371,"name":"Work Order: F.R.I.E.D.","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":8}
+{"id":52372,"name":"Work Order: XA-1000 Surface Skimmer","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":8}
+{"id":52373,"name":"Work Order: Electroshock Mount Motivator","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":8}
+{"id":52374,"name":"Work Order: Crow's Nest Scope","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":8}
 {"id":52375,"name":"Supplies Needed: Great Sea Catfish","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":52376,"name":"Supplies Needed: Sand Shifter","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":52378,"name":"Supplies Needed: Slimy Mackerel","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
@@ -20739,38 +20739,38 @@
 {"id":52386,"name":"Supplies Needed: Redtail Loach","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":16384}
 {"id":52387,"name":"Supplies Needed: Frenzied Fangtooth","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
 {"id":52388,"name":"Supplies Needed: Lane Snapper","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52389,"name":"Work Order: Contract: Proudmoore Admiralty","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52390,"name":"Work Order: Contract: Order of Embers","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52391,"name":"Work Order: Contract: Storm's Wake","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52392,"name":"Work Order: Ultramarine Pigment","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52395,"name":"Work Order: Contract: Zandalari Empire","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52396,"name":"Work Order: Contract: Talanji's Expedition","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52397,"name":"Work Order: Contract: Voldunai","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52398,"name":"Work Order: Ultramarine Pigment","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52400,"name":"Work Order: Kyanite","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52402,"name":"Work Order: Viridium","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52404,"name":"Work Order: Solstone","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52405,"name":"Work Order: Kubiline","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52406,"name":"Work Order: Rubellite","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52407,"name":"Work Order: Golden Beryl","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52408,"name":"Work Order: Kyanite","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52409,"name":"Work Order: Viridium","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52410,"name":"Work Order: Solstone","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52411,"name":"Work Order: Kubiline","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52412,"name":"Work Order: Rubellite","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52414,"name":"Work Order: Drums of the Maelstrom","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52415,"name":"Work Order: Coarse Leather Barding","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52416,"name":"Work Order: Shimmerscale Diving Suit","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52418,"name":"Work Order: Drums of the Maelstrom","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52419,"name":"Work Order: Coarse Leather Barding","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52420,"name":"Work Order: Shimmerscale Diving Suit","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52421,"name":"Work Order: Shimmerscale Diving Helmet","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52422,"name":"Work Order: Battle Flag: Spirit of Freedom","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52423,"name":"Work Order: Battle Flag: Phalanx Defense","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52424,"name":"Work Order: Battle Flag: Rallying Swiftness","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52425,"name":"Work Order: Battle Flag: Spirit of Freedom","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52426,"name":"Work Order: Battle Flag: Phalanx Defense","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":52427,"name":"Work Order: Battle Flag: Rallying Swiftness","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
+{"id":52389,"name":"Work Order: Contract: Proudmoore Admiralty","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":16}
+{"id":52390,"name":"Work Order: Contract: Order of Embers","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":16}
+{"id":52391,"name":"Work Order: Contract: Storm's Wake","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":16}
+{"id":52392,"name":"Work Order: Ultramarine Pigment","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":16}
+{"id":52395,"name":"Work Order: Contract: Zandalari Empire","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":16}
+{"id":52396,"name":"Work Order: Contract: Talanji's Expedition","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":16}
+{"id":52397,"name":"Work Order: Contract: Voldunai","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":16}
+{"id":52398,"name":"Work Order: Ultramarine Pigment","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":16}
+{"id":52400,"name":"Work Order: Kyanite","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":32}
+{"id":52402,"name":"Work Order: Viridium","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":32}
+{"id":52404,"name":"Work Order: Solstone","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":32}
+{"id":52405,"name":"Work Order: Kubiline","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":32}
+{"id":52406,"name":"Work Order: Rubellite","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":32}
+{"id":52407,"name":"Work Order: Golden Beryl","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":32}
+{"id":52408,"name":"Work Order: Kyanite","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":32}
+{"id":52409,"name":"Work Order: Viridium","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":32}
+{"id":52410,"name":"Work Order: Solstone","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":32}
+{"id":52411,"name":"Work Order: Kubiline","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":32}
+{"id":52412,"name":"Work Order: Rubellite","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":32}
+{"id":52414,"name":"Work Order: Drums of the Maelstrom","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":64}
+{"id":52415,"name":"Work Order: Coarse Leather Barding","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":64}
+{"id":52416,"name":"Work Order: Shimmerscale Diving Suit","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":64}
+{"id":52418,"name":"Work Order: Drums of the Maelstrom","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":64}
+{"id":52419,"name":"Work Order: Coarse Leather Barding","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":64}
+{"id":52420,"name":"Work Order: Shimmerscale Diving Suit","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":64}
+{"id":52421,"name":"Work Order: Shimmerscale Diving Helmet","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":64}
+{"id":52422,"name":"Work Order: Battle Flag: Spirit of Freedom","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191,"profession":128}
+{"id":52423,"name":"Work Order: Battle Flag: Phalanx Defense","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191,"profession":128}
+{"id":52424,"name":"Work Order: Battle Flag: Rallying Swiftness","level":50,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191,"profession":128}
+{"id":52425,"name":"Work Order: Battle Flag: Spirit of Freedom","level":50,"zone":"Zuldazar","category":1082,"type":128,"faction":2,"race":61658034,"class":8191,"profession":128}
+{"id":52426,"name":"Work Order: Battle Flag: Phalanx Defense","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":2,"race":61658034,"class":8191,"profession":128}
+{"id":52427,"name":"Work Order: Battle Flag: Rallying Swiftness","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191,"profession":128}
 {"id":52428,"name":"Infusing the Heart","level":10,"zone":"Silithus: The Wound","category":186,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":743}
 {"id":52430,"name":"Not So Bad Down Here","level":50,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":52431,"name":"No-Landing Zone","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":588}
@@ -21178,7 +21178,7 @@
 {"id":53288,"name":"Overgrown Anchor Weed","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":53289,"name":"Flourishing Sea Stalks","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":53290,"name":"Flourishing Riverbud","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
-{"id":53291,"name":"Blooming Star Moss","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":53291,"name":"Blooming Star Moss","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":53292,"name":"Blooming Siren's Sting","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":53293,"name":"Overgrown Anchor Weed","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":53294,"name":"Akunda's Bite Cluster","level":50,"zone":"Vol`dun","category":1081,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
@@ -22908,7 +22908,7 @@
 {"id":56370,"name":"Break a Few Eggs","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":56371,"name":"Young Twilight Scale","level":10,"zone":"Wetlands","category":272,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":56372,"name":"Hozen Totem","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":56373,"name":"A Gulper Ate the Rolly","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":56373,"name":"A Gulper Ate the Rolly","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191,"profession":16384}
 {"id":56374,"name":"A Titanic Problem","level":50,"zone":"Black Empire Campaign","category":1132,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":950}
 {"id":56375,"name":"To Ramkahen","level":50,"zone":"Black Empire Campaign","category":1132,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":950}
 {"id":56376,"name":"Surfacing Threats","level":50,"zone":"Black Empire Campaign","category":1132,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":950}
@@ -23024,7 +23024,7 @@
 {"id":56563,"name":"The Problem with Shrinkage","level":50,"zone":"Skinning","category":401,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":56565,"name":"Hanging by a Thread","level":50,"zone":"Skinning","category":401,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":56566,"name":"Hanging by a Thread","level":50,"zone":"Skinning","category":401,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":56570,"name":"Work Order: Greater Flask of the Currents","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
+{"id":56570,"name":"Work Order: Greater Flask of the Currents","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191,"profession":1}
 {"id":56572,"name":"Toys Like Us","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":981}
 {"id":56573,"name":"Certified Pre-Owned","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":56574,"name":"Reflections in Amber","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1009}
@@ -23093,15 +23093,15 @@
 {"id":56789,"name":"A Gift of Supplies","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":56790,"name":"Treasure To Find","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":56791,"name":"Mysterious Treasure","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":56793,"name":"Work Order: Mech-Dowel's \"Big Mech","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":56794,"name":"Work Order: Baked Port Tato","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":56795,"name":"Work Order: Abyssal-Fried Rissole","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":56796,"name":"Work Order: Fragrant Kakavia","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":56797,"name":"Work Order: Bil'Tong","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":56798,"name":"Work Order: Bil'Tong","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":56799,"name":"Work Order: Fragrant Kakavia","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":56800,"name":"Work Order: Abyssal-Fried Rissole","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":56801,"name":"Work Order: Baked Port Tato","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191}
+{"id":56793,"name":"Work Order: Mech-Dowel's \"Big Mech","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191,"profession":8192}
+{"id":56794,"name":"Work Order: Baked Port Tato","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191,"profession":8192}
+{"id":56795,"name":"Work Order: Abyssal-Fried Rissole","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191,"profession":8192}
+{"id":56796,"name":"Work Order: Fragrant Kakavia","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191,"profession":8192}
+{"id":56797,"name":"Work Order: Bil'Tong","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191,"profession":8192}
+{"id":56798,"name":"Work Order: Bil'Tong","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
+{"id":56799,"name":"Work Order: Fragrant Kakavia","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
+{"id":56800,"name":"Work Order: Abyssal-Fried Rissole","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
+{"id":56801,"name":"Work Order: Baked Port Tato","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191,"profession":8192}
 {"id":56808,"name":"We're Going To Be Friends","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":56809,"name":"Super Friends","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":56811,"name":"You've Got A Friend In Me","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -25140,23 +25140,23 @@
 {"id":61431,"name":"Lloth'wellyn's Breakthrough","level":50,"zone":"Torghast, Tower of the Damned","category":1246,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":61432,"name":"Lost Journals","level":10,"zone":"Revendreth","category":1205,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":61433,"name":"Giant Lungcap","level":60,"zone":"Revendreth","category":1205,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":61434,"name":"Alchemy: Flask of Measured Discipline","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61435,"name":"Blacksmithing: Stalker Arrowheads","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61434,"name":"Alchemy: Flask of Measured Discipline","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":61435,"name":"Blacksmithing: Stalker Arrowheads","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
 {"id":61436,"name":"Field Trip","level":60,"zone":"Path of Ascension","category":1232,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2}
-{"id":61439,"name":"Cooking: Steward Stew","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61440,"name":"Enchanting: Boundless Basket","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61441,"name":"Engineering: Power Hammer","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61442,"name":"Fishing: Glorious Shimmerfin","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61443,"name":"Herbalism: Windswept Rising Glory","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61439,"name":"Cooking: Steward Stew","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":61440,"name":"Enchanting: Boundless Basket","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":61441,"name":"Engineering: Power Hammer","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":61442,"name":"Fishing: Glorious Shimmerfin","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":61443,"name":"Herbalism: Windswept Rising Glory","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":61445,"name":"Court Gossip (+Relaxing)","level":60,"zone":"Revendreth","category":1205,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":61446,"name":"Inscription: Invocation of Duty","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61447,"name":"Jewelcrafting: Gleaming Kyranite Necklace","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61446,"name":"Inscription: Invocation of Duty","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":61447,"name":"Jewelcrafting: Gleaming Kyranite Necklace","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
 {"id":61448,"name":"Blob of Slime (+Clean)","level":60,"zone":"Revendreth","category":1205,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":61449,"name":"Leatherworking: Steelhide Leather Harness","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61449,"name":"Leatherworking: Steelhide Leather Harness","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
 {"id":61450,"name":"Cluster of Seeds (+Humble)","level":60,"zone":"Revendreth","category":1205,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":61467,"name":"Mining: Luminous Solenium Cluster","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61468,"name":"Skinning: Plush Copperfur Pelts","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61469,"name":"Tailoring: Woven Gossamer Tunic","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61467,"name":"Mining: Luminous Solenium Cluster","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":61468,"name":"Skinning: Plush Copperfur Pelts","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":61469,"name":"Tailoring: Woven Gossamer Tunic","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
 {"id":61473,"name":"Sourcing Your Own Materials","level":60,"zone":"Path of Ascension","category":1232,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1209,"prereq":60497}
 {"id":61475,"name":"The Heart of the Forest","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":8,"storyline":1237,"prereq":63214}
 {"id":61477,"name":"Calling the Champions","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -25179,16 +25179,16 @@
 {"id":61524,"name":"The Ember Court","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":2,"race":67108863,"class":8191,"covenant":4}
 {"id":61525,"name":"The Ember Court","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":4}
 {"id":61526,"name":"The Ember Court","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":4}
-{"id":61530,"name":"Mining: Ligneous Phaedrum Cluster","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61537,"name":"Mining: Monolithic Oxxein Cluster","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61538,"name":"Mining: Menacing Sinvyr Cluster","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61530,"name":"Mining: Ligneous Phaedrum Cluster","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":61537,"name":"Mining: Monolithic Oxxein Cluster","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":61538,"name":"Mining: Menacing Sinvyr Cluster","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":61539,"name":"Liches Get Stitches","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":61540,"name":"Just Winging It","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":61541,"name":"The Forge of Bonds","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":8,"storyline":1098,"prereq":62898}
 {"id":61542,"name":"The Boon of Binding","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":8,"storyline":1098,"prereq":63008}
-{"id":61543,"name":"Herbalism: Lambent Vigil's Torch","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61544,"name":"Herbalism: Lush Widowbloom","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61545,"name":"Herbalism: Engorged Marrowroot","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61543,"name":"Herbalism: Lambent Vigil's Torch","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":61544,"name":"Herbalism: Lush Widowbloom","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":61545,"name":"Herbalism: Engorged Marrowroot","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":61548,"name":"Set Me Free","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1134,"prereq":60112}
 {"id":61549,"name":"Drought Conditions","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":61550,"name":"Strengthening the Bond","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":8,"storyline":1098,"prereq":61542}
@@ -25201,46 +25201,46 @@
 {"id":61557,"name":"An Echo in the Darkness","level":60,"zone":"Oribos","category":1204,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1140}
 {"id":61558,"name":"The Highlord's Vision","level":60,"zone":"Oribos","category":1204,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1138,"prereq":61557}
 {"id":61559,"name":"A Mourneblade Born","level":60,"zone":"Oribos","category":1204,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1138,"prereq":61557}
-{"id":61564,"name":"Blacksmithing: Polished Kyrian Shield","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61564,"name":"Blacksmithing: Polished Kyrian Shield","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
 {"id":61565,"name":"Tracking Quest","level":0,"zone":"The Maw","category":1206,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":61567,"name":"Grave Intent","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":60114}
 {"id":61569,"name":"Keys to the Ruin","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1134,"prereq":61551}
 {"id":61586,"name":"Machinations of War","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120}
 {"id":61593,"name":"A Crisis of Memory","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":61594,"name":"This Way Out","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1134,"prereq":61569}
-{"id":61595,"name":"Alchemy: Potion of Hibernal Rest","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61596,"name":"Cooking: Arden Apple Pie","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61597,"name":"Engineering: Bug Zapifier","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61598,"name":"Fishing: Speckled Flametail","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61599,"name":"Inscription: Hymnal of Reprise","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61601,"name":"Jewelcrafting: Gem Studded Bangle","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61602,"name":"Leatherworking: Stalker's Leather Quiver","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61603,"name":"Skinning: Thick Gormhide","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61604,"name":"Tailoring: Cloak of Camouflage","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61605,"name":"Alchemy: Draught of Grotesque Strength","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61606,"name":"Blacksmithing: Soul Razor","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61607,"name":"Cooking: Spider Jerky","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61608,"name":"Enchanting: Unbreakable Crystal","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61609,"name":"Engineering: Boneclad Stake Launcher","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61610,"name":"Fishing: Skeletal Mudskipper","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61611,"name":"Inscription: Litany of Might","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61612,"name":"Jewelcrafting: Carved Crystal Ring","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61613,"name":"Leatherworking: Bonestudded Fists","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61614,"name":"Skinning: Rugged Carapace","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61615,"name":"Tailoring: Haunting Hood","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61595,"name":"Alchemy: Potion of Hibernal Rest","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":61596,"name":"Cooking: Arden Apple Pie","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":61597,"name":"Engineering: Bug Zapifier","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":61598,"name":"Fishing: Speckled Flametail","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":61599,"name":"Inscription: Hymnal of Reprise","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":61601,"name":"Jewelcrafting: Gem Studded Bangle","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":61602,"name":"Leatherworking: Stalker's Leather Quiver","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":61603,"name":"Skinning: Thick Gormhide","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":61604,"name":"Tailoring: Cloak of Camouflage","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":61605,"name":"Alchemy: Draught of Grotesque Strength","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":61606,"name":"Blacksmithing: Soul Razor","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":61607,"name":"Cooking: Spider Jerky","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":61608,"name":"Enchanting: Unbreakable Crystal","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":61609,"name":"Engineering: Boneclad Stake Launcher","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":61610,"name":"Fishing: Skeletal Mudskipper","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":61611,"name":"Inscription: Litany of Might","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":61612,"name":"Jewelcrafting: Carved Crystal Ring","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":61613,"name":"Leatherworking: Bonestudded Fists","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":61614,"name":"Skinning: Rugged Carapace","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":61615,"name":"Tailoring: Haunting Hood","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
 {"id":61616,"name":"The Ember Court","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":4,"storyline":1196,"prereq":[61882,61884,61880]}
-{"id":61619,"name":"Alchemy: Elixir of Humility","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61620,"name":"Blacksmithing: Prideful Manacles","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61621,"name":"Cooking: Skewered Meats","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61622,"name":"Engineering: Duelist's Pistol","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61623,"name":"Fishing: Bloodthroated Grouper","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61624,"name":"Inscription: Catalog of Sins","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61625,"name":"Jewelcrafting: Sinister Choker","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61626,"name":"Leatherworking: Courtly Leather Boots","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61627,"name":"Skinning: Horrific Leather Hide","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61628,"name":"Tailoring: Looming Tapestry","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61629,"name":"Enchanting: True Aim","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":61630,"name":"Enchanting: Everburning Brand","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":61619,"name":"Alchemy: Elixir of Humility","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
+{"id":61620,"name":"Blacksmithing: Prideful Manacles","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":61621,"name":"Cooking: Skewered Meats","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8192}
+{"id":61622,"name":"Engineering: Duelist's Pistol","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":8}
+{"id":61623,"name":"Fishing: Bloodthroated Grouper","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384}
+{"id":61624,"name":"Inscription: Catalog of Sins","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
+{"id":61625,"name":"Jewelcrafting: Sinister Choker","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
+{"id":61626,"name":"Leatherworking: Courtly Leather Boots","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
+{"id":61627,"name":"Skinning: Horrific Leather Hide","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1024}
+{"id":61628,"name":"Tailoring: Looming Tapestry","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":61629,"name":"Enchanting: True Aim","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":61630,"name":"Enchanting: Everburning Brand","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
 {"id":61631,"name":"Drust Between You and Me","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":61635,"name":"Troubled Souls","level":60,"zone":"Abominable Stitching","category":1230,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16}
 {"id":61636,"name":"PH - UNUSED","level":60,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191}
