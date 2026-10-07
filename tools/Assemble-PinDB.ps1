@@ -158,8 +158,10 @@ Write-Output "when enough of them stack on the same spot)..."
 $proximityMergeThreshold = 1.5
 # A known NPC's quests share a pin only where they start close together. Story NPCs stand in
 # several places on one map (Thalyssra across Suramar), and grouping by map + NPC alone put every
-# one of their quests on a single pin, up to 90 map points from where the quest starts.
-$npcGroupThreshold = 3.0
+# one of their quests on a single pin, up to 90 map points from where the quest starts. 3 points
+# until October 2026: a quest with a start point in the client's data now keeps it rather than
+# joining its giver's pin up to 3 points away (docs/plans/quest-location-data-pipeline.md).
+$npcGroupThreshold = 1.5
 $pinGroups = @{}
 $namedGroupKeysByMapAndName = @{}   # "$UiMapID|$Name" -> List[pinGroups key], for proximity lookup
 $npcGroupKeys = @{}                 # "$UiMapID|npc-$NpcId" -> List[pinGroups key]
