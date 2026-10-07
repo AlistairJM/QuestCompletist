@@ -218,7 +218,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
-| 6c | Quest givers from the client's data, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
+| 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
@@ -472,14 +472,31 @@ So after setting IDs, rerun the pipeline: apply what it changes, then check the 
 which names one for every quest whose reward has an appearance the collections can show
 (`CollectableSourceQuestSparse`, about 2,000 quests; see
 [plans/client-tables-review.md](plans/client-tables-review.md)): the giver's creature ID and each
-of its spawns. Blizzard's data over TrinityCore's wherever both speak. A pin with no NPC ID takes
-the giver when a spawn stands within 1.5 map points of it, with the giver's name from TrinityCore's
-database if the pin has none; a quest with no pin gets one at the giver's spawn, on the smallest
-zone map that holds it, joining a pin of that giver within 1.5 points; a pin that names another
-NPC is listed for review with the nearest spawn's distance, and a pin the client agrees with is
-counted. The report is `tools\client-giver-report.txt`. Run it with `-WhatIf` first (`-Refresh`
-downloads the table again for the build). A second run changes nothing; a new build, or new pins
-from step 6, may give more.
+of its spawns. Blizzard's data over TrinityCore's wherever both speak.
+- **A quest on a pin whose NPC is another character moves to its giver's pin** when a spawn of the
+  giver stands within 1.5 map points of the pin. The same name under another creature ID is the
+  same character, and counts as agreeing. The pipeline took each pin's NPC from a neighbour of the
+  spot, so the quests of several NPCs standing together often shared one pin; the quest goes to
+  an existing pin of its giver within 1.5 points, or to a new one at the old pin's place, and a
+  pin left with no quest goes. A quest the client's table doesn't list moves on TrinityCore's word
+  when it lists a starter other than the pin's NPC and one stands within 1.5 points (by its own
+  spawns, or the client's for a character of that name, as TrinityCore has few after Mists of
+  Pandaria).
+- **A pin with no NPC ID takes the giver** when a spawn stands within 3 map points of it and
+  TrinityCore names no other starter, with the giver's name from TrinityCore's database if the pin
+  has none.
+- **A quest with no pin gets one** at the giver's spawn, on the smallest zone map that holds it,
+  joining a pin of that giver within 1.5 points.
+- **A giver farther than that is listed, not acted on.** The client's quest-giver points often mark
+  a quest's turn-in rather than its start ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
+  "October 2026, the pin review"), so the pin may stand at the NPC who ends the quest.
+
+The report is `tools\client-giver-report.txt`. A listed case that was looked at and stays goes into
+`docs\plans\pin-giver-decisions.csv` as a `KEEP` row (`Quest`, the `Map`, `X` and `Y` of its pin, a
+`Reason`); later runs mark it kept and count only the new ones. `MOVE` gives the quest on that pin
+to the NPC in `NpcId`, and `FILL` gives a pin with no NPC that NPC, for the cases the rules don't
+reach. Run it with `-WhatIf` first (`-Refresh` downloads the table again for the build). A second
+run changes nothing; a new build, or new pins from step 6, may give more.
 
 `Fill-PinNpcIds.ps1` (step 6c, second) gives a pin that has a name and no NPC ID the ID of the
 creature of exactly that name that starts one of its quests in TrinityCore's database (step 5

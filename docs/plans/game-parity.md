@@ -88,7 +88,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 5 zone table and client names | three tools | `Build-ForeverMenu.ps1` | – | equivalent |
 | 6 pins | the pipeline from `QuestPOIBlob` | the importer from CMaNGOS and the recorder | – | equivalent |
 | 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | **no** | never pointed at Forever's folders | **Yes:** run it with `-DataDir data\forever -AddonDir QuestCompletist\Forever` in step 10 |
-| 6c NPC IDs for named pins | TrinityCore (`Fill-PinNpcIds.ps1`) and the client's giver table (`Apply-ClientQuestGivers.ps1`) | CMaNGOS gives the IDs | `CollectableSourceQuestSparse` is retail's alone | equivalent; nature |
+| 6c NPC IDs for named pins | TrinityCore (`Fill-PinNpcIds.ps1`), and the client's giver table with TrinityCore's starters, which also move a quest to its giver's pin (`Apply-ClientQuestGivers.ps1`) | CMaNGOS gives the IDs, from each quest's starter, so there is no neighbour's identity to correct | `CollectableSourceQuestSparse` is retail's alone | equivalent; nature |
 | 7 quests no longer obtainable | `Find-UnavailableQuestCandidates.ps1` | the importer's refused-quest rule | process | later, after launch |
 | 8 dungeons against the Dungeon Journal | `Audit-DungeonCategories.ps1` | – | Forever's menu takes instance types from the map table; whether its client carries the journal's names is unchecked | check `JournalInstance` on Forever once; if it's there, point the audit at it |
 | 9 reachability | yes | yes | – | shared |

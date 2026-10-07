@@ -10,7 +10,7 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
 - **Data source**: wago.tools exposes raw Blizzard client DB2 tables via an open, undocumented-ToS-restriction, no-auth API. This is raw client data, not a third party's curated/copyrighted content — same legal footing as typing quest names in by hand, which this addon already does.
 - **The tables that matter**:
-  - `QuestPOIBlob` (72,698 rows): links `QuestID` → `UiMapID` + one or more point-blobs. `ObjectiveIndex = -1` marks the quest-giver's own pin (a single point); `ObjectiveIndex >= 0` marks a multi-point objective-area outline (meaning of the paired `ObjectiveID` is still unresolved — see Open Questions).
+  - `QuestPOIBlob` (72,698 rows): links `QuestID` → `UiMapID` + one or more point-blobs. `ObjectiveIndex = -1` marks the quest's own pin (a single point), which is the quest giver's where the quest starts and ends in one place and otherwise often the turn-in ("October 2026, the pin review", below); `ObjectiveIndex >= 0` marks a multi-point objective-area outline (meaning of the paired `ObjectiveID` is still unresolved — see Open Questions).
   - `QuestPOIPoint` (172,609 rows): raw X/Y/Z world coordinates per point, keyed by `QuestPOIBlobID`.
   - `UiMapAssignment`: per-`UiMapID` world-space bounding box (`Region_0`, `Region_1`, `Region_3`, `Region_4`).
 - **Verified conversion formula** (confirmed against two independent, real in-game landmark readings — Goldshire and Northshire Abbey on the Elwynn Forest map — both within ~1 percentage point):
@@ -173,6 +173,8 @@ split had put on two Marshal Everit Reade pins, and took it off the farther one;
 are left alone as before. The reachability summary differs by one: 92 pins hidden from every
 character by the identity filters instead of 91, as Magister Umbric's "no data" quest 83561 in
 Eversong Woods, hidden before as well, now has a pin of its own.
+- **Forever**: checked in October 2026 on beta build `1.60.1.70205` (wago.tools product `wow_classic_beta`). Its `QuestPOIBlob` has only 54 rows (23 start points), so this pipeline can't build Forever's pins. The plan for a Forever version, with other sources, is [forever.md](forever.md).
+- **Classic Era / Anniversary / MoP Progression**: unlike Blizzard's REST API (which has zero quest data for any Classic flavor), wago.tools archives builds for these too. If their client files contain the same DB2 tables, this could be a real path to Classic support that we previously ruled out. Separate investigation, separate plan.
 
 ## October 2026, the client's own quest givers
 
@@ -199,7 +201,7 @@ fill) applies it to the pins, with the pipeline's conversion of a spawn to a map
 - **76 pins name another NPC than the client's giver.** They're listed in
   `tools\client-giver-report.txt` with the nearest spawn's distance: 47 within 1.5 points, the same
   spot under another ID of the character (Locus-Keeper Mnemis 167034 for our 167035), 28
-  further, 1 on another map. They stay as they are until reviewed through the decisions file.
+  further, 1 on another map. They are reviewed in the section below.
 - **The pipeline rerun** the runbook asks for after an ID change merged 27 pins: a newly identified
   NPC's two pins within 1.5 points (Gazlowe's two at one spot in Northern Barrens, Gazrog's 0.03
   apart), and 4 of those merges moved quests by up to 0.9 points (Archmage Khadgar in Draenor's
@@ -210,5 +212,53 @@ fill) applies it to the pins, with the pipeline's conversion of a spawn to a map
 - **Result:** 14,994 pins (14,923 before), 11,638 of them with an NPC ID and 2,993 with neither
   ID nor name (3,087 before). The reachability report differs only in the pin count.
 
-- **Forever**: checked in October 2026 on beta build `1.60.1.70205` (wago.tools product `wow_classic_beta`). Its `QuestPOIBlob` has only 54 rows (23 start points), so this pipeline can't build Forever's pins. The plan for a Forever version, with other sources, is [forever.md](forever.md).
-- **Classic Era / Anniversary / MoP Progression**: unlike Blizzard's REST API (which has zero quest data for any Classic flavor), wago.tools archives builds for these too. If their client files contain the same DB2 tables, this could be a real path to Classic support that we previously ruled out. Separate investigation, separate plan.
+
+## October 2026, the pin review
+
+The 76 pins that name another NPC than the client's giver, the 37 without an ID that the giver
+stands too far from to fill, and four odd ones (two "<Remote>" names, two named `CHANGE_TO_NIL`)
+were read pin by pin: the evidence for each pin (the client's table, TrinityCore's quest starters
+and what stands within 1.5 points of it) was read by one agent, and a second tried to refute every
+decision. The two agreed on 174 of 175 decisions, and with the tool's rules on all but a few.
+TrinityCore's starters, which the first review hadn't used, added 37 more pins, 56 quests, where
+a starter stands within 1.5 points of a pin whose NPC isn't one; the same two passes agreed on 85
+of the 90 decisions there.
+
+- **Pins merge quests of NPCs who stand together.** The earlier line that 47 of the 76 were "the
+  same spot under another ID" was mostly wrong. Only 17 of the 76 are one character under two
+  creature IDs (Matthias Lehner's 32404 and 32408). The rest are neighbours: the pin took the name of one NPC
+  standing at the spot, and the quests of the others went under it, like Kelsey Steelspark's pin
+  in Tanaris holding Megs Dreadshredder's Horde quests, or Mordant Grimsby's in Dustwallow Marsh
+  holding "Swamp Eye" Jarl's. `Apply-ClientQuestGivers.ps1` now gives such a quest to its giver's
+  pin at the same spot: 123 quests moved (50 on the client's table, 70 on TrinityCore's word, 3 by
+  decision), 7 pins with no NPC took the client's giver, and 10 pins left with no quest went. The
+  pins went from 14,994 to 15,054, and the 23,283 quests that have a pin still all have one.
+- **The client's quest-giver points are mostly turn-in points.** `ObjectiveIndex = -1` in
+  `QuestPOIBlob` was taken to be the quest giver's own pin, and it is where a quest starts and
+  ends at one place. Of 2,622 quests whose TrinityCore starters and enders differ, the point
+  stands at an ender only for 1,354 and at a starter only for 31 (205 at both, 201 at neither,
+  831 with no spawn on that map to compare). Wowhead says the same for the five that were looked
+  up: "Rite of Vision" starts at Zarlman Two-Moons and ends at Una Wildmane, where its pin is, 39.7
+  points from the start; "Back to Riznek" starts at Khan Blizh and ends at Riznek, where its pin is.
+  So a pin for a quest that starts and ends in different places often stands at the turn-in, under
+  the name of the NPC who starts it: the 262 pins counted above as far from every spawn of their
+  giver are such pins, as are 20 of the 48 cases below. The tool lists them and leaves them
+  where the client's data puts them, as decided on 6 October ("a pin that matches the client's
+  data stays"); whether to move them to the starter's spawn, which the client's table gives for
+  2,074 quests and TrinityCore for the older ones, is a separate decision.
+- **Two earlier decisions were wrong.** The Exile's Reach pins at 61.88,82.88 and 61.88,82.35 had
+  been given Captain Garrick's and Warlord Breka Grimaxe's IDs by name; Wowhead says "Emergency
+  First Aid" starts and ends at Lady Jaina Proudmoore, and "Murloc Mania" at Thrall, as
+  TrinityCore's starters did. The quests moved to their pins, and the two rows of
+  `pin-npc-id-decisions.csv` went with their pins. Two more Alliance quests there, 58915 and 58933,
+  sit under Breka Grimaxe's pin at the turn-in, Private Cole's spot, with their starters elsewhere.
+- **By hand:** the two pins named `CHANGE_TO_NIL`, a leftover marker of the old addon's author,
+  lost their name; quest 24799 left a Thousand Needles pin it had no business on, as it has its
+  own pin in Icecrown.
+- **What stays:** 48 cases in `docs/plans/pin-giver-decisions.csv`, each with its reason: 20 where
+  the pin stands at the turn-in (TrinityCore's ender or Wowhead says so), 13 pins with no NPC whose
+  giver stands more than 3 points away, 6 whose giver has no spawn on the map (an image, a summon
+  or an item), 5 pins whose NPC stays as the giver stands farther than 1.5 points, 3 "<Remote>"
+  names, which are deliberate, and a pin that lost its junk name. TrinityCore also lists another
+  starter than the pin's NPC for 163 quests the client doesn't have, with none within 1.5
+  points: left alone.
