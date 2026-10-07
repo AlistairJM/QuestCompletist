@@ -147,6 +147,27 @@ each was beside the same guardian's pin with the right ID and the same quest. Se
 map that has its own row, and moved Lor'themar Theron's Isle of Thunder row to the pin that took
 his quests; see quest-location-data-pipeline.md.)
 
+**Looked up (2026-10-07).** All 109. Wowhead blocks the browser after about five page loads in a
+few minutes, even twenty seconds apart, for ten minutes or so, so TrinityCore's dump
+(`tools/tdb`, build 12.1.0) answered first: `creature_queststarter` and `gameobject_queststarter`
+for every quest on each pin, with the creature's name from `creature_template`. Wowhead's quest
+pages were read for the 10 quests the dump lacks (Argus, Exile's Reach, Nazjatar, the Emerald
+Nightmare, the Maw, Valdrakken) and to confirm 12 more; the two never disagreed. Results:
+- **100 IDs set** (83 as they were named, 17 renamed). A pin whose quests all start at a creature
+  of another name takes that creature's name as well as its ID: the four Noblegarden "Spring
+  Gatherer" pins are Spring Collectors, "Finkle Einhorn" is Pip Quickwit in both Blackrock Caverns
+  and Hyjal, "Jessera of Mac'Aree" is Maatparm, Krasarang's "Admiral Taylor" at Lion's Landing is
+  The Monkey King, and seven had the right ID under a wrong or misspelt name (Zevrist, Nozdormu,
+  Kharmarn Palegrip twice, Gaal, Tomas Riogain, Scalecommander Emberthal). Exile's Reach's "Meredy
+  Huntswell" keeps its ID, which the game names "Wrathion": check that pin in game. The Maw's
+  "Paper Scrap (item)" keeps the Paper Scrap creature's ID under the game's name for it.
+- **9 start at objects** (the Sparklematic 5200 twice, the four Stolen Explorers' League Documents,
+  Elder Atkanok's shrine, Dire Maul's Broken Trap, Ghostlands' wanted poster): NewId stays blank.
+- Where a character has one ID per phase (Lady Jaina Proudmoore, Lor'themar Theron, Kai-Lin
+  Honeydew), the pin takes the first; the row notes the others.
+The reachability report is identical to master's. Still to do in game: hover the renamed pins and
+Exile's Reach's to see the names the client gives their IDs.
+
 **Filled from pins of the same name (October 2026).** 28 rows had a pin on the same map with the
 same name and an ID, which the English probe had already confirmed is that name. Their NewId is
 that pin's ID, applied, and their Note says which pin it came from.
@@ -255,5 +276,8 @@ inside an instance either; this covers them.) Then switch back to English.
     checked in game (the instance map can't be opened outside); the simulation covers it.
   - **English:** pins look as before.
   
-  Merged as #114. All four phases are done; the Wowhead lookups for pins with cleared IDs remain
+  Merged as #114. All four phases are done; the Wowhead lookups for pins with cleared IDs remained
   (91 NPC-and-map pairs, 109 pins, since October 2026; 106 pairs to begin with).
+- 2026-10-07: the 109 lookups done on `data/pin-npc-id-lookups` (see "Looked up" under phase 2):
+  100 IDs set, 17 of those pins renamed, 9 object starts left at 0. Next: the renamed pins and
+  Exile's Reach's in game.
