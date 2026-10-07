@@ -10,7 +10,7 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
 - **Data source**: wago.tools exposes raw Blizzard client DB2 tables via an open, undocumented-ToS-restriction, no-auth API. This is raw client data, not a third party's curated/copyrighted content — same legal footing as typing quest names in by hand, which this addon already does.
 - **The tables that matter**:
-  - `QuestPOIBlob` (72,698 rows): links `QuestID` → `UiMapID` + one or more point-blobs. `ObjectiveIndex = -1` marks the quest's own pin (a single point), which is the quest giver's where the quest starts and ends in one place and otherwise often the turn-in ("October 2026, the pin review", below); `ObjectiveIndex >= 0` marks a multi-point objective-area outline (meaning of the paired `ObjectiveID` is still unresolved — see Open Questions).
+  - `QuestPOIBlob` (72,698 rows): links `QuestID` → `UiMapID` + one or more point-blobs. `ObjectiveIndex = -1` marks the quest's own pin (a single point), which is the quest giver's where the quest starts and ends in one place and otherwise often the turn-in ("October 2026, the pin review", below), and `ObjectiveIndex = 32` marks its start point ("October 2026, the start points", below); `ObjectiveIndex >= 0` marks a multi-point objective-area outline (meaning of the paired `ObjectiveID` is still unresolved — see Open Questions).
   - `QuestPOIPoint` (172,609 rows): raw X/Y/Z world coordinates per point, keyed by `QuestPOIBlobID`.
   - `UiMapAssignment`: per-`UiMapID` world-space bounding box (`Region_0`, `Region_1`, `Region_3`, `Region_4`).
 - **Verified conversion formula** (confirmed against two independent, real in-game landmark readings — Goldshire and Northshire Abbey on the Elwynn Forest map — both within ~1 percentage point):
@@ -46,7 +46,7 @@ This addon's map-pin feature (`qcPinDB.lua`) hasn't been meaningfully refreshed 
 
 ## Open questions (still unresolved, may need work during Phase 1)
 
-1. **`ObjectiveID`/`ObjectiveIndex` meaning beyond "-1 = giver pin."** Didn't resolve what table (if any) `ObjectiveID` cross-references. Not blocking for giver pins, but blocks pulling in richer "objective area" pins as a bonus.
+1. **`ObjectiveID`/`ObjectiveIndex` meaning beyond "-1 = turn-in, 32 = start."** Didn't resolve what table (if any) `ObjectiveID` cross-references. Not blocking for giver pins, but blocks pulling in richer "objective area" pins as a bonus.
 2. **No published rate limit for wago.tools.** Should self-impose a conservative delay between requests when pulling ~250K+ rows across tables, out of politeness, even though nothing prohibits it outright.
 3. **Some old quests only have continent-level POI data, not zone-level.** Checked across all 109 known Durotar quests: 56 resolve to `UiMapID 463` (the real zone map), but 42 resolve to `UiMapID 1` (the Kalimdor continent) — a real pattern, not a fluke. This looks like a genuine gap in Blizzard's own source data for older vanilla content that never got a fine-grained pin when the modern per-zone map system rolled out. Not fixable by us; the pin will only show at the continent zoom level for these quests. Not blocking — a continent-level pin is still better than none — but worth knowing before treating every conversion as equally precise.
 
@@ -262,3 +262,30 @@ of the 90 decisions there.
   names, which are deliberate, and a pin that lost its junk name. TrinityCore also lists another
   starter than the pin's NPC for 163 quests the client doesn't have, with none within 1.5
   points: left alone.
+
+## October 2026, the start points
+
+The pin review above found that `ObjectiveIndex -1` is mostly a quest's turn-in. The retail run of
+the Forever probe's map pass (7 October 2026; [game-api-review.md](game-api-review.md),
+"Map-offers probe: retail run") found where the start is: `ObjectiveIndex 32`, in the same table.
+
+- **Evidence:** all 439 offers the game listed lie within 10 yards of the same quest's point 32.
+  Of 1,421 quests whose starter and ender differ in TrinityCore's dump and have spawns on the
+  point's map, point -1 is nearer the ender in 1,275 and nearer the starter in 13; point 32 is
+  nearer the starter for 1,369 of 1,513 blobs and nearer the ender for 24. Wowhead agrees on "O Lonely Star", "The Conquered
+  Heroes" and "Be Grudge You".
+- **What it means for the pins:** of 5,202 pairs of a quest and a map whose two points are more
+  than 1.5 map points apart and that have a pin on the map, 4,886 to 5,081 have the pin only at
+  the turn-in. The pins of 20 September were nearer the start (159 of 172 quests within 1.5 points
+  of the offer, against 107 today): the rebuilds moved 55 of them to the turn-in.
+- **Quests with a start point and no turn-in point** (4,278 without a pin: 4,082 task quests and
+  196 others, 192 with a map position) get no pin, as the filter drops them. The 19 quests the
+  game offers or forces visible that have no pin are of this kind.
+- **A way to move the turn-in pins that needs no spawn data:** the start point is in the table the
+  pipeline already reads, for every quest that has one.
+- **Other readers of -1:** `Get-WagoQuestRequirements.ps1`; `Find-UnavailableQuestCandidates.ps1`,
+  whose "GiverPOI" is a turn-in point, so whether a start point should count as evidence that a
+  quest is still obtainable is to check with the change; and, for Forever, `Import-ForeverData.ps1`.
+- **Not changed yet.** The decision, with a recommendation, is number 8 under "Decisions to take"
+  in game-api-review.md: first give a start pin to the quests with no turn-in point, which moves
+  nothing; then review the 50 quests the run found, in game, before any rule moves the rest.
