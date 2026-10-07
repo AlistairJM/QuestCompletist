@@ -59,9 +59,9 @@ So the code has one gate to fix and no other divergence that isn't the games' na
 |---|---|---|---|---|
 | Storylines (`storyline`, `qcQuestLines`) | 16,950 quests, 1,474 storylines | 11 quests, 1 storyline | **data:** Forever's client `QuestLine` has 3 rows, and no other source has storylines | Watch the table: have the importer's summary print `QuestLine` and `QuestLineXQuest` row counts, as it prints start points |
 | Covenant | 777 | 0 | nature | No |
-| Profession | 1,332 | 142 | both | – |
+| Profession | 1,742 | 142 | both; retail's task quests from `QuestV2CliTask` | – |
 | Holiday | 911 | 322 | both; retail's from Blizzard's API and hand, Forever's from CMaNGOS's events | – |
-| Prerequisites | 7,619 | 2,296 | both; retail's from Blizzard's API and TrinityCore, Forever's from CMaNGOS | – |
+| Prerequisites | 8,306 | 2,296 | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS | – |
 | Breadcrumbs, "only one of these" | 279 and 249 lines | 93 and 257 | both | – |
 | Reputation rewards | 11,035 | 1,837 quests | both; API against the quest cache | – |
 | Renown requirements | 96 | none | nature | No |
@@ -79,9 +79,10 @@ So the code has one gate to fix and no other divergence that isn't the games' na
 | 1 faction, race and class against Blizzard's API | `Audit-QuestAccuracy.ps1` | the importer takes the cache's race masks over CMaNGOS's | the API has no Forever | equivalent |
 | 1b second source for race and class | `Get-WagoQuestRequirements.ps1` | – | `QuestV2CliTask` is retail's alone | nature |
 | 1c quest names | from the API | from the cache | – | equivalent |
+| 1d professions of task quests | `Sync-QuestProfessions.ps1` | – | `QuestV2CliTask` is retail's alone; Forever's come from CMaNGOS | nature |
 | 2 reputation | API compare and backfill | the cache, in the importer | – | equivalent |
 | 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | **no** | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | **Yes:** run the consistency part on `data\forever` and `QuestCompletist\Forever` (the tool takes both folders; it needs a switch to skip the API and TrinityCore parts) |
-| 2c prerequisites | API and TrinityCore | CMaNGOS, in the importer | – | equivalent |
+| 2c prerequisites | API, the client's task quests (`QuestV2CliTask`) and TrinityCore | CMaNGOS, in the importer | – | equivalent |
 | 3 quest types | `Retype-*.ps1` with the probe | the importer | – | equivalent |
 | 4 storylines | `Build-QuestLines.ps1` | `Build-ForeverMenu.ps1` reads the same table | data (3 rows) | watched |
 | 5 zone table and client names | three tools | `Build-ForeverMenu.ps1` | – | equivalent |
@@ -142,3 +143,6 @@ To take: which of recommendations 1 to 7 come first. Each is one pull request.
 
 - 2026-10-07: audit written; `Compare-ApiDocs.ps1` extended with the one-game list and the
   gap-closing failure. Nothing else changed.
+- 2026-10-07: retail's task quests got their professions (410) and prerequisites (687 new, 90
+  changed) from `QuestV2CliTask`, as the client-tables review's recommendation 5. The skill
+  levels in the same table are still recommendation 3 above.

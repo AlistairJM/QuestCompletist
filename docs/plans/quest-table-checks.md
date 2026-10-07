@@ -196,12 +196,12 @@ each recommendation:
    pairs and the Twilight Highlands' Dunwald quests. The check now counts them rather than listing
    them.
 
-**Kept, with KEEP rows in `quest-table-decisions.csv` (120):**
+**Kept, with KEEP rows in `quest-table-decisions.csv` (121):**
 - TrinityCore's disagreements on 43 breadcrumbs and 31 pairs;
 - the 12 previous quests where ours fits Blizzard's storyline at least as well;
 - the 6 prerequisites naming quests outside our data;
 - the 26 weekly and daily requirements;
-- the 2 other-faction quests in Blizzard's own lists.
+- the 3 other-faction quests in Blizzard's own lists, and the client's (7 October).
 
 **A bug found on the way:** step 2c's first run stored the 28 quests that keep ours alongside
 Blizzard's list as a choice (any one) instead of a list (all), through a stray comma in
@@ -244,3 +244,6 @@ The review's code change, decision 2 and the last 3 findings:
 - 2026-10-06: the review's data in #166, and its code (above) stacked on it. Next: the user's check
   in game, then release 111.5.
 - 2026-10-06: #166 and #167 merged after the user's check in game, and released in 111.5.
+- 2026-10-07: step 2c takes the client's task-quest tables for task quests (client-tables-review.md,
+  Status): 687 quests gained a prerequisite, 90 changed. The check found one new finding, an
+  other-faction quest, and kept it (121 findings, all decided).

@@ -95,10 +95,11 @@ prerequisite, which most quests don't have, are in `qcQuestProfession`, `qcQuest
 The zone text stays in the data file only: the game never reads it.
 
 **Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
-`Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
-`Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`,
-`Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Sync-QuestPrerequisites.ps1`,
-`Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
+`Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Sync-QuestProfessions.ps1`,
+`Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`,
+`Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`,
+`Sync-QuestPrerequisites.ps1`, `Apply-ClientQuestGivers.ps1`, `Apply-PinNpcIds.ps1`,
+`Fill-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
@@ -205,11 +206,12 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | # | Area | Scripts, in order | Edits the addon? |
 |---|---|---|---|
 | 1 | Faction, race and class | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
-| 1b | Second source for race and class | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
+| 1b | Second source for race and class, and the task-quest tables 1d and 2c read | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 1d | Professions of task quests | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
-| 2c | Prerequisites from Blizzard's API and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2c | Prerequisites from Blizzard's API, the client's task quests and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -253,6 +255,21 @@ To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-d
 `Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
 KEPT rather than raising it again, unless our value changes.
 
+### 1d. Professions of task quests
+
+`Sync-QuestProfessions.ps1` gives a world quest, bonus objective or calling the profession it needs,
+so "Hide Other Profession Quests" hides a Legion Mining world quest from a character without Mining.
+The API doesn't serve task quests, so the client says it, in two columns of `QuestV2CliTask` that
+agree wherever both speak: the skill the quest asks for, in the expansion's own line of the
+profession (its `SkillLine` row names the base profession), and the profession of its quest type
+(`QuestInfo`). Run it with `-WhatIf` first.
+- **Only a quest with no profession is given one.** A quest of ours that has another, a quest whose
+  two columns disagree and a skill line with no bit in `qcProfessionBits` are listed and left.
+- **The skill level isn't kept.** It belongs with the skill requirements, which retail doesn't
+  fill yet ([plans/game-parity.md](plans/game-parity.md), recommendation 3).
+
+A second run changes nothing. WoW: Forever has no such table, so its professions come from
+CMaNGOS in step 10.
 ### 2. Reputation rewards
 
 `Compare-QuestReputation.ps1` compares `qcQuestReputation` against the API cache from step 1 and
@@ -307,6 +324,13 @@ with `-WhatIf` first to see what it would change.
 - **Where Blizzard's API names required quests,** its list replaces ours: an AND of them, with an OR
   as a choice. As the API names at most 3, a quest of ours it leaves out stays when it's the step
   just before in the quest's storyline.
+- **Where the API is silent on a task quest,** the client's own tables are taken: the quests its
+  `QuestV2CliTask` row says must be done and those its `PlayerCondition` says were turned in, both
+  required, read with the logic fields the game gives them (and, or, and a quest that mustn't be
+  done, which is no prerequisite). They replace ours, except for the step just before in the
+  quest's storyline, as with the API's list. Most of what the client gates a task quest on is a
+  hidden tracking quest we hold no data for, with no name to show: it's left out of the list,
+  or the whole choice it's in. The tables are those step 1b refreshes.
 - **Where the API is silent and we have none,** TrinityCore's previous quest is taken when it's the
   step just before in the quest's storyline (the client's `QuestLineXQuest` for `-Build`).
 - **A one-time quest never gets a daily, weekly or repeatable requirement,** and a choice that
@@ -886,7 +910,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1` and `Fill-PinNpcIds.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
