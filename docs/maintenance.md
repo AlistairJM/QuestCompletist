@@ -125,6 +125,21 @@ then every tool refuses to save.
    retail's for steps 1 to 9, Forever's for step 10. The Forever tools default to the beta build
    they were written on, so always pass it. Downloading a table from wago.tools without a build
    number does *not* reliably return the latest build.
+2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
+   table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
+   and the tools read 26 of them (14 for Forever). Run
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-ClientTables.ps1 -Build <retail build> -ForeverBuild <Forever build>
+   ```
+   It saves every table name wago.tools has for each build as `tools\client_tables-<build>.txt`,
+   lists the tables added and removed since the newest earlier list for that game (quest-related
+   names flagged), and compares the column names of every table the tools read with the cached
+   copy in `tools\`. A column change exits with 1: check the tool that reads that table, and the
+   plan docs, before the sweep goes on. A new table or column that could serve the addon is a
+   finding to plan, not just to note. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104
+   tables and Forever 1.60.1.70245 had 612, with no column changes in the tables read. No
+   systematic review of every table has been done yet; the tables read were chosen as each need
+   came up.
 3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
    ```powershell
    Rename-Item tools\quest_api_cache "quest_api_cache.$(Get-Date -Format yyyyMMdd)"
