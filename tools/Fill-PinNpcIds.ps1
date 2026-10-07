@@ -18,7 +18,8 @@ WoW: Forever's pins aren't touched: Import-ForeverData.ps1 gives them their IDs 
 Reads the newest tools\tdb\TDB_full_world_*.sql (maintenance.md, "Before a sweep") through
 Read-SqlDump.lua. A second run changes nothing. With -WhatIf it only reports; otherwise it saves
 through AddonData.ps1, which rebuilds the Lua. After it, rerun the pin pipeline: a pin that now
-shares its ID with another pin of that NPC within 3 points joins it at the next rebuild.
+shares its ID with another pin of that NPC within 1.5 points joins it at the next rebuild, and a
+quest the client starts 1.5 points or more from its giver's pin gets a pin of its own there.
 
   .\Fill-PinNpcIds.ps1 -WhatIf
   .\Fill-PinNpcIds.ps1

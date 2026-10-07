@@ -134,6 +134,46 @@ Later the same day, filling 28 NPC IDs from pins of the same name (localized-npc
 pins the ID of a pin of that character within 3 points, so the rebuild was applied again: 14,673
 pins, and a rerun still leaves them byte-identical.
 
+## October 2026, after the NPC IDs
+
+On 2026-10-07 `Fill-PinNpcIds.ps1` gave 2,259 pins that had a name and no NPC ID their giver's
+ID (localized-npc-names.md, "IDs from TrinityCore's quest starters"). maintenance.md asks for a
+pipeline rerun after any ID change, because a known NPC's quests group onto one pin where they
+start close together. The rerun, on the same client data (the September 30 locations, nothing
+refreshed), was done twice, with the two groupings compared, and the user chose the second:
+
+- **With the 3-point rule the pipeline had used until then,** 57 pins merged into 54 pins of the
+  same NPC on the same map (1 within 1.5 points, 22 within 2, 19 within 2.5, 13 within 3; the
+  furthest 2.99, High Commander Halford Wyrmbane's third pin in Dragonblight), and nothing else
+  changed. But 81 quest placements moved, 73 of them quests with a start point in the client's
+  data on that map, and 66 of those left it: they had been within 1.5 points of it, 55 exactly on
+  it, and would have sat 1.6 to 3 points away. In October's rebuild only two such quests had
+  moved, by 1.1 points. The rule had been doing what it was designed to do, since without IDs the
+  same pins had been kept apart by the 1.5-point rule for pins without one, but at this scale it
+  moved quests off the client's own start points.
+- **With a 1.5-point rule, the one chosen** (`$npcGroupThreshold` in `Assemble-PinDB.ps1`, applied
+  in the pull request after the IDs'), nothing merges. Instead 250 pins split off existing pins:
+  a known NPC's quest that the client starts 1.5 points or more from the NPC's pin gets a pin of
+  its own at that start point, where the earlier runs had grouped it onto the NPC's pin up to 3
+  points away. 316 quest placements moved (bands: 141 within 2 points, 111 within 2.5, 63 within
+  3, and Valeera Sanguinar's "Champion: Valeera Sanguinar" in Legion's Dalaran by 3.05, onto its
+  start point). Of 325 start-point checks, 320 moved closer and 241 landed exactly on the start,
+  and none moved away. Every added pin at a new position (174; the other 76 sit on a position
+  another pin already had) carries an NPC ID and sits exactly on a client start point of one of
+  its quests. Suramar, Tiragarde Sound, Maldraxxus, Revendreth, Eversong Woods, Bastion, Hallowfall and
+  Zuldazar gained the most: story NPCs whose quests start in several places. The map now has 250
+  more pins (14,923), each a second pin of an NPC 1.5 to 3 points from its first.
+
+Checks on the 1.5-point result: the data is the candidate byte for byte; `Apply-PinNpcIds.ps1
+-WhatIf` matched every row after one correction (the "Your Hatchling" row in the Jade Forest had
+said the pin was an object, and now records creature 65669, which TrinityCore says starts its
+quests and the fill had set); `Remove-DuplicatePinQuests.ps1` found one new duplicate, "A
+Traitor's Death" (50454), which the client starts at two points 0.5 apart in Drustvar and the
+split had put on two Marshal Everit Reade pins, and took it off the farther one; the same 14 pairs
+are left alone as before. The reachability summary differs by one: 92 pins hidden from every
+character by the identity filters instead of 91, as Magister Umbric's "no data" quest 83561 in
+Eversong Woods, hidden before as well, now has a pin of its own.
+
 ## Possible future extensions (explicitly not this plan)
 
 - **Forever**: checked in October 2026 on beta build `1.60.1.70205` (wago.tools product `wow_classic_beta`). Its `QuestPOIBlob` has only 54 rows (23 start points), so this pipeline can't build Forever's pins. The plan for a Forever version, with other sources, is [forever.md](forever.md).

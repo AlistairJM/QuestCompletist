@@ -192,7 +192,7 @@ ID,371,The Jade Forest,50.41,88.27,Sky Admiral Rogers,756,Skullsplitter Panther,
 ID,371,The Jade Forest,41.37,79.56,Sunke Khang,374,Cog Glitzspinner,31741 Twinspire Keep; 31744 Unfair Trade,https://www.wowhead.com/quest=31741,,65910,Quest giver looked up 2026-10-07
 ID,371,The Jade Forest,46.25,84.72,Sunke Khang,374,Cog Glitzspinner,31738 Pillaging Peons,https://www.wowhead.com/quest=31738,,65910,Quest giver looked up 2026-10-07
 ID,371,The Jade Forest,29.14,13.84,Taran Zhu,1121,Frostmane Snowstrider,31771 Face to Face With Consequence,https://www.wowhead.com/quest=31771,,66657,Quest giver looked up 2026-10-07
-ID,371,The Jade Forest,57.5,45.4,Your Hatchling,135,,30151 Catch!; 31704 Pooped; 30150 Sweet as Honey,https://www.wowhead.com/quest=30151,,,"An object or item, not a creature: leave NewId blank"
+ID,371,The Jade Forest,57.5,45.4,Your Hatchling,135,,30151 Catch!; 31704 Pooped; 30150 Sweet as Honey,https://www.wowhead.com/quest=30151,,65669,"Quest giver looked up 2026-10-07: the quests start at a creature of this name, 65669, in TrinityCore (Fill-PinNpcIds.ps1); 135 was no creature"
 ID,1543,The Maw,19.30,33.50,Paper Scrap (item),173841,Paper Scrap,63159 Words of the Warden,https://www.wowhead.com/quest=63159,Paper Scrap,173841,"Quest giver looked up 2026-10-07: started by the item; the old ID is the Paper Scrap creature at this spot, named as the game names it"
 ID,2214,The Ringing Deeps,61.71,42.64,Broodmother's Egg,423581,,79372 A Clutch of Hope,https://www.wowhead.com/quest=79372,,,"An object or item, not a creature: leave NewId blank"
 ID,2214,The Ringing Deeps,62.61,38.75,Broodmother's Egg,423581,,80513 Snouty Sabotage; 80512 Beat the Best,https://www.wowhead.com/quest=80513,,,"An object or item, not a creature: leave NewId blank"

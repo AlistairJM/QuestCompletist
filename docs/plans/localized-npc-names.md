@@ -186,8 +186,11 @@ one per phase (80 pins). It changes no name and moves no pin:
   Sanders' Treasure Map"), so there is no creature to name.
 The reachability report is identical to master's but for four pins in Ashran now printed with
 their ID. `Remove-DuplicatePinQuests.ps1` finds the same 14 pairs as before. A rerun of the pin
-pipeline would merge 57 pins into a pin of the same NPC within 3 points, as its rule says (61 pairs,
-one within 1.5 points, the rest 1.6 to 3 apart); that is left for a pull request of its own.
+pipeline, with its 3-point rule, would merge 57 pins into a pin of the same NPC (one within 1.5
+points, the rest 1.6 to 3 apart), moving 66 quests off the client's start point for them. The
+pull request after this one does that rerun with the rule tightened to 1.5 points instead, which
+merges nothing and gives 250 quests a pin at their start point; quest-location-data-pipeline.md
+("October 2026, after the NPC IDs") compares the two.
 Forever's pins aren't touched: the importer gives them their IDs from CMaNGOS.
 
 **Filled from pins of the same name (October 2026).** 28 rows had a pin on the same map with the
@@ -306,5 +309,8 @@ inside an instance either; this covers them.) Then switch back to English.
   Exile's Reach's in game.
 - 2026-10-07: 2,259 of the 2,622 pins with a name and no ID given one from TrinityCore's quest
   starters by the new `tools/Fill-PinNpcIds.ps1`, sweep step 6c, on `data/pin-npc-ids-from-tdb`
-  (see "IDs from TrinityCore's quest starters" under phase 2). Next: the pin pipeline's 57 merges,
-  and the 14 other-name pins through the decisions file.
+  (see "IDs from TrinityCore's quest starters" under phase 2). The pipeline rerun the IDs call for
+  follows on `data/pin-merges-after-ids`, with the grouping rule tightened from 3 points to 1.5 at
+  the user's choice, so that 250 quests get a pin at their client start point instead of 57 pins
+  merging (quest-location-data-pipeline.md, "October 2026, after the NPC IDs"). Next: the 14
+  other-name pins through the decisions file.

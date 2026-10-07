@@ -360,7 +360,10 @@ nearest existing pin. Treat that as a finding to review. When you're ready to ta
 run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` and rebuilds
 `QuestCompletist\qcPinDB.lua`.
 
-- An NPC's quests share a pin only where they start within 3 map points of each other.
+- An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
+  October 2026, when the user chose that a quest with a start point in the client's data keeps it
+  rather than joining its giver's pin up to 3 points away; see the pipeline plan, "October 2026,
+  after the NPC IDs").
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
   Notes that find no pin are listed.
 - Pins are written in a fixed order.
@@ -375,8 +378,9 @@ the rebuild merged into another matches no pin, and stops that tool. Point the r
 took its quests, or delete it if that pin has a row of its own or already has the row's NewId.
 
 It works the other way too. When `Apply-PinNpcIds.ps1` or `Fill-PinNpcIds.ps1` gives a pin the ID
-of another pin of that NPC within 3 points, the next rebuild merges the two. So after setting IDs,
-rerun the pipeline: apply what it merges, then check the rows again.
+of another pin of that NPC within 1.5 points, the next rebuild merges the two, and a quest of a
+now-known NPC that the client starts 1.5 points or more from its pin gets a pin of its own there.
+So after setting IDs, rerun the pipeline: apply what it changes, then check the rows again.
 
 `Fill-PinNpcIds.ps1` (step 6c) gives a pin that has a name and no NPC ID the ID of the creature of
 exactly that name that starts one of its quests in TrinityCore's database (step 5 under "Before a
