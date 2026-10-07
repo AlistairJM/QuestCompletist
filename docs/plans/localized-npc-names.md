@@ -314,3 +314,10 @@ inside an instance either; this covers them.) Then switch back to English.
   the user's choice, so that 250 quests get a pin at their client start point instead of 57 pins
   merging (quest-location-data-pipeline.md, "October 2026, after the NPC IDs"). Next: the 14
   other-name pins through the decisions file.
+- 2026-10-07: the client's own quest givers, from `CollectableSourceQuestSparse` (the one client
+  table that names one; client-tables-review.md), through the new `tools/Apply-ClientQuestGivers.ps1`,
+  sweep step 6c, on `data/client-quest-givers` (#208): 94 nameless pins got the client's giver
+  and its TrinityCore name, where a spawn stood within 1.5 points; 76 pins whose ID isn't the
+  client's giver are listed in `tools\client-giver-report.txt` for review, 47 of them within 1.5
+  points of a spawn, so the same spot under another ID of the character. Next: those 76 through
+  the decisions file.

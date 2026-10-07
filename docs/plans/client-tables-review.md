@@ -217,3 +217,9 @@ that; it isn't a table question.
   Blizzard's capitalisation. Left as they are, as judgement calls for the user: "Time Rift" (the
   game says "Time Rifts"), "Weekly Events" ("Weekly Event") and "9.1 Campaign", whose key can't
   be a Lua name.
+- 2026-10-07: the client's quest givers (recommendation 1), through a new tool,
+  `Apply-ClientQuestGivers.ps1` (#208), step 6c ahead of the TrinityCore fill: 94 nameless pins
+  got the client's giver and its name, 98 pins were added and 10 joined for the 103 quests with no
+  pin, the 76 pins naming another NPC are listed for review, and the pipeline rerun merged 27
+  pins of newly identified NPCs (quest-location-data-pipeline.md, "October 2026, the client's own
+  quest givers"). 14,994 pins. All four chosen recommendations are done.

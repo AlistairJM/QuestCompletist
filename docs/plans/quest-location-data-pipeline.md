@@ -174,7 +174,41 @@ are left alone as before. The reachability summary differs by one: 92 pins hidde
 character by the identity filters instead of 91, as Magister Umbric's "no data" quest 83561 in
 Eversong Woods, hidden before as well, now has a pin of its own.
 
-## Possible future extensions (explicitly not this plan)
+## October 2026, the client's own quest givers
+
+The client tables review ([client-tables-review.md](client-tables-review.md), 2026-10-07) found
+the one client table that names a quest giver: `CollectableSourceQuestSparse`, which, for every
+quest whose reward has an appearance the collections can show, holds the giver's creature ID and
+each of its spawns (an instance and a world position). On build 12.1.0.69933 that's 2,074 quests,
+2,070 of them ours. The new `tools/Apply-ClientQuestGivers.ps1` (step 6c, before the TrinityCore
+fill) applies it to the pins, with the pipeline's conversion of a spawn to a map's percentages:
+
+- **1,758 quests have a pin whose NPC ID is the client's giver.** For 262 of those pins no spawn
+  stands within 3 points: the giver stands in several places, and the pin is at another of them.
+- **94 pins with no NPC ID and no name**, the pipeline's "no recoverable identity" pins, got the
+  client's giver and its name from TrinityCore's dump, where a spawn stood within 1.5 points of
+  the pin, 0 points for most: Gazlowe, Eitrigg, Colonel Troteman, Dispatch Commander Ruag. Two
+  named pins whose names carry a "<Remote>" suffix (Commander Mar'alith, Daria L'Rayne) were left
+  for a look by hand, as the database names the giver without it; 37 ID-less pins have no spawn
+  within 1.5 points.
+- **98 pins added and 10 existing pins of the giver joined** for the 103 quests that had no pin
+  and no start point in the client's data: Veren Tallstrider's "Gathering Leather", Caitrin
+  Ironkettle's Pilgrim's Bounty quests, Prospector Stonehewer's "Hero of the Stormpike" on both
+  Alterac Valley maps. A giver's spawns within 1.5 points share a pin, so 18 quests sit on more
+  than one new pin, at each place their giver stands. Two spawns are on instances no map holds.
+- **76 pins name another NPC than the client's giver.** They're listed in
+  `tools\client-giver-report.txt` with the nearest spawn's distance: 47 within 1.5 points, the same
+  spot under another ID of the character (Locus-Keeper Mnemis 167034 for our 167035), 28
+  further, 1 on another map. They stay as they are until reviewed through the decisions file.
+- **The pipeline rerun** the runbook asks for after an ID change merged 27 pins: a newly identified
+  NPC's two pins within 1.5 points (Gazlowe's two at one spot in Northern Barrens, Gazrog's 0.03
+  apart), and 4 of those merges moved quests by up to 0.9 points (Archmage Khadgar in Draenor's
+  Nagrand). Every one of the 24,412 quest placements survived. `Remove-DuplicatePinQuests.ps1`
+  found the usual re-split of "A Traitor's Death" (50454) and took it off the farther Marshal
+  Everit Reade pin again; 16 pairs are left alone, the 14 before plus two new pins of a giver with
+  two IDs (Prospector Stonehewer). `Apply-PinNpcIds.ps1 -WhatIf` matches every row.
+- **Result:** 14,994 pins (14,923 before), 11,638 of them with an NPC ID and 2,993 with neither
+  ID nor name (3,087 before). The reachability report differs only in the pin count.
 
 - **Forever**: checked in October 2026 on beta build `1.60.1.70205` (wago.tools product `wow_classic_beta`). Its `QuestPOIBlob` has only 54 rows (23 start points), so this pipeline can't build Forever's pins. The plan for a Forever version, with other sources, is [forever.md](forever.md).
 - **Classic Era / Anniversary / MoP Progression**: unlike Blizzard's REST API (which has zero quest data for any Classic flavor), wago.tools archives builds for these too. If their client files contain the same DB2 tables, this could be a real path to Classic support that we previously ruled out. Separate investigation, separate plan.
