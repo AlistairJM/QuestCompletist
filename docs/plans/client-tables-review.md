@@ -192,9 +192,14 @@ that; it isn't a table question.
 
 ## Decisions
 
-None yet: the user chooses from the recommendations.
+1. **Recommendations 1 to 4 go ahead** (2026-10-07, the user), one pull request each, in the
+   order 4, 3, 2, 1. Campaigns (6) and the task quests' columns (5) wait.
 
 ## Status
 
 - 2026-10-07: review done, for retail 12.1.0.69933 and Forever 1.60.1.70245; nothing changed in
   data or tools. maintenance.md's step 2b points here.
+- 2026-10-07: the holiday check (recommendation 4) is part of step 2b, in
+  `Compare-ClientTables.ps1` (#205): for each entry in `qcHolidays`, the Holidays rows of its name
+  in each build given, through HolidayNames, against the IDs it lists. On the same builds, 15 of
+  the 17 holidays match and the two Forever events have no row, as expected.

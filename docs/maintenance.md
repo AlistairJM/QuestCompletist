@@ -136,9 +136,12 @@ then every tool refuses to save.
    names flagged), and compares the column names of every table the tools read with the cached
    copy in `tools\`. A column change exits with 1: check the tool that reads that table, and the
    plan docs, before the sweep goes on. A new table or column that could serve the addon is a
-   finding to plan, not just to note. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104
-   tables and Forever 1.60.1.70245 had 612, with no column changes in the tables read. The
-   first systematic review of every table (2026-10-07) is in
+   finding to plan, not just to note. It also compares `qcHolidays` (see [Holidays](#holidays))
+   with both games' calendar tables: an ID the client has under one of our holidays' names that
+   `qcHolidays` lacks exits with 1 too, and goes into `qcHolidays` before the sweep goes on.
+   Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
+   612, with no column changes in the tables read, and every holiday's IDs matched. The first
+   systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
    were chosen as each need came up.
 3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
@@ -666,15 +669,18 @@ database to the IDs of the game's Holidays table that its calendar event carries
 
 `/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
 running, each one's next dates, and any calendar holiday that isn't tied to a quest. A holiday there
-that should match one of ours, under a new ID, means an entry in `qcHolidays` needs that ID adding. A
-new holiday with quests needs a new flag, an entry, and its quests' `holiday` set in
-`data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table from
-Holidays IDs to flags, so add the ID there too and rerun step 10.
+that should match one of ours, under a new ID, means an entry in `qcHolidays` needs that ID adding.
+Step 2b of a sweep finds the same offline, from the client's Holidays and HolidayNames tables: for
+each entry in `qcHolidays`, every ID the client has under that name in either game, against the
+IDs the entry lists. A new holiday with quests needs a new flag, an entry, and its quests' `holiday`
+set in `data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table
+from Holidays IDs to flags, so add the ID there too and rerun step 10.
 
 Some events aren't on the calendar at all. WoW: Forever's Scourge Invasion and Ahn'Qiraj War Effort
 have entries in `qcHolidays` with no IDs, so the seasonal filter always hides their quests on the map;
-the quest list still has them. `/qc holidays` says they're not on the calendar. If Blizzard ever adds
-one to the Holidays table, it shows up there as a calendar holiday not tied to a quest: add its ID.
+the quest list still has them. `/qc holidays` says they're not on the calendar, and step 2b that no
+row of their names exists. If Blizzard ever adds one to the Holidays table, step 2b reports its ID,
+and in game it shows up as a calendar holiday not tied to a quest: add its ID.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
