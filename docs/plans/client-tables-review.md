@@ -252,3 +252,11 @@ that; it isn't a table question.
     second run of both tools changes nothing; the table check found one new finding, a Horde
     quest ("Assault on Skold-Ashil") whose client list names the Alliance's "To Skold-Ashil",
     kept like the two before it.
+- 2026-10-07: the pin review (the 76 pins naming another NPC, the 37 without an ID, and four odd
+  ones), in quest-location-data-pipeline.md, "October 2026, the pin review", and
+  `Apply-ClientQuestGivers.ps1` (step 6c), which now gives a quest to the giver standing at the
+  pin on the client's table or TrinityCore's word (123 quests moved, 7 pins named, 10 emptied pins
+  gone; 15,054 pins) and reads `docs/plans/pin-giver-decisions.csv` for the 48 cases that stay.
+  It found that the client's quest-giver points are mostly turn-in points: of 2,622 quests whose
+  TrinityCore starters and enders differ, the point is at an ender for 1,354 and at a starter for
+  31. Moving those pins to the starters is a separate decision.
