@@ -10,9 +10,9 @@ changes with it. Each candidate is weighed against what the sweep already gets o
 ([maintenance.md](../maintenance.md), "Where the data comes from"): an API earns a place only where
 it gives something those sources don't, or gives it live for the player's own character.
 
-The client's own data tables get a review of their own, `client-tables-review.md`, written alongside
-this one. Where a table covers the same ground as a function, the table is named here and the
-details left to that review.
+The client's own data tables get a review of their own, `client-tables-review.md` (#203), written
+alongside this one. Where a table covers the same ground as a function, the table is named here and
+the details left to that review.
 
 ## What was checked (7 October 2026)
 
@@ -336,8 +336,9 @@ Forever adds `ShouldDisplaySurname`: no.
 the player's language, isWarCampaign), `GetChapterIDs`, `GetCampaignChapterInfo` (name,
 description, rewardQuestID), `GetCurrentChapterID`, `GetState`, `GetFailureReason`,
 `GetAvailableCampaigns`, `SortAsNormalQuest`. A campaign is the grouping above storylines. Use:
-probe, the campaign of every quest (the client's campaign tables are the offline side, for the
-client-tables review); addon, "Campaign: X" in the player's language. Retail only in practice.
+probe, the campaign of every quest (the client's campaign tables are the offline side: the
+client-tables review counts 145 campaigns holding 740 of our 1,474 storylines); addon, "Campaign: X"
+in the player's language. Retail only in practice.
 
 ### C_ContentTracking (18 functions, 5 events, both games)
 
@@ -514,7 +515,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Account-wide quests | nothing | `IsAccountQuest` | probe → data → addon |
 | Expansion | hand menus | `GetQuestExpansion` if it works | check |
 | Zone level ranges | nothing | `C_Map.GetMapLevels` | addon |
-| Starting item | not shipped (TrinityCore, CMaNGOS and Forever's cache have it; `QuestV2CliTask.StartItem` for the client-tables review) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
+| Starting item | not shipped (TrinityCore, CMaNGOS and Forever's cache have it; the client's `QuestV2CliTask` has it for 198 task quests only, per the client-tables review) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
 | Waypoints | TomTom | `C_Map.SetUserWaypoint` and `C_SuperTrack` | addon |
 | Treasures and rares | not planned | `C_VignetteInfo` rewardQuestID | later |
 
@@ -534,7 +535,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 10 | **Conversion check:** run the Forever importer's spawns through `C_Map.GetMapPosFromWorldPos` without an override, and retail's pins through `GetWorldPosFromMapPos` and back, and compare with the tools' results | probe, tool | the client's own map choice for overlapping frames (the importer's rules reach 98.2%); a check of the pipeline's formula | small to medium: the probe needs the world coordinates in its lists | none |
 | 11 | **An API check every sweep:** a tool that downloads both branches' documentation for the current builds, lists the functions and events of the namespaces the addon uses, and reports what was added or removed since the saved list, as `Compare-ClientTables.ps1` does for tables (step 2b). The Lua loader written for this review is its core | tool | no silent loss of a function the addon calls at a patch; new functions noticed | small | none |
 | 12 | **Zone level ranges** from `C_Map.GetMapLevels` on zone categories | addon | "Westfall (10–15)" in menus or tooltips | small | check Forever answers |
-| 13 | **Starting items:** a data field from TrinityCore, CMaNGOS, Forever's cache or `QuestV2CliTask.StartItem`, shown as "Starts from: <item>" through `C_Item.GetItemNameByID` | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
+| 13 | **Starting items:** a data field from TrinityCore, CMaNGOS and Forever's cache (the recorder adds what it sees), shown as "Starts from: <item>" through `C_Item.GetItemNameByID` | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
 | 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | later |
 | 15 | **Treasures and rares** from `C_VignetteInfo` | recorder, addon | names and places for hidden tracking quests | medium | a new feature, not planned |
 
@@ -573,9 +574,11 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 ## Out of scope
 
 - Changing the addon or any tool: this review only recommends.
-- The client's data tables: `client-tables-review.md`. The columns this review leans on there are
-  `QuestV2CliTask`'s StartItem, BreadCrumbID and reputation and skill filters, `PlayerCondition`,
-  `ParagonReputation`, `AreaPOI`, the campaign tables and `UiMap`'s content tuning.
+- The client's data tables: `client-tables-review.md` (#203). The tables this review points at
+  there, with what that review found: `QuestV2CliTask` (task quests only; a start item for 198,
+  breadcrumbs for 11 unrelated pairs, skill filters), `PlayerCondition`, `ParagonReputation` (79
+  rows), `AreaPOI` (linked to quests only through `QuestHub`), the campaign tables and `UiMap`'s
+  content tuning.
 - `C_UnitAuras`, PvP, housing, professions' crafting UI, and everything else the clients document
   that has no bearing on quests, givers, maps, holidays, requirements, storylines, reputation or
   text.
