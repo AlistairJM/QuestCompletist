@@ -586,8 +586,122 @@ Objectives" entry (the `questPOI` setting), and it was on during the run, with e
 of Forever's filter: Show Quest Levels, Quest Difficulty Color, Instance Entrances, Low-Level
 Quests and Tracked Items. So the empty offer lists stand. Forever's filter has no "Account
 Completed Quests" entry, which retail's has (recommendation 8). The probe now records the
-`questPOI` setting and the minimap's quest POI tracking with each run. Still to do: the retail
-run, which compares the game's offers with our pins.
+`questPOI` setting and the minimap's quest POI tracking with each run. The retail run,
+which compares the game's offers with our pins, follows.
+
+## Map-offers probe: retail run (7 October 2026, build 12.1.0.69933)
+
+Run by the user with `/qcprobe maps 1` on an Alliance Human mage, level 90, with the probe folder
+copied into retail's AddOns folder. The quest points of interest setting, the minimap's tracking of
+quest points and the tracking of trivial and account-completed quests were all on. The saved
+variables are `tools/retail_probe_69933/QCForeverProbe.lua` and the reader's rows
+`tools/map_offers_retail_69933.tsv` (neither in git). The reader:
+`tools/Report-MapOffers.lua tools/retail_probe_69933/QCForeverProbe.lua QuestCompletist`.
+
+- **The run.** All 1,961 maps in 301 seconds at a 1-second wait; the runbook had guessed up to an
+  hour. 1,913 maps answered in 41 to 201 ms, 109 on average. The 48 that didn't are the continents, the world
+  map and the cosmic map, which Blizzard's own map never asks for either; their task quests and
+  points of interest were listed all the same.
+- **What retail serves,** as the baseline for the next run (offers, log quests and the account
+  flags depend on the character):
+
+  | What | Rows | Distinct |
+  |---|---|---|
+  | Quest offers | 439, on 88 maps | 246 quests |
+  | Forced-visible quests | 77 | 17 |
+  | Task quests | 2,016 | 366 |
+  | Quests in the log | 41 | 9 |
+  | Points of interest | 459 | 323 |
+  | Dungeon entrances, with their journal instance | 290 | 190 |
+  | Quest hubs | 14, all on Khaz Algar and Midnight maps | |
+  | Events on maps | 63 | |
+  | Events schedule | 4 ongoing, 121 scheduled | |
+  | Maps with a level range | 182 | |
+  | Maps allowing a user waypoint | 657 | |
+
+  Forever's beta served none of the first three, no entrances, hubs or events, and 16 points of
+  interest.
+- **The offers say what the character has done, not what it can take.** 77 of the 246 carry the
+  account-completed flag (another character did them) and 126 the hidden flag, as the tracking
+  settings allow. The list alone is not an availability check.
+- **Offers against our pins.** All 439 rows are quests in the addon's data. 254 start on the map
+  that lists them, and 222 of those have a pin there: 151 within 1.5 map points of the game's
+  position, 9 within 3, 31 within 10, 23 within 25 and 8 further. 20 have pins only on another
+  map and 12 (10 quests) have none. The other 185 rows are storylines listed on a map other than
+  the one they start on.
+- **Why the pins differ: they sit where the quest ends.** The 50 quests more than 10 points off, or
+  with their pin on another map, were traced with TrinityCore's dump, the client's tables and five
+  Wowhead pages, and each claim was re-derived by a second reader.
+  - The client's `QuestPOIBlob` holds two points that matter here: `ObjectiveIndex 32` is where
+    the quest starts and `-1` is where it is handed in. All 439 offers lie within 10 yards of the
+    same quest's point 32. The pipeline reads only point -1 and has called it the giver's pin.
+  - TrinityCore's spawns agree. Of 1,421 quests whose starter and ender differ and have spawns on
+    the point's map, point -1 is nearer the ender in 1,275, nearer the starter in 13 and within 20
+    yards of both in 133. The offer is nearer the starter in 14 of the 15 quests where the two
+    differ, and nearer the ender in none.
+  - The pin review (PR #217, "October 2026, the pin review" in the pipeline plan) reached the same
+    from the starters' side: of 2,622 quests whose TrinityCore starters and enders differ, point -1
+    stands at an ender for 1,354 and at a starter for 31. What it lacked is where the start is,
+    which the same table gives: point 32.
+  - Wowhead agrees on three Midnight quests. "O Lonely Star" (92603) starts with Orin Straylight at
+    39.8, 84.2 in Slayer's Rise and ends with another Orin Straylight, an NPC of a different ID, at
+    39.4, 38; our pin is at the end, 46 points from where the game offers the quest. "The
+    Conquered Heroes" (91145) and "Be Grudge You" (90615) are the same.
+  - The pins keep the giver's name and ID but sit at the turn-in. Of the 50: 10 old-world quests
+    have TrinityCore spawns at both ends, 3 are confirmed on Wowhead, 24 have an earlier pin of
+    ours on the offer as well as the client's two points, 6 rest on the client's two points alone,
+    1 (12507) has the ender's spawn at the pin and no known giver, and 6 are only another map ID
+    for the same world point (433, 12049, 24824, 25084, 82706, 40029) and need nothing.
+  - The pins were right more often before the rebuilds. Of 172 quests with a pin now and one in the
+    snapshot of 20 September on the offer's map, the snapshot's pin is within 1.5 points of the
+    offer for 159 and today's for 107: 55 quests with the right pin were moved to the turn-in.
+  - It is not a few quests. Of 5,202 pairs of a quest and a map whose start and turn-in points are
+    more than 1.5 map points apart and that have a pin on the map, 4,886 to 5,081 (by the
+    tolerance used) have the pin only at the turn-in, and 1 to 4 only at the start. Where the two
+    points coincide, which is most quests as giver and turn-in are one NPC, nothing is wrong.
+  - The same reading runs through the tools and two plans. `Build-QuestLocationData.ps1` (the
+    filter on index -1), `Get-WagoQuestRequirements.ps1`, `Find-UnavailableQuestCandidates.ps1`
+    and, for Forever's start points, `Import-ForeverData.ps1` (Forever's table has 23 index -1
+    blobs and 23 index 32 ones). The pipeline plan called -1
+    the giver's pin until the pin review corrected it. The Stormwind Harbor entry in
+    `data-cleanup.md`, whose decision (the user's) rested on those points being start points, now
+    carries a correction and needs a second look:
+    for "A Royal Summons" (38035) the harbor point is the turn-in, with TrinityCore's ender Sky
+    Admiral Rogers, and the start is point 32 in Dalaran.
+- **Quests the game offers that have no pin anywhere.** 11 offered quests (44543, 38777, 38785,
+  38796, 38797, 38806, 40024, 40034, 40040, 56775, 82449) and 8 forced-visible ones (81854, 82552,
+  83048, 83079, 83538, 84423, 91937, 92364). All 19 are in the data and none is flagged
+  unavailable. 18 have a point 32 and no point -1, which is all the pipeline reads; 84423 has no
+  point. In all, 4,278 quests have a point 32, no point -1 and no pin: 4,082 task quests (1,387 of
+  them world quests) and 196 others, 192 of which convert to a map. Quest by quest:
+  - The eight Legion profession "Sample" quests (38777, 38785, 38796, 38797, 38806, 40024, 40034,
+    40040) are started by an item. Their start point, or the pin of the NPC who ends them (Mama
+    Diggs and Kuhuine Tenderstride in Dalaran), can carry them; the point of 40040 is on no map.
+  - 44543 "The Battle for Broken Shore" can join an existing pin; 56775 "Warming Up" has its point
+    on open sea, and its Horde and Alliance versions (59926, 43806) are pinless the same way;
+    82449 joins the Worldsoul weekly pins in Dornogal.
+  - The seven forced world quests stay without pins, as the addon doesn't pin world quests, and 84423
+    (a Dracthyr starter in The War Creche, filed under Hallowfall with an all-races mask) has no
+    position at all: its category and mask look wrong, which is a separate check.
+- **Task quests the data lacks.** The game lists 366 distinct task quests across the maps; 340 are
+  in the data and 26 are not. 22 of the 26 are player-facing (14 world quests, a bonus objective
+  and 7 quests an NPC starts) and 4 are hidden tracking quests, which stay out. All 26 are in the
+  client's `QuestV2` and `QuestV2CliTask` tables on 12.1.0 and 12.1.5. No step of the pipeline
+  finds quests in `QuestV2CliTask`: a quest enters only through a giver point, which task quests
+  lack, and an answer from Blizzard's web API, which world quests never get. The 340 are there from
+  the snapshot of 20 September. The whole table has 6,242 rows, 5,230 in the data and 1,012 not:
+  470 hidden trackers and 542 player-facing quests (136 world quests, 52 world events, 36 bonus
+  objectives and others), of which this character's maps showed 22. About 7 hidden trackers slip
+  past the tracking flag (QuestInfo 265, or "Tracking Quest" in the title). 12.1.5 adds 125 quest
+  IDs, none of them among the 26: 25 have a giver point, 8 only objective points and 92 none.
+- **Dungeon entrances come with their journal instance,** so step 8's audit of dungeons against
+  the Dungeon Journal has a second source for retail (recommendation 14).
+- **To check:** the events schedule lists Midnight's world events (Saltheril's Soiree, Stormarion
+  Assault, Legends of the Haranir, Prey, and scheduled Void Assaults, Abundance and Curse Surge).
+  Whether any quest the addon shows as always available is gated by them is not known.
+
+Nothing in the addon or the pipeline changed with these results. Decisions 8 and 9 below come from
+them.
 
 ## Decisions to take
 
@@ -608,6 +722,22 @@ run, which compares the game's offers with our pins.
 6. **The tracking toggles** (8). **Recommendation:** leave the filters as they are and note the
    toggles in the settings grid plan; the addon's defaults were chosen deliberately (settings-grid.md).
 7. **Items 9 to 15:** after the probes report, one PR each, in the order above, as time allows.
+8. **Pin start points** (the retail run, and PR #217's pin review, which found the same turn-in
+   points from the starters' side and left those pins where the client puts them). The pipeline
+   takes the client's turn-in point for the giver's. **Recommendation:** two pull requests. First fill the gaps: a quest with a start point
+   (index 32) and no turn-in point gets a pin at the start point, which moves no existing pin (196
+   quests, 192 with a map position, including 10 of the 19 above; 82449 by hand), and the
+   scripts' comments, plans and Forever's importer say what the points are. Then take the 50
+   quests of the shortlist (the 44 that aren't only another map ID): move each to its start point (the client's own
+   point 32, so no spawn lookup is needed; #217 suggests the starters' spawns, and the two should
+   agree), look at them in game, and decide from that whether the same rule applies to the 5,000 or so
+   other pairs. The user's earlier decision that a pin matching the client's data stays is the one
+   to revisit, as those pins match the turn-in point, not the start.
+9. **Task quests in the database** (542 player-facing rows in `QuestV2CliTask`, 22 of them seen on
+   one character's maps). **Recommendation:** yes, as an inflow step in the sweep that takes the
+   title, level, type and map from the client's table, with no web API, skips the hidden trackers
+   (the flag and QuestInfo 265) and gives no pins, as the 1,425 world quests already in the data
+   have none. The database would grow by about 535 quests.
 
 ## Decisions (agreed 7 October 2026)
 
@@ -675,6 +805,12 @@ run, which compares the game's offers with our pins.
   function, a removed one, one with changed returns, an added event, and an addon call that had
   vanished or changed shape were each reported, the last two with exit code 1. Next: the retail
   map run and the remaining decisions.
+- 2026-10-07: the retail run (build 12.1.0.69933; "Map-offers probe: retail run"): 1,961 maps in
+  five minutes, 246 distinct offers, 366 task quests, 459 points of interest and 290 dungeon
+  entrances, as the baseline for later runs. It found that the client's `ObjectiveIndex -1` is a
+  quest's turn-in and 32 its start, which the pipeline has had the other way round; 19 quests the
+  game offers have no pin; and the pipeline never takes in task quests. Nothing changed in the
+  addon or tools; decisions 8 and 9 follow.
 - 2026-10-07: the user's rule that a feature or check built for one game goes to both unless a
   game can't support it, and the audit of where retail and Forever differ, are in
   `game-parity.md`; the API check now names the functions one game documents and the other
