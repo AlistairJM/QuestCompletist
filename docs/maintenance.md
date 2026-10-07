@@ -779,10 +779,12 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    as instances hide names. `/qcprobe status` says what's been gathered.
 4b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
-   second. Run it once on a character of each experience preset, Classic and Modern, as the preset
-   may change what the game offers. It works on retail too (copy the folder into `_retail_`'s
-   AddOns; retail's 2,000 maps take up to an hour at a 1-second wait), to compare the game's
-   offers with our pins.
+   second. One run is enough. The results note the experience preset chosen once at Forever's login
+   screen, Classic or Enhanced (Blizzard's code calls the second Modern): a starting-settings
+   choice, whose Classic option turns the quest points of interest on the map off. If a run lists
+   no offers at all, turn that setting on and run again before concluding the server sends none.
+   It works on retail too (copy the folder into `_retail_`'s AddOns; retail's 2,000 maps take up
+   to an hour at a 1-second wait), to compare the game's offers with our pins.
 5. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
