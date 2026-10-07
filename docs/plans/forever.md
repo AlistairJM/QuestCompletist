@@ -798,4 +798,6 @@ these level 60 quests.
   (`game-api-review.md`, recommendation 3; maintenance.md, step 4b under "In the game"). It answers
   two open questions once run on the beta: whether Forever's server sends offer positions for the
   new zones at all, and whether the Scourge Invasion, the War Effort or the fishing contest show
-  up as events. Run pending, on a Classic-preset and a Modern-preset character.
+  up as events. Run pending. (The results note the experience preset chosen at Forever's login
+  screen, Classic or Enhanced, a settings preset whose Classic option turns quest points of
+  interest off; it isn't a kind of character.)
