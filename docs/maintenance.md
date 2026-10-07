@@ -344,8 +344,12 @@ Then run `Add-ZoneTableMaps.ps1 -WhatIf`, then without `-WhatIf`. It adds the ma
 quest list through it when you enter a zone, and `Place-UncategorisedQuests.ps1` files quests by it.
 Nothing else maintains it, so new dungeons and new versions of a zone's map drift out of it. A map
 is added when a category is named by it, when it has the same name and parent as a map already
-listed (a dungeon's other floors), or when its name is exactly that of one category with no map
-yet. It never adds continent-level maps, and never changes an existing entry. Run
+listed (a dungeon's other floors), when it's in the client's map group (`UiMapGroupMember`, the
+floor selector's list, downloaded for `-Build`) of a map already listed (floors with names of their
+own, such as Black Temple's Karabor Sewers), or when its name is exactly that of one category with
+no map yet. It never adds continent-level maps, never gives a map to a category with no quests,
+and never changes an existing entry. A floor it leaves out because its name is another category's
+(The Stockade, in Stormwind City's group) is listed, for adding by hand if that's wrong. Run
 `Build-CategoryUiMapIDs.ps1` again afterwards, without `-Refresh`, so it sees the new maps.
 
 Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
