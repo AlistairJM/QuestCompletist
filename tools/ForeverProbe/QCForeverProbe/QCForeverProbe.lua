@@ -465,6 +465,8 @@ local function startMaps(waitSeconds)
 		trackingAccountDone = plain(try(C_Minimap and C_Minimap.IsTrackingAccountCompletedQuests))}
 	local filtered = try(function() return C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.QuestPOIs) end)
 	if filtered ~= nil then r.extra.trackingQuestPois = not filtered end
+	local questPoi = try(function() return C_CVar.GetCVarBool("questPOI") end)
+	if questPoi ~= nil then r.extra.questPoiSetting = questPoi end
 	r.send = function(mapID)
 		r.inFlight[mapID] = debugprofilestop()
 		r.inFlightCount = r.inFlightCount + 1
