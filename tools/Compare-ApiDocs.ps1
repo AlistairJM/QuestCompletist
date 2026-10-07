@@ -18,10 +18,11 @@ earlier list exits with 1: check the code before the sweep goes on. New function
 look, not a failure.
 
 A function the addon calls that one game documents and the other doesn't (C_SkillInfo on retail)
-is listed at the end: the code guards each, and the feature behind it is that game's alone for
-now (docs\plans\game-parity.md). When such a function turns up in a game's documentation that
-lacked it in the earlier list, that exits with 1 too: the game has gained it, and the feature is
-to be shared.
+is listed at the end: the code guards each, with a fallback where it has one (the skill check
+reads the character's profession list without C_SkillInfo), and what is still that game's alone is
+in docs\plans\game-parity.md. When such a function turns up in a game's documentation that
+lacked it in the earlier list, that exits with 1 too: the game has gained it, so check that the
+code reads it as its fallback did, and share any feature that was gated on it.
 
   .\Compare-ApiDocs.ps1
   .\Compare-ApiDocs.ps1 -Branches live
@@ -133,7 +134,7 @@ function Compare-Branch([string]$branch, [string[]]$calls) {
             $present++
             $script:documented[$branch] += $call
             if ($old -and -not $old.Functions.ContainsKey($call)) {
-                Write-Output "  the addon calls ${call}: not documented in $($earlier.Name), documented now. This game has gained it: share the feature the code gates on it (docs\plans\game-parity.md)."
+                Write-Output "  the addon calls ${call}: not documented in $($earlier.Name), documented now. This game has gained it: check that the code reads it as its fallback did, and share any feature gated on it (docs\plans\game-parity.md)."
                 $broken++
             } elseif ($old -and $old.Functions[$call].Shape -ne $new.Functions[$call].Shape) {
                 Write-Output "  the addon calls ${call}: its shape changed, was $($old.Functions[$call].Shape), now $($new.Functions[$call].Shape)"
@@ -160,7 +161,7 @@ if ($Branches.Count -gt 1) {
         $has = @($Branches | Where-Object { $script:documented[$_] -contains $call })
         if ($has.Count -gt 0 -and $has.Count -lt $Branches.Count) { $only += "$call ($($has -join ', ') only)" }
     }
-    Write-Output ("Functions the addon calls that one game documents and another doesn't: " + $(if ($only) { $only -join '; ' } else { 'none' }) + ". The code guards each, and the game without it gains the feature when this changes (docs\plans\game-parity.md).")
+    Write-Output ("Functions the addon calls that one game documents and another doesn't: " + $(if ($only) { $only -join '; ' } else { 'none' }) + ". The code guards each, with a fallback where it has one; when a game gains one, check the fallback against it and share any feature gated on it (docs\plans\game-parity.md).")
 }
 if ($script:brokenTotal -gt 0) {
     Write-Output "$script:brokenTotal function(s) the addon calls have gone, changed, or newly appeared on a game that lacked them: check the code before the sweep goes on."

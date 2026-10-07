@@ -753,12 +753,21 @@ local function qcFactionLevel(factionId)
 end
 
 -- The character's skill in a profession, bonuses included, as its skill list shows it: 0 when it
--- hasn't learned the profession, nil when the client can't say. Only WoW: Forever's client can.
+-- hasn't learned the profession, nil when the client can't say. A client with C_SkillInfo (WoW:
+-- Forever) answers for any skill line; the others answer for the professions in qcProfessionBits,
+-- from the character's profession list.
 local function qcSkillRank(skillLine)
-	if not (C_SkillInfo and C_SkillInfo.GetSkillLineInfoByID) then return nil end
-	local info = C_SkillInfo.GetSkillLineInfoByID(skillLine)
-	if not info then return 0 end
-	return (info.rank or 0) + (info.modifier or 0)
+	if C_SkillInfo and C_SkillInfo.GetSkillLineInfoByID then
+		local info = C_SkillInfo.GetSkillLineInfoByID(skillLine)
+		if not info then return 0 end
+		return (info.rank or 0) + (info.modifier or 0)
+	end
+	if not qcProfessionBits[skillLine] then return nil end
+	for _, index in pairs({GetProfessions()}) do
+		local _, _, rank, _, _, _, line, modifier = GetProfessionInfo(index)
+		if line == skillLine then return (rank or 0) + (modifier or 0) end
+	end
+	return 0
 end
 
 -- Whether the character has the level, the quests to do first, the renown or rank, and the skill in

@@ -159,7 +159,8 @@ then every tool refuses to save.
    it uses, is still documented with the same arguments and returns: one gone or changed exits
    with 1, so check the code before the sweep goes on. A function one game's documentation lacks
    and the other's has is only reported: `C_SkillInfo.GetSkillLineInfoByID` is Forever's, and the
-   code guards it. The documentation leaves out the old globals (`GetQuestID`,
+   code falls back to the character's profession list without it. The documentation leaves out the
+   old globals (`GetQuestID`,
    `GetAvailableQuestInfo` and their kind), which it can't check. Baseline on 2026-10-07: live
    12.1.0.69933 had 5,539 functions and 1,782 events, Forever 1.60.1.70245 5,785 and 1,804, and
    the addon's 45 functions were all documented on Forever and 44 on live. The first systematic
@@ -167,7 +168,8 @@ then every tool refuses to save.
    new function or event that could serve the addon is a finding to plan, as a new table is.
    It ends with the functions the addon calls that one game documents and the other doesn't
    (`C_SkillInfo.GetSkillLineInfoByID`, Forever's), and exits with 1 when one of those turns up on
-   the game that lacked it: that game has gained it, and the feature behind it is to be shared.
+   the game that lacked it: that game has gained it, so check that the code reads it as its
+   fallback did, and share any feature gated on it.
    Which checks each game has, and why the rest differ, is
    [plans/game-parity.md](plans/game-parity.md): a check built for one game goes to both unless a
    game can't support it.

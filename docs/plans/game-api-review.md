@@ -407,7 +407,9 @@ become one; and check whether the Modern preset changes what the quest UI shows.
 
 ### C_SkillInfo (none on live, 8 on Forever; 1 event)
 
-`GetSkillLineInfoByID` is used for the profession skill requirements. `GetNumSkillLines`,
+`GetSkillLineInfoByID` is used for the profession skill requirements, with a fallback through
+`GetProfessions` and `GetProfessionInfo` on a client without it (docs/plans/game-parity.md).
+`GetNumSkillLines`,
 `GetSkillLineInfo(index)` (the whole skill list as `SkillLineAttributes`), `AbandonSkill` and the
 header and selection functions: no. Event SKILL_LINES_CHANGED: addon, to refresh skill-gated pins
 when a skill goes up.
