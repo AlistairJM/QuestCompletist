@@ -111,7 +111,7 @@ on 7 October 2026.
 | QuestSort | 199 / 39 | The quest log's headings, in every language | Forever's menu already takes its headings from it (step 10). On retail, 32 categories with quests are still named by our own text; 27 match a heading exactly (Alliance and Horde War Campaign, Garrison Campaign and Garrison Support, Heritage, Tournament, Timerunning, The Harbinger, Warbands and the rest), 2 nearly (Time Rift and Time Rifts, Weekly Events and Weekly Event), and 3 don't (Legion Uncategorized, Mac'Aree, Warfront Contribution) | **Use:** their translations, as Forever's, since no runtime function names a heading |
 | UiMapGroupMember (with UiMapGroup) | 836 / – | The floors of each multi-floor map, with their names | 9 groups are partly in the zone table and 28 of their floors aren't: Black Temple's 7, Dawn of the Infinite's 8, Firelands' 2, Mardum's 2, the Exodar's 3, the Stockade, Greymane Manor's main floor and Tazavesh's Aggramar's Vault | **Use:** a rule for `Add-ZoneTableMaps.ps1` (step 5) |
 | Holidays, HolidayNames | 799, 160 / 22, 16 | Every calendar holiday with its name, dates and durations | Every ID in `qcHolidays` is there under its name; Hallow's End's second ID, 1405, is the kind of thing that has been found by hand in game. Forever's 22 rows include four new ones ("Call to Arms: Darkspear Islands") and still neither the Scourge Invasion nor the Ahn'Qiraj War Effort | **Use:** an offline check of `qcHolidays` in step 2b |
-| QuestV2CliTask (the columns above) | 6,242 / – | The task quests | Skill levels for 410 world quests that have no profession in our data; prerequisites for 2,114 task quests | **Maybe:** small gains on quests hidden by default |
+| QuestV2CliTask (the columns above) | 6,242 / – | The task quests | Skill levels for 410 world quests that have no profession in our data; prerequisites for 2,114 task quests | **Used:** the profession of 410 quests and prerequisites for 850, steps 1d and 2c (Status); the skill level waits for [game-parity.md](game-parity.md) |
 | Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 740 of our 1,474 storylines and 5,946 quests. The game gives a quest's campaign at runtime | **Maybe:** a feature (a campaign line in the tooltip, or campaigns in the menu), not data the addon lacks |
 | ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | Only task quests, areas and maps carry a ContentTuningID; the API gives every quest's range, and `C_Map.GetMapLevels` a map's | No |
 | AdventureMapPOI | 514 / – | Points on the Legion, Battle for Azeroth and Torghast adventure maps | 500 name a quest, 475 ours, 30 with a pin. 420 are 12.1's Prey hunts, with no position; the 25 others are placed at the zone chosen, not at a giver | No |
@@ -194,6 +194,8 @@ that; it isn't a table question.
 
 1. **Recommendations 1 to 4 go ahead** (2026-10-07, the user), one pull request each, in the
    order 4, 3, 2, 1. Campaigns (6) and the task quests' columns (5) wait.
+2. **Recommendation 5 goes ahead too** (2026-10-07, the user, though its value is small: world quests
+   are hidden by default). Campaigns (6) still wait.
 
 ## Status
 
@@ -223,3 +225,30 @@ that; it isn't a table question.
   pin, the 76 pins naming another NPC are listed for review, and the pipeline rerun merged 27
   pins of newly identified NPCs (quest-location-data-pipeline.md, "October 2026, the client's own
   quest givers"). 14,994 pins. All four chosen recommendations are done.
+- 2026-10-07: task quests' professions and prerequisites (recommendation 5):
+  - **Professions,** through a new tool, `Sync-QuestProfessions.ps1` (step 1d): 410 task quests
+    got the profession their `FiltMinSkillID` names through `SkillLine`'s parent, which their
+    quest type's profession (`QuestInfo`) confirms on all 506 quests that have both; 97 had it
+    already, and no quest of ours differs. 25 of the 410 have a pin (work orders in Suramar,
+    Zuldazar and Nazjatar), so "Hide Other Profession Quests" now hides them from characters without
+    the profession.
+  - **Prerequisites,** through a third source in `Sync-QuestPrerequisites.ps1` (step 2c): the
+    `FiltCompletedQuest` list and the `PlayerCondition` of each task quest, both required, read
+    with the logic fields the way TrinityCore reads a PlayerCondition's (bit 16+n turns the nth
+    answer round, two bits per slot say and, or or ignore; no row uses both an and and an or).
+    687 quests gained a prerequisite (345 world quests and weeklies, 187 one-time, 155 daily)
+    and 90 changed: for 75 ours stays, and for 15 the client's replaces ours (11 of them Twilight
+    Highlands quests, "Don't Bring That Here" to "Bloodeye Prisoners", where ours chained each to
+    the one before and the client gates them all on "Cult It Out"). 73 already matched. 8,306
+    quests have a prerequisite now.
+  - **The review's 2,114 was an overcount of what can be shown:** of the 3,588 quest slots the
+    client's lists fill for our task quests, 2,495 name one of 54 quests we hold no data for, hidden
+    tracking quests with no name to show, and 133 name a quest that must not be done. They are left
+    out of a list, and out of a whole choice, so 850 of the 2,748 task quests with a list end up
+    with one. The tool counts the hidden quests.
+  - The skill level (`FiltMinSkillValue`) isn't kept: it goes with retail's skill requirements,
+    recommendation 3 of [game-parity.md](game-parity.md).
+  - Checked: the data files and Lua agree; the reachability report is identical to master's; a
+    second run of both tools changes nothing; the table check found one new finding, a Horde
+    quest ("Assault on Skold-Ashil") whose client list names the Alliance's "To Skold-Ashil",
+    kept like the two before it.

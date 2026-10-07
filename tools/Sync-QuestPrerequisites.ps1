@@ -9,7 +9,21 @@ against, as decided with the user on 6 October 2026:
   - TrinityCore's previous quest (PrevQuestID), for a quest that has no prerequisite and that the
     API is silent on, when it's the step just before the quest in the quest's own Blizzard
     storyline (the client's QuestLineXQuest for -Build).
-A quest the API is silent on keeps its prerequisite.
+  - The client's own task-quest tables, as decided on 7 October 2026, for a task quest (a world
+    quest, bonus objective, calling and the like), which the API doesn't serve. QuestV2CliTask
+    names quests that must be done (FiltCompletedQuest), and its PlayerCondition (ConditionID)
+    quests the character must have turned in (PrevQuestID); both are required at once. Each is up
+    to four quests with a logic field, read as the game reads a PlayerCondition's: bit 16+n turns
+    the nth answer round (a quest that must NOT be done), and two bits each say how the next quest
+    joins the answer so far, from left to right: 1 and, 2 or, 0 not at all. Where the client's
+    list leaves us something to show, it replaces ours, except that one of ours stays when it's the
+    step just before the quest in its storyline, as with the API's list. A quest that must not be
+    done is no prerequisite. A quest we hold no data for (a hidden tracking quest, with no name to
+    show) can't be told to the player: as a quest to do first it's left out, and as one of several
+    that will do it takes the whole choice with it, as another way needs nothing we could show.
+    The tables are those step 1b refreshes (QuestV2CliTask.csv and PlayerCondition.csv in
+    -ToolsDir); they're fetched for -Build when missing.
+A quest the API and the client are silent on keeps its prerequisite.
 
 A one-time quest's required quest that recurs (daily, weekly or repeatable) is left out: the game
 only knows such a quest is done until the next reset, so the map would hide the one-time quest
@@ -89,6 +103,63 @@ foreach ($file in (Get-ChildItem $cache -Filter *.json | Select-String -Pattern 
     $api[$id] = ConvertTo-PrereqValue (Convert-ApiNode $json.requirements.quests)
 }
 
+# The client's task quests. A group of the simplified tree with its leaves joined as the game joins
+# them: $null (nothing to show) stands for an answer that's always yes, so it drops out of an AND and
+# takes the whole OR with it.
+function Join-Nodes([bool]$isAnd, $a, $b) {
+    if ($null -eq $a) { if ($isAnd) { return $b } else { return $null } }
+    if ($null -eq $b) { if ($isAnd) { return $a } else { return $null } }
+    $items = New-Object System.Collections.Generic.List[object]
+    foreach ($node in @($a, $b)) {
+        $parts = if ($node -is [pscustomobject] -and $node.And -eq $isAnd) { $node.Items } else { @($node) }
+        foreach ($part in $parts) { if ($part -is [pscustomobject] -or $items -notcontains $part) { $items.Add($part) } }
+    }
+    if ($items.Count -eq 1) { return $items[0] }
+    return [pscustomobject]@{ And = $isAnd; Items = $items.ToArray() }
+}
+# One of the client's lists of quests (FiltCompletedQuest, or a PlayerCondition's PrevQuestID) with
+# its logic field, as a tree; $null when it leaves nothing to show.
+function Convert-ClientList($row, [string]$prefix, [int]$count, [string]$logicField) {
+    $logic = [int64]$row.$logicField
+    $answer = $null
+    for ($i = 0; $i -lt $count; $i++) {
+        $id = [int]$row.("${prefix}_$i")
+        $item = $null
+        if ($id -gt 0 -and -not ($logic -band (0x10000 -shl $i))) {
+            if (-not $quests.ContainsKey($id)) { $script:notInData[$id] = $true }
+            elseif (Test-Checkable $script:converting $id) { $item = $id }
+        }
+        if ($i -eq 0) { $answer = $item; continue }
+        $how = [int](($logic -shr (2 * ($i - 1))) -band 3)
+        if ($how -eq 1) { $answer = Join-Nodes $true $answer $item }
+        elseif ($how -eq 2) { $answer = Join-Nodes $false $answer $item }
+    }
+    return $answer
+}
+
+foreach ($table in 'QuestV2CliTask', 'PlayerCondition') {
+    $path = Join-Path $ToolsDir "$table.csv"
+    if (-not (Test-Path $path)) {
+        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$table/csv?build=$Build" -OutFile $path
+        Start-Sleep -Seconds 1
+    }
+}
+$tasks = @(Import-Csv (Join-Path $ToolsDir 'QuestV2CliTask.csv') | Where-Object { $quests.ContainsKey([int]$_.ID) })
+$wanted = @{}
+foreach ($t in $tasks) { if ($t.ConditionID -ne '0') { $wanted[$t.ConditionID] = $true } }
+$conditions = @{}
+Import-Csv (Join-Path $ToolsDir 'PlayerCondition.csv') | ForEach-Object { if ($wanted.ContainsKey($_.ID)) { $conditions[$_.ID] = $_ } }
+$script:notInData = @{}
+$client = @{}
+foreach ($t in $tasks) {
+    $script:converting = [int]$t.ID
+    $own = Convert-ClientList $t 'FiltCompletedQuest' 3 'FiltCompletedQuestLogic'
+    $condition = $null
+    if ($conditions.ContainsKey($t.ConditionID)) { $condition = Convert-ClientList $conditions[$t.ConditionID] 'PrevQuestID' 4 'PrevQuestLogic' }
+    $value = ConvertTo-PrereqValue (Join-Nodes $true $own $condition)
+    if ($null -ne $value) { $client[[int]$t.ID] = $value }
+}
+
 $tcPrev = @{}
 if (-not $TdbFile) {
     $TdbFile = Get-ChildItem "$ToolsDir\tdb\TDB_full_world_*.sql" -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1 -ExpandProperty FullName
@@ -117,22 +188,26 @@ function Test-OtherFaction([int]$a, [int]$b) {
 }
 
 $new = @{}
-$counts = [ordered]@{ fromApiNew = 0; fromApiChanged = 0; fromApiSame = 0; keptOurs = 0; fromTrinityCore = 0 }
+$counts = [ordered]@{ fromApiNew = 0; fromApiChanged = 0; fromApiSame = 0; keptApi = 0; fromClientNew = 0; fromClientChanged = 0; fromClientSame = 0; keptClient = 0; fromTrinityCore = 0 }
 foreach ($id in ($quests.Keys | Sort-Object)) {
     $q = $quests[$id]
     $ours = if ($q.prereq) { ConvertTo-PrereqText $q.prereq '[' ']' } else { '' }
-    if ($api.ContainsKey($id) -and $null -ne $api[$id]) {
-        # The API names at most 3 quests. One of ours it leaves out stays when it's the step just
-        # before the quest in its storyline, as it nearly always is.
-        $value = $api[$id]
-        $apiQuests = Get-PrereqQuests $value
+    $source = ''
+    if ($api.ContainsKey($id) -and $null -ne $api[$id]) { $source = 'Api'; $value = $api[$id] }
+    elseif ($client.ContainsKey($id) -and -not $api.ContainsKey($id)) { $source = 'Client'; $value = $client[$id] }
+    if ($source) {
+        # The API names at most 3 quests and often leaves out the step just before the quest in its
+        # storyline, and the client names what must be done before a task quest shows, not the chain.
+        # One of ours that's missing from the list stays when it's the step just before the quest in
+        # its storyline, as it nearly always is.
+        $listed = Get-PrereqQuests $value
         $ourQuests = if ($q.prereq) { Get-PrereqQuests $q.prereq } else { @() }
-        $kept = @($ourQuests | Where-Object { $apiQuests -notcontains $_ -and (Test-StepJustBefore $id $_) })
-        if ($kept.Count) { $value = @($kept) + @($value); $counts.keptOurs++ }
+        $kept = @($ourQuests | Where-Object { $listed -notcontains $_ -and (Test-StepJustBefore $id $_) })
+        if ($kept.Count) { $value = @($kept) + @($value); $counts["kept$source"]++ }
         $text = ConvertTo-PrereqText $value '[' ']'
-        if ($text -eq $ours) { $counts.fromApiSame++; continue }
+        if ($text -eq $ours) { $counts["from${source}Same"]++; continue }
         $new[$id] = $value
-        if ($ours) { $counts.fromApiChanged++ } else { $counts.fromApiNew++ }
+        if ($ours) { $counts["from${source}Changed"]++ } else { $counts["from${source}New"]++ }
     } elseif (-not $ours -and -not $api.ContainsKey($id) -and $tcPrev.ContainsKey($id)) {
         $prev = $tcPrev[$id]
         if ($quests.ContainsKey($prev) -and (Test-Checkable $id $prev) -and -not (Test-OtherFaction $id $prev) -and (Test-StepJustBefore $id $prev)) {
@@ -159,7 +234,8 @@ foreach ($id in @($new.Keys)) {
     }
 }
 
-"From the API: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match. From TrinityCore: {4}." -f $counts.fromApiNew, $counts.fromApiChanged, $counts.fromApiSame, $counts.keptOurs, $counts.fromTrinityCore
+"From the API: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match. From TrinityCore: {4}." -f $counts.fromApiNew, $counts.fromApiChanged, $counts.fromApiSame, $counts.keptApi, $counts.fromTrinityCore
+"From the client's task quests: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match; it names {4} quests we hold no data for, so those requirements are left out." -f $counts.fromClientNew, $counts.fromClientChanged, $counts.fromClientSame, $counts.keptClient, $script:notInData.Count
 "Left out as they'd go round in a circle: $($cycles.Count)" + $(if ($cycles.Count) { " (" + ($cycles -join '; ') + ")" } else { '' })
 "Changes: $($new.Count)"
 if ($WhatIf) {

@@ -508,10 +508,10 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Type (recurrence) | the API's flags, the type probe's classification, `QuestV2`; CMaNGOS | the giver's offer says daily, weekly or repeatable for the quests actually met (the Forever recorder saves it; the importer doesn't read it yet) | recorder |
 | Faction | the API, `QuestV2CliTask` and `PlayerCondition`, CMaNGOS; Forever's cache | `GetQuestFactionGroup` for every loaded quest | probe |
 | Race and class | the same | nothing per quest; an offer seen by a character of a race and class is positive evidence only | – |
-| Profession and skill level | CMaNGOS (Forever), TrinityCore | `QuestTagInfo.tradeskillLineID` for profession tags | no |
+| Profession and skill level | the client's `QuestV2CliTask` for task quests, the profession only (retail), CMaNGOS (Forever), TrinityCore | `QuestTagInfo.tradeskillLineID` for profession tags | no |
 | Holiday and events | the calendar; CMaNGOS's events | `C_AreaPoiInfo.GetEventsForMap`, `C_EventScheduler`: which events run now, where, for how long | probe, then addon |
 | Storylines | `QuestLine` and `QuestLineXQuest` | `GetQuestLineInfo`: the name in the player's language, and a second source for membership; `C_CampaignInfo`: campaigns | addon, probe |
-| Prerequisites, breadcrumbs, "only one of these" | the API, TrinityCore, CMaNGOS, hand tables | `IsBreadcrumbQuest` if it works; the offer list shows which step is available now | check |
+| Prerequisites, breadcrumbs, "only one of these" | the API, the client's task-quest tables, TrinityCore, CMaNGOS, hand tables | `IsBreadcrumbQuest` if it works; the offer list shows which step is available now | check |
 | Reputation rewards | the API (retail), the quest cache (Forever) | the same figures, for loaded quests | no |
 | Renown and friendship requirements | hand table | nothing; `IsQuestFlaggedCompletedOnAccount` and the offer list are the only live availability | – |
 | Pins: giver and position | client points, old pins, TrinityCore IDs (retail); CMaNGOS, recorder, hand lists (Forever) | the giver's GUID, name and position at every quest window, on retail too; popups and area triggers placed where they open; hand-in NPCs | recorder |
