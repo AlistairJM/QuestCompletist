@@ -811,3 +811,7 @@ these level 60 quests.
   of interest. Details in `game-api-review.md`, "Map-offers probe: first run". The user's decision:
   the map pass stays in every probe run, with its totals compared against this run's, so a build
   that starts sending offers is noticed.
+- 2026-10-07: where Forever and retail differ in code, data and checks, and why, is audited in
+  `game-parity.md`, under the user's rule that a feature or check built for one game goes to both
+  unless a game can't support it. Forever's own gaps to watch: `QuestLine` rows, start points, the
+  quest-giver field, and the two events on the calendar.

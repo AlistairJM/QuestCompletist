@@ -14,9 +14,14 @@ the same branch: functions and events added and removed, with the quest-related 
 out, and for every function the addon calls (the C_ calls in QuestCompletist\*.lua and
 QuestCompletist\Forever\*.lua, plus the documented globals it uses) whether it is still there with
 the same arguments and returns. A function the addon calls that has gone or changed since the
-earlier list exits with 1: check the code before the sweep goes on. A function absent from one
-game's documentation but present in the other (C_SkillInfo on retail) is only reported: the code
-guards it. New functions are a prompt to look, not a failure.
+earlier list exits with 1: check the code before the sweep goes on. New functions are a prompt to
+look, not a failure.
+
+A function the addon calls that one game documents and the other doesn't (C_SkillInfo on retail)
+is listed at the end: the code guards each, and the feature behind it is that game's alone for
+now (docs\plans\game-parity.md). When such a function turns up in a game's documentation that
+lacked it in the earlier list, that exits with 1 too: the game has gained it, and the feature is
+to be shared.
 
   .\Compare-ApiDocs.ps1
   .\Compare-ApiDocs.ps1 -Branches live
@@ -122,10 +127,15 @@ function Compare-Branch([string]$branch, [string[]]$calls) {
     }
 
     $present = 0; $absent = @(); $broken = 0
+    $script:documented[$branch] = @()
     foreach ($call in $calls) {
         if ($new.Functions.ContainsKey($call)) {
             $present++
-            if ($old -and $old.Functions.ContainsKey($call) -and $old.Functions[$call].Shape -ne $new.Functions[$call].Shape) {
+            $script:documented[$branch] += $call
+            if ($old -and -not $old.Functions.ContainsKey($call)) {
+                Write-Output "  the addon calls ${call}: not documented in $($earlier.Name), documented now. This game has gained it: share the feature the code gates on it (docs\plans\game-parity.md)."
+                $broken++
+            } elseif ($old -and $old.Functions[$call].Shape -ne $new.Functions[$call].Shape) {
                 Write-Output "  the addon calls ${call}: its shape changed, was $($old.Functions[$call].Shape), now $($new.Functions[$call].Shape)"
                 $broken++
             }
@@ -142,9 +152,18 @@ function Compare-Branch([string]$branch, [string[]]$calls) {
 
 $calls = Get-AddonCalls
 $script:brokenTotal = 0
+$script:documented = @{}
 foreach ($branch in $Branches) { Compare-Branch $branch $calls }
+if ($Branches.Count -gt 1) {
+    $only = @()
+    foreach ($call in $calls) {
+        $has = @($Branches | Where-Object { $script:documented[$_] -contains $call })
+        if ($has.Count -gt 0 -and $has.Count -lt $Branches.Count) { $only += "$call ($($has -join ', ') only)" }
+    }
+    Write-Output ("Functions the addon calls that one game documents and another doesn't: " + $(if ($only) { $only -join '; ' } else { 'none' }) + ". The code guards each, and the game without it gains the feature when this changes (docs\plans\game-parity.md).")
+}
 if ($script:brokenTotal -gt 0) {
-    Write-Output "$script:brokenTotal function(s) the addon calls have gone or changed: check the code before the sweep goes on."
+    Write-Output "$script:brokenTotal function(s) the addon calls have gone, changed, or newly appeared on a game that lacked them: check the code before the sweep goes on."
     exit 1
 }
 Write-Output "Every function the addon calls is documented as before on each branch that documents it."
