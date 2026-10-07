@@ -13,10 +13,19 @@ column names with the cached copy's. A column change exits with 1: check the too
 table, and the plan docs, before the sweep goes on. A new table is a prompt to see whether the addon
 could use it, not a failure.
 
+It also checks the holidays. qcHolidays in qcCore.lua ties each holiday value in the quest data to
+the IDs of the client's Holidays table that its calendar event can carry, and Blizzard adds an ID
+now and then (Hallow's End gained 1405). For each holiday there, the Holidays rows of that name
+(through HolidayNames) in every build given are compared with the IDs qcHolidays lists: an ID the
+client has and qcHolidays lacks is a finding, and exits with 1 as a column change does; add it to
+qcHolidays. A holiday with no row of its name in any build checked is only reported: the Scourge
+Invasion and the Ahn'Qiraj War Effort are never on the calendar.
+
   .\Compare-ClientTables.ps1 -Build 12.1.0.69933 -ForeverBuild 1.60.1.70245
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string]$Build = "",
     [string]$ForeverBuild = "",
     [string]$DownloadDir = (Join-Path $env:TEMP 'client_tables')
@@ -81,10 +90,69 @@ function Compare-Build([string]$build, [string]$game) {
     }
     Write-Output "$($cached.Count) tables the tools read checked: $changed changed."
     $script:changedTotal += $changed
+
+    $names = @{}
+    foreach ($row in Import-Csv (Get-BuildTable $build 'HolidayNames' $dir)) { $names[$row.ID] = $row.Name_lang }
+    $byName = @{}
+    foreach ($row in Import-Csv (Get-BuildTable $build 'Holidays' $dir)) {
+        $name = $names[$row.HolidayNameID]
+        if (-not $name) { continue }
+        if (-not $byName.ContainsKey($name)) { $byName[$name] = New-Object System.Collections.Generic.List[int] }
+        $byName[$name].Add([int]$row.ID)
+    }
+    $script:holidaysByGame[$game] = $byName
+}
+
+# The build's copy of a table, downloaded once per run; the first run also caches it in tools\ as
+# <Table>-<build>.csv, so later runs compare its columns like any other table the tools read.
+function Get-BuildTable([string]$build, [string]$table, [string]$dir) {
+    $path = Join-Path $dir "$table.csv"
+    if (-not (Test-Path $path)) {
+        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$table/csv?build=$build" -OutFile $path
+        Start-Sleep -Milliseconds 500
+    }
+    $cache = Join-Path $ToolsDir "$table-$build.csv"
+    if (-not (Test-Path $cache)) { Copy-Item $path $cache }
+    return $path
+}
+
+function Compare-Holidays {
+    $core = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcCore.lua'))
+    $block = [regex]::Match($core, '(?s)local qcHolidays = \{(.*?)\r?\n\}').Groups[1].Value
+    $entries = [regex]::Matches($block, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=\{([\d, ]*)\}\}')
+    if ($entries.Count -eq 0) { throw "qcHolidays wasn't found in $AddonDir\qcCore.lua" }
+    $games = @($script:holidaysByGame.Keys | Sort-Object)
+    Write-Output "== qcHolidays against the calendar tables of $($games -join ' and ')"
+    $matched = 0; $absent = @()
+    foreach ($e in $entries) {
+        $name = $e.Groups[2].Value
+        $ours = @($e.Groups[3].Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | ForEach-Object { [int]$_ })
+        $client = @{}
+        foreach ($game in $games) {
+            $ids = $script:holidaysByGame[$game][$name]
+            if (-not $ids) { continue }
+            foreach ($id in $ids) { if (-not $client.ContainsKey($id)) { $client[$id] = @() }; $client[$id] += $game }
+        }
+        if ($client.Count -eq 0) { $absent += $name; continue }
+        $new = @($client.Keys | Where-Object { $ours -notcontains $_ } | Sort-Object)
+        $gone = @($ours | Where-Object { -not $client.ContainsKey($_) })
+        if ($new.Count -eq 0 -and $gone.Count -eq 0) { $matched++; continue }
+        foreach ($id in $new) { Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')) that qcHolidays lacks"; $script:holidayFindings++ }
+        if ($gone.Count -gt 0) {
+            if ($games.Count -ge 2) { $script:holidayFindings++ }
+            Write-Output ("  ${name}: qcHolidays has " + ($gone -join ', ') + ", which " + $(if ($games.Count -ge 2) { 'neither game has' } else { "$($games[0]) doesn't have (the other game may)" }))
+        }
+    }
+    Write-Output "$($entries.Count) holidays: $matched match the client's IDs; not on any calendar checked: $(if ($absent) { $absent -join ', ' } else { 'none' })."
 }
 
 $script:changedTotal = 0
+$script:holidayFindings = 0
+$script:holidaysByGame = @{}
 if ($Build) { Compare-Build $Build 'retail' }
 if ($ForeverBuild) { Compare-Build $ForeverBuild 'WoW: Forever' }
-if ($script:changedTotal -gt 0) { Write-Output "Columns changed in $script:changedTotal table(s): check the tools that read them before the sweep goes on."; exit 1 }
-Write-Output "No column changes in the tables the tools read."
+Compare-Holidays
+if ($script:changedTotal -gt 0) { Write-Output "Columns changed in $script:changedTotal table(s): check the tools that read them before the sweep goes on." }
+if ($script:holidayFindings -gt 0) { Write-Output "$script:holidayFindings holiday finding(s): bring qcHolidays up to date before the sweep goes on." }
+if ($script:changedTotal + $script:holidayFindings -gt 0) { exit 1 }
+Write-Output "No column changes in the tables the tools read, and qcHolidays matches the calendar tables."
