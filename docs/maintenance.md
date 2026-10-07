@@ -144,6 +144,26 @@ then every tool refuses to save.
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
    were chosen as each need came up.
+
+   Then check the game's Lua API the same way:
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-ApiDocs.ps1
+   ```
+   It downloads the `live` and `forever` branches of Gethe/wow-ui-source, the UI source of retail
+   and WoW: Forever, reads Blizzard's generated API documentation with `Read-ApiDocs.lua`, saves
+   every function and event as `tools\api_docs-<branch>-<build>.tsv` (the files themselves stay
+   in `tools\api_docs\`, for grepping how Blizzard uses a function), and lists what was added or
+   removed since the newest earlier list for that branch, with quest-related namespaces flagged.
+   It also checks that every function the addon calls, its `C_` calls and the documented globals
+   it uses, is still documented with the same arguments and returns: one gone or changed exits
+   with 1, so check the code before the sweep goes on. A function one game's documentation lacks
+   and the other's has is only reported: `C_SkillInfo.GetSkillLineInfoByID` is Forever's, and the
+   code guards it. The documentation leaves out the old globals (`GetQuestID`,
+   `GetAvailableQuestInfo` and their kind), which it can't check. Baseline on 2026-10-07: live
+   12.1.0.69933 had 5,539 functions and 1,782 events, Forever 1.60.1.70245 5,785 and 1,804, and
+   the addon's 45 functions were all documented on Forever and 44 on live. The first systematic
+   review of the API (2026-10-07) is in [plans/game-api-review.md](plans/game-api-review.md). A
+   new function or event that could serve the addon is a finding to plan, as a new table is.
 3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
    ```powershell
    Rename-Item tools\quest_api_cache "quest_api_cache.$(Get-Date -Format yyyyMMdd)"

@@ -616,7 +616,8 @@ run, which compares the game's offers with our pins.
    reason, in their words: we never know what the client files or the in-game APIs might start
    serving up, which is why these audits were asked for in the first place. The rule covers every
    check this review and the client-tables review add, so recommendation 11, the API check every
-   sweep, follows from it and is wanted.
+   sweep, follows from it; built the same day as `tools/Compare-ApiDocs.ps1` with
+   `Read-ApiDocs.lua` (maintenance.md, step 2b under "Before a sweep").
 
 ## Open questions (to check in game)
 
@@ -661,5 +662,14 @@ run, which compares the game's offers with our pins.
   offers on any map, log quests with positions, 16 named points of interest, no events, no level
   ranges, no dungeon entrances, user waypoints allowed on the zones, with the quest points of
   interest setting on. The user's decision the same day: the map pass stays in every probe run,
-  and no check is dropped for finding nothing (Decisions, above). Next: the retail run, the API
-  check every sweep (recommendation 11), and the remaining decisions.
+  and no check is dropped for finding nothing (Decisions, above).
+- 2026-10-07: the API check every sweep (recommendation 11) built: `tools/Compare-ApiDocs.ps1`
+  downloads both branches, reads the documentation with `tools/Read-ApiDocs.lua` (the loader this
+  review was made with), saves a per-build list, reports what changed since the last one, and
+  exits with 1 when a function the addon calls has gone or changed shape. Baselines saved for live
+  12.1.0.69933 (5,539 functions, 1,782 events) and Forever 1.60.1.70245 (5,785 and 1,804); of the
+  addon's 45 functions, 44 are documented on live and 45 on Forever, the missing one being
+  Forever's `C_SkillInfo.GetSkillLineInfoByID`. Checked against doctored older lists: an added
+  function, a removed one, one with changed returns, an added event, and an addon call that had
+  vanished or changed shape were each reported, the last two with exit code 1. Next: the retail
+  map run and the remaining decisions.
