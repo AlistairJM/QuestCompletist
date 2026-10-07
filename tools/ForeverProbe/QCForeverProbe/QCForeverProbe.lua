@@ -463,6 +463,8 @@ local function startMaps(waitSeconds)
 		hardcore = flag(try(C_GameRules and C_GameRules.IsHardcoreActive)),
 		trackingHidden = plain(try(C_Minimap and C_Minimap.IsTrackingHiddenQuests)),
 		trackingAccountDone = plain(try(C_Minimap and C_Minimap.IsTrackingAccountCompletedQuests))}
+	local filtered = try(function() return C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.QuestPOIs) end)
+	if filtered ~= nil then r.extra.trackingQuestPois = not filtered end
 	r.send = function(mapID)
 		r.inFlight[mapID] = debugprofilestop()
 		r.inFlightCount = r.inFlightCount + 1
