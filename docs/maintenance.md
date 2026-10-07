@@ -753,7 +753,9 @@ results are enough.
 
 **Forever probe (`/qcprobe`).** A small addon of its own for the Forever client. It asks the server
 about every quest in the client's `QuestV2` and every CMaNGOS quest `QuestV2` lacks, as it leaves out
-repeatable quests. It names the quest givers, and records quest givers while you play.
+repeatable quests. It names the quest givers, and records quest givers while you play. Its map pass
+asks every map for the quest offers, points of interest, events, quest hubs and dungeon entrances
+the game lists ([game-api-review.md](plans/game-api-review.md), recommendation 3).
 It's pull request #139, which stays open and isn't for merging; its files are in
 `tools\ForeverProbe\` on the branch `tools/forever-probe`. Step 10 reads what it gathers.
 
@@ -775,6 +777,12 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    time; the first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered.
+4b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
+   and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
+   second. Run it once on a character of each experience preset, Classic and Modern, as the preset
+   may change what the game offers. It works on retail too (copy the folder into `_retail_`'s
+   AddOns; retail's 2,000 maps take up to an hour at a 1-second wait), to compare the game's
+   offers with our pins.
 5. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
@@ -782,6 +790,13 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    - `WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua`.
 
 After Forever's launch, use its live client's folder in place of `_classic_beta_`.
+
+A map pass is read with `tools\Report-MapOffers.lua`, which prints each map's offers, with how far
+each is from the quest's pin, and the points of interest, events, hubs and entrances, and writes
+the rows as a TSV. Give `QuestCompletist` instead of `QuestCompletist\Forever` for a retail file:
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Report-MapOffers.lua tools\forever_probe_<build number>\QCForeverProbe.lua QuestCompletist\Forever tools\map_offers_<build number>.tsv
+```
 
 Leave the probe installed while you play Forever. Its recorder notes which quests each NPC or object
 offers and where it stands. For most of Forever's new quests that's the only source of where they
@@ -833,7 +848,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1` and `Fill-PinNpcIds.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1` |

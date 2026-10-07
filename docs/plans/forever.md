@@ -793,3 +793,9 @@ these level 60 quests.
 - 2026-10-06: Epic and Legendary are no longer categories either: their quests go under Silithus,
   Moonglade and Tanaris, by their givers or, for those started from an item, by the NPC they're
   handed in to (#192); results above.
+- 2026-10-07: the probe gains `/qcprobe maps` (PR #139's branch), which asks each map for the quest
+  offers, points of interest and events the game lists, and reads the events schedule
+  (`game-api-review.md`, recommendation 3; maintenance.md, step 4b under "In the game"). It answers
+  two open questions once run on the beta: whether Forever's server sends offer positions for the
+  new zones at all, and whether the Scourge Invasion, the War Effort or the fishing contest show
+  up as events. Run pending, on a Classic-preset and a Modern-preset character.
