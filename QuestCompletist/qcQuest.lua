@@ -214,6 +214,13 @@ qcAreaIDToCategoryID={
 [2564]=1747,	-- Den of Nalorakk
 [2574]=1748,	-- Voidscar Arena
 [2531]=1749,	-- The Dreamrift
+[892]=17,[893]=17,[894]=17,	-- Azuremyst Isle
+[1030]=84,	-- Gilneas City
+[491]=211,[492]=211,[493]=211,[494]=211,[495]=211,[496]=211,[497]=211,	-- Black Temple
+[720]=1010,[721]=1010,	-- Mardum, the Shattered Abyss (Demon Hunter)
+[1997]=1244,	-- Tazavesh, the Veiled Market
+[2235]=1309,[2236]=1309,[2237]=1309,	-- Amirdrassil
+[2190]=1723,[2191]=1723,[2192]=1723,[2193]=1723,[2194]=1723,[2195]=1723,[2196]=1723,[2197]=1723,	-- Dawn of the Infinite
 }	
 
 qcQuestCategories={
