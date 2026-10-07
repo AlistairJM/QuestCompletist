@@ -9,6 +9,11 @@ part of Quest Completist: copy this folder to _classic_beta_\Interface\AddOns\QC
 /qcprobe quests all           asks about every quest again
 /qcprobe npcs [in flight]     names the quest givers from CMaNGOS and our old Classic pins (NpcIDs.lua)
 /qcprobe npcs all             names every NPC again
+/qcprobe maps [wait seconds]  asks the server for each map's quest offers (the storyline starts
+                              Blizzard's map draws), points of interest, events, quest hubs and
+                              dungeon entrances, and once for the events schedule
+                              (docs/plans/game-api-review.md, recommendation 3). It waits the given
+                              seconds, 2 by default, for each map's answer. Runs on retail too.
 /qcprobe stop                 stops the run in progress
 /qcprobe status               what's been gathered on this build
 /qcprobe record on|off        the recorder, on by default
@@ -30,7 +35,14 @@ QCForeverProbeDB holds:
                 turnIns (questId = true)
   started[id]   quests offered by no NPC or object: build, item, map, x, y, by
   accepted[id]  build, heading, map, x, y, by, level
-  runs          one row per run; logins: one row per build, TOC and load test seen at login ]]--
+  maps[mapID]   build, preset (Forever's experience preset: 0 Classic, 1 Modern, nil on retail),
+                result (event: QUESTLINE_UPDATE came; noevent: it didn't within the wait; unanswered:
+                the game kept asking for another request), ms, requests, name, mapType, parent,
+                questLines (the offers, each with its quest, storyline, x, y, startMapID and flags),
+                forceVisible, tasks, logQuests, pois, events, hubs, entrances, levels, waypoint.
+                Positions are map percentages, like the recorder's spots.
+  runs          one row per run; a map run also keeps the character, the tracking toggles and the
+                events schedule. logins: one row per build, TOC and load test seen at login ]]--
 
 local ADDON_NAME, probe = ...
 
@@ -40,6 +52,10 @@ local LATE_ANSWER_WAIT_MS = 10000
 local POLL_MS = 1000
 local TICK_SECONDS = 0.05
 local PROGRESS_EVERY = 500
+local DEFAULT_MAP_WAIT_SECONDS = 2
+local MAP_PROGRESS_EVERY = 20
+local MAX_MAP_ID = 5000
+local MAX_MAP_REQUESTS = 3
 
 local db, build, run
 
@@ -85,7 +101,7 @@ end
 local function count(r, result)
 	r.counts[result] = (r.counts[result] or 0) + 1
 	r.done = r.done + 1
-	if r.done % PROGRESS_EVERY == 0 then
+	if r.done % (r.progressEvery or PROGRESS_EVERY) == 0 then
 		say(string.format("%s: %d of %d (%s).", r.label, r.done, r.total, countsText(r.counts)))
 	end
 end
@@ -100,9 +116,11 @@ local function finish(stopped)
 	run = nil
 	r.ticker:Cancel()
 	local seconds = math.floor((debugprofilestop() - r.startedMs) / 1000 + 0.5)
-	table.insert(db.runs, {kind = r.kind, build = build, locale = GetLocale(), inFlight = r.maxInFlight,
+	local row = {kind = r.kind, build = build, locale = GetLocale(), inFlight = r.maxInFlight,
 		asked = r.total, answered = r.done, counts = r.counts, seconds = seconds, stopped = stopped or nil,
-		time = time()})
+		time = time()}
+	for key, value in pairs(r.extra or {}) do row[key] = value end
+	table.insert(db.runs, row)
 	say(string.format("%s the %s: %d of %d in %d s (%s). Log out fully to save the results and the game's cache.",
 		stopped and "Stopped" or "Finished", r.label, r.done, r.total, seconds, countsText(r.counts)))
 end
@@ -112,7 +130,7 @@ local function tick()
 	if not r then return end
 	local now = debugprofilestop()
 	for id, started in pairs(r.inFlight) do
-		if now - started > REQUEST_TIMEOUT_MS then
+		if now - started > (r.timeoutMs or REQUEST_TIMEOUT_MS) then
 			r.inFlight[id] = nil
 			r.inFlightCount = r.inFlightCount - 1
 			r.timedOut[id] = started
@@ -294,6 +312,193 @@ local function startNpcs(all, inFlight)
 	go(r)
 end
 
+local function plain(value)
+	if value == nil or secret(value) then return nil end
+	return value
+end
+
+local function flag(value)
+	return plain(value) == true or nil
+end
+
+local function percent(value)
+	value = plain(value)
+	if type(value) ~= "number" then return nil end
+	return math.floor(value * 1000 + 0.5) / 10
+end
+
+local function pointOf(position)
+	if type(position) ~= "table" then return nil end
+	if position.GetXY then
+		local ok, x, y = pcall(position.GetXY, position)
+		if ok then return percent(x), percent(y) end
+		return nil
+	end
+	return percent(position.x), percent(position.y)
+end
+
+local function listOf(func, ...)
+	local list = try(func, ...)
+	return type(list) == "table" and list or {}
+end
+
+local function keep(list)
+	return #list > 0 and list or nil
+end
+
+local function idsOf(func, ...)
+	local ids = {}
+	for _, id in ipairs(listOf(func, ...)) do ids[#ids + 1] = plain(id) end
+	return keep(ids)
+end
+
+local function poiFacts(mapID, areaPoiID)
+	local p = try(C_AreaPoiInfo.GetAreaPOIInfo, mapID, areaPoiID)
+	if type(p) ~= "table" then return {areaPoiID = areaPoiID} end
+	local x, y = pointOf(p.position)
+	local facts = {areaPoiID = plain(p.areaPoiID) or areaPoiID, name = plain(p.name), description = plain(p.description),
+		x = x, y = y, atlas = plain(p.atlasName), textureIndex = plain(p.textureIndex), factionID = plain(p.factionID),
+		linkedMap = plain(p.linkedUiMapID), currentEvent = flag(p.isCurrentEvent), primary = flag(p.isPrimaryMapForPOI),
+		flightMap = flag(p.isAlwaysOnFlightmap), glow = flag(p.shouldGlow)}
+	if flag(try(C_AreaPoiInfo.IsAreaPOITimed, areaPoiID)) then
+		facts.timed = true
+		facts.secondsLeft = plain(try(C_AreaPoiInfo.GetAreaPOISecondsLeft, areaPoiID))
+	end
+	return facts
+end
+
+local function mapFacts(mapID, r, result, ms)
+	local facts = {build = build, preset = r.extra.preset, result = result, ms = ms and math.floor(ms + 0.5) or nil,
+		requests = r.requests, time = time()}
+	local info = try(C_Map.GetMapInfo, mapID)
+	if type(info) == "table" then
+		facts.name, facts.mapType, facts.parent = plain(info.name), plain(info.mapType), plain(info.parentMapID)
+	end
+	local lines = {}
+	for _, q in ipairs(listOf(C_QuestLine.GetAvailableQuestLines, mapID)) do
+		lines[#lines + 1] = {questLineID = plain(q.questLineID), questLineName = plain(q.questLineName),
+			questID = plain(q.questID), questName = plain(q.questName), x = percent(q.x), y = percent(q.y),
+			startMapID = plain(q.startMapID), floor = plain(q.floorLocation), hidden = flag(q.isHidden),
+			accountDone = flag(q.isAccountCompleted), inProgress = flag(q.inProgress), campaign = flag(q.isCampaign),
+			important = flag(q.isImportant), legendary = flag(q.isLegendary), daily = flag(q.isDaily),
+			meta = flag(q.isMeta), localStory = flag(q.isLocalStory), questStart = flag(q.isQuestStart)}
+	end
+	facts.questLines = keep(lines)
+	facts.forceVisible = idsOf(C_QuestLine.GetForceVisibleQuests, mapID)
+	local function poiQuests(func)
+		local list = {}
+		for _, q in ipairs(listOf(func, mapID)) do
+			list[#list + 1] = {questID = plain(q.questID), x = percent(q.x), y = percent(q.y), mapID = plain(q.mapID),
+				questStart = flag(q.isQuestStart), inProgress = flag(q.inProgress), daily = flag(q.isDaily),
+				meta = flag(q.isMeta), objectives = plain(q.numObjectives), tagType = plain(q.questTagType),
+				childDepth = plain(q.childDepth), indicator = flag(q.isMapIndicatorQuest)}
+		end
+		return keep(list)
+	end
+	facts.tasks = poiQuests(C_TaskQuest and C_TaskQuest.GetQuestsOnMap)
+	facts.logQuests = poiQuests(C_QuestLog.GetQuestsOnMap)
+	if C_AreaPoiInfo then
+		local pois = {}
+		for _, areaPoiID in ipairs(listOf(C_AreaPoiInfo.GetAreaPOIForMap, mapID)) do
+			pois[#pois + 1] = poiFacts(mapID, plain(areaPoiID))
+		end
+		facts.pois = keep(pois)
+		facts.events = idsOf(C_AreaPoiInfo.GetEventsForMap, mapID)
+		facts.hubs = idsOf(C_AreaPoiInfo.GetQuestHubsForMap, mapID)
+	end
+	local entrances = {}
+	for _, e in ipairs(listOf(C_EncounterJournal and C_EncounterJournal.GetDungeonEntrancesForMap, mapID)) do
+		local x, y = pointOf(e.position)
+		entrances[#entrances + 1] = {areaPoiID = plain(e.areaPoiID), name = plain(e.name), x = x, y = y,
+			atlas = plain(e.atlasName), journalInstanceID = plain(e.journalInstanceID)}
+	end
+	facts.entrances = keep(entrances)
+	local ok, minLevel, maxLevel = pcall(C_Map.GetMapLevels, mapID)
+	if ok and plain(minLevel) and plain(maxLevel) and (minLevel > 0 or maxLevel > 0) then
+		facts.levels = {minLevel, maxLevel}
+	end
+	facts.waypoint = plain(try(C_Map.CanSetUserWaypointOnMap, mapID))
+	return facts
+end
+
+local function schedulerFacts()
+	if not C_EventScheduler then return {missing = true} end
+	local s = {hasData = plain(try(C_EventScheduler.HasData)), canShow = plain(try(C_EventScheduler.CanShowEvents)),
+		continent = plain(try(C_EventScheduler.GetActiveContinentName)), ongoing = {}, scheduled = {}}
+	local function place(entry, areaPoiID)
+		entry.zone = plain(try(C_EventScheduler.GetEventZoneName, areaPoiID))
+		entry.map = plain(try(C_EventScheduler.GetEventUiMapID, areaPoiID))
+		local poi = areaPoiID and try(C_AreaPoiInfo.GetAreaPOIInfo, entry.map, areaPoiID)
+		if type(poi) == "table" then entry.name = plain(poi.name) end
+	end
+	for _, e in ipairs(listOf(C_EventScheduler.GetOngoingEvents)) do
+		local entry = {areaPoiID = plain(e.areaPoiID), rewardsClaimed = flag(e.rewardsClaimed)}
+		place(entry, entry.areaPoiID)
+		s.ongoing[#s.ongoing + 1] = entry
+	end
+	for _, e in ipairs(listOf(C_EventScheduler.GetScheduledEvents)) do
+		local entry = {eventKey = plain(e.eventKey), eventID = plain(e.eventID), areaPoiID = plain(e.areaPoiID),
+			startTime = plain(e.startTime), endTime = plain(e.endTime), duration = plain(e.duration)}
+		place(entry, entry.areaPoiID)
+		s.scheduled[#s.scheduled + 1] = entry
+	end
+	return s
+end
+
+local function startMaps(waitSeconds)
+	local queue = {}
+	for mapID = 1, MAX_MAP_ID do
+		local info = try(C_Map.GetMapInfo, mapID)
+		if type(info) == "table" and info.mapID then queue[#queue + 1] = mapID end
+	end
+	if #queue == 0 then
+		say("the client lists no maps.")
+		return
+	end
+	local r = begin("maps", "map pass", queue, 1)
+	r.timeoutMs = waitSeconds * 1000
+	r.progressEvery = MAP_PROGRESS_EVERY
+	r.extra = {waitSeconds = waitSeconds, character = character(), level = UnitLevel("player"),
+		preset = plain(try(C_GameRules and C_GameRules.GetForeverExperiencePreset)),
+		hardcore = flag(try(C_GameRules and C_GameRules.IsHardcoreActive)),
+		trackingHidden = plain(try(C_Minimap and C_Minimap.IsTrackingHiddenQuests)),
+		trackingAccountDone = plain(try(C_Minimap and C_Minimap.IsTrackingAccountCompletedQuests))}
+	r.send = function(mapID)
+		r.inFlight[mapID] = debugprofilestop()
+		r.inFlightCount = r.inFlightCount + 1
+		r.requests = pcall(C_QuestLine.RequestQuestLinesForMap, mapID) and 1 or 0
+	end
+	r.questLineUpdate = function(requestRequired)
+		local mapID, started = next(r.inFlight)
+		if not mapID or r.requests == 0 then return end
+		if requestRequired and r.requests < MAX_MAP_REQUESTS then
+			r.requests = r.requests + 1
+			pcall(C_QuestLine.RequestQuestLinesForMap, mapID)
+			return
+		end
+		r.inFlight[mapID] = nil
+		r.inFlightCount = r.inFlightCount - 1
+		local result = requestRequired and "unanswered" or "event"
+		db.maps[mapID] = mapFacts(mapID, r, result, debugprofilestop() - started)
+		count(r, result)
+	end
+	r.timeout = function(mapID)
+		local started = r.timedOut[mapID]
+		r.timedOut[mapID] = nil
+		db.maps[mapID] = mapFacts(mapID, r, "noevent", started and debugprofilestop() - started or nil)
+		count(r, "noevent")
+	end
+	r.schedulerUpdate = function()
+		r.extra.scheduler = schedulerFacts()
+		r.extra.schedulerEvent = true
+	end
+	r.lastLook = function()
+		if not r.extra.scheduler then r.extra.scheduler = schedulerFacts() end
+	end
+	if C_EventScheduler then pcall(C_EventScheduler.RequestEvents) end
+	go(r)
+end
+
 local function giverKey()
 	local guid = UnitGUID("npc")
 	if not guid or secret(guid) then return nil end
@@ -441,6 +646,19 @@ local function status()
 	say(string.format("on %s: %d of %d quests answered (%s); %d of %d NPCs (%s). The recorder is %s: %d givers offering %d quests, and %d quests accepted.",
 		build, questCount, #probe.questIds, countsText(quests), npcCount, #probe.npcIds, countsText(npcs),
 		db.recording and "on" or "off", givers, offers, accepted))
+	local maps, mapOffers, pois, events, hubs, entrances = 0, 0, 0, 0, 0, 0
+	for _, facts in pairs(db.maps) do
+		if facts.build == build then
+			maps = maps + 1
+			mapOffers = mapOffers + #(facts.questLines or {}) + #(facts.forceVisible or {}) + #(facts.tasks or {})
+			pois = pois + #(facts.pois or {})
+			events = events + #(facts.events or {})
+			hubs = hubs + #(facts.hubs or {})
+			entrances = entrances + #(facts.entrances or {})
+		end
+	end
+	say(string.format("Maps on %s: %d asked, with %d quest offers, %d points of interest, %d events, %d quest hubs and %d dungeon entrances.",
+		build, maps, mapOffers, pois, events, hubs, entrances))
 	if run then say(string.format("Running: the %s, %d of %d.", run.label, run.done, run.total)) end
 end
 
@@ -461,7 +679,7 @@ end
 local function init()
 	QCForeverProbeDB = QCForeverProbeDB or {}
 	db = QCForeverProbeDB
-	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "runs", "logins"}) do
+	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "runs", "logins"}) do
 		db[key] = db[key] or {}
 	end
 	if db.recording == nil then db.recording = true end
@@ -471,8 +689,9 @@ end
 
 local frame = CreateFrame("Frame")
 for _, event in ipairs({"ADDON_LOADED", "PLAYER_LOGIN", "QUEST_DATA_LOAD_RESULT", "TOOLTIP_DATA_UPDATE",
-	"GOSSIP_SHOW", "QUEST_GREETING", "QUEST_DETAIL", "QUEST_COMPLETE", "QUEST_ACCEPTED"}) do
-	frame:RegisterEvent(event)
+	"QUESTLINE_UPDATE", "EVENT_SCHEDULER_UPDATE", "GOSSIP_SHOW", "QUEST_GREETING", "QUEST_DETAIL", "QUEST_COMPLETE",
+	"QUEST_ACCEPTED"}) do
+	pcall(frame.RegisterEvent, frame, event)
 end
 frame:SetScript("OnEvent", function(_, event, ...)
 	if event == "ADDON_LOADED" then
@@ -485,6 +704,10 @@ frame:SetScript("OnEvent", function(_, event, ...)
 		if run and run.answered then run.answered(...) end
 	elseif event == "TOOLTIP_DATA_UPDATE" then
 		if run and run.tooltipUpdate then run.tooltipUpdate(...) end
+	elseif event == "QUESTLINE_UPDATE" then
+		if run and run.questLineUpdate then run.questLineUpdate(...) end
+	elseif event == "EVENT_SCHEDULER_UPDATE" then
+		if run and run.schedulerUpdate then run.schedulerUpdate() end
 	elseif db.recording then
 		record(event, ...)
 	end
@@ -500,6 +723,12 @@ SlashCmdList.QCFOREVERPROBE = function(argument)
 		end
 		local inFlight = tonumber(option) or DEFAULT_IN_FLIGHT
 		if command == "quests" then startQuests(option == "all", inFlight) else startNpcs(option == "all", inFlight) end
+	elseif command == "maps" then
+		if run then
+			say(string.format("the %s is running. /qcprobe stop first.", run.label))
+			return
+		end
+		startMaps(tonumber(option) or DEFAULT_MAP_WAIT_SECONDS)
 	elseif command == "stop" then
 		if run then finish(true) else say("nothing is running.") end
 	elseif command == "status" then
@@ -508,6 +737,6 @@ SlashCmdList.QCFOREVERPROBE = function(argument)
 		db.recording = option == "on"
 		say("the recorder is " .. option .. ".")
 	else
-		say("/qcprobe quests [all | in flight], npcs [all | in flight], stop, status, record on|off.")
+		say("/qcprobe quests [all | in flight], npcs [all | in flight], maps [wait seconds], stop, status, record on|off.")
 	end
 end
