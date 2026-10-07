@@ -26,3 +26,4 @@ tools/*
 !tools/Read-SqlDump.lua
 !tools/Read-ForeverProbe.lua
 !tools/Report-MapOffers.lua
+!tools/Read-ApiDocs.lua
