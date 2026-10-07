@@ -320,7 +320,8 @@ The beta test found Felwood and Winterspring quest givers drawn at the edge of t
   - So the old pins come first, and the rules only decide for NPCs without one.
   - The rules changed again after the probe rerun: see "Three importer fixes" below.
 - **New zones get pins only from the recorder** (or a lookup). CMaNGOS's NPCs are vanilla, and the
-  quest cache names no quest giver. Mount Hyjal has no quests yet: the beta answered none filed
+  quest cache names no quest giver. The game's own map offers don't help either: the server
+  offers no storyline starts on any map (the probe's map pass, 7 October 2026). Mount Hyjal has no quests yet: the beta answered none filed
   there. Riverglades has one, "Remember That I Love You", started by an item, so it has no giver.
 
 ### Start points, and watching for more client data (5 October 2026)
@@ -745,6 +746,7 @@ these level 60 quests.
   the war is long over, and the officers who take signets stand in the capitals for good. On the
   beta it isn't over: Officer Lunalight isn't in Darnassus (6 October). If either event comes to
   Forever's calendar, `/qc holidays` lists it among the calendar holidays not tied to a quest.
+  Neither is on the game's events schedule either (the probe's map pass, 7 October).
 - Whether the 39 quests CMaNGOS calls repeatable that `QuestV2` does list really repeat. No quest
   retail's API flags repeatable is in retail's `QuestV2`, but Forever's lists "Junkboxes Needed"
   (8249), which retail's API calls repeatable. They keep CMaNGOS's type until the recorder sees them
@@ -798,6 +800,14 @@ these level 60 quests.
   (`game-api-review.md`, recommendation 3; maintenance.md, step 4b under "In the game"). It answers
   two open questions once run on the beta: whether Forever's server sends offer positions for the
   new zones at all, and whether the Scourge Invasion, the War Effort or the fishing contest show
-  up as events. Run pending. (The results note the experience preset chosen at Forever's login
-  screen, Classic or Enhanced, a settings preset whose Classic option turns quest points of
-  interest off; it isn't a kind of character.)
+  up as events. (The results note the experience preset chosen at Forever's login screen, Classic
+  or Enhanced, a settings preset whose Classic option turns quest points of interest off; it isn't
+  a kind of character.)
+- 2026-10-07: the map pass ran on the beta (build 70245). The server answers every zone's request
+  and offers nothing: no storyline starts, forced quests or task quests on any of the 60 maps, so
+  the new zones' pins keep coming from the recorder and the hand lists. The events schedule lists
+  nothing, so neither the fishing contest nor the Scourge Invasion or the War Effort is on it.
+  Quests in the log do come with objective positions, and Darkspear Islands has four named points
+  of interest. Details in `game-api-review.md`, "Map-offers probe: first run". The user's decision:
+  the map pass stays in every probe run, with its totals compared against this run's, so a build
+  that starts sending offers is noticed.

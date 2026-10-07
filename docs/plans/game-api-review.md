@@ -542,6 +542,51 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | later |
 | 15 | **Treasures and rares** from `C_VignetteInfo` | recorder, addon | names and places for hidden tracking quests | medium | a new feature, not planned |
 
+## Map-offers probe: first run (7 October 2026, beta build 1.60.1.70245)
+
+Run by the user with `/qcprobe maps` on an Alliance Night Elf rogue, level 12, with 13 Darkshore
+quests in the log and the Classic experience preset: all 60 maps in 22 seconds. The saved
+variables are `tools/forever_probe_70245/QCForeverProbe.lua` and the reader's rows
+`tools/map_offers_70245.tsv` (neither in git).
+
+- **Quest offers: none, on any map.** The server answered every zone's request with
+  QUESTLINE_UPDATE within 122 to 228 ms, and every list was empty: no storyline starts, no forced
+  quests and no task quests, on the old zones, the capitals, Mount Hyjal, Zephras Isle, Darkspear
+  Islands, the Riverglades and Shen'dralas alike. The five maps that sent no update were the world
+  map and the four continent maps, which Blizzard's own map never asks for, and their lists were
+  empty too. So Forever's new zones won't get pins from the game's offers: the recorder
+  (recommendation 1) and the hand lists stay the only sources, as forever.md assumed.
+- **Quests in the log come with positions.** `C_QuestLog.GetQuestsOnMap` listed the character's 13
+  Darkshore quests with their objective points: on Darkshore, and also on both Kalimdor maps (1414
+  and 1464), on Felwood (all 13, at x 17 to 41) and on Winterspring (2, at x 0 to 6). The client
+  lists a point on every map whose frame holds it, overlaps included, the same overlap the
+  importer works around (#144). Two things follow: the client's map lists aren't an answer key
+  for which map a point belongs on (recommendation 10's check, with `GetMapPosFromWorldPos`, is
+  still open), and Forever's server does send positions for log quests, although the client's
+  `QuestPOIBlob` has 54 rows. A recorder could save a quest's objective and turn-in points while
+  it's in the log, which is a different thing from where it's offered.
+- **Points of interest: 16, all named; no events, hubs or dungeon entrances.** The six capitals on
+  the world map and on their continent maps, and four on Darkspear Islands: Camp, Ruins, Abandoned
+  Tower and Shipwreck Cove. The new zone has area POIs where the old zones have none; the
+  client-tables review's `AreaPOI` table (372 rows on Forever) is where to look for more.
+- **Events: none.** The events schedule has data but lists nothing ongoing or scheduled, and
+  `CanShowEvents` is false. The fishing contest, the Scourge Invasion and the War Effort don't
+  appear there on the beta (forever.md, open questions).
+- **Level ranges: none.** `C_Map.GetMapLevels` gives 0 for every map: recommendation 12 is retail
+  only.
+- **User waypoints: allowed on 56 of the 60 maps.** Refused only on the four orphan maps (the three
+  battlegrounds and Darkspear Islands). Recommendation 6's built-in waypoint works on Forever's
+  zones.
+- **Dungeon entrances: none** on any map: recommendation 14 is retail only.
+
+The setting the Classic preset turns off, quest points of interest, is the map filter's "Quest
+Objectives" entry (the `questPOI` setting), and it was on during the run, with every other entry
+of Forever's filter: Show Quest Levels, Quest Difficulty Color, Instance Entrances, Low-Level
+Quests and Tracked Items. So the empty offer lists stand. Forever's filter has no "Account
+Completed Quests" entry, which retail's has (recommendation 8). The probe now records the
+`questPOI` setting and the minimap's quest POI tracking with each run. Still to do: the retail
+run, which compares the game's offers with our pins.
+
 ## Decisions to take
 
 1. **The recorder on retail** (recommendation 1). Is it wanted, and is it on by default? It writes
@@ -562,10 +607,21 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
    toggles in the settings grid plan; the addon's defaults were chosen deliberately (settings-grid.md).
 7. **Items 9 to 15:** after the probes report, one PR each, in the order above, as time allows.
 
+## Decisions (agreed 7 October 2026)
+
+1. **The map-offers probe first** (recommendation 3): built and run the same day; results in
+   "Map-offers probe: first run".
+2. **A check stays even while it finds nothing.** The map pass stays in every probe run, and its
+   totals are compared with the last run's (maintenance.md, step 10 and step 4b). The user's
+   reason, in their words: we never know what the client files or the in-game APIs might start
+   serving up, which is why these audits were asked for in the first place. The rule covers every
+   check this review and the client-tables review add, so recommendation 11, the API check every
+   sweep, follows from it and is wanted.
+
 ## Open questions (to check in game)
 
-- Does Forever's server send quest-line offers on any map, and does the quest points of interest
-  setting (off under the Classic experience preset) change what the client receives? (Probe 3.)
+- Does Forever's server send quest-line offers on any map? No, on the first run (above), with the
+  quest points of interest setting on, so the setting isn't the reason.
 - Do `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` return anything on 12.1.0 and on
   Forever? (Probe 2.)
 - Does `GetQuestLineInfo` answer for a quest whose data hasn't been loaded? Blizzard calls it for
@@ -599,5 +655,11 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
   flag, and once per run for the events schedule, the experience preset and the tracking toggles;
   `tools/Report-MapOffers.lua` reads a pass against the addon's quests and pins
   (maintenance.md, "In the game", step 4b). Checked offline with stand-ins for the game: 16 checks
-  across maps that answer, answer late, ask for a second request, never answer or refuse. Not yet
-  run on the beta; its results go here.
+  across maps that answer, answer late, ask for a second request, never answer or refuse. Merged as
+  #210.
+- 2026-10-07: the first beta run (build 70245; results in "Map-offers probe: first run"): no quest
+  offers on any map, log quests with positions, 16 named points of interest, no events, no level
+  ranges, no dungeon entrances, user waypoints allowed on the zones, with the quest points of
+  interest setting on. The user's decision the same day: the map pass stays in every probe run,
+  and no check is dropped for finding nothing (Decisions, above). Next: the retail run, the API
+  check every sweep (recommendation 11), and the remaining decisions.
