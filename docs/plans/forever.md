@@ -808,4 +808,6 @@ these level 60 quests.
   the new zones' pins keep coming from the recorder and the hand lists. The events schedule lists
   nothing, so neither the fishing contest nor the Scourge Invasion or the War Effort is on it.
   Quests in the log do come with objective positions, and Darkspear Islands has four named points
-  of interest. Details in `game-api-review.md`, "Map-offers probe: first run".
+  of interest. Details in `game-api-review.md`, "Map-offers probe: first run". The user's decision:
+  the map pass stays in every probe run, with its totals compared against this run's, so a build
+  that starts sending offers is noticed.

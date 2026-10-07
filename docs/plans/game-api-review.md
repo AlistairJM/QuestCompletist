@@ -607,6 +607,17 @@ run, which compares the game's offers with our pins.
    toggles in the settings grid plan; the addon's defaults were chosen deliberately (settings-grid.md).
 7. **Items 9 to 15:** after the probes report, one PR each, in the order above, as time allows.
 
+## Decisions (agreed 7 October 2026)
+
+1. **The map-offers probe first** (recommendation 3): built and run the same day; results in
+   "Map-offers probe: first run".
+2. **A check stays even while it finds nothing.** The map pass stays in every probe run, and its
+   totals are compared with the last run's (maintenance.md, step 10 and step 4b). The user's
+   reason, in their words: we never know what the client files or the in-game APIs might start
+   serving up, which is why these audits were asked for in the first place. The rule covers every
+   check this review and the client-tables review add, so recommendation 11, the API check every
+   sweep, follows from it and is wanted.
+
 ## Open questions (to check in game)
 
 - Does Forever's server send quest-line offers on any map? No, on the first run (above), with the
@@ -649,4 +660,6 @@ run, which compares the game's offers with our pins.
 - 2026-10-07: the first beta run (build 70245; results in "Map-offers probe: first run"): no quest
   offers on any map, log quests with positions, 16 named points of interest, no events, no level
   ranges, no dungeon entrances, user waypoints allowed on the zones, with the quest points of
-  interest setting on. Next: the retail run and the user's decisions.
+  interest setting on. The user's decision the same day: the map pass stays in every probe run,
+  and no check is dropped for finding nothing (Decisions, above). Next: the retail run, the API
+  check every sweep (recommendation 11), and the remaining decisions.
