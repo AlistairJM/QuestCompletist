@@ -98,7 +98,7 @@ The zone text stays in the data file only: the game never reads it.
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Retype-FlaggedWorldQuests.ps1`,
 `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`, `Place-UncategorisedQuests.ps1`,
 `Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`, `Sync-QuestPrerequisites.ps1`,
-`Apply-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
+`Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
@@ -137,10 +137,10 @@ then every tool refuses to save.
    ```
    The Forever tools take the `ClassicDB_*.sql.gz` already in `tools\`, and only download one when
    there's none.
-5. **Get TrinityCore's latest world database** for step 2b. Download the newest `TDB_full_*.7z`
-   from [TrinityCore's releases](https://github.com/TrinityCore/TrinityCore/releases), extract its
-   `TDB_full_world_*.sql` into `tools\tdb\` with 7-Zip, and move the older one aside. Step 2b reads
-   the newest one there and names it in its summary.
+5. **Get TrinityCore's latest world database** for steps 2b, 2c and 6c. Download the newest
+   `TDB_full_*.7z` from [TrinityCore's releases](https://github.com/TrinityCore/TrinityCore/releases),
+   extract its `TDB_full_world_*.sql` into `tools\tdb\` with 7-Zip, and move the older one aside.
+   Those steps read the newest one there and name it in their summaries.
 
 Run a script with:
 ```powershell
@@ -169,6 +169,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
+| 6c | NPC IDs for pins that have a name and none, from TrinityCore | `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins it merges | Only the last one |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
@@ -373,9 +374,16 @@ After `-Apply`, run `Apply-PinNpcIds.ps1 -WhatIf`. A row in `pin-npc-id-decision
 the rebuild merged into another matches no pin, and stops that tool. Point the row at the pin that
 took its quests, or delete it if that pin has a row of its own or already has the row's NewId.
 
-It works the other way too. When `Apply-PinNpcIds.ps1` gives a pin the ID of another pin of that NPC
-within 3 points, the next rebuild merges the two. So after setting IDs, rerun the pipeline: apply
-what it merges, then check the rows again.
+It works the other way too. When `Apply-PinNpcIds.ps1` or `Fill-PinNpcIds.ps1` gives a pin the ID
+of another pin of that NPC within 3 points, the next rebuild merges the two. So after setting IDs,
+rerun the pipeline: apply what it merges, then check the rows again.
+
+`Fill-PinNpcIds.ps1` (step 6c) gives a pin that has a name and no NPC ID the ID of the creature of
+exactly that name that starts one of its quests in TrinityCore's database (step 5 under "Before a
+sweep"), so the game names it in the player's language. It leaves a pin whose quests start at
+objects or items, or at a creature of another name, and lists those in `tools\pin-npc-id-report.txt`
+for a lookup by hand through `pin-npc-id-decisions.csv`. Run it with `-WhatIf` first. A second run
+changes nothing; a newer database or new pins from step 6 may fill more.
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -768,6 +776,6 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1` |
-| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests | `Audit-QuestTables.ps1`, from `tools\tdb\` |
+| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1` and `Fill-PinNpcIds.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1` |
