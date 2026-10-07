@@ -579,10 +579,13 @@ variables are `tools/forever_probe_70245/QCForeverProbe.lua` and the reader's ro
   zones.
 - **Dungeon entrances: none** on any map: recommendation 14 is retail only.
 
-Still to do: a one-minute rerun with the minimap's "Track Quest POIs" on (the Classic preset turns
-quest points of interest off, and the probe now records that toggle), to rule the setting out
-before the empty offer lists count as final, since the log quests' points came through with it
-off; and the retail run, which compares the game's offers with our pins.
+The setting the Classic preset turns off, quest points of interest, is the map filter's "Quest
+Objectives" entry (the `questPOI` setting), and it was on during the run, with every other entry
+of Forever's filter: Show Quest Levels, Quest Difficulty Color, Instance Entrances, Low-Level
+Quests and Tracked Items. So the empty offer lists stand. Forever's filter has no "Account
+Completed Quests" entry, which retail's has (recommendation 8). The probe now records the
+`questPOI` setting and the minimap's quest POI tracking with each run. Still to do: the retail
+run, which compares the game's offers with our pins.
 
 ## Decisions to take
 
@@ -606,9 +609,8 @@ off; and the retail run, which compares the game's offers with our pins.
 
 ## Open questions (to check in game)
 
-- Does Forever's server send quest-line offers on any map? No, on the first run (above). Does the
-  quest points of interest setting (off under the Classic experience preset) change what the
-  client receives? One rerun with "Track Quest POIs" on answers it.
+- Does Forever's server send quest-line offers on any map? No, on the first run (above), with the
+  quest points of interest setting on, so the setting isn't the reason.
 - Do `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` return anything on 12.1.0 and on
   Forever? (Probe 2.)
 - Does `GetQuestLineInfo` answer for a quest whose data hasn't been loaded? Blizzard calls it for
@@ -646,5 +648,5 @@ off; and the retail run, which compares the game's offers with our pins.
   #210.
 - 2026-10-07: the first beta run (build 70245; results in "Map-offers probe: first run"): no quest
   offers on any map, log quests with positions, 16 named points of interest, no events, no level
-  ranges, no dungeon entrances, user waypoints allowed on the zones. Next: the rerun with "Track
-  Quest POIs" on, the retail run, and the user's decisions.
+  ranges, no dungeon entrances, user waypoints allowed on the zones, with the quest points of
+  interest setting on. Next: the retail run and the user's decisions.

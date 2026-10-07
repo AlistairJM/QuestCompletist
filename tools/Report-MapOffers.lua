@@ -110,8 +110,9 @@ for _, r in ipairs(runs) do
 		r.hardcore and ", hardcore" or "", text(r.waitSeconds), r.asked or 0, r.answered or 0,
 		(function() local parts = {} for _, k in ipairs(sortedKeys(r.counts)) do parts[#parts + 1] = k .. " " .. r.counts[k] end return table.concat(parts, ", ") end)(),
 		r.seconds or 0, r.stopped and ", stopped early" or ""))
-	print(string.format("  Tracking toggles: trivial quests %s, account-completed quests %s, quest POIs %s.",
-		text(r.trackingHidden), text(r.trackingAccountDone), r.trackingQuestPois == nil and "not recorded" or text(r.trackingQuestPois)))
+	local function recorded(value) return value == nil and "not recorded" or text(value) end
+	print(string.format("  Settings: quest points of interest (questPOI) %s; tracking trivial quests %s, account-completed quests %s, quest POIs on the minimap %s.",
+		recorded(r.questPoiSetting), text(r.trackingHidden), text(r.trackingAccountDone), recorded(r.trackingQuestPois)))
 	local s = r.scheduler
 	if not s then
 		print("  Events schedule: not read.")
