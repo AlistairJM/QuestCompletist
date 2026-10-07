@@ -570,6 +570,7 @@ lacks is greyed with its reason, as another class's quests are.
 - **The character's skill:** Forever's client has `C_SkillInfo.GetSkillLineInfoByID`, a skill's
   rank and its bonuses. Retail's and Classic Era's API documentation have only a stub of it. The
   addon counts the bonuses, as the skill list shows them; whether the game does is still to check.
+  A client without the function gets the base professions' ranks from `GetProfessionInfo`.
 - **What changed:** the importer writes `data/forever/skills.jsonl`, and `Build-ForeverMenu.ps1`
   turns it into `qcQuestSkillRequirements` in Forever's `qcQuest.lua`; retail's is empty. A quest
   whose skill the character lacks, or hasn't enough of:

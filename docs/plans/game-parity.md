@@ -42,7 +42,7 @@ Numbers are from master 8c7d38c (7 October 2026, after releases 112.3): retail 3
 
 | Place | Game | Why | Could the other have it? | Recommendation |
 |---|---|---|---|---|
-| Profession skill requirement: `qcCore.lua` returns "can't say" when the client has no `C_SkillInfo.GetSkillLineInfoByID`, so the quest's required skill level is never checked on retail | Forever | **API, wrongly placed, over data.** Retail's client reads a profession's rank through `GetProfessionInfo`, which the addon already calls for the profession filter. The real gap is data: `qcQuestSkillRequirements` has 141 Forever quests from CMaNGOS and none for retail | Yes. Retail's sources: the client's `QuestV2CliTask` skill filters (410 task quests, client-tables review) and TrinityCore's 78 old quests. Retail splits each profession by expansion, so the skill line in the requirement must be the expansion's | Replace the gate with a fallback through `GetProfessionInfo` on clients without `C_SkillInfo`, so the code is the same on both; then fill retail's requirements from those two sources |
+| Profession skill requirement: `qcSkillRank` in `qcCore.lua` | both (was Forever's alone) | **API, now handled; the real gap is data.** `qcSkillRank` used to return "can't say" on a client without `C_SkillInfo.GetSkillLineInfoByID`, so the required level was never checked on retail. Since 7 October 2026 it prefers `C_SkillInfo` and otherwise reads the professions in `qcProfessionBits` through `GetProfessions` and `GetProfessionInfo`, which the addon already calls for the profession filter. `qcQuestSkillRequirements` still has 141 Forever quests from CMaNGOS and none for retail | Yes, by data. Retail's sources: the client's `QuestV2CliTask` skill filters (410 task quests, client-tables review) and TrinityCore's 78 old quests. Retail splits each profession by expansion, so the requirement's skill line must be the expansion's, and whether the profession list reports that line or only the base one is still to check in game; until then a line outside `qcProfessionBits`, an expansion's included, answers "can't say" | Fallback done. Before the data, check in game what `GetProfessionInfo` reports and whether `C_TradeSkillUI.GetProfessionInfoBySkillLineID` reads an expansion's line (recommendation 3) |
 | Renown requirements: `qcRenownLevelRequirements` (96 quests) and the `C_MajorFactions` guard in `qcTooltips.lua` | retail | nature: Forever has no major factions (the functions exist and answer nothing) | No | Keep |
 | Covenants: the covenant filter and `qcQuestCovenant` (777 quests) | retail | nature | No | Keep |
 | Warband filter: `IsQuestFlaggedCompletedOnAccount` | both | the function is documented on both; Forever has no warbands, so it presumably answers false | Check once on the beta that a quest done on one character isn't flagged on another | Keep; a line in the next beta check |
@@ -51,7 +51,7 @@ Numbers are from master 8c7d38c (7 October 2026, after releases 112.3): retail 3
 | Quests no longer available: the flag file and the filter | both | process: retail flags 218 quests from a review; Forever's importer leaves refused quests out instead, and flags none | A Forever review of hidden and test quests after launch, by the same method | Later, after launch |
 | Everything else: the 15 filters, tooltips, pins, quest and NPC names from the game, categories' client names, waypoints, the settings grid | both | shared | – | – |
 
-So the code has one gate to fix and no other divergence that isn't the games' nature.
+So the code's one gate is fixed, and no other divergence is anything but the games' nature.
 
 ## The data
 
@@ -105,8 +105,11 @@ So the code has one gate to fix and no other divergence that isn't the games' na
 - **API gaps.** `tools\Compare-ApiDocs.ps1` (step 2b) lists the functions the addon calls that one
   game documents and the other doesn't, today only `C_SkillInfo.GetSkillLineInfoByID` on Forever,
   and exits with 1 when such a function turns up in the documentation of a game that lacked it in
-  the earlier list: the game has gained it, and the feature behind it is to be shared. Checked
-  with an older Forever list doctored to lack `C_SkillInfo`.
+  the earlier list: the game has gained it, so check that the code reads it as its fallback did,
+  and share any feature gated on it. Checked
+  with an older Forever list doctored to lack `C_SkillInfo`. `qcSkillRank` prefers `C_SkillInfo`
+  where the client has it, so when retail gains it the profession-list fallback becomes the second
+  route and the expansion lines can be read directly.
 - **Data gaps**, each with the place that watches it: Forever's storylines (`QuestLine` rows; the
   importer's summary, once it prints them) and start points (`QuestPOIBlob`; the importer's
   summary); a quest-giver field in Forever's quest records (the importer's summary); a Forever
@@ -120,7 +123,7 @@ So the code has one gate to fix and no other divergence that isn't the games' na
 |---|---|---|---|
 | 1 | The recorder on retail (API review, recommendation 1) | small in the addon, medium for the merge tool | the one check Forever has that retail lacks outright |
 | 2 | One probe for both games: a retail mode for `Build-ProbeLists.ps1`, the quest-facts pass built once, the NPC pass run on retail each sweep, #42's probe retired | medium | ends the two-probes split; the Forever probe already loads on retail |
-| 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback, then the data from `QuestV2CliTask` and TrinityCore | small code, medium data | the case that started this; the fallback alone makes the code the same on both |
+| 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback (done 7 October 2026), then the in-game check of the expansion lines, then the data from `QuestV2CliTask` and TrinityCore | small code (done), medium data | the case that started this; the fallback makes the code the same on both, and changes nothing in game until retail has requirement data |
 | 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | a switch to skip the API and TrinityCore parts |
 | 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | probably finds nothing; the point is that it looks |
 | 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
@@ -136,9 +139,18 @@ So the code has one gate to fix and no other divergence that isn't the games' na
 2. **The sweep watches the gaps:** the API check names the one-game functions and fails when a gap
    closes; the data gaps are listed here with what watches each.
 
-To take: which of recommendations 1 to 7 come first. Each is one pull request.
+3. **The order of work**, one pull request each: the skill fallback (3, code half); the retail map
+   pass (8), a run in game that should come before 12.1.5 so that sweep has a baseline; the
+   recorder on retail with one probe for both games (1 and 2); the table checks on Forever (4 and
+   5); the retail skill data (3, data half); the journal check on Forever (9); the retail quest
+   cache reader (6); the importer's row counts (7); the hidden and test quest review after launch
+   (10). Behind it: 12.1.5 goes live on 13 or 14 October and Forever launches on 4 November.
 
 ## Status
 
 - 2026-10-07: audit written; `Compare-ApiDocs.ps1` extended with the one-game list and the
   gap-closing failure. Nothing else changed.
+- 2026-10-07: the order agreed (decision 3). Recommendation 3's code half built: `qcSkillRank`
+  falls back to the character's profession list on a client without `C_SkillInfo`, for the
+  professions in `qcProfessionBits`; checked with stand-ins for both clients. Retail has no
+  requirement data yet, so nothing changes in game until the data half.
