@@ -186,7 +186,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2c | Prerequisites from Blizzard's API and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
+| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 6c | NPC IDs for pins that have a name and none, from TrinityCore | `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins it merges | Only the last one |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
@@ -358,6 +358,16 @@ events), factions, Blizzard's UI text and area names. A rerun with no client cha
 `qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
 The same tool writes `clientName` into `qcMenu.lua` for the menu headings it lists (continents,
 expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
+
+Then run `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh`,
+with `-WhatIf` first. The game can't be asked at runtime for the name of a quest log heading, so a
+category filed under one ("Timerunning", "Garrison Support", the War Campaigns, Forever's "Lunar
+Festival") keeps its key in the `Localization` files, and this tool writes the client's own name
+for the heading, in each language, into those keys from the `QuestSort` table, downloaded per
+language. The headings are chosen by hand in the script, only where the heading's English is
+exactly the category's name; it stops if Blizzard renames a heading or we a category. Both games'
+headings are covered, retail's text first where both have one ("Seasonal"). A rerun with no client
+changes leaves every file byte-identical. Then run `Test-Localization.lua` (below).
 
 `Remove-ConvertedLocaleKeys.ps1` then deletes the text the client has made redundant, in both
 games. Run it with `-WhatIf` first.
@@ -609,9 +619,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    races and its in-game UI strings (the script's `$headingSources` for headings). It lists the
    categories still named by our own strings: quest log headings such as "Lunar Festival", which
    the game can't be asked for. Each has a key in every `Localization` file, made from its English
-   name as for any category, with the client's name for that heading in each language: its
-   `QuestSort` table, downloaded with `&locale=` from wago.tools. The script names any that lack a
-   key. If it names a category our text covered, run `Remove-ConvertedLocaleKeys.ps1` (step 5).
+   name as for any category, which `Sync-QuestSortNames.ps1` (step 5) fills with the client's
+   name for that heading in each language, from its `QuestSort` table; a new heading goes into
+   that script's list. The script names any that lack a key. If it names a category our text
+   covered, run `Remove-ConvertedLocaleKeys.ps1` (step 5).
 6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
    both.
 7. The reachability check (step 9), with Forever's TOC and its client's map table:
@@ -660,10 +671,13 @@ reports text to remove. `Remove-ConvertedLocaleKeys.ps1` (step 5) removes all bu
 - a label on a category's entry in a menu, which never shows;
 - a key a translation has that English doesn't.
 
-Still in English: the `/qc holidays` output, which is for maintainers, and about 20 of retail's
-category names the game has no name for, mostly Blizzard content such as "Timerunning" and "The
-Harbinger", whose official translations we don't have. WoW: Forever's are all translated, with the
-game's own names for those quest log headings (step 10).
+Still in English: the `/qc holidays` output, which is for maintainers, and a handful of retail
+category names the game has no name for: our own groupings ("Legion Uncategorized", "Warfront
+Contribution"), "Mac'Aree", and three whose quest log heading is worded differently ("Time Rift"
+is the game's "Time Rifts", "Weekly Events" its "Weekly Event", and "9.1 Campaign" can't be a key).
+The 26 retail categories filed under a heading worded exactly as ours, and WoW: Forever's six, take
+the game's own names for those headings in every language, through `Sync-QuestSortNames.ps1`
+(step 5).
 
 ## Holidays
 
