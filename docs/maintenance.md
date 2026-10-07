@@ -137,9 +137,10 @@ then every tool refuses to save.
    copy in `tools\`. A column change exits with 1: check the tool that reads that table, and the
    plan docs, before the sweep goes on. A new table or column that could serve the addon is a
    finding to plan, not just to note. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104
-   tables and Forever 1.60.1.70245 had 612, with no column changes in the tables read. No
-   systematic review of every table has been done yet; the tables read were chosen as each need
-   came up.
+   tables and Forever 1.60.1.70245 had 612, with no column changes in the tables read. The
+   first systematic review of every table (2026-10-07) is in
+   [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
+   were chosen as each need came up.
 3. **Move the Blizzard API cache aside** so every quest is fetched fresh:
    ```powershell
    Rename-Item tools\quest_api_cache "quest_api_cache.$(Get-Date -Format yyyyMMdd)"
