@@ -12,7 +12,8 @@ Signals per quest (1 = present):
   ServerKnows   the server sent the quest's data to the /qc typecheck probe (its saved results,
                 quest_type_probe_results.lua); 0 if it didn't, blank if the probe never asked.
                 Missing from QuestV2 with ServerKnows 0 is the one sure sign a quest is gone.
-  GiverPOI      client has a quest-giver map point (QuestPOIBlob, ObjectiveIndex -1)
+  GiverPOI      client has the quest's own map point (QuestPOIBlob, ObjectiveIndex -1: where it starts and
+                ends, or its turn-in when those differ; its start is point 32)
   AnyPOI        client has any map point for it
   InPinDB       one of our pins (data\pins.jsonl) offers it
   InQuestLine   part of a client quest line (QuestLineXQuest)

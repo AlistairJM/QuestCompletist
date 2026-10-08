@@ -3,11 +3,17 @@ Phase 1 pipeline: join wago.tools QuestPOIBlob + QuestPOIPoint + UiMapAssignment
 into per-quest, per-map converted (mapX%, mapY%) positions for quest-giver pins,
 then cross-reference against this addon's own quests (data\quests.jsonl).
 
+A pin goes where a quest starts: its point 32 in QuestPOIBlob, else its point -1, which is the
+quest's own point (where it starts and ends when that is one place, the turn-in otherwise). A start on
+the parent map of another start of the quest (a continent over a zone) is left out. A quest with
+a point 32 and no point -1 is placed only if it has a pin already.
+
 Inputs (expected already downloaded into tools/):
-  QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv
+  QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv, UiMap.csv
 
 Output:
-  tools/quest_locations.csv - QuestID, UiMapID, MapX, MapY, NumPointsUsed, InOurDB, OurZoneName
+  tools/quest_locations.csv - QuestID, UiMapID, MapX, MapY, NumPointsUsed, ObjectiveIndex (32 or -1),
+  InOurDB, OurQuestName, OurZoneName
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -97,7 +103,10 @@ function Convert-Blob($blob) {
 # A quest's point -1 is where it starts and ends when that is one place, and the turn-in otherwise
 # (docs\plans\quest-location-data-pipeline.md, "October 2026, the pin review"); its point 32 is
 # where it starts. A quest the client gives a point -1 is placed at its points 32 when it has any,
-# else at its point -1. A quest with a point 32 and no point -1 gets no location, as before.
+# else at its point -1. A quest with a point 32 and no point -1 gets a location only if it has a pin
+# already (to move that pin to its start); giving pins to the rest is a separate step.
+$pinned = New-Object System.Collections.Generic.HashSet[string]
+foreach ($pin in (Read-PinData $DataDir)) { foreach ($questId in $pin.quests) { [void]$pinned.Add([string]$questId) } }
 $startConverted = @{}
 foreach ($blob in ($blobs | Where-Object { $_.ObjectiveIndex -eq "32" })) {
     $c = Convert-Blob $blob
@@ -121,7 +130,8 @@ function Test-AncestorMap($ancestor, $map) {
     return $false
 }
 $droppedParentCopies = 0
-foreach ($questId in ($ownConverted.Keys | Sort-Object { [int]$_ })) {
+$startOnly = @($startConverted.Keys | Where-Object { -not $ownConverted.ContainsKey($_) -and $pinned.Contains($_) })
+foreach ($questId in (@($ownConverted.Keys) + $startOnly | Sort-Object { [int]$_ })) {
     if ($startConverted.ContainsKey($questId)) {
         # The client also lists a start on a parent map (a continent over a zone) at the same place.
         $starts = $startConverted[$questId]
@@ -151,7 +161,7 @@ foreach ($questId in ($ownConverted.Keys | Sort-Object { [int]$_ })) {
 Write-Output "Skipped (no matching point): $skippedNoPoint"
 Write-Output "Skipped (no matching region): $skippedNoRegion"
 Write-Output "Skipped (point outside every region of its map): $skippedOffMap"
-Write-Output "Quests placed at their start (point 32): $($questsAtStart.Count); at their own point (-1): $($questsAtOwnPoint.Count)"
+Write-Output "Quests placed at their start (point 32): $($questsAtStart.Count) ($($startOnly.Count) with no point -1, pinned already); at their own point (-1): $($questsAtOwnPoint.Count)"
 Write-Output "Starts on a parent map of another start of the quest, left out: $droppedParentCopies"
 Write-Output "Converted quest locations: $($results.Count)"
 

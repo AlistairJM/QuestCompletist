@@ -29,9 +29,10 @@ For each such quest in data\quests.jsonl, against data\pins.jsonl:
     giver's name from TrinityCore. A giver's quests within 1.5 points of each other share the pin,
     and join an existing pin of that giver within 1.5 points. A spawn no map holds, and a giver
     the database doesn't name, are reported.
-A giver that stands farther from the pin than that is listed, not acted on: the client's quest-giver
-points often mark a quest's turn-in rather than its start, so the pin may stand at the NPC who ends the
-quest (plans\quest-location-data-pipeline.md).
+A giver that stands farther from the pin than that is listed, not acted on. The pins stand at the
+client's start point of each quest (Build-QuestLocationData.ps1), and at its own point, the turn-in
+when it ends elsewhere, for the few the client gives no start; so the giver may be one of several
+places, or the pin may stand at the NPC who ends the quest (plans\quest-location-data-pipeline.md).
 
 A listed case that was looked at and stays is recorded in docs\plans\pin-giver-decisions.csv (Quest, Map,
 X and Y of its pin, Decision, NpcId, Reason), and later runs mark it kept and count only the new ones.
