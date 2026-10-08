@@ -514,7 +514,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Prerequisites, breadcrumbs, "only one of these" | the API, the client's task-quest tables, TrinityCore, CMaNGOS, hand tables | `IsBreadcrumbQuest` if it works; the offer list shows which step is available now | check |
 | Reputation rewards | the API (retail), the quest cache (Forever) | the same figures, for loaded quests | no |
 | Renown and friendship requirements | hand table | nothing; `IsQuestFlaggedCompletedOnAccount` and the offer list are the only live availability | – |
-| Pins: giver and position | client points, old pins, TrinityCore IDs (retail); CMaNGOS, recorder, hand lists (Forever) | the giver's GUID, name and position at every quest window, on retail too; popups and area triggers placed where they open; hand-in NPCs | recorder |
+| Pins: giver and position | client points, TrinityCore's start points and starters, old pins (retail); CMaNGOS, recorder, hand lists (Forever) | the giver's GUID, name and position at every quest window, on retail too; popups and area triggers placed where they open; hand-in NPCs | recorder |
 | Pins: which map | `UiMapAssignment` by our rules | the client's own `GetMapPosFromWorldPos` | probe |
 | Availability (obsolete, hidden) | the API's 404s, `QuestV2`, the probe's loads | the offer list per map; `QuestIgnoresAccountCompletedFiltering`; `IsAccountQuest` | probe, addon |
 | Account-wide quests | nothing | `IsAccountQuest` | probe → data → addon |
@@ -828,3 +828,6 @@ them.
   the Legion profession "Sample" quests among them. The new names were checked by hand and 11 quests
   moved to their real giver. 82449, a task-table quest, needs a hand entry; the 4,082 task quests in
   the data with a start and no pin stay unpinned, which decision 9 does not cover.
+- 2026-10-08: pins from TrinityCore's start points (quest-location-data-pipeline.md, "pins from
+  TrinityCore"): 1,453 more quests have a pin. The recorder (recommendation 1) is still the way to
+  give the pins that stay nameless, and the quests TrinityCore has no start for, their giver.

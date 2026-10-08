@@ -24,7 +24,7 @@ param(
 
 $ProgressPreference = "SilentlyContinue"
 
-foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "QuestPOIBlob") {
+foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "QuestPOIBlob", "QuestV2", "QuestInfo") {
     $path = "$toolsDir\$t.csv"
     if ($Refresh -or -not (Test-Path $path)) {
         Write-Output "Downloading $t..."
