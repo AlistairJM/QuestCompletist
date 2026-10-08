@@ -51,7 +51,7 @@ Numbers are from master 8c7d38c (7 October 2026, after releases 112.3): retail 3
 | Holidays: `qcHolidays` carries both games' IDs; Forever's Scourge Invasion and War Effort have none | both | data: the two events aren't on Forever's calendar (nor its events schedule, 7 October) | When Blizzard adds them, step 2b's holiday check reports the IDs | Keep |
 | Quests no longer available: the flag file and the filter | both | process: retail flags 218 quests from a review; Forever's importer leaves refused quests out instead, and flags none | A Forever review of hidden and test quests after launch, by the same method | Later, after launch |
 | Minimap button: `qcMinimap.lua` on LibDBIcon-1.0 | both | shared. Forever's minimap is retail's frame (`MinimapCluster.MinimapContainer.Minimap`, 198 wide, round mask; its `Camelot` skin only changes the art), so one button serves both; both TOCs list the libraries and the file, and both save `qcMinimapIcon` | Done for both | Check the button's distance from the ring on the beta |
-| Addon compartment entry (`showInCompartment` in `qcMinimapIcon`): not enabled | retail, probably Forever | API: `AddonCompartmentFrame` is in retail's client and, from `Blizzard_Minimap`'s TOC (`camelot` counts as `mainline` there), probably Forever's; the library skips it where the frame is missing | Yes, one flag | Decide with the user; confirm on the beta first |
+| Addon compartment entry: `qcMinimap.lua` calls `AddButtonToCompartment` whether or not the button shows | both | API: `AddonCompartmentFrame` is in retail's client and in Forever's (`Blizzard_Minimap`'s TOC counts `camelot` as `mainline`; the user saw the compartment on the beta, 8 October 2026); the library does nothing on a client without the frame, so an edition that lacks it needs no gate | Done for both | Keep; confirm the entry's click and tooltip on the beta |
 | Everything else: the 15 filters, tooltips, pins, quest and NPC names from the game, categories' client names, waypoints, the settings grid | both | shared | – | – |
 
 So the code's one gate is fixed, and no other divergence is anything but the games' nature.
@@ -172,3 +172,4 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-08: the minimap button (`qcMinimap.lua`, LibDBIcon-1.0) is in both games' TOCs from the
   start, so the code row above needed no gate. Checked with stand-ins for the client's frames; the
   button's look and distance from the ring on each game are for the in-game check.
+- 2026-10-08: the addon compartment entry turned on for both games, at the user's request.

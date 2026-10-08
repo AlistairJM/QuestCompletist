@@ -34,6 +34,7 @@ function qcCreateMinimapButton()
 		OnTooltipShow = qcMinimapTooltip,
 	})
 	qcDBIcon:Register(QC_MINIMAP_NAME, dataObject, qcMinimapIcon)
+	qcDBIcon:AddButtonToCompartment(QC_MINIMAP_NAME)
 end
 
 function qcShowMinimapButton(shown)
