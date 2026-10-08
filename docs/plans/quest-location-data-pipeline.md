@@ -367,7 +367,7 @@ missing, as without it every task quest would get a pin.
   new pins. 136 places carry a giver's name and 65 have none. Pins went from 13,688 to 13,772
   and quests with a pin from 23,283 to 23,476. Every one of the 13,688 old pins is still there,
   13,625 identical and 63 with new quests added: nothing moved, nothing went, no icon changed.
-  Four non-task quests still have no pin, as their start is on no map: 27858 and 27898
+  Five non-task quests still have no pin, as their start is on no map: 66038, 27858 and 27898
   "Rheastrasza's Gift", 40040 "Felwort Sample" and 46812 "Draconic Secrets".
 - **The names were checked.** A quest that joins a known NPC's pin takes that NPC's name, which is
   wrong when the NPC only stands nearby. Eleven were moved to their real giver by `MOVE` rows in
@@ -390,7 +390,8 @@ missing, as without it every task quest would get a pin.
   The recorder (`game-parity.md`, recommendation 1) would give these their real giver.
 - **Icons.** `Assemble-PinDB.ps1` gave a group the icon of its first row, and a new quest's default
   icon came first: Rukua's pin in Darkshore lost its class icon (9 to 1) and three profession pins
-  went from 1 to 3. A quest that takes a neighbouring pin's identity now takes its icon too.
+  went from 1 to 3. A quest new to a pin no longer replaces its icon (`IconFromPin`, in "pins from
+  TrinityCore" below).
 - **Of the 19 quests the retail map pass found with no pin,** 9 of the 11 the game offers now have
   one (the Legion profession "Sample" quests, "The Battle for Broken Shore" and "Warming Up"), and
   so do the twins 43806 and 59926. Still without: 40040, whose start is on no map, and 82449 "The
@@ -406,3 +407,72 @@ missing, as without it every task quest would get a pin.
 - **Open:** 4,082 task quests already in the data have a start and no pin, 1,387 of them world
   quests; whether to pin any of them is not decided. Decision 9 in game-api-review.md is about
   adding task quests to the database, with no pins.
+
+## October 2026, pins from TrinityCore
+
+The user's rule (8 October 2026): a normal quest gets a pin whenever there is data for where it is
+picked up, with or without an NPC, and never a world quest; the same for every game that has the
+data. The client's export of `QuestPOIBlob` lists no point at all for thousands of our quests, but
+TrinityCore's `quest_poi` and `quest_poi_points` do: they are the points the server sends the
+client, with the same `ObjectiveIndex 32` for where a quest starts (and -1, mostly the turn-in,
+which is not used). Where both list a quest, 19,801 of 19,806 single-place quests agree within 1.5
+map points. `Build-QuestLocationData.ps1` now places the quests the client doesn't list, as rows with
+`Source=trinitycore`, and `Assemble-PinDB.ps1` pins them.
+
+- **Which quests.** One of ours with no pin that is none of these: a task quest
+  (`QuestV2CliTask`); flagged unavailable; a type other than 0, 1, 2, 4 or 128; tagged a holiday or
+  profession quest; in a system category (Scenario, Delves, Prey, Warbands, Warfront Contribution,
+  Path of Ascension, Covenant Assaults, Torghast, Time Rift, Weekly Events, World PvP and the
+  others in the script), a holiday's category, or Landfall, whose dailies look retired; named like
+  an internal quest; absent from the client's `QuestV2`; disabled in TrinityCore; without a
+  `quest_template` row; flagged tracking (0x400) or unavailable (0x4000), or auto-accept together
+  with auto-complete (a scripted helper), or auto-accept with no starter (a trigger, not a giver);
+  type 128 with no weekly or daily flag; or of a system kind (World Quest, Emissary, Delve, Envoy,
+  Meta Quest, Professions and the like). The script prints a count per reason.
+- **Where.** Every start place, after dropping a start on the parent map of another start at the
+  same world point and merging places within 1.5 map points: up to six places (class and race
+  quests start in several cities). More, none, a start with no point, on a map without a region or on
+  a disabled map go to `tools\quest_locations_tdb_review.csv`, and so do the quests at a
+  placeholder point: where five or more of our quests of three or more categories start at one
+  world point (Mechagon's board also holds quests of Maldraxxus and Zereth Mortis, the Nerub-ar
+  Palace point those of three expansions), only the quests of its commonest category stay, and none
+  when that is under half of them.
+- **Names.** A pin takes a creature starter's name when that starter's TrinityCore spawn stands
+  within 1.5 map points of the start on the same map. Otherwise the quest joins a neighbouring
+  pin's identity only if that NPC, or one of the same name, starts it, else it gets a nameless pin
+  of its own: the NPC next to a start is often not its giver. A quest new to the pins never changes
+  the icon of the pin it joins (`IconFromPin`, replacing #223's copy of the icon).
+- **Result** (build 12.1.0.69933, TrinityCore 1210.26091). 1,454 quests got their first pin in 1,779
+  places: 207 on pins that already held other quests, 1,572 on 1,431 new pins. 508 places carry a
+  giver's name (402 from a starter's spawn at the start, 99 by joining a starter's pin, 7 by hand)
+  and 1,271 have none. Pins went from 13,772 to 15,203 and quests with a pin from 23,476 to 24,930. Every one
+  of the 13,772 earlier pins is still there, 13,646 identical and 126 with new quests added.
+  Pins with an NPC ID went from 10,404 to 10,564 and pins with neither ID nor name from 3,031 to 4,302.
+- **Left for a person** (`tools\quest_locations_tdb_review.csv`, 157 quests): 130 at placeholder
+  points, 17 starting outside every region of their map, 5 with more than six places, 3 with a start but
+  no point, 3 on a map without a region and 2 on a disabled map. The script also prints, per reason, the
+  quests TrinityCore has a start for that were not placed; among them are 2,766 that are not in our
+  quest data, a list to look through for the step that adds quests the database lacks.
+- **Names by hand.** Seven nameless pins got the starter the client's giver table puts at the
+  start (Master Hight, Wavespeaker Tulra) by `FILL` rows. About twenty pet-battle tutorial
+  quests stand nameless on their trainers' pins, and want one Wowhead check per city before
+  `FILL` rows. Three quests of holidays have no holiday tag in our data (47430, 79178, 79694) and
+  were pinned; they want the tag.
+- **A rerun.** Once a quest has a pin, the next run leaves it out of `quest_locations.csv` ("already
+  has a pin"), and its pin stays through the preserved-pairs net, so the CSV is shorter by these
+  quests and Join's "No existing pin at all" count is the number of new quests to review. A new
+  rule therefore takes no pin away: flag a retired quest in `unavailable-quest-decisions.csv`, or
+  take the quest off its pin in `data\pins.jsonl` and rerun.
+- **Checks.** Three independent readers recomputed all the positions from TrinityCore's points
+  (own pins within 0.007 map points, joined pins within 1.49), checked the names and the
+  population, and the script and these docs; what they found is fixed above. The pipeline, step
+  6c, `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1` and `Remove-DuplicatePinQuests.ps1` were rerun
+  until a second run changed nothing (two rounds). The reachability report differs from master's in
+  the pin count and one pin hidden by "no data" less. Not tried in game.
+- **Open.** About 10% of the pins that have a creature starter spawn are far from it (30 of 278);
+  TrinityCore's starter list is stale in places such as Orgrimmar's class hubs, and the quest points
+  agree with the client where the client lists them. 1036 "Avast Ye, Scallywag" is pinned where the
+  client puts its end, not at "Pretty Boy" Duncan: it wants a look in game. Item-started quests
+  with a start point, and auto-accepts that have a starter, are pinned at that point, as before. The addon draws a nameless new pin as the
+  anchor of a stack whose old pin was named in 53 stacks, so clicking it sets a waypoint titled
+  with a quest's name; a named pin should anchor the stack in `qcMergeStackedPins`.

@@ -185,10 +185,11 @@ then every tool refuses to save.
    ```
    The Forever tools take the `ClassicDB_*.sql.gz` already in `tools\`, and only download one when
    there's none.
-5. **Get TrinityCore's latest world database** for steps 2b, 2c and 6c. Download the newest
+5. **Get TrinityCore's latest world database** for steps 2b, 2c, 6 and 6c. Download the newest
    `TDB_full_*.7z` from [TrinityCore's releases](https://github.com/TrinityCore/TrinityCore/releases),
    extract its `TDB_full_world_*.sql` into `tools\tdb\` with 7-Zip, and move the older one aside.
-   Those steps read the newest one there and name it in their summaries.
+   Those steps read the newest one there and name it in their summaries. Step 6 also needs Lua 5.1
+   (one-time setup).
 
 Run a script with:
 ```powershell
@@ -455,8 +456,25 @@ continent over a zone) is left out. A quest with a point 32 and no point -1 on a
 pin already (534 do), which it moves to its start, or when it is one of our quests and not a task
 quest (193 more since October 2026): a task quest is one in the client's task table, which holds the
 world quests and bonus objectives the addon doesn't pin, and some dailies, holiday and ordinary
-quests. The tool needs `UiMap.csv` and `QuestV2CliTask.csv` as well as the tables above (step 5
-downloads `UiMap.csv`, step 1b `QuestV2CliTask.csv`) and stops without the second.
+quests. The tool needs `UiMap.csv` and `QuestV2CliTask.csv` (it stops without the second) as well as the
+tables above; step 5 downloads `UiMap.csv`, and step 1b `QuestV2CliTask.csv`, `QuestV2.csv` and
+`QuestInfo.csv`.
+
+A quest the client's export lists no point for at all gets its start from TrinityCore's
+`quest_poi` (point 32; point -1 is mostly the hand-in and is not used) when it is a normal quest
+of ours with no pin: not a task, system, holiday or retired quest, in `QuestV2`, not disabled in
+TrinityCore, and not an auto-accepted one with no giver
+([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026,
+pins from TrinityCore", has the rules). The tool reads the newest `tools\tdb\TDB_full_world_*.sql` with
+Lua 5.1 and, without them, only warns and places none. It writes each place of such a quest, up to
+six, to `quest_locations.csv` (`Source=trinitycore`). The quests it holds back for a person, at a
+placeholder start point or with no usable start, go to `tools\quest_locations_tdb_review.csv`: look
+through it every sweep. A starter whose TrinityCore spawn stands at the start names the pin;
+otherwise the quest joins a neighbour's pin only if that NPC starts it, else it gets a nameless pin,
+and it never changes the icon of a pin it joins. Once a quest has a pin, the next run leaves it
+out of the CSV and its pin stays, so a rerun's CSV is shorter by these quests and Join's "No
+existing pin at all" count is the number of new quests to review (1,454 in October 2026). To take a
+pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 4b). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
@@ -705,6 +723,17 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
+   Pins follow the same rule as retail's ([plans/game-parity.md](plans/game-parity.md)): a normal quest
+   gets a pin at every place a source puts its pickup, named after the giver when one stands there and
+   nameless otherwise. Forever's sources are CMaNGOS's creature and object givers with their spawns,
+   the recorder's spots, the hand list and the client's start points (point 32 first). It has no
+   equivalent of retail's TrinityCore start table, as CMaNGOS's `quest_poi` holds no point 32 and its
+   point -1 is the hand-in, and it has no world quests to leave out. Its pinless quests, by cause in
+   the review list of 6 October 2026: 956 that only the game knows (no giver, no start point), 197
+   started by an item, 72 that CMaNGOS gives no giver, 142 whose giver stands only inside
+   instances, 46 whose giver has no CMaNGOS spawn, and 1 off every Forever map. Compare each
+   import's pinless count and causes with these: a start point, recorded spot or spawn that turns up
+   for one of them is a pin the importer already makes.
    A quest whose givers, NPCs and objects, all stand only during one of CMaNGOS's game events gets
    that event's holiday, so its pins follow the calendar. Events with no holiday of their own go by
    their description: the Darkmoon Faire's building days, the fishing contest's announcers and
@@ -955,6 +984,6 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
-| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1` and `Fill-PinNpcIds.ps1`, from `tools\tdb\` |
+| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1` |

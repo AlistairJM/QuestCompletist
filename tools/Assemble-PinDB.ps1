@@ -62,6 +62,10 @@ foreach ($loc in $locations) {
         $npcName = $old.NpcName
         $iconType = $old.IconType
         $identitySource = "borrowed"
+    } elseif ($loc.GiverNpcId) {
+        $npcId = $loc.GiverNpcId
+        $npcName = $loc.GiverName
+        $identitySource = "giver-spawn"
     } elseif ($questProfession.ContainsKey($loc.QuestID) -and $questProfession[$loc.QuestID] -ne 0) {
         $iconType = "3"
     }
@@ -69,6 +73,7 @@ foreach ($loc in $locations) {
         QuestID = $loc.QuestID; UiMapID = $loc.UiMapID; MapX = $loc.MapX; MapY = $loc.MapY
         NpcId = $npcId; NpcName = $npcName; IconType = $iconType
         IdentitySource = $identitySource
+        Source = $loc.Source; StarterNpcIds = $loc.StarterNpcIds; StarterNames = $loc.StarterNames
     })
 }
 
@@ -92,6 +97,12 @@ Write-Output "Distinct known-NPC pins available for proximity matching: $totalDi
 Write-Output "Proximity-matching quests with no identity yet (within 1.5 map points, same UiMapID)..."
 $proximityThreshold = 1.5
 $proximityMatched = 0
+# A quest placed from TrinityCore's points has no pin of its own to borrow from, and the NPC next to its
+# start is often not its giver: it takes a neighbour's identity only when that NPC starts it.
+function Test-StartsQuest($row, $pin) {
+    if (@($row.StarterNpcIds -split '[|]' | Where-Object { $_ }) -contains [string]$pin.NpcId) { return $true }
+    return [bool]$pin.NpcName -and (@($row.StarterNames -split '[|]' | Where-Object { $_ }) -contains $pin.NpcName)
+}
 foreach ($row in $enriched) {
     if ($row.IdentitySource -ne "inferred-default") { continue }
     if (-not $distinctPinsByMap.ContainsKey($row.UiMapID)) { continue }
@@ -101,6 +112,7 @@ foreach ($row in $enriched) {
     $rowX = [double]$row.MapX
     $rowY = [double]$row.MapY
     foreach ($candidate in $distinctPinsByMap[$row.UiMapID]) {
+        if ($row.Source -eq 'trinitycore' -and -not (Test-StartsQuest $row $candidate)) { continue }
         $dx = $rowX - [double]$candidate.OldMapX
         $dy = $rowY - [double]$candidate.OldMapY
         $dist = [math]::Sqrt($dx * $dx + $dy * $dy)
@@ -110,7 +122,6 @@ foreach ($row in $enriched) {
     if ($best -and $bestDist -le $proximityThreshold) {
         $row.NpcId = $best.NpcId
         $row.NpcName = $best.NpcName
-        $row.IconType = $best.IconType
         $row.IdentitySource = "proximity-matched"
         $proximityMatched++
     }
@@ -226,7 +237,13 @@ foreach ($row in $enriched) {
             IconType = $row.IconType; MapX = $row.MapX; MapY = $row.MapY
             QuestIDs = New-Object System.Collections.Generic.List[string]
             Note = $null
+            IconFromPin = $false
         }
+    }
+    # A quest new to the pins comes with a default icon, which must not replace the icon of the pin it joins.
+    if (-not $pinGroups[$key].IconFromPin -and ($row.IdentitySource -eq 'borrowed' -or $row.IdentitySource -eq 'kept-old-unreplaced')) {
+        $pinGroups[$key].IconType = $row.IconType
+        $pinGroups[$key].IconFromPin = $true
     }
     if ($row.Note -and -not $pinGroups[$key].Note) { $pinGroups[$key].Note = $row.Note }
     if (-not $pinGroups[$key].QuestIDs.Contains($row.QuestID)) {
@@ -301,7 +318,7 @@ foreach ($g in $pinGroups.Values) {
 $pins = New-Object System.Collections.Generic.List[object]
 foreach ($mapId in ($byMap.Keys | Sort-Object { [int]$_ })) {
     # Hashtable order changes between runs; a fixed order keeps an unchanged rerun byte-identical.
-    $ordered = $byMap[$mapId] | Sort-Object { ($_.QuestIDs | ForEach-Object { [int]$_ } | Measure-Object -Minimum).Minimum }, { [double]$_.MapX }, { [double]$_.MapY }
+    $ordered = $byMap[$mapId] | Sort-Object { ($_.QuestIDs | ForEach-Object { [int]$_ } | Measure-Object -Minimum).Minimum }, { [double]$_.MapX }, { [double]$_.MapY }, { [int]$_.NpcId }
     foreach ($group in $ordered) {
         $pins.Add([pscustomobject][ordered]@{
             map = [int]$mapId
@@ -327,8 +344,10 @@ if ($Apply) {
 
 $borrowedCount = ($enriched | Where-Object { $_.IdentitySource -eq "borrowed" }).Count
 $proximityCount = ($enriched | Where-Object { $_.IdentitySource -eq "proximity-matched" }).Count
+$giverSpawnCount = ($enriched | Where-Object { $_.IdentitySource -eq "giver-spawn" }).Count
 $inferredCount = ($enriched | Where-Object { $_.IdentitySource -eq "inferred-default" }).Count
 Write-Output "Identity borrowed from existing data (exact quest match): $borrowedCount"
+Write-Output "Identity from a starter's spawn at the start point: $giverSpawnCount"
 Write-Output "Identity resolved via proximity match (same map, nearby known NPC): $proximityCount"
 Write-Output "Identity still unknown (no prior pin, nothing nearby): $inferredCount"
 
