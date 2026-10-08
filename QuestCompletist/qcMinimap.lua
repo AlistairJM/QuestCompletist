@@ -1,7 +1,7 @@
 local qcL = qcLocalize
 local qcDBIcon = LibStub("LibDBIcon-1.0")
 
-local QC_MINIMAP_NAME = "QuestCompletist"
+local QC_MINIMAP_NAME = "Quest Completist"
 local QC_MINIMAP_ICON = "Interface\\GossipFrame\\AvailableQuestIcon"
 
 local function qcMinimapClick(_, button)
@@ -15,7 +15,7 @@ local function qcMinimapClick(_, button)
 end
 
 local function qcMinimapTooltip(tooltip)
-	tooltip:AddLine("Quest Completist", 1, 0.82, 0)
+	tooltip:AddLine(QC_MINIMAP_NAME, 1, 0.82, 0)
 	tooltip:AddLine(qcL.MINIMAPLEFTCLICK, 1, 1, 1)
 	tooltip:AddLine(qcL.MINIMAPRIGHTCLICK, 1, 1, 1)
 	tooltip:AddLine(qcL.MINIMAPDRAG, 1, 1, 1)
@@ -28,7 +28,7 @@ function qcCreateMinimapButton()
 	qcMinimapIcon.hide = qcSettings.QC_MINIMAP_SHOW == 0
 	local dataObject = LibStub("LibDataBroker-1.1"):NewDataObject(QC_MINIMAP_NAME, {
 		type = "launcher",
-		text = "Quest Completist",
+		text = QC_MINIMAP_NAME,
 		icon = QC_MINIMAP_ICON,
 		OnClick = qcMinimapClick,
 		OnTooltipShow = qcMinimapTooltip,
