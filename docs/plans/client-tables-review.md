@@ -112,7 +112,7 @@ on 7 October 2026.
 | UiMapGroupMember (with UiMapGroup) | 836 / – | The floors of each multi-floor map, with their names | 9 groups are partly in the zone table and 28 of their floors aren't: Black Temple's 7, Dawn of the Infinite's 8, Firelands' 2, Mardum's 2, the Exodar's 3, the Stockade, Greymane Manor's main floor and Tazavesh's Aggramar's Vault | **Use:** a rule for `Add-ZoneTableMaps.ps1` (step 5) |
 | Holidays, HolidayNames | 799, 160 / 22, 16 | Every calendar holiday with its name, dates and durations | Every ID in `qcHolidays` is there under its name; Hallow's End's second ID, 1405, is the kind of thing that has been found by hand in game. Forever's 22 rows include four new ones ("Call to Arms: Darkspear Islands") and still neither the Scourge Invasion nor the Ahn'Qiraj War Effort | **Use:** an offline check of `qcHolidays` in step 2b |
 | QuestV2CliTask (the columns above) | 6,242 / – | The task quests | Skill levels for 410 world quests that have no profession in our data; prerequisites for 2,114 task quests | **Used:** the profession of 410 quests and prerequisites for 850, steps 1d and 2c (Status); the skill level waits for [game-parity.md](game-parity.md) |
-| Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 740 of our 1,474 storylines and 5,946 quests. The game gives a quest's campaign at runtime | **Maybe:** a feature (a campaign line in the tooltip, or campaigns in the menu), not data the addon lacks |
+| Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 740 of our 1,474 storylines and 5,946 quests. The game gives a quest's campaign at runtime | **Used:** the campaign line in the tooltip (Status); campaigns in the menu wait, and none of it is data the addon lacked |
 | ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | Only task quests, areas and maps carry a ContentTuningID; the API gives every quest's range, and `C_Map.GetMapLevels` a map's | No |
 | AdventureMapPOI | 514 / – | Points on the Legion, Battle for Azeroth and Torghast adventure maps | 500 name a quest, 475 ours, 30 with a pin. 420 are 12.1's Prey hunts, with no position; the 25 others are placed at the zone chosen, not at a giver | No |
 | QuestHub | 107 / – | A quest's hub, as an AreaPOI | 104 ours, 97 with a pin | No |
@@ -196,6 +196,8 @@ that; it isn't a table question.
    order 4, 3, 2, 1. Campaigns (6) and the task quests' columns (5) wait.
 2. **Recommendation 5 goes ahead too** (2026-10-07, the user, though its value is small: world quests
    are hidden by default). Campaigns (6) still wait.
+3. **Recommendation 6's tooltip line goes ahead** (2026-10-08, the user). The campaign headings
+   in the menu still wait.
 
 ## Status
 
@@ -261,3 +263,17 @@ that; it isn't a table question.
   TrinityCore starters and enders differ, the point is at an ender for 1,354 and at a starter for
   31. Moving those pins to where the quests start was done on 8 October, by the client's own start
   points (`ObjectiveIndex 32`): "October 2026, pins at the start" in the same plan.
+- 2026-10-08: the campaign line (recommendation 6, the tooltip half). A quest that belongs to a
+  campaign shows "Campaign: War Campaign (chapter 6 of 27)" above its storyline line in the quest
+  list's tooltip. It needs no data of ours: `C_CampaignInfo` names the quest's campaign and lists
+  the campaign's chapters, which are quest lines. A quest's storyline is its smallest quest line,
+  and is the chapter for 85% of the 6,067 campaign quests; for the rest the chapters' quests are
+  searched (`C_QuestLine.GetQuestLineQuests`). The label is the game's own word for it, and the
+  one new text, "(chapter %d of %d)", is in all 11 languages, the ten translations marked for
+  review (nine use the game's own word for a chapter). Retail's alone: WoW: Forever has no
+  campaign tables. The menu headings, which would need `Campaign` and `CampaignXQuestLine` in
+  `Build-QuestLines.ps1`, wait.
+  To check in game: Blizzard keeps utility campaigns ("Catching Up!", "Jump to Chapter 5") that
+  share quests with the real ones, and the game gives a quest one campaign. If `/dump
+  C_CampaignInfo.GetCampaignInfo(C_CampaignInfo.GetCampaignID(63639)).name` (or 62966, 70180)
+  names one of them, the line needs a list of campaigns to skip.

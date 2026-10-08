@@ -821,3 +821,5 @@ them.
   242 of the 439 offers the retail run listed (159 before) and more than 5 points from 1 (56 before).
   The 192 quests with a start and no pin stay a separate step; quest-location-data-pipeline.md,
   "October 2026, pins at the start".
+- 2026-10-08: the campaign line of recommendation 5 is in the quest list's tooltip, from
+  `C_CampaignInfo` and `C_QuestLine.GetQuestLineQuests` (client-tables-review.md, Status).
