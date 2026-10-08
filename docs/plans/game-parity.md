@@ -20,7 +20,7 @@ the content), **API** (the game's client lacks a function; the sweep watches the
 reach the same end by different tools).
 
 Numbers are from 8 October 2026 (master 8d96e42 with the pin changes of that day): retail 35,023
-quests and 15,203 pins; Forever 5,081 quests and 1,706 pins.
+quests and 15,202 pins; Forever 5,081 quests and 1,706 pins.
 
 ## The games by their nature
 
@@ -68,8 +68,8 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Renown requirements | 96 | none | nature | No |
 | Skill requirements | none | 141 | **data** (the code row above) | Yes: `QuestV2CliTask` and TrinityCore |
 | Unavailable flags | 218 | 0 | process (above) | Later |
-| Pins with an NPC ID | 10,564 of 15,203 | 1,503 of 1,706 | both; retail's IDs from TrinityCore and the client's giver table (#208), Forever's from CMaNGOS | – |
-| Pins with neither ID nor name | 4,302 | 4 | retail's are popups, items, ship decks and the quests TrinityCore's start points place with no starter standing there; Forever has 23 start points in its client | **data** on Forever's side: the importer counts the start points every run | – |
+| Pins with an NPC ID | 10,564 of 15,202 | 1,503 of 1,706 | both; retail's IDs from TrinityCore and the client's giver table (#208), Forever's from CMaNGOS | – |
+| Pins with neither ID nor name | 4,301 | 4 | retail's are popups, items, ship decks and the quests TrinityCore's start points place with no starter standing there; Forever has 23 start points in its client | **data** on Forever's side: the importer counts the start points every run | – |
 | Pickup sources for pins | the client's `QuestPOIBlob` start points (point 32), TrinityCore's `quest_poi` start points for the quests the client lists none for, the client's giver table, TrinityCore's starters and spawns | CMaNGOS's creature and object givers with their spawns, the recorder's spots, the hand list, the client's 23 start points | **data:** CMaNGOS's `quest_poi` has no point 32 (its -1 is the hand-in), Forever's client lists 23 start points, and its 197 item-started quests stay pinless where retail pins them at their start point; **nature:** Forever has no world quests to leave out and no client giver table; **process:** retail pins every place of a quest, Forever merges quests starting at one spot into one nameless pin (11 quests on 4 pins) | Watch Forever's side: the importer's start-point count, the map pass's offers (0 on build 70245), and whether CMaNGOS or its client gains a point-32 table |
 | Quest types | retail: probe, API and `QuestV2` | CMaNGOS and the cache's flags, `QuestV2` | process; neither game's probe can say "repeatable" | – |
 | Category names in the player's language | all from the client since #207 | all from the client | both | – |
@@ -174,7 +174,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   order, from its own client tables (quest-location-data-pipeline.md, "October 2026, pins at the
   start"). Forever's data takes it at the next import.
 - 2026-10-08: pins from every pickup source. Retail's pipeline now places the quests the client lists
-  no point for from TrinityCore's `quest_poi` (1,454 quests, 1,779 places; quest-location-data-pipeline.md,
+  no point for from TrinityCore's `quest_poi` (1,453 quests, 1,778 places; quest-location-data-pipeline.md,
   "pins from TrinityCore"), and the rule that a normal quest gets a pin wherever a source puts its
   pickup, with or without an NPC, is written in the runbook for both games (steps 6 and 10).
   Forever already applies it to every source it has; what it lacks is data (data row "Pickup

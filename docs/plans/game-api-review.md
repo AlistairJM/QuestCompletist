@@ -829,5 +829,5 @@ them.
   moved to their real giver. 82449, a task-table quest, needs a hand entry; the 4,082 task quests in
   the data with a start and no pin stay unpinned, which decision 9 does not cover.
 - 2026-10-08: pins from TrinityCore's start points (quest-location-data-pipeline.md, "pins from
-  TrinityCore"): 1,454 more quests have a pin. The recorder (recommendation 1) is still the way to
+  TrinityCore"): 1,453 more quests have a pin. The recorder (recommendation 1) is still the way to
   give the pins that stay nameless, and the quests TrinityCore has no start for, their giver.

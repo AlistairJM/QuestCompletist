@@ -442,12 +442,12 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   pin's identity only if that NPC, or one of the same name, starts it, else it gets a nameless pin
   of its own: the NPC next to a start is often not its giver. A quest new to the pins never changes
   the icon of the pin it joins (`IconFromPin`, replacing #223's copy of the icon).
-- **Result** (build 12.1.0.69933, TrinityCore 1210.26091). 1,454 quests got their first pin in 1,779
-  places: 207 on pins that already held other quests, 1,572 on 1,431 new pins. 508 places carry a
+- **Result** (build 12.1.0.69933, TrinityCore 1210.26091). 1,453 quests got their first pin in 1,778
+  places: 207 on pins that already held other quests, 1,571 on 1,430 new pins. 508 places carry a
   giver's name (402 from a starter's spawn at the start, 99 by joining a starter's pin, 7 by hand)
-  and 1,271 have none. Pins went from 13,772 to 15,203 and quests with a pin from 23,476 to 24,930. Every one
+  and 1,270 have none. Pins went from 13,772 to 15,202 and quests with a pin from 23,476 to 24,929. Every one
   of the 13,772 earlier pins is still there, 13,646 identical and 126 with new quests added.
-  Pins with an NPC ID went from 10,404 to 10,564 and pins with neither ID nor name from 3,031 to 4,302.
+  Pins with an NPC ID went from 10,404 to 10,564 and pins with neither ID nor name from 3,031 to 4,301.
 - **Left for a person** (`tools\quest_locations_tdb_review.csv`, 157 quests): 130 at placeholder
   points, 17 starting outside every region of their map, 5 with more than six places, 3 with a start but
   no point, 3 on a map without a region and 2 on a disabled map. The script also prints, per reason, the

@@ -473,7 +473,7 @@ through it every sweep. A starter whose TrinityCore spawn stands at the start na
 otherwise the quest joins a neighbour's pin only if that NPC starts it, else it gets a nameless pin,
 and it never changes the icon of a pin it joins. Once a quest has a pin, the next run leaves it
 out of the CSV and its pin stays, so a rerun's CSV is shorter by these quests and Join's "No
-existing pin at all" count is the number of new quests to review (1,454 in October 2026). To take a
+existing pin at all" count is the number of new quests to review (1,453 in October 2026). To take a
 pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 4b). Its offers

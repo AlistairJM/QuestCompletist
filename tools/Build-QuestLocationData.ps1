@@ -234,7 +234,7 @@ if (-not $tdbFile -or -not (Test-Path $LuaExe)) {
     $systemCategories = @(170, 173, 191, 290, 1092, 1095, 1130, 1133, 1134, 1232, 1241, 1246, 1346, 1347, 1428, 1429, 1430, 1431, 1514, 1735)
     $holidayCategories = @(31, 37, 46, 50, 90, 126, 127, 133, 145, 153, 413)
     $landfall = 121
-    $internalName = '\[DNT\]|\bDNT\b|\bTBD\b|\bDEPRECATED\b|^Test$|Test Quest$|Flight Test$|\bJrz\b|\bPlaceholder\b|^(Conditional Objectives|Prey Contract:|Paragon of |Bonus Objective:)'
+    $internalName = '\[DNT\]|\bDNT\b|\bTBD\b|\bDEPRECATED\b|^Test$|Test Quest$|Flight Test$|\bJrz\b|\bPlaceholder\b|^Blank$|^(Conditional Objectives|Prey Contract:|Paragon of |Bonus Objective:)'
     function Get-TdbSkipReason([string]$questId) {
         $ours = $ourQuests[$questId]
         if (-not $ours) { return 'not in our data' }
