@@ -273,7 +273,8 @@ that; it isn't a table question.
   review (nine use the game's own word for a chapter). Retail's alone: WoW: Forever has no
   campaign tables. The menu headings, which would need `Campaign` and `CampaignXQuestLine` in
   `Build-QuestLines.ps1`, wait.
-  To check in game: Blizzard keeps utility campaigns ("Catching Up!", "Jump to Chapter 5") that
-  share quests with the real ones, and the game gives a quest one campaign. If `/dump
-  C_CampaignInfo.GetCampaignInfo(C_CampaignInfo.GetCampaignID(63639)).name` (or 62966, 70180)
-  names one of them, the line needs a list of campaigns to skip.
+  Checked in game on 8 October: quest 63639 ("Report to Oribos"), which offline sits in 14
+  campaigns, answers campaign 138, "Chains of Domination", a real one; quests 62966 and 70180,
+  which offline sit in Blizzard's utility campaigns ("Torghast Story Progression Skip" and
+  "Catching Up!"), answer 0 and show no line. So the game does not hand out the utility
+  campaigns for these, and no list of campaigns to skip is needed on that evidence.
