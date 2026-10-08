@@ -151,7 +151,7 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	if file == "qcCore.lua" then
 		core = runFile(file,
 			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, Holidays = qcHolidays}")
-	elseif file then
+	elseif file and file:sub(1, 4) ~= "Libs" then
 		runFile(file)
 	end
 end
