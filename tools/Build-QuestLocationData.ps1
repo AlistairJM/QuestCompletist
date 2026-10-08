@@ -6,10 +6,12 @@ then cross-reference against this addon's own quests (data\quests.jsonl).
 A pin goes where a quest starts: its point 32 in QuestPOIBlob, else its point -1, which is the
 quest's own point (where it starts and ends when that is one place, the turn-in otherwise). A start on
 the parent map of another start of the quest (a continent over a zone) is left out. A quest with
-a point 32 and no point -1 is placed only if it has a pin already.
+a point 32 and no point -1 on a map is placed if it has a pin already, or is one of our quests and not in
+the client's task table (QuestV2CliTask: world quests, bonus objectives and some dailies, which the addon
+doesn't pin).
 
 Inputs (expected already downloaded into tools/):
-  QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv, UiMap.csv
+  QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv, UiMap.csv, QuestV2CliTask.csv
 
 Output:
   tools/quest_locations.csv - QuestID, UiMapID, MapX, MapY, NumPointsUsed, ObjectiveIndex (32 or -1),
@@ -103,10 +105,14 @@ function Convert-Blob($blob) {
 # A quest's point -1 is where it starts and ends when that is one place, and the turn-in otherwise
 # (docs\plans\quest-location-data-pipeline.md, "October 2026, the pin review"); its point 32 is
 # where it starts. A quest the client gives a point -1 is placed at its points 32 when it has any,
-# else at its point -1. A quest with a point 32 and no point -1 gets a location only if it has a pin
-# already (to move that pin to its start); giving pins to the rest is a separate step.
+# else at its point -1. A quest with a point 32 and no point -1 gets a location if it has a pin
+# already (to move that pin to its start) or is one of our quests and not in the task table.
 $pinned = New-Object System.Collections.Generic.HashSet[string]
 foreach ($pin in (Read-PinData $DataDir)) { foreach ($questId in $pin.quests) { [void]$pinned.Add([string]$questId) } }
+if (-not (Test-Path "$toolsDir\QuestV2CliTask.csv")) { throw "QuestV2CliTask.csv missing (step 1b): without it every task quest would get a pin" }
+$isTask = New-Object System.Collections.Generic.HashSet[string]
+foreach ($row in (Import-Csv "$toolsDir\QuestV2CliTask.csv")) { [void]$isTask.Add($row.ID) }
+if ($isTask.Count -eq 0) { throw "QuestV2CliTask.csv has no rows" }
 $startConverted = @{}
 foreach ($blob in ($blobs | Where-Object { $_.ObjectiveIndex -eq "32" })) {
     $c = Convert-Blob $blob
@@ -130,7 +136,7 @@ function Test-AncestorMap($ancestor, $map) {
     return $false
 }
 $droppedParentCopies = 0
-$startOnly = @($startConverted.Keys | Where-Object { -not $ownConverted.ContainsKey($_) -and $pinned.Contains($_) })
+$startOnly = @($startConverted.Keys | Where-Object { -not $ownConverted.ContainsKey($_) -and ($pinned.Contains($_) -or ($ourQuests.ContainsKey($_) -and -not $isTask.Contains($_))) })
 foreach ($questId in (@($ownConverted.Keys) + $startOnly | Sort-Object { [int]$_ })) {
     if ($startConverted.ContainsKey($questId)) {
         # The client also lists a start on a parent map (a continent over a zone) at the same place.
@@ -161,7 +167,7 @@ foreach ($questId in (@($ownConverted.Keys) + $startOnly | Sort-Object { [int]$_
 Write-Output "Skipped (no matching point): $skippedNoPoint"
 Write-Output "Skipped (no matching region): $skippedNoRegion"
 Write-Output "Skipped (point outside every region of its map): $skippedOffMap"
-Write-Output "Quests placed at their start (point 32): $($questsAtStart.Count) ($($startOnly.Count) with no point -1, pinned already); at their own point (-1): $($questsAtOwnPoint.Count)"
+Write-Output "Quests placed at their start (point 32): $($questsAtStart.Count) ($($startOnly.Count) with no point -1, $(@($startOnly | Where-Object { -not $pinned.Contains($_) }).Count) of them with no pin yet); at their own point (-1): $($questsAtOwnPoint.Count)"
 Write-Output "Starts on a parent map of another start of the quest, left out: $droppedParentCopies"
 Write-Output "Converted quest locations: $($results.Count)"
 

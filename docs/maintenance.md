@@ -452,14 +452,17 @@ A pin goes where its quest starts: `Build-QuestLocationData.ps1` takes each ques
 where it starts and ends when that is one place and its turn-in when it ends elsewhere; taken as the
 pin, it put about 7,600 quests at the hand-in ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
 "October 2026, pins at the start"). Point 32 on a parent map of another point 32 of the quest (a
-continent over a zone) is left out. A quest with a point 32 and no point -1 is placed only when it
-has a pin already (534 do): it moves that pin to its start, and giving pins to the others is a step
-of its own. The tool needs `UiMap.csv` as well as the tables above (step 5 downloads it).
+continent over a zone) is left out. A quest with a point 32 and no point -1 on a map is placed when it has a
+pin already (534 do), which it moves to its start, or when it is one of our quests and not a task
+quest (193 more since October 2026): a task quest is one in the client's task table, which holds the
+world quests and bonus objectives the addon doesn't pin, and some dailies, holiday and ordinary
+quests. The tool needs `UiMap.csv` and `QuestV2CliTask.csv` as well as the tables above (step 5
+downloads `UiMap.csv`, step 1b `QuestV2CliTask.csv`) and stops without the second.
 
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 4b). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
 quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
-run were within 10 yards of point 32; the pins are now within 1.5 points of 242 of them and more than
+run were within 10 yards of point 32; the pins are now within 1.5 points of 253 of them and more than
 5 points from 1.
 
 - An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
