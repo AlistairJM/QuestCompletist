@@ -9,7 +9,8 @@ If you're working with Claude Code in this repository, **"do a full sweep"** (or
 runs all of this for you, for both games. It will tell you up front which steps need you in the
 game.
 
-Releasing a new version is covered in [releasing.md](releasing.md).
+Releasing a new version is covered in [releasing.md](releasing.md). What is still open from earlier
+sweeps, and the calls kept, are in [plans/open-items.md](plans/open-items.md): read it before a sweep.
 
 ## One-time setup
 
@@ -966,6 +967,23 @@ git diff --stat
   step 10 for Forever.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
+
+## Bundled libraries
+
+The minimap button needs four libraries, kept unchanged in `QuestCompletist\Libs\` and listed in both
+TOCs before the addon's own files:
+
+| Library | Version | Source |
+|---|---|---|
+| LibStub | 2 | `https://repos.wowace.com/wow/libstub/trunk/LibStub.lua` |
+| CallbackHandler-1.0 | 8 | `https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0/` |
+| LibDataBroker-1.1 | 4 | `https://github.com/tekkub/libdatabroker-1-1` |
+| LibDBIcon-1.0 | 56 | `https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0/` |
+
+They aren't part of a sweep. To update one, download the file from its source, read what changed,
+and check that `Test-Localization.lua` and the syntax check above still pass. Each library keeps the
+highest version of itself that any loaded addon carries, so a newer copy in another addon wins
+without conflict. LibStub is public domain; CurseForge lists LibDBIcon as Ace3-style BSD.
 
 ## One-off scripts
 

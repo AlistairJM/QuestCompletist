@@ -128,6 +128,10 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "La quête %d « %s » est indiquée comme n'étant plus disponible, mais vous venez de l'accepter. Elle s'affiche normalement pour vous ; signalez-le pour que la liste soit corrigée.", -- Needs review
 	UNAVAILABLETURNEDIN = "La quête %d « %s » est indiquée comme n'étant plus disponible, mais vous venez de la rendre. Elle s'affiche normalement pour vous ; signalez-le pour que la liste soit corrigée.", -- Needs review
 	TOGGLEFRAME = "Afficher/masquer la fenêtre", -- Needs review
+	SHOWMINIMAPBUTTON = "Afficher le bouton de la minicarte", -- Needs review
+	MINIMAPLEFTCLICK = "Clic gauche : afficher ou masquer la liste des quêtes", -- Needs review
+	MINIMAPRIGHTCLICK = "Clic droit : ouvrir les options", -- Needs review
+	MINIMAPDRAG = "Glisser : déplacer ce bouton autour de la minicarte", -- Needs review
 	}, {__index = qcLocalize})
 
 end
