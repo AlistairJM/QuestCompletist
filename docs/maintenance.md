@@ -446,12 +446,28 @@ nearest existing pin. Treat that as a finding to review. When you're ready to ta
 run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` and rebuilds
 `QuestCompletist\qcPinDB.lua`.
 
+A pin goes where its quest starts: `Build-QuestLocationData.ps1` takes each quest's point 32 in
+`QuestPOIBlob` and, for the few quests with none, its point -1. Point -1 is the quest's own point,
+where it starts and ends when that is one place and its turn-in when it ends elsewhere; taken as the
+pin, it put about 7,600 quests at the hand-in ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
+"October 2026, pins at the start"). Point 32 on a parent map of another point 32 of the quest (a
+continent over a zone) is left out. A quest with a point 32 and no point -1 is placed only when it
+has a pin already (534 do): it moves that pin to its start, and giving pins to the others is a step
+of its own. The tool needs `UiMap.csv` as well as the tables above (step 5 downloads it).
+
+Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 4b). Its offers
+are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
+quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
+run were within 10 yards of point 32; the pins are now within 1.5 points of 242 of them and more than
+5 points from 1.
+
 - An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
   October 2026, when the user chose that a quest with a start point in the client's data keeps it
   rather than joining its giver's pin up to 3 points away; see the pipeline plan, "October 2026,
   after the NPC IDs").
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
-  Notes that find no pin are listed.
+  Notes that find no pin are listed. Two groups of one NPC that land on the same coordinates this
+  way become one pin, so a rebuild leaves no two pins of an NPC closer than 1.5 points.
 - Pins are written in a fixed order.
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
@@ -487,9 +503,11 @@ of its spawns. Blizzard's data over TrinityCore's wherever both speak.
   has none.
 - **A quest with no pin gets one** at the giver's spawn, on the smallest zone map that holds it,
   joining a pin of that giver within 1.5 points.
-- **A giver farther than that is listed, not acted on.** The client's quest-giver points often mark
-  a quest's turn-in rather than its start ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
-  "October 2026, the pin review"), so the pin may stand at the NPC who ends the quest.
+- **A giver farther than that is listed, not acted on.** The pins stand at the client's start
+  points, so a giver farther from its pin is one of several places the character stands, or the
+  quest is one of the few with no start point, whose pin stays at its turn-in
+  ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026, pins
+  at the start").
 
 The report is `tools\client-giver-report.txt`. A listed case that was looked at and stays goes into
 `docs\plans\pin-giver-decisions.csv` as a `KEEP` row (`Quest`, the `Map`, `X` and `Y` of its pin, a
@@ -659,8 +677,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    last run's in [game-api-review.md](plans/game-api-review.md), "Map-offers probe": on build
    70245, no quest offers, 16 points of interest, no events, no dungeon entrances and no level
    ranges. A rise in any of them is a finding to plan, as a new client table is (step 2b under
-   "Before a sweep"): offers would become start points for quests with no giver, as the client's
-   `QuestPOIBlob` points are today.
+   "Before a sweep"): offers would become start points for quests with no giver.
 3. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
    `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
    nothing: Blizzard has changed the record's layout, and the reader needs updating.
@@ -863,8 +880,11 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    (game-api-review.md, "Map-offers probe: first run"). Run it with every probe run all the same:
    a check stays in the sweep while it finds nothing, as the client's files and the game's API can
    start serving more at any build (decided 7 October 2026), and a change in its totals is a
-   finding to plan. It works on retail too (copy the folder into `_retail_`'s AddOns; retail's
-   2,000 maps take up to an hour at a 1-second wait), to compare the game's offers with our pins.
+   finding to plan. It works on retail too, and the retail sweep takes it as well: copy the folder
+   into `_retail_`'s AddOns and type `/qcprobe maps 1`. Retail's 1,961 maps took five minutes
+   (7 October 2026). Read it with `tools\Report-MapOffers.lua <saved variables> QuestCompletist` and
+   compare the totals with the baseline in game-api-review.md, "Map-offers probe: retail run"; the
+   offers and log quests depend on the character, so use a similar one.
 5. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):

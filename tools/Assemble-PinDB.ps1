@@ -267,6 +267,22 @@ foreach ($g in $pinGroups.Values) {
 }
 Write-Output "Pins snapped back to an existing position within $stableThreshold points: $keptPositions"
 
+# Two groups of one NPC can snap onto the same existing coordinates: they are one pin.
+$mergedGroups = 0
+$groupAtPlace = @{}
+foreach ($key in @($pinGroups.Keys | Sort-Object)) {
+    $g = $pinGroups[$key]
+    if ($g.NpcId -eq "0") { continue }
+    $place = "$($g.UiMapID)|$($g.NpcId)|$([decimal]::Parse([string]$g.MapX, $script:Invariant))|$([decimal]::Parse([string]$g.MapY, $script:Invariant))"
+    if (-not $groupAtPlace.ContainsKey($place)) { $groupAtPlace[$place] = $g; continue }
+    $base = $groupAtPlace[$place]
+    foreach ($questId in $g.QuestIDs) { if (-not $base.QuestIDs.Contains($questId)) { $base.QuestIDs.Add($questId) } }
+    if ($g.Note -and -not $base.Note) { $base.Note = $g.Note }
+    $pinGroups.Remove($key)
+    $mergedGroups++
+}
+Write-Output "Groups of one NPC that landed on the same spot and became one pin: $mergedGroups"
+
 $keptNotes = @{}
 foreach ($g in $pinGroups.Values) { if ($g.Note) { $keptNotes[$g.Note] = $true } }
 $lostNotes = @($existing | Where-Object { $_.Note -and -not $keptNotes.ContainsKey($_.Note) } |

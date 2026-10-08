@@ -259,4 +259,5 @@ that; it isn't a table question.
   gone; 15,054 pins) and reads `docs/plans/pin-giver-decisions.csv` for the 48 cases that stay.
   It found that the client's quest-giver points are mostly turn-in points: of 2,622 quests whose
   TrinityCore starters and enders differ, the point is at an ender for 1,354 and at a starter for
-  31. Moving those pins to the starters is a separate decision.
+  31. Moving those pins to where the quests start was done on 8 October, by the client's own start
+  points (`ObjectiveIndex 32`): "October 2026, pins at the start" in the same plan.

@@ -816,3 +816,11 @@ these level 60 quests.
   `game-parity.md`, under the user's rule that a feature or check built for one game goes to both
   unless a game can't support it. Forever's own gaps to watch: `QuestLine` rows, start points, the
   quest-giver field, and the two events on the calendar.
+- 2026-10-07: the retail map pass found that `QuestPOIBlob`'s index -1 is a quest's turn-in point
+  and index 32 its start (`game-api-review.md`, "Map-offers probe: retail run"). The importer takes
+  Forever's start points from index -1; the beta's table has 23 such blobs and 23 index 32 ones. It
+  changes with the pin start points decision there (number 8), not before.
+- 2026-10-08: the importer takes Forever's start points from index 32 first, then -1 for a quest with
+  none, as retail's pipeline does now (`quest-location-data-pipeline.md`, "October 2026, pins at the
+  start"). Forever's data is unchanged until the next import, which would move 5 of the 11 quests
+  pinned from the client's start points (92748, 92750, 92751, 92752 and 92753).

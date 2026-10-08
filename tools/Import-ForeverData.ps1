@@ -302,17 +302,23 @@ function Convert-ToMapSpot([int]$map, [double]$x, [double]$y, $Zones = $null, $O
         Y = [decimal][Math]::Round(100 * ($chosen.U1 + $fy * ($chosen.V1 - $chosen.U1)), 2) }
 }
 
-# Quest start points from the client's tables: a blob with objective index -1 marks where the quest is
-# picked up. Its first point is used, as retail's pin tool does.
+# Quest start points from the client's tables: a blob with objective index 32 marks where the quest is
+# picked up, and index -1 is the quest's own point, which is its turn-in when it ends elsewhere. A quest
+# the client gives a point 32 starts there; one with only a point -1 starts at it. The first point of a
+# blob is used, as retail's pin tool does.
 $firstPoint = @{}
 foreach ($row in Get-ClientTable 'QuestPOIPoint') { if (-not $firstPoint.ContainsKey([int]$row.QuestPOIBlobID)) { $firstPoint[[int]$row.QuestPOIBlobID] = $row } }
 $startSpots = @{}; $startOffMap = 0
-foreach ($blob in (Get-ClientTable 'QuestPOIBlob' | Where-Object { $_.ObjectiveIndex -eq '-1' })) {
+$questBlobs = @(Get-ClientTable 'QuestPOIBlob' | Where-Object { $_.ObjectiveIndex -eq '-1' -or $_.ObjectiveIndex -eq '32' })
+$hasStart = New-Object System.Collections.Generic.HashSet[int]
+foreach ($blob in $questBlobs) { if ($blob.ObjectiveIndex -eq '32') { [void]$hasStart.Add([int]$blob.QuestID) } }
+foreach ($blob in $questBlobs) {
+    $quest = [int]$blob.QuestID
+    if (($blob.ObjectiveIndex -eq '32') -ne $hasStart.Contains($quest)) { continue }
     $point = $firstPoint[[int]$blob.ID]
     if (-not $point) { continue }
     $spot = Convert-ToMapSpot ([int]$blob.MapID) ([double]$point.X) ([double]$point.Y) -OnUiMap ([int]$blob.UiMapID)
     if (-not $spot) { $startOffMap++; continue }
-    $quest = [int]$blob.QuestID
     $near = $startSpots[$quest] | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
     if (-not $near) { $startSpots[$quest] += @($spot) }
 }

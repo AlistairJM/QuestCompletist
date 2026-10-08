@@ -3,11 +3,17 @@ Phase 1 pipeline: join wago.tools QuestPOIBlob + QuestPOIPoint + UiMapAssignment
 into per-quest, per-map converted (mapX%, mapY%) positions for quest-giver pins,
 then cross-reference against this addon's own quests (data\quests.jsonl).
 
+A pin goes where a quest starts: its point 32 in QuestPOIBlob, else its point -1, which is the
+quest's own point (where it starts and ends when that is one place, the turn-in otherwise). A start on
+the parent map of another start of the quest (a continent over a zone) is left out. A quest with
+a point 32 and no point -1 is placed only if it has a pin already.
+
 Inputs (expected already downloaded into tools/):
-  QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv
+  QuestPOIBlob.csv, QuestPOIPoint.csv, UiMapAssignment.csv, UiMap.csv
 
 Output:
-  tools/quest_locations.csv - QuestID, UiMapID, MapX, MapY, NumPointsUsed, InOurDB, OurZoneName
+  tools/quest_locations.csv - QuestID, UiMapID, MapX, MapY, NumPointsUsed, ObjectiveIndex (32 or -1),
+  InOurDB, OurQuestName, OurZoneName
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -20,6 +26,8 @@ Write-Output "Loading source tables..."
 $blobs = Import-Csv "$toolsDir\QuestPOIBlob.csv"
 $points = Import-Csv "$toolsDir\QuestPOIPoint.csv"
 $regions = Import-Csv "$toolsDir\UiMapAssignment.csv"
+$parentMap = @{}
+foreach ($m in (Import-Csv "$toolsDir\UiMap.csv")) { $parentMap[$m.ID] = $m.ParentUiMapID }
 
 # Index points by QuestPOIBlobID for fast lookup
 Write-Output "Indexing points by blob ID..."
@@ -77,44 +85,85 @@ foreach ($quest in (Read-QuestData $DataDir)) {
 }
 Write-Output "Our quest data has $($ourQuests.Count) quests."
 
-Write-Output "Processing quest-giver blobs (ObjectiveIndex = -1)..."
-$giverBlobs = $blobs | Where-Object { $_.ObjectiveIndex -eq "-1" }
+Write-Output "Processing quest blobs (ObjectiveIndex 32, the start, and -1, the quest's own point)..."
 $results = New-Object System.Collections.Generic.List[object]
 $skippedNoPoint = 0
 $skippedNoRegion = 0
 $skippedOffMap = 0
 
-foreach ($blob in $giverBlobs) {
-    $blobId = $blob.ID
-    $questId = $blob.QuestID
-    $uiMapId = $blob.UiMapID
+function Convert-Blob($blob) {
+    if (-not $pointsByBlob.ContainsKey($blob.ID)) { $script:skippedNoPoint++; return $null }
+    if (-not $regionsByMap.ContainsKey($blob.UiMapID)) { $script:skippedNoRegion++; return $null }
+    $pt = $pointsByBlob[$blob.ID][0]  # take first point; >99.8% of giver blobs have exactly one anyway
+    $conv = Get-BestConversion -worldX ([double]$pt.X) -worldY ([double]$pt.Y) -instanceId $blob.MapID -candidateRegions $regionsByMap[$blob.UiMapID]
+    if (-not $conv) { $script:skippedOffMap++; return $null }
+    return @{ Blob = $blob; X = [math]::Round($conv.X * 100, 2); Y = [math]::Round($conv.Y * 100, 2) }
+}
 
-    if (-not $pointsByBlob.ContainsKey($blobId)) { $skippedNoPoint++; continue }
-    if (-not $regionsByMap.ContainsKey($uiMapId)) { $skippedNoRegion++; continue }
-
-    $pt = $pointsByBlob[$blobId][0]  # take first point; >99.8% of giver blobs have exactly one anyway
-    $candidateRegions = $regionsByMap[$uiMapId]
-    $conv = Get-BestConversion -worldX ([double]$pt.X) -worldY ([double]$pt.Y) -instanceId $blob.MapID -candidateRegions $candidateRegions
-    if (-not $conv) { $skippedOffMap++; continue }
-
+# A quest's point -1 is where it starts and ends when that is one place, and the turn-in otherwise
+# (docs\plans\quest-location-data-pipeline.md, "October 2026, the pin review"); its point 32 is
+# where it starts. A quest the client gives a point -1 is placed at its points 32 when it has any,
+# else at its point -1. A quest with a point 32 and no point -1 gets a location only if it has a pin
+# already (to move that pin to its start); giving pins to the rest is a separate step.
+$pinned = New-Object System.Collections.Generic.HashSet[string]
+foreach ($pin in (Read-PinData $DataDir)) { foreach ($questId in $pin.quests) { [void]$pinned.Add([string]$questId) } }
+$startConverted = @{}
+foreach ($blob in ($blobs | Where-Object { $_.ObjectiveIndex -eq "32" })) {
+    $c = Convert-Blob $blob
+    if ($c) {
+        if (-not $startConverted.ContainsKey($blob.QuestID)) { $startConverted[$blob.QuestID] = New-Object System.Collections.Generic.List[object] }
+        $startConverted[$blob.QuestID].Add($c)
+    }
+}
+$questsAtStart = New-Object System.Collections.Generic.HashSet[string]
+$questsAtOwnPoint = New-Object System.Collections.Generic.HashSet[string]
+$ownConverted = @{}
+foreach ($blob in ($blobs | Where-Object { $_.ObjectiveIndex -eq "-1" })) {
+    $c = Convert-Blob $blob
+    if (-not $c) { continue }
+    if (-not $ownConverted.ContainsKey($blob.QuestID)) { $ownConverted[$blob.QuestID] = New-Object System.Collections.Generic.List[object] }
+    $ownConverted[$blob.QuestID].Add($c)
+}
+function Test-AncestorMap($ancestor, $map) {
+    $up = $parentMap[$map]
+    for ($i = 0; $up -and $up -ne '0' -and $i -lt 20; $i++) { if ($up -eq $ancestor) { return $true }; $up = $parentMap[$up] }
+    return $false
+}
+$droppedParentCopies = 0
+$startOnly = @($startConverted.Keys | Where-Object { -not $ownConverted.ContainsKey($_) -and $pinned.Contains($_) })
+foreach ($questId in (@($ownConverted.Keys) + $startOnly | Sort-Object { [int]$_ })) {
+    if ($startConverted.ContainsKey($questId)) {
+        # The client also lists a start on a parent map (a continent over a zone) at the same place.
+        $starts = $startConverted[$questId]
+        $chosen = @($starts | Where-Object { $c = $_; -not ($starts | Where-Object { $_ -ne $c -and (Test-AncestorMap $c.Blob.UiMapID $_.Blob.UiMapID) }) })
+        $droppedParentCopies += $starts.Count - $chosen.Count
+        [void]$questsAtStart.Add($questId)
+    } else {
+        $chosen = $ownConverted[$questId]
+        [void]$questsAtOwnPoint.Add($questId)
+    }
     $ours = $ourQuests[$questId]
-
-    $results.Add([PSCustomObject]@{
-        QuestID       = $questId
-        UiMapID       = $uiMapId
-        MapX          = [math]::Round($conv.X * 100, 2)
-        MapY          = [math]::Round($conv.Y * 100, 2)
-        NumPointsUsed = $pointsByBlob[$blobId].Count
-        InOurDB       = [bool]$ours
-        OurQuestName  = if ($ours) { $ours.Name } else { "" }
-        OurZoneName   = if ($ours) { $ours.Zone } else { "" }
-    })
+    foreach ($c in $chosen) {
+        $results.Add([PSCustomObject]@{
+            QuestID        = $questId
+            UiMapID        = $c.Blob.UiMapID
+            MapX           = $c.X
+            MapY           = $c.Y
+            NumPointsUsed  = $pointsByBlob[$c.Blob.ID].Count
+            ObjectiveIndex = $c.Blob.ObjectiveIndex
+            InOurDB        = [bool]$ours
+            OurQuestName   = if ($ours) { $ours.Name } else { "" }
+            OurZoneName    = if ($ours) { $ours.Zone } else { "" }
+        })
+    }
 }
 
 Write-Output "Skipped (no matching point): $skippedNoPoint"
 Write-Output "Skipped (no matching region): $skippedNoRegion"
 Write-Output "Skipped (point outside every region of its map): $skippedOffMap"
-Write-Output "Converted quest-giver locations: $($results.Count)"
+Write-Output "Quests placed at their start (point 32): $($questsAtStart.Count) ($($startOnly.Count) with no point -1, pinned already); at their own point (-1): $($questsAtOwnPoint.Count)"
+Write-Output "Starts on a parent map of another start of the quest, left out: $droppedParentCopies"
+Write-Output "Converted quest locations: $($results.Count)"
 
 $outFile = "$toolsDir\quest_locations.csv"
 $results | Export-Csv -Path $outFile -NoTypeInformation -Encoding utf8

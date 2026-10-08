@@ -96,7 +96,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | The quest probe | `/qc typecheck` (#42's branch): recurrence and tags | `/qcprobe quests`: the same and more (level, elite, group size, title) | process: two probes for one job; the Forever probe's TOC loads on retail too | **Yes:** one probe for both games. Give `Build-ProbeLists.ps1` a retail mode (the quests from `data\quests.jsonl` with `QuestV2`), retire #42's probe, and add the quest-facts pass (API review, recommendation 2) once |
 | The NPC-name check | once, in #112, for the 6,468 IDs then | every build, `/qcprobe npcs` | process | **Yes:** a retail NPC list for the probe, from the pins, run each sweep (3 to 4 minutes) |
 | The recorder | **none** | every time the game is played | process; the biggest gap | **Yes:** API review, recommendation 1 |
-| The map pass | pending | done (7 October) | – | run it on retail |
+| The map pass | done (7 October) | done (7 October) | – | run on both each sweep (maintenance.md, step 4b) |
 | The quest cache reader (`Read-ForeverQuestCache.ps1`) | **none** | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Maybe:** it would give retail the starting item, the quest sort and the minimum level per quest, which Blizzard's API doesn't; the start item is the prize (API review, recommendation 13). The reader stops on a layout it doesn't know, so retail's layout is the first thing to try |
 | Hand lists | `pin-npc-id-decisions.csv` | `forever-quest-givers.csv`, `forever-quest-zones.csv` | – | equivalent |
 | Release | one ZIP, both TOCs | – | shared |
@@ -129,7 +129,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | probably finds nothing; the point is that it looks |
 | 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
 | 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | a watch, nothing else |
-| 8 | The retail map pass | a run | the pin comparison |
+| 8 | The retail map pass | a run | the pin comparison; done 7 October 2026 (game-api-review.md, "Map-offers probe: retail run") |
 | 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | |
 | 10 | A Forever review of hidden and test quests | later | after launch |
 
@@ -158,3 +158,11 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-07: retail's task quests got their professions (410) and prerequisites (687 new, 90
   changed) from `QuestV2CliTask`, as the client-tables review's recommendation 5. The skill
   levels in the same table are still recommendation 3 above.
+- 2026-10-07: recommendation 8 done: the user ran the map pass on retail (1,961 maps, five
+  minutes). It compared the game's offers with our pins and found the pipeline reads a quest's
+  turn-in point as its giver (game-api-review.md, decision 8); it is now in the retail sweep
+  with Forever's.
+- 2026-10-08: pins at the start. Retail's pipeline places a quest at its client start point
+  (`ObjectiveIndex 32`), then its own point (-1); Forever's importer reads the same two, in the same
+  order, from its own client tables (quest-location-data-pipeline.md, "October 2026, pins at the
+  start"). Forever's data takes it at the next import.
