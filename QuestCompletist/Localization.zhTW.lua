@@ -96,6 +96,7 @@ qcLocalize = setmetatable({
 	NODETAILS = "遊戲未提供任務詳情", -- Needs review
 	QUESTID = "任務ID：", -- Needs review
 	STORYLINEPOSITION = "(%d/%d)", -- Needs review
+	CAMPAIGNCHAPTER = "(第%d章，共%d章)", -- Needs review
 	EARLIERQUESTS = "... 之前%d個", -- Needs review
 	LATERQUESTS = "... 還有%d個", -- Needs review
 	THISQUEST = "此任務", -- Needs review

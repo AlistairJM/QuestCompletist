@@ -96,6 +96,7 @@ qcLocalize = setmetatable({
 	NODETAILS = "게임에서 퀘스트 정보를 받지 못했습니다", -- Needs review
 	QUESTID = "퀘스트 ID:", -- Needs review
 	STORYLINEPOSITION = "(%d/%d)", -- Needs review
+	CAMPAIGNCHAPTER = "(%d/%d장)", -- Needs review
 	EARLIERQUESTS = "... 이전 %d개", -- Needs review
 	LATERQUESTS = "... %d개 더", -- Needs review
 	THISQUEST = "이 퀘스트", -- Needs review

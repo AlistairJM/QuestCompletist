@@ -122,6 +122,7 @@ qcLocalize = {
 	NODETAILS = "Quest details not available from the game",
 	QUESTID = "Quest ID:",
 	STORYLINEPOSITION = "(%d of %d)",
+	CAMPAIGNCHAPTER = "(chapter %d of %d)",
 	EARLIERQUESTS = "... %d earlier",
 	LATERQUESTS = "... %d more",
 	THISQUEST = "this quest",

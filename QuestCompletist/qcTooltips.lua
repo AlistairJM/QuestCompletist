@@ -179,6 +179,37 @@ local function qcPrereqQuestText(questId)
     return string.format("%s |cff%s%s|r", qcQuestStatus.IconText(icon, 14), colour, qcQuestName(questId, qcQuestTooltipWaiting) or UNKNOWN)
 end
 
+-- The campaign a quest belongs to and, when it can be told, the quest's chapter among the campaign's
+-- chapters, which are quest lines. A quest's storyline is the smallest quest line that holds it, and
+-- not always the chapter, so when it isn't one the chapters' own quests are searched. WoW: Forever has
+-- no campaigns; the game answers 0 there.
+local function qcCampaignOf(questId, storylineId)
+    if not (QUEST_CLASSIFICATION_CAMPAIGN and C_CampaignInfo and C_CampaignInfo.GetCampaignID) then return nil end
+    local campaignId = C_CampaignInfo.GetCampaignID(questId)
+    local info = campaignId and campaignId ~= 0 and C_CampaignInfo.GetCampaignInfo(campaignId)
+    if not (info and info.name and info.name ~= "") then return nil end
+    local chapters = C_CampaignInfo.GetChapterIDs(campaignId) or {}
+    local chapter
+    for i, chapterId in ipairs(chapters) do
+        if chapterId == storylineId then
+            chapter = i
+            break
+        end
+    end
+    if not chapter and C_QuestLine and C_QuestLine.GetQuestLineQuests then
+        for i, chapterId in ipairs(chapters) do
+            for _, lineQuestId in ipairs(C_QuestLine.GetQuestLineQuests(chapterId) or {}) do
+                if lineQuestId == questId then
+                    chapter = i
+                    break
+                end
+            end
+            if chapter then break end
+        end
+    end
+    return info.name, chapter, #chapters
+end
+
 -- Function to update the quest tooltip
 function qcUpdateTooltip(index)
     local stringFormat = string.format
@@ -223,9 +254,15 @@ function qcUpdateTooltip(index)
             att_HookBackup = nil
         end
 
+        local storylineId = qcQuestDatabase[questId][8]
+        local campaignName, chapter, chapterCount = qcCampaignOf(questId, storylineId)
+        if campaignName then
+            local place = chapter and stringFormat(" |cFF808080%s|r", stringFormat(qcL.CAMPAIGNCHAPTER, chapter, chapterCount)) or ""
+            qcQuestInformationTooltip:AddDoubleLine(stringFormat(STAT_FORMAT, QUEST_CLASSIFICATION_CAMPAIGN), stringFormat("%s%s|r%s", COLOUR_HUNTER, campaignName, place))
+        end
+
         -- Storyline information. qcQuestLines holds each storyline's quests in Blizzard's order;
         -- a whole-zone storyline runs to 200+ quests, so only a window around this one is shown.
-        local storylineId = qcQuestDatabase[questId][8]
         local storyline = storylineId and qcQuestLines[storylineId]
         if storyline then
             -- Older zones share one storyline between both factions, and a class's quests sit
@@ -290,6 +327,8 @@ function qcUpdateTooltip(index)
                 qcQuestInformationTooltip:AddLine("|cFF808080   " .. stringFormat(qcL.LATERQUESTS, #lineQuests - last) .. "|r")
             end
 
+            qcAddQuestTooltipDivider()
+        elseif campaignName then
             qcAddQuestTooltipDivider()
         end
 

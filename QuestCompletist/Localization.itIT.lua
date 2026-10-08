@@ -96,6 +96,7 @@ qcLocalize = setmetatable({
 	NODETAILS = "Il gioco non fornisce i dettagli della missione", -- Needs review
 	QUESTID = "ID missione:", -- Needs review
 	STORYLINEPOSITION = "(%d di %d)", -- Needs review
+	CAMPAIGNCHAPTER = "(capitolo %d di %d)", -- Needs review
 	EARLIERQUESTS = "... %d precedenti", -- Needs review
 	LATERQUESTS = "... altre %d", -- Needs review
 	THISQUEST = "questa missione", -- Needs review
