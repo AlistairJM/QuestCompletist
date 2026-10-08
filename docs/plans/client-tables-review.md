@@ -264,12 +264,12 @@ that; it isn't a table question.
   31. Moving those pins to where the quests start was done on 8 October, by the client's own start
   points (`ObjectiveIndex 32`): "October 2026, pins at the start" in the same plan.
 - 2026-10-08: the campaign line (recommendation 6, the tooltip half). A quest that belongs to a
-  campaign shows "Campaign: War Campaign (chapter 6 of 27)" above its storyline line in the quest
+  campaign shows "Campaign: War Campaign (Chapter 6 of 27)" above its storyline line in the quest
   list's tooltip. It needs no data of ours: `C_CampaignInfo` names the quest's campaign and lists
   the campaign's chapters, which are quest lines. A quest's storyline is its smallest quest line,
   and is the chapter for 85% of the 6,067 campaign quests; for the rest the chapters' quests are
   searched (`C_QuestLine.GetQuestLineQuests`). The label is the game's own word for it, and the
-  one new text, "(chapter %d of %d)", is in all 11 languages, the ten translations marked for
+  one new text, "(Chapter %d of %d)", is in all 11 languages, the ten translations marked for
   review (nine use the game's own word for a chapter). Retail's alone: WoW: Forever has no
   campaign tables. The menu headings, which would need `Campaign` and `CampaignXQuestLine` in
   `Build-QuestLines.ps1`, wait.
