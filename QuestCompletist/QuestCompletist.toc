@@ -3,7 +3,12 @@
 ## Title: Quest Completist
 ## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
 ## SavedVariables: qcSettings qcFlaggedButSeen
-## SavedVariablesPerCharacter: qcCharacterCompletions qcCompletedQuests QC_LastDailyReset QC_LastWeeklyReset
+## SavedVariablesPerCharacter: qcCharacterCompletions qcCompletedQuests QC_LastDailyReset QC_LastWeeklyReset qcMinimapIcon
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 Localization.enUS.lua
 Localization.ptBR.lua
@@ -25,4 +30,5 @@ qcUnavailableQuests.lua
 qcCore.lua
 qcTooltips.lua
 qcMapPins.lua
+qcMinimap.lua
 QuestCompletist.xml

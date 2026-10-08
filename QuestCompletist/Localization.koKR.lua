@@ -129,6 +129,10 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "퀘스트 %d \"%s\"은(는) 더 이상 받을 수 없는 퀘스트로 표시되어 있지만 방금 수락했습니다. 당신에게는 정상적으로 표시됩니다. 목록을 바로잡을 수 있도록 알려 주세요.", -- Needs review
 	UNAVAILABLETURNEDIN = "퀘스트 %d \"%s\"은(는) 더 이상 받을 수 없는 퀘스트로 표시되어 있지만 방금 완료했습니다. 당신에게는 정상적으로 표시됩니다. 목록을 바로잡을 수 있도록 알려 주세요.", -- Needs review
 	TOGGLEFRAME = "창 표시/숨기기", -- Needs review
+	SHOWMINIMAPBUTTON = "미니맵 버튼 표시", -- Needs review
+	MINIMAPLEFTCLICK = "왼쪽 클릭: 퀘스트 목록 표시/숨기기", -- Needs review
+	MINIMAPRIGHTCLICK = "오른쪽 클릭: 설정 열기", -- Needs review
+	MINIMAPDRAG = "드래그: 미니맵 주위로 버튼 이동", -- Needs review
 	}, {__index = qcLocalize})
 
 end

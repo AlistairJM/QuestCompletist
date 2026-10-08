@@ -2,7 +2,7 @@
 
 See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places nearly 15,000 quest-giver pins on your world map.
 
-Type **/qc** (or **/questc**) to open it, or set a key binding.
+Type **/qc** (or **/questc**) to open it, click its minimap button, or set a key binding.
 
 ## Game versions
 
@@ -63,6 +63,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 - **Left-click** a quest giver's pin on the map to set a waypoint to it (needs TomTom).
 - **Shift-click** a quest to mark it as done, or not done.
 - **Alt-click** a quest to mark it as unattainable (for quests you can no longer get).
+- **Left-click** the minimap button to show or hide the quest list, **right-click** it for the options, and drag it to move it around the minimap. Untick *Show Minimap Button* in the options, or type **/qc minimap**, to hide it. Quest Completist is also in the AddOns menu beside the minimap, with the same clicks, whether the button shows or not.
 
 ## Feedback
 
