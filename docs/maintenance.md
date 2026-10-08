@@ -446,18 +446,28 @@ nearest existing pin. Treat that as a finding to review. When you're ready to ta
 run `Assemble-PinDB.ps1 -Apply`, which saves the candidate as `data\pins.jsonl` and rebuilds
 `QuestCompletist\qcPinDB.lua`.
 
+A pin goes where its quest starts: `Build-QuestLocationData.ps1` takes each quest's point 32 in
+`QuestPOIBlob` and, for the few quests with none, its point -1. Point -1 is the quest's own point,
+where it starts and ends when that is one place and its turn-in when it ends elsewhere; taken as the
+pin, it put about 7,600 quests at the hand-in ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
+"October 2026, pins at the start"). Point 32 on a parent map of another point 32 of the quest (a
+continent over a zone) is left out. A quest with a point 32 and no point -1 is placed only when it
+has a pin already (534 do): it moves that pin to its start, and giving pins to the others is a step
+of its own. The tool needs `UiMap.csv` as well as the tables above (step 5 downloads it).
+
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 4b). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
-quests whose pin is far from, or on another map than, the game's position. The first run found that
-the client's index -1 point is a quest's turn-in and 32 its start
-([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), last section).
+quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
+run were within 10 yards of point 32; the pins are now within 1.5 points of 242 of them and more than
+5 points from 1.
 
 - An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
   October 2026, when the user chose that a quest with a start point in the client's data keeps it
   rather than joining its giver's pin up to 3 points away; see the pipeline plan, "October 2026,
   after the NPC IDs").
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
-  Notes that find no pin are listed.
+  Notes that find no pin are listed. Two groups of one NPC that land on the same coordinates this
+  way become one pin, so a rebuild leaves no two pins of an NPC closer than 1.5 points.
 - Pins are written in a fixed order.
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
@@ -493,9 +503,11 @@ of its spawns. Blizzard's data over TrinityCore's wherever both speak.
   has none.
 - **A quest with no pin gets one** at the giver's spawn, on the smallest zone map that holds it,
   joining a pin of that giver within 1.5 points.
-- **A giver farther than that is listed, not acted on.** The client's quest-giver points often mark
-  a quest's turn-in rather than its start ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
-  "October 2026, the pin review"), so the pin may stand at the NPC who ends the quest.
+- **A giver farther than that is listed, not acted on.** The pins stand at the client's start
+  points, so a giver farther from its pin is one of several places the character stands, or the
+  quest is one of the few with no start point, whose pin stays at its turn-in
+  ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026, pins
+  at the start").
 
 The report is `tools\client-giver-report.txt`. A listed case that was looked at and stays goes into
 `docs\plans\pin-giver-decisions.csv` as a `KEEP` row (`Quest`, the `Map`, `X` and `Y` of its pin, a

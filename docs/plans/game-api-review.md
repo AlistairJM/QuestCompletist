@@ -815,3 +815,9 @@ them.
   game can't support it, and the audit of where retail and Forever differ, are in
   `game-parity.md`; the API check now names the functions one game documents and the other
   doesn't, and fails when such a gap closes.
+- 2026-10-08: decision 8 taken, by the user, in one step rather than two: the pipeline places each quest
+  at its point 32, the client's start, and at its point -1 only when it has none; the turn-in pin goes.
+  7,637 quests have other pins, 2,165 of them on another map, and the pins are within 1.5 points of
+  242 of the 439 offers the retail run listed (159 before) and more than 5 points from 1 (56 before).
+  The 192 quests with a start and no pin stay a separate step; quest-location-data-pipeline.md,
+  "October 2026, pins at the start".

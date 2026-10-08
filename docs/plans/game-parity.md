@@ -162,3 +162,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   minutes). It compared the game's offers with our pins and found the pipeline reads a quest's
   turn-in point as its giver (game-api-review.md, decision 8); it is now in the retail sweep
   with Forever's.
+- 2026-10-08: pins at the start. Retail's pipeline places a quest at its client start point
+  (`ObjectiveIndex 32`), then its own point (-1); Forever's importer reads the same two, in the same
+  order, from its own client tables (quest-location-data-pipeline.md, "October 2026, pins at the
+  start"). Forever's data takes it at the next import.

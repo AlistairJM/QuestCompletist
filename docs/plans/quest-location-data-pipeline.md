@@ -242,10 +242,11 @@ of the 90 decisions there.
   points from the start; "Back to Riznek" starts at Khan Blizh and ends at Riznek, where its pin is.
   So a pin for a quest that starts and ends in different places often stands at the turn-in, under
   the name of the NPC who starts it: the 262 pins counted above as far from every spawn of their
-  giver are such pins, as are 20 of the 48 cases below. The tool lists them and leaves them
-  where the client's data puts them, as decided on 6 October ("a pin that matches the client's
-  data stays"); whether to move them to the starter's spawn, which the client's table gives for
-  2,074 quests and TrinityCore for the older ones, is a separate decision.
+  giver are such pins, as are 20 of the 48 cases below. This review listed them and left them
+  where the client's data put them, as decided on 6 October ("a pin that matches the client's
+  data stays"); the user then chose that pins stand where a quest is picked up, and "October 2026,
+  pins at the start" below moves them, by the client's own start points rather than the starters'
+  spawns.
 - **Two earlier decisions were wrong.** The Exile's Reach pins at 61.88,82.88 and 61.88,82.35 had
   been given Captain Garrick's and Warlord Breka Grimaxe's IDs by name; Wowhead says "Emergency
   First Aid" starts and ends at Lady Jaina Proudmoore, and "Murloc Mania" at Thrall, as
@@ -255,7 +256,9 @@ of the 90 decisions there.
 - **By hand:** the two pins named `CHANGE_TO_NIL`, a leftover marker of the old addon's author,
   lost their name; quest 24799 left a Thousand Needles pin it had no business on, as it has its
   own pin in Icecrown.
-- **What stays:** 48 cases in `docs/plans/pin-giver-decisions.csv`, each with its reason: 20 where
+- **What stayed** (before the pins moved to the start; 39 of these rows left the file then, as their
+  pins moved, and 6 were added): 48 cases in `docs/plans/pin-giver-decisions.csv`, each with its
+  reason: 20 where
   the pin stands at the turn-in (TrinityCore's ender or Wowhead says so), 13 pins with no NPC whose
   giver stands more than 3 points away, 6 whose giver has no spawn on the map (an image, a summon
   or an item), 5 pins whose NPC stays as the giver stands farther than 1.5 points, 3 "<Remote>"
@@ -284,8 +287,68 @@ the Forever probe's map pass (7 October 2026; [game-api-review.md](game-api-revi
 - **A way to move the turn-in pins that needs no spawn data:** the start point is in the table the
   pipeline already reads, for every quest that has one.
 - **Other readers of -1:** `Get-WagoQuestRequirements.ps1`; `Find-UnavailableQuestCandidates.ps1`,
-  whose "GiverPOI" is a turn-in point, so whether a start point should count as evidence that a
-  quest is still obtainable is to check with the change; and, for Forever, `Import-ForeverData.ps1`.
-- **Not changed yet.** The decision, with a recommendation, is number 8 under "Decisions to take"
-  in game-api-review.md: first give a start pin to the quests with no turn-in point, which moves
-  nothing; then review the 50 quests the run found, in game, before any rule moves the rest.
+  whose "GiverPOI" is the quest's own point (a turn-in when it ends elsewhere), so whether a start
+  point should count as evidence that a quest is still obtainable is to check; and, for Forever,
+  `Import-ForeverData.ps1`, which now reads point 32 as well.
+- **Done in the next section.** The decision was number 8 under "Decisions to take" in
+  game-api-review.md; the user chose to move the pins by the client's start points in one step,
+  rather than the 50-quest shortlist first.
+
+## October 2026, pins at the start
+
+On 8 October 2026 the pipeline began to place each quest where it starts. The user's rule is that a
+pin stands where a quest is picked up, never at the hand-in; it overrides the 6 October decision that
+a pin matching the client's data stays (which rested on point -1 being the start), and the
+4 October decision about the pins in the water at Stormwind Harbor, which were turn-in points.
+
+- **The rule** (`Build-QuestLocationData.ps1`). A quest is placed at its points 32 when the client
+  has any (15,866 quests with a point -1), and at its point -1 otherwise (433). A point 32 on a parent
+  map of another point 32 of the quest, a continent over a zone, is left out (409 blobs): the
+  client lists both. Flag bit 2 doesn't mark them; 4,571 zone-map starts carry it. A quest with a
+  point 32 and no point -1 is placed only if it has a pin already (534 quests; 162 of them moved):
+  nothing gives a pin to a quest without one, so those 192 quests with a start and no pin
+  (decision 8's first step) are a separate change. The rule lives in the pipeline because the
+  pipeline recomputes every position from the client's data on each run: a move made afterwards
+  would be put back at the next rebuild. The turn-in pin goes; a pin means a quest can be picked up
+  there, and a second pin at the hand-in would list it as available under the same name.
+- **Spawn data is the cross-check, not the source.** The client has a start for nearly every quest;
+  the client's giver table covers 2,074 quests and TrinityCore's spawns stop at Mists of Pandaria.
+  Of the 3,550 pairs of a quest and a pin where the client's table or TrinityCore names a starter
+  and an ender that differ, with spawns on the pin's map, the pin stands at a starter's spawn in
+  1,693 (503 before) and at an ender's in 26 (1,230 before). 19 of the 26 are pins at the client's
+  own start point, which stands at the ender; 7 are quests with no start point, which sit at the turn-in: 31145 "The Rear is Clear",
+  26538 "Emergency Aid", 28405 "Weapons of Darkness", 75190 "Ready and Abel", 9897 "I'm Saved!",
+  14405 "Escape By Sea" and 29652 "One Last Favor".
+- **What moved.** Pins went from 15,054 to 13,688, mostly as pins at hand-ins joined the pins of
+  their starters. The 23,283 quests with a pin all still have one, and no quest gained a first pin.
+  7,637 quests have other pins than before: 2,165 on another map (a quest that starts in a different
+  zone than it ends in now shows on the zone where it starts), 2,450 moved by more than 10 map
+  points, 2,012 by 3 to 10, 702 by 1.5 to 3, 2 by less, 306 regrouped at the same places, and 15,646
+  unchanged. "Rite of Vision" is at Zarlman Two-Moons and "Back to Riznek" at Khan Blizh
+  (Wowhead's starts); "O Lonely Star" is at 39.99, 84.26 in Slayer's Rise; "A Royal Summons" is in
+  Dalaran, no longer at the harbor.
+- **Against the game's own offers** (the retail map pass, 439 offer rows of 246 quests): a pin within
+  1.5 points of the offer for 242, against 159; more than 5 points away for 1, against 56. The
+  pins' NPCs stand within 1.5 points of them for 3,800 pins, against 3,370, and more than 10 points
+  away for 466, against 1,158.
+- **Step 6c on the moved pins** gave 18 pins with no ID the client's giver, moved 95 quests to the giver
+  who stands at the spot (92 pins left empty went), and left 16 cases for review, none new after the
+  decisions below. The pins "far from every spawn of their giver" fell from 275 to 38. One MOVE row
+  was added (11652 to Annihilator Grek'lor, whose pin had taken Gorge the Corpsegrinder's name),
+  and the rows that no longer described a pin left the file: `pin-giver-decisions.csv` has 19
+  rows (from 52), `pin-npc-id-decisions.csv` 197 (from 219), its rows moved to the pins that took
+  their quests (78 rows, 8 copied where a pin split, 28 dropped where two pins merged into one that
+  already had the row).
+- **A fix to the grouping.** The stable-position step snaps a group to an existing pin's coordinates
+  within 1.5 points, and two groups of one NPC could snap onto the same ones (2 pairs on master; the move
+  produced 11 more). `Assemble-PinDB.ps1` now makes them one pin, so no two pins of an NPC are
+  closer than 1.5 points; the 1.5-point grouping rule and the spacing floor are otherwise as
+  before.
+- **Checks.** The pipeline, 6c, `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1` and
+  `Remove-DuplicatePinQuests.ps1` (4 quests off 3 pins, 1 pin gone) were rerun until a second run
+  changed nothing. The reachability report differs from master's only in the pin count and in 100
+  pins hidden by the identity filters, all by "no data", against 93: those quests share pins
+  differently now. Not tried in game.
+- **Forever.** `Import-ForeverData.ps1` takes point 32 first as well. Its data is unchanged until
+  the next import, which would move 5 of the 11 quests pinned from the client's start points
+  (92748, 92750, 92751, 92752 and 92753), some to another map.

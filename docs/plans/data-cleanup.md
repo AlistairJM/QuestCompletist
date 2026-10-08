@@ -179,8 +179,11 @@ stays unflagged.
   **Correction (7 October 2026):** `QuestPOIBlob`'s index -1 is a quest's turn-in point, not its
   start point; the start is index 32 (quest-location-data-pipeline.md, last section). For "A Royal
   Summons" (38035) the harbor point is the turn-in, where TrinityCore puts the ender Sky Admiral
-  Rogers, and the start is a point in Dalaran. The decision rested on the first reading and stands
-  until the user has looked at it again.
+  Rogers, and the start is a point in Dalaran. The decision rested on the first reading.
+  **Superseded (8 October 2026):** the user chose that a pin stands where a quest is picked up, never
+  at the hand-in. The pipeline now places a quest at its point 32 (quest-location-data-pipeline.md,
+  "October 2026, pins at the start"), so "A Royal Summons" is in Dalaran and the harbor pins that
+  were turn-ins are gone. A quest the client gives no start point keeps its point -1.
 - **Three Midnight quests stuck in Uncategorized: filed under Eversong Woods** (2026-10-04). They're
   94519 "What Hope in the Light?", 94527 "Null Space" and 95973 "Echoes of the Darkwell", from the
   storyline "The Call of the Void". Blizzard files all three in area 15968, Midnight's Eversong Woods,
