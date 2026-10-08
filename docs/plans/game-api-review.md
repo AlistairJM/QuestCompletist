@@ -819,7 +819,12 @@ them.
   at its point 32, the client's start, and at its point -1 only when it has none; the turn-in pin goes.
   7,637 quests have other pins, 2,165 of them on another map, and the pins are within 1.5 points of
   242 of the 439 offers the retail run listed (159 before) and more than 5 points from 1 (56 before).
-  The 192 quests with a start and no pin stay a separate step; quest-location-data-pipeline.md,
+  The 192 quests with a start and no pin followed the same day (below); quest-location-data-pipeline.md,
   "October 2026, pins at the start".
 - 2026-10-08: the campaign line of recommendation 5 is in the quest list's tooltip, from
   `C_CampaignInfo` and `C_QuestLine.GetQuestLineQuests` (client-tables-review.md, Status).
+- 2026-10-08: the 193 quests with a start and no pin got pins (quest-location-data-pipeline.md,
+  "October 2026, pins for quests with only a start point"): 9 of the 11 offered quests that had none,
+  the Legion profession "Sample" quests among them. The new names were checked by hand and 11 quests
+  moved to their real giver. 82449, a task-table quest, needs a hand entry; the 4,082 task quests in
+  the data with a start and no pin stay unpinned, which decision 9 does not cover.

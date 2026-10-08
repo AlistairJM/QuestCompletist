@@ -282,7 +282,7 @@ the Forever probe's map pass (7 October 2026; [game-api-review.md](game-api-revi
   the turn-in. The pins of 20 September were nearer the start (159 of 172 quests within 1.5 points
   of the offer, against 107 today): the rebuilds moved 55 of them to the turn-in.
 - **Quests with a start point and no turn-in point** (4,278 without a pin: 4,082 task quests and
-  196 others, 192 with a map position) get no pin, as the filter drops them. The 19 quests the
+  196 others, 192 with a map position) got no pin, as the filter dropped them (given one in the last section). The 19 quests the
   game offers or forces visible that have no pin are of this kind.
 - **A way to move the turn-in pins that needs no spawn data:** the start point is in the table the
   pipeline already reads, for every quest that has one.
@@ -305,9 +305,8 @@ a pin matching the client's data stays (which rested on point -1 being the start
   has any (15,866 quests with a point -1), and at its point -1 otherwise (433). A point 32 on a parent
   map of another point 32 of the quest, a continent over a zone, is left out (409 blobs): the
   client lists both. Flag bit 2 doesn't mark them; 4,571 zone-map starts carry it. A quest with a
-  point 32 and no point -1 is placed only if it has a pin already (534 quests; 162 of them moved):
-  nothing gives a pin to a quest without one, so those 192 quests with a start and no pin
-  (decision 8's first step) are a separate change. The rule lives in the pipeline because the
+  point 32 and no point -1 was placed only if it had a pin already (534 quests; 162 of them moved);
+  the 192 without one got pins in the last section. The rule lives in the pipeline because the
   pipeline recomputes every position from the client's data on each run: a move made afterwards
   would be put back at the next rebuild. The turn-in pin goes; a pin means a quest can be picked up
   there, and a second pin at the hand-in would list it as available under the same name.
@@ -352,3 +351,58 @@ a pin matching the client's data stays (which rested on point -1 being the start
 - **Forever.** `Import-ForeverData.ps1` takes point 32 first as well. Its data is unchanged until
   the next import, which would move 5 of the 11 quests pinned from the client's start points
   (92748, 92750, 92751, 92752 and 92753), some to another map.
+
+## October 2026, pins for quests with only a start point
+
+The 8 October change left the quests with a point 32, no point -1 on a map and no pin without a pin
+(decision 8's first step). `Build-QuestLocationData.ps1` now places such a quest at its start when
+it is one of our quests and not in the client's task table (`QuestV2CliTask`: world quests and bonus
+objectives, which the addon doesn't pin, but also some dailies, holiday and ordinary quests); one
+that already had a pin was placed before. The tool stops if `QuestV2CliTask.csv` (step 1b) is
+missing, as without it every task quest would get a pin.
+
+- **193 quests got their first pin,** in 201 places: the 192 counted before, and 81969 "An End to the
+  End", whose point -1 is off its map. 124 places joined pins that already held other quests, by the
+  pipeline's rule that a start within 1.5 points of a known NPC's pin takes that NPC; 77 are on
+  new pins. 136 places carry a giver's name and 65 have none. Pins went from 13,688 to 13,772
+  and quests with a pin from 23,283 to 23,476. Every one of the 13,688 old pins is still there,
+  13,625 identical and 63 with new quests added: nothing moved, nothing went, no icon changed.
+  Four non-task quests still have no pin, as their start is on no map: 27858 and 27898
+  "Rheastrasza's Gift", 40040 "Felwort Sample" and 46812 "Draconic Secrets".
+- **The names were checked.** A quest that joins a known NPC's pin takes that NPC's name, which is
+  wrong when the NPC only stands nearby. Eleven were moved to their real giver by `MOVE` rows in
+  `pin-giver-decisions.csv`: 54147 to Princess Talanji (it was under Genn Greymane, an Alliance
+  NPC, for a Horde quest), 28446 and 28447 to Ariok, 33826 and 33828 to the Frostwolf Champions,
+  27894 to Rhea, 30657 to General Nazgrim, 36512 to Soulbinder Tuulani, and 43261, 43262 and 40704
+  to Vanessa VanCleef, Garona Halforcen and Li Li Stormstout (the client's start for the four
+  champion quests there is a placeholder point). Eight unnamed pins got their giver by `FILL`
+  rows, each read on Wowhead: Warmaster Zog (36261), the Demon Hunter (37450), Lady Jaina Proudmoore
+  (56775), Private Cole (58208 and 58209), Thrall (59926) and Grunt Throg (59927 and 59928). The
+  Exile's Reach pins stand on a sea map and their NPCs only on the ship's instance maps, so
+  the spawn data could not place them. Four more are `KEEP` rows: "The Warden's Game" and "The
+  Sentinel's Game" and their Horde versions start at a Stone or Marble Slab, an object, whatever
+  TrinityCore's creature starters say.
+- **Left as they are:** six Horde and five Alliance Chromie Time quests (the "Onward to Adventure"
+  campaign quests), which are auto-accepted and carry the name of the nearest NPC, as 60887 and
+  60891 already did; 41852 and 41853, listed under Brewer Almai though the class hall's
+  Brewmaster ends them; 41627 and 26149, beside pins of their same-name twins that carry an
+  object's name and no ID; and 44543, under the Kor'kron Loyalist who stands 0.03 points from it.
+  The recorder (`game-parity.md`, recommendation 1) would give these their real giver.
+- **Icons.** `Assemble-PinDB.ps1` gave a group the icon of its first row, and a new quest's default
+  icon came first: Rukua's pin in Darkshore lost its class icon (9 to 1) and three profession pins
+  went from 1 to 3. A quest that takes a neighbouring pin's identity now takes its icon too.
+- **Of the 19 quests the retail map pass found with no pin,** 9 of the 11 the game offers now have
+  one (the Legion profession "Sample" quests, "The Battle for Broken Shore" and "Warming Up"), and
+  so do the twins 43806 and 59926. Still without: 40040, whose start is on no map, and 82449 "The
+  Call of the Worldsoul", a task-table quest that needs a hand entry; the seven forced world
+  quests and 84423 have no start for the addon to show. Against the game's 439 offers the pins are
+  within 1.5 points of 253 (242 before), and 6 rows (2 quests) have no pin at all (34 before).
+- **Checks.** The pipeline, step 6c, `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1` and
+  `Remove-DuplicatePinQuests.ps1` were rerun until a second run changed nothing, which took two
+  rounds. The reachability report differs from master's in the pin count alone, and
+  `Build-AddonData.ps1 -Check` passes for both games. Three independent readers checked the
+  positions of all 193 quests against the client's tables (every pin within 1.36 points of the
+  start, none beyond 1.5), the names, and the script and these docs. Not tried in game.
+- **Open:** 4,082 task quests already in the data have a start and no pin, 1,387 of them world
+  quests; whether to pin any of them is not decided. Decision 9 in game-api-review.md is about
+  adding task quests to the database, with no pins.

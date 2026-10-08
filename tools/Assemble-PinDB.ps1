@@ -110,6 +110,7 @@ foreach ($row in $enriched) {
     if ($best -and $bestDist -le $proximityThreshold) {
         $row.NpcId = $best.NpcId
         $row.NpcName = $best.NpcName
+        $row.IconType = $best.IconType
         $row.IdentitySource = "proximity-matched"
         $proximityMatched++
     }
