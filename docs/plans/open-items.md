@@ -20,19 +20,22 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   `tools\quest_locations_tdb_review.csv`.
 - **A nameless pin is fine; a wrong NPC name is not.** A quest joins a neighbour's identity only if
   that NPC starts it, and by-hand names go in `pin-giver-decisions.csv`, each read on Wowhead.
-- **Untested changes wait.** A pull request that changes the addon and hasn't been tried in game is
-  not in the release ([releasing.md](../releasing.md), step 1).
+- **Untested changes wait** unless the user says to ship them: a pull request that changes the addon
+  and hasn't been tried in game is not in the release ([releasing.md](../releasing.md), step 1).
+  #223 and #224 went out in 112.5 on the user's word.
 - **A check stays in the sweep even while it finds nothing**, and every feature or check built for
   one game goes to both unless a game can't support it
   ([game-parity.md](game-parity.md)).
 
 ## To try in game
 
-- **Pull requests #223 and #224** (pins for the 193 quests with only a start point, and for 1,454
-  more from TrinityCore's start points) are open and untried. Look at a few, and at these:
-  quest 1036 "Avast Ye, Scallywag" (its pin is where the client puts its end, not at "Pretty Boy"
-  Duncan), the class quests at Orgrimmar's and Stormwind's hubs, and the pins on Mechagon and the
-  Caverns of Time. They ship in the release after they have been tried.
+- **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
+  TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
+  spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
+  convenient, look at a few, and at these: quest 1036 "Avast Ye, Scallywag" (its pin is where the
+  client puts its end, not at "Pretty Boy" Duncan), the class quests at Orgrimmar's and Stormwind's
+  hubs, the Silithus sigil quests (45749 to 45762, which may be retired), and the pins on the Caverns
+  of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
 

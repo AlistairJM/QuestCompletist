@@ -1,6 +1,6 @@
 # Quest Completist
 
-See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places over 13,500 quest-giver pins on your world map.
+See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places over 15,000 quest-giver pins on your world map.
 
 Type **/qc** (or **/questc**) to open it, click its minimap button, or set a key binding.
 
