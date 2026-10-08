@@ -9,7 +9,8 @@ If you're working with Claude Code in this repository, **"do a full sweep"** (or
 runs all of this for you, for both games. It will tell you up front which steps need you in the
 game.
 
-Releasing a new version is covered in [releasing.md](releasing.md).
+Releasing a new version is covered in [releasing.md](releasing.md). What is still open from earlier
+sweeps, and the calls kept, are in [plans/open-items.md](plans/open-items.md): read it before a sweep.
 
 ## One-time setup
 
