@@ -831,3 +831,9 @@ them.
 - 2026-10-08: pins from TrinityCore's start points (quest-location-data-pipeline.md, "pins from
   TrinityCore"): 1,453 more quests have a pin. The recorder (recommendation 1) is still the way to
   give the pins that stay nameless, and the quests TrinityCore has no start for, their giver.
+- 2026-10-08: recommendation 1 and decision 1: the recorder is built into the addon for both games
+  (`qcRecorder.lua`, on by default, checkbox, `/qc report`, `/qc record`), taken as agreed when the user
+  said "Let's start on the retail recorder"; the plan, the data model and the list to try in game
+  are in [quest-giver-recorder.md](quest-giver-recorder.md). The open question on its size is
+  answered for the cap (514 KB on disk at the caps) but a month of play is still unmeasured. The merge
+  tool is next; recommendation 2 (one probe for both games) after it.

@@ -351,12 +351,19 @@ SLASH_QUESTCOMPLETIST2 = "/questc"
 
 SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
 	local command = strtrim(msg or ""):lower()
+	local word, rest = command:match("^(%S*)%s*(.*)$")
 	if (command == "holidays") then
 		qcPrintHolidays()
 		return
 	elseif (command == "minimap") then
 		qcShowMinimapButton(qcSettings.QC_MINIMAP_SHOW == 0)
 		qcApplySettings()
+		return
+	elseif (word == "report") then
+		if qcRecorderReport then qcRecorderReport() end
+		return
+	elseif (word == "record") then
+		if qcRecorderCommand then qcRecorderCommand(rest) end
 		return
 	end
 	ShowUIPanel(qcQuestCompletistUI)
@@ -1986,6 +1993,9 @@ function qcCheckSettings()
     if (qcSettings.QC_MINIMAP_SHOW == nil) then
         qcSettings.QC_MINIMAP_SHOW = 1
     end
+    if (qcSettings.QC_RECORD_GIVERS == nil) then
+        qcSettings.QC_RECORD_GIVERS = 1
+    end
     for _, filter in ipairs(QC_FILTERS) do
         for _, view in ipairs({"M", "L"}) do
             local key = "QC_" .. view .. "_HIDE_" .. filter.key
@@ -2000,9 +2010,11 @@ local qcFilterBoxes = {}
 function qcApplySettings()
     qcIO_M_SHOW_ICONS:SetChecked(qcSettings.QC_M_SHOW_ICONS ~= 0)
     qcIO_MINIMAP_SHOW:SetChecked(qcSettings.QC_MINIMAP_SHOW ~= 0)
+    qcIO_RECORD_GIVERS:SetChecked(qcSettings.QC_RECORD_GIVERS ~= 0)
     for key, box in pairs(qcFilterBoxes) do
         box:SetChecked(qcSettings[key] == 1)
     end
+    if qcRecorderApply then qcRecorderApply() end
 end
 
 function qcWelcomeMessage()
@@ -2086,6 +2098,19 @@ function qcInterfaceOptions_OnShow(self)
         qcShowMinimapButton(self:GetChecked())
     end)
 
+    qcIO_RECORD_GIVERS = CreateFrame("CheckButton", "qcIO_RECORD_GIVERS", self, "InterfaceOptionsCheckButtonTemplate")
+    qcIO_RECORD_GIVERS:SetPoint("TOPLEFT", qcIO_MINIMAP_SHOW, "BOTTOMLEFT", 0, -4)
+    _G[qcIO_RECORD_GIVERS:GetName().."Text"]:SetText(qcL.RECORDGIVERS)
+    qcIO_RECORD_GIVERS:SetScript("OnClick", function(self)
+        if qcRecorderSetEnabled then qcRecorderSetEnabled(self:GetChecked()) end
+    end)
+    qcIO_RECORD_GIVERS:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(qcL.RECORDGIVERSTIP, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    qcIO_RECORD_GIVERS:SetScript("OnLeave", GameTooltip_Hide)
+
     self:SetScript("OnShow", qcConfigRefresh)
     qcConfigRefresh(self)
 end
@@ -2114,7 +2139,9 @@ if QuestFrame_SetPortrait then
 	hooksecurefunc("QuestFrame_SetPortrait", function()
 		local questId = GetQuestID()
 		if questId and questId ~= 0 then
-			QuestFrame:SetTitle(string.format("%s [%d]", UnitName("questnpc") or "", questId))
+			local name = UnitName("questnpc")
+			if issecretvalue and issecretvalue(name) then name = nil end
+			QuestFrame:SetTitle(string.format("%s [%d]", name or "", questId))
 		end
 	end)
 end
@@ -2225,6 +2252,7 @@ QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIs
 QC.qcIsUnavailable, QC.qcMaskAllows, QC.qcPrereq = qcIsUnavailable, qcMaskAllows, qcPrereq
 QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides, qcFactionLevel
 QC.qcSkillRank, QC.qcSkillName = qcSkillRank, qcSkillName
+QC.CHAT_TITLE = QCADDON_CHAT_TITLE
 QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting

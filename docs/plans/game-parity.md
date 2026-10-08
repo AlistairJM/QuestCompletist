@@ -99,7 +99,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | The client-tables check, the API check, the holiday check, the localization test | both | both | – | shared |
 | The quest probe | `/qc typecheck` (#42's branch): recurrence and tags | `/qcprobe quests`: the same and more (level, elite, group size, title) | process: two probes for one job; the Forever probe's TOC loads on retail too | **Yes:** one probe for both games. Give `Build-ProbeLists.ps1` a retail mode (the quests from `data\quests.jsonl` with `QuestV2`), retire #42's probe, and add the quest-facts pass (API review, recommendation 2) once |
 | The NPC-name check | once, in #112, for the 6,468 IDs then | every build, `/qcprobe npcs` | process | **Yes:** a retail NPC list for the probe, from the pins, run each sweep (3 to 4 minutes) |
-| The recorder | **none** | every time the game is played | process; the biggest gap | **Yes:** API review, recommendation 1 |
+| The recorder | shared since 8 October 2026 (`qcRecorder.lua`, on by default; not yet tried in game) | the probe's, until the addon's has run one sweep; then the addon's | the merge tool for retail is still to build | **Yes:** API review, recommendation 1; [quest-giver-recorder.md](quest-giver-recorder.md) |
 | The map pass | done (7 October) | done (7 October) | – | run on both each sweep (maintenance.md, step 4b) |
 | The quest cache reader (`Read-ForeverQuestCache.ps1`) | **none** | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Maybe:** it would give retail the starting item, the quest sort and the minimum level per quest, which Blizzard's API doesn't; the start item is the prize (API review, recommendation 13). The reader stops on a layout it doesn't know, so retail's layout is the first thing to try |
 | Hand lists | `pin-npc-id-decisions.csv` | `forever-quest-givers.csv`, `forever-quest-zones.csv` | – | equivalent |
@@ -129,7 +129,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 
 | # | What | Effort | Notes |
 |---|---|---|---|
-| 1 | The recorder on retail (API review, recommendation 1) | small in the addon, medium for the merge tool | the one check Forever has that retail lacks outright |
+| 1 | The recorder on retail (API review, recommendation 1) | small in the addon (built 8 October 2026), medium for the merge tool (next) | the one check Forever has that retail lacks outright |
 | 2 | One probe for both games: a retail mode for `Build-ProbeLists.ps1`, the quest-facts pass built once, the NPC pass run on retail each sweep, #42's probe retired | medium | ends the two-probes split; the Forever probe already loads on retail |
 | 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback (done 7 October 2026), then the in-game check of the expansion lines, then the data from `QuestV2CliTask` and TrinityCore | small code (done), medium data | the case that started this; the fallback makes the code the same on both, and changes nothing in game until retail has requirement data |
 | 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | a switch to skip the API and TrinityCore parts |
@@ -185,3 +185,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   start, so the code row above needed no gate. Checked with stand-ins for the client's frames; the
   button's look and distance from the ring on each game are for the in-game check.
 - 2026-10-08: the addon compartment entry turned on for both games, at the user's request.
+- 2026-10-08: recommendation 1: the recorder is shared code (`qcRecorder.lua` in both TOCs, one
+  account-wide saved variable, so each game keeps its own file), built and tested with stand-ins;
+  the game's answers to its open questions come from one in-game session on each
+  ([quest-giver-recorder.md](quest-giver-recorder.md)). The merge tool is next.

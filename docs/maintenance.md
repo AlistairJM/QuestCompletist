@@ -938,6 +938,14 @@ Leave the probe installed while you play Forever. Its recorder notes which quest
 offers and where it stands. For most of Forever's new quests that's the only source of where they
 start, so step 10 copies its file on every sweep.
 
+From the version that ships it, the addon itself notes the same on both games (on by default,
+`/qc report` shows what it holds; [quest-giver-recorder.md](plans/quest-giver-recorder.md)). Leave it
+on while you play retail and Forever. The tool that merges its notes into the pins is still to come;
+until it is, copy `WTF\Account\<account>\SavedVariables\QuestCompletist.lua` from each game's folder
+(`_retail_`; `_classic_beta_` until Forever launches, then its live folder) into
+`tools\recordings\own\retail\` and `tools\recordings\own\forever\` after a full log out, every
+sweep, so nothing is lost to the cap.
+
 ## Checking a change before its pull request
 
 ```powershell
@@ -967,6 +975,9 @@ git diff --stat
   step 10 for Forever.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
+- For changes to the recorder (`qcRecorder.lua`) or what it reads, run `Test-Recorder.lua`. It must
+  say "0 failed". It plays the events against stand-ins for the API, so it can't say what the game
+  answers: that is the in-game list in [quest-giver-recorder.md](plans/quest-giver-recorder.md).
 
 ## Bundled libraries
 
