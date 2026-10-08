@@ -128,6 +128,10 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "任务%d“%s”被列为已无法获取，但你刚刚接受了它。它会对你正常显示；请反馈，以便修正列表。", -- Needs review
 	UNAVAILABLETURNEDIN = "任务%d“%s”被列为已无法获取，但你刚刚交付了它。它会对你正常显示；请反馈，以便修正列表。", -- Needs review
 	TOGGLEFRAME = "显示/隐藏窗口", -- Needs review
+	SHOWMINIMAPBUTTON = "显示小地图按钮", -- Needs review
+	MINIMAPLEFTCLICK = "左键点击：显示或隐藏任务列表", -- Needs review
+	MINIMAPRIGHTCLICK = "右键点击：打开设置", -- Needs review
+	MINIMAPDRAG = "拖动：沿小地图边缘移动此按钮", -- Needs review
 	}, {__index = qcLocalize})
 
 end

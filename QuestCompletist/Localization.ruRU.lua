@@ -128,6 +128,10 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "Задание %d «%s» отмечено как недоступное, но вы только что его взяли. Для вас оно показывается как обычно; сообщите об этом, чтобы список исправили.", -- Needs review
 	UNAVAILABLETURNEDIN = "Задание %d «%s» отмечено как недоступное, но вы только что его сдали. Для вас оно показывается как обычно; сообщите об этом, чтобы список исправили.", -- Needs review
 	TOGGLEFRAME = "Показать/скрыть окно", -- Needs review
+	SHOWMINIMAPBUTTON = "Показывать кнопку у миникарты", -- Needs review
+	MINIMAPLEFTCLICK = "Левый щелчок: показать или скрыть список заданий", -- Needs review
+	MINIMAPRIGHTCLICK = "Правый щелчок: открыть настройки", -- Needs review
+	MINIMAPDRAG = "Перетаскивание: переместить кнопку вокруг миникарты", -- Needs review
 	}, {__index = qcLocalize})
 
 end

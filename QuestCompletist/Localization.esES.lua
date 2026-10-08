@@ -129,6 +129,10 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "La misión %d \"%s\" figura como ya no disponible, pero acabas de aceptarla. Se te muestra con normalidad; infórmalo para que se corrija la lista.", -- Needs review
 	UNAVAILABLETURNEDIN = "La misión %d \"%s\" figura como ya no disponible, pero acabas de entregarla. Se te muestra con normalidad; infórmalo para que se corrija la lista.", -- Needs review
 	TOGGLEFRAME = "Mostrar/ocultar ventana", -- Needs review
+	SHOWMINIMAPBUTTON = "Mostrar botón del minimapa", -- Needs review
+	MINIMAPLEFTCLICK = "Clic izquierdo: mostrar u ocultar la lista de misiones", -- Needs review
+	MINIMAPRIGHTCLICK = "Clic derecho: abrir las opciones", -- Needs review
+	MINIMAPDRAG = "Arrastrar: mover este botón alrededor del minimapa", -- Needs review
 	}, {__index = qcLocalize})
 
 end

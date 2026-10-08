@@ -129,6 +129,10 @@ qcLocalize = setmetatable({
 	UNAVAILABLEACCEPTED = "Quest %d \"%s\" ist als nicht mehr verfügbar eingetragen, aber du hast sie gerade angenommen. Bei dir wird sie normal angezeigt; bitte melde es, damit die Liste korrigiert werden kann.", -- Needs review
 	UNAVAILABLETURNEDIN = "Quest %d \"%s\" ist als nicht mehr verfügbar eingetragen, aber du hast sie gerade abgegeben. Bei dir wird sie normal angezeigt; bitte melde es, damit die Liste korrigiert werden kann.", -- Needs review
 	TOGGLEFRAME = "Fenster ein-/ausblenden", -- Needs review
+	SHOWMINIMAPBUTTON = "Minikartensymbol anzeigen", -- Needs review
+	MINIMAPLEFTCLICK = "Linksklick: Questliste ein-/ausblenden", -- Needs review
+	MINIMAPRIGHTCLICK = "Rechtsklick: Optionen öffnen", -- Needs review
+	MINIMAPDRAG = "Ziehen: Symbol um die Minikarte bewegen", -- Needs review
 	}, {__index = qcLocalize})
 
 end

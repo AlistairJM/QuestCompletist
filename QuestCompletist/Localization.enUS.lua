@@ -155,4 +155,8 @@ qcLocalize = {
 	UNAVAILABLEACCEPTED = "Quest %d \"%s\" is listed as no longer available, but you've just accepted it. It shows as normal for you; please report it so the list can be corrected.",
 	UNAVAILABLETURNEDIN = "Quest %d \"%s\" is listed as no longer available, but you've just turned it in. It shows as normal for you; please report it so the list can be corrected.",
 	TOGGLEFRAME = "Toggle Frame",
+	SHOWMINIMAPBUTTON = "Show Minimap Button",
+	MINIMAPLEFTCLICK = "Left-click: show or hide the quest list",
+	MINIMAPRIGHTCLICK = "Right-click: open the options",
+	MINIMAPDRAG = "Drag: move this button around the minimap",
 	}

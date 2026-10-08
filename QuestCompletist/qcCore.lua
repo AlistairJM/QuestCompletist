@@ -350,8 +350,13 @@ SLASH_QUESTCOMPLETIST1 = "/qc"
 SLASH_QUESTCOMPLETIST2 = "/questc"
 
 SlashCmdList["QUESTCOMPLETIST"] = function(msg, editbox)
-	if (strtrim(msg or ""):lower() == "holidays") then
+	local command = strtrim(msg or ""):lower()
+	if (command == "holidays") then
 		qcPrintHolidays()
+		return
+	elseif (command == "minimap") then
+		qcShowMinimapButton(qcSettings.QC_MINIMAP_SHOW == 0)
+		qcApplySettings()
 		return
 	end
 	ShowUIPanel(qcQuestCompletistUI)
@@ -1978,6 +1983,9 @@ function qcCheckSettings()
     if (qcSettings.QC_M_SHOW_ICONS == nil) then
         qcSettings.QC_M_SHOW_ICONS = 1
     end
+    if (qcSettings.QC_MINIMAP_SHOW == nil) then
+        qcSettings.QC_MINIMAP_SHOW = 1
+    end
     for _, filter in ipairs(QC_FILTERS) do
         for _, view in ipairs({"M", "L"}) do
             local key = "QC_" .. view .. "_HIDE_" .. filter.key
@@ -1991,6 +1999,7 @@ local qcFilterBoxes = {}
 
 function qcApplySettings()
     qcIO_M_SHOW_ICONS:SetChecked(qcSettings.QC_M_SHOW_ICONS ~= 0)
+    qcIO_MINIMAP_SHOW:SetChecked(qcSettings.QC_MINIMAP_SHOW ~= 0)
     for key, box in pairs(qcFilterBoxes) do
         box:SetChecked(qcSettings[key] == 1)
     end
@@ -2069,6 +2078,13 @@ function qcInterfaceOptions_OnShow(self)
             end
         end
     end
+
+    qcIO_MINIMAP_SHOW = CreateFrame("CheckButton", "qcIO_MINIMAP_SHOW", self, "InterfaceOptionsCheckButtonTemplate")
+    qcIO_MINIMAP_SHOW:SetPoint("TOPLEFT", labels[#labels], "BOTTOMLEFT", -4, -12)
+    _G[qcIO_MINIMAP_SHOW:GetName().."Text"]:SetText(qcL.SHOWMINIMAPBUTTON)
+    qcIO_MINIMAP_SHOW:SetScript("OnClick", function(self)
+        qcShowMinimapButton(self:GetChecked())
+    end)
 
     self:SetScript("OnShow", qcConfigRefresh)
     qcConfigRefresh(self)
@@ -2151,6 +2167,7 @@ local function qcEventHandler(self, event, ...)
 			qcMigrateCompletions()
 			if not (qcFlaggedButSeen) then qcFlaggedButSeen = {} end
 			qcCheckSettings()
+			qcCreateMinimapButton()
 			qcApplySettings()
 			qcWelcomeMessage()
 			qcZoneChangedNewArea()
