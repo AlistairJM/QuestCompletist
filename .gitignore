@@ -30,3 +30,4 @@ tools/*
 !tools/Read-ForeverProbe.lua
 !tools/Report-MapOffers.lua
 !tools/Read-ApiDocs.lua
+!tools/Test-SeasonalCalendar.lua

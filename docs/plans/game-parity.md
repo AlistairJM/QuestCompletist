@@ -42,7 +42,7 @@ quests and 15,202 pins; Forever 5,081 quests and 1,706 pins.
 
 | Place | Game | Why | Could the other have it? | Recommendation |
 |---|---|---|---|---|
-| Profession skill requirement: `qcSkillRank` in `qcCore.lua` | both (was Forever's alone) | **API, now handled; the real gap is data.** `qcSkillRank` used to return "can't say" on a client without `C_SkillInfo.GetSkillLineInfoByID`, so the required level was never checked on retail. Since 7 October 2026 it prefers `C_SkillInfo` and otherwise reads the professions in `qcProfessionBits` through `GetProfessions` and `GetProfessionInfo`, which the addon already calls for the profession filter. `qcQuestSkillRequirements` still has 141 Forever quests from CMaNGOS and none for retail | Yes, by data. Retail's sources: the client's `QuestV2CliTask` skill filters (410 task quests, client-tables review) and TrinityCore's 78 old quests. Retail splits each profession by expansion, so the requirement's skill line must be the expansion's, and whether the profession list reports that line or only the base one is still to check in game; until then a line outside `qcProfessionBits`, an expansion's included, answers "can't say" | Fallback done. Before the data, check in game what `GetProfessionInfo` reports and whether `C_TradeSkillUI.GetProfessionInfoBySkillLineID` reads an expansion's line (recommendation 3) |
+| Profession skill requirement: `qcSkillRank` in `qcCore.lua` | both (was Forever's alone) | **API, now handled; the real gap is data.** `qcSkillRank` used to return "can't say" on a client without `C_SkillInfo.GetSkillLineInfoByID`, so the required level was never checked on retail. Since 7 October 2026 it prefers `C_SkillInfo` and otherwise reads the professions in `qcProfessionBits` through `GetProfessions` and `GetProfessionInfo`, which the addon already calls for the profession filter. `qcQuestSkillRequirements` still has 141 Forever quests from CMaNGOS and none for retail | Yes, by data. Retail's sources: the client's `QuestV2CliTask` skill filters (410 task quests, client-tables review) and TrinityCore's 78 old quests. Retail splits each profession by expansion, so the requirement's skill line must be the expansion's, and the profession list reports the base line (offline: Blizzard's profession book hands that one to its unlearn dialog, and 464 of the 524 task quests with a skill filter name an expansion line; the retail API that may read one, `C_TradeSkillUI.GetProfessionInfoBySkillLineID`, is for the two-line check in open-items.md); until then a line outside `qcProfessionBits`, an expansion's included, answers "can't say" | Fallback done. Before the data, check in game what `GetProfessionInfo` reports and whether `C_TradeSkillUI.GetProfessionInfoBySkillLineID` reads an expansion's line (recommendation 3) |
 | Campaign line in the quest tooltip: `qcTooltips.lua` asks `C_CampaignInfo` and prints the game's `QUEST_CLASSIFICATION_CAMPAIGN` | retail | nature: Forever has no campaign tables, so `GetCampaignID` should answer 0 there (to confirm once on the beta); the game's word and the API are both in its client | No | Keep |
 | Renown requirements: `qcRenownLevelRequirements` (96 quests) and the `C_MajorFactions` guard in `qcTooltips.lua` | retail | nature: Forever has no major factions (the functions exist and answer nothing) | No | Keep |
 | Covenants: the covenant filter and `qcQuestCovenant` (777 quests) | retail | nature | No | Keep |
@@ -63,11 +63,12 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Storylines (`storyline`, `qcQuestLines`) | 16,950 quests, 1,474 storylines | 11 quests, 1 storyline | **data:** Forever's client `QuestLine` has 3 rows, and no other source has storylines | Watch the table: have the importer's summary print `QuestLine` and `QuestLineXQuest` row counts, as it prints start points |
 | Covenant | 777 | 0 | nature | No |
 | Profession | 1,742 | 142 | both; retail's task quests from `QuestV2CliTask` | – |
-| Holiday | 911 | 322 | both; retail's from Blizzard's API and hand, Forever's from CMaNGOS's events | – |
+| Holiday | 1,095 (9 October 2026; it grows as quests are tagged) | 322 | both; retail's is hand data in `data\quests.jsonl` (no tool writes it; the record is [quest-holiday-decisions.csv](quest-holiday-decisions.csv)), Forever's comes from CMaNGOS's events | – |
 | Prerequisites | 8,306 | 2,296 | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS | – |
 | Breadcrumbs, "only one of these" | 279 and 249 lines | 93 and 257 | both | – |
 | Reputation rewards | 11,035 | 1,837 quests | both; API against the quest cache | – |
 | Renown requirements | 96 | none | nature | No |
+| Minimum level: `qcQuestMinLevel` | none (empty table) | 4,180 | **data:** retail's `level` is already read as the minimum: it is meant to be the API's, and equals the API's today for 28,455 of the 30,066 quests whose API record gives one (94.6%; 1,611 differ). Forever's is the quest's own level, with the minimum from its quest cache or CMaNGOS. The readers take `qcQuestMinLevel[id] or level`, whichever game | Shared code, no gate on the game. Refreshing retail's levels from the API is a separate decision |
 | Skill requirements | none | 141 | **data** (the code row above) | Yes: `QuestV2CliTask` and TrinityCore |
 | Unavailable flags | 218 | 0 | process (above) | Later |
 | Pins with an NPC ID | 10,564 of 15,202 | 1,503 of 1,706 | both; retail's IDs from TrinityCore and the client's giver table (#208), Forever's from CMaNGOS | – |
@@ -85,24 +86,25 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 1c quest names | from the API | from the cache | – | equivalent |
 | 1d professions of task quests | `Sync-QuestProfessions.ps1` | – | `QuestV2CliTask` is retail's alone; Forever's come from CMaNGOS | nature |
 | 2 reputation | API compare and backfill | the cache, in the importer | – | equivalent |
-| 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | **no** | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | **Yes:** run the consistency part on `data\forever` and `QuestCompletist\Forever` (the tool takes both folders; it needs a switch to skip the API and TrinityCore parts) |
+| 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | the consistency part, `-Game forever` (9 October 2026) | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | done: step 10 runs it; the API, TrinityCore and client-table parts stay retail's (`-OwnDataOnly` skips them) |
 | 2c prerequisites | API, the client's task quests (`QuestV2CliTask`) and TrinityCore | CMaNGOS, in the importer | – | equivalent |
+| 2d holiday tags (`Audit-QuestHolidays.ps1`) | yes | **no** | Forever's tags aren't hand data: the importer derives them from CMaNGOS's events on every step-10 run, so a check against the same tables would only repeat it. The one thing it could find, a CMaNGOS event with quests that the importer maps to no holiday, is two events and four quests today (New Year's Eve, 8860 and 8861; Winter Veil: Gifts, 8827 and 8828), all tagged Winter Veil in Forever's data (9 October 2026) | equivalent |
 | 3 quest types | `Retype-*.ps1` with the probe | the importer | – | equivalent |
 | 4 storylines | `Build-QuestLines.ps1` | `Build-ForeverMenu.ps1` reads the same table | data (3 rows) | watched |
 | 5 zone table and client names | three tools | `Build-ForeverMenu.ps1` | – | equivalent |
 | 6 pins | the pipeline from `QuestPOIBlob` and TrinityCore's `quest_poi` | the importer from CMaNGOS, the recorder and the client's start points | the same rule, a pin at every place a source puts the pickup, from each game's sources (the data row above) | equivalent |
-| 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | **no** | never pointed at Forever's folders | **Yes:** run it with `-DataDir data\forever -AddonDir QuestCompletist\Forever` in step 10 |
+| 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | `-Game forever` (9 October 2026) | it had never been pointed at Forever's folders; retail's start points (`quest_locations.csv`) have no Forever counterpart, so only its half-point rule applies | done: step 10 runs it after the import |
 | 6d the addon's recorder merged into the pins | `Import-RecordedGivers.ps1`: blank NPC IDs and names filled, pins for quests no source places; the ledger and the lists, retail's and Forever's | the ledger and the lists only; Forever's pins are rebuilt by step 10, which does not read the ledger yet | Forever's importer does not read the ledger | **Yes:** the importer reads the ledger and merges recorded spots at 1.5 points (plan item 5) |
 | 6c NPC IDs for named pins | TrinityCore (`Fill-PinNpcIds.ps1`), and the client's giver table with TrinityCore's starters, which also move a quest to its giver's pin (`Apply-ClientQuestGivers.ps1`) | CMaNGOS gives the IDs, from each quest's starter, so there is no neighbour's identity to correct | `CollectableSourceQuestSparse` is retail's alone | equivalent; nature |
 | 7 quests no longer obtainable | `Find-UnavailableQuestCandidates.ps1` | the importer's refused-quest rule | process | later, after launch |
-| 8 dungeons against the Dungeon Journal | `Audit-DungeonCategories.ps1` | – | Forever's menu takes instance types from the map table; whether its client carries the journal's names is unchecked | check `JournalInstance` on Forever once; if it's there, point the audit at it |
+| 8 dungeons against the Dungeon Journal | `Audit-DungeonCategories.ps1` | – | **data:** Forever's client has no `JournalInstance` (nor any `Journal*` table: 612 tables on builds 70205 and 70245, checked 9 October 2026); its menu takes instance types from the map table, and `DungeonEncounter` and `LFGDungeons` are all it has near the journal | watched: `Compare-ClientTables.ps1` flags a `Journal` table as quest-related when one appears, and the audit is then pointed at it |
 | 9 reachability | yes | yes | – | shared |
 | The client-tables check, the API check, the holiday check, the localization test | both | both | – | shared |
 | The quest probe | `/qc typecheck` (#42's branch): recurrence and tags | `/qcprobe quests`: the same and more (level, elite, group size, title) | process: two probes for one job; the Forever probe's TOC loads on retail too | **Yes:** one probe for both games. Give `Build-ProbeLists.ps1` a retail mode (the quests from `data\quests.jsonl` with `QuestV2`), retire #42's probe, and add the quest-facts pass (API review, recommendation 2) once |
 | The NPC-name check | once, in #112, for the 6,468 IDs then | every build, `/qcprobe npcs` | process | **Yes:** a retail NPC list for the probe, from the pins, run each sweep (3 to 4 minutes) |
 | The recorder | shared since 8 October 2026 (`qcRecorder.lua`, on by default; not yet tried in game); merged into retail's pins by `Import-RecordedGivers.ps1` (step 6d, 9 October 2026) | the probe's, until the addon's has run one sweep; then the addon's; step 6d keeps Forever's ledger and the importer will read it | Forever's importer does not read the ledger yet | **Yes:** API review, recommendation 1; [quest-giver-recorder.md](quest-giver-recorder.md) |
 | The map pass | done (7 October) | done (7 October) | – | run on both each sweep (maintenance.md, step 4b) |
-| The quest cache reader (`Read-ForeverQuestCache.ps1`) | **none** | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Maybe:** it would give retail the starting item, the quest sort and the minimum level per quest, which Blizzard's API doesn't; the start item is the prize (API review, recommendation 13). The reader stops on a layout it doesn't know, so retail's layout is the first thing to try |
+| The quest cache reader (`Read-QuestCache.ps1`) | step 2e, with `Compare-QuestCache.ps1` | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Done 9 October 2026** ([retail-quest-cache.md](retail-quest-cache.md)): it gives retail the quest sort and, as a content tuning, the level the server asks for (`minLevel`, which Forever's `qcQuestMinLevel` is made from; retail's `level` was taken from the API's minimum and differs from it today for 1,611 quests: see maintenance.md, "The quest and pin data files"); the start item turned out to be the item the quest hands over when accepted, not the one that begins it, so it is no prize. The reader read retail's layout (TrinityCore's, with two numbers fewer), and `Compare-QuestCache.ps1` watches it against Blizzard's own data |
 | Hand lists | `pin-npc-id-decisions.csv` | `forever-quest-givers.csv`, `forever-quest-zones.csv` | – | equivalent |
 | Release | one ZIP, both TOCs | – | shared |
 
@@ -117,7 +119,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   where the client has it, so when retail gains it the profession-list fallback becomes the second
   route and the expansion lines can be read directly.
 - **Data gaps**, each with the place that watches it: Forever's storylines (`QuestLine` rows; the
-  importer's summary, once it prints them) and start points (`QuestPOIBlob`; the importer's
+  importer's "Storylines:" line) and start points (`QuestPOIBlob`; the importer's
   summary); a quest-giver field in Forever's quest records (the importer's summary); a Forever
   namespace in Blizzard's web API (forever.md, phase 5); `QuestV2CliTask` appearing on Forever
   (step 2b's new-table flag); the Scourge Invasion and War Effort on Forever's calendar (step 2b's
@@ -133,12 +135,12 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 1 | The recorder on retail (API review, recommendation 1) | small in the addon (built 8 October 2026), medium for the merge tool (built 9 October 2026) | the one check Forever has that retail lacks outright; the in-game session and the first real ingest are left |
 | 2 | One probe for both games: a retail mode for `Build-ProbeLists.ps1`, the quest-facts pass built once, the NPC pass run on retail each sweep, #42's probe retired | medium | ends the two-probes split; the Forever probe already loads on retail |
 | 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback (done 7 October 2026), then the in-game check of the expansion lines, then the data from `QuestV2CliTask` and TrinityCore | small code (done), medium data | the case that started this; the fallback makes the code the same on both, and changes nothing in game until retail has requirement data |
-| 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | a switch to skip the API and TrinityCore parts |
-| 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | probably finds nothing; the point is that it looks |
-| 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
-| 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | a watch, nothing else |
+| 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | done 9 October 2026 (`-Game forever`, `-OwnDataOnly`): 6 findings, five kept and one fixed |
+| 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | done 9 October 2026 (`-Game forever`): it did find something, 11 pins |
+| 6 | Retail's quest cache through `Read-QuestCache.ps1` | medium | done 9 October 2026: the layout is TrinityCore's, 120 fixed numbers; the start items are not what the recommendation took them for ([retail-quest-cache.md](retail-quest-cache.md)) |
+| 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | done 9 October 2026: the "Storylines:" line (3 and 22 rows on build 70205) |
 | 8 | The retail map pass | a run | the pin comparison; done 7 October 2026 (game-api-review.md, "Map-offers probe: retail run") |
-| 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | |
+| 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | done 9 October 2026: it isn't there, so there is no audit to point (row 8) |
 | 10 | A Forever review of hidden and test quests | later | after launch |
 | 11 | One rule for nameless pins in both games: a pin per quest and place (retail) or per spot (Forever) | small | decide, then align the tool that differs |
 | 12 | Name retail's pins after the object or item that starts the quest, as Forever's are | small | `gameobject_queststarter` and `gameobject_template` give 62 object-started quests; 120 start from an item alone |
@@ -195,3 +197,23 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   `recorded-quest-givers.csv`, for both games' files; Forever only gets its ledger, as its pins are
   rebuilt by step 10. The pickup rule of the data row "Pickup sources for pins" now has the recorder as a
   source on both games once files exist ([quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool").
+- 2026-10-09: recommendations 4 and 5, the table checks on Forever (step 10, items 8 and 9 of the runbook):
+  `Audit-QuestTables.ps1 -Game forever` (and `-OwnDataOnly` on either game) and
+  `Remove-DuplicatePinQuests.ps1 -Game forever`, with `Test-ForeverChecks.ps1`. The audit found 6 things in
+  Forever's data: five are kept in `forever-quest-table-decisions.csv` (three prerequisites that name the
+  other faction's quest, two that name a repeatable one), and quest 92727's own record in the game names
+  itself as its next quest, which the importer took as its previous quest, so the quest could never show
+  (fixed in the importer and the data). The removal took quest 2933 off 10 "Venom Bottle" pins and quest
+  926 off one "Flawed Power Stones" pin (11 pins): CMaNGOS has several object entries of one name. It also
+  found a bug that had been in the tool since it was written, in retail's copy too: a spot whose only
+  pin was the first in the file read as empty, so that pin was never merged (retail's output is unchanged).
+- 2026-10-09: recommendation 6: `Read-ForeverQuestCache.ps1` is now `Read-QuestCache.ps1` and reads retail's
+  cache (32,713 quests) as well as Forever's, from one walker and a table of positions for each game.
+  `Compare-QuestCache.ps1` (step 2e) checks it against the API and the client's task table: nothing
+  differs. Eight comparisons of the cache with our data are in [retail-quest-cache.md](retail-quest-cache.md);
+  the start item is the item handed over on accept, which retires "Starts from" as recommendation 13
+  had it. Forever's output is the old reader's plus `flagsEx`, `questType` and `scheduler`; its
+  `recurs` takes a daily from flags Ex too (none of Forever's differ).
+- 2026-10-09: recommendation 9: Forever's client carries no `JournalInstance` or any other `Journal*` table (the
+  lists of client tables for builds 70205 and 70245), so the dungeon audit has nothing to read there. The
+  watch is step 2b's table list.

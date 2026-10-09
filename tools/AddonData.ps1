@@ -11,10 +11,11 @@ Fields that are empty are left out: a quest's profession, holiday, covenant, sto
 when 0, and a pin's npc when 0, its name when it has none and its note when it has none. A quest's
 prereq is the quest to do first, or a list of quests that all must be done; a list inside that
 list is a choice, any one of which will do, and a list inside a choice is all of it again:
-[57115,57116] needs both, and [[10983,10989,11057]] needs any one of the three. The
-records become the whole of QuestCompletist\qcQuestData.lua, in file order (see
-ConvertTo-LuaQuestFile for its layout), and the whole of qcPinDB.lua, map by map in ascending order.
-Both start with a line saying they're generated.
+[57115,57116] needs both, and [[10983,10989,11057]] needs any one of the three. A quest's level is
+its row's second value; minLevel, the level a character needs to accept the quest, is left out when
+it is the same, and kept when it is 0 (no minimum). The records become the whole of
+QuestCompletist\qcQuestData.lua, in file order (see ConvertTo-LuaQuestFile for its layout), and the
+whole of qcPinDB.lua, map by map in ascending order. Both start with a line saying they're generated.
 #>
 
 $script:Invariant = [Globalization.CultureInfo]::InvariantCulture
@@ -23,8 +24,8 @@ $DefaultDataDir = Join-Path $PSScriptRoot '..\data'
 $DefaultAddonDir = Join-Path $PSScriptRoot '..\QuestCompletist'
 
 $QuestFields = @('id', 'name', 'level', 'zone', 'category', 'type', 'faction', 'race', 'class',
-    'profession', 'holiday', 'covenant', 'storyline', 'prereq')
-$QuestOptionalFields = @('profession', 'holiday', 'covenant', 'storyline', 'prereq')
+    'profession', 'holiday', 'covenant', 'storyline', 'prereq', 'minLevel')
+$QuestOptionalFields = @('profession', 'holiday', 'covenant', 'storyline', 'prereq', 'minLevel')
 $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
@@ -54,7 +55,8 @@ function Get-PrereqQuests($value) {
 # same in Lua and JSON; control characters are refused by the checks), and numbers are written the
 # shortest way: 47.3 rather than 47.30. Like the Lua writers further down, these do it inline: a
 # function call per field made writing them take a minute. A profession, holiday, covenant,
-# storyline or prereq of 0 is left out, as is a pin's npc of 0.
+# storyline or prereq of 0 is left out, as is a pin's npc of 0; a minLevel is left out only when it
+# is missing, since 0 is a minimum.
 function ConvertTo-QuestJsonLines($quests) {
     $sb = New-Object System.Text.StringBuilder (6MB)
     foreach ($q in $quests) {
@@ -67,6 +69,7 @@ function ConvertTo-QuestJsonLines($quests) {
         if ($q.storyline) { [void]$sb.Append(',"storyline":' + $q.storyline) }
         $prereq = $q.prereq
         if ($prereq) { [void]$sb.Append(',"prereq":' + $(if ($prereq -is [array]) { ConvertTo-PrereqText $prereq '[' ']' } else { $prereq })) }
+        if ($null -ne $q.minLevel) { [void]$sb.Append(',"minLevel":' + $q.minLevel) }
         [void]$sb.Append("}`n")
     }
     return $sb.ToString()
@@ -132,6 +135,7 @@ function Test-QuestRecords($quests) {
             ($q.race -is [int]) -and ($q.class -is [int]) -and
             ($null -eq $q.profession -or $q.profession -is [int]) -and ($null -eq $q.holiday -or $q.holiday -is [int]) -and
             ($null -eq $q.covenant -or $q.covenant -is [int]) -and ($null -eq $q.storyline -or $q.storyline -is [int]) -and
+            ($null -eq $q.minLevel -or ($q.minLevel -is [int] -and $q.minLevel -ge 0 -and $q.minLevel -ne $q.level)) -and
             ($null -eq $q.prereq -or ($q.prereq -is [int] -and $q.prereq -ge 0) -or (Test-PrereqValue $q.prereq)) -and -not ($name -match '[\x00-\x1f]') -and -not ($zone -match '[\x00-\x1f]')
         if (-not $sound) {
             $what = "quests.jsonl line $n" + $(if (Test-WholeNumber $id) { " (id $id)" } else { '' })
@@ -145,6 +149,9 @@ function Test-QuestRecords($quests) {
                     elseif ($field -eq 'name' -and $value -eq '') { $problems.Add("${what}: 'name' is empty") }
                 } elseif ($field -eq 'prereq') {
                     if (-not (($value -is [int] -and $value -ge 0) -or (Test-PrereqValue $value))) { $problems.Add("${what}: 'prereq' must be a quest ID, or a list of them with no empty list") }
+                } elseif ($field -eq 'minLevel') {
+                    if (-not (Test-WholeNumber $value) -or $value -lt 0) { $problems.Add("${what}: 'minLevel' must be a whole number, 0 or more") }
+                    elseif ($value -eq $q.level) { $problems.Add("${what}: 'minLevel' is the same as 'level'; leave it out") }
                 } elseif (-not (Test-WholeNumber $value)) {
                     $problems.Add("${what}: '$field' must be a whole number")
                 }
@@ -199,15 +206,23 @@ function Test-PinRecords($pins) {
 # The whole of qcQuestData.lua, each line ending in CRLF. A quest's row in qcQuestDatabase is
 # {name, level, category, type, faction, race, class, storyline}, with storyline left off when it's
 # 0; profession, holiday, covenant and prereq, which most quests don't have, go in tables of their
-# own keyed by quest ID, a prereq list as a Lua table. The zone text isn't written: the game never
-# reads it.
+# own keyed by quest ID, a prereq list as a Lua table. qcQuestMinLevel holds the level a character
+# needs to take a quest whose own level (the row's) is not that; a quest it lacks needs the row's
+# level. The zone text isn't written: the game never reads it.
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
 function ConvertTo-LuaQuestFile($quests, [string]$source = 'data') {
     $sb = New-Object System.Text.StringBuilder (4MB)
     [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
-    $sparse = [ordered]@{ qcQuestProfession = 'profession'; qcQuestHoliday = 'holiday'; qcQuestCovenant = 'covenant'; qcQuestPrereq = 'prereq' }
+    # ZeroIsValue: a minimum level of 0 is a real value (no minimum); in the other tables 0 means none.
+    $sparse = [ordered]@{
+        qcQuestProfession = @{ Field = 'profession' }
+        qcQuestHoliday = @{ Field = 'holiday' }
+        qcQuestCovenant = @{ Field = 'covenant' }
+        qcQuestPrereq = @{ Field = 'prereq' }
+        qcQuestMinLevel = @{ Field = 'minLevel'; ZeroIsValue = $true }
+    }
     $tables = @{}
     foreach ($table in $sparse.Keys) { $tables[$table] = New-Object System.Text.StringBuilder }
     foreach ($q in $quests) {
@@ -216,9 +231,10 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data') {
         if ($q.storyline) { $row += ',' + $q.storyline }
         [void]$sb.Append('[' + $q.id + ']={' + $row + "},`r`n")
         foreach ($table in $sparse.Keys) {
-            $value = $q.($sparse[$table])
+            $column = $sparse[$table]
+            $value = $q.($column.Field)
             if ($value -is [array]) { $value = ConvertTo-PrereqText $value '{' '}' }
-            if ($value) { [void]$tables[$table].Append('[' + $q.id + ']=' + $value + ",`r`n") }
+            if ($value -or ($column.ZeroIsValue -and $null -ne $value)) { [void]$tables[$table].Append('[' + $q.id + ']=' + $value + ",`r`n") }
         }
     }
     [void]$sb.Append("}`r`n")

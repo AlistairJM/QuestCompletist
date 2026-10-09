@@ -128,7 +128,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
-2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`, #141): decodes the cache records, checked
+2. **Cache reader** (tool, `tools/Read-QuestCache.ps1`, #141, called Read-ForeverQuestCache.ps1 until retail's layout was added): decodes the cache records, checked
    against CMaNGOS for the quests both have.
 3. **CMaNGOS importer** (tool, `tools/Import-ForeverData.ps1`, #142): turns the dump into
    `data/forever`, with spawns converted to map positions. It merges the probe, cache and recorder results, and lists every disagreement for
@@ -177,7 +177,7 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 - **The quest cache** (2,860 records) holds the server's quest record, laid out as TrinityCore's
   `QueryQuestInfoResponse`. Against CMaNGOS, the zone (the int32 at byte 24) matches for 1,802 of
   1,811 quests, the level (byte 8) for 1,795 and the minimum level (byte 16) for 1,743. It also has
-  the follow-up quest, the starting item, reputation rewards, objectives and texts.
+  the follow-up quest, the on-accept item, reputation rewards, objectives and texts.
   - The race mask (bytes 440–447) is −1, meaning no restriction, for 2,040 quests; a faction quest's
     faction comes from its giver. It's an Alliance or Horde race set for 526 quests, and a single race
     for the starting quests.
@@ -190,12 +190,14 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 
 ### Phase 2: the cache reader (5 October 2026)
 
-`tools/Read-ForeverQuestCache.ps1` reads `questcache.wdb` into
+`tools/Read-QuestCache.ps1` reads `questcache.wdb` into
 `tools/forever_quest_cache_<build>.jsonl`, one quest per line:
-- **Always:** id, title, level, minLevel and sort (the zone, or a negative QuestSort for class,
-  profession and holiday quests).
-- **Where they apply:** questInfo, groupSize, recurs, nextQuest, startItem, flags, reputation (each
-  faction with its amount, since 6 October), and races with their faction.
+- **Always:** id, title, level, minLevel, sort (the zone, or a negative QuestSort for class,
+  profession and holiday quests) and questType. Retail's lines carry contentTuning instead of level
+  and minLevel ([retail-quest-cache.md](retail-quest-cache.md)).
+- **Where they apply:** questInfo, groupSize, recurs, nextQuest, startItem (the item handed over on
+  accept), flags, flagsEx, scheduler, reputation (each faction with its amount, since 6 October), and
+  races with their faction.
 
 It reads every record to its last byte, or writes nothing. On the beta cache (2,860 quests, under 2
 seconds):
@@ -209,7 +211,7 @@ seconds):
     95 and 96). The races playable in Forever carry the flag 0x400000.
   - 404 quests are Alliance-only, 404 Horde-only, and 12 are for both Skyborne.
   - The other 2,040 leave it to the giver, including 1,172 that CMaNGOS gives one faction.
-- **Against CMaNGOS** (1,811 quests): the starting item matches for all 500 that have one, and the
+- **Against CMaNGOS** (1,811 quests): the on-accept item matches for all 500 that have one, and the
   faction for all 129 both give. The zone matches for 1,802, the level for 1,795, the minimum level
   for 1,743, and the follow-up quest for 746 of 795. The differences are Blizzard's, such as a cooking
   quest filed under Cooking, or Forever's new follow-ups such as 98298 after quest 99.
@@ -221,10 +223,12 @@ the client's `QuestV2`, the quest cache file, CMaNGOS's dump and the probe's sav
 downloads the dump and any client tables it lacks. Since 6 October a fifth source,
 `forever-quest-givers.csv` and `forever-quest-zones.csv`, adds givers and zones looked up by hand
 (see "Race headings" and "Treasure Map" below).
-- **The game wins wherever it speaks.** Title, level, zone, recurrence and race restrictions come
-  from the cache, and recorded spots and NPC names from the probe.
+- **The game wins wherever it speaks.** Title, level, minimum level, zone, recurrence and race
+  restrictions come from the cache, and recorded spots and NPC names from the probe.
 - **The files use retail's fields and conventions** (see the tool's header), so the existing build
-  turns them into Lua. Tried into a scratch folder, it wrote a 267 KB `qcQuestData.lua` and an 87 KB
+  turns them into Lua. `level` is the quest's own level, which the list shows; since 9 October 2026
+  `minLevel`, the level a character needs to take it, is kept beside it where it differs (see the
+  log below). Tried into a scratch folder, it wrote a 267 KB `qcQuestData.lua` and an 87 KB
   `qcPinDB.lua`, both passing `luac -p`.
 
 From the beta's data (9 seconds, with the same files on a rerun):
@@ -824,3 +828,18 @@ these level 60 quests.
   none, as retail's pipeline does now (`quest-location-data-pipeline.md`, "October 2026, pins at the
   start"). Forever's data is unchanged until the next import, which would move 5 of the 11 quests
   pinned from the client's start points (92748, 92750, 92751, 92752 and 92753).
+- 2026-10-09: the importer keeps each quest's minimum level, `minLevel`: the game's, else CMaNGOS's,
+  as given. The file holds it only where it differs from the quest's own `level`, 4,180 of the 5,081
+  quests (2,436 from the game, 1,744 from CMaNGOS; 4,154 below the level, 2 of them 0 for no minimum,
+  and 26 above), and the build writes it to `qcQuestMinLevel`. The tooltip's "Requires Level" line,
+  the grey pins and the requirements-not-met filter read it; the list's bracket, sort and low-level
+  filter still read `level`. Before, they all read the quest's own level: a level 10 character was
+  told 808 quests (438 with pins) needed a level it didn't. The summary gains a "Minimum levels:"
+  line, so a sweep can compare it with this baseline (build 1.60.1.70205): 4,180 quests, 2,436 from
+  the game and 1,744 from CMaNGOS, 26 above the quest's level, 2 at 0. The rest of the data is
+  unchanged: a rerun from the same sources, into a scratch folder, writes the same `quests.jsonl`,
+  `links.jsonl`, `reputation.jsonl` and `skills.jsonl` and the same review list. It does not write
+  the same `pins.jsonl`: the committed one still waits for the 2026-10-08 start point change above,
+  so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
+  with them. Since 9 October the committed `pins.jsonl` also has 11 pins fewer than an import writes:
+  `Remove-DuplicatePinQuests.ps1 -Game forever` takes duplicates off after it (step 10, item 9).
