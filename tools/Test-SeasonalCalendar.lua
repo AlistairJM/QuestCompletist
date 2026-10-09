@@ -1,14 +1,19 @@
 --[[
 Checks that the seasonal filter follows the game's calendar from login on: the addon asks for the
-calendar's events, redraws an open map when they arrive, and keeps an out-of-season pin hidden.
+calendar's events, redraws an open map when they arrive, and keeps an out-of-season pin hidden. And
+that it shows every seasonal quest it can't judge: when the calendar hasn't answered, and for a
+holiday whose filter is unticked in Blizzard's calendar window.
 
 Loads the addon's own files with stand-ins for the WoW API and drives the real event handler, filter
 and map pin code. The calendar stand-in behaves as WoW: Forever's did on 9 October 2026: it starts on
 November 2004, holds no events until C_Calendar.OpenCalendar() has asked the server for them, and
 fires CALENDAR_UPDATE_EVENT_LIST at once whenever its month is set. Today is a quiet October day
-with Hallow's End due on the 18th, and the Lunar Festival isn't running.
+with Hallow's End due on the 18th, and the Lunar Festival isn't running. It leaves out the events of
+a filter whose CVar is false, the way Blizzard's window needs the game to (its checkboxes only set the
+CVar and redraw from the day lists); whether the game really does hasn't been seen in game.
 
-The pin checked is the first one in the data whose quests all belong to the Lunar Festival.
+The pins checked are the first ones in the data whose quests all belong to the Lunar Festival, and to
+the Darkmoon Faire.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua
@@ -59,16 +64,27 @@ local NOW = {year = 2026, month = 10, monthDay = 9, weekday = 6, hour = 14, minu
 local function at(month, day, hour)
 	return {year = 2026, month = month, monthDay = day, hour = hour or 0, minute = 0}
 end
-local function holiday(eventID, title, startTime, endTime)
-	return {calendarType = "HOLIDAY", eventID = eventID, title = title, startTime = startTime, endTime = endTime}
+local function holiday(eventID, title, startTime, endTime, cvar)
+	return {calendarType = "HOLIDAY", eventID = eventID, title = title, startTime = startTime, endTime = endTime,
+		cvar = cvar or "calendarShowHolidays"}
 end
 local function quietOctober()
 	return {
 		holiday(324, "Hallow's End", at(10, 18, 4), at(11, 2, 4)),
-		holiday(301, "Stranglethorn Fishing Extravaganza", at(10, 11, 14), at(10, 11, 16)),
+		holiday(301, "Stranglethorn Fishing Extravaganza", at(10, 11, 14), at(10, 11, 16), "calendarShowWeeklyHolidays"),
 	}
 end
 local LUNAR_FESTIVAL = holiday(327, "Lunar Festival", at(10, 2, 6), at(10, 16, 6))
+local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
+	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
+local function withLockout(events)
+	events[#events + 1] = RAID_LOCKOUT
+	return events
+end
+
+local FILTER_NAMES = {CALENDAR_FILTER_HOLIDAYS = "Holidays", CALENDAR_FILTER_DARKMOON = "Darkmoon Faire",
+	CALENDAR_FILTER_WEEKLY_HOLIDAYS = "Weekly Holidays"}
+for name, text in pairs(FILTER_NAMES) do _G[name] = text end
 
 local function dayValue(t) return (t.year * 100 + t.month) * 100 + t.monthDay end
 local function daysInMonth(year, month)
@@ -76,7 +92,7 @@ local function daysInMonth(year, month)
 end
 
 --[[ The calendar stand-in; fire is set once the addon is loaded ]]--
-local function newCalendar(events)
+local function newCalendar(events, cvars)
 	local calendar = {shown = {year = 2004, month = 11}, events = events, requested = false, delivered = false,
 		openCalls = 0, monthCalls = 0, windowOpen = false}
 	local function dayEvents(day)
@@ -84,7 +100,9 @@ local function newCalendar(events)
 		if not calendar.delivered then return out end
 		local today = (calendar.shown.year * 100 + calendar.shown.month) * 100 + day
 		for _, event in ipairs(calendar.events) do
-			if today >= dayValue(event.startTime) and today <= dayValue(event.endTime) then out[#out + 1] = event end
+			if cvars[event.cvar] ~= false and today >= dayValue(event.startTime) and today <= dayValue(event.endTime) then
+				out[#out + 1] = event
+			end
 		end
 		return out
 	end
@@ -117,8 +135,15 @@ end
 
 --[[ Load the addon in TOC order, reaching the core's file-local helpers through a trailing return ]]--
 local function load(events)
-	local ctx = {calendar = newCalendar(events), timers = {}, redraws = 0, chat = {}}
+	local ctx = {timers = {}, redraws = 0, chat = {}, cvarWrites = 0}
+	ctx.cvars = {calendarShowHolidays = true, calendarShowDarkmoon = true, calendarShowWeeklyHolidays = true,
+		calendarShowBattlegrounds = true, calendarShowLockouts = true}
+	ctx.calendar = newCalendar(events, ctx.cvars)
+	local function setCVar() ctx.cvarWrites = ctx.cvarWrites + 1 end
 	local env = {
+		GetCVarBool = function(name) return ctx.cvars[name] end,
+		SetCVar = setCVar,
+		C_CVar = {SetCVar = setCVar, SetCVarBitfield = setCVar},
 		bit = bit,
 		print = function(...) ctx.chat[#ctx.chat + 1] = table.concat({...}, " ") end,
 		GetLocale = function() return "enUS" end,
@@ -239,24 +264,28 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	env.qcSettings.QC_M_SHOW_ICONS = 1
 	env.qcCharacterCompletions = {}
 
-	-- The first pin whose quests are all the Lunar Festival's.
-	local lunarFlag
-	for _, entry in ipairs(ctx.core.Holidays) do
-		if entry.name == "Lunar Festival" then lunarFlag = entry.flag end
-	end
+	-- The first pin whose quests are all one holiday's.
+	local flags = {}
+	for _, entry in ipairs(ctx.core.Holidays) do flags[entry.name] = entry.flag end
 	local mapIds = {}
 	for mapId in pairs(env.qcPinDB) do mapIds[#mapIds + 1] = mapId end
 	table.sort(mapIds)
-	for _, mapId in ipairs(mapIds) do
-		for _, pin in ipairs(env.qcPinDB[mapId]) do
-			local allLunar = #pin[6] > 0
-			for _, questId in ipairs(pin[6]) do
-				if env.qcQuestHoliday[questId] ~= lunarFlag or not env.qcQuestDatabase[questId] then allLunar = false end
+	ctx.pins = {}
+	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire"}) do
+		for _, mapId in ipairs(mapIds) do
+			for _, pin in ipairs(env.qcPinDB[mapId]) do
+				local allOfIt = #pin[6] > 0
+				for _, questId in ipairs(pin[6]) do
+					if env.qcQuestHoliday[questId] ~= flags[holidayName] or not env.qcQuestDatabase[questId] then allOfIt = false end
+				end
+				if allOfIt and not ctx.pins[holidayName] then
+					ctx.pins[holidayName] = {mapId = mapId, questId = pin[6][1], name = pin[3]}
+				end
 			end
-			if allLunar and not ctx.pin then ctx.pin = {mapId = mapId, questId = pin[6][1], name = pin[3]} end
 		end
+		assert(ctx.pins[holidayName], "no pin of the " .. holidayName .. "'s quests in the data")
 	end
-	assert(ctx.pin, "no pin of the Lunar Festival's quests in the data")
+	ctx.pin = ctx.pins["Lunar Festival"]
 	return ctx
 end
 
@@ -363,6 +392,137 @@ do
 	ctx.calendar.reply()
 	ctx.flush()
 	check("the pin stays", ctx.pinShown(), "answer: " .. ctx.active())
+end
+
+print("The Holidays filter is unticked, the Lunar Festival is running and the month has a raid lockout")
+do
+	local ctx = load(withLockout({LUNAR_FESTIVAL}))
+	ctx.cvars.calendarShowHolidays = false
+	ctx.login()
+	ctx.openMap()
+	ctx.calendar.reply()
+	ctx.flush()
+	check("the calendar shows the lockout and not the holiday", ctx.calendar.shown.month == NOW.month and
+		ctx.calendar.api.GetNumDayEvents(0, 14) == 1 and ctx.calendar.api.GetNumDayEvents(0, 5) == 0)
+	check("the pin of the running holiday is shown", ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.core.Print()
+	local said = table.concat(ctx.chat, "\n")
+	local noted = said:match("The calendar window's \"Holidays\" filter is unticked, so the calendar can't show these holidays and their quests are all shown: ([^\n]*)%.")
+	local rightHolidays = noted ~= nil and noted:find("Lunar Festival", 1, true) ~= nil and noted:find("Darkmoon", 1, true) == nil
+	check("/qc holidays says which filter hides which holidays", rightHolidays, not rightHolidays and (noted or said) or nil)
+	check("and doesn't list them as missing from the calendar", said:find("Lunar Festival: not on the calendar", 1, true) == nil)
+	local neverOnCalendar = 0
+	for _, entry in ipairs(ctx.core.Holidays) do
+		if #entry.eventIDs == 0 then neverOnCalendar = bit.bor(neverOnCalendar, entry.flag) end
+	end
+	check("a holiday that is never on the calendar stays hidden", neverOnCalendar > 0 and bit.band(ctx.core.Active(), neverOnCalendar) == 0,
+		"answer: " .. ctx.active())
+	check("the addon changed no setting", ctx.cvarWrites == 0, "writes: " .. ctx.cvarWrites)
+end
+
+print("The Holidays filter is unticked and the month has nothing else")
+do
+	local ctx = load({LUNAR_FESTIVAL})
+	ctx.cvars.calendarShowHolidays = false
+	ctx.login()
+	ctx.openMap()
+	ctx.calendar.reply()
+	ctx.flush()
+	check("the calendar has no answer, and says why", ctx.active() == "nil" and ctx.core.Why() == "it has no events this month",
+		"answer: " .. ctx.active() .. ", " .. tostring(ctx.core.Why()))
+	check("the pin is shown", ctx.pinShown())
+end
+
+print("The player unticks and ticks the Holidays filter after the calendar has answered")
+do
+	local ctx = load(withLockout(quietOctober()))
+	ctx.login()
+	ctx.openMap()
+	ctx.calendar.reply()
+	ctx.flush()
+	check("the pin is hidden: the Lunar Festival isn't running", not ctx.pinShown(), "answer: " .. ctx.active())
+	local redrawsBefore = ctx.redraws
+	ctx.cvars.calendarShowHolidays = false
+	ctx.calendar.fire()
+	ctx.flush()
+	check("unticking redraws the open map once", ctx.redraws == redrawsBefore + 1, "redraws: " .. (ctx.redraws - redrawsBefore))
+	check("the pin is shown", ctx.pinShown(), "answer: " .. ctx.active())
+	redrawsBefore = ctx.redraws
+	ctx.calendar.fire()
+	ctx.flush()
+	check("the same answer again redraws nothing", ctx.redraws == redrawsBefore)
+	ctx.cvars.calendarShowHolidays = true
+	ctx.calendar.fire()
+	ctx.flush()
+	check("ticking redraws it once more", ctx.redraws == redrawsBefore + 1, "redraws: " .. (ctx.redraws - redrawsBefore))
+	check("the pin is hidden again", not ctx.pinShown(), "answer: " .. ctx.active())
+	check("the addon changed no setting", ctx.cvarWrites == 0, "writes: " .. ctx.cvarWrites)
+end
+
+print("The Holidays filter holds the whole month's events, and is unticked and ticked again")
+do
+	local ctx = load({holiday(324, "Hallow's End", at(10, 18, 4), at(11, 2, 4))})
+	ctx.login()
+	ctx.openMap()
+	ctx.calendar.reply()
+	ctx.flush()
+	check("the pin is hidden: the Lunar Festival isn't running", not ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.cvars.calendarShowHolidays = false
+	ctx.calendar.fire()
+	ctx.flush()
+	check("unticking leaves the month empty, and shows the pin", ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.cvars.calendarShowHolidays = true
+	ctx.calendar.fire()
+	ctx.flush()
+	check("ticking hides it again", not ctx.pinShown(), "answer: " .. ctx.active())
+end
+
+print("The filter is ticked again while Blizzard's calendar window is open on another month")
+do
+	local ctx = load(withLockout(quietOctober()))
+	ctx.cvars.calendarShowHolidays = false
+	ctx.login()
+	ctx.openMap()
+	ctx.calendar.reply()
+	ctx.flush()
+	check("the pin is shown while it's unticked", ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.cvars.calendarShowHolidays = true
+	ctx.calendar.shown = {year = 2026, month = 12}
+	ctx.calendarFrame = {IsShown = function() return true end}
+	ctx.openMap()
+	check("the read can't be made, and the answer taken while it was unticked isn't trusted", ctx.pinShown(), "answer: " .. ctx.active())
+end
+
+print("Only the Darkmoon Faire filter is unticked")
+do
+	local ctx = load(withLockout(quietOctober()))
+	ctx.cvars.calendarShowDarkmoon = false
+	ctx.login()
+	ctx.calendar.reply()
+	ctx.flush()
+	ctx.pin = ctx.pins["Darkmoon Faire"]
+	ctx.openMap()
+	check("a Darkmoon Faire pin is shown", ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.pin = ctx.pins["Lunar Festival"]
+	ctx.openMap()
+	check("a Lunar Festival pin is still hidden out of season", not ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.cvars.calendarShowDarkmoon = true
+	ctx.pin = ctx.pins["Darkmoon Faire"]
+	ctx.openMap()
+	check("ticked again, the Darkmoon Faire isn't running, so its pin is hidden", not ctx.pinShown(), "answer: " .. ctx.active())
+end
+
+print("The game has none of the filters' CVars")
+do
+	local ctx = load(withLockout(quietOctober()))
+	for name in pairs(ctx.cvars) do ctx.cvars[name] = nil end
+	ctx.login()
+	ctx.openMap()
+	ctx.calendar.reply()
+	ctx.flush()
+	check("nothing counts as unticked: the pin is hidden out of season", not ctx.pinShown(), "answer: " .. ctx.active())
+	ctx.core.Print()
+	check("/qc holidays names no filter", not table.concat(ctx.chat, "\n"):find("unticked", 1, true))
 end
 
 print(failures == 0 and "All checks passed." or (failures .. " check(s) failed."))

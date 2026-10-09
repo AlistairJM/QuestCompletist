@@ -354,7 +354,14 @@ adds the description and texture; `SetMonth`, `GetMinDate`, `GetMaxCreateDate`, 
 `GetEventIndex` and `GetClubCalendarEvents` no; the other 78 create, invite and manage events. No
 new data. `OpenCalendar` asks the server for the calendar's events, and event CALENDAR_UPDATE_EVENT_LIST
 says they've arrived: the addon calls the one at login and redraws the open map on the other
-(maintenance.md, "Holidays"). The other 12 events no.
+(maintenance.md, "Holidays"). The other 12 events no. The calendar window's filters are CVars
+(`calendarShowHolidays`, `calendarShowDarkmoon`, `calendarShowWeeklyHolidays`, and three more for
+battlegrounds, raid lockouts and, on Forever, raid resets), and its Lua filters nothing itself, so
+the game must leave an unticked filter's events out of the day lists. The addon reads the three that
+hold its holidays with `GetCVarBool` (documented the same in both games, nil for a CVar the game
+doesn't have) and shows the quests of a holiday whose filter is unticked, since the calendar can't
+say whether it is running. Read from the source, not yet seen in game (maintenance.md, "Holidays",
+has the lines to try). The CVAR_UPDATE event exists in both games and isn't used.
 
 ### C_EventScheduler (11 functions, 1 event, both games)
 
