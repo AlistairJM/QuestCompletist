@@ -215,8 +215,9 @@ local function qcPinQuestNeeds(questId, state, anything)
     local classFlag = class and qcClassBits[class]
     local classes = classFlag and not qcMaskAllows(e[7], classFlag) and qcMaskNames(e[7], qcClassBits, qcClassName)
     if classes then needs[#needs + 1] = string.format(ITEM_CLASSES_ALLOWED, classes) end
-    if (e[2] or 0) > UnitLevel("player") then
-        needs[#needs + 1] = string.format(ITEM_MIN_LEVEL, e[2])
+    local minLevel = qcQuestMinLevel[questId] or e[2] or 0
+    if minLevel > UnitLevel("player") then
+        needs[#needs + 1] = string.format(ITEM_MIN_LEVEL, minLevel)
     end
     local prereqParts = qcPrereq.Parts(questId)
     if prereqParts then

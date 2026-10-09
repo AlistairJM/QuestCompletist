@@ -4,7 +4,7 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
 
   - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
     some start (QuestPOIBlob and QuestPOIPoint);
-  - the quest cache file Read-ForeverQuestCache.ps1 writes: what the server says about each quest it
+  - the quest cache file Read-QuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
     quests the beta didn't answer, and who starts each quest and where they stand;
@@ -14,9 +14,9 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
     can't place. A listed NPC stands where CMaNGOS or the recorder puts it.
 
-The game wins wherever it speaks. Title, level, zone, recurrence and race restrictions come from the
-cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC names come
-from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
+The game wins wherever it speaks. Title, level, minimum level, zone, recurrence and race restrictions
+come from the cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC
+names come from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
 listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out.
 Quests with internal titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows)
 are left out.
@@ -27,6 +27,9 @@ to 35, where the beta answers nearly every quest, is left out too, until the gam
 Every kept quest QuestV2 lacks is listed for review.
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
+  level     the quest's own level: the game's, else CMaNGOS's QuestLevel.
+  minLevel  the level a character needs to take the quest: the game's, else CMaNGOS's MinLevel, as
+            given (0 is kept, for no minimum). Left out where it is the quest's level.
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
             profession, holiday and Forever's other headings; CMaNGOS's when the game's record
             has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
@@ -112,7 +115,7 @@ $ProgressPreference = "SilentlyContinue"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
 if (-not $CacheFile) { $CacheFile = "$ToolsDir\forever_quest_cache_$Build.jsonl" }
-if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-ForeverQuestCache.ps1 first." }
+if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-QuestCache.ps1 first." }
 if (-not $ProbeFile) {
     $ProbeFile = Get-ChildItem "$ToolsDir\forever_probe_*\QCForeverProbe.lua" -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime | Select-Object -Last 1 -ExpandProperty FullName
@@ -532,14 +535,18 @@ foreach ($id in $ids) {
     $type = if ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 } elseif ($m -and ($m.Special -band 1)) { 2 }
         elseif ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($profession) { 32 } else { 1 }
 
-    $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $(if ($c) { [int]$c.level } else { $m.Level })
+    if ($c -and $null -eq $c.minLevel) { throw "$CacheFile gives quest $id no minLevel. Rerun Read-QuestCache.ps1." }
+    $level = if ($c) { [int]$c.level } else { $m.Level }
+    $minLevel = if ($c) { [int]$c.minLevel } else { $m.MinLevel }
+    $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $level
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
         type = $type; faction = $faction; race = $race; class = $class; profession = $profession; holiday = $holiday
-        covenant = 0; storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0 }
+        covenant = 0; storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0
+        minLevel = $(if ($minLevel -ne $level) { $minLevel } else { $null }) }
 }
 
 $previousByNext = @{}
-foreach ($c in $cache.Values) { if ($c.nextQuest) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
+foreach ($c in $cache.Values) { if ($c.nextQuest -and [int]$c.nextQuest -ne [int]$c.id) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
 foreach ($q in $records.Values) {
     $m = $cmQuest[$q.id]
     if ($m -and $m.Prev -gt 0 -and $records.ContainsKey($m.Prev)) { $q.prereq = $m.Prev }
@@ -575,7 +582,7 @@ $reputationLines = @(foreach ($id in ($records.Keys | Sort-Object)) {
     if ($null -eq $c.reputation) { continue }
     $rewarding++
     foreach ($reward in $c.reputation) {
-        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-ForeverQuestCache.ps1." }
+        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-QuestCache.ps1." }
         '{"quest":' + $id + ',"faction":' + $reward[0] + ',"amount":' + $reward[1] + '}'
     }
 })
@@ -795,10 +802,17 @@ Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; p
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
 Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} groups of which only one can be done." -f
     @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $exclusiveWith.Count, $exclusiveGroups)
+Write-Host ("Storylines: the client's QuestLine has {0} rows and QuestLineXQuest {1}; {2} of our quests belong to {3} storyline(s)." -f
+    @(Get-ClientTable 'QuestLine').Count, @(Get-ClientTable 'QuestLineXQuest').Count,
+    @($questList | Where-Object { $_.storyline }).Count, @($questList | Where-Object { $_.storyline } | Select-Object -ExpandProperty storyline -Unique).Count)
 Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f
     $skillLines.Count, @($skillLines | Where-Object { $_ -notmatch '"level":1\}$' }).Count)
+$withMinLevel = @($questList | Where-Object { $null -ne $_.minLevel })
+Write-Host ("Minimum levels: {0} quests need another level than their own, {1} from the game and {2} from CMaNGOS; {3} are above the quest's level, {4} are 0." -f
+    $withMinLevel.Count, @($withMinLevel | Where-Object { $cache.ContainsKey($_.id) }).Count, @($withMinLevel | Where-Object { -not $cache.ContainsKey($_.id) }).Count,
+    @($withMinLevel | Where-Object { $_.minLevel -gt $_.level }).Count, @($withMinLevel | Where-Object { $_.minLevel -eq 0 }).Count)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
 if ($WhatIf) { return }

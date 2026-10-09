@@ -22,7 +22,7 @@ local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
 
 --[[ Constants ]]--
-local QCADDON_VERSION = "112.5"
+local QCADDON_VERSION = "112.6"
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
@@ -189,7 +189,8 @@ qcCovenantsBits = {
 -- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
 -- calendar event can carry. WoW: Forever's Darkmoon Faire is 263 and 264, from Classic. The Scourge
 -- Invasion and the Ahn'Qiraj War Effort aren't on the calendar, so the seasonal filter always hides
--- their quests.
+-- their quests. filter names the calendar window's filter that holds the holiday's events, "HOLIDAYS"
+-- when it isn't given.
 local qcHolidays = {
 	{flag=1, name="Brewfest", eventIDs={372}},
 	{flag=2, name="Children's Week", eventIDs={201}},
@@ -204,11 +205,21 @@ local qcHolidays = {
 	{flag=1024, name="Pilgrim's Bounty", eventIDs={404}},
 	{flag=2048, name="Pirates' Day", eventIDs={398}},
 	{flag=4096, name="Trial of Style", eventIDs={691}},
-	{flag=8192, name="Darkmoon Faire", eventIDs={479, 263, 264}},
+	{flag=8192, name="Darkmoon Faire", eventIDs={479, 263, 264}, filter="DARKMOON"},
 	{flag=16384, name="Scourge Invasion", eventIDs={}},
 	{flag=32768, name="Ahn'Qiraj War Effort", eventIDs={}},
-	{flag=65536, name="Stranglethorn Fishing Extravaganza", eventIDs={301}},
+	{flag=65536, name="Stranglethorn Fishing Extravaganza", eventIDs={301}, filter="WEEKLY"},
 }
+-- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
+-- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
+local qcCalendarFilters = {
+	HOLIDAYS = {cvar="calendarShowHolidays", label="CALENDAR_FILTER_HOLIDAYS"},
+	DARKMOON = {cvar="calendarShowDarkmoon", label="CALENDAR_FILTER_DARKMOON"},
+	WEEKLY = {cvar="calendarShowWeeklyHolidays", label="CALENDAR_FILTER_WEEKLY_HOLIDAYS"},
+}
+local function qcHolidayFilter(holiday)
+	return qcCalendarFilters[holiday.filter or "HOLIDAYS"]
+end
 local qcHolidayFlagByEventID = {}
 local qcKnownHolidayFlags = {}
 for _, holiday in ipairs(qcHolidays) do
@@ -216,8 +227,15 @@ for _, holiday in ipairs(qcHolidays) do
 	for _, eventID in ipairs(holiday.eventIDs) do qcHolidayFlagByEventID[eventID] = holiday.flag end
 end
 
--- The holiday flags running now; nil until the calendar has answered, which restricts nothing.
+-- The holiday flags running now; nil until the calendar has answered, which restricts nothing. A
+-- holiday whose filter was unticked at the read counts as running, since the read couldn't see it.
 local qcActiveHolidays = nil
+-- The holiday flags whose filter is unticked in Blizzard's calendar window as of the last update.
+local qcFilteredHolidays = 0
+-- Why the last read had no answer, for /qc holidays.
+local qcCalendarWhy = nil
+-- True while the addon moves the calendar's month itself, so the events that causes start no read.
+local qcCalendarBusy = false
 
 local function qcCalendarTimeValue(t)
 	return (((t.year * 100 + t.month) * 100 + t.monthDay) * 100 + t.hour) * 100 + t.minute
@@ -242,18 +260,18 @@ local function qcSetCalendarMonth(month, year)
 	return true
 end
 
--- nil when the calendar can't answer. A month with no events at all means it isn't ready, not that
--- no holiday is running. A quiet day in a month that has events is a day with no holiday: retail
--- always has some event, but WoW: Forever's calendar has empty days.
+-- nil, and why, when the calendar can't answer. A month with no events at all means it isn't ready,
+-- not that no holiday is running. A quiet day in a month that has events is a day with no holiday:
+-- retail always has some event, but WoW: Forever's calendar has empty days.
 local function qcReadActiveHolidays()
 	local now = C_DateAndTime.GetCurrentCalendarTime()
-	if not qcSetCalendarMonth(now.month, now.year) then return nil end
+	if not qcSetCalendarMonth(now.month, now.year) then return nil, "its window is open on another month" end
 	local numEvents = C_Calendar.GetNumDayEvents(0, now.monthDay)
 	if (numEvents == 0) then
 		for monthDay = 1, C_Calendar.GetMonthInfo(0).numDays do
 			if C_Calendar.GetNumDayEvents(0, monthDay) > 0 then return 0 end
 		end
-		return nil
+		return nil, "it has no events this month"
 	end
 	local nowValue = qcCalendarTimeValue(now)
 	local active = 0
@@ -267,11 +285,56 @@ local function qcReadActiveHolidays()
 	return active
 end
 
+-- The flags of the holidays whose filter is unticked. Only an explicit false counts: a CVar the game
+-- doesn't have leaves nothing out. A holiday with no IDs is never on the calendar, whatever the filter.
+local function qcReadFilteredHolidays()
+	local filtered = 0
+	for _, holiday in ipairs(qcHolidays) do
+		if #holiday.eventIDs > 0 and GetCVarBool(qcHolidayFilter(holiday).cvar) == false then
+			filtered = bit.bor(filtered, holiday.flag)
+		end
+	end
+	return filtered
+end
+
+-- What the map filter tests a quest's holiday against: the running ones, plus those the calendar
+-- can't show. nil until the calendar has answered.
+local function qcShownHolidays()
+	return qcActiveHolidays and bit.bor(qcActiveHolidays, qcFilteredHolidays)
+end
+
 -- Keeps the last answer when the calendar can't be read, e.g. during chat lockdown.
 local function qcUpdateActiveHolidays()
-	local ok, active = pcall(qcReadActiveHolidays)
-	if (ok and active) then qcActiveHolidays = active end
-	return qcActiveHolidays
+	qcFilteredHolidays = qcReadFilteredHolidays()
+	local wasBusy = qcCalendarBusy
+	qcCalendarBusy = true
+	local ok, active, why = pcall(qcReadActiveHolidays)
+	qcCalendarBusy = wasBusy
+	if (ok and active) then
+		qcActiveHolidays = bit.bor(active, qcFilteredHolidays)
+	else
+		qcCalendarWhy = ok and why or ("error: " .. tostring(active))
+	end
+	return qcShownHolidays()
+end
+
+-- The server sends the calendar's events when asked, as Blizzard's calendar does each time it opens.
+-- Nothing asks at login, and on WoW: Forever a calendar nobody has opened reads as empty.
+local function qcRequestCalendar()
+	if C_Calendar and C_Calendar.OpenCalendar then pcall(C_Calendar.OpenCalendar) end
+end
+
+-- CALENDAR_UPDATE_EVENT_LIST: the events have arrived or changed. True when the open map should be
+-- redrawn: on every event until the first answer, since the redraw reads the calendar, and after it
+-- only when the answer for the month already shown has changed. This never sets the month itself,
+-- which another addon reading the calendar may have set.
+local function qcCalendarDataArrived()
+	if qcCalendarBusy or qcCalendarFrameOpen() or qcSettings.QC_M_HIDE_SEASONAL ~= 1 then return false end
+	if qcActiveHolidays == nil then return true end
+	local now, shown = C_DateAndTime.GetCurrentCalendarTime(), C_Calendar.GetMonthInfo(0)
+	if (shown.month ~= now.month or shown.year ~= now.year) then return false end
+	local before = qcShownHolidays()
+	return qcUpdateActiveHolidays() ~= before
 end
 
 -- The holiday flags this game's quests have, so /qc holidays lists only its own.
@@ -315,22 +378,40 @@ local function qcPrintHolidays()
 	end
 	local active = qcUpdateActiveHolidays()
 	local inUse = qcHolidayFlagsInUse()
+	qcCalendarBusy = true
 	local ok, nextByFlag, untracked = pcall(qcScanCalendarHolidays, inUse)
+	qcCalendarBusy = false
 	if not ok then
 		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(nextByFlag))
 		return
 	end
 	if not active then
-		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet, so seasonal quests are all shown.")
+		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet (" .. tostring(qcCalendarWhy) .. "), so seasonal quests are all shown.")
+	end
+	local hidden, hiddenFilters = {}, {}
+	for _, holiday in ipairs(qcHolidays) do
+		if bit.band(qcFilteredHolidays, holiday.flag) ~= 0 and bit.band(inUse, holiday.flag) ~= 0 then
+			local filter = qcHolidayFilter(holiday)
+			if not hidden[filter] then
+				hidden[filter] = {}
+				hiddenFilters[#hiddenFilters + 1] = filter
+			end
+			table.insert(hidden[filter], holiday.name)
+		end
+	end
+	for _, filter in ipairs(hiddenFilters) do
+		print(string.format("%sThe calendar window's \"%s\" filter is unticked, so the calendar can't show these holidays and their quests are all shown: %s.",
+			QCADDON_CHAT_TITLE, _G[filter.label] or filter.cvar, table.concat(hidden[filter], ", ")))
 	end
 	print(QCADDON_CHAT_TITLE .. "Seasonal quests follow these calendar holidays:")
 	for _, holiday in ipairs(qcHolidays) do
 		local event = nextByFlag[holiday.flag]
-		local running = active and bit.band(active, holiday.flag) ~= 0
+		local unticked = bit.band(qcFilteredHolidays, holiday.flag) ~= 0
+		local running = not unticked and qcActiveHolidays and bit.band(qcActiveHolidays, holiday.flag) ~= 0
 		if event then
 			print(string.format("  %s%s (%d): %s to %s", running and "|cff00ff00Running|r " or "", event.title,
 				event.eventID, qcFormatCalendarTime(event.startTime), qcFormatCalendarTime(event.endTime)))
-		elseif bit.band(inUse, holiday.flag) ~= 0 then
+		elseif bit.band(inUse, holiday.flag) ~= 0 and not unticked then
 			print(string.format("  %s: not on the calendar in the next 12 months", holiday.name))
 		end
 	end
@@ -458,7 +539,8 @@ local qcCategoryIndex = nil
 local qcQuestNameUpperCache = nil
 
 -- A quest's row in qcQuestDatabase (qcQuestData.lua) is {name, level, category, type, faction, race,
--- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID.
+-- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So is
+-- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that.
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
     for questId, e in pairs(qcQuestDatabase) do
@@ -785,7 +867,7 @@ end
 -- Whether the character has the level, the quests to do first, the renown or rank, and the skill in
 -- a profession a quest needs. A renown level or skill the game doesn't give counts as met.
 local function qcRequirementsMet(questId, e, playerLevel)
-	if (e[2] or 0) > playerLevel then return false end
+	if (qcQuestMinLevel[questId] or e[2] or 0) > playerLevel then return false end
 	if not qcPrereq.QuestMet(questId) then return false end
 	local renown = qcRenownLevelRequirements[questId]
 	local level = renown and qcFactionLevel(renown[1])
@@ -2153,6 +2235,9 @@ local function qcEventHandler(self, event, ...)
 		qcQuestDataArrived(...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
+	elseif (event == "CALENDAR_UPDATE_EVENT_LIST") then
+		local ok, redraw = pcall(qcCalendarDataArrived)
+		if (ok and redraw) then qcRequestRefresh(nil, true) end
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
 		if (... == "player") then qcRequestRefresh(QC_REDRAW_ROWS) end
 	elseif (event == "ZONE_CHANGED_NEW_AREA") then
@@ -2185,6 +2270,7 @@ local function qcEventHandler(self, event, ...)
 			local isInitialLogin, isReloadingUi = ...
 			if (isInitialLogin or isReloadingUi) then
 				qcQuestQueryCompleted()
+				qcRequestCalendar()
 			end
 			qcZoneChangedNewArea()
 			qcSendNpcLoads()
@@ -2230,6 +2316,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED")
 	self:RegisterEvent("ADDON_LOADED")
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
+	self:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
 	self:RegisterEvent("QUEST_DATA_LOAD_RESULT")
 	self:RegisterEvent("TOOLTIP_DATA_UPDATE")
 	self:SetScript("OnEvent", qcEventHandler)
