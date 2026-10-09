@@ -51,9 +51,9 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 | 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
 | 8 | Retail's gate level from the content tuning: `level` stays the row's own and `qcQuestMinLevel` carries the gate, as on Forever; 1,828 quests change | yes | [retail-quest-cache.md](retail-quest-cache.md), "Level" |
-| 9 | Backfill reputation rewards for the 2,043 quests the API has no record of, from the cache | yes, after in-game checks of five quests | same, "Reputation" |
-| 10 | Type changes the cache shows: 37 daily that are weekly, 92 repeatable that Blizzard calls daily or weekly, 5 that recur and are ticked for ever, 17 repeatable by the Darkmoon-deck rule, 38 one-time task quests, 21 test or deprecated titles | class by class | same, "Recurrence and flags" |
-| 11 | Race changes: the two outright contradictions (quest 2, 27675), 19 stale masks, 49 starting-race narrowings, 28 where we show a quest to races the server denies | the contradictions and stale masks yes; the narrowings are a call | same, "Races" |
+| 9 | Backfill reputation rewards from the cache for the 2,043 quests the API has no record of that reward a visible faction | yes, after in-game checks of five quests | same, "Reputation" |
+| 10 | Type changes the cache shows: 37 daily that are weekly, 92 repeatable that Blizzard calls daily or weekly, 4 that recur and are ticked for ever, 17 repeatable by the Darkmoon-deck rule, 38 one-time task quests, 21 test or deprecated titles | class by class | same, "Recurrence and flags" |
+| 11 | Race changes: the two outright contradictions (quest 2, 27675), 19 stale masks, 49 starting-race narrowings, 28 where we show a quest to races the server denies | the contradictions and stale masks yes; the narrowings are a call; the 28 class by class | same, "Races" |
 | 12 | Sort fixes: 98 Uncategorized quests whose sort names one category, 27 profession misfiles | yes | same, "Sort" |
 | 13 | "Starts from" only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`, never from the cache's `startItem` | yes | same, "Start item" |
 
@@ -101,8 +101,9 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
    data (recommendations 4 and 5).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an
    expansion's skill line (recommendation 3).
-6. The dungeon journal on Forever, the quest cache reader on retail (done 9 October 2026, [retail-quest-cache.md](retail-quest-cache.md)), the importer's `QuestLine` row
-   counts (recommendations 9, 6, 7).
+6. The dungeon journal on Forever, the quest cache reader on retail (done 9 October 2026,
+   [retail-quest-cache.md](retail-quest-cache.md)), the importer's `QuestLine` row counts
+   (recommendations 9, 6, 7).
 7. A review of Forever's hidden and test quests, after its launch on 4 November (recommendation 10).
 
 Also: the 12.1.5 sweep when the patch is live (13 or 14 October; the TOC lists both interface

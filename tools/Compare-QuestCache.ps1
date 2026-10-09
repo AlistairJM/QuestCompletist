@@ -5,15 +5,22 @@ every value would be wrong. So the cache's values are compared with what Blizzar
 the same quests:
 
   - Blizzard's API records (tools\quest_api_cache, the sweep's step 1): title, sort (the API's area or,
-    as a negative number, its category), questInfo (the API's type), daily, weekly and repeatable (the
-    API's is_daily, is_weekly and is_repeatable), the reputation amounts, and that each content tuning
-    gives one level range;
-  - the client's task table (tools\QuestV2CliTask.csv, step 1b): questInfo, contentTuning and startItem.
+    as a negative number, its category), questInfo (the API's type), daily, weekly, repeatable and
+    recurs (the API's is_daily, is_weekly and is_repeatable), faction and races, the reputation
+    amounts, and that each content tuning gives one level range;
+  - the client's task table (tools\QuestV2CliTask.csv, step 1b): questInfo, contentTuning and startItem;
+  - the client's QuestV2 for the cache's build (tools\QuestV2-<build>.csv, the one wago.tools gives for
+    that build), for repeatable: a quest of type 0 is repeatable only when it is not in it. Without
+    the file that check is skipped and the closing line says so.
 
-Those two sources are Blizzard's, not the cache's, so a shift shows as thousands of differences. A few
-differences are what a hotfix between the API's build and the cache's looks like; they are listed and
-don't fail the run. It fails when a check differs for more than 0.5% of what it compared (and at least
-5), when it compared fewer quests than -MinCompared, or when the cache can't be found.
+Those sources are Blizzard's, not the cache's, so a shift of a field they cover shows as thousands of
+differences. A few differences are what a hotfix between the API's build and the cache's looks like;
+they are listed and don't fail the run. It fails when a check differs for more than 5 quests and for
+more than 0.5% of what it compared, when the title, sort or daily check compared fewer quests than
+-MinCompared, when a check it needs compared nothing, or when the cache can't be found.
+
+Nothing in tools\ says what the group size, the follow-up quest, the quest giver or the scheduler bit
+should be, or the flags bits other than the daily and weekly ones, so a shift of those would not show.
 
 The baseline on 9 October 2026 (cache 12.1.0.69933, API 12.1.0_68914) is in docs\maintenance.md,
 step 2d. Exit 0 is a clean run, 1 a failed one.
@@ -73,10 +80,14 @@ $categoryRx = New-Object Text.RegularExpressions.Regex ('"category":\{"key":\{[^
 $typeRx = New-Object Text.RegularExpressions.Regex ('"type":\{"key":\{[^}]*\},"name":' + $stringRx + ',"id":(\d+)\}')
 $minRx = New-Object Text.RegularExpressions.Regex '"min_character_level":(\d+),"max_character_level":(\d+)'
 $rewardRx = New-Object Text.RegularExpressions.Regex ('"reward":\{"key":\{"href":"[^"]*/reputation-faction/\d+[^"]*"\},"name":' + $stringRx + ',"id":(\d+)\},"value":(-?\d+)')
+$sideRx = New-Object Text.RegularExpressions.Regex '"faction":\{"type":"(ALLIANCE|HORDE)"'
+$racesRx = New-Object Text.RegularExpressions.Regex '"races":\[([^\]]*)\]'
+$raceIdRx = New-Object Text.RegularExpressions.Regex '/playable-race/(\d+)\?'
 
 $apiBuilds = @{}
 $withApi = 0
 $tuningLevels = @{}
+$tuningRows = New-Object System.Collections.Generic.List[object]
 foreach ($id in ($quests.Keys | Sort-Object)) {
     $q = $quests[$id]
     $file = "$apiDir\$id.json"
@@ -98,25 +109,38 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
             if ($type.Success) { Note-Check 'questInfo against the API' ([int]$type.Groups[1].Value -eq [int]$q.questInfo) "$id cache $([int]$q.questInfo), API $($type.Groups[1].Value)" }
 
             $flags = [long]$q.flags; $flagsEx = [long]$q.flagsEx
+            $apiDaily = $text.Contains('"is_daily":true'); $apiWeekly = $text.Contains('"is_weekly":true')
             $daily = [bool](($flags -band 0x1000) -or ($flagsEx -band 0x8000))
             $weekly = [bool]($flags -band 0x8000)
-            Note-Check 'daily' ($daily -eq $text.Contains('"is_daily":true')) "$id cache daily=$daily, API is_daily=$($text.Contains('"is_daily":true'))"
-            Note-Check 'weekly' ($weekly -eq $text.Contains('"is_weekly":true')) "$id cache weekly=$weekly, API is_weekly=$($text.Contains('"is_weekly":true'))"
+            Note-Check 'daily' ($daily -eq $apiDaily) "$id cache daily=$daily, API is_daily=$apiDaily"
+            Note-Check 'weekly' ($weekly -eq $apiWeekly) "$id cache weekly=$weekly, API is_weekly=$apiWeekly"
+            $apiRecurs = if ($apiWeekly) { 'weekly' } elseif ($apiDaily) { 'daily' } else { '' }
+            Note-Check 'recurs' ($apiRecurs -ceq [string]$q.recurs) "$id cache '$($q.recurs)', API '$apiRecurs'"
             if ($questV2) {
                 $repeatable = [bool]([int]$q.questType -eq 0 -and -not $questV2.Contains($id))
                 Note-Check 'repeatable' ($repeatable -eq $text.Contains('"is_repeatable":true')) "$id cache repeatable=$repeatable, API is_repeatable=$($text.Contains('"is_repeatable":true'))"
             }
 
+            $side = $sideRx.Match($text)
+            if ($side.Success) {
+                $apiSide = $side.Groups[1].Value.Substring(0, 1) + $side.Groups[1].Value.Substring(1).ToLowerInvariant()
+                Note-Check 'faction' ($apiSide -ceq [string]$q.faction) "$id cache '$($q.faction)', API '$apiSide'"
+            }
+            $raceList = $racesRx.Match($text)
+            if ($raceList.Success) {
+                $apiRaces = (@($raceIdRx.Matches($raceList.Groups[1].Value) | ForEach-Object { [int]$_.Groups[1].Value } | Sort-Object) -join ',')
+                $myRaces = if ($null -ne $q.races) { (@($q.races | ForEach-Object { [int]$_ } | Sort-Object) -join ',') } else { '' }
+                Note-Check 'races' ($apiRaces -ceq $myRaces) "$id cache [$myRaces], API [$apiRaces]"
+            }
+
             $levels = $minRx.Match($text)
             if ($levels.Success) {
-                $pair = $levels.Groups[1].Value + '-' + $levels.Groups[2].Value
+                $levelPair = $levels.Groups[1].Value + '-' + $levels.Groups[2].Value
                 $tuning = [int]$q.contentTuning
-                if (-not $tuningLevels.ContainsKey($tuning)) { $tuningLevels[$tuning] = @{ Pair = $pair; Quest = $id; Equal = $true } }
-                else {
-                    $t = $tuningLevels[$tuning]
-                    if ($t.Pair -ne $pair) { $t.Equal = $false }
-                    Note-Check 'one level range per content tuning' ($t.Pair -eq $pair) "$id tuning $tuning gives $pair, but quest $($t.Quest) gives $($t.Pair)"
-                }
+                if (-not $tuningLevels.ContainsKey($tuning)) { $tuningLevels[$tuning] = @{} }
+                if (-not $tuningLevels[$tuning].ContainsKey($levelPair)) { $tuningLevels[$tuning][$levelPair] = @{ Count = 0; Quest = $id } }
+                $tuningLevels[$tuning][$levelPair].Count++
+                $tuningRows.Add(@($id, $tuning, $levelPair))
             }
 
             $apiRewards = @{}
@@ -139,6 +163,16 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
     }
 }
 
+$commonLevels = @{}
+foreach ($tuning in $tuningLevels.Keys) {
+    $commonLevels[$tuning] = $tuningLevels[$tuning].GetEnumerator() |
+        Sort-Object @{ Expression = { $_.Value.Count }; Descending = $true }, @{ Expression = { $_.Value.Quest } } | Select-Object -First 1
+}
+foreach ($row in $tuningRows) {
+    $common = $commonLevels[$row[1]]
+    Note-Check 'one level range per content tuning' ($row[2] -eq $common.Key) "$($row[0]) tuning $($row[1]) gives $($row[2]), but quest $($common.Value.Quest) gives $($common.Key)"
+}
+
 $failed = $false
 Write-Output ("Cache {0}: {1} quests, {2} with an API record (build {3}), {4} in the client's task table." -f
     (Split-Path $Cache -Leaf), $quests.Count, $withApi, (($apiBuilds.Keys | Sort-Object) -join ', '), @($quests.Keys | Where-Object { $cli.ContainsKey($_) }).Count)
@@ -149,22 +183,25 @@ foreach ($name in $checks.Keys) {
     Write-Output ("  {0}: {1:N0} compared, {2:N0} differ  [{3}]" -f $name, $c.Compared, $c.Differ, $verdict)
     foreach ($example in $c.Examples) { Write-Output "      $example" }
     if ($c.Compared -lt $MinCompared -and $name -in 'title', 'sort', 'daily') {
-        Write-Output "      only $($c.Compared) compared, fewer than -MinCompared ${MinCompared}: is the API cache complete?"
+        Write-Output "      only $($c.Compared) compared, fewer than -MinCompared ${MinCompared}: is the API cache or the quest cache complete?"
         $failed = $true
     }
 }
-foreach ($required in 'title', 'sort', 'questInfo against the API', 'daily', 'weekly', 'reputation reward', 'questInfo against the client table', 'contentTuning against the client table', 'startItem against the client table') {
+foreach ($required in 'title', 'sort', 'questInfo against the API', 'daily', 'weekly', 'recurs', 'faction', 'races', 'reputation reward', 'one level range per content tuning', 'questInfo against the client table', 'contentTuning against the client table', 'startItem against the client table') {
     if (-not $checks.Contains($required)) { Write-Output "  ${required}: nothing compared  [FAILED]"; $failed = $true }
 }
 $notCompared = @()
-$noApi = $quests.Count - $withApi
-if ($noApi -gt 0) {
-    $inTable = @($quests.Keys | Where-Object { $cli.ContainsKey($_) -and -not (Test-Path "$apiDir\$_.json") }).Count
-    $notCompared += "{0} {1} the API has no record of ({2} of them in the client's task table)" -f $noApi, $(if ($noApi -eq 1) { 'quest' } else { 'quests' }), $inTable
+$gone = @($quests.Keys | Where-Object { -not (Test-Path "$apiDir\$_.json") -and (Test-Path "$apiDir\$_.404") })
+if ($gone.Count -gt 0) {
+    $inTable = @($gone | Where-Object { $cli.ContainsKey($_) }).Count
+    $notCompared += "{0} {1} the API has no record of ({2} of them in the client's task table)" -f $gone.Count, $(if ($gone.Count -eq 1) { 'quest' } else { 'quests' }), $inTable
 }
+$unread = $quests.Count - $withApi - $gone.Count
+if ($unread -gt 0) { $notCompared += "{0} {1} not in the API cache or not recognised in it" -f $unread, $(if ($unread -eq 1) { 'quest' } else { 'quests' }) }
 if (-not $questV2) { $notCompared += "repeatable (no $questV2File)" }
 if ($apiBuilds.Count -gt 1) { $notCompared += "the API cache holds more than one build" }
 if ($notCompared) { Write-Output ("Not compared: {0}." -f ($notCompared -join '; ')) }
-Write-Output "The values here are Blizzard's own: a shift in the reader's field numbers would show as thousands of differences, a hotfix between the builds as a few."
+Write-Output "Not looked at by any check: group size, follow-up quest, quest giver, scheduler bit, and flags bits other than daily and weekly."
+Write-Output "The values here are Blizzard's own: a shift in a field compared above would show as thousands of differences, a hotfix between the builds as a few."
 if ($failed) { Write-Output "FAILED: do not use the cache's values this sweep; see docs\maintenance.md, step 2d."; exit 1 }
 exit 0

@@ -524,7 +524,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Account-wide quests | nothing | `IsAccountQuest` | probe → data → addon |
 | Expansion | hand menus | `GetQuestExpansion` if it works | check |
 | Zone level ranges | nothing | `C_Map.GetMapLevels` | addon |
-| Starting item | not shipped (TrinityCore, CMaNGOS and Forever's cache have it; the client's `QuestV2CliTask` has it for 198 task quests only, per the client-tables review) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
+| Starting item | not shipped (CMaNGOS's `item_template.startquest` has it for old content; the `StartItem` of TrinityCore, the quest cache and `QuestV2CliTask` is the item handed over on accept, not the item that begins the quest: [retail-quest-cache.md](retail-quest-cache.md)) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
 | Waypoints | TomTom | `C_Map.SetUserWaypoint` and `C_SuperTrack` | addon |
 | Treasures and rares | not planned | `C_VignetteInfo` rewardQuestID | later |
 
@@ -771,7 +771,7 @@ them.
 
 - Changing the addon or any tool: this review only recommends.
 - The client's data tables: `client-tables-review.md` (#203). The tables this review points at
-  there, with what that review found: `QuestV2CliTask` (task quests only; a start item for 198,
+  there, with what that review found: `QuestV2CliTask` (task quests only; an on-accept item for 198,
   breadcrumbs for 11 unrelated pairs, skill filters), `PlayerCondition`, `ParagonReputation` (79
   rows), `AreaPOI` (linked to quests only through `QuestHub`), the campaign tables and `UiMap`'s
   content tuning.

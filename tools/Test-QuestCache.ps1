@@ -29,6 +29,8 @@ function Lacks([string]$text, [string]$part, [string]$message) {
     Check (-not $text.Contains($part)) "$message ('$part' is in: $text)"
 }
 
+function Invoke-WebRequest { throw 'A download was tried.' }
+
 $Scratch = Join-Path ([IO.Path]::GetTempPath()) ("quest-cache-test-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
 New-Item -ItemType Directory -Path $Scratch | Out-Null
 $utf8 = New-Object System.Text.UTF8Encoding $false
@@ -78,7 +80,7 @@ function New-Payload([hashtable]$Layout, [hashtable]$q) {
         Put $b 0
         for ($e = 0; $e -lt $o.Effects; $e++) { Put $b (5 + $e) }
         $d = $utf8.GetBytes($o.Description)
-        $b.Add([byte]$d.Length); $b.Add(1); $b.AddRange($d)
+        $b.Add([byte]$d.Length); $b.Add(0x80); $b.AddRange($d)
     }
     for ($i = 0; $i -lt $q.Treasure[0] + $q.Treasure[1]; $i++) { Put $b 7 }
     foreach ($text in @($q.ConditionalDesc) + @($q.ConditionalLog)) {
@@ -133,11 +135,11 @@ function Write-Cache([hashtable]$Layout, [hashtable[]]$quests, [string]$path, [i
 function Write-Tables([string]$dir, [string]$version) {
     $races = @(
         'ID,ClientPrefix,ClientFileString,Flags,PlayableRaceBit,Alliance',
-        '1,Hu,Human,4194304,0,0', '2,Or,Orc,4194304,1,1', '3,Dw,Dwarf,4194304,2,0', '4,Ne,NightElf,4194304,3,0',
-        '5,Sc,Scourge,4194304,4,1', '6,Ta,Tauren,4194304,5,1', '7,Gn,Gnome,4194304,6,0', '8,Tr,Troll,4194304,7,1',
-        '24,Pa,Pandaren,4194304,14,2', '98,Xx,Hidden,4194304,-1,0', '99,Al,Allied,0,8,0')
+        '1,Hu,Human,6291468,0,0', '2,Or,Orc,6291468,1,1', '3,Dw,Dwarf,6291468,2,0', '4,Ne,NightElf,6291468,3,0',
+        '5,Sc,Scourge,6291468,4,1', '6,Ta,Tauren,6291468,5,1', '7,Gn,Gnome,6291468,6,0', '8,Tr,Troll,6291468,7,1',
+        '24,Pa,Pandaren,6291468,14,2', '32,Kt,KulTiran,6291468,31,0', '98,Xx,Hidden,6291468,-1,0', '99,Al,Allied,1,8,0')
     if ($version -like '12.*') { $races += '95,Tb,tbdNPCRaceX,0,32,2', '96,Tb,tbdNPCRaceY,0,33,2', '97,Nw,Newrace,0,34,1' }
-    else { $races += '95,Sa,SkyborneA,4194304,32,0', '96,Sh,SkyborneH,4194304,33,1' }
+    else { $races += '95,Sa,SkyborneA,6291468,32,0', '96,Sh,SkyborneH,6291468,33,1' }
     [IO.File]::WriteAllLines("$dir\ChrRaces-$version.csv", [string[]]$races)
     $rewards = @(
         'ID,Difficulty_0,Difficulty_1,Difficulty_2,Difficulty_3,Difficulty_4,Difficulty_5,Difficulty_6,Difficulty_7,Difficulty_8,Difficulty_9',
@@ -169,7 +171,7 @@ try {
         Rep = @(@(76, 3, 0), @(72, -2, 0), @(70, 0, 5000), @(68, 0, -1050), @(66, 0, 7700))
         Spells = 2
         Objectives = @(@{ Effects = 0; Description = 'Kill 5 boars' }, @{ Effects = 2; Description = '' }, @{ Effects = 1; Description = 'x' * 200 })
-        Treasure = @(1, 2); ConditionalDesc = @('Alternative text'); ConditionalLog = @('Log text', 'y' * 300); House = @(1, 1)
+        Treasure = @(1, 2); ConditionalDesc = @('Alternative text'); ConditionalLog = @('Log text', ('y' * 3000)); House = @(1, 2)
         Others = @('The log description', 'A longer quest description for this quest', 'Area', 'Hello', 'Giver', 'Bye', 'Turn in', 'Done')
     }
     $small = New-Quest 5 'Plain' @{ Set = @{ Level = 1 } }
@@ -216,7 +218,7 @@ try {
     Equal $lines[6] '{"id":13,"title":"High word, Horde","level":0,"minLevel":0,"sort":0,"questType":2,"races":[96],"faction":"Horde"}' 'F3: bit 33 is its second'
     Equal $lines[7] '{"id":14,"title":"Nobody","level":0,"minLevel":0,"sort":0,"questType":2}' 'F3: a mask of none, as TrinityCore''s AllowableRaces 0, restricts nothing'
     Equal $lines[8] '{"id":15,"title":"Not playable here","level":0,"minLevel":0,"sort":0,"questType":2,"races":[]}' 'F3: a race the client doesn''t flag as playable in Forever is left out'
-    Equal $lines[9] '{"id":16,"title":"Half mask","level":0,"minLevel":0,"sort":0,"questType":2,"races":[1,2,3,4,5,6,7,8,24]}' 'F3: a mask with only the low word full lists the low races, not the high ones'
+    Equal $lines[9] '{"id":16,"title":"Half mask","level":0,"minLevel":0,"sort":0,"questType":2,"races":[1,2,3,4,5,6,7,8,24,32]}' 'F3: a mask with only the low word full lists the low races, not the high ones'
     Equal $lines.Count 11 'F3: and the long-texted quest is read too'
     Equal (($lines[10] | ConvertFrom-Json).title.Length) 300 'F3: whose title takes the nine bits of its length, and whose other eight texts each need every bit of theirs'
     Has $r.Text 'Races: 2 Alliance only, 3 Horde only, 3 other sets, 1 no playable race.' 'F3: the race counts (a neutral race alone, a mixed set and the half mask are no side)'
@@ -228,8 +230,7 @@ try {
     [void](Invoke-Reader @{ CacheFile = $path; Build = $Forever.Version; OutFile = $out })
     Has ((Read-Lines $out)[0]) '"recurs":"weekly","flags":36864' 'F4: weekly wins when both flags are set'
 
-    foreach ($step in 12, 10, -10) {
-        $display = New-Quest 30 'Displayed as daily' @{ Set = @{ FlagsEx = 0x8000 } }
+    $display = New-Quest 30 'Displayed as daily' @{ Set = @{ FlagsEx = 0x8000 } }
     $weeklyEx = New-Quest 31 'Weekly, shown daily' @{ Set = @{ Flags = 0x8000; FlagsEx = 0x8000 } }
     $scheduled = New-Quest 32 'Scheduled' @{ Scheduler = $true; Set = @{ FlagsEx = 0x100 } }
     $task = New-Quest 33 'Task' @{ Set = @{ QuestType = 3 } }
@@ -246,7 +247,8 @@ try {
     Equal $lines[4] '{"id":34,"title":"Repeatable","level":0,"minLevel":0,"sort":0,"questType":0}' 'F6: and a quest type of 0 is kept, not left out as empty'
     Has $r.Text 'Recurring: 1 daily, 1 weekly.' 'F6: the counts take the new rule'
 
-    $tooBig = New-Quest 21 "Step $step" @{ Rep = @(, @(76, $step, 0)) }
+    foreach ($step in 12, 10, -10) {
+        $tooBig = New-Quest 21 "Step $step" @{ Rep = @(, @(76, $step, 0)) }
         $path = "$Scratch\forever4.wdb"; $out = "$Scratch\forever4.jsonl"
         Write-Cache $Forever @($tooBig) $path
         $r = Invoke-Reader @{ CacheFile = $path; Build = $Forever.Version; OutFile = $out }
@@ -259,6 +261,35 @@ try {
     $r = Invoke-Reader @{ CacheFile = $path; Build = $Forever.Version; OutFile = $out }
     Equal $r.Failure '' 'F5: the last step of the table, up and down, is read'
     Has ((Read-Lines $out)[0]) '"reputation":[[76,5],[77,-5]]' 'F5: with the amounts of its last column'
+    $amounts = New-Quest 23 'Amounts' @{ Rep = @(@(76, 1, 0), @(77, -1, 0), @(78, 3, 2500), @(79, 0, 12399), @(80, 0, -12399)) }
+    $path = "$Scratch\forever7.wdb"; $out = "$Scratch\forever7.jsonl"
+    Write-Cache $Forever @($amounts) $path
+    [void](Invoke-Reader @{ CacheFile = $path; Build = $Forever.Version; OutFile = $out })
+    Has ((Read-Lines $out)[0]) '"reputation":[[76,10],[77,-10],[78,25],[79,123],[80,-123]]' 'F7: steps of 1 up and down, an own amount over a step, and own amounts cut to whole points'
+
+    $word = @(
+        (New-Quest 40 'Bit 31' @{ Set = @{ RacesLow = 2147483648 } }),
+        (New-Quest 41 'Not bit 31' @{ Set = @{ RacesLow = 2147483647 } }))
+    $path = "$Scratch\forever8.wdb"; $out = "$Scratch\forever8.jsonl"
+    Write-Cache $Forever $word $path
+    [void](Invoke-Reader @{ CacheFile = $path; Build = $Forever.Version; OutFile = $out })
+    $lines = Read-Lines $out
+    Equal $lines[0] '{"id":40,"title":"Bit 31","level":0,"minLevel":0,"sort":0,"questType":2,"races":[32],"faction":"Alliance"}' 'F8: bit 31 of the low word is a race'
+    Equal $lines[1] '{"id":41,"title":"Not bit 31","level":0,"minLevel":0,"sort":0,"questType":2,"races":[1,2,3,4,5,6,7,8,24]}' 'F8: and without it the race goes'
+
+    $several = @(
+        (New-Quest 24 'Bit 11 in both' @{ Set = @{ Flags = 0x800; FlagsEx = 0x800 } }),
+        (New-Quest 25 'Top bit of flagsEx' @{ Set = @{ FlagsEx = 0x80000000L } }),
+        (New-Quest 26 'Daily with another bit' @{ Set = @{ Flags = 0x1004 } }),
+        (New-Quest 27 'Displayed daily with another bit' @{ Set = @{ FlagsEx = 0x8004 } }))
+    $path = "$Scratch\forever9.wdb"; $out = "$Scratch\forever9.jsonl"
+    Write-Cache $Forever $several $path
+    [void](Invoke-Reader @{ CacheFile = $path; Build = $Forever.Version; OutFile = $out })
+    $lines = Read-Lines $out
+    Equal $lines[0] '{"id":24,"title":"Bit 11 in both","level":0,"minLevel":0,"sort":0,"flags":2048,"flagsEx":2048,"questType":2}' 'F9: a bit that is neither daily nor weekly is kept in both words and makes nothing recurring'
+    Equal $lines[1] '{"id":25,"title":"Top bit of flagsEx","level":0,"minLevel":0,"sort":0,"flagsEx":2147483648,"questType":2}' 'F9: the top bit of flagsEx stays unsigned'
+    Equal $lines[2] '{"id":26,"title":"Daily with another bit","level":0,"minLevel":0,"sort":0,"recurs":"daily","flags":4100,"questType":2}' 'F9: the daily flag is a bit test, not an equality'
+    Equal $lines[3] '{"id":27,"title":"Displayed daily with another bit","level":0,"minLevel":0,"sort":0,"recurs":"daily","flagsEx":32772,"questType":2}' 'F9: and so is flagsEx''s'
 
     # --- Retail ---------------------------------------------------------------------------------------
     $Retail = $Games.retail
@@ -291,6 +322,24 @@ try {
     $lines = Read-Lines $out
     Equal $lines[0] '{"id":160,"title":"Retail displayed as daily","contentTuning":5,"sort":0,"recurs":"daily","flagsEx":32768,"questType":2,"scheduler":true}' 'R4: retail''s FlagsEx is its field 24, and its scheduler bit is read'
     Equal $lines[1] '{"id":161,"title":"Retail task","contentTuning":5,"sort":0,"flags":16384,"questType":3}' 'R4: and its quest type is field 1'
+
+    $rAmounts = New-Quest 202 'Retail amounts' @{ Set = @{ Tuning = 5 }; Rep = @(@(1273, 1, 0), @(1275, -1, 0), @(1277, 3, 2500), @(1279, 0, 12399), @(1281, 0, -12399)) }
+    $rWord = New-Quest 170 'Retail bit 31' @{ Set = @{ Tuning = 5; RacesLow = 2147483648 } }
+    $rSeveral = @(
+        (New-Quest 162 'Bit 11 in both' @{ Set = @{ Flags = 0x800; FlagsEx = 0x800 } }),
+        (New-Quest 163 'Top bit of flagsEx' @{ Set = @{ FlagsEx = 0x80000000L } }),
+        (New-Quest 164 'Daily with another bit' @{ Set = @{ Flags = 0x1004 } }),
+        (New-Quest 165 'Displayed daily with another bit' @{ Set = @{ FlagsEx = 0x8004 } }))
+    $path = "$Scratch\retail5.wdb"; $out = "$Scratch\retail5.jsonl"
+    Write-Cache $Retail (@($rAmounts, $rWord) + $rSeveral) $path
+    [void](Invoke-Reader @{ CacheFile = $path; Build = $Retail.Version; OutFile = $out })
+    $lines = Read-Lines $out
+    Equal $lines[0] '{"id":162,"title":"Bit 11 in both","contentTuning":0,"sort":0,"flags":2048,"flagsEx":2048,"questType":2}' 'R5: a bit that is neither daily nor weekly is kept in both words and makes nothing recurring'
+    Equal $lines[1] '{"id":163,"title":"Top bit of flagsEx","contentTuning":0,"sort":0,"flagsEx":2147483648,"questType":2}' 'R5: the top bit of flagsEx stays unsigned'
+    Equal $lines[2] '{"id":164,"title":"Daily with another bit","contentTuning":0,"sort":0,"recurs":"daily","flags":4100,"questType":2}' 'R5: the daily flag is a bit test, not an equality'
+    Equal $lines[3] '{"id":165,"title":"Displayed daily with another bit","contentTuning":0,"sort":0,"recurs":"daily","flagsEx":32772,"questType":2}' 'R5: and so is flagsEx''s'
+    Equal $lines[4] '{"id":170,"title":"Retail bit 31","contentTuning":5,"sort":0,"questType":2,"races":[32],"faction":"Alliance"}' 'R5: bit 31 of the low word is a race in retail too'
+    Equal $lines[5] '{"id":202,"title":"Retail amounts","contentTuning":5,"sort":0,"questType":2,"reputation":[[1273,10],[1275,-10],[1277,25],[1279,123],[1281,-123]]}' 'R5: steps of 1 up and down, an own amount over a step, and own amounts cut to whole points'
 
     $mix = @(
         (New-Quest 301 'Alliance, neutral, and Alliance-flag 99' @{ Set = @{ RacesLow = 16640 } }),
@@ -329,6 +378,11 @@ try {
     try { $text = (@(& $Tool @params -Build $Forever.Version 6>&1 | ForEach-Object { "$_" }) -join "`n") } catch { $text = $_.Exception.Message }
     Check (Test-Path "$dir\forever_quest_cache_1.60.1.70205.jsonl") 'D1: Forever writes forever_quest_cache_<build>.jsonl'
     Has ([IO.File]::ReadAllText("$dir\forever_quest_cache_1.60.1.70205.jsonl")) '"Plain"' 'D1: from the Forever probe''s cache'
+    New-Item -ItemType Directory "$dir\retail_probe_70000" | Out-Null
+    Write-Cache $Retail @((New-Quest 160 'Older retail')) "$dir\retail_probe_70000\questcache.wdb"
+    (Get-Item "$dir\retail_probe_70000\questcache.wdb").LastWriteTime = [datetime]'2020-01-01'
+    try { $text = (@(& $Tool @params -Build $Retail.Version 6>&1 | ForEach-Object { "$_" }) -join "`n") } catch { $text = $_.Exception.Message }
+    Lacks ([IO.File]::ReadAllText("$dir\retail_quest_cache_12.1.0.69933.jsonl")) 'Older retail' 'D1: the newest cache by write time is read, whatever the folders'' names'
     $empty = "$Scratch\empty"
     New-Item -ItemType Directory $empty | Out-Null
     $r = $null
@@ -339,7 +393,7 @@ try {
     # --- A cache that doesn't fit ---------------------------------------------------------------------
     foreach ($case in @(
             @{ Name = 'long'; Quest = (New-Quest 401 'Too long' @{ Extra = @(1) }); Expect = '1 bytes are left over' },
-            @{ Name = 'short'; Quest = (New-Quest 402 'Too short' @{ Others = @('A text'); Cut = 3 }); Expect = 'bytes past its end' },
+            @{ Name = 'short'; Quest = (New-Quest 402 'Too short' @{ Others = @('A text'); Cut = 1 }); Expect = 'bytes past its end' },
             @{ Name = 'lie'; Quest = (New-Quest 403 'Counts one objective too many' @{ Lie = 1; Others = @('Text') }); Expect = '' })) {
         foreach ($game in 'forever', 'retail') {
             $Spec = $Games[$game]
@@ -361,6 +415,43 @@ try {
         [IO.File]::WriteAllBytes($path, $bytes)
         $r = Invoke-Reader @{ CacheFile = $path; Build = $Spec.Version; OutFile = "$Scratch\badid-$game.jsonl" }
         Has $r.Failure 'it holds quest 411' "B2: $game, a record whose own id isn't its header's is refused"
+    }
+
+    # --- A cache cut short ------------------------------------------------------------------------------
+    foreach ($game in 'forever', 'retail') {
+        $Spec = $Games[$game]
+        $whole = "$Scratch\cut-$game.wdb"
+        Write-Cache $Spec @((New-Quest 700 'First'), (New-Quest 701 'Second'), (New-Quest 702 'Third' @{ Others = @('Some text to cut') })) $whole
+        $bytes = [IO.File]::ReadAllBytes($whole)
+        $secondAt = 24 + 8 + [BitConverter]::ToInt32($bytes, 28)
+        $noLength = [byte[]]$bytes.Clone()
+        foreach ($k in 4..7) { $noLength[$secondAt + $k] = 0 }
+        $negativeLength = [byte[]]$bytes.Clone()
+        foreach ($k in 4..7) { $negativeLength[$secondAt + $k] = 255 }
+        $zeroedHeader = [byte[]]$bytes.Clone()
+        foreach ($k in 0..7) { $zeroedHeader[$secondAt + $k] = 0 }
+        $idTerminator = [byte[]]$bytes.Clone()
+        $idTerminator[$bytes.Length - 8] = 9
+        $negativeTerminator = [byte[]]$bytes.Clone()
+        foreach ($k in 4..7) { $negativeTerminator[$bytes.Length - 8 + $k] = 255 }
+        $cases = @(
+            @{ Name = 'no terminator'; Bytes = [byte[]]$bytes[0..($bytes.Length - 9)]; Expect = "doesn't end with its terminator after 3 quests" },
+            @{ Name = 'cut inside the last record'; Bytes = [byte[]]$bytes[0..($bytes.Length - 30)]; Expect = "records don't fit|doesn't end with its terminator" },
+            @{ Name = 'cut after the second record'; Bytes = [byte[]]$bytes[0..($secondAt - 1)]; Expect = "doesn't end with its terminator after 1 quests" },
+            @{ Name = 'a record of no length'; Bytes = $noLength; Expect = "doesn't end with its terminator after 1 quests" },
+            @{ Name = 'a record of negative length'; Bytes = $negativeLength; Expect = "doesn't end with its terminator after 1 quests" },
+            @{ Name = 'a zeroed header between records'; Bytes = $zeroedHeader; Expect = "doesn't end with its terminator after 1 quests" },
+            @{ Name = 'a terminator with an id'; Bytes = $idTerminator; Expect = "doesn't end with its terminator after 3 quests" },
+            @{ Name = 'a terminator of negative length'; Bytes = $negativeTerminator; Expect = "doesn't end with its terminator after 3 quests" },
+            @{ Name = 'bytes after the terminator'; Bytes = [byte[]]($bytes + (New-Object byte[] 4)); Expect = "doesn't end with its terminator after 3 quests" },
+            @{ Name = 'nothing after the header'; Bytes = [byte[]]($bytes[0..23] + (New-Object byte[] 8)); Expect = 'holds no quests' })
+        foreach ($case in $cases) {
+            $path = "$Scratch\cut-$($case.Name -replace '\W', '')-$game.wdb"; $out = "$Scratch\cut-$game.jsonl"
+            [IO.File]::WriteAllBytes($path, $case.Bytes)
+            $r = Invoke-Reader @{ CacheFile = $path; Build = $Spec.Version; OutFile = $out }
+            Check ($r.Failure -match $case.Expect) "C1: $game, $($case.Name): refused with the reason (got '$($r.Failure)')"
+            Check (-not (Test-Path $out)) "C1: $game, $($case.Name): and nothing is written"
+        }
     }
 
     # --- The other game's layout ----------------------------------------------------------------------
@@ -400,7 +491,12 @@ try {
     $r = $null
     try { & $Tool -ToolsDir $few -Build $Retail.Version -CacheFile "$Scratch\okay.wdb" -OutFile "$few\o.jsonl" 6>&1 | Out-Null } catch { $r = $_.Exception.Message }
     Has $r 'lacks its gain and loss rows' 'W5: a reward table without its loss row is refused'
+    [IO.File]::WriteAllLines("$few\QuestFactionReward-12.1.0.69933.csv", [string[]]@('ID,Difficulty_0,Difficulty_1,Difficulty_2,Difficulty_3,Difficulty_4,Difficulty_5,Difficulty_6,Difficulty_7,Difficulty_8,Difficulty_9', '2,0,-10,-25,-75,-150,-250,-350,-500,-1000,-5'))
+    $r = $null
+    try { & $Tool -ToolsDir $few -Build $Retail.Version -CacheFile "$Scratch\okay.wdb" -OutFile "$few\o.jsonl" 6>&1 | Out-Null } catch { $r = $_.Exception.Message }
+    Has $r 'lacks its gain and loss rows' 'W5: nor one without its gain row'
 }
+catch { Check $false "the run stopped: $($_.Exception.Message)" }
 finally {
     Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue
 }

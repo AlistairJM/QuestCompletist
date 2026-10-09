@@ -367,30 +367,43 @@ A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore
 The client keeps the server's record of every quest it has asked about in
 `Cache\WDB\enUS\questcache.wdb`, and step 10 reads WoW: Forever's copy of it. Retail's holds the same
 record, in the same layout with two fields fewer, for every quest the game has been asked about
-(32,713 in October 2026). Log out fully, so the game writes it, copy the file from
-`_retail_\Cache\WDB\enUS\` to `tools\retail_probe_<retail build>\`, and run:
+(32,713 in October 2026). The cache holds only what was asked: the quest-type probe (`/qc typecheck`,
+see [In the game](#in-the-game)) asks for every quest in our data, so a cache from ordinary play is
+far too small, and `Compare-QuestCache.ps1` fails when fewer than 20,000 quests could be compared.
+Log out fully, so the game writes it, and copy the file from `_retail_\Cache\WDB\enUS\` to
+`tools\retail_probe_<build number>\` (`retail_probe_69933` for build 12.1.0.69933). The comparison also
+needs the API cache (step 1), the client's task table (step 1b) and the client's `QuestV2` for the
+cache's build, which step 1b's unnumbered `QuestV2.csv` is not:
 
 ```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/QuestV2/csv?build=<retail build>" -OutFile tools\QuestV2-<retail build>.csv
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Read-QuestCache.ps1 -Build <retail build>
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestCache.ps1
 ```
 
+Without that file the run still exits 0 but skips the repeatable check, and its closing line says so.
+The reader fetches the `ChrRaces` and `QuestFactionReward` tables for the build from wago.tools when
+`tools\` lacks them.
+
 The reader (about 30 seconds) writes `tools\retail_quest_cache_<build>.jsonl`, one quest per line:
 its title, content tuning, sort (the zone, or a negative number for a heading such as a class or a
 profession), quest type, flags, and when they apply the quest info, group size, recurrence, follow-up
-quest, start item, reputation rewards and races. It reads every record to its last byte, or writes
-nothing. That can't see two fields of the same size swapped, so `Compare-QuestCache.ps1` (about 25
-seconds, after steps 1 and 1b have filled the API cache and the client's task table) compares the
-values with Blizzard's own: the API's records for the same quests, and the task table's rows. It
-exits with 1 when a check differs for more than 0.5% of what it compared (and at least 5 quests),
-which a shifted field does for thousands; fewer differences are listed and are what a hotfix between
-the API cache's build and the cache's looks like. On 9 October 2026 (cache 12.1.0.69933, API cache
-12.1.0_68914) nothing differed: titles for 28,985 quests, sort for 28,614, daily, weekly and
-repeatable for 28,985 each, 11,690 reputation rewards, one level range for each of 741 content
-tunings over 28,242 quests, quest info for 1,830 quests against the API and 4,125 against the task
-table, which also agreed on content tuning and start item for those 4,125. If it fails, don't use the
-cache's values that sweep: check that the cache and the API cache are from the builds you think, then
-rerun the reader's record walk and look at the first differing quests with both values.
+quest, start item, reputation rewards and races. It reads every record to its last byte and the file
+to its terminator, or writes nothing. That can't see two fields of the same size swapped, so
+`Compare-QuestCache.ps1` (about 25 seconds) compares the values with Blizzard's own: the API's records
+for the same quests, and the task table's rows. It exits with 1 when a check differs for more than 5
+quests and for more than 0.5% of what it compared, which a shifted field does for thousands; when the
+title, sort or daily check compared fewer than 20,000 quests (`-MinCompared`), as with an incomplete
+API cache; or when a check it needs compared nothing. Fewer differences are listed and are what a
+hotfix between the API cache's build and the cache's looks like. It does not look at the group size,
+the follow-up quest, the quest giver, the scheduler bit or the flags bits other than daily and weekly.
+On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) nothing differed: titles for 28,985
+quests, sort for 28,614, daily, weekly, recurs and repeatable for 28,985 each, faction for 9,273 and
+races for 728, 11,690 reputation rewards, one level range for each of 741 content tunings over 28,983
+quests, quest info for 1,830 quests against the API and 4,125 against the task table, which also
+agreed on content tuning and start item for those 4,125. If it fails, don't use the cache's values
+that sweep: check that the cache, the API cache and the task table are from the builds you think,
+then rerun the reader's record walk and look at the first differing quests with both values.
 
 What the cache says about our data, and what it can't, is in
 [plans/retail-quest-cache.md](plans/retail-quest-cache.md). Two things to know before reading its
@@ -1094,7 +1107,7 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 14,673
+  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 15,202
   pins for retail, and 5,081 quests and 1,706 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.

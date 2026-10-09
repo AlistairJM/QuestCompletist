@@ -6,13 +6,15 @@ keeps the server's record of every quest it has asked about there; the probe ask
 -Build says the game: 1.x is WoW: Forever, 12.x and up retail. Each record is the server's quest
 record, laid out as TrinityCore's QueryQuestInfoResponse: a block of fixed numbers (122 in Forever, 120
 in retail, whose records lack QuestLevel and QuestMinLevel), the objectives and other lists, then the
-texts. Every record must be read to its last byte, or nothing is written: a record that doesn't fit
-means the layout has changed.
+texts. Every record must be read to its last byte, and the file must end with its terminator, or
+nothing is written: a record that doesn't fit means the layout has changed, a missing terminator a
+copy cut short.
 
 A line holds the quest's id, title, level and minLevel (Forever) or contentTuning (retail, whose level
 range is a function of that ContentTuningID), and sort (its zone, or a negative QuestSort for class,
-profession and holiday quests), questType (0 repeatable, 1 disabled, 2 normal, 3 task), and when
-they apply: questInfo (1 group, 41 PvP, 62 raid, 81 dungeon), groupSize, recurs (weekly when the
+profession and holiday quests), questType (0, which every repeatable quest has but so do many
+that are not: retail's repeatable ones are 0 and not in QuestV2; 1 disabled, 2 normal, 3 task), and
+when they apply: questInfo (1 group, 41 PvP, 62 raid, 81 dungeon), groupSize, recurs (weekly when the
 flags say so, else daily when they or flagsEx do: the API's is_weekly and is_daily), nextQuest (the
 follow-up offered on hand-in), startItem (the item the quest hands out when it is accepted, not the
 item that begins it), giver (the quest giver's creature ID, empty in every record so far), flags,
@@ -20,8 +22,8 @@ flagsEx, scheduler (the quest is reset by the game's scheduler, as many unflagge
 weeklies are), reputation (each faction it rewards, with the amount), and races with their faction.
 races lists the playable races that may take the quest; it's left out when every race may (a mask
 of all ones, or of none, as TrinityCore's AllowableRaces 0), as for most quests of one faction, whose
-giver decides. Retail's two placeholder races, "TBD NPC Race", which almost every mask carries, are
-left out of the list. The quest texts other than the title are left out.
+giver decides. Retail's two placeholder races, "TBD NPC Race", one in each side's masks, are left
+out of the list. The quest texts other than the title are left out.
 
 A record gives each reputation reward as a step in the client's QuestFactionReward table (a gain or,
 when negative, a loss), or as its own amount in hundredths, which wins when it's set. The amounts
@@ -93,10 +95,11 @@ $lines = New-Object System.Collections.Generic.List[string]
 $failed = New-Object System.Collections.Generic.List[string]
 $counts = @{ alliance = 0; horde = 0; someRaces = 0; noRace = 0; daily = 0; weekly = 0; startItem = 0; nextQuest = 0; giver = 0; reputation = 0 }
 $offset = 24
+$terminated = $false
 while ($offset + 8 -le $bytes.Length) {
     $id = [BitConverter]::ToUInt32($bytes, $offset)
     $length = [BitConverter]::ToInt32($bytes, $offset + 4)
-    if ($length -le 0) { break }
+    if ($length -le 0) { $terminated = ($id -eq 0 -and $length -eq 0 -and $offset + 8 -eq $bytes.Length); break }
     $start = $offset + 8
     $end = $start + $length
     $offset = $end
@@ -180,6 +183,8 @@ if ($failed.Count) {
     throw ("{0} of {1} records don't fit the layout, so nothing was written. The first: {2}" -f
         $failed.Count, ($failed.Count + $lines.Count), (($failed | Select-Object -First 5) -join '; '))
 }
+if (-not $terminated) { throw "$CacheFile doesn't end with its terminator after $($lines.Count) quests: it is cut short or holds an empty record." }
+if (-not $lines.Count) { throw "$CacheFile holds no quests." }
 if (-not $OutFile) { $OutFile = "$ToolsDir\${game}_quest_cache_$Build.jsonl" }
 $sorted = $lines | Sort-Object { [int]($_ -replace '^\{"id":(\d+),.*$', '$1') }
 [System.IO.File]::WriteAllText($OutFile, (($sorted -join "`n") + "`n"), (New-Object System.Text.UTF8Encoding $false))
