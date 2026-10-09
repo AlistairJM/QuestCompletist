@@ -117,7 +117,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   where the client has it, so when retail gains it the profession-list fallback becomes the second
   route and the expansion lines can be read directly.
 - **Data gaps**, each with the place that watches it: Forever's storylines (`QuestLine` rows; the
-  importer's summary, once it prints them) and start points (`QuestPOIBlob`; the importer's
+  importer's "Storylines:" line) and start points (`QuestPOIBlob`; the importer's
   summary); a quest-giver field in Forever's quest records (the importer's summary); a Forever
   namespace in Blizzard's web API (forever.md, phase 5); `QuestV2CliTask` appearing on Forever
   (step 2b's new-table flag); the Scourge Invasion and War Effort on Forever's calendar (step 2b's
@@ -136,7 +136,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | a switch to skip the API and TrinityCore parts |
 | 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | probably finds nothing; the point is that it looks |
 | 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
-| 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | a watch, nothing else |
+| 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | done 9 October 2026: the "Storylines:" line (3 and 22 rows on build 70205) |
 | 8 | The retail map pass | a run | the pin comparison; done 7 October 2026 (game-api-review.md, "Map-offers probe: retail run") |
 | 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | |
 | 10 | A Forever review of hidden and test quests | later | after launch |
