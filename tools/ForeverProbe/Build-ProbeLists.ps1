@@ -1,27 +1,87 @@
 <#
-Writes the Forever probe's two lists into QCForeverProbe\ (docs/plans/forever.md, phase 1):
+Writes the probe's two lists for one game into QCForeverProbe\ (they are generated, so they are not in
+git). The retail TOC loads the _Retail lists and the _Camelot TOC (WoW: Forever) the _Forever ones.
 
-  - QuestIDs.lua: every quest ID in the client's QuestV2 table for -Build, from wago.tools, and
-    every quest in CMaNGOS's vanilla database that QuestV2 lacks. QuestV2 only lists the quests the
-    game records as completed, so it leaves out repeatable ones: only the server can say which of
-    those Forever has.
-  - NpcIDs.lua: the creatures CMaNGOS names as givers of those quests, plus the NPCs on our old
-    Classic pins, removed in #89 and read from git history.
+  -Game retail:
+    - QuestIDs_Retail.lua: every quest in data\quests.jsonl, the ones typed daily, repeatable or 128 first, so
+      that a run stopped early still holds the answers that matter most. Retail's QuestV2 is not asked.
+    - NpcIDs_Retail.lua: the NPC of every pin in data\pins.jsonl.
+  -Game forever (docs/plans/forever.md, phase 1):
+    - QuestIDs_Forever.lua: every quest ID in the client's QuestV2 table for -Build, from wago.tools, and
+      every quest in CMaNGOS's vanilla database that QuestV2 lacks. QuestV2 only lists the quests the
+      game records as completed, so it leaves out repeatable ones: only the server can say which of
+      those Forever has.
+    - NpcIDs_Forever.lua: the creatures CMaNGOS names as givers of those quests, plus the NPC of every
+      pin in data\forever\pins.jsonl.
 
-Rerun with the live build at launch. The CMaNGOS dump (Full_DB in cmangos/classic-db) is downloaded
-into -ToolsDir unless -CmangosDump names a copy.
+-Build is the client's build as the probe reads it (12.1.0.69933, 1.60.1.70245); the probe says so when
+its list is from another. Rerun for every new build. The CMaNGOS dump (Full_DB in cmangos/classic-db) is
+downloaded into -ToolsDir unless -CmangosDump names a copy.
 #>
 param(
-    [string]$ToolsDir = (Join-Path $PSScriptRoot '..'),
-    [string]$Build = "1.60.1.70205",
+    [string]$Game,
+    [string]$Build,
+    [string]$ToolsDir,
+    [string]$DataDir,
+    [string]$AddonDir,
     [string]$CmangosDump = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [switch]$Refresh
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$addonDir = Join-Path $PSScriptRoot 'QCForeverProbe'
+if ($Game -notin 'retail', 'forever') { throw "-Game must be retail or forever." }
+if ($Build -notmatch '^\d+\.\d+\.\d+\.\d+$') { throw "-Build '$Build' is not a build number like 12.1.0.69933." }
+if (-not $ToolsDir) { $ToolsDir = Join-Path $PSScriptRoot '..' }
+if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot '..\..\data' }
+if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot 'QCForeverProbe' }
+$suffix = if ($Game -eq 'retail') { 'Retail' } else { 'Forever' }
+
+function Read-JsonlNumbers([string]$path, [string]$field) {
+    $values = New-Object System.Collections.Generic.List[int]
+    $pattern = '"' + $field + '":(\d+)'
+    foreach ($line in [System.IO.File]::ReadLines($path)) {
+        if ($line -match $pattern) { $values.Add([int]$Matches[1]) }
+    }
+    return $values
+}
+
+function Write-IdList($path, $header, $assignment, $ids) {
+    $lines = New-Object System.Collections.Generic.List[string]
+    $lines.Add($header)
+    $lines.Add("local _, probe = ...")
+    $lines.Add("$assignment = {")
+    for ($i = 0; $i -lt $ids.Count; $i += 20) {
+        $last = [Math]::Min($i + 19, $ids.Count - 1)
+        $lines.Add("`t" + (($ids[$i..$last] | ForEach-Object { "$_" }) -join ",") + ",")
+    }
+    $lines.Add("}")
+    [System.IO.File]::WriteAllText($path, (($lines -join "`r`n") + "`r`n"), (New-Object System.Text.UTF8Encoding $false))
+}
+
+if ($Game -eq 'retail') {
+    $questFile = Join-Path $DataDir 'quests.jsonl'
+    $pinFile = Join-Path $DataDir 'pins.jsonl'
+    $recurring = New-Object System.Collections.Generic.List[int]
+    $others = New-Object System.Collections.Generic.List[int]
+    $seen = @{}
+    foreach ($line in [System.IO.File]::ReadLines($questFile)) {
+        if ($line -notmatch '"id":(\d+)') { throw "A line of $questFile has no quest ID: $line" }
+        $id = [int]$Matches[1]
+        if ($seen.ContainsKey($id)) { continue }
+        $seen[$id] = $true
+        $type = if ($line -match '"type":(\d+)') { [int]$Matches[1] } else { 0 }
+        if (($type -band (2 + 4 + 128)) -ne 0) { $recurring.Add($id) } else { $others.Add($id) }
+    }
+    if ($recurring.Count + $others.Count -lt 1000) { throw "$questFile has only $($recurring.Count + $others.Count) quests: is the data folder right?" }
+    $questIds = @(@($recurring | Sort-Object) + @($others | Sort-Object))
+    $npcIds = @(Read-JsonlNumbers $pinFile 'npc' | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+    if ($npcIds.Count -lt 100) { throw "$pinFile has only $($npcIds.Count) NPCs: is the data folder right?" }
+    Write-IdList (Join-Path $AddonDir 'QuestIDs_Retail.lua') "-- Generated by tools/ForeverProbe/Build-ProbeLists.ps1: data\quests.jsonl, the daily, repeatable and 128 quests first." "probe.questBuild = `"$Build`"`r`nprobe.questIds" $questIds
+    Write-IdList (Join-Path $AddonDir 'NpcIDs_Retail.lua') "-- Generated by tools/ForeverProbe/Build-ProbeLists.ps1: the NPC of every pin in data\pins.jsonl." "probe.npcIds" $npcIds
+    Write-Host ("{0} quests ({1} typed daily, repeatable or 128 first, {2} others); {3} NPCs from the pins." -f $questIds.Count, $recurring.Count, $others.Count, $npcIds.Count)
+    return
+}
 
 $questCsv = "$ToolsDir\QuestV2-$Build.csv"
 if ($Refresh -or -not (Test-Path $questCsv)) {
@@ -68,31 +128,13 @@ foreach ($line in $starters) {
     if ($listed[[int]$quest]) { $npcIds[[int]$npc] = $true }
 }
 $fromCmangos = $npcIds.Count
-
-$mapId = 0
-foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")) {
-    if ($line -match '^\t\[(\d+)\] = \{') { $mapId = [int]$Matches[1]; continue }
-    if ($mapId -ge 1411 -and $mapId -le 1459 -and $line -match '^\t\t\{\d+,(\d+),' -and $Matches[1] -ne '0') {
-        $npcIds[[int]$Matches[1]] = $true
-    }
+foreach ($id in (Read-JsonlNumbers (Join-Path $DataDir 'forever\pins.jsonl') 'npc')) {
+    if ($id -gt 0) { $npcIds[$id] = $true }
 }
 
-function Write-IdList($path, $header, $assignment, $ids) {
-    $lines = New-Object System.Collections.Generic.List[string]
-    $lines.Add($header)
-    $lines.Add("local _, probe = ...")
-    $lines.Add("$assignment = {")
-    for ($i = 0; $i -lt $ids.Count; $i += 20) {
-        $last = [Math]::Min($i + 19, $ids.Count - 1)
-        $lines.Add("`t" + (($ids[$i..$last] | ForEach-Object { "$_" }) -join ",") + ",")
-    }
-    $lines.Add("}")
-    [System.IO.File]::WriteAllText($path, (($lines -join "`r`n") + "`r`n"), (New-Object System.Text.UTF8Encoding $false))
-}
-
-Write-IdList "$addonDir\QuestIDs.lua" "-- Generated by tools/ForeverProbe/Build-ProbeLists.ps1: QuestV2, build $Build, and CMaNGOS's quests it lacks." "probe.questBuild = `"$Build`"`r`nprobe.questIds" $questIds
+Write-IdList (Join-Path $AddonDir 'QuestIDs_Forever.lua') "-- Generated by tools/ForeverProbe/Build-ProbeLists.ps1: QuestV2, build $Build, and CMaNGOS's quests it lacks." "probe.questBuild = `"$Build`"`r`nprobe.questIds" $questIds
 $sortedNpcs = @($npcIds.Keys | Sort-Object)
-Write-IdList "$addonDir\NpcIDs.lua" "-- Generated by tools/ForeverProbe/Build-ProbeLists.ps1: CMaNGOS givers of QuestIDs.lua's quests (build $Build), and our old Classic pins' NPCs." "probe.npcIds" $sortedNpcs
+Write-IdList (Join-Path $AddonDir 'NpcIDs_Forever.lua') "-- Generated by tools/ForeverProbe/Build-ProbeLists.ps1: CMaNGOS givers of QuestIDs_Forever.lua's quests (build $Build), and the NPC of every pin in data\forever\pins.jsonl." "probe.npcIds" $sortedNpcs
 
-Write-Host ("{0} quests: {1} in QuestV2 (build {2}) and {3} CMaNGOS quests it lacks; {4} NPCs: {5} CMaNGOS givers, {6} more from our old pins." -f
+Write-Host ("{0} quests: {1} in QuestV2 (build {2}) and {3} CMaNGOS quests it lacks; {4} NPCs: {5} CMaNGOS givers, {6} more from our pins." -f
     $questIds.Count, $inClient.Count, $Build, $notInClient.Count, $sortedNpcs.Count, $fromCmangos, ($sortedNpcs.Count - $fromCmangos))

@@ -2,13 +2,13 @@
 retail. A dev-only addon, not part of Quest Completist and never shipped: copy this folder to the
 game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folder, or _retail_).
 
-/qcprobe quests [in flight]   asks the server about every quest in QuestIDs.lua that hasn't
+/qcprobe quests [in flight]   asks the server about every quest in the game's list (QuestIDs_*.lua) that hasn't
                               answered yet on this build: the client's quest list, which leaves out
                               repeatable quests, and the CMaNGOS quests it lacks. The beta only
                               answers quests up to about level 40, so rerun it when the beta opens
                               higher levels.
 /qcprobe quests all           asks about every quest again
-/qcprobe npcs [in flight]     names the quest givers from CMaNGOS and our old Classic pins (NpcIDs.lua)
+/qcprobe npcs [in flight]     names the NPCs in the game's list (NpcIDs_*.lua): the NPC of every pin, and on Forever CMaNGOS's givers
 /qcprobe npcs all             names every NPC again
 /qcprobe maps [wait seconds]  asks the server for each map's quest offers (the storyline starts
                               Blizzard's map draws), points of interest, events, quest hubs and
@@ -186,7 +186,7 @@ end
 
 local function startQuests(all, inFlight)
 	if probe.questBuild ~= build then
-		say(string.format("the quest list is from build %s, and this is %s. Rebuild it with tools/ForeverProbe/Build-ProbeLists.ps1 to include new quests.",
+		say(string.format("the quest list is from build %s, and this is %s. Rebuild it with tools/ForeverProbe/Build-ProbeLists.ps1 -Game retail or forever.",
 			probe.questBuild, build))
 	end
 	local queue = {}
