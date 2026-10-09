@@ -114,6 +114,7 @@ qcMenu={
 {text=stringformat("   %s",qcL.PROFESSIONS),clientName={"string","TRADE_SKILLS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-181,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-121,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=-666,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-304,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=16941,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-201,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -129,7 +130,6 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-366,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-369,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=-22,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
-{text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-666,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=2257,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=-284,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},

@@ -24763,7 +24763,7 @@
 {"id":60468,"name":"Rubble Rummaging","level":10,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1147,"prereq":60467}
 {"id":60469,"name":"Safe in the Shadows","level":10,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1147,"prereq":60468}
 {"id":60470,"name":"Setting Sabina Free","level":10,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1147,"prereq":60469}
-{"id":60474,"name":"Spawn Tracking Unit-Specified World Effect in a WMO Bug","level":1,"zone":"Development Land","category":287,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":60474,"name":"Spawn Tracking Unit-Specified World Effect in a WMO Bug","level":1,"zone":"Development Land","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":60475,"name":"We'll Workshop It","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60476,"name":"Spriggan Size Me!","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60480,"name":"The Endmire","level":10,"zone":"Revendreth","category":1205,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1143}
@@ -33307,101 +33307,101 @@
 {"id":89416,"name":"Eternal Gratitude","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899,"prereq":89415}
 {"id":89417,"name":"Infinite Meetings","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899,"prereq":89416}
 {"id":89418,"name":"A Fixed Point in Time","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899,"prereq":89417}
-{"id":89464,"name":"Infinite Research: Combat Studies, Comprehensive","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89538}
-{"id":89465,"name":"Infinite Research: No Task Too Small","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90103}
-{"id":89466,"name":"Infinite Research: Time to Raid, Light's Breach","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89596}
-{"id":89467,"name":"Infinite Research: Time to Raid, Forbidden Descent","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89466}
-{"id":89468,"name":"Infinite Research: Dungeoneers Wanted, Normal","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89469}
-{"id":89469,"name":"Infinite Research: Dungeoneers Wanted, Heroic","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89540}
-{"id":89476,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902}
-{"id":89516,"name":"Infinite Research: Assault on Violet Hold, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89531}
-{"id":89517,"name":"Infinite Research: Assault on Violet Hold, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":92430}
-{"id":89518,"name":"Infinite Research: Cathedral of Eternal Night, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89523}
-{"id":89519,"name":"Infinite Research: Black Rook Hold, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89516}
-{"id":89520,"name":"Infinite Research: Darkheart Thicket, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89558}
-{"id":89521,"name":"Infinite Research: Court of Stars, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89530}
-{"id":89522,"name":"Infinite Research: Cathedral of Eternal Night, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89518}
-{"id":89523,"name":"Infinite Research: Black Rook Hold, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89528}
-{"id":89524,"name":"Infinite Research: Maw of Souls, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89547}
-{"id":89525,"name":"Infinite Research: Eye of Azshara, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89527}
-{"id":89526,"name":"Infinite Research: Eye of Azshara, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89525}
-{"id":89527,"name":"Infinite Research: Eye of Azshara, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89557}
-{"id":89528,"name":"Infinite Research: Black Rook Hold, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89519}
-{"id":89529,"name":"Infinite Research: Court of Stars, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89556}
-{"id":89530,"name":"Infinite Research: Cathedral of Eternal Night, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89522}
-{"id":89531,"name":"Infinite Research: Assault on Violet Hold, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89517}
-{"id":89532,"name":"Infinite Research: Neltharion's Lair, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89549}
-{"id":89533,"name":"Infinite Research: Seat of the Triumvirate, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89548}
-{"id":89534,"name":"Infinite Research: The Arcway, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89535}
-{"id":89535,"name":"Infinite Research: The Arcway, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89543}
-{"id":89536,"name":"Infinite Research: Upper Return to Karazhan, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89534}
-{"id":89537,"name":"Infinite Research: Vault of the Wardens, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89542}
-{"id":89538,"name":"Infinite Research: Vault of the Wardens, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89539}
-{"id":89539,"name":"Infinite Research: Vault of the Wardens, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89537}
-{"id":89540,"name":"Infinite Research: Timeworn Keystone Dungeon","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89550}
-{"id":89541,"name":"Infinite Research: Upper Return to Karazhan, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89536}
-{"id":89542,"name":"Infinite Research: Upper Return to Karazhan, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89541}
-{"id":89543,"name":"Infinite Research: The Arcway, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89545}
-{"id":89544,"name":"Infinite Research: Seat of the Triumvirate, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89533}
-{"id":89545,"name":"Infinite Research: Seat of the Triumvirate, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89544}
-{"id":89546,"name":"Infinite Research: Maw of Souls, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89553}
-{"id":89547,"name":"Infinite Research: Maw of Souls, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89546}
-{"id":89548,"name":"Infinite Research: Neltharion's Lair, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89532}
-{"id":89549,"name":"Infinite Research: Neltharion's Lair, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89524}
-{"id":89550,"name":"Infinite Research: Halls of Valor, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89552}
-{"id":89551,"name":"Infinite Research: Halls of Valor, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89526}
-{"id":89552,"name":"Infinite Research: Halls of Valor, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89551}
-{"id":89553,"name":"Infinite Research: Lower Return to Karazhan, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89555}
-{"id":89554,"name":"Infinite Research: Lower Return to Karazhan, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89468}
-{"id":89555,"name":"Infinite Research: Lower Return to Karazhan, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89554}
-{"id":89556,"name":"Infinite Research: Court of Stars, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89521}
-{"id":89557,"name":"Infinite Research: Darkheart Thicket, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89520}
-{"id":89558,"name":"Infinite Research: Darkheart Thicket, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89529}
-{"id":89590,"name":"Infinite Research: Time to Raid, Hope's End","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89467}
-{"id":89591,"name":"Infinite Research: Time to Raid, Seat of the Pantheon","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89590}
-{"id":89592,"name":"Infinite Research: Antorus, the Burning Throne, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89597}
-{"id":89593,"name":"Infinite Research: Time to Raid, Nightspire","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89683}
-{"id":89594,"name":"Infinite Research: Time to Raid, Betrayer's Rise","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89593}
-{"id":89595,"name":"Infinite Research: Antorus, the Burning Throne, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90102}
-{"id":89596,"name":"Infinite Research: Trial of Valor, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89602}
-{"id":89597,"name":"Infinite Research: Trial of Valor, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89603}
-{"id":89598,"name":"Infinite Research: Nighthold, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89677}
-{"id":89599,"name":"Infinite Research: Nighthold, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89679}
-{"id":89600,"name":"Infinite Research: The Nighthold, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89680}
-{"id":89601,"name":"Infinite Research: Antorus, the Burning Throne, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89681}
-{"id":89602,"name":"Infinite Research: Tomb of Sargeras, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89599}
-{"id":89603,"name":"Infinite Research: Tomb of Sargeras, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89600}
-{"id":89604,"name":"Infinite Research: Time to Raid, The Gates of Hell","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89594}
-{"id":89605,"name":"Infinite Research: Time to Raid, Wailing Halls","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89604}
-{"id":89606,"name":"Infinite Research: Time to Raid, Chamber of the Avatar","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89605}
-{"id":89607,"name":"Infinite Research: Time to Raid, Deceiver's Fall","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89606}
-{"id":89622,"name":"Infinite Research: Tomb of Sargeras, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89598}
-{"id":89644,"name":"Infinite Research: Time to Raid, Darkbough","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89591}
-{"id":89665,"name":"Infinite Research: Time to Raid, Tormented Guardians","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89644}
-{"id":89676,"name":"Infinite Research: Time to Raid, Rift of Aln","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89665}
-{"id":89677,"name":"Infinite Research: The Emerald Nightmare, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89592}
-{"id":89678,"name":"Infinite Research: Time to Raid, Arcing Aqueducts","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89676}
-{"id":89679,"name":"Infinite Research: The Emerald Nightmare, Heroic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89595}
-{"id":89680,"name":"Infinite Research: The Emerald Nightmare, Mythic","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89601}
-{"id":89681,"name":"Infinite Research: Time to Raid, Trial of Valor","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89607}
-{"id":89682,"name":"Infinite Research: Trial of Valor, Normal","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89622}
-{"id":89683,"name":"Infinite Research: Time to Raid, Royal Athenaeum","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89678}
-{"id":90096,"name":"Infinite Research: Worldly Deeds","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91439}
-{"id":90097,"name":"Infinite Research: Invasion Points","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91440}
-{"id":90098,"name":"Infinite Research: Greater Invasion Points","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90110}
-{"id":90099,"name":"Infinite Research: Combat Studies, Rare","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91446}
-{"id":90100,"name":"Infinite Research: Combat Studies, Rare Elites","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91444}
-{"id":90101,"name":"Infinite Research: Terrors of the Broken Isles","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91443}
-{"id":90102,"name":"Infinite Research: Champion of the Broken Isles","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91438}
-{"id":90103,"name":"Infinite Research: Champion of the Order Hall","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91441}
-{"id":90108,"name":"Infinite Research: Artifact Collector","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90114}
-{"id":90109,"name":"Infinite Research: Clear the Skies","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90108}
-{"id":90110,"name":"Infinite Research: Gather Timewarped Samples","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90109}
-{"id":90111,"name":"Infinite Research: Combat Studies, Demonology","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91449}
-{"id":90112,"name":"Infinite Research: Combat Studies, Elite","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91447}
-{"id":90113,"name":"Infinite Research: Self Improvement, Basic","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91448}
-{"id":90114,"name":"Infinite Research: Self Improvement, Advanced","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90113}
-{"id":90115,"name":"Infinite Research: Combat Studies, Groverunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":89464,"name":"Infinite Research: Combat Studies, Comprehensive","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89538}
+{"id":89465,"name":"Infinite Research: No Task Too Small","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90103}
+{"id":89466,"name":"Infinite Research: Time to Raid, Light's Breach","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89596}
+{"id":89467,"name":"Infinite Research: Time to Raid, Forbidden Descent","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89466}
+{"id":89468,"name":"Infinite Research: Dungeoneers Wanted, Normal","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89469}
+{"id":89469,"name":"Infinite Research: Dungeoneers Wanted, Heroic","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89540}
+{"id":89476,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902}
+{"id":89516,"name":"Infinite Research: Assault on Violet Hold, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89531}
+{"id":89517,"name":"Infinite Research: Assault on Violet Hold, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":92430}
+{"id":89518,"name":"Infinite Research: Cathedral of Eternal Night, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89523}
+{"id":89519,"name":"Infinite Research: Black Rook Hold, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89516}
+{"id":89520,"name":"Infinite Research: Darkheart Thicket, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89558}
+{"id":89521,"name":"Infinite Research: Court of Stars, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89530}
+{"id":89522,"name":"Infinite Research: Cathedral of Eternal Night, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89518}
+{"id":89523,"name":"Infinite Research: Black Rook Hold, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89528}
+{"id":89524,"name":"Infinite Research: Maw of Souls, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89547}
+{"id":89525,"name":"Infinite Research: Eye of Azshara, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89527}
+{"id":89526,"name":"Infinite Research: Eye of Azshara, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89525}
+{"id":89527,"name":"Infinite Research: Eye of Azshara, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89557}
+{"id":89528,"name":"Infinite Research: Black Rook Hold, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89519}
+{"id":89529,"name":"Infinite Research: Court of Stars, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89556}
+{"id":89530,"name":"Infinite Research: Cathedral of Eternal Night, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89522}
+{"id":89531,"name":"Infinite Research: Assault on Violet Hold, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89517}
+{"id":89532,"name":"Infinite Research: Neltharion's Lair, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89549}
+{"id":89533,"name":"Infinite Research: Seat of the Triumvirate, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89548}
+{"id":89534,"name":"Infinite Research: The Arcway, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89535}
+{"id":89535,"name":"Infinite Research: The Arcway, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89543}
+{"id":89536,"name":"Infinite Research: Upper Return to Karazhan, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89534}
+{"id":89537,"name":"Infinite Research: Vault of the Wardens, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89542}
+{"id":89538,"name":"Infinite Research: Vault of the Wardens, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89539}
+{"id":89539,"name":"Infinite Research: Vault of the Wardens, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89537}
+{"id":89540,"name":"Infinite Research: Timeworn Keystone Dungeon","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89550}
+{"id":89541,"name":"Infinite Research: Upper Return to Karazhan, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89536}
+{"id":89542,"name":"Infinite Research: Upper Return to Karazhan, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89541}
+{"id":89543,"name":"Infinite Research: The Arcway, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89545}
+{"id":89544,"name":"Infinite Research: Seat of the Triumvirate, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89533}
+{"id":89545,"name":"Infinite Research: Seat of the Triumvirate, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89544}
+{"id":89546,"name":"Infinite Research: Maw of Souls, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89553}
+{"id":89547,"name":"Infinite Research: Maw of Souls, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89546}
+{"id":89548,"name":"Infinite Research: Neltharion's Lair, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89532}
+{"id":89549,"name":"Infinite Research: Neltharion's Lair, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89524}
+{"id":89550,"name":"Infinite Research: Halls of Valor, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89552}
+{"id":89551,"name":"Infinite Research: Halls of Valor, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89526}
+{"id":89552,"name":"Infinite Research: Halls of Valor, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89551}
+{"id":89553,"name":"Infinite Research: Lower Return to Karazhan, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89555}
+{"id":89554,"name":"Infinite Research: Lower Return to Karazhan, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89468}
+{"id":89555,"name":"Infinite Research: Lower Return to Karazhan, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89554}
+{"id":89556,"name":"Infinite Research: Court of Stars, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89521}
+{"id":89557,"name":"Infinite Research: Darkheart Thicket, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89520}
+{"id":89558,"name":"Infinite Research: Darkheart Thicket, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89529}
+{"id":89590,"name":"Infinite Research: Time to Raid, Hope's End","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89467}
+{"id":89591,"name":"Infinite Research: Time to Raid, Seat of the Pantheon","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89590}
+{"id":89592,"name":"Infinite Research: Antorus, the Burning Throne, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89597}
+{"id":89593,"name":"Infinite Research: Time to Raid, Nightspire","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89683}
+{"id":89594,"name":"Infinite Research: Time to Raid, Betrayer's Rise","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89593}
+{"id":89595,"name":"Infinite Research: Antorus, the Burning Throne, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90102}
+{"id":89596,"name":"Infinite Research: Trial of Valor, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89602}
+{"id":89597,"name":"Infinite Research: Trial of Valor, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89603}
+{"id":89598,"name":"Infinite Research: Nighthold, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89677}
+{"id":89599,"name":"Infinite Research: Nighthold, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89679}
+{"id":89600,"name":"Infinite Research: The Nighthold, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89680}
+{"id":89601,"name":"Infinite Research: Antorus, the Burning Throne, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89681}
+{"id":89602,"name":"Infinite Research: Tomb of Sargeras, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89599}
+{"id":89603,"name":"Infinite Research: Tomb of Sargeras, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89600}
+{"id":89604,"name":"Infinite Research: Time to Raid, The Gates of Hell","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89594}
+{"id":89605,"name":"Infinite Research: Time to Raid, Wailing Halls","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89604}
+{"id":89606,"name":"Infinite Research: Time to Raid, Chamber of the Avatar","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89605}
+{"id":89607,"name":"Infinite Research: Time to Raid, Deceiver's Fall","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89606}
+{"id":89622,"name":"Infinite Research: Tomb of Sargeras, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89598}
+{"id":89644,"name":"Infinite Research: Time to Raid, Darkbough","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89591}
+{"id":89665,"name":"Infinite Research: Time to Raid, Tormented Guardians","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89644}
+{"id":89676,"name":"Infinite Research: Time to Raid, Rift of Aln","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89665}
+{"id":89677,"name":"Infinite Research: The Emerald Nightmare, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89592}
+{"id":89678,"name":"Infinite Research: Time to Raid, Arcing Aqueducts","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89676}
+{"id":89679,"name":"Infinite Research: The Emerald Nightmare, Heroic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89595}
+{"id":89680,"name":"Infinite Research: The Emerald Nightmare, Mythic","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89601}
+{"id":89681,"name":"Infinite Research: Time to Raid, Trial of Valor","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89607}
+{"id":89682,"name":"Infinite Research: Trial of Valor, Normal","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89622}
+{"id":89683,"name":"Infinite Research: Time to Raid, Royal Athenaeum","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89678}
+{"id":90096,"name":"Infinite Research: Worldly Deeds","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91439}
+{"id":90097,"name":"Infinite Research: Invasion Points","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91440}
+{"id":90098,"name":"Infinite Research: Greater Invasion Points","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90110}
+{"id":90099,"name":"Infinite Research: Combat Studies, Rare","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91446}
+{"id":90100,"name":"Infinite Research: Combat Studies, Rare Elites","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91444}
+{"id":90101,"name":"Infinite Research: Terrors of the Broken Isles","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91443}
+{"id":90102,"name":"Infinite Research: Champion of the Broken Isles","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91438}
+{"id":90103,"name":"Infinite Research: Champion of the Order Hall","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91441}
+{"id":90108,"name":"Infinite Research: Artifact Collector","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90114}
+{"id":90109,"name":"Infinite Research: Clear the Skies","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90108}
+{"id":90110,"name":"Infinite Research: Gather Timewarped Samples","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90109}
+{"id":90111,"name":"Infinite Research: Combat Studies, Demonology","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91449}
+{"id":90112,"name":"Infinite Research: Combat Studies, Elite","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91447}
+{"id":90113,"name":"Infinite Research: Self Improvement, Basic","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91448}
+{"id":90114,"name":"Infinite Research: Self Improvement, Advanced","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90113}
+{"id":90115,"name":"Infinite Research: Combat Studies, Groverunner","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":90659,"name":"Something Borrowed","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899,"prereq":89409}
 {"id":90754,"name":"Skyriding","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5546,"prereq":80012}
 {"id":90755,"name":"Time Flies","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -33410,19 +33410,19 @@
 {"id":90995,"name":"The Future of The Fel Hammer","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":520,"class":2048,"prereq":89418}
 {"id":91061,"name":"Infinite Chaos","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91437,"name":"Call for Participants","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91849}
-{"id":91438,"name":"Infinite Research: Heroic Worldly Deeds","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90096}
-{"id":91439,"name":"Infinite Research: Heroic Invasion Points","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90097}
-{"id":91440,"name":"Infinite Research: Hero of the Broken Isles","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89465}
-{"id":91441,"name":"Infinite Research: Heroic Greater Invasion Points","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90098}
-{"id":91443,"name":"Infinite Research: Advanced Combat Studies, Rare","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90099}
-{"id":91444,"name":"Infinite Research: Advanced Combat Studies, Elite","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90112}
-{"id":91445,"name":"Infinite Research: Advanced Combat Studies, Comprehensive","level":10,"zone":"Meta Quests","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89464}
-{"id":91446,"name":"Infinite Research: Advanced Combat Studies, Rare Elites","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90100}
-{"id":91447,"name":"Infinite Research: Advanced Combat Studies, Demonology","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90111}
-{"id":91448,"name":"Infinite Research: Heroic Terrors of the Broken Isles","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90101}
-{"id":91449,"name":"Infinite Research: Advanced Combat Studies, Empowerment","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91445}
+{"id":91438,"name":"Infinite Research: Heroic Worldly Deeds","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90096}
+{"id":91439,"name":"Infinite Research: Heroic Invasion Points","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90097}
+{"id":91440,"name":"Infinite Research: Hero of the Broken Isles","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89465}
+{"id":91441,"name":"Infinite Research: Heroic Greater Invasion Points","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90098}
+{"id":91443,"name":"Infinite Research: Advanced Combat Studies, Rare","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90099}
+{"id":91444,"name":"Infinite Research: Advanced Combat Studies, Elite","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90112}
+{"id":91445,"name":"Infinite Research: Advanced Combat Studies, Comprehensive","level":10,"zone":"Meta Quests","category":427,"type":2,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89464}
+{"id":91446,"name":"Infinite Research: Advanced Combat Studies, Rare Elites","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90100}
+{"id":91447,"name":"Infinite Research: Advanced Combat Studies, Demonology","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90111}
+{"id":91448,"name":"Infinite Research: Heroic Terrors of the Broken Isles","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":90101}
+{"id":91449,"name":"Infinite Research: Advanced Combat Studies, Empowerment","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91445}
 {"id":91522,"name":"Order from Chaos","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5959}
-{"id":91612,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":92563}
+{"id":91612,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":92563}
 {"id":91613,"name":"Infinite Research Promotion: Timely Assistant","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91614,"name":"Focusing the Energies","level":45,"zone":"Druid Campaign","category":1013,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":5885,"prereq":42365}
 {"id":91615,"name":"A Thirst For Blood","level":45,"zone":"Death Knight Campaign","category":1021,"type":1,"faction":3,"race":67108863,"class":32,"storyline":5894,"prereq":44690}
@@ -33445,16 +33445,16 @@
 {"id":91792,"name":"Si'vash","level":45,"zone":"Broken Shore","category":1002,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":46734}
 {"id":91844,"name":"Infinite Research Promotion: Honorary Chronographer","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":91613}
 {"id":91845,"name":"Infinite Research Promotion: Senior Executive Chronographer","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":91844}
-{"id":91847,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89476}
-{"id":91848,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91847}
-{"id":91849,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91848}
+{"id":91847,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":89476}
+{"id":91848,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91847}
+{"id":91849,"name":"Infinite Research","level":10,"zone":"Meta Quests","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91848}
 {"id":91955,"name":"Just Between Us","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92331,"name":"Turbo-Boost: Trade Must Flow","level":80,"zone":"Meta Quests","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5572}
 {"id":92430,"name":"Embracing the Infinite Chaos","level":10,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91612}
-{"id":92439,"name":"Infinite Research: Combat Studies, Felrunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":92440,"name":"Infinite Research: Combat Studies, Stormrunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":92441,"name":"Infinite Research: Combat Studies, Magerunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":92442,"name":"Infinite Research: Combat Studies, Lightrunner","level":10,"zone":"Meta Quests","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":92439,"name":"Infinite Research: Combat Studies, Felrunner","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":92440,"name":"Infinite Research: Combat Studies, Stormrunner","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":92441,"name":"Infinite Research: Combat Studies, Magerunner","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":92442,"name":"Infinite Research: Combat Studies, Lightrunner","level":10,"zone":"Meta Quests","category":427,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":92563,"name":"Awoken by Accessory","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5902,"prereq":91437}
 {"id":92688,"name":"Bronze Simulacrum","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92855,"name":"Make Haste, Not Waste","level":10,"zone":"Eastern Kingdoms","category":262,"type":4,"faction":3,"race":67108863,"class":8191}

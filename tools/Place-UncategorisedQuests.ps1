@@ -43,6 +43,8 @@ category (the summary lists those maps, which usually means qcAreaIDToCategoryID
 Uncategorized"; 1150 "Bfa Unknown" until what was left of it was merged into category 0). For those
 quests, and for category 0, between rules 2 and 3, a hand-written list maps the catch-all's own zone
 text to a category ("Death Knight Campaign" -> the Death Knight class hall), below in $zoneTextRules.
+A second hand-written list, $namePrefixRules, files category 0's quests by the start of their name
+("Infinite Research: ..." -> Timerunning, where the Legion Remix research quests already are).
 A quest is never filed in a category no menu entry reaches, nor back into the catch-all.
 
 Only the category changes, in data\quests.jsonl, then qcQuestData.lua is rebuilt. Categories, maps and
@@ -71,6 +73,11 @@ $zoneTextRules = @{
         "Time Rifts" = "1347"; "Zskera Vaults" = "1304"; "Vision of Orgrimmar" = "1133"; "Primalist Storms" = "1322"
         "Death Knight Campaign" = "1021"; "Prey" = "1514"
     }
+}
+# Quest names that begin with a phrase, for category 0 only, filed the same way as the zone text above:
+# "Meta Quests" is the zone text of other families too, so the name decides.
+$namePrefixRules = @{
+    "0" = @{ "Infinite Research" = "427" }
 }
 
 $questFile = "$AddonDir\qcQuest.lua"
@@ -280,6 +287,15 @@ foreach ($quest in $quests) {
         $handTarget = $zoneTextRules[$current][$zoneText]
         if (-not (& $usable $handTarget)) { throw "Zone text rule '$zoneText' points at category $handTarget, which no menu entry reaches" }
         $target = $handTarget; $rule = "catch-all zone text, by hand"
+    }
+    if (-not $target -and ($refiling -or $current -eq "0") -and $namePrefixRules.ContainsKey($current)) {
+        foreach ($namePrefix in $namePrefixRules[$current].Keys) {
+            if (-not $quest.name.StartsWith($namePrefix, [System.StringComparison]::Ordinal)) { continue }
+            $handTarget = $namePrefixRules[$current][$namePrefix]
+            if (-not (& $usable $handTarget)) { throw "Name rule '$namePrefix' points at category $handTarget, which no menu entry reaches" }
+            $target = $handTarget; $rule = "catch-all name prefix, by hand"
+            break
+        }
     }
     if (-not $target -and -not $ambiguous) {
         if ($pins.Count -eq 1) { $target = $pins[0]; $rule = "pin's map" }

@@ -20,7 +20,7 @@ Every category in the data gets a place in the menu:
 The Settings entries are copied from retail's QuestCompletist\qcMenu.lua.
 
 qcQuest.lua holds what the core reads:
-  - which map is which category (qcAreaIDToCategoryID);
+  - which map is which category (qcAreaIDToCategoryID), for the categories that hold quests;
   - each category's English name (qcQuestCategories);
   - where the client names it (qcCategoryClientName: the area, class or profession, else one of the
     client's in-game strings with the category's English name, so the name is in the player's
@@ -79,6 +79,7 @@ $headingSources = @{
 $classIdBySort = @{ (-81) = 1; (-141) = 2; (-261) = 3; (-162) = 4; (-262) = 5; (-82) = 7; (-161) = 8; (-61) = 9; (-263) = 11 }
 $skillBySort = @{ (-24) = 182; (-101) = 356; (-121) = 164; (-181) = 171; (-182) = 165; (-201) = 202; (-264) = 197; (-304) = 185; (-324) = 129 }
 $eventSorts = @(-22, -364, -365, -366, -368, -369)
+$professionSorts = @(-666)   # Camping: the "Camping 101" profession tutorials
 $professionAreas = @('Crafting')
 
 $areas = @{}; foreach ($row in Get-ClientTable 'AreaTable') { $areas[[int]$row.ID] = $row }
@@ -138,7 +139,7 @@ foreach ($id in $categories.Keys) {
     if ($id -eq 0) { continue }
     if ($id -lt 0) {
         if ($classIdBySort.ContainsKey($id)) { $classes.Add($id) }
-        elseif ($skillBySort.ContainsKey($id)) { $professions.Add($id) }
+        elseif ($skillBySort.ContainsKey($id) -or $professionSorts -contains $id) { $professions.Add($id) }
         elseif ($eventSorts -contains $id) { $events.Add($id) }
         else { $others.Add($id) }
         continue
@@ -227,7 +228,8 @@ $menuText = $header + "`r`nlocal qcL = qcLocalize`r`nlocal stringformat = string
 function Format-LuaString([string]$text) { return '"' + $text.Replace('\', '\\').Replace('"', '\"') + '"' }
 $quest = New-Object System.Text.StringBuilder
 [void]$quest.Append("$header`r`nqcAreaIDToCategoryID={`r`n")
-foreach ($uiMap in ($zoneMaps.Keys | Sort-Object)) { [void]$quest.Append("[$uiMap]=$($zoneMaps[$uiMap]),`r`n") }
+# A map whose zone no quest is filed under has no category to switch to (Deadwind Pass, Mount Hyjal), so it gets no row.
+foreach ($uiMap in ($zoneMaps.Keys | Sort-Object)) { if ($categories.ContainsKey($zoneMaps[$uiMap])) { [void]$quest.Append("[$uiMap]=$($zoneMaps[$uiMap]),`r`n") } }
 [void]$quest.Append("}`r`nqcQuestCategories={`r`n")
 foreach ($id in (Get-Sorted @($categories.Keys))) { [void]$quest.Append("{$id,$(Format-LuaString (Get-EnglishName $id))},`r`n") }
 [void]$quest.Append("}`r`nqcCategoryUiMapID={}`r`nqcCategoryClientName={`r`n")
