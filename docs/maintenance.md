@@ -824,10 +824,15 @@ the game's own names for those headings in every language, through `Sync-QuestSo
 
 Seasonal quests need no yearly upkeep. The map's seasonal filter asks the game's calendar which
 holidays are running, and `qcHolidays` in `qcCore.lua` ties each holiday value in the quest
-database to the IDs of the game's Holidays table that its calendar event carries.
+database to the IDs of the game's Holidays table that its calendar event carries. The filter is the
+map's alone: the quest list keeps holiday quests in their own categories. A pin is drawn while any
+one of its quests passes the filter, so a pin that holds a tagged quest and ordinary ones stays drawn
+out of season, and only a pin whose quests are all tagged, for holidays that aren't running, goes. On
+9 October 2026 quest 81561 stood on three such mixed pins, and 11882 on one of its 8 pins.
 
 `/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
-running, each one's next dates, and any calendar holiday that isn't tied to a quest. A holiday there
+running, each one's next dates, and any calendar holiday that isn't tied to a quest. Retail's list
+now includes Pirates' Day, because 42758 is the first retail quest tagged with it. A holiday there
 that should match one of ours, under a new ID, means an entry in `qcHolidays` needs that ID adding.
 Step 2b of a sweep finds the same offline, from the client's Holidays and HolidayNames tables: for
 each entry in `qcHolidays`, every ID the client has under that name in either game, against the
@@ -835,11 +840,50 @@ IDs the entry lists. A new holiday with quests needs a new flag, an entry, and i
 set in `data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table
 from Holidays IDs to flags, so add the ID there too and rerun step 10.
 
+Retail's `holiday` values are hand data: no tool writes them (Forever's come from the importer).
+They live in `data\quests.jsonl` and are changed there, by hand or through `AddonData.ps1`
+(`Read-QuestData`, `Set-RecordField` and `Save-QuestData`, which rebuilds the Lua as it saves).
+`Build-AddonData.ps1` rebuilds the Lua from the file and checks the records, and its `-Check` says
+whether the Lua still matches. Every decision, with its evidence, is in
+`docs\plans\quest-holiday-decisions.csv`, one row per quest: `SET` rows are quests given their
+holiday, `CORRECT` rows tags that were wrong (with the category and zone text each moved to), `KEEP`
+rows tags and omissions checked and left as they are, and `PENDING` rows quests that may belong to a
+holiday and are left untagged. Read the file for what is pending; this page doesn't count it. A
+pending row says why: the user left it out by a decision, or it is undecided because the holiday has
+no flag in `qcHolidays`, the flag has no calendar ID in this game, or the evidence is doubtful.
+
+In that file, `Cur` and `Target` are the holiday value before and after (on a pending row, the value
+the quest would take, blank when no flag exists). `CurCategory`, `TargetCategory`, `CurZone` and
+`TargetZone` are filled only on the rows that change them. `Pins` is the number of pins in
+`data\pins.jsonl` that hold the quest, and `PinsAllYear`, on `SET` and `CORRECT` rows, how many of
+those also hold a quest with no holiday, so stay drawn out of season. The evidence says who
+decided: "Approved with the group" for the tagged quests the user approved as a group, not one by
+one, "The user ruled" for quests the user said belong to a holiday, "Left out by the user's
+decision" for judgment calls the user left out, "Not decided", or, on `KEEP` rows, "Checked".
+
+The evidence a tag rests on is Blizzard's API quest category when it is the holiday's own (the
+general "Seasonal" one names none), TrinityCore's `game_event_*_quest` and
+`game_event_seasonal_questrelation` tables, quests of the same name, the quest's description and
+reward, and an achievement the quest is a criterion of, when the achievement's event is the holiday.
+
+No sweep step checks that retail's holiday tags are complete or right: step 9 only checks that each
+value is in `qcHolidays`, and step 2b the IDs in `qcHolidays` against the client's calendar tables.
+A holiday quest that appears without a tag shows its pin all year until someone tags it. Step 6's
+TrinityCore placement already leaves out any quest with a `holiday` value, the holiday categories
+(31, 37, 46, 50, 90, 126, 127, 133, 145, 153, 413) and quests whose type isn't 0, 1, 2, 4 or 128, so
+tagging an ordinary quest that has no pin also stops that step placing one for it. On 9 October 2026
+that changed nothing: of the quests tagged that day without a pin, none would have been placed by it
+anyway, since the rest were skipped already or TrinityCore has no start point for them. The client's
+own points place a tagged quest as before.
+
 Some events aren't on the calendar at all. WoW: Forever's Scourge Invasion and Ahn'Qiraj War Effort
 have entries in `qcHolidays` with no IDs, so the seasonal filter always hides their quests on the map;
 the quest list still has them. `/qc holidays` says they're not on the calendar, and step 2b that no
 row of their names exists. If Blizzard ever adds one to the Holidays table, step 2b reports its ID,
-and in game it shows up as a calendar holiday not tied to a quest: add its ID.
+and in game it shows up as a calendar holiday not tied to a quest: add its ID. Retail has the same
+problem with the Stranglethorn Fishing Extravaganza: `qcHolidays` carries it for Forever (event 301),
+but retail's Holidays table has no such row, so a retail quest tagged with it would be hidden for
+good, and its retail quests stay `PENDING` for that reason.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
@@ -1023,9 +1067,9 @@ git log --diff-filter=D --name-only --oneline -- tools
 
 | Source | Used for | How |
 |---|---|---|
-| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
+| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday evidence is read by hand ([Holidays](#holidays)) |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
-| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
+| TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\`; the holiday evidence is read by hand ([Holidays](#holidays)) |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
-| [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1` |
+| [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv` |
