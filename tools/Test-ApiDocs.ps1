@@ -500,6 +500,7 @@ try {
     Lacks $r.Text 'Every documented function' 'A16: and does not claim a full comparison'
     $r = Invoke-Build $s $Base '1.0.0.3'
     Has $r.Text 'EnumUserDocumentation.lua didn''t load before and does now' 'A16: a file that loads again is named too'
+    Has $r.Text 'EnumUserDocumentation.lua loads on live now' 'A16: and the closing line points back to it'
 
     # the closing line and the failures
     $s = New-Scenario 'readerfails'
@@ -644,6 +645,13 @@ try {
     Equal $r.Failure '' 'I5: a file in the tools folder that is not a list of a build is ignored'
     $r = Invoke-Compare $s @{ SourceDir = '' }
     Check ($r.Failure -match '-SourceDir was given but is empty') 'I6: an empty -SourceDir is refused rather than downloading'
+    $s = New-Scenario 'reread'
+    [void](Invoke-Build $s $Base '1.0.0.1')
+    $list = "$($s.Tools)\api_docs-live-1.0.0.1.tsv"
+    [IO.File]::WriteAllLines($list, [string[]]@([IO.File]::ReadAllLines($list) | Where-Object { $_ -notmatch "`tC_Test`tFoo`t" }))
+    $r = Invoke-Build $s $Base '1.0.0.2'
+    Equal $r.Exit 0 'I7: an earlier list that no longer matches its kept folder is read from the folder'
+    Has $r.Text 'functions 0 added, 0 removed, 0 changed; events 0 added, 0 removed.' 'I7: so nothing shows as added'
 
     # ways a run is refused
     $s = New-Scenario 'refused'
