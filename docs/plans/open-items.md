@@ -122,6 +122,8 @@ again.
 | 2 | Pin any of the 4,082 task quests already in the data that have a start (1,387 are world quests) | no for world quests; the NPC-started ones need a rule first | quest-location-data-pipeline.md, "pins for quests with only a start point" |
 | 3 | 82449 "The Call of the Worldsoul", a task-table quest | a hand entry on the Worldsoul pins | same |
 | 4 | Item-started quests with a start point but no NPC (about 13% of all pins) | keep pinning them, as before | quest-location-data-pipeline.md, "pins from TrinityCore" |
+| 5a | What a creature's offer lets a quest have a pin for ([quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool", Adds): the holds on a quest that no creature offers (not in `QuestV2`, a task of another kind than world, bonus or hidden, Landfall, holiday, profession, a quest type other than 0, 1, 2, 4 and 128) are waived when a creature offers it; system categories, unavailable and internal-name quests stay held | keep: an NPC offering a quest is the best proof it is a real pickup; the report counts the quests by class. This settles decisions 2 and 5 case by case for NPC-offered quests. To undo a class, edit `$isPinnable` in `Import-RecordedGivers.ps1`, or add a `KEEP` row for the quest | the plan, "Adds" |
+| 5b | Which system category (Garrison Support, Torghast, Prey, Delves ...) may get pins from an offer | none until you say; the report lists them by category, and `$allowedSystemCategories` in `Import-RecordedGivers.ps1` is the switch | the plan, "Adds" |
 | 5 | The Landfall dailies (31 without a pin, 29 with one already) and the Silithus sigil quests (10), which look retired | flag them in `unavailable-quest-decisions.csv` after a look at the evidence | unavailable-quests.md |
 | 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, taken as agreed on 8 October 2026 and built; probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
@@ -178,8 +180,9 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 1. Profession skill fallback: **done** (#216).
 2. Retail map pass: **done** (#219 carries its record).
 3. **In progress:** the recorder on retail, with one probe for both games (recommendations 1 and 2).
-   The addon half is built on `feature/quest-giver-recorder` and waits for its in-game session
-   ([quest-giver-recorder.md](quest-giver-recorder.md)); the merge tool, then the probe, come next.
+   The addon half (#228) waits for its in-game session, and the merge tool (step 6d, `tools/recorded-givers`)
+   is built and waits for a real recording ([quest-giver-recorder.md](quest-giver-recorder.md)); the
+   probe comes next.
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
    data (recommendations 4 and 5).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an

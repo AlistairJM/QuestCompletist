@@ -117,7 +117,7 @@ the table has an entry.
 `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`,
 `Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`,
 `Sync-QuestPrerequisites.ps1`, `Apply-ClientQuestGivers.ps1`, `Apply-PinNpcIds.ps1`,
-`Fill-PinNpcIds.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
+`Fill-PinNpcIds.ps1`, `Import-RecordedGivers.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
 files, and stop without changing anything if it doesn't. Commit the data files along with the Lua.
@@ -241,12 +241,14 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
+| 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
 | 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
 
-Steps 1 to 9 are retail's. Blizzard's API has no Forever data, so Forever has a step of its own,
+Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins.
+Blizzard's API has no Forever data, so Forever has a step of its own,
 which rebuilds its data from the game, the client's tables and CMaNGOS's database. It gets its own
 pull request, like each kind of retail change. Which of retail's checks Forever has an equivalent
 of, which it lacks and why, is in [plans/game-parity.md](plans/game-parity.md).
@@ -652,6 +654,53 @@ quests start at objects or items, or at a creature of another name, and lists th
 `-WhatIf` first. A second run changes nothing; a newer database or new pins from step 6 may fill
 more.
 
+`Import-RecordedGivers.ps1` (step 6d, after 6c) takes in what the addon's recorder noted while the
+game was played ([plans/quest-giver-recorder.md](plans/quest-giver-recorder.md)). It needs `tools\UiMap.csv`
+(step 5) and Forever's `UiMap-<build>.csv`, and for new pins `QuestV2CliTask.csv`, `QuestInfo.csv` and, to
+count a class, `QuestV2.csv` (step 1b). The files are
+the maintainer's own (`tools\recordings\own\retail\` and `\own\forever\`, and the Forever probes'
+files in `tools\`) and players' (`tools\recordings\players\<tag>\`, the tag a label such as `p01`,
+never a name); see "In the game" for how to collect them. A file is read by
+`Read-RecordedGivers.lua`, which refuses anything that is not plain data, because a saved-variables
+file is Lua code and a player may have sent it. The game each file belongs to comes from the
+versions in it, and only the versions the TOCs name are read (`-Builds` changes that).
+
+What it keeps is the ledger, `plans\recorded-quest-givers.csv`: the givers, the places they were
+seen, the quests they offered and took in, and the quests that began away from a giver, with the
+sources that saw each. It only grows, so the facts outlive the addon's cap and a file a player
+clears. A fact is acted on when the maintainer's own files saw it, or two different players did;
+a lone player's file decides nothing (not a name, not where a place is, not how often a giver was seen).
+Two files are two players whatever they hold, so open players' files only after a sweep on your own has
+run clean. `-ForgetTag p07` takes a source out of the ledger and skips its file for that run: delete the
+file as well, or the next run reads it again, and a pin that source helped to fill keeps its ID.
+
+On retail's pins it fills a pin's missing NPC ID (with its name) when a trusted creature offered one
+of the pin's quests and stood within 1.5 map points of it; and it gives a quest that has no pin one,
+at the place its giver was most seen, or adds the quest to the pin that giver already has. The
+holds the TrinityCore pass puts on a quest that no creature offers (not in `QuestV2`, a task of
+another kind than world, bonus or hidden, Landfall, a holiday, a profession, a quest type other than 0,
+1, 2, 4 and 128) are waived when a creature offers it, and the report counts the quests by class; a
+world, bonus or hidden quest, a quest flagged unavailable, an internal name and a system category stay
+held. It never moves a pin, never changes an ID
+or a name that is there, never takes a quest off a pin, and writes no pin if any of that would
+happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
+merge them and move one pin's quests): it is listed, as are a pin the recorded giver stood 1.5 to 3
+points from, a giver recorded where the game gave no position, and trusted sources that disagree on a
+name (the giver then has none). Everything that needs a person is in `tools\recorded-giver-report.txt`,
+and the lists beside it, each for both games, with the sources and whether they are enough to act on: `recorded_unknown_quests.csv` (offers for
+quests the data lacks, for `Fetch-GapQuestData.ps1`), `recorded_quest_types.csv` (a recorded
+daily, weekly or repeatable that is not the quest's type, for step 3), `recorded_headings.csv`
+(the log heading of unplaced quests), `recorded_start_items.csv` (quests that began with an item
+or a trigger) and `recorded_mask_contradictions.csv` (a character offered a quest whose faction,
+race or class mask excludes them); they are lists to look through, and nothing reads them yet. A case
+looked at that stays goes in `plans\recorded-giver-decisions.csv` (`Quest`, `Map`, `X`, `Y`, `Decision`
+KEEP, `Reason`, as in `pin-giver-decisions.csv`, whose KEEP rows it also honours: a KEEP on any quest of a
+pin keeps the pin; a row with a quest and no map or place keeps the quest from getting a pin from here; a
+pin whose ID `pin-npc-id-decisions.csv` took off by hand is left alone). A second run changes nothing. After it, run
+`Remove-DuplicatePinQuests.ps1 -WhatIf` and rerun the pin pipeline, as after 6c. Forever's pins are
+rebuilt by `Import-ForeverData.ps1` every time, so for Forever this step only keeps the ledger; run it
+before step 10.
+
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
 points has it too, which would list it twice in one tooltip or show it on two pins side by side.
@@ -814,7 +863,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    from the Forever client into the newest `tools\forever_probe_<build number>\` (see
    [In the game](#in-the-game), step 5). The recorder adds to that file whenever you play, so this
    brings in the quest givers you've met since the last sweep. Log out or `/reload` first, so the
-   game has written it.
+   game has written it. Run step 6d first (it keeps the facts of the probe's files and of the addon's own
+   notes in the ledger), and copy the addon's file for Forever as well (see "In the game").
 2. **The probe**, when Forever has a new build, the beta opens higher levels, or the probe's quest
    list has grown: see [In the game](#in-the-game). Otherwise the last run's results stand. Every
    probe run includes the map pass (step 4b there), and the reader's totals are compared with the
@@ -1225,11 +1275,16 @@ start, so step 10 copies its file on every sweep.
 
 From the version that ships it, the addon itself notes the same on both games (on by default,
 `/qc report` shows what it holds; [quest-giver-recorder.md](plans/quest-giver-recorder.md)). Leave it
-on while you play retail and Forever. The tool that merges its notes into the pins is still to come;
-until it is, copy `WTF\Account\<account>\SavedVariables\QuestCompletist.lua` from each game's folder
-(`_retail_`; `_classic_beta_` until Forever launches, then its live folder) into
-`tools\recordings\own\retail\` and `tools\recordings\own\forever\` after a full log out, every
-sweep, so nothing is lost to the cap.
+on while you play retail and Forever. Step 6d merges its notes into the pins. Before it, after a full
+log out of each game, copy `WTF\Account\<account>\SavedVariables\QuestCompletist.lua` from the game's
+folder (`_retail_`; `_classic_beta_` until Forever launches, then its live folder) into
+`tools\recordings\own\retail\` and `tools\recordings\own\forever\`, replacing the old copy: the
+file is cumulative. A player's file goes in `tools\recordings\players\<tag>\QuestCompletist.lua`;
+nothing opens those files but `Read-RecordedGivers.lua`. Do this every sweep, so nothing is lost to
+the addon's cap. Forever's importer (step 10) still reads only the probe's file, and the addon's notes
+for Forever reach nothing but the ledger until the importer is made to read it (plans/quest-giver-recorder.md,
+"What is left"): keep the probe installed while you play the Forever beta, and copy its file as step 10 says,
+before or after step 6d. The probe's recorder is retired after one sweep that has run clean on the addon's.
 
 ## Checking a change before its pull request
 
@@ -1269,6 +1324,10 @@ git diff --stat
 - For changes to the recorder (`qcRecorder.lua`) or what it reads, run `Test-Recorder.lua`. It must
   say "0 failed". It plays the events against stand-ins for the API, so it can't say what the game
   answers: that is the in-game list in [quest-giver-recorder.md](plans/quest-giver-recorder.md).
+- For changes to `Read-RecordedGivers.lua`, `RecordedGivers.ps1` or `Import-RecordedGivers.ps1`, run
+  `Test-RecordedGivers.lua` (the reader: what it reads, and the hostile files it refuses) and
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-RecordedGivers.ps1` (the rules and the
+  tool, on small data made in a scratch folder). Both must say "0 failed".
 - For changes to `Audit-QuestTables.ps1` or `Remove-DuplicatePinQuests.ps1`, or to the data and tables they
   check on Forever, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverChecks.ps1`. It
   must say "0 failed". It makes small data in a scratch folder for both, and ends with the two run on Forever's
@@ -1307,7 +1366,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d) |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`); the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv` |
