@@ -2,7 +2,7 @@
 
 What the retail client's quest cache holds, how it is read, and what it says about our data. It is
 recommendation 6 of [game-parity.md](game-parity.md): the reader Forever has, for retail too. The
-runbook step is [maintenance.md](../maintenance.md), step 2d. Counted on 9 October 2026 on the cache
+runbook step is [maintenance.md](../maintenance.md), step 2e. Counted on 9 October 2026 on the cache
 of retail build 12.1.0.69933 (32,713 quests) against the data of master a288b24 (35,023 quests) and
 the API cache of build 12.1.0_68914.
 

@@ -38,6 +38,26 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
+- **The calendar window's filters, on both games (#243, merged 9 October 2026, not released).** The
+  seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
+  source that the game then leaves its events out of the calendar. Nobody has seen that in game.
+  The lines to paste on the Forever beta and on retail, and what each result means, are in
+  [maintenance.md](../maintenance.md), "Holidays". When they have been run:
+  - The results settle four things: whether `GetNumDayEvents` and `GetDayEvent` drop an unticked
+    filter's events (also before the calendar window has been opened in a session), whether each ID
+    in `qcHolidays` sits under the filter the table gives it (Forever's plain holidays are
+    `CalendarFilterType` 3, which is read from names, not from a Blizzard enum), whether
+    `GetCVarBool` returns real booleans for these CVars, and whether ticking a box fires
+    `CALENDAR_UPDATE_EVENT_LIST` or `CVAR_UPDATE`.
+  - Then change the "not yet seen in game" wording in maintenance.md ("Holidays", including the
+    paragraph that says what the filters do in game is still to be seen) and in the C_Calendar
+    section of [game-api-review.md](game-api-review.md), and take this item off the list.
+  - If the game does not drop the events, the handling is harmless but unneeded; decide whether to
+    keep it. If an ID is under another filter, fix its `filter=` in `qcHolidays`. If ticking a box
+    reaches the addon through `CVAR_UPDATE` and not the calendar event, a listener would redraw the
+    open map at once (today the map notices at its next draw); that was left out on purpose.
+  - The change is untested in game, so by the call above it stays out of the next release unless
+    the user says to ship it.
 
 ## Decisions waiting for the user
 

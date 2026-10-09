@@ -19,7 +19,12 @@ now and then (Hallow's End gained 1405). For each holiday there, the Holidays ro
 (through HolidayNames) in every build given are compared with the IDs qcHolidays lists: an ID the
 client has and qcHolidays lacks is a finding, and exits with 1 as a column change does; add it to
 qcHolidays. A holiday with no row of its name in any build checked is only reported: the Scourge
-Invasion and the Ahn'Qiraj War Effort are never on the calendar.
+Invasion and the Ahn'Qiraj War Effort are never on the calendar. The rows' CalendarFilterType says
+which filter of Blizzard's calendar window holds the event (0 weekly holidays, 1 Darkmoon Faire,
+2 battlegrounds, anything else Holidays); it is compared with the filter that qcHolidays gives the
+holiday ("HOLIDAYS" unless it has filter=), since the addon shows a holiday's quests when its filter
+is unticked. A mismatch is a finding too, and a holiday under the battlegrounds filter needs one
+added to qcCalendarFilters.
 
   .\Compare-ClientTables.ps1 -Build 12.1.0.69933 -ForeverBuild 1.60.1.70245
 #>
@@ -94,13 +99,16 @@ function Compare-Build([string]$build, [string]$game) {
     $names = @{}
     foreach ($row in Import-Csv (Get-BuildTable $build 'HolidayNames' $dir)) { $names[$row.ID] = $row.Name_lang }
     $byName = @{}
+    $filterTypes = @{}
     foreach ($row in Import-Csv (Get-BuildTable $build 'Holidays' $dir)) {
+        $filterTypes[[int]$row.ID] = [int]$row.CalendarFilterType
         $name = $names[$row.HolidayNameID]
         if (-not $name) { continue }
         if (-not $byName.ContainsKey($name)) { $byName[$name] = New-Object System.Collections.Generic.List[int] }
         $byName[$name].Add([int]$row.ID)
     }
     $script:holidaysByGame[$game] = $byName
+    $script:filterTypesByGame[$game] = $filterTypes
 }
 
 # The build's copy of a table, downloaded once per run; the first run also caches it in tools\ as
@@ -119,14 +127,27 @@ function Get-BuildTable([string]$build, [string]$table, [string]$dir) {
 function Compare-Holidays {
     $core = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcCore.lua'))
     $block = [regex]::Match($core, '(?s)local qcHolidays = \{(.*?)\r?\n\}').Groups[1].Value
-    $entries = [regex]::Matches($block, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=\{([\d, ]*)\}\}')
+    $entries = [regex]::Matches($block, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=\{([\d, ]*)\}(?:, filter="(\w+)")?\}')
     if ($entries.Count -eq 0) { throw "qcHolidays wasn't found in $AddonDir\qcCore.lua" }
     $games = @($script:holidaysByGame.Keys | Sort-Object)
     Write-Output "== qcHolidays against the calendar tables of $($games -join ' and ')"
+    $filterOfType = @{ 0 = 'WEEKLY'; 1 = 'DARKMOON'; 2 = 'BATTLEGROUND' }
     $matched = 0; $absent = @()
     foreach ($e in $entries) {
         $name = $e.Groups[2].Value
         $ours = @($e.Groups[3].Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | ForEach-Object { [int]$_ })
+        $filter = if ($e.Groups[4].Success) { $e.Groups[4].Value } else { 'HOLIDAYS' }
+        foreach ($game in $games) {
+            foreach ($id in $ours) {
+                if (-not $script:filterTypesByGame[$game].ContainsKey($id)) { continue }
+                $type = $script:filterTypesByGame[$game][$id]
+                $want = if ($filterOfType.ContainsKey($type)) { $filterOfType[$type] } else { 'HOLIDAYS' }
+                if ($want -ne $filter) {
+                    Write-Output "  ${name}: $game puts ID $id under the calendar's $want filter (CalendarFilterType $type), and qcHolidays has $filter"
+                    $script:holidayFindings++
+                }
+            }
+        }
         $client = @{}
         foreach ($game in $games) {
             $ids = $script:holidaysByGame[$game][$name]
@@ -149,6 +170,7 @@ function Compare-Holidays {
 $script:changedTotal = 0
 $script:holidayFindings = 0
 $script:holidaysByGame = @{}
+$script:filterTypesByGame = @{}
 if ($Build) { Compare-Build $Build 'retail' }
 if ($ForeverBuild) { Compare-Build $ForeverBuild 'WoW: Forever' }
 Compare-Holidays

@@ -23,7 +23,7 @@ Nothing in tools\ says what the group size, the follow-up quest, the quest giver
 should be, or the flags bits other than the daily and weekly ones, so a shift of those would not show.
 
 The baseline on 9 October 2026 (cache 12.1.0.69933, API 12.1.0_68914) is in docs\maintenance.md,
-step 2d. Exit 0 is a clean run, 1 a failed one.
+step 2e. Exit 0 is a clean run, 1 a failed one.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -203,5 +203,5 @@ if ($apiBuilds.Count -gt 1) { $notCompared += "the API cache holds more than one
 if ($notCompared) { Write-Output ("Not compared: {0}." -f ($notCompared -join '; ')) }
 Write-Output "Not looked at by any check: group size, follow-up quest, quest giver, scheduler bit, and flags bits other than daily and weekly."
 Write-Output "The values here are Blizzard's own: a shift in a field compared above would show as thousands of differences, a hotfix between the builds as a few."
-if ($failed) { Write-Output "FAILED: do not use the cache's values this sweep; see docs\maintenance.md, step 2d."; exit 1 }
+if ($failed) { Write-Output "FAILED: do not use the cache's values this sweep; see docs\maintenance.md, step 2e."; exit 1 }
 exit 0

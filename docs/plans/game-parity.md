@@ -88,6 +88,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 2 reputation | API compare and backfill | the cache, in the importer | – | equivalent |
 | 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | **no** | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | **Yes:** run the consistency part on `data\forever` and `QuestCompletist\Forever` (the tool takes both folders; it needs a switch to skip the API and TrinityCore parts) |
 | 2c prerequisites | API, the client's task quests (`QuestV2CliTask`) and TrinityCore | CMaNGOS, in the importer | – | equivalent |
+| 2d holiday tags (`Audit-QuestHolidays.ps1`) | yes | **no** | Forever's tags aren't hand data: the importer derives them from CMaNGOS's events on every step-10 run, so a check against the same tables would only repeat it. The one thing it could find, a CMaNGOS event with quests that the importer maps to no holiday, is two events and four quests today (New Year's Eve, 8860 and 8861; Winter Veil: Gifts, 8827 and 8828), all tagged Winter Veil in Forever's data (9 October 2026) | equivalent |
 | 3 quest types | `Retype-*.ps1` with the probe | the importer | – | equivalent |
 | 4 storylines | `Build-QuestLines.ps1` | `Build-ForeverMenu.ps1` reads the same table | data (3 rows) | watched |
 | 5 zone table and client names | three tools | `Build-ForeverMenu.ps1` | – | equivalent |
@@ -102,7 +103,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | The NPC-name check | once, in #112, for the 6,468 IDs then | every build, `/qcprobe npcs` | process | **Yes:** a retail NPC list for the probe, from the pins, run each sweep (3 to 4 minutes) |
 | The recorder | **none** | every time the game is played | process; the biggest gap | **Yes:** API review, recommendation 1 |
 | The map pass | done (7 October) | done (7 October) | – | run on both each sweep (maintenance.md, step 4b) |
-| The quest cache reader (`Read-QuestCache.ps1`) | step 2d, with `Compare-QuestCache.ps1` | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Done 9 October 2026** ([retail-quest-cache.md](retail-quest-cache.md)): it gives retail the quest sort and, as a content tuning, the level the server asks for (`minLevel`, which Forever's `qcQuestMinLevel` is made from; retail's `level` was taken from the API's minimum and differs from it today for 1,611 quests: see maintenance.md, "The quest and pin data files"); the start item turned out to be the item the quest hands over when accepted, not the one that begins it, so it is no prize. The reader read retail's layout (TrinityCore's, with two numbers fewer), and `Compare-QuestCache.ps1` watches it against Blizzard's own data |
+| The quest cache reader (`Read-QuestCache.ps1`) | step 2e, with `Compare-QuestCache.ps1` | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Done 9 October 2026** ([retail-quest-cache.md](retail-quest-cache.md)): it gives retail the quest sort and, as a content tuning, the level the server asks for (`minLevel`, which Forever's `qcQuestMinLevel` is made from; retail's `level` was taken from the API's minimum and differs from it today for 1,611 quests: see maintenance.md, "The quest and pin data files"); the start item turned out to be the item the quest hands over when accepted, not the one that begins it, so it is no prize. The reader read retail's layout (TrinityCore's, with two numbers fewer), and `Compare-QuestCache.ps1` watches it against Blizzard's own data |
 | Hand lists | `pin-npc-id-decisions.csv` | `forever-quest-givers.csv`, `forever-quest-zones.csv` | – | equivalent |
 | Release | one ZIP, both TOCs | – | shared |
 
@@ -188,7 +189,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-08: the addon compartment entry turned on for both games, at the user's request.
 - 2026-10-09: recommendation 6: `Read-ForeverQuestCache.ps1` is now `Read-QuestCache.ps1` and reads retail's
   cache (32,713 quests) as well as Forever's, from one walker and a table of positions for each game.
-  `Compare-QuestCache.ps1` (step 2d) checks it against the API and the client's task table: nothing
+  `Compare-QuestCache.ps1` (step 2e) checks it against the API and the client's task table: nothing
   differs. Eight comparisons of the cache with our data are in [retail-quest-cache.md](retail-quest-cache.md);
   the start item is the item handed over on accept, which retires "Starts from" as recommendation 13
   had it. Forever's output is the old reader's plus `flagsEx`, `questType` and `scheduler`; its
