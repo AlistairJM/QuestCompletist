@@ -9,7 +9,8 @@ Signals per quest (1 = present):
   IsTask        client task quest (world quest / bonus objective; QuestV2CliTask) - API never serves these
   InClient      in the client's QuestV2 table, which never lists repeatable quests: none of the
                 500 the API flags repeatable are in it. Missing from it proves nothing on its own.
-  ServerKnows   the server sent the quest's data to the /qc typecheck probe (its saved results,
+  ServerKnows   the server sent the quest's data to the probe (its saved results: the newest
+                tools\retail_probe_<build>\QCForeverProbe.lua, else the #42 probe's
                 quest_type_probe_results.lua); 0 if it didn't, blank if the probe never asked.
                 Missing from QuestV2 with ServerKnows 0 is the one sure sign a quest is gone.
   GiverPOI      client has the quest's own map point (QuestPOIBlob, ObjectiveIndex -1: where it starts and
@@ -29,7 +30,8 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$Decisions = (Join-Path $PSScriptRoot '..\docs\plans\unavailable-quest-decisions.csv'),
-    [string]$ProbeResults = (Join-Path $PSScriptRoot 'quest_type_probe_results.lua'),
+    [string]$ProbeResults = '',
+    [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe',
     [string[]]$SampleIds = @(),
     [string]$Build = "12.1.0.69933",
     [switch]$Refresh
@@ -63,9 +65,11 @@ foreach ($quest in $entries) { if ($quest.prereq) { foreach ($id in (Get-PrereqQ
 $decided = @{}
 foreach ($row in Import-Csv $Decisions) { $decided[$row.QuestID] = $row.Decision }
 $serverKnows = @{}
+. "$PSScriptRoot\ProbeResults.ps1"
+if (-not $ProbeResults) { $ProbeResults = Find-ProbeResults $ToolsDir }
 if (Test-Path $ProbeResults) {
-    $probe = [System.IO.File]::ReadAllText($ProbeResults)
-    foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "\d+\|[^|]*\|\d+,[01-],([01])",?\s*$')) { $serverKnows[$m.Groups[1].Value] = $m.Groups[2].Value }
+    $probe = Get-ProbeQuests $ProbeResults $LuaExe
+    foreach ($id in $probe.Quests.Keys) { if ($probe.Quests[$id].Load -in '0', '1') { $serverKnows[$id] = $probe.Quests[$id].Load } }
 } else { Write-Warning "No probe results at $ProbeResults, so ServerKnows is blank" }
 
 $rows = foreach ($quest in $entries) {

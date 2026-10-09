@@ -1,6 +1,7 @@
--- Prints the Forever probe's saved variables (QCForeverProbe.lua) as tab-separated lines for
--- Import-ForeverData.ps1. usage: lua Read-ForeverProbe.lua <QCForeverProbe.lua>
---   quest    id  build  result
+-- Prints the probe's saved variables (QCForeverProbe.lua) as tab-separated lines for
+-- Import-ForeverData.ps1 and ProbeResults.ps1. usage: lua Read-ForeverProbe.lua <QCForeverProbe.lua> [facts]
+--   quest    id  build  result  classification
+--   fact     id  name  value                     (only with "facts": every other field of a quest's row)
 --   npc      id  build  result  name
 --   spot     kind  id  name  "map x y"  times seen
 --   offer    kind  id  questId
@@ -27,7 +28,15 @@ local function keys(t)
 	return list
 end
 
-for _, id in ipairs(keys(db.quests)) do line("quest", id, db.quests[id].build, db.quests[id].result) end
+for _, id in ipairs(keys(db.quests)) do
+	local quest = db.quests[id]
+	line("quest", id, quest.build, quest.result, quest.classification)
+	if arg[2] == "facts" then
+		for _, name in ipairs(keys(quest)) do
+			if name ~= "build" and name ~= "result" then line("fact", id, name, quest[name]) end
+		end
+	end
+end
 for _, id in ipairs(keys(db.npcs)) do
 	local npc = db.npcs[id]
 	line("npc", id, npc.build, npc.result, npc.name)

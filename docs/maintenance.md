@@ -497,9 +497,12 @@ as one-time; since October 2026 no quest has it.
   flag daily or weekly gets 128. The table is in the script's header.
   - **A quest the server knows that the client's `QuestV2` table leaves out becomes repeatable.**
     That table lists only quests the game can record as done.
-  - **Inputs:** the probe's saved results in `tools\quest_type_probe_results.lua`, which only cover
-    quests that were in the database when the probe ran, and `QuestV2` for the probe's build. The
-    script downloads that table when it isn't there.
+  - **Inputs:** the probe's saved results on retail: the newest `tools\retail_probe_<build number>\QCForeverProbe.lua`
+    (the probe's list is every quest in the data, so a quest added since needs a new list and run), else
+    the older `tools\quest_type_probe_results.lua` of the retail type probe, whose only run, on 29
+    September 2026, is the baseline until the probe has run on retail; and `QuestV2` for the probe's
+    build. The script downloads that table when it isn't there. `Test-ProbeResults.ps1` checks that
+    both files give the same retypes.
 
 What's been checked and decided, and the quests still open, are in
 [plans/quest-types.md](plans/quest-types.md).
@@ -799,7 +802,7 @@ After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf
 ### 7. Quests that may no longer be obtainable
 
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables,
-our pins and the type probe's saved results (whether the server knows the quest). It's a report
+our pins and the probe's saved results on retail (whether the server knows the quest). It's a report
 only; see [plans/unavailable-quests.md](plans/unavailable-quests.md). Its summary counts the quests
 that have no sign of being live and no decision yet: those are the ones to review, in groups, with
 the user.
@@ -1215,10 +1218,12 @@ show them.
 Some answers only the game client has.
 
 **Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It's pull
-request #42, which is closed and its branch deleted; GitHub keeps its commits.
+request #42, which is closed and its branch deleted; GitHub keeps its commits. It is superseded by the
+probe below, which asks the same and more on both games from a dev-only addon; once the probe has run
+on retail this section goes. Until then its saved results stand.
 
-Run it after step 6 has added quests, then run step 3 again. On a sweep that adds nothing, the saved
-results are enough.
+Run the probe after step 6 has added quests, then run step 3 again. On a sweep that adds nothing, the
+saved results are enough.
 
 1. Bring the branch back with `git fetch origin pull/42/head:tools/quest-type-probe`, check it out
    and merge `master` into it. The probe walks the branch's own quest database, so quests added
@@ -1234,10 +1239,11 @@ results are enough.
    to `tools\quest_type_probe_results.lua`. Once the probe isn't in the TOC any more, WoW drops its
    results from that file the next time it saves.
 
-`Retype-ProbeRecurring.ps1` reads that copy.
+`Retype-ProbeRecurring.ps1` reads that copy, or the probe's below.
 
-**Forever probe (`/qcprobe`).** A small addon of its own, for the maintainer only: it is not part of
-Quest Completist, and the ZIP, which holds `QuestCompletist\` alone, never has it. It asks the server
+**The probe (`/qcprobe`).** A small addon of its own, for the maintainer only: it is not part of
+Quest Completist, and the ZIP, which holds `QuestCompletist\` alone, never has it. It runs in WoW:
+Forever and in retail. It asks the server
 about every quest in the client's `QuestV2` and every CMaNGOS quest `QuestV2` lacks, as it leaves out
 repeatable quests. It names the quest givers, and records quest givers while you play. Its map pass
 asks every map for the quest offers, points of interest, events, quest hubs and dungeon entrances
@@ -1270,7 +1276,10 @@ It began as pull request #139, which stays open as the record; its files are in
    zone if it is a task, and the expansion, breadcrumb and story answers of three undocumented
    functions), and the run's row says which functions the client has. Nothing reads them yet.
    Then `/qcprobe npcs`, outside any instance,
-   as instances hide names. `/qcprobe status` says what's been gathered.
+   as instances hide names. `/qcprobe status` says what's been gathered. On retail the quest pass
+   takes about two hours (35,023 quests, 4 at a time; the old type probe's run was 31,425 loaded and
+   3,598 refused), the NPC pass about five minutes (8,418 NPCs), and the saved variables about 13
+   MB; delete the addon's folder, or disable it, when you are not running it.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
    second. One run is enough. The results note the experience preset chosen once at Forever's login
@@ -1292,7 +1301,11 @@ It began as pull request #139, which stays open as the record; its files are in
    - `Cache\WDB\enUS\questcache.wdb` and `creaturecache.wdb`;
    - `WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua`.
 
-After Forever's launch, use its live client's folder in place of `_classic_beta_`.
+After Forever's launch, use its live client's folder in place of `_classic_beta_`. From `_retail_`, copy
+`WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua` into `tools\retail_probe_<build number>\`
+(`retail_probe_69933` for build 12.1.0.69933), where step 3 of the sweep, step 7 and the map report find it;
+the retail quest cache is not read yet. `Read-ForeverProbe.lua <file> facts` prints every fact the quest
+pass saved, one per line.
 
 A map pass is read with `tools\Report-MapOffers.lua`, which prints each map's offers, with how far
 each is from the quest's pin, and the points of interest, events, hubs and entrances, and writes
@@ -1358,6 +1371,10 @@ git diff --stat
   own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).
   For `Build-ProbeLists.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ProbeLists.ps1`
   (made-up data, nothing downloaded). Both must say "0 failed".
+  For `ProbeResults.ps1`, `Read-ForeverProbe.lua`, `Retype-ProbeRecurring.ps1` or
+  `Find-UnavailableQuestCandidates.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File
+  tools\Test-ProbeResults.ps1` (both probes' files read the same, and the two scripts give the same answers
+  on a scratch copy of the data). It must say "0 failed".
 - For changes to the recorder (`qcRecorder.lua`) or what it reads, run `Test-Recorder.lua`. It must
   say "0 failed". It plays the events against stand-ins for the API, so it can't say what the game
   answers: that is the in-game list in [quest-giver-recorder.md](plans/quest-giver-recorder.md).
