@@ -103,7 +103,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | The NPC-name check | once, in #112, for the 6,468 IDs then | every build, `/qcprobe npcs` | process | **Yes:** a retail NPC list for the probe, from the pins, run each sweep (3 to 4 minutes) |
 | The recorder | **none** | every time the game is played | process; the biggest gap | **Yes:** API review, recommendation 1 |
 | The map pass | done (7 October) | done (7 October) | – | run on both each sweep (maintenance.md, step 4b) |
-| The quest cache reader (`Read-ForeverQuestCache.ps1`) | **none** | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Maybe:** it would give retail the starting item, the quest sort and the level the server asks for (`minLevel`, which Forever's `qcQuestMinLevel` is made from; retail's `level` was taken from the API's minimum and differs from it today for 1,611 quests: see maintenance.md, "The quest and pin data files"); the start item is the prize (API review, recommendation 13). The reader stops on a layout it doesn't know, so retail's layout is the first thing to try |
+| The quest cache reader (`Read-QuestCache.ps1`) | step 2e, with `Compare-QuestCache.ps1` | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Done 9 October 2026** ([retail-quest-cache.md](retail-quest-cache.md)): it gives retail the quest sort and, as a content tuning, the level the server asks for (`minLevel`, which Forever's `qcQuestMinLevel` is made from; retail's `level` was taken from the API's minimum and differs from it today for 1,611 quests: see maintenance.md, "The quest and pin data files"); the start item turned out to be the item the quest hands over when accepted, not the one that begins it, so it is no prize. The reader read retail's layout (TrinityCore's, with two numbers fewer), and `Compare-QuestCache.ps1` watches it against Blizzard's own data |
 | Hand lists | `pin-npc-id-decisions.csv` | `forever-quest-givers.csv`, `forever-quest-zones.csv` | – | equivalent |
 | Release | one ZIP, both TOCs | – | shared |
 
@@ -136,7 +136,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback (done 7 October 2026), then the in-game check of the expansion lines, then the data from `QuestV2CliTask` and TrinityCore | small code (done), medium data | the case that started this; the fallback makes the code the same on both, and changes nothing in game until retail has requirement data |
 | 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | a switch to skip the API and TrinityCore parts |
 | 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | probably finds nothing; the point is that it looks |
-| 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
+| 6 | Retail's quest cache through `Read-QuestCache.ps1` | medium | done 9 October 2026: the layout is TrinityCore's, 120 fixed numbers; the start items are not what the recommendation took them for ([retail-quest-cache.md](retail-quest-cache.md)) |
 | 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | a watch, nothing else |
 | 8 | The retail map pass | a run | the pin comparison; done 7 October 2026 (game-api-review.md, "Map-offers probe: retail run") |
 | 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | |
@@ -187,3 +187,10 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   start, so the code row above needed no gate. Checked with stand-ins for the client's frames; the
   button's look and distance from the ring on each game are for the in-game check.
 - 2026-10-08: the addon compartment entry turned on for both games, at the user's request.
+- 2026-10-09: recommendation 6: `Read-ForeverQuestCache.ps1` is now `Read-QuestCache.ps1` and reads retail's
+  cache (32,713 quests) as well as Forever's, from one walker and a table of positions for each game.
+  `Compare-QuestCache.ps1` (step 2e) checks it against the API and the client's task table: nothing
+  differs. Eight comparisons of the cache with our data are in [retail-quest-cache.md](retail-quest-cache.md);
+  the start item is the item handed over on accept, which retires "Starts from" as recommendation 13
+  had it. Forever's output is the old reader's plus `flagsEx`, `questType` and `scheduler`; its
+  `recurs` takes a daily from flags Ex too (none of Forever's differ).
