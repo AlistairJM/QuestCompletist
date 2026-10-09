@@ -8,6 +8,8 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               answers quests up to about level 40, so rerun it when the beta opens
                               higher levels.
 /qcprobe quests all           asks about every quest again
+                              A quest the game already has data for (HaveQuestData, or a title) is
+                              not asked; one that gets no answer in 5 seconds is asked once more.
 /qcprobe npcs [in flight]     names the NPCs in the game's list (NpcIDs_*.lua): the NPC of every pin, and on Forever CMaNGOS's givers
 /qcprobe npcs all             names every NPC again
 /qcprobe maps [wait seconds]  asks the server for each map's quest offers (the storyline starts
@@ -49,6 +51,7 @@ local ADDON_NAME, probe = ...
 
 local DEFAULT_IN_FLIGHT = 4
 local REQUEST_TIMEOUT_MS = 5000
+local MAX_ATTEMPTS = 2
 local LATE_ANSWER_WAIT_MS = 10000
 local POLL_MS = 1000
 local TICK_SECONDS = 0.05
@@ -99,11 +102,19 @@ local function where()
 	return mapId, math.floor(x * 1000 + 0.5) / 10, math.floor(y * 1000 + 0.5) / 10
 end
 
+local function minutesLeft(r)
+	local elapsed = debugprofilestop() - r.startedMs
+	if r.done == 0 or elapsed <= 0 then return nil end
+	return math.ceil((r.total - r.done) / (r.done / elapsed) / 60000)
+end
+
 local function count(r, result)
 	r.counts[result] = (r.counts[result] or 0) + 1
 	r.done = r.done + 1
 	if r.done % (r.progressEvery or PROGRESS_EVERY) == 0 then
-		say(string.format("%s: %d of %d (%s).", r.label, r.done, r.total, countsText(r.counts)))
+		local left = minutesLeft(r)
+		say(string.format("%s: %d of %d (%s)%s.", r.label, r.done, r.total, countsText(r.counts),
+			left and string.format(", about %d min left", left) or ""))
 	end
 end
 
@@ -140,12 +151,12 @@ local function tick()
 			r.poll(id)
 		end
 	end
-	while r.inFlightCount < r.maxInFlight and r.nextIndex <= r.total do
+	while r.inFlightCount < r.maxInFlight and r.nextIndex <= #r.queue do
 		local id = r.queue[r.nextIndex]
 		r.nextIndex = r.nextIndex + 1
 		r.send(id)
 	end
-	if r.inFlightCount == 0 and r.nextIndex > r.total then
+	if r.inFlightCount == 0 and r.nextIndex > #r.queue then
 		if next(r.timedOut) and not r.lateWaitUntil then
 			r.lateWaitUntil = now + LATE_ANSWER_WAIT_MS
 		end
@@ -184,6 +195,15 @@ local function questFacts(questId, result, ms)
 	return facts
 end
 
+local function haveQuestData(questId)
+	if HaveQuestData then
+		local ok, have = pcall(HaveQuestData, questId)
+		if ok and have then return true end
+	end
+	local title = try(C_QuestLog.GetTitleForQuestID, questId)
+	return title ~= nil and title ~= ""
+end
+
 local function startQuests(all, inFlight)
 	if probe.questBuild ~= build then
 		say(string.format("the quest list is from build %s, and this is %s. Rebuild it with tools/ForeverProbe/Build-ProbeLists.ps1 -Game retail or forever.",
@@ -201,18 +221,24 @@ local function startQuests(all, inFlight)
 		return
 	end
 	local r = begin("quests", "quest pass", queue, inFlight)
+	local attempts = {}
 	r.send = function(questId)
-		local title = try(C_QuestLog.GetTitleForQuestID, questId)
-		if title and title ~= "" then
+		if haveQuestData(questId) then
 			db.quests[questId] = questFacts(questId, "cached")
 			count(r, "cached")
 			return
 		end
+		attempts[questId] = (attempts[questId] or 0) + 1
 		r.inFlight[questId] = debugprofilestop()
 		r.inFlightCount = r.inFlightCount + 1
 		C_QuestLog.RequestLoadQuestByID(questId)
 	end
 	r.timeout = function(questId)
+		if attempts[questId] < MAX_ATTEMPTS then
+			r.timedOut[questId] = nil
+			r.queue[#r.queue + 1] = questId
+			return
+		end
 		db.quests[questId] = questFacts(questId, "timeout")
 		count(r, "timeout")
 	end

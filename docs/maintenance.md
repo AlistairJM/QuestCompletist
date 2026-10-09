@@ -961,7 +961,10 @@ It began as pull request #139, which stays open as the record; its files are in
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\` (or `_retail_`),
    replacing any copy there, and restart the game fully.
 3. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
-   time; the first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
+   time (the server stops answering a burst); one that gets no answer in 5 seconds is asked once more,
+   and a quest the game already has data for isn't asked. It says how many minutes are left every 500
+   quests; stopping it (`/qcprobe stop`) and running it again picks up where it was, across logouts. The
+   first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)

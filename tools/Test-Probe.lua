@@ -51,7 +51,7 @@ local function newWorld(options)
 	local w = {printed = {}, tickers = {}, requests = {}, calls = {}, handlers = {}}
 	local S = {
 		ms = 100000, locale = "enUS", map = 84, pos = {0.45349, 0.67812},
-		quests = {}, cached = {}, loaded = {}, answer = {}, npcs = {}, npcCalls = 0,
+		quests = {}, cached = {}, loaded = {}, answer = {}, sequence = {}, npcs = {}, npcCalls = 0,
 		guid = {}, names = {}, available = {}, active = {}, greetingAvailable = {}, greetingActive = {},
 		questId = 0, logIndex = {}, log = {}, maps = {}, lines = {}, mapAnswers = {}, level = 12,
 		faction = "Alliance", race = "NightElf", class = "ROGUE",
@@ -61,6 +61,7 @@ local function newWorld(options)
 	w.env = env
 	env.print = function(text) w.printed[#w.printed + 1] = text end
 	env.debugprofilestop = function() return S.ms end
+	env._G = env
 	env.GetLocale = function() return S.locale end
 	env.GetBuildInfo = function() return unpack(options.build or {"1.60.1", "70245", "Oct 5 2026", 160001}) end
 	env.time = function() return 1790000000 end
@@ -144,10 +145,11 @@ local function newWorld(options)
 			end
 			w.maxConcurrent = math.max(w.maxConcurrent or 0, concurrent)
 			local answer = S.answer[questId] or "ok"
+			if S.sequence[questId] then answer = table.remove(S.sequence[questId], 1) or "ok" end
 			if answer == "never" then return end
 			local delay, success = 300, true
 			if answer == "fail" then success = false end
-			if answer == "late" then delay = 7000 end
+			if answer == "late" then delay = 12000 end
 			w.pending = w.pending or {}
 			w.pending[#w.pending + 1] = {at = sentAt + delay, id = questId, success = success, request = w.requests[#w.requests]}
 		end,
@@ -365,7 +367,7 @@ do
 	equal(db.quests[1004].result, "cached", "Q1: one the game already had is cached")
 	equal(db.quests[1004].ms, nil, "Q1: with no time")
 	check(w.maxConcurrent <= 4, "Q1: never more than 4 in flight (" .. tostring(w.maxConcurrent) .. ")")
-	equal(w.calls.RequestLoadQuestByID, 7, "Q1: a request for each but the cached one")
+	equal(w.calls.RequestLoadQuestByID, 9, "Q1: a request for each but the cached one, and a second for the two that got no answer in time")
 	local run = db.runs[#db.runs]
 	equal(run.kind, "quests", "Q1: the run row is a quest run")
 	equal(run.asked, 8, "Q1: asked")
@@ -378,6 +380,7 @@ do
 	equal(run.inFlight, 4, "Q1: in flight, 4")
 	equal(run.stopped, nil, "Q1: not stopped")
 	check(w.said("Finished the quest pass: 8 of 8"), "Q1: the closing line")
+	check(w.said("quest pass: asking about 8, 4 at a time"), "Q1: asked about 8 though two were asked twice")
 	roundTrips(db, "Q1")
 
 	-- a rerun asks only about what has not answered
@@ -456,6 +459,61 @@ do
 	local progress = 0
 	for _, line in ipairs(w.printed) do if line:find("|r quest pass: %d+ of 1200 %(") then progress = progress + 1 end end
 	equal(progress, 2, "Q6: a progress line every 500 quests")
+end
+
+-- A quest that gets no answer is asked a second time; one that answers late after both is late.
+do
+	local w = newWorld({questIds = quests(3)})
+	for i = 1000, 1002 do w.S.quests[i] = {title = "Q" .. i} end
+	w.S.sequence[1000] = {"never", "ok"}
+	w.S.sequence[1001] = {"never", "never"}
+	w.S.sequence[1002] = {"never", "never", "ok"}
+	w.boot()
+	w.slash("quests")
+	w.run(300)
+	local db = w.db()
+	equal(db.quests[1000].result, "ok", "Q7: a quest that answers the second time is ok")
+	equal(db.quests[1001].result, "timeout", "Q7: one that gets no answer twice is a timeout")
+	equal(db.quests[1002].result, "timeout", "Q7: and a third try is not made")
+	equal(w.calls.RequestLoadQuestByID, 6, "Q7: six requests for three quests")
+	local run = db.runs[#db.runs]
+	equal(run.asked, 3, "Q7: three asked")
+	equal(run.answered, 3, "Q7: and three answered")
+	equal(run.counts.ok, 1, "Q7: one ok")
+	equal(run.counts.timeout, 2, "Q7: two timeouts")
+end
+
+-- HaveQuestData answers for a quest the game has, with no title yet
+do
+	local w = newWorld({questIds = quests(2)})
+	w.S.quests[1000] = {title = "Has data"}
+	w.S.quests[1001] = {title = "Does not"}
+	w.env.HaveQuestData = function(questId) return questId == 1000 end
+	w.boot()
+	w.slash("quests")
+	w.run(60)
+	equal(w.db().quests[1000].result, "cached", "Q8: a quest the game has data for is cached without a request")
+	equal(w.db().quests[1001].result, "ok", "Q8: another is asked")
+	equal(w.calls.RequestLoadQuestByID, 1, "Q8: one request")
+	local w2 = newWorld({questIds = quests(1)})
+	w2.S.quests[1000] = {title = "x"}
+	w2.env.HaveQuestData = function() error("HaveQuestData failed") end
+	w2.boot()
+	w2.slash("quests")
+	w2.run(60)
+	equal(w2.db().quests[1000].result, "ok", "Q8: a HaveQuestData that errors is as if it said no")
+end
+
+-- The progress line says how long is left
+do
+	local w = newWorld({questIds = quests(600)})
+	for i = 1000, 1599 do w.S.quests[i] = {title = "Q"} end
+	w.boot()
+	w.slash("quests")
+	w.run(3600)
+	local line
+	for _, text in ipairs(w.printed) do if text:find("|r quest pass: 500 of 600", 1, true) then line = text end end
+	check(line ~= nil and line:find(", about %d+ min left%.$") ~= nil, "Q9: the progress line gives the minutes left (" .. tostring(line) .. ")")
 end
 
 -- 3. The NPC pass ----------------------------------------------------------------------------------
