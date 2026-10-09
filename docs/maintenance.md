@@ -254,7 +254,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1b | Second source for race and class, and the task-quest tables 1d and 2c read | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 1d | Professions of task quests | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
-| 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
+| 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 2c | Prerequisites from Blizzard's API, the client's task quests and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
@@ -326,6 +326,49 @@ writes `quest_reputation_compare.csv`. Then `Apply-ReputationBackfill.ps1` adds 
 lists and we don't have, and corrects the ones whose amounts differ from the API's. It leaves a
 reward only we list alone and counts it: check those by hand, as the API may simply not list a
 reward the game gives. In October 2026 all 11,035 of our rewards matched the API.
+
+Its cache pass (retail only, report-only) then checks the same rewards against the client's own
+quest cache. It needs step 2e's `Read-QuestCache.ps1` to have written
+`tools\retail_quest_cache_<build>.jsonl` (the newest is read unless `-Cache` names one) and the
+client's Faction table for that build; without either it says so and skips, and the rest runs as
+before:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/Faction/csv?build=<retail build>" -OutFile tools\Faction-<retail build>.csv
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestReputation.ps1
+```
+
+Each quest of ours falls in one class, found by comparing ours, the API's and the cache's rewards as
+sets of faction=amount, never by position. A faction counts as shown when the Faction table lists it,
+its `ReputationIndex` is 0 or more (the client keeps no standing for it otherwise) and
+`ReputationFlags_0` lacks bit 4 (value 4, hidden). The classes, with the `Kind` of the row each
+writes to `quest_reputation_compare.csv` (the old kinds, `api-only`, `ours-only` and `differ`, are
+still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on `api-only` and
+`differ` only):
+
+| Class | Quests where | Kind |
+|---|---|---|
+| A | wherever each lists, ours, the API and the cache are the same | none |
+| B | the cache has the API's rewards (ours, with none from the API) and more, only on factions that are not shown | `cache-more` |
+| **C** | both list and the factions or amounts differ, a cache reward on a shown faction the API does not list included | `cache-differ` |
+| **D** | ours or the API lists a reward and the cache has the quest with none | `cache-lost` |
+| E | the cache lists rewards, ours and the API none, and one is on a shown faction: backfill candidates | `cache-only` |
+| F | the same, with none on a shown faction | `cache-hidden` |
+| G | the quest is not in the cache (informational) | none |
+| H | the cache's own extras: quests not in our data, slots with an amount of 0, a faction in two slots | none |
+
+The run exits with 1 on a class C or D quest, and says the reader looks moved when there are 100 or
+more C quests (`-ReaderMovedAt`): run `Compare-QuestCache.ps1` then, and don't use the cache's
+rewards that sweep. It prints the three builds (the API's, the cache's, the Faction table's) and warns
+when they differ, as they do in October 2026 (API `12.1.0_68914`, cache `12.1.0.69933`); a few C
+quests may be a hotfix between them. B, E, F and G move with what a probe run asked for, so their
+quests are kept in `docs\plans\quest-reputation-cache-baseline.csv`, and each run says how many are
+new and gone against it. Once those are explained, rerun with `-UpdateBaseline` and commit the file.
+On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) the classes held A 10,786, B 3 (quests
+41138, 43568, 73226), C 0, D 0, E 2,043 quests with 2,986 rewards (all of them quests the API has no
+record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the cache reproduced all
+11,690 of the API's rewards. Whether to backfill E is the user's decision
+([plans/retail-quest-cache.md](plans/retail-quest-cache.md)); nothing here changes data.
 
 ### 2b. The tables kept by hand
 
@@ -470,8 +513,9 @@ agreed on content tuning and start item for those 4,125. If it fails, don't use 
 that sweep: check that the cache, the API cache and the task table are from the builds you think,
 then rerun the reader's record walk and look at the first differing quests with both values.
 
-What the cache says about our data, and what it can't, is in
-[plans/retail-quest-cache.md](plans/retail-quest-cache.md). Two things to know before reading its
+Step 2's cache pass reads the same file for the reputation rewards. What the cache says about our
+data, and what it can't, is in [plans/retail-quest-cache.md](plans/retail-quest-cache.md). Two things
+to know before reading its
 file: `startItem` is the item the quest hands over when it is accepted, not the item that begins it,
 and the record holds no level, only the ContentTuning ID that Blizzard's level range is a function of.
 
@@ -1366,9 +1410,10 @@ git diff --stat
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
   step 10 for Forever. Its four "character level" lines (the minimum level) must read 0, and
   the run exits with 1 when they don't.
-- For changes to `Read-QuestCache.ps1` or `Compare-QuestCache.ps1`, run `Test-QuestCache.ps1` and
-  `Test-CompareQuestCache.ps1`. They build their own caches, API records and tables in a scratch
-  folder; each must end "N checks passed, 0 failed".
+- For changes to `Read-QuestCache.ps1`, `Compare-QuestCache.ps1` or `Compare-QuestReputation.ps1`,
+  run `Test-QuestCache.ps1`, `Test-CompareQuestCache.ps1` and `Test-CompareQuestReputation.ps1`.
+  They build their own caches, API records and tables in a scratch folder; each must end "N checks
+  passed, 0 failed".
 - For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
