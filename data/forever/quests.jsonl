@@ -4351,7 +4351,7 @@
 {"id":92707,"name":"The Giant in the Den","level":33,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":30}
 {"id":92708,"name":"A Grand Adventure","level":12,"zone":"Zephras Isle","category":16593,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":7}
 {"id":92709,"name":"A Grand Adventure","level":12,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":7}
-{"id":92727,"name":"The Missing Scholar","level":10,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"prereq":92727,"minLevel":4}
+{"id":92727,"name":"The Missing Scholar","level":10,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":4}
 {"id":92741,"name":"Unwelcome Visitors","level":13,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":8}
 {"id":92742,"name":"Testing the Wells","level":12,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
 {"id":92743,"name":"A Conqueror's Crown","level":40,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"prereq":1369,"minLevel":30}

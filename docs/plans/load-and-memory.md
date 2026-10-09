@@ -202,3 +202,20 @@ Around 38 places read or write it today.
     and it is the design the user approved.
   - Retail's file gains an empty table (22 bytes), and its loaded size is unchanged: 15,174.0 KB
     for the whole addon before and 15,173.5 KB after.
+
+## The quest giver recorder (8 October 2026)
+
+`qcRecorder.lua` keeps `qcQuestRecorder`, an account-wide saved variable, with one packed string per
+record and caps of 2,500 givers, 5,000 quests and 500 quests started away from a giver
+([quest-giver-recorder.md](quest-giver-recorder.md)). Measured offline with a synthetic full file in
+plain Lua (32-bit, so the game's numbers are larger):
+
+| | Records | File | Memory once loaded | Load |
+|---|---|---|---|---|
+| At the caps | 8,000 | 514 KB | 0.8 MB (about 1.5 MB in the game) | 6 ms |
+| A table per record instead | the same | | 2.2 to 3 times as much | |
+
+The code itself adds a file of about 590 lines and nothing at login but one pass over the three
+tables to check the shape of each key and value. In the game: the cost of an event is two small
+list calls, one GUID read, one map position and a few string operations on at most two records.
+Today's account file is about 1 KB. The in-game memory is to be measured in the recorder's session.
