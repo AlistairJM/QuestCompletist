@@ -132,6 +132,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "左键点击：显示或隐藏任务列表", -- Needs review
 	MINIMAPRIGHTCLICK = "右键点击：打开设置", -- Needs review
 	MINIMAPDRAG = "拖动：沿小地图边缘移动此按钮", -- Needs review
+	RECORDGIVERS = "记录我遇到的任务提供者", -- Needs review
+	RECORDGIVERSTIP = "简要记录你遇到的任务提供者以及遇到他们的位置。仅保存在这台电脑上，不会发送到任何地方。/qc report 可查看已记录的内容。", -- Needs review
+	RECORDERNOTICE = "Quest Completist 现在会简要记录你遇到的任务提供者及其所在位置，仅保存在这台电脑上。/qc report 可查看；/qc record off 可停止。", -- Needs review
+	RECORDERSTATUS = "记录任务提供者：%s。可用 /qc record on、/qc record off 或 /qc record clear 更改。", -- Needs review
+	RECORDERCOUNTS = "目前已记录 %d 个任务提供者、%d 个任务，以及 %d 个不由提供者开始的任务。", -- Needs review
+	RECORDERFULL = "记录已满，新记录会替换最旧的记录（目前已替换 %d 条）。", -- Needs review
+	RECORDERERRORS = "记录任务提供者时发生了 %d 个错误；最近一个：%s", -- Needs review
+	RECORDERHIDDEN = "游戏有 %d 次隐藏了说话者；这些任务已在没有提供者的情况下记录。", -- Needs review
+	RECORDERFILE = "不会发送到任何地方。游戏会在你登出或重载界面时，把记录保存到你账号 SavedVariables 文件夹（游戏的 WTF 文件夹中的 Account 下）里的 QuestCompletist.lua。若想帮助改进地图，请把该文件附在插件 CurseForge 页面的评论中。", -- Needs review
+	RECORDERCLEARED = "记录已清除。", -- Needs review
 	}, {__index = qcLocalize})
 
 end

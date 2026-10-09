@@ -140,7 +140,6 @@
 {"map":1413,"icon":1,"name":"Control Console","x":52.4,"y":11.65,"quests":[900,901,902]}
 {"map":1413,"icon":1,"name":"Flawed Power Stone","x":62.34,"y":20.03,"quests":[926]}
 {"map":1413,"icon":1,"name":"Flawed Power Stones","x":62.34,"y":20.03,"quests":[926]}
-{"map":1413,"icon":1,"name":"Flawed Power Stones","x":62.34,"y":20.04,"quests":[926]}
 {"map":1416,"icon":1,"npc":2316,"name":"Gol'dir","x":59.96,"y":43.74,"quests":[506]}
 {"map":1416,"icon":1,"npc":2317,"name":"Elysa","x":39.3,"y":14.31,"quests":[508]}
 {"map":1416,"icon":1,"npc":2333,"name":"Henchman Valik","x":57.17,"y":69.51,"quests":[535]}
@@ -399,18 +398,8 @@
 {"map":1425,"icon":5,"npc":15559,"name":"Elder Highpeak","x":50,"y":48.05,"quests":[8643]}
 {"map":1425,"icon":1,"name":"Rin'ji's Secret","x":86.3,"y":59.01,"quests":[2782]}
 {"map":1425,"icon":1,"name":"Venom Bottle","x":23.54,"y":58.8,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":23.21,"y":58.65,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":23.22,"y":58.64,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":23.54,"y":58.85,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":23.53,"y":58.85,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":23.21,"y":58.65,"quests":[2933]}
 {"map":1425,"icon":1,"name":"Venom Bottle","x":31.55,"y":57.73,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":31.53,"y":57.72,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":31.55,"y":57.69,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":31.54,"y":57.73,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":31.55,"y":57.76,"quests":[2933]}
 {"map":1425,"icon":1,"name":"Venom Bottle","x":23,"y":57.71,"quests":[2933]}
-{"map":1425,"icon":1,"name":"Venom Bottle","x":22.99,"y":57.73,"quests":[2933]}
 {"map":1425,"icon":1,"name":"Call to Arms!","x":79.08,"y":78.99,"quests":[7861,7862]}
 {"map":1426,"icon":9,"npc":460,"name":"Alamar Grimm","x":28.65,"y":66.14,"quests":[1599]}
 {"map":1426,"icon":1,"npc":658,"name":"Sten Stoutarm","x":29.93,"y":71.2,"quests":[179,233,3106,3107,3108,3109,3110,3112,3113,3114,3115]}
