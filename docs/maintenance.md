@@ -1264,7 +1264,11 @@ It began as pull request #139, which stays open as the record; its files are in
    time (the server stops answering a burst); one that gets no answer in 5 seconds is asked once more,
    and a quest the game already has data for isn't asked. It says how many minutes are left every 500
    quests; stopping it (`/qcprobe stop`) and running it again picks up where it was, across logouts. The
-   first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
+   first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long. For every
+   quest that loads it also saves the facts of API review recommendation 2 (whether the quest is
+   account-wide, its faction group, whether it is important or meta, its quest line and campaign, its
+   zone if it is a task, and the expansion, breadcrumb and story answers of three undocumented
+   functions), and the run's row says which functions the client has. Nothing reads them yet.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)

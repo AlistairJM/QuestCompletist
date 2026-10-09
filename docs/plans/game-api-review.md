@@ -724,6 +724,8 @@ them.
 2. **The probe additions** (2 and 3). Each costs an in-game run: about two hours on retail for the
    facts pass, minutes for the map offers. **Recommendation:** both, the map offers first on the
    Forever beta, as the answer decides whether Forever's new zones can get pins without the recorder.
+   The map offers were built and run in October; the user said "go ahead with the facts pass" on
+   9 October 2026, and it is built (below).
 3. **Scaling-aware levels** (4). It changes what "hide low level quests" hides for scaling quests.
    **Recommendation:** yes, with the stored level as the fallback.
 4. **Text from the game** (5). English clients would show Blizzard's storyline names where ours
@@ -859,3 +861,10 @@ them.
   functions, 1,782 events (3,619 and 124 with flags); Forever 1.60.1.70245 5,903 and 1,804 (3,783 and
   125). The counts of 7 October let script objects' methods of one name overwrite each other. Not
   covered: the contents of structures, and the old globals the documentation leaves out.
+- 2026-10-09: recommendation 2, the facts pass, built into the probe's quest pass for both games (the user:
+  "dev-only addon, data only, go ahead with the facts pass"): for every quest that loads, `isTask`,
+  `isWorld`, `taskZone`, `accountQuest`, `factionGroup`, `important`, `meta`, `questLineID`,
+  `campaignID`, and the three undocumented `expansion`, `breadcrumb` and `story`, each from the first of
+  its functions the client has, with the run's row saying which that was. The probe is `tools/ForeverProbe`,
+  a dev-only addon; retail's list is every quest in `data\quests.jsonl` (QuestV2 is not asked), the
+  recurring ones first. It still needs the in-game run (about two hours on retail) and readers.

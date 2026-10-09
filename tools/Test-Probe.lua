@@ -164,6 +164,34 @@ local function newWorld(options)
 		GetQuestsOnMap = function(mapID) return S.mapAnswers[mapID] and S.mapAnswers[mapID].logQuests or {} end,
 	}
 	env.C_QuestInfoSystem = {GetQuestClassification = function(questId) return fact(questId, "class") end}
+	-- The facts pass: each function exists unless the options say the client lacks it.
+	local function defineFacts()
+		local missing = options.missing or {}
+		local function answer(key) return function(questId)
+			if w.factError == key then error(key .. " failed") end
+			if w.factHidden == key then return SECRET end
+			return fact(questId, key)
+		end end
+		local function put(owner, name, key) if not missing[key] then owner[name] = answer(key) end end
+		put(env.C_QuestLog, "IsQuestTask", "isTask")
+		put(env.C_QuestLog, "IsWorldQuest", "isWorld")
+		put(env.C_QuestLog, "IsAccountQuest", "accountQuest")
+		put(env.C_QuestLog, "IsImportantQuest", "important")
+		put(env.C_QuestLog, "IsMetaQuest", "meta")
+		env.C_QuestLine = env.C_QuestLine or {}
+		if not missing.questLineID then
+			env.C_QuestLine.GetQuestLineInfo = function(questId) local id = fact(questId, "questLineID"); return id and {questLineID = id, questLineName = "A line"} or nil end
+		end
+		if not missing.campaignID then env.C_CampaignInfo = {GetCampaignID = answer("campaignID")} end
+		if not missing.taskZone then env.C_TaskQuest = env.C_TaskQuest or {}; env.C_TaskQuest.GetQuestZoneID = answer("taskZone") end
+		if options.factionGlobal then env.GetQuestFactionGroup = answer("factionGroup") end
+		if options.factionNamespaced then env.C_QuestLog.GetQuestFactionGroup = answer("factionGroup") end
+		if options.undocumented then
+			env.GetQuestExpansion = answer("expansion")
+			env.IsBreadcrumbQuest = answer("breadcrumb")
+			env.IsStoryQuest = answer("story")
+		end
+	end
 	env.C_QuestLine = {
 		RequestQuestLinesForMap = function(mapID)
 			w.calls.RequestQuestLinesForMap = (w.calls.RequestQuestLinesForMap or 0) + 1
@@ -197,6 +225,7 @@ local function newWorld(options)
 	if options.forever then
 		env.C_GameRules = {GetForeverExperiencePreset = function() return 0 end, IsHardcoreActive = function() return false end}
 	end
+	defineFacts()
 	env.CreateFrame = function()
 		local frame = {events = {}}
 		frame.RegisterEvent = function(self, event) self.events[event] = true end
@@ -502,6 +531,94 @@ do
 	w2.slash("quests")
 	w2.run(60)
 	equal(w2.db().quests[1000].result, "ok", "Q8: a HaveQuestData that errors is as if it said no")
+end
+
+-- The facts pass
+do
+	local w = newWorld({questIds = quests(6), factionGlobal = true, undocumented = true})
+	local S = w.S
+	S.quests[1000] = {title = "Task", isTask = true, isWorld = true, taskZone = 1234, accountQuest = false, important = true, meta = false,
+		factionGroup = 1, questLineID = 77, campaignID = 5, expansion = 9, breadcrumb = false, story = true}
+	S.quests[1001] = {title = "Plain", isTask = false, isWorld = false, taskZone = 99}
+	S.quests[1002] = {title = "Fails"}
+	S.quests[1003] = {title = "Never"}
+	S.quests[1004] = {title = "Cached", accountQuest = true}
+	S.answer[1002] = "fail"
+	S.answer[1003] = "never"
+	S.cached[1004] = true
+	S.quests[1005] = {title = "Odd", isTask = true, taskZone = {1}, expansion = "ten"}
+	w.boot()
+	w.slash("quests")
+	w.run(300)
+	local db = w.db()
+	local q = db.quests[1000]
+	equal(q.isTask, true, "F1: IsQuestTask")
+	equal(q.isWorld, true, "F1: IsWorldQuest")
+	equal(q.taskZone, 1234, "F1: the zone of a task quest")
+	equal(q.accountQuest, false, "F1: IsAccountQuest, false kept")
+	equal(q.important, true, "F1: IsImportantQuest")
+	equal(q.meta, false, "F1: IsMetaQuest, false kept")
+	equal(q.factionGroup, 1, "F1: the faction group, from the global")
+	equal(q.questLineID, 77, "F1: the quest line's ID, out of the table GetQuestLineInfo returns")
+	equal(q.campaignID, 5, "F1: the campaign")
+	equal(q.expansion, 9, "F1: the expansion, from an undocumented global")
+	equal(q.breadcrumb, false, "F1: IsBreadcrumbQuest")
+	equal(q.story, true, "F1: IsStoryQuest")
+	equal(db.quests[1001].isTask, false, "F1: a quest that is no task")
+	equal(db.quests[1001].taskZone, nil, "F1: is not asked for a zone")
+	equal(db.quests[1001].questLineID, nil, "F1: a quest in no line has none")
+	equal(db.quests[1001].campaignID, nil, "F1: nor a campaign")
+	equal(db.quests[1002].accountQuest, nil, "F1: a failed quest has no facts")
+	equal(db.quests[1003].accountQuest, nil, "F1: nor a timed-out one")
+	equal(db.quests[1004].result, "cached", "F1: a cached quest")
+	equal(db.quests[1004].accountQuest, true, "F1: has its facts")
+	equal(db.quests[1005].taskZone, nil, "F1: an answer that is a table is not kept")
+	equal(db.quests[1005].expansion, "ten", "F1: a string is")
+	local found = db.runs[#db.runs].facts
+	equal(found.accountQuest, "C_QuestLog.IsAccountQuest", "F2: the run row says which function answered")
+	equal(found.factionGroup, "GetQuestFactionGroup", "F2: the faction group's came from the global")
+	equal(found.questLineID, "C_QuestLine.GetQuestLineInfo", "F2: the quest line's")
+	equal(found.campaignID, "C_CampaignInfo.GetCampaignID", "F2: the campaign's")
+	equal(found.taskZone, "C_TaskQuest.GetQuestZoneID", "F2: the task zone's")
+	equal(found.expansion, "GetQuestExpansion", "F2: an undocumented global that exists is named")
+	roundTrips(db, "F2")
+
+	local w2 = newWorld({questIds = quests(2), missing = {accountQuest = true, expansion = true, questLineID = true, campaignID = true}, factionNamespaced = true})
+	w2.S.quests[1000] = {title = "A", accountQuest = true, important = true, factionGroup = 2, expansion = 3}
+	w2.S.quests[1001] = {title = "B", meta = true}
+	w2.boot()
+	w2.slash("quests")
+	w2.run(120)
+	local found2 = w2.db().runs[#w2.db().runs].facts
+	equal(found2.accountQuest, false, "F3: a function the client lacks is false in the run row")
+	equal(found2.expansion, false, "F3: and so is an undocumented one that isn't there")
+	equal(found2.breadcrumb, false, "F3: and the other two")
+	equal(found2.questLineID, false, "F3: and a namespace without it")
+	equal(found2.campaignID, false, "F3: and a missing namespace")
+	equal(found2.factionGroup, "C_QuestLog.GetQuestFactionGroup", "F3: the namespaced faction function comes first")
+	equal(w2.db().quests[1000].accountQuest, nil, "F3: so there is no answer in the rows")
+	equal(w2.db().quests[1000].important, true, "F3: the others are kept")
+	equal(w2.db().quests[1000].factionGroup, 2, "F3: the namespaced faction group")
+	equal(w2.db().quests[1001].meta, true, "F3: another quest's")
+
+	local w3 = newWorld({questIds = quests(2)})
+	w3.S.quests[1000] = {title = "A", important = true, meta = true}
+	w3.S.quests[1001] = {title = "B", important = true, meta = true}
+	w3.factError = "important"
+	w3.boot()
+	w3.slash("quests")
+	w3.run(120)
+	equal(w3.db().quests[1000].important, nil, "F4: a fact whose function errors is left out")
+	equal(w3.db().quests[1000].meta, true, "F4: and the rest are asked")
+	equal(w3.db().quests[1000].result, "ok", "F4: and the quest still answers")
+	local w4 = newWorld({questIds = quests(1)})
+	w4.S.quests[1000] = {title = "A", important = true, meta = true}
+	w4.factHidden = "important"
+	w4.boot()
+	w4.slash("quests")
+	w4.run(60)
+	equal(w4.db().quests[1000].important, nil, "F5: a fact the game hides is left out")
+	equal(w4.db().quests[1000].meta, true, "F5: and the rest are kept")
 end
 
 -- The progress line says how long is left
