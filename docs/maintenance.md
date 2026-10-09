@@ -233,6 +233,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2 | Reputation rewards | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 2c | Prerequisites from Blizzard's API, the client's task quests and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2d | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -241,7 +242,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-ForeverQuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
 
 Steps 1 to 9 are retail's. Blizzard's API has no Forever data, so Forever has a step of its own,
 which rebuilds its data from the game, the client's tables and CMaNGOS's database. It gets its own
@@ -360,6 +361,41 @@ with `-WhatIf` first to see what it would change.
 - **A requirement that would make two quests each require the other** is left out, and listed.
 
 A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore changed.
+
+### 2d. The retail quest cache
+
+The client keeps the server's record of every quest it has asked about in
+`Cache\WDB\enUS\questcache.wdb`, and step 10 reads WoW: Forever's copy of it. Retail's holds the same
+record, in the same layout with two fields fewer, for every quest the game has been asked about
+(32,713 in October 2026). Log out fully, so the game writes it, copy the file from
+`_retail_\Cache\WDB\enUS\` to `tools\retail_probe_<retail build>\`, and run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Read-QuestCache.ps1 -Build <retail build>
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestCache.ps1
+```
+
+The reader (about 30 seconds) writes `tools\retail_quest_cache_<build>.jsonl`, one quest per line:
+its title, content tuning, sort (the zone, or a negative number for a heading such as a class or a
+profession), quest type, flags, and when they apply the quest info, group size, recurrence, follow-up
+quest, start item, reputation rewards and races. It reads every record to its last byte, or writes
+nothing. That can't see two fields of the same size swapped, so `Compare-QuestCache.ps1` (about 25
+seconds, after steps 1 and 1b have filled the API cache and the client's task table) compares the
+values with Blizzard's own: the API's records for the same quests, and the task table's rows. It
+exits with 1 when a check differs for more than 0.5% of what it compared (and at least 5 quests),
+which a shifted field does for thousands; fewer differences are listed and are what a hotfix between
+the API cache's build and the cache's looks like. On 9 October 2026 (cache 12.1.0.69933, API cache
+12.1.0_68914) nothing differed: titles for 28,985 quests, sort for 28,614, daily, weekly and
+repeatable for 28,985 each, 11,690 reputation rewards, one level range for each of 741 content
+tunings over 28,242 quests, quest info for 1,830 quests against the API and 4,125 against the task
+table, which also agreed on content tuning and start item for those 4,125. If it fails, don't use the
+cache's values that sweep: check that the cache and the API cache are from the builds you think, then
+rerun the reader's record walk and look at the first differing quests with both values.
+
+What the cache says about our data, and what it can't, is in
+[plans/retail-quest-cache.md](plans/retail-quest-cache.md). Two things to know before reading its
+file: `startItem` is the item the quest hands over when it is accepted, not the item that begins it,
+and the record holds no level, only the ContentTuning ID that Blizzard's level range is a function of.
 
 ### 3. Quest types
 
@@ -727,9 +763,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    70245, no quest offers, 16 points of interest, no events, no dungeon entrances and no level
    ranges. A rise in any of them is a finding to plan, as a new client table is (step 2b under
    "Before a sweep"): offers would become start points for quests with no giver.
-3. `Read-ForeverQuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
+3. `Read-QuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
    `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
-   nothing: Blizzard has changed the record's layout, and the reader needs updating.
+   nothing: Blizzard has changed the record's layout, and the reader needs updating. (The same
+   script reads retail's cache, from a retail build number: step 2d.)
 4. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl`, `pins.jsonl`,
    `links.jsonl`, `reputation.jsonl` and `skills.jsonl`, and the review list,
    `tools\forever_import_review.csv`. It downloads the client tables and the CMaNGOS dump it doesn't
@@ -1068,6 +1105,9 @@ git diff --stat
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
   step 10 for Forever. Its four "character level" lines (the minimum level) must read 0, and
   the run exits with 1 when they don't.
+- For changes to `Read-QuestCache.ps1` or `Compare-QuestCache.ps1`, run `Test-QuestCache.ps1` and
+  `Test-CompareQuestCache.ps1`. They build their own caches, API records and tables in a scratch
+  folder; each must end "N checks passed, 0 failed".
 - For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
@@ -1106,7 +1146,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday evidence is read by hand ([Holidays](#holidays)) |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\`; the holiday evidence is read by hand ([Holidays](#holidays)) |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv` |

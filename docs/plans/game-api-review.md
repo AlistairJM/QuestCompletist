@@ -109,6 +109,10 @@ Retail has none.
 | Quests whose only pins are nameless | 2,711 | 11 |
 | Quests flagged unavailable | 218 | 0 |
 
+Counted again on 9 October 2026 (master a288b24), retail: pins 15,202; with an NPC ID 10,564; with
+neither 4,301; quests with no pin at all 10,361; quests whose only pins are nameless 3,696 counting
+every quest ID a pin lists, as the table does (3,600 counting only quests we hold).
+
 Fields no offline source gives: whether a quest is account-wide (done once per warband), the
 expansion of a quest (the menus group by expansion by hand), a zone's level range, the item a quest
 starts from (not shipped), and the NPC a quest is handed in to (not shipped). Text still in English
@@ -540,7 +544,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 10 | **Conversion check:** run the Forever importer's spawns through `C_Map.GetMapPosFromWorldPos` without an override, and retail's pins through `GetWorldPosFromMapPos` and back, and compare with the tools' results | probe, tool | the client's own map choice for overlapping frames (the importer's rules reach 98.2%); a check of the pipeline's formula | small to medium: the probe needs the world coordinates in its lists | none |
 | 11 | **An API check every sweep:** a tool that downloads both branches' documentation for the current builds, lists the functions and events of the namespaces the addon uses, and reports what was added or removed since the saved list, as `Compare-ClientTables.ps1` does for tables (step 2b). The Lua loader written for this review is its core | tool | no silent loss of a function the addon calls at a patch; new functions noticed | small | none |
 | 12 | **Zone level ranges** from `C_Map.GetMapLevels` on zone categories | addon | "Westfall (10–15)" in menus or tooltips | small | check Forever answers |
-| 13 | **Starting items:** a data field from TrinityCore, CMaNGOS and Forever's cache (the recorder adds what it sees), shown as "Starts from: <item>" through `C_Item.GetItemNameByID` | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
+| 13 | **Starting items:** a data field from `ItemSparse`'s `StartQuestID`, CMaNGOS's `item_template.startquest` (Forever) and what the recorder sees, shown as "Starts from: <item>" through `C_Item.GetItemNameByID`. Not from the `StartItem` of TrinityCore, the quest cache or the task table: that is the item handed over on accept ([retail-quest-cache.md](retail-quest-cache.md)) | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
 | 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | later |
 | 15 | **Treasures and rares** from `C_VignetteInfo` | recorder, addon | names and places for hidden tracking quests | medium | a new feature, not planned |
 

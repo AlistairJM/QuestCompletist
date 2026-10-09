@@ -128,7 +128,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
-2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`, #141): decodes the cache records, checked
+2. **Cache reader** (tool, `tools/Read-QuestCache.ps1`, #141, called Read-ForeverQuestCache.ps1 until retail's layout was added): decodes the cache records, checked
    against CMaNGOS for the quests both have.
 3. **CMaNGOS importer** (tool, `tools/Import-ForeverData.ps1`, #142): turns the dump into
    `data/forever`, with spawns converted to map positions. It merges the probe, cache and recorder results, and lists every disagreement for
@@ -190,7 +190,7 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 
 ### Phase 2: the cache reader (5 October 2026)
 
-`tools/Read-ForeverQuestCache.ps1` reads `questcache.wdb` into
+`tools/Read-QuestCache.ps1` reads `questcache.wdb` into
 `tools/forever_quest_cache_<build>.jsonl`, one quest per line:
 - **Always:** id, title, level, minLevel and sort (the zone, or a negative QuestSort for class,
   profession and holiday quests).

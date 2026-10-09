@@ -79,7 +79,7 @@ quest at once.
     our data; `SkillLine.ParentSkillLineID` maps each line to its base profession's bit. Retail has
     no quest skill requirements otherwise ([forever.md](forever.md), "Profession skill
     requirements").
-  - **StartItem** for 198 (191 ours, 42 with a pin), **QuestInfoID** (World Quest, Rare World
+  - **StartItem** (the item handed over on accept) for 198 (191 ours, 42 with a pin), **QuestInfoID** (World Quest, Rare World
     Quest, Battle Pet World Quest, Calling Quest and so on) and **ContentTuningID** for 5,961.
   - **BreadCrumbID** is set for 11, and the pairs are unrelated quests ("Fashion Week" to a Battle
     for Azeroth work order), so it's unusable.
@@ -185,7 +185,9 @@ and Cfg_TimeEventRegionGroup.
    the next change to its menu.
 
 Not recommended: everything marked No above. ContentTuning in particular adds nothing to the API's
-level ranges, though measuring it raised a data question worth its own note: on retail our `level`
+level ranges for the quests the API has (update, 9 October 2026: the retail quest cache carries a
+ContentTuningID for all 32,713 quests it holds, so the table would give a level range for 4,305 of the
+4,955 the API has no record of: [retail-quest-cache.md](retail-quest-cache.md)), though measuring it raised a data question worth its own note: on retail our `level`
 is the API's minimum, and the low-level filter compares it with the character's level,
 so a quest that scales up to 30 can count as low level long before the game greys it. The API's
 maximum would fix that; it isn't a table question. (Forever's `level` is the quest's own level,
