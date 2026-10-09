@@ -4,7 +4,7 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
 
   - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
     some start (QuestPOIBlob and QuestPOIPoint);
-  - the quest cache file Read-ForeverQuestCache.ps1 writes: what the server says about each quest it
+  - the quest cache file Read-QuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
     quests the beta didn't answer, and who starts each quest and where they stand;
@@ -115,7 +115,7 @@ $ProgressPreference = "SilentlyContinue"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
 if (-not $CacheFile) { $CacheFile = "$ToolsDir\forever_quest_cache_$Build.jsonl" }
-if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-ForeverQuestCache.ps1 first." }
+if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-QuestCache.ps1 first." }
 if (-not $ProbeFile) {
     $ProbeFile = Get-ChildItem "$ToolsDir\forever_probe_*\QCForeverProbe.lua" -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime | Select-Object -Last 1 -ExpandProperty FullName
@@ -535,7 +535,7 @@ foreach ($id in $ids) {
     $type = if ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 } elseif ($m -and ($m.Special -band 1)) { 2 }
         elseif ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($profession) { 32 } else { 1 }
 
-    if ($c -and $null -eq $c.minLevel) { throw "$CacheFile gives quest $id no minLevel. Rerun Read-ForeverQuestCache.ps1." }
+    if ($c -and $null -eq $c.minLevel) { throw "$CacheFile gives quest $id no minLevel. Rerun Read-QuestCache.ps1." }
     $level = if ($c) { [int]$c.level } else { $m.Level }
     $minLevel = if ($c) { [int]$c.minLevel } else { $m.MinLevel }
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $level
@@ -582,7 +582,7 @@ $reputationLines = @(foreach ($id in ($records.Keys | Sort-Object)) {
     if ($null -eq $c.reputation) { continue }
     $rewarding++
     foreach ($reward in $c.reputation) {
-        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-ForeverQuestCache.ps1." }
+        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-QuestCache.ps1." }
         '{"quest":' + $id + ',"faction":' + $reward[0] + ',"amount":' + $reward[1] + '}'
     }
 })
