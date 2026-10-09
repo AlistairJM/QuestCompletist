@@ -90,6 +90,20 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   Since 6 October 2026 a prereq can also be a list, and 8,306 quests have one
   ([quest-table-checks.md](quest-table-checks.md)).
   The code reads them as "nil means none", where it used to test for 0.
+- **The minimum level** is in `qcQuestMinLevel`, keyed by quest ID, since 9 October 2026. The row's
+  level is the quest's own; the table holds the level a character needs to take a quest whose
+  minimum isn't its level, and keeps a 0. Retail's table is empty because its level is already read
+  as the minimum: it is meant to be the API's `min_character_level`, and today equals the API's for
+  28,455 of the 30,066 quests whose API record gives one (94.6%). Refreshing retail's levels from
+  the API is a separate decision ([maintenance.md](../maintenance.md#the-quest-and-pin-data-files)
+  has the counts). Forever's table has 4,180 entries. The tooltip's "Requires Level" line, the grey
+  pins and the requirements filter read `qcQuestMinLevel[id] or level`; the list's bracket, sort and
+  low-level filter read the level. On Forever's quest data the table adds 48,948 bytes to the file
+  (305,031 to 353,979) and 256 KB when loaded (a table with 4,180 keys; Lua 5.1, 32-bit), 20% of the
+  quest data's 1,275 KB. A ninth value in the rows would have cost about half that in memory
+  (+130.5 KB), so the keyed table costs about twice as much. It was chosen because the project
+  prefers a keyed table for sparse data to a new field in the row layout both games share, and it is
+  the design the user approved ([load-and-memory.md](load-and-memory.md) has the measurements).
 - **The zone text isn't written to the Lua.** The game never read it; it stays in the data file for
   the tools.
 - **The quest ID isn't repeated inside its row.** The quest list now holds quest IDs rather than
@@ -120,7 +134,8 @@ every one (15 in all).
   wrapping and silently drop it. JSON Lines also names the field next to each value, so a change to
   one field is readable in a diff. PowerShell 5.1 reads all 35,023 quests in about a second.
 - **Fields that are usually empty are left out** of a record rather than written as 0: a quest's
-  profession, holiday, covenant, storyline and prereq; a pin's npc, name and note.
+  profession, holiday, covenant, storyline and prereq; a pin's npc, name and note. A quest's
+  minLevel is left out when it is the quest's level; a 0 is a minimum, and kept.
 - **The class mask is the game's; the race mask stays the addon's own** (2026-10-06). Blizzard's
   class mask is 1 shifted left by the class ID less one, and ours differed only in Monk and Druid,
   which were swapped; now class masks from the API, the client tables and CMaNGOS are used as they

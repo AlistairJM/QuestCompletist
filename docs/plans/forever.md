@@ -221,10 +221,12 @@ the client's `QuestV2`, the quest cache file, CMaNGOS's dump and the probe's sav
 downloads the dump and any client tables it lacks. Since 6 October a fifth source,
 `forever-quest-givers.csv` and `forever-quest-zones.csv`, adds givers and zones looked up by hand
 (see "Race headings" and "Treasure Map" below).
-- **The game wins wherever it speaks.** Title, level, zone, recurrence and race restrictions come
-  from the cache, and recorded spots and NPC names from the probe.
+- **The game wins wherever it speaks.** Title, level, minimum level, zone, recurrence and race
+  restrictions come from the cache, and recorded spots and NPC names from the probe.
 - **The files use retail's fields and conventions** (see the tool's header), so the existing build
-  turns them into Lua. Tried into a scratch folder, it wrote a 267 KB `qcQuestData.lua` and an 87 KB
+  turns them into Lua. `level` is the quest's own level, which the list shows; since 9 October 2026
+  `minLevel`, the level a character needs to take it, is kept beside it where it differs (see the
+  log below). Tried into a scratch folder, it wrote a 267 KB `qcQuestData.lua` and an 87 KB
   `qcPinDB.lua`, both passing `luac -p`.
 
 From the beta's data (9 seconds, with the same files on a rerun):
@@ -824,3 +826,17 @@ these level 60 quests.
   none, as retail's pipeline does now (`quest-location-data-pipeline.md`, "October 2026, pins at the
   start"). Forever's data is unchanged until the next import, which would move 5 of the 11 quests
   pinned from the client's start points (92748, 92750, 92751, 92752 and 92753).
+- 2026-10-09: the importer keeps each quest's minimum level, `minLevel`: the game's, else CMaNGOS's,
+  as given. The file holds it only where it differs from the quest's own `level`, 4,180 of the 5,081
+  quests (2,436 from the game, 1,744 from CMaNGOS; 4,154 below the level, 2 of them 0 for no minimum,
+  and 26 above), and the build writes it to `qcQuestMinLevel`. The tooltip's "Requires Level" line,
+  the grey pins and the requirements-not-met filter read it; the list's bracket, sort and low-level
+  filter still read `level`. Before, they all read the quest's own level: a level 10 character was
+  told 808 quests (438 with pins) needed a level it didn't. The summary gains a "Minimum levels:"
+  line, so a sweep can compare it with this baseline (build 1.60.1.70205): 4,180 quests, 2,436 from
+  the game and 1,744 from CMaNGOS, 26 above the quest's level, 2 at 0. The rest of the data is
+  unchanged: a rerun from the same sources, into a scratch folder, writes the same `quests.jsonl`,
+  `links.jsonl`, `reputation.jsonl` and `skills.jsonl` and the same review list. It does not write
+  the same `pins.jsonl`: the committed one still waits for the 2026-10-08 start point change above,
+  so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
+  with them.

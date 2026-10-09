@@ -14,9 +14,9 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
     can't place. A listed NPC stands where CMaNGOS or the recorder puts it.
 
-The game wins wherever it speaks. Title, level, zone, recurrence and race restrictions come from the
-cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC names come
-from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
+The game wins wherever it speaks. Title, level, minimum level, zone, recurrence and race restrictions
+come from the cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC
+names come from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
 listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out.
 Quests with internal titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows)
 are left out.
@@ -27,6 +27,9 @@ to 35, where the beta answers nearly every quest, is left out too, until the gam
 Every kept quest QuestV2 lacks is listed for review.
 
 The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Forever's values:
+  level     the quest's own level: the game's, else CMaNGOS's QuestLevel.
+  minLevel  the level a character needs to take the quest: the game's, else CMaNGOS's MinLevel, as
+            given (0 is kept, for no minimum). Left out where it is the quest's level.
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
             profession, holiday and Forever's other headings; CMaNGOS's when the game's record
             has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
@@ -532,10 +535,14 @@ foreach ($id in $ids) {
     $type = if ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 } elseif ($m -and ($m.Special -band 1)) { 2 }
         elseif ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($profession) { 32 } else { 1 }
 
-    $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $(if ($c) { [int]$c.level } else { $m.Level })
+    if ($c -and $null -eq $c.minLevel) { throw "$CacheFile gives quest $id no minLevel. Rerun Read-ForeverQuestCache.ps1." }
+    $level = if ($c) { [int]$c.level } else { $m.Level }
+    $minLevel = if ($c) { [int]$c.minLevel } else { $m.MinLevel }
+    $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $level
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
         type = $type; faction = $faction; race = $race; class = $class; profession = $profession; holiday = $holiday
-        covenant = 0; storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0 }
+        covenant = 0; storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0
+        minLevel = $(if ($minLevel -ne $level) { $minLevel } else { $null }) }
 }
 
 $previousByNext = @{}
@@ -799,6 +806,10 @@ Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2}
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f
     $skillLines.Count, @($skillLines | Where-Object { $_ -notmatch '"level":1\}$' }).Count)
+$withMinLevel = @($questList | Where-Object { $null -ne $_.minLevel })
+Write-Host ("Minimum levels: {0} quests need another level than their own, {1} from the game and {2} from CMaNGOS; {3} are above the quest's level, {4} are 0." -f
+    $withMinLevel.Count, @($withMinLevel | Where-Object { $cache.ContainsKey($_.id) }).Count, @($withMinLevel | Where-Object { -not $cache.ContainsKey($_.id) }).Count,
+    @($withMinLevel | Where-Object { $_.minLevel -gt $_.level }).Count, @($withMinLevel | Where-Object { $_.minLevel -eq 0 }).Count)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
 if ($WhatIf) { return }

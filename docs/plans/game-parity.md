@@ -68,6 +68,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Breadcrumbs, "only one of these" | 279 and 249 lines | 93 and 257 | both | – |
 | Reputation rewards | 11,035 | 1,837 quests | both; API against the quest cache | – |
 | Renown requirements | 96 | none | nature | No |
+| Minimum level: `qcQuestMinLevel` | none (empty table) | 4,180 | **data:** retail's `level` is already read as the minimum: it is meant to be the API's, and equals the API's today for 28,455 of the 30,066 quests whose API record gives one (94.6%; 1,611 differ). Forever's is the quest's own level, with the minimum from its quest cache or CMaNGOS. The readers take `qcQuestMinLevel[id] or level`, whichever game | Shared code, no gate on the game. Refreshing retail's levels from the API is a separate decision |
 | Skill requirements | none | 141 | **data** (the code row above) | Yes: `QuestV2CliTask` and TrinityCore |
 | Unavailable flags | 218 | 0 | process (above) | Later |
 | Pins with an NPC ID | 10,564 of 15,202 | 1,503 of 1,706 | both; retail's IDs from TrinityCore and the client's giver table (#208), Forever's from CMaNGOS | – |
@@ -101,7 +102,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | The NPC-name check | once, in #112, for the 6,468 IDs then | every build, `/qcprobe npcs` | process | **Yes:** a retail NPC list for the probe, from the pins, run each sweep (3 to 4 minutes) |
 | The recorder | **none** | every time the game is played | process; the biggest gap | **Yes:** API review, recommendation 1 |
 | The map pass | done (7 October) | done (7 October) | – | run on both each sweep (maintenance.md, step 4b) |
-| The quest cache reader (`Read-ForeverQuestCache.ps1`) | **none** | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Maybe:** it would give retail the starting item, the quest sort and the minimum level per quest, which Blizzard's API doesn't; the start item is the prize (API review, recommendation 13). The reader stops on a layout it doesn't know, so retail's layout is the first thing to try |
+| The quest cache reader (`Read-ForeverQuestCache.ps1`) | **none** | every sweep | process: retail's `questcache.wdb` holds the same server records for the 31,425 quests the type probe loaded (localized-quest-names.md), in the same layout the reader checks | **Maybe:** it would give retail the starting item, the quest sort and the level the server asks for (`minLevel`, which Forever's `qcQuestMinLevel` is made from; retail's `level` was taken from the API's minimum and differs from it today for 1,611 quests: see maintenance.md, "The quest and pin data files"); the start item is the prize (API review, recommendation 13). The reader stops on a layout it doesn't know, so retail's layout is the first thing to try |
 | Hand lists | `pin-npc-id-decisions.csv` | `forever-quest-givers.csv`, `forever-quest-zones.csv` | – | equivalent |
 | Release | one ZIP, both TOCs | – | shared |
 
