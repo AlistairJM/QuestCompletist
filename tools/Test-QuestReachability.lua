@@ -16,6 +16,12 @@ character has every profession, at the highest skill.
 The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn. An event the calendar
 never shows, such as the Scourge Invasion, can't be on, so its pins get a section of their own.
 
+The minimum level is checked at character levels 1, 10, 30 and 60: the tooltip's "Requires Level" line,
+the grey pins and the requirements filter must follow each quest's minLevel (else its level) in the data
+file qcQuestData.lua was built from, while the low-level filter and the bracket and sort of the list (its
+first 16 rows in each category) must still follow its level. Any wrong reading fails the run (exit
+status 1).
+
 Trying every race, class, covenant and holiday together is ~28k combinations per map, far too slow.
 Each filter group only reads its own part of the character (faction and race/class read race,
 faction and class; covenant reads the covenant; seasonal reads the calendar), so each group is swept on
@@ -101,7 +107,8 @@ local env = {
 	UnitFactionGroup = function() return P.faction, P.faction end,
 	UnitRace = function() return P.race, P.race end,
 	UnitClass = function() return P.class, P.class end,
-	UnitLevel = function() return 1000 end,
+	UnitLevel = function() return P.level or 1000 end,
+	ITEM_MIN_LEVEL = "Requires Level %d",
 	UnitQuestTrivialLevelRange = function() return 5 end,
 	GetProfessions = function() return unpack(PROFESSION_INDEXES) end,
 	GetProfessionInfo = function(index) return nil, nil, nil, nil, nil, nil, PROFESSION_SKILLS[index] end,
@@ -145,17 +152,22 @@ local function runFile(name, trailer)
 end
 
 --[[ Load the addon in TOC order, reaching the core's file-local helpers through a trailing return ]]--
-local core
+local core, pinCode, questDataFile
 for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file == "qcCore.lua" then
 		core = runFile(file,
 			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, Holidays = qcHolidays}")
+	elseif file == "qcMapPins.lua" then
+		pinCode = runFile(file, "\nreturn {Needs = qcPinQuestNeeds, Greyed = qcPinGreyed}")
 	elseif file and file:sub(1, 4) ~= "Libs" then
+		if file:match("qcQuestData%.lua$") then questDataFile = file end
 		runFile(file)
 	end
 end
 assert(core and type(core.BuildListFilter) == "function", "qcBuildViewFilter not found in qcCore.lua")
+assert(pinCode and type(pinCode.Needs) == "function" and type(pinCode.Greyed) == "function", "qcPinQuestNeeds not found in qcMapPins.lua")
+assert(questDataFile, "qcQuestData.lua is not in the TOC")
 
 local QUESTS = env.qcQuestDatabase
 local PIN_DB = env.qcPinDB
@@ -658,6 +670,133 @@ end
 out()
 note(string.format("%d holiday values with no calendar holiday in qcHolidays", count(unknownHolidays)))
 
+--[[ Minimum level ]]--
+-- A quest's minimum level is its minLevel in the data file qcQuestData.lua was built from, else its
+-- level. The tooltip's "Requires Level" line, the grey pins and the requirements filter must follow it
+-- at any character level. The character here has no faction, race or class, and has done every quest
+-- to do first, so nothing else stands between it and a quest. The list's bracket and sort and the
+-- low-level filter must still follow the quest's own level, its level in the data file.
+local minimumLevels, ownLevels = {}, {}
+do
+	local source = readFile(ADDON_DIR .. "/" .. questDataFile):match("^%-%- Generated from (.-) by tools")
+	local handle = source and io.open(ADDON_DIR .. "/../" .. (source:gsub("\\", "/")), "rb")
+	if handle then
+		for line in handle:lines() do
+			local id, level = line:match('^{"id":(%d+),.-,"level":(-?%d+),"zone"')
+			if id then
+				ownLevels[tonumber(id)] = tonumber(level)
+				minimumLevels[tonumber(id)] = tonumber(line:match('[,{]"minLevel":(%d+)')) or tonumber(level)
+			end
+		end
+		handle:close()
+	end
+end
+
+local levelProblems = 0
+if next(minimumLevels) then
+	local todo = ADDON_TABLE.qcQuestStatus.TODO
+	local function ids(set)
+		local list = sortedNumbers(set)
+		return string.format("%d%s", #list, #list > 0 and (": " .. table.concat(list, ", ", 1, math.min(#list, 20)) .. (#list > 20 and ", ..." or "")) or "")
+	end
+	local function withPins(set)
+		local n = 0
+		for id in pairs(set) do if pairsByQuest[id] then n = n + 1 end end
+		return n
+	end
+	local buttons, categories = {}, {}
+	for i = 1, 16 do
+		buttons[i] = stubTable({QuestName = stubTable({SetText = function(self, text) self.text = text end})})
+		_G["qcMenuButton" .. i] = buttons[i]
+	end
+	env.qcMenuSlider = stubTable({SetValue = function(self, value) self.value = value end, GetValue = function(self) return self.value end})
+	for _, e in pairs(QUESTS) do categories[e[3]] = true end
+	for _, level in ipairs({1, 10, 30, 60}) do
+		P.level, P.faction, P.race, P.class = level, nil, nil, nil
+		applySettings({QC_L_HIDE_REQUIREMENTSNOTMET = true})
+		local filter = core.BuildListFilter()
+		local told, missed, otherLevel, hidden, shown, notInData = {}, {}, {}, {}, {}, {}
+		for id in pairs(QUESTS) do
+			local minimum = minimumLevels[id]
+			if not minimum then
+				notInData[id] = true
+			else
+				local needed = minimum > level
+				local line = pinCode.Needs(id, todo)
+				local expected = needed and string.format(env.ITEM_MIN_LEVEL, minimum) or nil
+				if line ~= expected then
+					if line and not needed then told[id] = true
+					elseif needed and not line then missed[id] = true
+					else otherLevel[id] = true end
+				end
+				local passes = filter(id)
+				if passes and needed then shown[id] = true
+				elseif not passes and not needed then hidden[id] = true end
+			end
+		end
+		local greyWrongly, plainWrongly = {}, {}
+		for mapId, pins in pairs(PIN_DB) do
+			for index, pin in ipairs(pins) do
+				local expected = true
+				for _, questId in ipairs(pin[6]) do
+					if QUESTS[questId] and (minimumLevels[questId] or 0) <= level then expected = false break end
+				end
+				local grey = pinCode.Greyed(pin)
+				if grey and not expected then greyWrongly[mapId * 100000 + index] = true
+				elseif not grey and expected then plainWrongly[mapId * 100000 + index] = true end
+			end
+		end
+		local lowLevel, bracket, order = {}, {}, {}
+		applySettings({QC_L_HIDE_LOWLEVEL = true})
+		local lowLevelFilter = core.BuildListFilter()
+		for id, own in pairs(ownLevels) do
+			if QUESTS[id] and lowLevelFilter(id) == (own < level - env.UnitQuestTrivialLevelRange()) then lowLevel[id] = true end
+		end
+		applySettings({})
+		for categoryId in pairs(categories) do
+			env.qcUpdateQuestList(categoryId, 1)
+			local previous = -math.huge
+			for _, button in ipairs(buttons) do
+				local id, text = button.QuestID, button.QuestName.text
+				local own = ownLevels[id]
+				if text == "#" then break end
+				if own and tonumber(text:match("^%[(%-?%d+)%]")) ~= own then bracket[id] = true end
+				if own and own < previous then order[id] = true end
+				previous = own or previous
+			end
+		end
+		local needWrong, noneWrong = {}, {}
+		for id in pairs(told) do needWrong[id] = true end
+		for id in pairs(hidden) do needWrong[id] = true end
+		for id in pairs(missed) do noneWrong[id] = true end
+		for id in pairs(shown) do noneWrong[id] = true end
+		out(string.format("== Minimum level, character level %d", level))
+		out("  tooltip says a level is needed that the character has: " .. ids(told))
+		out("  tooltip says none is needed when one is: " .. ids(missed))
+		out("  tooltip gives another level than the minimum: " .. ids(otherLevel))
+		out("  requirements filter hides a quest the character has the level for: " .. ids(hidden))
+		out("  requirements filter shows a quest the character lacks the level for: " .. ids(shown))
+		out(string.format("  pins greyed although a quest on them can be taken: %d; not greyed although none can: %d",
+			count(greyWrongly), count(plainWrongly)))
+		out("  low-level filter not following the quest's own level: " .. ids(lowLevel))
+		out("  list bracket not the quest's own level (first 16 rows of each category): " .. ids(bracket))
+		out("  list sort not by the quest's own level (first 16 rows of each category): " .. ids(order))
+		out("  quests in qcQuestData.lua that the data file lacks: " .. ids(notInData))
+		out()
+		note(string.format("character level %d: %d quests (%d with pins) wrongly need a level, %d (%d) wrongly need none, %d need another; %d pins wrongly grey, %d wrongly not; %d wrong low-level, %d bracket, %d sort",
+			level, count(needWrong), withPins(needWrong), count(noneWrong), withPins(noneWrong), count(otherLevel),
+			count(greyWrongly), count(plainWrongly), count(lowLevel), count(bracket), count(order)))
+		levelProblems = levelProblems + count(needWrong) + count(noneWrong) + count(otherLevel) + count(greyWrongly) +
+			count(plainWrongly) + count(lowLevel) + count(bracket) + count(order) + count(notInData)
+	end
+	P.level = nil
+else
+	out("== Minimum level: not checked, the data file qcQuestData.lua was built from wasn't found")
+	out()
+	note("minimum level not checked: the data file qcQuestData.lua was built from wasn't found")
+	levelProblems = 1
+end
+
 local handle = assert(io.open(REPORT_FILE, "wb"))
 handle:write(table.concat(lines, "\n"), "\n")
 handle:close()
@@ -666,3 +805,7 @@ realPrint()
 for _, text in ipairs(summary) do realPrint("  " .. text) end
 realPrint()
 realPrint("Full report: " .. REPORT_FILE)
+if levelProblems > 0 then
+	realPrint(string.format("FAILED: the minimum level check found %d problems", levelProblems))
+	os.exit(1)
+end

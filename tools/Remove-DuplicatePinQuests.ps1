@@ -18,16 +18,25 @@ same quest are different quest givers (class trainers), and keep it.
 
 Only data\pins.jsonl changes, then qcPinDB.lua is rebuilt. Running it again changes nothing.
   .\Remove-DuplicatePinQuests.ps1 -WhatIf     lists what would change
+  .\Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf     the same on data\forever\pins.jsonl, whose
+        pins the importer writes; Forever has no equivalent of retail's start points in
+        quest_locations.csv, so only the second rule applies, and it has no decisions file
 #>
 param(
+    [string]$Game = 'retail',
     [string]$ToolsDir = $PSScriptRoot,
-    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
-    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
-    [string]$DecisionsCsv = (Join-Path $PSScriptRoot '..\docs\plans\pin-npc-id-decisions.csv'),
+    [string]$DataDir = '',
+    [string]$AddonDir = '',
+    [string]$DecisionsCsv = '',
     [switch]$WhatIf
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\AddonData.ps1"
+if ($Game -notin 'retail', 'forever') { throw "-Game must be retail or forever." }
+$forever = $Game -eq 'forever'
+if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot $(if ($forever) { '..\data\forever' } else { '..\data' }) }
+if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot $(if ($forever) { '..\QuestCompletist\Forever' } else { '..\QuestCompletist' }) }
+if (-not $DecisionsCsv -and -not $forever) { $DecisionsCsv = Join-Path $PSScriptRoot '..\docs\plans\pin-npc-id-decisions.csv' }
 
 $groupDistance = 3.0
 $sameSpot = 1.5
@@ -41,7 +50,7 @@ for ($i = 0; $i -lt $count; $i++) { $x[$i] = [double]$pins[$i].x; $y[$i] = [doub
 function Get-Distance([int]$a, [int]$b) { $dx = $x[$a] - $x[$b]; $dy = $y[$a] - $y[$b]; return [math]::Sqrt($dx * $dx + $dy * $dy) }
 
 $startPoints = @{}
-foreach ($row in Import-Csv "$ToolsDir\quest_locations.csv") {
+foreach ($row in $(if ($forever) { @() } else { Import-Csv "$ToolsDir\quest_locations.csv" })) {
     $key = "$($row.UiMapID)|$($row.QuestID)"
     if (-not $startPoints.ContainsKey($key)) { $startPoints[$key] = New-Object System.Collections.Generic.List[double[]] }
     $startPoints[$key].Add([double[]]@([double]$row.MapX, [double]$row.MapY))
@@ -104,7 +113,7 @@ foreach ($key in ($pinsOf.Keys | Sort-Object)) {
             foreach ($i in $near) {
                 $spot = $null
                 foreach ($s in $spots) { if ((Get-Distance $s[0] $i) -le $drawnAsOne) { $spot = $s; break } }
-                if ($spot) { $spot.Add($i) } else { $spots.Add((New-Object System.Collections.Generic.List[int] (, [int[]]@($i)))) }
+                if ($null -ne $spot) { $spot.Add($i) } else { $spots.Add((New-Object System.Collections.Generic.List[int] (, [int[]]@($i)))) }
             }
             foreach ($s in $spots) { $keep.Add((Get-Preferred $s.ToArray())) }
             if ($spots.Count -gt 1) { $leftAlone.Add("  map ${map}: quest $questId on " + (($keep | ForEach-Object { Get-PinText $_ }) -join '; ')) }
@@ -145,7 +154,7 @@ function Get-PlaceKey($map, $px, $py) {
     $format = '0.############################'
     return "$map|$(([decimal]$px).ToString($format, $script:Invariant))|$(([decimal]$py).ToString($format, $script:Invariant))"
 }
-if ($removedPins.Count -and (Test-Path $DecisionsCsv)) {
+if ($removedPins.Count -and $DecisionsCsv -and (Test-Path $DecisionsCsv)) {
     $gone = @{}
     foreach ($i in $removedPins) { $gone[(Get-PlaceKey $pins[$i].map $pins[$i].x $pins[$i].y)] = $true }
     $rows = @(Import-Csv $DecisionsCsv -Encoding UTF8 | Where-Object {

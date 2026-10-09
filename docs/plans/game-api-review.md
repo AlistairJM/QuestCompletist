@@ -109,6 +109,10 @@ Retail has none.
 | Quests whose only pins are nameless | 2,711 | 11 |
 | Quests flagged unavailable | 218 | 0 |
 
+Counted again on 9 October 2026 (master a288b24), retail: pins 15,202; with an NPC ID 10,564; with
+neither 4,301; quests with no pin at all 10,361; quests whose only pins are nameless 3,696 counting
+every quest ID a pin lists, as the table does (3,600 counting only quests we hold).
+
 Fields no offline source gives: whether a quest is account-wide (done once per warband), the
 expansion of a quest (the menus group by expansion by hand), a zone's level range, the item a quest
 starts from (not shipped), and the NPC a quest is handed in to (not shipped). Text still in English
@@ -348,13 +352,20 @@ name a quest as a tracked collectable's source, but only per collectable, never 
 
 ### C_Calendar (90 functions, 13 events, both games)
 
-`SetAbsMonth`, `GetMonthInfo`, `GetNumDayEvents` and `GetDayEvent` are used, and `GetDayEvent`'s
+`SetAbsMonth`, `GetMonthInfo`, `GetNumDayEvents`, `GetDayEvent` and `OpenCalendar` are used, and `GetDayEvent`'s
 `title` already names a holiday in the player's language. `GetHolidayInfo(monthOffset, day, index)`
 adds the description and texture; `SetMonth`, `GetMinDate`, `GetMaxCreateDate`, `GetRaidInfo`,
-`GetEventIndex` and `GetClubCalendarEvents` no; the other 79 create, invite and manage events. No
-new data. Event CALENDAR_UPDATE_EVENT_LIST says when the calendar's data has arrived: the holiday
-filter could re-read then, instead of keeping "the last answer" until the next read
-(maintenance.md, "Holidays"). The other 12 no.
+`GetEventIndex` and `GetClubCalendarEvents` no; the other 78 create, invite and manage events. No
+new data. `OpenCalendar` asks the server for the calendar's events, and event CALENDAR_UPDATE_EVENT_LIST
+says they've arrived: the addon calls the one at login and redraws the open map on the other
+(maintenance.md, "Holidays"). The other 12 events no. The calendar window's filters are CVars
+(`calendarShowHolidays`, `calendarShowDarkmoon`, `calendarShowWeeklyHolidays`, and three more for
+battlegrounds, raid lockouts and, on Forever, raid resets), and its Lua filters nothing itself, so
+the game must leave an unticked filter's events out of the day lists. The addon reads the three that
+hold its holidays with `GetCVarBool` (documented the same in both games, nil for a CVar the game
+doesn't have) and shows the quests of a holiday whose filter is unticked, since the calendar can't
+say whether it is running. Read from the source, not yet seen in game (maintenance.md, "Holidays",
+has the lines to try). The CVAR_UPDATE event exists in both games and isn't used.
 
 ### C_EventScheduler (11 functions, 1 event, both games)
 
@@ -520,7 +531,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Account-wide quests | nothing | `IsAccountQuest` | probe → data → addon |
 | Expansion | hand menus | `GetQuestExpansion` if it works | check |
 | Zone level ranges | nothing | `C_Map.GetMapLevels` | addon |
-| Starting item | not shipped (TrinityCore, CMaNGOS and Forever's cache have it; the client's `QuestV2CliTask` has it for 198 task quests only, per the client-tables review) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
+| Starting item | not shipped (CMaNGOS's `item_template.startquest` has it for old content; the `StartItem` of TrinityCore, the quest cache and `QuestV2CliTask` is the item handed over on accept, not the item that begins the quest: [retail-quest-cache.md](retail-quest-cache.md)) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
 | Waypoints | TomTom | `C_Map.SetUserWaypoint` and `C_SuperTrack` | addon |
 | Treasures and rares | not planned | `C_VignetteInfo` rewardQuestID | later |
 
@@ -534,13 +545,13 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 4 | **Scaling-aware levels:** the low-level filter asks `IsQuestTrivial`, and list rows, tooltips and grey pins take `GetQuestDifficultyLevel` and `GetContentDifficultyQuestForPlayer`, for quests whose data is loaded (the quest-name queue already loads what's on screen), falling back to the stored level | addon (both games) | the right "low level" answer for scaling quests and Chromie Time; Blizzard's own colours | medium | needs the quest's data, so the map's pins would queue loads like the NPC names do |
 | 5 | **Text from the game:** the storyline name from `GetQuestLineInfo(questID, nil, false)`, the campaign from `C_CampaignInfo`, and a classification or tag line from `QuestUtil.GetQuestClassificationInfo` and `GetQuestTagInfo` (Dungeon, Raid, Group, Elite, Important, Campaign), all in the player's language | addon | the last English storyline names gone; Blizzard's own labels | small | as with names, an English client shows Blizzard's wording where ours differed |
 | 6 | **Waypoints without TomTom:** on a pin click, `C_Map.SetUserWaypoint` on the pin and `C_SuperTrack.SetSuperTrackedUserWaypoint(true)`, when TomTom isn't loaded or as an option; `SetSuperTrackedMapPin(QuestOffer, questID)` where the game lists the offer | addon | an arrow to a pin for everyone | small | `CanSetUserWaypointOnMap` must be checked per map, and on Forever at all |
-| 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN, PLAYER_LEVEL_UP and CALENDAR_UPDATE_EVENT_LIST redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md) | addon | gated pins change the moment the requirement is met; holidays read as soon as the calendar answers | small | none |
+| 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN and PLAYER_LEVEL_UP redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md); CALENDAR_UPDATE_EVENT_LIST already does, for the seasonal filter | addon | gated pins change the moment the requirement is met | small | none |
 | 8 | **Follow the game's tracking toggles:** read `C_Minimap.IsTrackingAccountCompletedQuests` and `IsTrackingHiddenQuests` as the defaults of the warband and low-level filters, or as a "follow the minimap" option | addon | one setting instead of two | small | a design decision: the addon's filters have their own defaults and a settings grid |
 | 9 | **Availability from the offers:** with the map open, mark the quests `GetAvailableQuestLines` lists as offered to this character now, in progress, or done by the warband, on our pins and in tooltips | addon | the server's own word on availability, for storyline starts, forced quests and tasks | medium | covers only what the game lists; depends on what probe 3 finds |
 | 10 | **Conversion check:** run the Forever importer's spawns through `C_Map.GetMapPosFromWorldPos` without an override, and retail's pins through `GetWorldPosFromMapPos` and back, and compare with the tools' results | probe, tool | the client's own map choice for overlapping frames (the importer's rules reach 98.2%); a check of the pipeline's formula | small to medium: the probe needs the world coordinates in its lists | none |
 | 11 | **An API check every sweep:** a tool that downloads both branches' documentation for the current builds, lists the functions and events of the namespaces the addon uses, and reports what was added or removed since the saved list, as `Compare-ClientTables.ps1` does for tables (step 2b). The Lua loader written for this review is its core | tool | no silent loss of a function the addon calls at a patch; new functions noticed | small | none |
 | 12 | **Zone level ranges** from `C_Map.GetMapLevels` on zone categories | addon | "Westfall (10–15)" in menus or tooltips | small | check Forever answers |
-| 13 | **Starting items:** a data field from TrinityCore, CMaNGOS and Forever's cache (the recorder adds what it sees), shown as "Starts from: <item>" through `C_Item.GetItemNameByID` | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
+| 13 | **Starting items:** a data field from `ItemSparse`'s `StartQuestID`, CMaNGOS's `item_template.startquest` (Forever) and what the recorder sees, shown as "Starts from: <item>" through `C_Item.GetItemNameByID`. Not from the `StartItem` of TrinityCore, the quest cache or the task table: that is the item handed over on accept ([retail-quest-cache.md](retail-quest-cache.md)) | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
 | 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | later |
 | 15 | **Treasures and rares** from `C_VignetteInfo` | recorder, addon | names and places for hidden tracking quests | medium | a new feature, not planned |
 
@@ -767,7 +778,7 @@ them.
 
 - Changing the addon or any tool: this review only recommends.
 - The client's data tables: `client-tables-review.md` (#203). The tables this review points at
-  there, with what that review found: `QuestV2CliTask` (task quests only; a start item for 198,
+  there, with what that review found: `QuestV2CliTask` (task quests only; an on-accept item for 198,
   breadcrumbs for 11 unrelated pairs, skill filters), `PlayerCondition`, `ParagonReputation` (79
   rows), `AreaPOI` (linked to quests only through `QuestHub`), the campaign tables and `UiMap`'s
   content tuning.
