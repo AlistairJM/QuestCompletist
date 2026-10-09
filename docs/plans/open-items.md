@@ -80,6 +80,36 @@ again.
     ("Holidays") and in the C_Calendar section of [game-api-review.md](game-api-review.md), and take
     this item off the list.
 
+- **Which API reads an expansion's profession skill, on retail (two lines, retail only).** Retail's
+  skill requirements are on expansion skill lines: of the 524 task quests with a skill filter, 464
+  name one ("Legion Mining" 2566, "Kul Tiran Herbalism" 2549, "Legion Skinning" 2558, whose parents
+  in `SkillLine.csv` are the base professions 186, 182 and 393) and 60 a base line (Fishing 356 x44,
+  Jewelcrafting 755 x12, Tailoring 197 x4). Offline, Blizzard's own profession book
+  (`Blizzard_ProfessionsBook`) reads `GetProfessionInfo` as rank and maximum of a line it titles
+  with the 11th value `skillLineName`, with a base `skillLine` in the 7th (it hands that one to the
+  unlearn dialog); that the line is the newest known one is an inference from that code, not seen.
+  So the fallback in `qcSkillRank` can answer for the base lines and for nothing else, which is why
+  it says "can't say" for the rest. The API that may answer for an expansion line is
+  `C_TradeSkillUI.GetProfessionInfoBySkillLineID`; what the game alone can say is whether it works
+  with the professions window shut and returns the character's level. On a retail character with a
+  profession, best one with an older expansion's skill, in a city, window shut, entered one at a
+  time:
+
+  ```text
+  /run for _,i in pairs({GetProfessions()}) do print(GetProfessionInfo(i)) end
+  /run for _,l in ipairs(C_TradeSkillUI.GetAllProfessionTradeSkillLines()) do local i=C_TradeSkillUI.GetProfessionInfoBySkillLineID(l) if i and (i.skillLevel or 0)>0 then print(l,i.professionName,i.skillLevel,i.maxSkillLevel) end end
+  ```
+
+  Paste back both outputs.
+  - The second lists expansion lines (2566 and the like) with the character's levels: the API reads
+    them with the window shut, and `qcSkillRank` can use it on a client without `C_SkillInfo`, then
+    the data from `QuestV2CliTask` and TrinityCore (recommendation 3 of
+    [game-parity.md](game-parity.md)). Nothing, a Lua error, or only base lines: it needs the window,
+    and an expansion line stays "can't say" on retail; the data then covers the base lines only.
+  - The first shows whether the 7th value is a base line (164, 186 ...) and the rank the newest
+    line's, as read above.
+  - No offline test can answer this: the stand-ins for the client only return what they are given.
+
 ## Decisions waiting for the user
 
 | # | Decision | Recommendation | Detail |
@@ -141,7 +171,7 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
    data (recommendations 4 and 5).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an
-   expansion's skill line (recommendation 3).
+   expansion's skill line (recommendation 3): the two lines are under "To try in game".
 6. The dungeon journal on Forever, the quest cache reader on retail, the importer's `QuestLine` row
    counts (recommendations 9, 6, 7).
 7. A review of Forever's hidden and test quests, after its launch on 4 November (recommendation 10).
