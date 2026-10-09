@@ -29,6 +29,13 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 
 ## To try in game
 
+Keep the manual checking small. The user has said (9 October 2026) that long in-game test sheets are
+too much to ask. The code and the data are checked offline (the real addon files under stand-in APIs,
+counts recomputed a second way, the repo's test tools), so ask for in-game testing only for what the
+game alone can answer, such as what an API call returns or how retail and Forever differ, as a few
+lines per game and a few minutes in all, and say what was verified offline instead of asking for it
+again.
+
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
@@ -41,23 +48,35 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 - **The calendar window's filters, on both games (#243, merged 9 October 2026, not released).** The
   seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
   source that the game then leaves its events out of the calendar. Nobody has seen that in game.
-  The lines to paste on the Forever beta and on retail, and what each result means, are in
-  [maintenance.md](../maintenance.md), "Holidays". When they have been run:
-  - The results settle four things: whether `GetNumDayEvents` and `GetDayEvent` drop an unticked
-    filter's events (also before the calendar window has been opened in a session), whether each ID
-    in `qcHolidays` sits under the filter the table gives it (Forever's plain holidays are
-    `CalendarFilterType` 3, which is read from names, not from a Blizzard enum), whether
-    `GetCVarBool` returns real booleans for these CVars, and whether ticking a box fires
-    `CALENDAR_UPDATE_EVENT_LIST` or `CVAR_UPDATE`.
-  - Then change the "not yet seen in game" wording in maintenance.md ("Holidays", including the
-    paragraph that says what the filters do in game is still to be seen) and in the C_Calendar
-    section of [game-api-review.md](game-api-review.md), and take this item off the list.
-  - If the game does not drop the events, the handling is harmless but unneeded; decide whether to
-    keep it. If an ID is under another filter, fix its `filter=` in `qcHolidays`. If ticking a box
-    reaches the addon through `CVAR_UPDATE` and not the calendar event, a listener would redraw the
-    open map at once (today the map notices at its next draw); that was left out on purpose.
-  - The change is untested in game, so by the call above it stays out of the next release unless
-    the user says to ship it.
+  The whole check is seven lines per game, entered one at a time (a pasted block is joined into one
+  chat line), in a city with the calendar window shut:
+
+  ```text
+  /qc holidays
+  /run function QCL(c) local t,s={},"" for d=1,c.GetMonthInfo(0).numDays do for i=1,c.GetNumDayEvents(0,d) do local e=c.GetDayEvent(0,d,i) local k=e.calendarType:sub(1,6)..(e.eventID or 0) if not t[k] then t[k]=1 s=s..k.." " end end end print(s) end
+  /run QCL(C_Calendar)
+  /run print(SetCVar("calendarShowHolidays","0"),GetCVar("calendarShowHolidays"))
+  /run QCL(C_Calendar)
+  /qc holidays
+  /run print(SetCVar("calendarShowHolidays","1"),GetCVar("calendarShowHolidays"))
+  ```
+
+  Paste back the first `/qc holidays` (it also lists the other calendar holidays), the two lists, the
+  two read-backs (`nil 0` and `nil 1`, or `true` for `nil`) and the filter line of the second
+  `/qc holidays`.
+  - `HOLIDA324`, and `HOLIDA1405` on retail, are in the first list and missing from the second: the
+    game drops an unticked filter's events, and the handling is needed. In both lists: the game keeps
+    them, the handling is harmless but unneeded, and the user decides whether to keep it. Anything
+    else (another ID gone, an error, a read-back that did not change): the table `qcHolidays` or the
+    CVars need another look.
+  - It leaves unseen, on purpose: that Darkmoon and the fishing contest sit under their filters (the
+    table is the client's own `CalendarFilterType`, and the handling fails open, so an unticked
+    filter shows the quests), whether ticking a box fires `CVAR_UPDATE` (the map notices at its next
+    draw; a listener was left out), and the map with a filter unticked (tested offline). The longer
+    experiment is in [maintenance.md](../maintenance.md), "Holidays", for a puzzling result only.
+  - When it has run, change the "not yet seen in game" wording in maintenance.md ("Holidays") and in
+    the C_Calendar section of [game-api-review.md](game-api-review.md), and take this item off the
+    list. Until then the change stays out of the next release, unless the user says to ship it.
 
 ## Decisions waiting for the user
 
