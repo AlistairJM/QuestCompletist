@@ -744,7 +744,7 @@ them.
 1. **The map-offers probe first** (recommendation 3): built and run the same day; results in
    "Map-offers probe: first run".
 2. **A check stays even while it finds nothing.** The map pass stays in every probe run, and its
-   totals are compared with the last run's (maintenance.md, step 10 and step 4b). The user's
+   totals are compared with the last run's (maintenance.md, step 10 and step 3b). The user's
    reason, in their words: we never know what the client files or the in-game APIs might start
    serving up, which is why these audits were asked for in the first place. The rule covers every
    check this review and the client-tables review add, so recommendation 11, the API check every
@@ -783,11 +783,11 @@ them.
   pull request per item taken, starting with the map-offers probe on the Forever beta and the
   recorder.
 - 2026-10-07: the map-offers probe (recommendation 3) built, at the user's choice: `/qcprobe maps`
-  in the Forever probe (PR #139's branch, `tools/forever-probe`) asks each map for its quest
+  in the Forever probe (PR #139's branch, now `tools/ForeverProbe`) asks each map for its quest
   offers, points of interest, events, quest hubs, dungeon entrances, level range and waypoint
   flag, and once per run for the events schedule, the experience preset and the tracking toggles;
   `tools/Report-MapOffers.lua` reads a pass against the addon's quests and pins
-  (maintenance.md, "In the game", step 4b). Checked offline with stand-ins for the game: 16 checks
+  (maintenance.md, "In the game", step 3b). Checked offline with stand-ins for the game: 16 checks
   across maps that answer, answer late, ask for a second request, never answer or refuse. Merged as
   #210.
 - 2026-10-07: the first beta run (build 70245; results in "Map-offers probe: first run"): no quest
