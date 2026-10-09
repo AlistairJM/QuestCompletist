@@ -546,7 +546,7 @@ foreach ($id in $ids) {
 }
 
 $previousByNext = @{}
-foreach ($c in $cache.Values) { if ($c.nextQuest) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
+foreach ($c in $cache.Values) { if ($c.nextQuest -and [int]$c.nextQuest -ne [int]$c.id) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
 foreach ($q in $records.Values) {
     $m = $cmQuest[$q.id]
     if ($m -and $m.Prev -gt 0 -and $records.ContainsKey($m.Prev)) { $q.prereq = $m.Prev }
