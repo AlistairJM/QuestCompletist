@@ -24,6 +24,8 @@ tools/*
 !tools/Test-QuestReachability.lua
 !tools/Test-Localization.lua
 !tools/Test-Recorder.lua
+!tools/Read-RecordedGivers.lua
+!tools/Test-RecordedGivers.lua
 !tools/Read-SqlDump.lua
 !tools/Read-ForeverProbe.lua
 !tools/Report-MapOffers.lua

@@ -476,3 +476,24 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   with a start point, and auto-accepts that have a starter, are pinned at that point, as before. The addon draws a nameless new pin as the
   anchor of a stack whose old pin was named in 53 stacks, so clicking it sets a waypoint titled
   with a quest's name; a named pin should anchor the stack in `qcMergeStackedPins`.
+## October 2026, pins from the addon's recorder
+
+`Import-RecordedGivers.ps1` (sweep step 6d, after 6c; the rules and the reasons are in
+[quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool") is a third kind of source for
+pins beside the client's points and TrinityCore's: what players, and the maintainer, saw in the game.
+It works on `data\pins.jsonl` after the pipeline, as the 6c tools do, and writes through `Save-PinData`;
+the pipeline keeps what it writes (a scratch run of `Parse-ExistingPinDB.ps1` and `Assemble-PinDB.ps1`
+over its output reproduced it line for line, new pins and fills included, because a pin with an NPC ID is
+covered by its quest and NPC pair and sits where the pipeline sorts it).
+
+- **A fill never decides by distance.** The recorded giver must have offered one of the pin's quests;
+  where two pins sit within 1.5 points, only the offer tells which is whose.
+- **A fill that would make two pins of one NPC 1.5 points or less apart, but not on one spot, is not made,**
+  because the next rebuild merges them and the lower quest's place wins, which can move the other pin's
+  quests by up to 1.5 points. It is listed.
+- **A quest that has any pin, anywhere, gets no second one** from this tool; a giver that offers it somewhere
+  else is listed (`quest offered away from its pins`).
+- **The holds the TrinityCore pass puts on a quest are waived when a creature offers it** (not in
+  `QuestV2`, the template inferences, a task of another kind than world, bonus or hidden, Landfall,
+  holiday, profession); the ones that are definitions stay (unavailable, internal name, world, bonus or
+  hidden task, system category), and the new pins are counted by class so the user sees what the waiver let in.

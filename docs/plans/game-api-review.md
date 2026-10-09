@@ -837,3 +837,6 @@ them.
   are in [quest-giver-recorder.md](quest-giver-recorder.md). The open question on its size is
   answered for the cap (514 KB on disk at the caps) but a month of play is still unmeasured. The merge
   tool is next; recommendation 2 (one probe for both games) after it.
+- 2026-10-09: recommendation 1, the merge tool: `Import-RecordedGivers.ps1` (sweep step 6d), with a
+  sandboxed reader and a ledger, fills retail pins' NPC IDs and pins quests no source places, from the
+  notes of both games; see [quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool".
