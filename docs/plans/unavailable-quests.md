@@ -196,8 +196,8 @@ generates the Lua file. Offline checks:
 - All 106 "Conquest's Reward" quests are flagged, not just the 8 that came up here. None is known
   to Blizzard's API, and Wowhead lists 54079 as obsolete. The other 98 have pins (Marshal Gabriel and
   High Warlord Volrath), which go too.
-- That's 183 more flags. With Phase 1's correction, 218 quests are flagged in all, and 447 have KEEP
-  rows.
+- That's 183 more flags. With Phase 1's correction, 218 quests are flagged in all, and 503 have KEEP
+  rows (56 of them from the menu review of 9 October 2026, [menu-review.md](menu-review.md)).
 
 ### Phase 3: maintenance
 - Periodically review `qcFlaggedButSeen` (from players who report it, or your own characters) and

@@ -26,7 +26,7 @@ one quest in no menu was 60474, a Blizzard test quest in a "Development Land" ca
 `tools\Test-QuestReachability.lua` (8 October) agreed: one quest never shown on Retail, none on
 Forever.
 
-## What changed (9 October 2026, branch `chore/menu-review`, not committed)
+## What changed (9 October 2026, branch `chore/menu-review`)
 
 | Finding | Change |
 |---|---|
@@ -48,7 +48,7 @@ and `tools\Build-ForeverMenu.ps1`. `qcUnavailableQuests.lua` is byte-identical. 
 change: `Build-AddonData.ps1 -Check` passes; the reachability report's "never shown" is 0 on Retail
 (was 1) and 0 on Forever, and every other count is as before; `Test-Localization.lua` is unchanged;
 the dungeon audit only lost its Scarlet Halls issue; `Remove-EmptyMenuEntries.ps1 -WhatIf` reports
-nothing; `Build-ForeverMenu.ps1` reruns byte for byte; `luac -p` is silent on all 25 Lua files.
+nothing; `Build-ForeverMenu.ps1` reruns byte for byte; `luac -p` is silent on all 26 Lua files.
 A separate script compared the menus, categories and quests before and after: the only quests that
 moved are the 115 above, and no category with quests lacks a menu entry or zone row, and no menu
 entry or zone row points at an undefined or empty category.
@@ -83,7 +83,7 @@ report's recommendation, it says so.
    None of the 56 unflagged ones passes: 48 are still served by Blizzard's API and known to the
    server, and the other 8 are in the latest PTR's `QuestV2` (7 of them task quests, which
    `Build-UnavailableQuests.ps1` will not flag). Each got a `KEEP` row with the evidence (the file now
-   has 218 `FLAG` and 503 `KEEP` rows). 22 of them still show in default lists; see question 8.
+   has 218 `FLAG` and 503 `KEEP` rows). 22 of them still show in default lists; see question 20.
 6. **Scarlet Halls goes with Classic**, where the Dungeon Journal lists it first and where
    `Audit-DungeonCategories.ps1` expects it. The Journal also lists it in its Mists of Pandaria tier,
    so either place is defensible. **Recommendation:** Classic, so the audit is clean.
@@ -99,28 +99,28 @@ report's recommendation, it says so.
   event, so both stay.
 - **R23 Amirdrassil** (zone and raid) keep the in-game names.
 - **R32, the 83 unused category definitions** are harmless. Removing them cascades into the locale
-  files (`Remove-ConvertedLocaleKeys.ps1`), so it is a pass of its own (question 19).
+  files (`Remove-ConvertedLocaleKeys.ps1`), so it is a pass of its own (question 31).
 - **R35, R36, R38 to R40 and F08 to F10** are information rows with nothing to change.
 
 ## Decisions waiting for the user
 
-Also in the table in [open-items.md](open-items.md), as decisions 8 to 19. The recommendation is the
+Also in the table in [open-items.md](open-items.md), as decisions 20 to 31. The recommendation is the
 one the report author would take.
 
 | # | Finding | Decision | Recommendation |
 |---|---|---|---|
-| 8 | R08 | The 22 placeholder-named quests that still show in default lists (63947 and 63948, "[PH]" quests in 9.1 Campaign, among them): flag them in `unavailable-quest-decisions.csv` although they fail the step-7 evidence rules? | yes, the 22 that show: the same call as on 5 October for the 19 internal entries. The rest are hidden already by their quest type |
-| 9 | R28 | One shape for every expansion's submenu | Main Zones and Other Categories for Draenor and The Broken Isles (Battle For Azeroth now has Other Categories); leave Outland, Northrend and The Maelstrom flat. Needs no new text |
-| 10 | R27 | Midnight: Founder's Point (57 quests) and Razorwind Shores (58) sit in Main Zones with the story zones | move them into Other Categories, beside Prey |
-| 11 | R26 | Lordaeron has 21 entries and also holds Quel'Thalas, Gilneas and Tol Barad | split into Lordaeron, Quel'Thalas, Gilneas and Tol Barad, named from the client's map names where `tools\UiMap.csv` has them |
-| 12 | R15, R31 | Merge categories: Darkmoon Island (10 quests) into Darkmoon Faire (59), and four one-quest entries (Brewmoon Festival 32, Greenstone Village 86, Unga Ingoo 257, Thunder Totem 1049) into their zones | yes, in one pass: refile, delete the category, point its map's zone row at the target, remove the menu entry and its locale key. Not done now because a merge changes how the sweep tools file new quests |
-| 13 | R17 to R21, R25, F03 | Names that repeat: nine names appear twice (Eversong Woods in two expansions, for example), a group and a category share a name (Covenant Sanctum, Professions, Battlegrounds, Vashj'ir, Miscellaneous), and Forever's heading is "Invasion" | leave. Each rename needs a new string in every language, and Forever's heading is the client's own (QuestSort 368). If it matters, show the menu path in the list header when a name repeats: one line of code, no new text |
-| 14 | R29, R30, R39, F06, F07, F09 | Entries that are empty by default (all their quests repeatable or retired) or hold one or two quests | keep them all, and have an empty list say how many quests the filters hide: one line in the list header code, for both games |
-| 15 | R06 | Rated PvP: 86 of 87 quests are flagged unavailable, so the entry opens an empty list | keep: removing it would leave 87 quests in no menu, and they show with "Show unavailable quests" on |
-| 16 | R05 | Class Quests has no Evoker | leave: 37 of the 45 Evoker-only quests are the Forbidden Reach start, filed by zone |
-| 17 | R33 | Ordering rule: Retail's hand order, or alphabetical everywhere | keep the hand order (Monk is fixed); Forever sorts alphabetically in its generator already |
-| 18 | F04, F05 | Forever: Seasonal lumps Winter Veil (37), Love is in the Air (21), Hallow's End (7) and Harvest Festival (2); Deeprun Tram and Special stand loose | leave until after the 4 November launch, then look again |
-| 19 | R32 | Remove the 83 unused category definitions | yes, in a pass of its own with `Remove-ConvertedLocaleKeys.ps1`, after question 12 |
+| 20 | R08 | The 22 placeholder-named quests that still show in default lists (63947 and 63948, "[PH]" quests in 9.1 Campaign, among them): flag them in `unavailable-quest-decisions.csv` although they fail the step-7 evidence rules? | yes, the 22 that show: the same call as on 5 October for the 19 internal entries. The rest are hidden already by their quest type |
+| 21 | R28 | One shape for every expansion's submenu | Main Zones and Other Categories for Draenor and The Broken Isles (Battle For Azeroth now has Other Categories); leave Outland, Northrend and The Maelstrom flat. Needs no new text |
+| 22 | R27 | Midnight: Founder's Point (57 quests) and Razorwind Shores (58) sit in Main Zones with the story zones | move them into Other Categories, beside Prey |
+| 23 | R26 | Lordaeron has 21 entries and also holds Quel'Thalas, Gilneas and Tol Barad | split into Lordaeron, Quel'Thalas, Gilneas and Tol Barad, named from the client's map names where `tools\UiMap.csv` has them |
+| 24 | R15, R31 | Merge categories: Darkmoon Island (10 quests) into Darkmoon Faire (59), and four one-quest entries (Brewmoon Festival 32, Greenstone Village 86, Unga Ingoo 257, Thunder Totem 1049) into their zones | yes, in one pass: refile, delete the category, point its map's zone row at the target, remove the menu entry and its locale key. Not done now because a merge changes how the sweep tools file new quests |
+| 25 | R17 to R21, R25, F03 | Names that repeat: nine names appear twice (Eversong Woods in two expansions, for example), a group and a category share a name (Covenant Sanctum, Professions, Battlegrounds, Vashj'ir, Miscellaneous), and Forever's heading is "Invasion" | leave. Each rename needs a new string in every language, and Forever's heading is the client's own (QuestSort 368). If it matters, show the menu path in the list header when a name repeats: one line of code, no new text |
+| 26 | R29, R30, R39, F06, F07, F09 | Entries that are empty by default (all their quests repeatable or retired) or hold one or two quests | keep them all, and have an empty list say how many quests the filters hide: one line in the list header code, for both games |
+| 27 | R06 | Rated PvP: 86 of 87 quests are flagged unavailable, so the entry opens an empty list | keep: removing it would leave 87 quests in no menu, and they show with "Show unavailable quests" on |
+| 28 | R05 | Class Quests has no Evoker | leave: 37 of the 45 Evoker-only quests are the Forbidden Reach start, filed by zone |
+| 29 | R33 | Ordering rule: Retail's hand order, or alphabetical everywhere | keep the hand order (Monk is fixed); Forever sorts alphabetically in its generator already |
+| 30 | F04, F05 | Forever: Seasonal lumps Winter Veil (37), Love is in the Air (21), Hallow's End (7) and Harvest Festival (2); Deeprun Tram and Special stand loose | leave until after the 4 November launch, then look again |
+| 31 | R32 | Remove the 83 unused category definitions | yes, in a pass of its own with `Remove-ConvertedLocaleKeys.ps1`, after question 24 |
 
 ## Noticed along the way
 
@@ -144,16 +144,24 @@ one the report author would take.
   deletions.
 - The runbook's step-10 reachability example uses `tools\UiMap-<build>.csv`. Only the 70205 map file
   is in `tools\`, while the docs name 70245 as the current beta build.
-- Docs that now want a line: `maintenance.md` step 6 (the hand-written lists of
-  `Place-UncategorisedQuests.ps1` now include a name-prefix list), the Dungeon Journal audit baseline
-  (Scarlet Halls is gone), the counts in `unavailable-quests.md` (503 `KEEP` rows, 218 `FLAG`),
-  `forever.md` (Camping under Professions, no rows for undefined zones), and wherever Timerunning's
-  place in the menu is written down.
+- Docs, updated with this change: `maintenance.md` step 6 (the name-prefix list of
+  `Place-UncategorisedQuests.ps1`), `unavailable-quests.md` (503 `KEEP` rows, 218 `FLAG`) and
+  `forever.md` (Camping under Professions, no rows for undefined zones). Nothing else writes down
+  Timerunning's place (`maintenance.md` only names it as an example), and no Dungeon Journal audit
+  baseline names Scarlet Halls.
 
 ## Status
 
 - 2026-10-09: reviewed (50 findings), then the changes above made on branch `chore/menu-review`, cut
-  from local master a288b24, which is 7 commits behind origin/master (the only overlap is quest
-  43472's row, which was not touched). Not committed, not pushed, not tried in game. Five release
-  zips (`QuestCompletistv112.1.zip` to `v112.5.zip`) sit untracked in the repo root and were left
-  alone. Questions 8 to 19 are also in `open-items.md`.
+  from master at a288b24.
+- 2026-10-09: committed, then master merged in (it had moved 62 commits: the quest giver recorder, the
+  probe, the Forever table checks, the quest cache). The one conflict was `open-items.md`: master's own
+  decisions 8 to 19 (levels, holidays, the quest cache) kept their numbers, so the menu questions
+  above are 20 to 31 there and here. The checks above were rerun on the merged tree: `luac -p` is
+  silent on all 26 Lua files, `Build-AddonData.ps1 -Check`, `Build-ForeverMenu.ps1 -Check`,
+  `Test-Localization.lua` and `Remove-EmptyMenuEntries.ps1 -WhatIf` pass, and the reachability run
+  shows 0 quests never shown and 0 Lua errors on Retail and on Forever.
+- Not tried in game. The menus are checked offline; what only the game can show is the four starter
+  areas following their parent zone (see "To try in game" in [open-items.md](open-items.md)).
+- Five release zips (`QuestCompletistv112.2.zip` to `v112.6.zip`) sit untracked in the repo root and
+  were left alone.

@@ -3,7 +3,8 @@ Retypes quests the addon treats as one-time - 1 (normal), 0 (no type) or 16 (the
 weekly type, which the addon draws and counts as normal) - that the game client or Blizzard's quest
 API say recur, in data\quests.jsonl, then rebuilds qcQuestData.lua.
 
-The game client answers through the /qc typecheck probe: with the quest's data loaded,
+The game client answers through the probe (tools\ForeverProbe, `/qcprobe quests`; before it, the retail
+type probe of pull request #42): with the quest's data loaded,
 C_QuestInfoSystem.GetQuestClassification says Recurring (5), Normal (7) or another class. Recurring
 means daily or weekly: none of the 3,309 quests the API flags daily or weekly answered Normal, and
 all 291 it flags repeatable and nothing else did, including 100 typed repeatable for years. So:
@@ -26,29 +27,33 @@ repeatable. The table must be the probe's build, QuestV2-<build>.csv, downloaded
 quest added since would look left out. Task quests are left alone, and so is a quest the API cache
 hasn't fetched. See docs\plans\quest-types.md.
 
-Input: a copy of the SavedVariables file holding qcQuestTypeProbeResults (WoW drops it from the
-live file once the probe is no longer in the TOC), the API cache in quest_api_cache, and
-QuestV2CliTask.csv (task quests).
+Input: the probe's saved variables, QCForeverProbe.lua, copied from the retail client into
+tools\retail_probe_<build number>\ (the newest is taken), or a copy of the SavedVariables file holding
+the #42 probe's qcQuestTypeProbeResults (tools\quest_type_probe_results.lua, used when there is no
+probe copy; ProbeResults.ps1 reads either), the API cache in quest_api_cache, and QuestV2CliTask.csv
+(task quests).
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
-    [string]$ProbeResults = (Join-Path $PSScriptRoot 'quest_type_probe_results.lua')
+    [string]$ProbeResults = '',
+    [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe'
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\ProbeResults.ps1"
 
-if (-not (Test-Path $ProbeResults)) { throw "Probe results not found at $ProbeResults" }
-$probe = [System.IO.File]::ReadAllText($ProbeResults)
+if (-not $ProbeResults) { $ProbeResults = Find-ProbeResults $ToolsDir }
+$probe = Get-ProbeQuests $ProbeResults $LuaExe
 $classification = @{}
-foreach ($m in [regex]::Matches($probe, '(?m)^\[(\d+)\] = "\d+\|[^|]*\|(\d+),[01-],([01t])",?\s*$')) {
-    if ($m.Groups[3].Value -eq "1") { $classification[$m.Groups[1].Value] = [int]$m.Groups[2].Value }
+foreach ($id in $probe.Quests.Keys) {
+    $answer = $probe.Quests[$id]
+    if ($answer.Load -eq '1' -and $null -ne $answer.Classification) { $classification[$id] = $answer.Classification }
 }
 if (-not $classification.Count) { throw "No loaded answers in $ProbeResults" }
-$probeBuild = [regex]::Match($probe, '\["client"\] = "([^"]+)"').Groups[1].Value
-if (-not $probeBuild) { throw "No client build in $ProbeResults" }
+$probeBuild = $probe.Build
 
 $clientQuests = "$ToolsDir\QuestV2-$probeBuild.csv"
 if (-not (Test-Path $clientQuests)) {
