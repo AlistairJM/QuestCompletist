@@ -109,6 +109,10 @@ Retail has none.
 | Quests whose only pins are nameless | 2,711 | 11 |
 | Quests flagged unavailable | 218 | 0 |
 
+Counted again on 9 October 2026 (master a288b24), retail: pins 15,202; with an NPC ID 10,564; with
+neither 4,301; quests with no pin at all 10,361; quests whose only pins are nameless 3,696 counting
+every quest ID a pin lists, as the table does (3,600 counting only quests we hold).
+
 Fields no offline source gives: whether a quest is account-wide (done once per warband), the
 expansion of a quest (the menus group by expansion by hand), a zone's level range, the item a quest
 starts from (not shipped), and the NPC a quest is handed in to (not shipped). Text still in English
@@ -354,7 +358,14 @@ adds the description and texture; `SetMonth`, `GetMinDate`, `GetMaxCreateDate`, 
 `GetEventIndex` and `GetClubCalendarEvents` no; the other 78 create, invite and manage events. No
 new data. `OpenCalendar` asks the server for the calendar's events, and event CALENDAR_UPDATE_EVENT_LIST
 says they've arrived: the addon calls the one at login and redraws the open map on the other
-(maintenance.md, "Holidays"). The other 12 events no.
+(maintenance.md, "Holidays"). The other 12 events no. The calendar window's filters are CVars
+(`calendarShowHolidays`, `calendarShowDarkmoon`, `calendarShowWeeklyHolidays`, and three more for
+battlegrounds, raid lockouts and, on Forever, raid resets), and its Lua filters nothing itself, so
+the game must leave an unticked filter's events out of the day lists. The addon reads the three that
+hold its holidays with `GetCVarBool` (documented the same in both games, nil for a CVar the game
+doesn't have) and shows the quests of a holiday whose filter is unticked, since the calendar can't
+say whether it is running. Read from the source, not yet seen in game (maintenance.md, "Holidays",
+has the lines to try). The CVAR_UPDATE event exists in both games and isn't used.
 
 ### C_EventScheduler (11 functions, 1 event, both games)
 
@@ -520,7 +531,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Account-wide quests | nothing | `IsAccountQuest` | probe → data → addon |
 | Expansion | hand menus | `GetQuestExpansion` if it works | check |
 | Zone level ranges | nothing | `C_Map.GetMapLevels` | addon |
-| Starting item | not shipped (TrinityCore, CMaNGOS and Forever's cache have it; the client's `QuestV2CliTask` has it for 198 task quests only, per the client-tables review) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
+| Starting item | not shipped (CMaNGOS's `item_template.startquest` has it for old content; the `StartItem` of TrinityCore, the quest cache and `QuestV2CliTask` is the item handed over on accept, not the item that begins the quest: [retail-quest-cache.md](retail-quest-cache.md)) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
 | Waypoints | TomTom | `C_Map.SetUserWaypoint` and `C_SuperTrack` | addon |
 | Treasures and rares | not planned | `C_VignetteInfo` rewardQuestID | later |
 
@@ -540,7 +551,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 10 | **Conversion check:** run the Forever importer's spawns through `C_Map.GetMapPosFromWorldPos` without an override, and retail's pins through `GetWorldPosFromMapPos` and back, and compare with the tools' results | probe, tool | the client's own map choice for overlapping frames (the importer's rules reach 98.2%); a check of the pipeline's formula | small to medium: the probe needs the world coordinates in its lists | none |
 | 11 | **An API check every sweep:** a tool that downloads both branches' documentation for the current builds, lists the functions and events of the namespaces the addon uses, and reports what was added or removed since the saved list, as `Compare-ClientTables.ps1` does for tables (step 2b). The Lua loader written for this review is its core | tool | no silent loss of a function the addon calls at a patch; new functions noticed | small | none |
 | 12 | **Zone level ranges** from `C_Map.GetMapLevels` on zone categories | addon | "Westfall (10–15)" in menus or tooltips | small | check Forever answers |
-| 13 | **Starting items:** a data field from TrinityCore, CMaNGOS and Forever's cache (the recorder adds what it sees), shown as "Starts from: <item>" through `C_Item.GetItemNameByID` | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
+| 13 | **Starting items:** a data field from `ItemSparse`'s `StartQuestID`, CMaNGOS's `item_template.startquest` (Forever) and what the recorder sees, shown as "Starts from: <item>" through `C_Item.GetItemNameByID`. Not from the `StartItem` of TrinityCore, the quest cache or the task table: that is the item handed over on accept ([retail-quest-cache.md](retail-quest-cache.md)) | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
 | 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | later |
 | 15 | **Treasures and rares** from `C_VignetteInfo` | recorder, addon | names and places for hidden tracking quests | medium | a new feature, not planned |
 
@@ -767,7 +778,7 @@ them.
 
 - Changing the addon or any tool: this review only recommends.
 - The client's data tables: `client-tables-review.md` (#203). The tables this review points at
-  there, with what that review found: `QuestV2CliTask` (task quests only; a start item for 198,
+  there, with what that review found: `QuestV2CliTask` (task quests only; an on-accept item for 198,
   breadcrumbs for 11 unrelated pairs, skill filters), `PlayerCondition`, `ParagonReputation` (79
   rows), `AreaPOI` (linked to quests only through `QuestHub`), the campaign tables and `UiMap`'s
   content tuning.
@@ -831,3 +842,20 @@ them.
 - 2026-10-08: pins from TrinityCore's start points (quest-location-data-pipeline.md, "pins from
   TrinityCore"): 1,453 more quests have a pin. The recorder (recommendation 1) is still the way to
   give the pins that stay nameless, and the quests TrinityCore has no start for, their giver.
+- 2026-10-08: recommendation 1 and decision 1: the recorder is built into the addon for both games
+  (`qcRecorder.lua`, on by default, checkbox, `/qc report`, `/qc record`), taken as agreed when the user
+  said "Let's start on the retail recorder"; the plan, the data model and the list to try in game
+  are in [quest-giver-recorder.md](quest-giver-recorder.md). The open question on its size is
+  answered for the cap (514 KB on disk at the caps) but a month of play is still unmeasured. The merge
+  tool is next; recommendation 2 (one probe for both games) after it.
+- 2026-10-09: recommendation 1, the merge tool: `Import-RecordedGivers.ps1` (sweep step 6d), with a
+  sandboxed reader and a ledger, fills retail pins' NPC IDs and pins quests no source places, from the
+  notes of both games; see [quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool".
+- 2026-10-09: recommendation 11, the secrecy watch: `Read-ApiDocs.lua` keeps every flag with `Secret` in its
+  name and the preconditions the documentation declares (on functions, events, arguments, returns, payload
+  and structure fields and the structures those lead to), `Compare-ApiDocs.ps1` fails the sweep when
+  they change on a function the addon calls or an event it listens for, and checks those events
+  (18, all documented in both games) for payload and for going. New baseline: live 12.1.0.69933 5,655
+  functions, 1,782 events (3,619 and 124 with flags); Forever 1.60.1.70245 5,903 and 1,804 (3,783 and
+  125). The counts of 7 October let script objects' methods of one name overwrite each other. Not
+  covered: the contents of structures, and the old globals the documentation leaves out.
