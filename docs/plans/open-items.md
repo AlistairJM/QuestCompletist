@@ -109,6 +109,10 @@ again.
   - The first shows whether the 7th value is a base line (164, 186 ...) and the rank the newest
     line's, as read above.
   - No offline test can answer this: the stand-ins for the client only return what they are given.
+- **The recorder**, on a branch, on both games: a full WoW restart, then the list in
+  [quest-giver-recorder.md](quest-giver-recorder.md) ("To try in game"): the order of the events,
+  whether the game hides who is speaking, whether the popup hook fires, what the options panel
+  looks like in the longest language. It ships only after that.
 
 ## Decisions waiting for the user
 
@@ -119,7 +123,7 @@ again.
 | 3 | 82449 "The Call of the Worldsoul", a task-table quest | a hand entry on the Worldsoul pins | same |
 | 4 | Item-started quests with a start point but no NPC (about 13% of all pins) | keep pinning them, as before | quest-location-data-pipeline.md, "pins from TrinityCore" |
 | 5 | The Landfall dailies (31 without a pin, 29 with one already) and the Silithus sigil quests (10), which look retired | flag them in `unavailable-quest-decisions.csv` after a look at the evidence | unavailable-quests.md |
-| 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
+| 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, taken as agreed on 8 October 2026 and built; probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
 | 8 | Refresh retail's levels from the API: 1,611 quests differ from it (large blocks in Zaralek Cavern, Mechagon Island and the Emerald Dream, where the API gives a much lower minimum than we store), 4,955 have no API record, 246 are 0 | yes, from the API, after a look at those zones; a campaign or Chromie Time may gate some | client-tables-review.md (the note on `level`); maintenance.md, the data files |
 | 9 | Scaling quests: the list bracket and the low-level filter read a scaling range's floor, so they judge a quest low level too early | probe first: what `IsQuestTrivial` and `GetQuestDifficultyLevel` return in game on both clients, then decide | game-api-review.md, recommendation 4 |
@@ -173,7 +177,9 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 
 1. Profession skill fallback: **done** (#216).
 2. Retail map pass: **done** (#219 carries its record).
-3. **Next:** the recorder on retail, with one probe for both games (recommendations 1 and 2).
+3. **In progress:** the recorder on retail, with one probe for both games (recommendations 1 and 2).
+   The addon half is built on `feature/quest-giver-recorder` and waits for its in-game session
+   ([quest-giver-recorder.md](quest-giver-recorder.md)); the merge tool, then the probe, come next.
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
    data (recommendations 4 and 5).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an
