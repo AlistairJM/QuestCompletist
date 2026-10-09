@@ -9,6 +9,9 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=47,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=76,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=139,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=69,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=78,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=136,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=138,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=204,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=17,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -138,7 +141,6 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=121,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=150,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=151,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=427,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=257,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
 {text=stringformat("   %s",qcL.DRAENOR),clientName={"map",572},isTitle=false,notCheckable=true,hasArrow=true,menuList={
@@ -191,7 +193,15 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1081,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1082,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1202,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1065,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1065,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{text=qcL.OTHERCATEGORIES,isTitle=false,notCheckable=true,hasArrow=true,menuList={
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1090,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1132,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1064,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1134,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1091,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1133,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=1092,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
 {text=stringformat("   %s",qcL.SHADOWLANDS),clientName={"string","EXPANSION_NAME8"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=qcL.COVENANTCALLINGS,clientName={"string","CALLINGS_QUESTS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
@@ -240,7 +250,6 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1320,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1322,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1324,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
---{text=qcL.EMERALDGARDENS,isTitle=false,notCheckable=false,hasArrow=false,arg1=1326,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1345,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1328,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1346,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -292,20 +301,12 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1514,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}}}},
 
 {text=stringformat("   %s",qcL.MISCELLANEOUS),clientName={"string","MISCELLANEOUS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1090,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=19,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1132,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=30,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1064,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=55,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1091,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=136,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=156,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=163,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=170,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1134,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1133,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=1092,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=170,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=qcL.DUNGEONSANDRAIDS,clientName={"achievementcategory",168},isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s",GetText("EXPANSION_NAME0")),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=21,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -320,6 +321,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=157,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=158,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=159,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=168,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=169,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=171,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=177,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -406,8 +408,7 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=206,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=193,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=242,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=185,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=168,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=185,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=stringformat("   %s",GetText("EXPANSION_NAME5")),isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=298,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=308,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
@@ -503,13 +504,13 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=62,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=104,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=128,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=137,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=149,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=155,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=164,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=180,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=266,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=267,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=137,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=267,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=qcL.MISCELLANEOUS,clientName={"string","MISCELLANEOUS"},isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s",qcL.PLAYERVSPLAYER),clientName={"string","PLAYER_V_PLAYER"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
 {text=stringformat("   %s",qcL.BATTLEGROUNDS),clientName={"string","BATTLEGROUNDS"},isTitle=false,notCheckable=true,hasArrow=true,menuList={
@@ -535,8 +536,6 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=401,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=202,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=stringformat("   %s",qcL.SPECIALS),isTitle=false,notCheckable=true,hasArrow=true,menuList={
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=69,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=78,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=239,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=191,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text=stringformat("   %s",qcL.WORLDEVENTS),clientName={"achievementcategory",155},isTitle=false,notCheckable=true,hasArrow=true,menuList={
@@ -546,17 +545,16 @@ qcMenu={
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=46,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=50,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=90,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
---{text=qcL.HARVESTFESTIVAL,isTitle=false,notCheckable=false,hasArrow=false,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=126,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=127,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=133,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
---{text=qcL.NEWYEARSEVE,isTitle=false,notCheckable=false,hasArrow=false,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=145,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=153,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=1735,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=413,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {isTitle=false,notCheckable=false,hasArrow=false,arg1=248,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
-{isTitle=false,notCheckable=false,hasArrow=false,arg1=173,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=173,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
+{isTitle=false,notCheckable=false,hasArrow=false,arg1=427,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end}}},
 {text="   ",isTitle=false,notCheckable=false,hasArrow=false,arg1=0,func=function(button,arg1)qcProcessMenuSelection(button,arg1);end},
 {text=GetText("SETTINGS"),isTitle=true,notCheckable=true,hasArrow=false},
 {text=stringformat("   %s%s|r","|cFFFF7D0A",GetText("SETTINGS")),isTitle=false,notCheckable=true,hasArrow=true,menuList={

@@ -832,6 +832,10 @@ holds quests has an entry in `qcMenu.lua`.
 and for category 0, it adds a hand-written list in the script that maps the quest's zone text
 ("Death Knight Campaign", "Time Rifts") to a category. What's left in the catch-alls has nothing to go on.
 
+For category 0 it also has a list of name prefixes (`$namePrefixRules`), for a family whose zone text
+other families share: "Infinite Research" goes to Timerunning, where the Legion Remix research quests
+already are (October 2026). It throws if a rule points at a category no menu entry reaches.
+
 `-Refile 123` did the same for "Legendary" in October 2026, as its quests all belong to zones, like
 Forever's: the pins placed 41 and the other 17 were placed by hand (see
 [plans/data-cleanup.md](plans/data-cleanup.md)). Check what a refile files by name: the prefix rule

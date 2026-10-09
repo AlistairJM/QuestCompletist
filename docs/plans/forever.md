@@ -269,7 +269,11 @@ Its review list, `tools/forever_import_review.csv` (3,307 rows), holds:
   client's tables:
   - **Continents:** the Kalimdor and Eastern Kingdoms zones by retail's regions, and Zephras Isle.
   - **Dungeons and raids,** by their instance's type.
-  - **Classes, battlegrounds, professions, world events** and Forever's other headings.
+  - **Classes, battlegrounds, professions, world events** and Forever's other headings. Camping
+    (`QuestSort` 666, the "Camping 101" tutorials) goes under Professions.
+  - **Zone auto-switch:** a map gets a row in `qcAreaIDToCategoryID` only if a category holds quests
+    of its zone. Maps 1430 and 2482 (Deadwind Pass, Mount Hyjal) have none, so the list stays where
+    it is when the player enters them.
   - **Names:** the menu's names come from the client in the player's language where it has them
     (areas, classes, professions, races and its UI strings; see "Menu names from the client"
     below). The rest are ours, translated with the client's own names for its quest log headings.

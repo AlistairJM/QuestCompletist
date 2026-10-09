@@ -45,7 +45,12 @@ again.
   of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
-- **The calendar window's filters, on both games (#243, merged 9 October 2026, not released).** The
+- **The menu review (starter areas only).** The offline checks cover the menus: every category with
+  quests has a menu entry and a zone row, none is empty, and the reachability run leaves no quest out.
+  What only the game can show is the four starter areas, whose quests are filed under their parent
+  zone: walk into Camp Narache, Shadowglen, Valley of Trials and New Tinkertown and see the list follow
+  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)).
+- **The calendar window's filters, on both games (#243, released in 112.6 on 9 October 2026).** The
   seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
   source that the game then leaves its events out of the calendar. Nobody has seen that in game.
   The whole check is seven lines per game, entered one at a time (a pasted block is joined into one
@@ -75,7 +80,7 @@ again.
     draw; a listener was left out), and the map with a filter unticked (tested offline). The longer
     experiment is in [maintenance.md](../maintenance.md), "Holidays", for a puzzling result only.
   - The user decided on 9 October 2026 to go with #243 without this check, and to deal with any
-    problem when it shows, so it is in the next release. The seven lines stay for whoever wants to
+    problem when it shows, so it shipped in 112.6. The seven lines stay for whoever wants to
     run them. When they have been run, change the "not yet seen in game" wording in maintenance.md
     ("Holidays") and in the C_Calendar section of [game-api-review.md](game-api-review.md), and take
     this item off the list.
@@ -109,10 +114,11 @@ again.
   - The first shows whether the 7th value is a base line (164, 186 ...) and the rank the newest
     line's, as read above.
   - No offline test can answer this: the stand-ins for the client only return what they are given.
-- **The recorder**, on a branch, on both games: a full WoW restart, then the list in
+- **The recorder** (#228, on master, not released), on both games: a full WoW restart, then the list in
   [quest-giver-recorder.md](quest-giver-recorder.md) ("To try in game"): the order of the events,
   whether the game hides who is speaking, whether the popup hook fires, what the options panel
-  looks like in the longest language. It ships only after that.
+  looks like in the longest language. It ships only after that, and a release cut from master carries
+  it (on by default in both TOCs) unless it is held back.
 - **The probe on both games** (`tools/ForeverProbe`, a dev-only addon built 9 October 2026, tested only
   against stand-ins by `Test-Probe.lua`). Build the lists (`Build-ProbeLists.ps1 -Game forever` and
   `-Game retail`), copy the folder into the game's AddOns and restart fully, then: on the **Forever
@@ -152,6 +158,18 @@ again.
 | 17 | Race changes: the two outright contradictions (quest 2, 27675), 19 stale masks, 49 starting-race narrowings, 28 where we show a quest to races the server denies | the contradictions and stale masks yes; the narrowings are a call; the 28 class by class | same, "Races" |
 | 18 | Sort fixes: 98 Uncategorized quests whose sort names one category, 27 profession misfiles | yes | same, "Sort" |
 | 19 | "Starts from" only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`, never from the cache's `startItem` | yes | same, "Start item" |
+| 20 | The 22 placeholder-named quests that still show in default lists (menu review R08) fail the step-7 evidence rules: flag them anyway? | yes, the 22 that show; the same call as 5 October on the 19 internal entries | [menu-review.md](menu-review.md), question 20 |
+| 21 | One submenu shape for every expansion (R28) | Main Zones and Other Categories for Draenor and The Broken Isles; Outland, Northrend and The Maelstrom stay flat | [menu-review.md](menu-review.md), question 21 |
+| 22 | Midnight: move Founder's Point and Razorwind Shores into Other Categories (R27) | yes | [menu-review.md](menu-review.md), question 22 |
+| 23 | Split Lordaeron into Lordaeron, Quel'Thalas, Gilneas and Tol Barad (R26) | yes, named from the client's maps | [menu-review.md](menu-review.md), question 23 |
+| 24 | Merge Darkmoon Island into Darkmoon Faire and four one-quest entries into their zones (R15, R31) | yes, in one pass, because a category merge changes how the sweep tools file new quests | [menu-review.md](menu-review.md), question 24 |
+| 25 | Names that repeat, groups and categories that share a name, Forever's "Invasion" (R17 to R21, R25, F03) | leave; if it matters, show the menu path in the list header (no new text) | [menu-review.md](menu-review.md), question 25 |
+| 26 | Entries empty by default and tiny entries (R29, R30, R39, F06, F07, F09) | keep them, and have an empty list say how many quests the filters hide | [menu-review.md](menu-review.md), question 26 |
+| 27 | Rated PvP, 86 of 87 quests unavailable (R06) | keep | [menu-review.md](menu-review.md), question 27 |
+| 28 | Class Quests has no Evoker (R05) | leave | [menu-review.md](menu-review.md), question 28 |
+| 29 | Ordering rule for Retail's lists (R33) | keep the hand order | [menu-review.md](menu-review.md), question 29 |
+| 30 | Forever: split Seasonal, and Deeprun Tram and Special loose (F04, F05) | leave until after the 4 November launch | [menu-review.md](menu-review.md), question 30 |
+| 31 | Remove the 83 unused category definitions (R32) | yes, in a pass of its own, after 24 | [menu-review.md](menu-review.md), question 31 |
 
 ## Data to finish
 
@@ -174,6 +192,12 @@ again.
   item alone, and have no name; Forever names its pins after the object or item (game-parity.md, recommendation 12).
 - **Pins and where they came from**: a pin does not record its source, and a new rule takes no pin
   away. A removal route (a decisions file like the unavailable quests') is open.
+- **Uncategorized after the Infinite Research refile**: a plain
+  `Place-UncategorisedQuests.ps1 -Refile 0` would move 30 more (28 by pin's map, 2 by storyline);
+  look through them with `-WhatIf` ([menu-review.md](menu-review.md)).
+- **272 quest IDs on pins or prerequisites with no quest row** (267 on pins only, 5 prerequisites
+  only: 30490, 54130, 59174, 89285, 91799): parked since phase 2 of
+  [data-cleanup.md](data-cleanup.md); the menu review found nothing new.
 
 ## Code to finish
 
@@ -184,7 +208,10 @@ again.
   Stonetalon. A start within about one map point of an edge should prefer the map its other
   points are on.
 - **A start on a disabled map** is held back; 79085 and 81640 want hand entries on Hallowfall's map.
-- **README** says the addon "places nearly 15,000 quest-giver pins"; check it at each release.
+- **README** says retail has "over 15,000" quest-giver pins and Forever "around 1,700"; check both at
+  each release.
+- **`Build-CategoryClientNames.ps1`** still lists two expected differences, for categories 1221 and
+  1430, that the spelling fixes made stale.
 
 ## The agreed order of work
 
@@ -192,17 +219,18 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 
 1. Profession skill fallback: **done** (#216).
 2. Retail map pass: **done** (#219 carries its record).
-3. **In progress:** the recorder on retail, with one probe for both games (recommendations 1 and 2).
-   The addon half (#228) waits for its in-game session, and the merge tool (step 6d, `tools/recorded-givers`)
-   is built and waits for a real recording ([quest-giver-recorder.md](quest-giver-recorder.md)); the
-   secrecy watch of step 2b is built; the probe comes next.
+3. **Built, waiting for the game:** the recorder on retail, with one probe for both games
+   (recommendations 1 and 2). The addon half (#228) is on master and waits for its in-game session;
+   the merge tool (step 6d) waits for a real recording
+   ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
+   probe is on master as a dev-only addon (#232 to #237) and waits for its in-game runs.
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
-   data (recommendations 4 and 5).
+   data (recommendations 4 and 5): **done** (#238).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an
    expansion's skill line (recommendation 3): the two lines are under "To try in game".
-6. The dungeon journal on Forever, the quest cache reader on retail (done 9 October 2026,
-   [retail-quest-cache.md](retail-quest-cache.md)), the importer's `QuestLine` row counts
-   (recommendations 9, 6, 7).
+6. The dungeon journal on Forever (**done**, #241: the client has no Journal tables), the quest cache
+   reader on retail (**done**, #246, [retail-quest-cache.md](retail-quest-cache.md)), the importer's
+   `QuestLine` row counts (**done**, #239) (recommendations 9, 6, 7).
 7. A review of Forever's hidden and test quests, after its launch on 4 November (recommendation 10).
 
 Also: the 12.1.5 sweep when the patch is live (13 or 14 October; the TOC lists both interface
