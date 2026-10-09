@@ -483,7 +483,8 @@ local qcCategoryIndex = nil
 local qcQuestNameUpperCache = nil
 
 -- A quest's row in qcQuestDatabase (qcQuestData.lua) is {name, level, category, type, faction, race,
--- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID.
+-- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So is
+-- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that.
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
     for questId, e in pairs(qcQuestDatabase) do
@@ -810,7 +811,7 @@ end
 -- Whether the character has the level, the quests to do first, the renown or rank, and the skill in
 -- a profession a quest needs. A renown level or skill the game doesn't give counts as met.
 local function qcRequirementsMet(questId, e, playerLevel)
-	if (e[2] or 0) > playerLevel then return false end
+	if (qcQuestMinLevel[questId] or e[2] or 0) > playerLevel then return false end
 	if not qcPrereq.QuestMet(questId) then return false end
 	local renown = qcRenownLevelRequirements[questId]
 	local level = renown and qcFactionLevel(renown[1])

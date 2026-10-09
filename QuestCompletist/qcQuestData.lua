@@ -46768,3 +46768,5 @@ qcQuestPrereq={
 [95245]=95276,
 [95276]=86522,
 }
+qcQuestMinLevel={
+}

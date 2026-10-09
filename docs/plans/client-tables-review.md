@@ -185,10 +185,12 @@ and Cfg_TimeEventRegionGroup.
    the next change to its menu.
 
 Not recommended: everything marked No above. ContentTuning in particular adds nothing to the API's
-level ranges, though measuring it raised a data question worth its own note: our `level` is the
-API's minimum, and the low-level filter compares it with the character's level, so a quest that
-scales up to 30 can count as low level long before the game greys it. The API's maximum would fix
-that; it isn't a table question.
+level ranges, though measuring it raised a data question worth its own note: on retail our `level`
+is the API's minimum, and the low-level filter compares it with the character's level,
+so a quest that scales up to 30 can count as low level long before the game greys it. The API's
+maximum would fix that; it isn't a table question. (Forever's `level` is the quest's own level,
+which that filter suits; its minimum is in `qcQuestMinLevel`, which the tooltip and the
+requirements filter read.)
 
 ## Decisions
 
