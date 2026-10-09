@@ -338,6 +338,16 @@ add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and 
 the report, then `Decision` and `Reason`. Later runs mark it kept and count only the rest as new. The
 first run's findings and what was decided are in [plans/quest-table-checks.md](plans/quest-table-checks.md).
 
+`-Game forever` runs the checks that need only our own data on `data\forever` and
+`QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
+prerequisite tables against the quests (a quest not in the data, a daily or repeatable quest in a pair
+or required by a one-time quest, a quest that requires itself or is required back, one for the other
+faction, a quest listed twice). Forever's tables are generated, so the checks for hand errors don't
+apply, and it reads no API cache, TrinityCore dump or client table. `-OwnDataOnly` does the same on
+either game's folders with no download. Forever's `KEEP` rows are in
+`docs\plans\forever-quest-table-decisions.csv`, and the findings go to
+`tools\quest_table_audit_forever.csv`.
+
 ### 2c. Prerequisites
 
 `Sync-QuestPrerequisites.ps1` sets the prerequisites step 2b checks, from the same sources. Run it
@@ -573,6 +583,12 @@ to choose between them, are only listed: a character in a phased story often sta
 pins can, as two pins then share a name. It says which rows of `pin-npc-id-decisions.csv` belong to
 pins it removed; delete them, or `Apply-PinNpcIds.ps1` stops.
 
+`-Game forever` does the same on `data\forever\pins.jsonl` (step 10, after the import). Forever has no
+start points like retail's, so only the half-point rule applies. The importer makes a pin for each
+object entry that starts a quest, and CMaNGOS gives some objects several entries of one name, so the
+first run, in October 2026, took quest 2933 off 10 "Venom Bottle" pins and quest 926 off one "Flawed
+Power Stones" pin, and removed those 11 pins.
+
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
 `Assemble-PinDB.ps1 -Apply` before inserting, because the inserter uses the new pins. The fetch
@@ -805,9 +821,19 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    0 in October 2026, so anything else is new, apart from the 81 pins of events the calendar doesn't
    show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's. That includes the four
    "character level" lines, the minimum-level check, which fails the run when one isn't 0.
+8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
+   the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
+   run of 9 October 2026 found 6 on 2,296 prerequisites and 350 table entries: five kept in
+   `docs\plans\forever-quest-table-decisions.csv` (three prerequisites that name the other faction's
+   quest, two that name a repeatable one), and a quest whose own record in the game names itself as
+   its next quest (92727, which the importer no longer takes as its previous quest). Anything new is a
+   finding to look at before the pull request.
+9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf`, then without `-WhatIf` if it lists anything
+   (see step 6): the importer's pins can share a name and a quest at one spot. Run it before
+   `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
 
 With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
-`skills.jsonl` byte for byte. So whatever changes in them comes from the game, the client's tables or
+`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables or
 CMaNGOS, and is for review before its pull request. The committed `pins.jsonl` is not yet a rerun's:
 the importer's start point change of 8 October was never followed by an import, so the next one also
 moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753; see [plans/forever.md](plans/forever.md)).
@@ -1028,6 +1054,10 @@ git diff --stat
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
+- For changes to `Audit-QuestTables.ps1` or `Remove-DuplicatePinQuests.ps1`, or to the data and tables they
+  check on Forever, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverChecks.ps1`. It
+  must say "0 failed". It makes small data in a scratch folder for both, and ends with the two run on Forever's
+  committed data, which must have no finding the decisions file doesn't keep and no duplicate to remove.
 
 ## Bundled libraries
 

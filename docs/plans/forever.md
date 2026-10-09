@@ -839,4 +839,5 @@ these level 60 quests.
   `links.jsonl`, `reputation.jsonl` and `skills.jsonl` and the same review list. It does not write
   the same `pins.jsonl`: the committed one still waits for the 2026-10-08 start point change above,
   so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
-  with them.
+  with them. Since 9 October the committed `pins.jsonl` also has 11 pins fewer than an import writes:
+  `Remove-DuplicatePinQuests.ps1 -Game forever` takes duplicates off after it (step 10, item 9).

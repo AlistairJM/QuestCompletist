@@ -86,13 +86,13 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 1c quest names | from the API | from the cache | – | equivalent |
 | 1d professions of task quests | `Sync-QuestProfessions.ps1` | – | `QuestV2CliTask` is retail's alone; Forever's come from CMaNGOS | nature |
 | 2 reputation | API compare and backfill | the cache, in the importer | – | equivalent |
-| 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | **no** | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | **Yes:** run the consistency part on `data\forever` and `QuestCompletist\Forever` (the tool takes both folders; it needs a switch to skip the API and TrinityCore parts) |
+| 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | the consistency part, `-Game forever` (9 October 2026) | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | done: step 10 runs it; the API, TrinityCore and client-table parts stay retail's (`-OwnDataOnly` skips them) |
 | 2c prerequisites | API, the client's task quests (`QuestV2CliTask`) and TrinityCore | CMaNGOS, in the importer | – | equivalent |
 | 3 quest types | `Retype-*.ps1` with the probe | the importer | – | equivalent |
 | 4 storylines | `Build-QuestLines.ps1` | `Build-ForeverMenu.ps1` reads the same table | data (3 rows) | watched |
 | 5 zone table and client names | three tools | `Build-ForeverMenu.ps1` | – | equivalent |
 | 6 pins | the pipeline from `QuestPOIBlob` and TrinityCore's `quest_poi` | the importer from CMaNGOS, the recorder and the client's start points | the same rule, a pin at every place a source puts the pickup, from each game's sources (the data row above) | equivalent |
-| 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | **no** | never pointed at Forever's folders | **Yes:** run it with `-DataDir data\forever -AddonDir QuestCompletist\Forever` in step 10 |
+| 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | `-Game forever` (9 October 2026) | it had never been pointed at Forever's folders; retail's start points (`quest_locations.csv`) have no Forever counterpart, so only its half-point rule applies | done: step 10 runs it after the import |
 | 6c NPC IDs for named pins | TrinityCore (`Fill-PinNpcIds.ps1`), and the client's giver table with TrinityCore's starters, which also move a quest to its giver's pin (`Apply-ClientQuestGivers.ps1`) | CMaNGOS gives the IDs, from each quest's starter, so there is no neighbour's identity to correct | `CollectableSourceQuestSparse` is retail's alone | equivalent; nature |
 | 7 quests no longer obtainable | `Find-UnavailableQuestCandidates.ps1` | the importer's refused-quest rule | process | later, after launch |
 | 8 dungeons against the Dungeon Journal | `Audit-DungeonCategories.ps1` | – | Forever's menu takes instance types from the map table; whether its client carries the journal's names is unchecked | check `JournalInstance` on Forever once; if it's there, point the audit at it |
@@ -133,8 +133,8 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 1 | The recorder on retail (API review, recommendation 1) | small in the addon, medium for the merge tool | the one check Forever has that retail lacks outright |
 | 2 | One probe for both games: a retail mode for `Build-ProbeLists.ps1`, the quest-facts pass built once, the NPC pass run on retail each sweep, #42's probe retired | medium | ends the two-probes split; the Forever probe already loads on retail |
 | 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback (done 7 October 2026), then the in-game check of the expansion lines, then the data from `QuestV2CliTask` and TrinityCore | small code (done), medium data | the case that started this; the fallback makes the code the same on both, and changes nothing in game until retail has requirement data |
-| 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | a switch to skip the API and TrinityCore parts |
-| 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | probably finds nothing; the point is that it looks |
+| 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | done 9 October 2026 (`-Game forever`, `-OwnDataOnly`): 6 findings, five kept and one fixed |
+| 5 | `Remove-DuplicatePinQuests.ps1` on Forever's pins, in step 10 | small | done 9 October 2026 (`-Game forever`): it did find something, 11 pins |
 | 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
 | 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | a watch, nothing else |
 | 8 | The retail map pass | a run | the pin comparison; done 7 October 2026 (game-api-review.md, "Map-offers probe: retail run") |
@@ -186,3 +186,13 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   start, so the code row above needed no gate. Checked with stand-ins for the client's frames; the
   button's look and distance from the ring on each game are for the in-game check.
 - 2026-10-08: the addon compartment entry turned on for both games, at the user's request.
+- 2026-10-09: recommendations 4 and 5, the table checks on Forever (step 10, items 8 and 9 of the runbook):
+  `Audit-QuestTables.ps1 -Game forever` (and `-OwnDataOnly` on either game) and
+  `Remove-DuplicatePinQuests.ps1 -Game forever`, with `Test-ForeverChecks.ps1`. The audit found 6 things in
+  Forever's data: five are kept in `forever-quest-table-decisions.csv` (three prerequisites that name the
+  other faction's quest, two that name a repeatable one), and quest 92727's own record in the game names
+  itself as its next quest, which the importer took as its previous quest, so the quest could never show
+  (fixed in the importer and the data). The removal took quest 2933 off 10 "Venom Bottle" pins and quest
+  926 off one "Flawed Power Stones" pin (11 pins): CMaNGOS has several object entries of one name. It also
+  found a bug that had been in the tool since it was written, in retail's copy too: a spot whose only
+  pin was the first in the file read as empty, so that pin was never merged (retail's output is unchanged).
