@@ -95,7 +95,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | `-Game forever` (9 October 2026) | it had never been pointed at Forever's folders; retail's start points (`quest_locations.csv`) have no Forever counterpart, so only its half-point rule applies | done: step 10 runs it after the import |
 | 6c NPC IDs for named pins | TrinityCore (`Fill-PinNpcIds.ps1`), and the client's giver table with TrinityCore's starters, which also move a quest to its giver's pin (`Apply-ClientQuestGivers.ps1`) | CMaNGOS gives the IDs, from each quest's starter, so there is no neighbour's identity to correct | `CollectableSourceQuestSparse` is retail's alone | equivalent; nature |
 | 7 quests no longer obtainable | `Find-UnavailableQuestCandidates.ps1` | the importer's refused-quest rule | process | later, after launch |
-| 8 dungeons against the Dungeon Journal | `Audit-DungeonCategories.ps1` | – | Forever's menu takes instance types from the map table; whether its client carries the journal's names is unchecked | check `JournalInstance` on Forever once; if it's there, point the audit at it |
+| 8 dungeons against the Dungeon Journal | `Audit-DungeonCategories.ps1` | – | **data:** Forever's client has no `JournalInstance` (nor any `Journal*` table: 612 tables on builds 70205 and 70245, checked 9 October 2026); its menu takes instance types from the map table, and `DungeonEncounter` and `LFGDungeons` are all it has near the journal | watched: `Compare-ClientTables.ps1` flags a `Journal` table as quest-related when one appears, and the audit is then pointed at it |
 | 9 reachability | yes | yes | – | shared |
 | The client-tables check, the API check, the holiday check, the localization test | both | both | – | shared |
 | The quest probe | `/qc typecheck` (#42's branch): recurrence and tags | `/qcprobe quests`: the same and more (level, elite, group size, title) | process: two probes for one job; the Forever probe's TOC loads on retail too | **Yes:** one probe for both games. Give `Build-ProbeLists.ps1` a retail mode (the quests from `data\quests.jsonl` with `QuestV2`), retire #42's probe, and add the quest-facts pass (API review, recommendation 2) once |
@@ -138,7 +138,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 6 | Retail's quest cache through `Read-ForeverQuestCache.ps1` | medium | for the start items; try the layout first |
 | 7 | The importer prints `QuestLine` and `QuestLineXQuest` row counts | small | a watch, nothing else |
 | 8 | The retail map pass | a run | the pin comparison; done 7 October 2026 (game-api-review.md, "Map-offers probe: retail run") |
-| 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | |
+| 9 | `JournalInstance` on Forever, and the dungeon audit if it's there | small check | done 9 October 2026: it isn't there, so there is no audit to point (row 8) |
 | 10 | A Forever review of hidden and test quests | later | after launch |
 | 11 | One rule for nameless pins in both games: a pin per quest and place (retail) or per spot (Forever) | small | decide, then align the tool that differs |
 | 12 | Name retail's pins after the object or item that starts the quest, as Forever's are | small | `gameobject_queststarter` and `gameobject_template` give 62 object-started quests; 120 start from an item alone |
@@ -196,3 +196,6 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   926 off one "Flawed Power Stones" pin (11 pins): CMaNGOS has several object entries of one name. It also
   found a bug that had been in the tool since it was written, in retail's copy too: a spot whose only
   pin was the first in the file read as empty, so that pin was never merged (retail's output is unchanged).
+- 2026-10-09: recommendation 9: Forever's client carries no `JournalInstance` or any other `Journal*` table (the
+  lists of client tables for builds 70205 and 70245), so the dungeon audit has nothing to read there. The
+  watch is step 2b's table list.
