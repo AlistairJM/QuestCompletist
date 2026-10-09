@@ -851,12 +851,15 @@ next 12 months, then sets it back to the current one.
 
 The calendar also has to be asked for its events. On WoW: Forever a fresh login showed every seasonal
 pin on the map, with the filter on, until the player opened and closed Blizzard's calendar window.
-That window calls `C_Calendar.OpenCalendar()` each time it opens, and nothing else does. So the addon
-calls it at login and on a reload, listens for CALENDAR_UPDATE_EVENT_LIST, and redraws the open map
-when the answer changes. Until the first answer every seasonal quest is shown. The addon's own month
-changes fire the same event, so reading the calendar and `/qc holidays` ignore it while they run.
-`/qc holidays` says why when there's no answer: no events in the month, the calendar window open on
-another month, or the error the read raised.
+That window calls `C_Calendar.OpenCalendar()` each time it opens (so does the Guild News pane), and
+nothing in Blizzard's interface calls it at login. So the addon calls it at login and on a reload,
+and listens for CALENDAR_UPDATE_EVENT_LIST. Until the first answer, each event redraws the open map,
+whose read sets the month and takes the answer; afterwards an event redraws it only when the answer
+for the month already shown has changed, so the event never moves a month another addon set. Until
+the first answer every seasonal quest is shown. The addon's own month changes fire the same event,
+so reading the calendar and `/qc holidays` ignore it while they run. `/qc holidays` says why when
+there's no answer: the month has no events, or the read raised an error. A map drawn while
+Blizzard's window is open on another month can't read either, and keeps the last answer.
 
 To check it in game, log in fresh and open the map in a zone with seasonal pins out of season: they
 should vanish within a moment without the calendar window being opened. `Test-SeasonalCalendar.lua`

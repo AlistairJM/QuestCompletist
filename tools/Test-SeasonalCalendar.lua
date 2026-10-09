@@ -169,7 +169,7 @@ local function load(events)
 			if file == "qcCore.lua" then
 				source = source .. [[
 
-return {Holidays = qcHolidays, Handler = qcEventHandler, Print = qcPrintHolidays,
+return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	Active = function() return qcActiveHolidays end, Why = function() return qcCalendarWhy end}]]
 			end
 			local chunk = assert(loadstring(source, "@" .. ADDON_DIR .. "/" .. file))
@@ -178,8 +178,20 @@ return {Holidays = qcHolidays, Handler = qcEventHandler, Print = qcPrintHolidays
 			if file == "qcCore.lua" then ctx.core = result end
 		end
 	end
-	assert(ctx.core and ctx.core.Handler, "qcEventHandler not found in qcCore.lua")
+	assert(ctx.core and ctx.core.Print, "qcPrintHolidays not found in qcCore.lua")
 	ctx.env = env
+
+	-- Events go through the handler the addon's own frame registers, so one it never registered never arrives.
+	local frame = setmetatable({}, {__index = function() return dummy end})
+	ctx.registered = {}
+	function frame:RegisterEvent(event) ctx.registered[event] = true end
+	function frame:SetScript(name, fn) if name == "OnEvent" then ctx.onEvent = fn end end
+	env.qcQuestCompletistUI_OnLoad(frame)
+	assert(ctx.onEvent, "the addon's frame sets no OnEvent script")
+	function ctx.dispatch(event, ...)
+		if ctx.registered[event] then return pcall(ctx.onEvent, frame, event, ...) end
+		return true
+	end
 
 	-- A map that keeps what was drawn on it, as the player sees it.
 	local map = {drawn = {}}
@@ -192,13 +204,13 @@ return {Holidays = qcHolidays, Handler = qcEventHandler, Print = qcPrintHolidays
 	provider.RefreshAllData = function(self) ctx.redraws = ctx.redraws + 1 return draw(self) end
 	ctx.map = map
 
-	ctx.calendar.fire = function() ctx.core.Handler(nil, "CALENDAR_UPDATE_EVENT_LIST") end
+	ctx.calendar.fire = function() ctx.dispatch("CALENDAR_UPDATE_EVENT_LIST") end
 	function ctx.flush()
 		local timers = ctx.timers
 		ctx.timers = {}
 		for _, fn in ipairs(timers) do fn() end
 	end
-	function ctx.login() return pcall(ctx.core.Handler, nil, "PLAYER_ENTERING_WORLD", true, false) end
+	function ctx.login() return ctx.dispatch("PLAYER_ENTERING_WORLD", true, false) end
 	function ctx.openMap()
 		ctx.map.mapId = ctx.pin.mapId
 		ctx.provider = provider
@@ -262,9 +274,12 @@ print(string.format("%s, %s: pin of %s, quest %d, map %d", ADDON_DIR, TOC_FILE, 
 print("Fresh login, a calendar that stays empty until it's asked, then the server replies")
 do
 	local ctx = load(quietOctober())
+	check("the addon listens for the calendar's event", ctx.registered.CALENDAR_UPDATE_EVENT_LIST == true)
 	local ok, err = ctx.login()
 	check("login is handled", ok, err and tostring(err))
 	check("the calendar is asked for its events", ctx.calendar.openCalls == 1, "OpenCalendar calls: " .. ctx.calendar.openCalls)
+	ctx.dispatch("PLAYER_ENTERING_WORLD", false, false)
+	check("a zone change doesn't ask again", ctx.calendar.openCalls == 1, "OpenCalendar calls: " .. ctx.calendar.openCalls)
 	ctx.openMap()
 	check("a map opened before the answer shows the pin", ctx.pinShown(), "answer: " .. ctx.active() .. ", " .. tostring(ctx.core.Why()))
 	local redrawsBefore = ctx.redraws
@@ -300,10 +315,11 @@ do
 	local redrawsBefore = ctx.redraws
 	ctx.calendar.fire()
 	ctx.flush()
-	check("there's no answer, and it says why", ctx.active() == "nil" and ctx.core.Why() == "its window is open on another month",
+	check("the event redraws nothing", ctx.redraws == redrawsBefore)
+	ctx.openMap()
+	check("a map drawn meanwhile has no answer, and says why", ctx.active() == "nil" and ctx.core.Why() == "its window is open on another month",
 		"answer: " .. ctx.active() .. ", " .. tostring(ctx.core.Why()))
 	check("the window's month is left alone", ctx.calendar.shown.month == 12 and ctx.calendar.monthCalls == 0)
-	check("nothing is redrawn", ctx.redraws == redrawsBefore)
 end
 
 print("/qc holidays")
@@ -315,6 +331,28 @@ do
 	check("the scan sets the month 15 times: the read, 13 months, and back", ctx.calendar.monthCalls == 15,
 		"month changes: " .. ctx.calendar.monthCalls)
 	check("it leaves the calendar on the current month", ctx.calendar.shown.month == NOW.month and ctx.calendar.shown.year == NOW.year)
+end
+
+print("Another addon sets the calendar's month with Blizzard's window closed")
+do
+	local ctx = load(quietOctober())
+	ctx.login()
+	ctx.calendar.reply()
+	ctx.openMap()
+	ctx.flush()
+	check("the answer is known", ctx.active() == "0", "answer: " .. ctx.active())
+	local monthCallsBefore, redrawsBefore = ctx.calendar.monthCalls, ctx.redraws
+	ctx.calendar.api.SetAbsMonth(12, 2026)
+	ctx.flush()
+	check("the event doesn't move the month back", ctx.calendar.shown.month == 12 and ctx.calendar.monthCalls == monthCallsBefore + 1,
+		"month " .. ctx.calendar.shown.month .. ", month changes by the addon: " .. (ctx.calendar.monthCalls - monthCallsBefore - 1))
+	check("and redraws nothing", ctx.redraws == redrawsBefore)
+
+	local early = load(quietOctober())
+	early.calendar.api.SetAbsMonth(12, 2026)
+	check("before the first answer the event still doesn't move the month", early.calendar.shown.month == 12 and early.calendar.monthCalls == 1,
+		"month " .. early.calendar.shown.month .. ", month changes: " .. early.calendar.monthCalls)
+	check("it asks for a redraw, which reads", early.timers[1] ~= nil)
 end
 
 print("The calendar says the Lunar Festival is running")

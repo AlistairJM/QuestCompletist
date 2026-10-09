@@ -348,13 +348,13 @@ name a quest as a tracked collectable's source, but only per collectable, never 
 
 ### C_Calendar (90 functions, 13 events, both games)
 
-`SetAbsMonth`, `GetMonthInfo`, `GetNumDayEvents` and `GetDayEvent` are used, and `GetDayEvent`'s
+`SetAbsMonth`, `GetMonthInfo`, `GetNumDayEvents`, `GetDayEvent` and `OpenCalendar` are used, and `GetDayEvent`'s
 `title` already names a holiday in the player's language. `GetHolidayInfo(monthOffset, day, index)`
 adds the description and texture; `SetMonth`, `GetMinDate`, `GetMaxCreateDate`, `GetRaidInfo`,
-`GetEventIndex` and `GetClubCalendarEvents` no; the other 79 create, invite and manage events. No
+`GetEventIndex` and `GetClubCalendarEvents` no; the other 78 create, invite and manage events. No
 new data. `OpenCalendar` asks the server for the calendar's events, and event CALENDAR_UPDATE_EVENT_LIST
-says they've arrived: the addon calls the one at login and reads again on the other, redrawing the map
-when the answer changes (maintenance.md, "Holidays"). The other 12 events no.
+says they've arrived: the addon calls the one at login and redraws the open map on the other
+(maintenance.md, "Holidays"). The other 12 events no.
 
 ### C_EventScheduler (11 functions, 1 event, both games)
 

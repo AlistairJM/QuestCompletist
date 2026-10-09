@@ -273,9 +273,10 @@ end
 
 -- Keeps the last answer when the calendar can't be read, e.g. during chat lockdown.
 local function qcUpdateActiveHolidays()
+	local wasBusy = qcCalendarBusy
 	qcCalendarBusy = true
 	local ok, active, why = pcall(qcReadActiveHolidays)
-	qcCalendarBusy = false
+	qcCalendarBusy = wasBusy
 	if (ok and active) then
 		qcActiveHolidays = active
 	else
@@ -285,14 +286,20 @@ local function qcUpdateActiveHolidays()
 end
 
 -- The server sends the calendar's events when asked, as Blizzard's calendar does each time it opens.
--- Nothing asks at login, and a calendar nobody has opened can read as empty.
+-- Nothing asks at login, and on WoW: Forever a calendar nobody has opened reads as empty.
 local function qcRequestCalendar()
-	if C_Calendar.OpenCalendar then pcall(C_Calendar.OpenCalendar) end
+	if C_Calendar and C_Calendar.OpenCalendar then pcall(C_Calendar.OpenCalendar) end
 end
 
--- CALENDAR_UPDATE_EVENT_LIST: the events have arrived or changed. True when that changed the answer.
+-- CALENDAR_UPDATE_EVENT_LIST: the events have arrived or changed. True when the open map should be
+-- redrawn: on every event until the first answer, since the redraw reads the calendar, and after it
+-- only when the answer for the month already shown has changed. This never sets the month itself,
+-- which another addon reading the calendar may have set.
 local function qcCalendarDataArrived()
-	if qcCalendarBusy then return false end
+	if qcCalendarBusy or qcCalendarFrameOpen() or qcSettings.QC_M_HIDE_SEASONAL ~= 1 then return false end
+	if qcActiveHolidays == nil then return true end
+	local now, shown = C_DateAndTime.GetCurrentCalendarTime(), C_Calendar.GetMonthInfo(0)
+	if (shown.month ~= now.month or shown.year ~= now.year) then return false end
 	local before = qcActiveHolidays
 	return qcUpdateActiveHolidays() ~= before
 end
@@ -2152,7 +2159,8 @@ local function qcEventHandler(self, event, ...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
 	elseif (event == "CALENDAR_UPDATE_EVENT_LIST") then
-		if qcCalendarDataArrived() then qcRequestRefresh(nil, true) end
+		local ok, redraw = pcall(qcCalendarDataArrived)
+		if (ok and redraw) then qcRequestRefresh(nil, true) end
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
 		if (... == "player") then qcRequestRefresh(QC_REDRAW_ROWS) end
 	elseif (event == "ZONE_CHANGED_NEW_AREA") then
