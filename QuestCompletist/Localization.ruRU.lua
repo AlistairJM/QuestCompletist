@@ -132,6 +132,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "Левый щелчок: показать или скрыть список заданий", -- Needs review
 	MINIMAPRIGHTCLICK = "Правый щелчок: открыть настройки", -- Needs review
 	MINIMAPDRAG = "Перетаскивание: переместить кнопку вокруг миникарты", -- Needs review
+	RECORDGIVERS = "Записывать NPC, дающих задания", -- Needs review
+	RECORDGIVERSTIP = "Хранит краткую запись о NPC, дающих задания, которых вы встречаете, и о том, где вы их встретили. Запись сохраняется только на этом компьютере, ничего никуда не отправляется. /qc report показывает, что в ней есть.", -- Needs review
+	RECORDERNOTICE = "Quest Completist теперь хранит краткую запись о NPC, дающих задания, которых вы встречаете, и о том, где вы их встретили, – только на этом компьютере. /qc report показывает её; /qc record off отключает.", -- Needs review
+	RECORDERSTATUS = "Запись NPC, дающих задания: %s. Изменить: /qc record on, /qc record off или /qc record clear.", -- Needs review
+	RECORDERCOUNTS = "Записано: NPC, дающих задания, – %d, заданий – %d, заданий, начатых не у NPC, – %d.", -- Needs review
+	RECORDERFULL = "Записи заполнены, поэтому самые старые заменяются новыми (уже %d).", -- Needs review
+	RECORDERERRORS = "При записи NPC, дающих задания, произошло ошибок: %d; последняя: %s", -- Needs review
+	RECORDERHIDDEN = "Игра скрывала, кто говорит, %d раз; эти задания записаны без NPC.", -- Needs review
+	RECORDERFILE = "Ничего никуда не отправляется. Игра сохраняет записи при выходе или перезагрузке интерфейса в файле QuestCompletist.lua в папке SavedVariables вашей учётной записи (в папке WTF игры, в разделе Account). Чтобы помочь улучшить карту, приложите этот файл к комментарию на странице аддона на CurseForge.", -- Needs review
+	RECORDERCLEARED = "Записи удалены.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

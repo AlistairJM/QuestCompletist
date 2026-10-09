@@ -133,6 +133,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "왼쪽 클릭: 퀘스트 목록 표시/숨기기", -- Needs review
 	MINIMAPRIGHTCLICK = "오른쪽 클릭: 설정 열기", -- Needs review
 	MINIMAPDRAG = "드래그: 미니맵 주위로 버튼 이동", -- Needs review
+	RECORDGIVERS = "만난 퀘스트 제공자 기록", -- Needs review
+	RECORDGIVERSTIP = "만난 퀘스트 제공자와 만난 위치를 간단히 기록합니다. 이 컴퓨터에만 저장되며 어디로도 전송되지 않습니다. /qc report로 기록 내용을 볼 수 있습니다.", -- Needs review
+	RECORDERNOTICE = "Quest Completist가 이제 만난 퀘스트 제공자와 만난 위치를 이 컴퓨터에만 간단히 기록합니다. /qc report로 확인하고, /qc record off로 중지할 수 있습니다.", -- Needs review
+	RECORDERSTATUS = "퀘스트 제공자 기록: %s. /qc record on, /qc record off 또는 /qc record clear로 변경할 수 있습니다.", -- Needs review
+	RECORDERCOUNTS = "지금까지 퀘스트 제공자 %d명, 퀘스트 %d개, 제공자 없이 시작된 퀘스트 %d개를 기록했습니다.", -- Needs review
+	RECORDERFULL = "기록이 가득 차서 새 기록이 들어올 때마다 가장 오래된 기록이 교체됩니다 (현재까지 %d개).", -- Needs review
+	RECORDERERRORS = "퀘스트 제공자 기록 중 오류가 %d번 발생했습니다. 마지막 오류: %s", -- Needs review
+	RECORDERHIDDEN = "게임이 말하는 대상을 %d번 숨겼으며, 해당 퀘스트는 제공자 없이 기록되었습니다.", -- Needs review
+	RECORDERFILE = "어디로도 전송되지 않습니다. 게임은 로그아웃하거나 UI를 다시 불러올 때 기록을 계정의 SavedVariables 폴더(게임의 WTF 폴더 안 Account 아래)에 있는 QuestCompletist.lua에 저장합니다. 지도 개선에 도움을 주시려면 해당 파일을 애드온의 CurseForge 페이지 댓글에 첨부해 주세요.", -- Needs review
+	RECORDERCLEARED = "기록이 삭제되었습니다.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

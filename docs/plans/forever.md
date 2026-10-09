@@ -125,7 +125,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 
 ## Phases (one PR each)
 
-1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
+1. **Beta probe and recorder** (#139, now `tools/ForeverProbe` on master, a dev-only addon): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
 2. **Cache reader** (tool, `tools/Read-QuestCache.ps1`, #141, called Read-ForeverQuestCache.ps1 until retail's layout was added): decodes the cache records, checked
@@ -802,7 +802,7 @@ these level 60 quests.
   handed in to (#192); results above.
 - 2026-10-07: the probe gains `/qcprobe maps` (PR #139's branch), which asks each map for the quest
   offers, points of interest and events the game lists, and reads the events schedule
-  (`game-api-review.md`, recommendation 3; maintenance.md, step 4b under "In the game"). It answers
+  (`game-api-review.md`, recommendation 3; maintenance.md, step 3b under "In the game"). It answers
   two open questions once run on the beta: whether Forever's server sends offer positions for the
   new zones at all, and whether the Scourge Invasion, the War Effort or the fishing contest show
   up as events. (The results note the experience preset chosen at Forever's login screen, Classic
@@ -841,4 +841,5 @@ these level 60 quests.
   `links.jsonl`, `reputation.jsonl` and `skills.jsonl` and the same review list. It does not write
   the same `pins.jsonl`: the committed one still waits for the 2026-10-08 start point change above,
   so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
-  with them.
+  with them. Since 9 October the committed `pins.jsonl` also has 11 pins fewer than an import writes:
+  `Remove-DuplicatePinQuests.ps1 -Game forever` takes duplicates off after it (step 10, item 9).

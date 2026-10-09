@@ -724,6 +724,8 @@ them.
 2. **The probe additions** (2 and 3). Each costs an in-game run: about two hours on retail for the
    facts pass, minutes for the map offers. **Recommendation:** both, the map offers first on the
    Forever beta, as the answer decides whether Forever's new zones can get pins without the recorder.
+   The map offers were built and run in October; the user said "go ahead with the facts pass" on
+   9 October 2026, and it is built (below).
 3. **Scaling-aware levels** (4). It changes what "hide low level quests" hides for scaling quests.
    **Recommendation:** yes, with the stored level as the fallback.
 4. **Text from the game** (5). English clients would show Blizzard's storyline names where ours
@@ -755,7 +757,7 @@ them.
 1. **The map-offers probe first** (recommendation 3): built and run the same day; results in
    "Map-offers probe: first run".
 2. **A check stays even while it finds nothing.** The map pass stays in every probe run, and its
-   totals are compared with the last run's (maintenance.md, step 10 and step 4b). The user's
+   totals are compared with the last run's (maintenance.md, step 10 and step 3b). The user's
    reason, in their words: we never know what the client files or the in-game APIs might start
    serving up, which is why these audits were asked for in the first place. The rule covers every
    check this review and the client-tables review add, so recommendation 11, the API check every
@@ -794,11 +796,11 @@ them.
   pull request per item taken, starting with the map-offers probe on the Forever beta and the
   recorder.
 - 2026-10-07: the map-offers probe (recommendation 3) built, at the user's choice: `/qcprobe maps`
-  in the Forever probe (PR #139's branch, `tools/forever-probe`) asks each map for its quest
+  in the Forever probe (PR #139's branch, now `tools/ForeverProbe`) asks each map for its quest
   offers, points of interest, events, quest hubs, dungeon entrances, level range and waypoint
   flag, and once per run for the events schedule, the experience preset and the tracking toggles;
   `tools/Report-MapOffers.lua` reads a pass against the addon's quests and pins
-  (maintenance.md, "In the game", step 4b). Checked offline with stand-ins for the game: 16 checks
+  (maintenance.md, "In the game", step 3b). Checked offline with stand-ins for the game: 16 checks
   across maps that answer, answer late, ask for a second request, never answer or refuse. Merged as
   #210.
 - 2026-10-07: the first beta run (build 70245; results in "Map-offers probe: first run"): no quest
@@ -842,3 +844,27 @@ them.
 - 2026-10-08: pins from TrinityCore's start points (quest-location-data-pipeline.md, "pins from
   TrinityCore"): 1,453 more quests have a pin. The recorder (recommendation 1) is still the way to
   give the pins that stay nameless, and the quests TrinityCore has no start for, their giver.
+- 2026-10-08: recommendation 1 and decision 1: the recorder is built into the addon for both games
+  (`qcRecorder.lua`, on by default, checkbox, `/qc report`, `/qc record`), taken as agreed when the user
+  said "Let's start on the retail recorder"; the plan, the data model and the list to try in game
+  are in [quest-giver-recorder.md](quest-giver-recorder.md). The open question on its size is
+  answered for the cap (514 KB on disk at the caps) but a month of play is still unmeasured. The merge
+  tool is next; recommendation 2 (one probe for both games) after it.
+- 2026-10-09: recommendation 1, the merge tool: `Import-RecordedGivers.ps1` (sweep step 6d), with a
+  sandboxed reader and a ledger, fills retail pins' NPC IDs and pins quests no source places, from the
+  notes of both games; see [quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool".
+- 2026-10-09: recommendation 11, the secrecy watch: `Read-ApiDocs.lua` keeps every flag with `Secret` in its
+  name and the preconditions the documentation declares (on functions, events, arguments, returns, payload
+  and structure fields and the structures those lead to), `Compare-ApiDocs.ps1` fails the sweep when
+  they change on a function the addon calls or an event it listens for, and checks those events
+  (18, all documented in both games) for payload and for going. New baseline: live 12.1.0.69933 5,655
+  functions, 1,782 events (3,619 and 124 with flags); Forever 1.60.1.70245 5,903 and 1,804 (3,783 and
+  125). The counts of 7 October let script objects' methods of one name overwrite each other. Not
+  covered: the contents of structures, and the old globals the documentation leaves out.
+- 2026-10-09: recommendation 2, the facts pass, built into the probe's quest pass for both games (the user:
+  "dev-only addon, data only, go ahead with the facts pass"): for every quest that loads, `isTask`,
+  `isWorld`, `taskZone`, `accountQuest`, `factionGroup`, `important`, `meta`, `questLineID`,
+  `campaignID`, and the three undocumented `expansion`, `breadcrumb` and `story`, each from the first of
+  its functions the client has, with the run's row saying which that was. The probe is `tools/ForeverProbe`,
+  a dev-only addon; retail's list is every quest in `data\quests.jsonl` (QuestV2 is not asked), the
+  recurring ones first. It still needs the in-game run (about two hours on retail) and readers.

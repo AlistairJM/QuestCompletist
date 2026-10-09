@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: QC Forever probe
+## Notes: Gathers quest, NPC and map data from the game for Quest Completist's tools (docs/maintenance.md, In the game). Not for players.
+## SavedVariables: QCForeverProbeDB
+## X-Probe-TOC: camelot
+
+QuestIDs_Forever.lua
+NpcIDs_Forever.lua
+QCForeverProbe.lua
