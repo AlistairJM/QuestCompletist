@@ -30,5 +30,5 @@ tools/*
 !tools/Test-SeasonalCalendar.lua
 !tools/Test-Probe.lua
 !tools/ForeverProbe/
-tools/ForeverProbe/QCForeverProbe/QuestIDs.lua
-tools/ForeverProbe/QCForeverProbe/NpcIDs.lua
+tools/ForeverProbe/QCForeverProbe/QuestIDs_*.lua
+tools/ForeverProbe/QCForeverProbe/NpcIDs_*.lua

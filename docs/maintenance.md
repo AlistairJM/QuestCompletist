@@ -947,13 +947,19 @@ It began as pull request #139, which stays open as the record; its files are in
 (it plays a run against stand-ins for the game and must say "0 failed").
 
 1. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`, and the CMaNGOS
-   quests it lacks) and of NPCs. They are generated, so they are not in git:
+   quests it lacks) and of NPCs. They are generated, so they are not in git, and each game has its
+   own (`QuestIDs_Forever.lua`, `NpcIDs_Forever.lua`; the retail TOC loads the `_Retail` ones):
    ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Build <build> -ToolsDir tools
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Game forever -Build <Forever build> -ToolsDir tools
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Game retail -Build <retail build>
    ```
+   The retail lists need no download: every quest in `data\quests.jsonl`, the daily, repeatable and
+   128 ones first, and the NPC of every pin in `data\pins.jsonl`. The Forever NPCs are CMaNGOS's
+   givers of the listed quests and the NPCs of `data\forever\pins.jsonl`. `Test-ProbeLists.ps1` checks
+   the builder on made-up data.
 2. Copy `tools\ForeverProbe\QCForeverProbe` from the checkout into
-   `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\`, replacing any copy
-   there, and restart the game fully.
+   `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\` (or `_retail_`),
+   replacing any copy there, and restart the game fully.
 3. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
    time; the first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
    Then `/qcprobe npcs`, outside any instance,
@@ -1027,6 +1033,8 @@ git diff --stat
 - For changes to the probe (`tools\ForeverProbe\QCForeverProbe`), run `Test-Probe.lua`. It must say "0 failed".
   It plays the quest, NPC and map passes and the recorder against stand-ins for the API, on a clock of its
   own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).
+  For `Build-ProbeLists.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File toolsTest-ProbeLists.ps1`
+  (made-up data, nothing downloaded). Both must say "0 failed".
 
 ## Bundled libraries
 
