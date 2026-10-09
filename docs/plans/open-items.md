@@ -45,7 +45,7 @@ again.
   of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
-- **The menu review (starter areas only).** The offline checks cover the menus: every category with
+- **The menu review (#251, released in 112.7 untried; the starter areas only).** The offline checks cover the menus: every category with
   quests has a menu entry and a zone row, none is empty, and the reachability run leaves no quest out.
   What only the game can show is the four starter areas, whose quests are filed under their parent
   zone: walk into Camp Narache, Shadowglen, Valley of Trials and New Tinkertown and see the list follow
@@ -114,11 +114,11 @@ again.
   - The first shows whether the 7th value is a base line (164, 186 ...) and the rank the newest
     line's, as read above.
   - No offline test can answer this: the stand-ins for the client only return what they are given.
-- **The recorder** (#228, on master, not released), on both games: a full WoW restart, then the list in
+- **The recorder** (#228, released in 112.7 untried), on both games: a full WoW restart, then the list in
   [quest-giver-recorder.md](quest-giver-recorder.md) ("To try in game"): the order of the events,
   whether the game hides who is speaking, whether the popup hook fires, what the options panel
-  looks like in the longest language. It ships only after that, and a release cut from master carries
-  it (on by default in both TOCs) unless it is held back.
+  looks like in the longest language. It went out in 112.7 on the user's word, without this session
+  (9 October 2026), so the session now checks what players already have.
 - **The probe on both games** (`tools/ForeverProbe`, a dev-only addon built 9 October 2026, tested only
   against stand-ins by `Test-Probe.lua`). Build the lists (`Build-ProbeLists.ps1 -Game forever` and
   `-Game retail`), copy the folder into the game's AddOns and restart fully, then: on the **Forever
@@ -220,7 +220,7 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 1. Profession skill fallback: **done** (#216).
 2. Retail map pass: **done** (#219 carries its record).
 3. **Built, waiting for the game:** the recorder on retail, with one probe for both games
-   (recommendations 1 and 2). The addon half (#228) is on master and waits for its in-game session;
+   (recommendations 1 and 2). The addon half (#228) is released (112.7, untried) and waits for its in-game session;
    the merge tool (step 6d) waits for a real recording
    ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
    probe is on master as a dev-only addon (#232 to #237) and waits for its in-game runs.

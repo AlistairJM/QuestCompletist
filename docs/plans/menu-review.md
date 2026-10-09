@@ -165,3 +165,4 @@ one the report author would take.
   areas following their parent zone (see "To try in game" in [open-items.md](open-items.md)).
 - Five release zips (`QuestCompletistv112.2.zip` to `v112.6.zip`) sit untracked in the repo root and
   were left alone.
+- 2026-10-09 (later): merged (#251) and released in 112.7, untried in game, on the user's word.
