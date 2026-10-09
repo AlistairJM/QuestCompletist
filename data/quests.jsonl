@@ -77,19 +77,19 @@
 {"id":7170,"name":"Earned Reverence","level":1,"zone":"Alterac Valley","category":7,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":7171,"name":"Legendary Heroes","level":1,"zone":"Alterac Valley","category":7,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":7172,"name":"The Eye of Command","level":1,"zone":"Alterac Valley","category":7,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":8902,"name":"Dearest Elenia,","level":1,"zone":"","category":245,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":8902,"name":"Dearest Elenia,","level":1,"zone":"","category":245,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
 {"id":9085,"name":"Shadows of Doom","level":21,"zone":"","category":67,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":9153,"name":"Under the Shadow","level":21,"zone":"","category":67,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":836,"name":"Rescue OOX-09/HL!","level":10,"zone":"","category":220,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":9261,"name":"Investigate the Scourge of Ironforge","level":1,"zone":"","category":63,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":301,"name":"Report to Ironforge","level":5,"zone":"Loch Modan","category":124,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9319,"name":"A Light in Dark Places","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9322,"name":"Wild Fires in Kalimdor","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9323,"name":"Wild Fires in the Eastern Kingdoms","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9386,"name":"A Light in Dark Places","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9367,"name":"The Festival of Fire","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9388,"name":"Flickering Flames in Kalimdor","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9389,"name":"Flickering Flames in the Eastern Kingdoms","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":9319,"name":"A Light in Dark Places","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
+{"id":9322,"name":"Wild Fires in Kalimdor","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
+{"id":9323,"name":"Wild Fires in the Eastern Kingdoms","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
+{"id":9386,"name":"A Light in Dark Places","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
+{"id":9367,"name":"The Festival of Fire","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
+{"id":9388,"name":"Flickering Flames in Kalimdor","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
+{"id":9389,"name":"Flickering Flames in the Eastern Kingdoms","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":1442,"name":"Seeking the Kor Gem","level":7,"zone":"","category":47,"type":2,"faction":1,"race":67108863,"class":8191}
 {"id":6563,"name":"The Essence of Aku'Mai","level":10,"zone":"Blackfathom Deeps","category":21,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":976,"name":"Supplies to Auberdine","level":7,"zone":"Ashenvale","category":12,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -136,10 +136,10 @@
 {"id":5885,"name":"Salve via Skinning","level":15,"zone":"Felwood","category":76,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":5886,"name":"Salve via Disenchanting","level":15,"zone":"Felwood","category":76,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":8447,"name":"Waking Legends","level":30,"zone":"","category":138,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":8862,"name":"Elune's Candle","level":1,"zone":"","category":138,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":8863,"name":"Festival Dumplings","level":1,"zone":"","category":138,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":8864,"name":"Festive Lunar Dresses","level":1,"zone":"","category":138,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":8865,"name":"Festive Lunar Pant Suits","level":1,"zone":"","category":138,"type":2,"faction":3,"race":67108863,"class":8191}
+{"id":8862,"name":"Elune's Candle","level":1,"zone":"","category":138,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8863,"name":"Festival Dumplings","level":1,"zone":"","category":138,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8864,"name":"Festive Lunar Dresses","level":1,"zone":"","category":138,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8865,"name":"Festive Lunar Pant Suits","level":1,"zone":"","category":138,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":8316,"name":"Armaments of War","level":15,"zone":"Silithus","category":186,"type":1,"faction":3,"race":67108863,"class":1}
 {"id":8376,"name":"Armaments of War","level":15,"zone":"Silithus","category":186,"type":1,"faction":3,"race":67108863,"class":2}
 {"id":8377,"name":"Armaments of War","level":15,"zone":"Silithus","category":186,"type":1,"faction":3,"race":67108863,"class":4}
@@ -150,15 +150,15 @@
 {"id":8382,"name":"Armaments of War","level":15,"zone":"Silithus","category":186,"type":1,"faction":3,"race":67108863,"class":1024}
 {"id":7496,"name":"Celebrating Good Times","level":30,"zone":"Stormwind City","category":194,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":9260,"name":"Investigate the Scourge of Stormwind","level":1,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":8897,"name":"Dearest Colara,","level":1,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":8897,"name":"Dearest Colara,","level":1,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":64}
 {"id":9154,"name":"Light's Hope Chapel","level":21,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9025,"name":"Morgan's Discovery","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":9025,"name":"Morgan's Discovery","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
 {"id":9292,"name":"Cracked Necrotic Crystal","level":1,"zone":"","category":0,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":9310,"name":"Faint Necrotic Crystal","level":1,"zone":"","category":0,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":9028,"name":"The Source Revealed","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9024,"name":"Aristan's Hunch","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9026,"name":"Tracing the Source","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":9027,"name":"Tracing the Source","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":9028,"name":"The Source Revealed","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":9024,"name":"Aristan's Hunch","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":9026,"name":"Tracing the Source","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":9027,"name":"Tracing the Source","level":1,"zone":"","category":194,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
 {"id":8604,"name":"The Horde Needs Wool Bandages!","level":30,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":8605,"name":"The Horde Needs More Wool Bandages!","level":30,"zone":"","category":148,"type":2,"faction":2,"race":67108863,"class":8191}
 {"id":9263,"name":"Investigate the Scourge of Orgrimmar","level":1,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
@@ -173,7 +173,7 @@
 {"id":8590,"name":"The Horde Needs Thick Leather!","level":30,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":8591,"name":"The Horde Needs More Thick Leather!","level":30,"zone":"","category":148,"type":2,"faction":2,"race":67108863,"class":8191}
 {"id":8532,"name":"The Horde Needs Copper Bars!","level":30,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":8900,"name":"Dearest Elenia,","level":1,"zone":"","category":148,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":8900,"name":"Dearest Elenia,","level":1,"zone":"","category":148,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
 {"id":8609,"name":"The Horde Needs Runecloth Bandages!","level":30,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":8610,"name":"The Horde Needs More Runecloth Bandages!","level":30,"zone":"","category":148,"type":2,"faction":2,"race":67108863,"class":8191}
 {"id":8600,"name":"The Horde Needs Rugged Leather!","level":30,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
@@ -190,12 +190,12 @@
 {"id":8581,"name":"The Horde Needs More Firebloom!","level":30,"zone":"","category":148,"type":2,"faction":2,"race":67108863,"class":8191}
 {"id":8607,"name":"The Horde Needs Mageweave Bandages!","level":30,"zone":"","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":8608,"name":"The Horde Needs More Mageweave Bandages!","level":30,"zone":"","category":148,"type":2,"faction":2,"race":67108863,"class":8191}
-{"id":9368,"name":"The Festival of Fire","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":9368,"name":"The Festival of Fire","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":8492,"name":"The Alliance Needs Copper Bars!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":8511,"name":"The Alliance Needs Light Leather!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":8517,"name":"The Alliance Needs Linen Bandages!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":8513,"name":"The Alliance Needs Medium Leather!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":8898,"name":"Dearest Colara,","level":1,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":8898,"name":"Dearest Colara,","level":1,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":64}
 {"id":8509,"name":"The Alliance Needs Arthas' Tears!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":8520,"name":"The Alliance Needs Silk Bandages!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":8503,"name":"The Alliance Needs Stranglekelp!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
@@ -208,15 +208,15 @@
 {"id":8505,"name":"The Alliance Needs Purple Lotus!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":8499,"name":"The Alliance Needs Thorium Bars!","level":30,"zone":"","category":110,"type":1,"faction":1,"race":67108863,"class":8191}
 {"id":9264,"name":"Investigate the Scourge of Thunder Bluff","level":1,"zone":"","category":243,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":8901,"name":"Dearest Elenia,","level":1,"zone":"","category":243,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":8899,"name":"Dearest Colara,","level":1,"zone":"","category":49,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":8901,"name":"Dearest Elenia,","level":1,"zone":"","category":243,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":8899,"name":"Dearest Colara,","level":1,"zone":"","category":49,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":64}
 {"id":9262,"name":"Investigate the Scourge of Darnassus","level":1,"zone":"","category":49,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":8983,"name":"Tracing the Source","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":8983,"name":"Tracing the Source","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
 {"id":9265,"name":"Investigate the Scourge of the Undercity","level":1,"zone":"","category":256,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":8984,"name":"The Source Revealed","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":8980,"name":"Zinge's Assessment","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":8979,"name":"Fenstad's Hunch","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":8982,"name":"Tracing the Source","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":8984,"name":"The Source Revealed","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":8980,"name":"Zinge's Assessment","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":8979,"name":"Fenstad's Hunch","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
+{"id":8982,"name":"Tracing the Source","level":1,"zone":"","category":256,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":64}
 {"id":7302,"name":"Fallen Sky Lords","level":1,"zone":"Alterac Valley","category":7,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":51344,"name":"To Matters at Hand","level":10,"zone":"","category":1064,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":61496,"name":"A Familiar Energy","level":60,"zone":"The Maw","category":1206,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -909,12 +909,12 @@
 {"id":6781,"name":"More Armor Scraps","level":1,"zone":"Alterac Valley","category":7,"type":2,"faction":1,"race":64175181,"class":8191}
 {"id":6801,"name":"Lokholar the Ice Lord","level":1,"zone":"Alterac Valley","category":7,"type":2,"faction":1,"race":64175181,"class":8191}
 {"id":6881,"name":"Ivus the Forest Lord","level":1,"zone":"Alterac Valley","category":7,"type":2,"faction":1,"race":64175181,"class":8191}
-{"id":6961,"name":"Great-father Winter is Here!","level":7,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191}
-{"id":6962,"name":"Treats for Great-father Winter","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191}
-{"id":6964,"name":"The Reason for the Season","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191}
+{"id":6961,"name":"Great-father Winter is Here!","level":7,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":8}
+{"id":6962,"name":"Treats for Great-father Winter","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":8}
+{"id":6964,"name":"The Reason for the Season","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":8}
 {"id":6982,"name":"Coldtooth Supplies","level":1,"zone":"Alterac Valley","category":7,"type":2,"faction":1,"race":64175181,"class":8191}
-{"id":6983,"name":"You're a Mean One...","level":30,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191}
-{"id":6984,"name":"A Smokywood Pastures' Thank You!","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191}
+{"id":6983,"name":"You're a Mean One...","level":30,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":8}
+{"id":6984,"name":"A Smokywood Pastures' Thank You!","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":8}
 {"id":6985,"name":"Irondeep Supplies","level":1,"zone":"Alterac Valley","category":7,"type":2,"faction":2,"race":61658034,"class":8191}
 {"id":7001,"name":"Empty Stables","level":10,"zone":"Alterac Valley","category":7,"type":2,"faction":2,"race":61658034,"class":8191}
 {"id":7002,"name":"Ram Hide Harnesses","level":1,"zone":"Alterac Valley","category":7,"type":2,"faction":2,"race":61658034,"class":8191}
@@ -973,7 +973,7 @@
 {"id":7928,"name":"Darkmoon Warlords Deck","level":1,"zone":"Darkmoon Faire","category":46,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":8192}
 {"id":7929,"name":"Darkmoon Elementals Deck","level":1,"zone":"Darkmoon Faire","category":46,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":8192}
 {"id":8149,"name":"Honoring a Hero","level":1,"zone":"Seasonal","category":173,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":32}
-{"id":8150,"name":"Honoring a Hero","level":1,"zone":"Seasonal","category":173,"type":64,"faction":2,"race":61658034,"class":8191}
+{"id":8150,"name":"Honoring a Hero","level":1,"zone":"Seasonal","category":173,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":32}
 {"id":8193,"name":"Grand Prize","level":1,"zone":"Fishing","category":80,"type":2,"faction":3,"race":67108863,"class":8191,"profession":16384}
 {"id":8194,"name":"Apprentice Angler","level":1,"zone":"Fishing","category":80,"type":2,"faction":3,"race":67108863,"class":8191,"profession":16384}
 {"id":8221,"name":"Rare Fish - Keefer's Angelfish","level":1,"zone":"Fishing","category":80,"type":2,"faction":3,"race":67108863,"class":8191,"profession":16384}
@@ -1068,7 +1068,7 @@
 {"id":8596,"name":"Footwraps of the Oracle","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":16}
 {"id":8602,"name":"Stormcaller's Pauldrons","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":64}
 {"id":8603,"name":"Vestments of the Oracle","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":16}
-{"id":8619,"name":"Morndeep the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":8619,"name":"Morndeep the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":8621,"name":"Stormcaller's Footguards","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":64}
 {"id":8622,"name":"Stormcaller's Hauberk","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":64}
 {"id":8623,"name":"Stormcaller's Diadem","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":64}
@@ -1083,8 +1083,8 @@
 {"id":8632,"name":"Enigma Circlet","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":128}
 {"id":8633,"name":"Enigma Robes","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":128}
 {"id":8634,"name":"Enigma Boots","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":128}
-{"id":8635,"name":"Splitrock the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8636,"name":"Rumblerock the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":8635,"name":"Splitrock the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8636,"name":"Rumblerock the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":8637,"name":"Deathdealer's Boots","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":8}
 {"id":8638,"name":"Deathdealer's Vest","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":8}
 {"id":8639,"name":"Deathdealer's Helm","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":8}
@@ -1118,24 +1118,24 @@
 {"id":8667,"name":"Genesis Helm","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":1024}
 {"id":8668,"name":"Genesis Trousers","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":1024}
 {"id":8669,"name":"Genesis Shoulderpads","level":30,"zone":"Ahn'Qiraj","category":1737,"type":2,"faction":3,"race":67108863,"class":1024}
-{"id":8670,"name":"Runetotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8671,"name":"Ragetotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8672,"name":"Stonespire the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8673,"name":"Bloodhoof the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8674,"name":"Winterhoof the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8675,"name":"Skychaser the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8676,"name":"Wildmane the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8677,"name":"Darkhorn the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8678,"name":"Wheathoof the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8679,"name":"Grimtotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8680,"name":"Windtotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8681,"name":"Thunderhorn the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8682,"name":"Skyseer the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8683,"name":"Dawnstrider the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8684,"name":"Dreamseer the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8685,"name":"Mistwalker the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8686,"name":"High Mountain the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8688,"name":"Windrun the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":8670,"name":"Runetotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8671,"name":"Ragetotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8672,"name":"Stonespire the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8673,"name":"Bloodhoof the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8674,"name":"Winterhoof the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8675,"name":"Skychaser the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8676,"name":"Wildmane the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8677,"name":"Darkhorn the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8678,"name":"Wheathoof the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8679,"name":"Grimtotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8680,"name":"Windtotem the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8681,"name":"Thunderhorn the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8682,"name":"Skyseer the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8683,"name":"Dawnstrider the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8684,"name":"Dreamseer the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8685,"name":"Mistwalker the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8686,"name":"High Mountain the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8688,"name":"Windrun the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":8689,"name":"Shroud of Infinite Wisdom","level":30,"zone":"Ahn'Qiraj","category":3,"type":1,"faction":3,"race":67108863,"class":16}
 {"id":8690,"name":"Cloak of the Gathering Storm","level":30,"zone":"Ahn'Qiraj","category":3,"type":1,"faction":3,"race":67108863,"class":64}
 {"id":8691,"name":"Drape of Vaulted Secrets","level":30,"zone":"Ahn'Qiraj","category":3,"type":1,"faction":3,"race":67108863,"class":128}
@@ -1160,21 +1160,21 @@
 {"id":8710,"name":"Kris of Unspoken Names","level":30,"zone":"Ahn'Qiraj","category":3,"type":1,"faction":3,"race":67108863,"class":256}
 {"id":8711,"name":"Blade of Eternal Justice","level":30,"zone":"Ahn'Qiraj","category":3,"type":1,"faction":3,"race":67108863,"class":2}
 {"id":8712,"name":"Scythe of the Unseen Path","level":30,"zone":"Ahn'Qiraj","category":3,"type":1,"faction":3,"race":67108863,"class":4}
-{"id":8713,"name":"Starsong the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8714,"name":"Moonstrike the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8715,"name":"Bladeleaf the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8716,"name":"Starglade the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8717,"name":"Moonwarden the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8718,"name":"Bladeswift the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8719,"name":"Bladesing the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8720,"name":"Skygleam the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8721,"name":"Starweave the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8722,"name":"Meadowrun the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8723,"name":"Nightwind the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8724,"name":"Morningdew the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8725,"name":"Riversong the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8726,"name":"Brightspear the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":8727,"name":"Farwhisper the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":8713,"name":"Starsong the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8714,"name":"Moonstrike the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8715,"name":"Bladeleaf the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8716,"name":"Starglade the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8717,"name":"Moonwarden the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8718,"name":"Bladeswift the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8719,"name":"Bladesing the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8720,"name":"Skygleam the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8721,"name":"Starweave the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8722,"name":"Meadowrun the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8723,"name":"Nightwind the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8724,"name":"Morningdew the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8725,"name":"Riversong the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8726,"name":"Brightspear the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":8727,"name":"Farwhisper the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":8744,"name":"A Carefully Wrapped Present","level":1,"zone":"Winter Veil","category":413,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":8757,"name":"The Path of the Invoker","level":30,"zone":"Tanaris","category":203,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":8758,"name":"The Path of the Invoker","level":30,"zone":"Tanaris","category":203,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -1309,7 +1309,7 @@
 {"id":9330,"name":"Stealing Stormwind's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":9331,"name":"Stealing Ironforge's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":9332,"name":"Stealing Darnassus's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
-{"id":9339,"name":"A Thief's Reward","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":9339,"name":"A Thief's Reward","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":9340,"name":"The Great Fissure","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":448}
 {"id":9345,"name":"Preparing the Salve","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":9349,"name":"Ravager Egg Roundup","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":448}
@@ -1322,7 +1322,7 @@
 {"id":9360,"name":"Amani Invasion","level":1,"zone":"Eversong Woods","category":74,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":569}
 {"id":9361,"name":"Helboar, the Other White Meat","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":448,"prereq":9349}
 {"id":9363,"name":"Warning Fairbreeze Village","level":1,"zone":"Eversong Woods","category":74,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":569,"prereq":9360}
-{"id":9365,"name":"A Thief's Reward","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":9365,"name":"A Thief's Reward","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":9366,"name":"In Need of Felblood","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":448}
 {"id":9369,"name":"Replenishing the Healing Crystals","level":1,"zone":"Azuremyst Isle","category":17,"type":1,"faction":1,"race":6221,"class":8191,"storyline":5404}
 {"id":9370,"name":"The Cleansing Must Be Stopped","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":448,"prereq":9366}
@@ -2829,7 +2829,7 @@
 {"id":11525,"name":"Further Conversions","level":25,"zone":"Isle of Quel'Danas","category":112,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":11526,"name":"The Missing Magistrix","level":25,"zone":"Isle of Quel'Danas","category":112,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":11527,"name":"Mutiny on the Mercy","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528}
-{"id":11528,"name":"A Winter Veil Gift","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":1,"race":64175181,"class":8191}
+{"id":11528,"name":"A Winter Veil Gift","level":10,"zone":"Winter Veil","category":413,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":8}
 {"id":11529,"name":"Sorlof's Booty","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528}
 {"id":11530,"name":"The Shield of the Aesirites","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":528}
 {"id":11531,"name":"Strange Engine Part","level":10,"zone":"Fishing","category":80,"type":32,"faction":1,"race":64175181,"class":8191,"profession":16384}
@@ -2947,7 +2947,7 @@
 {"id":11654,"name":"The Spire of Blood","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":11655,"name":"Into the Mist","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":11656,"name":"Burn in Effigy","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":11657,"name":"Torch Catching","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":11657,"name":"Torch Catching","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11658,"name":"Plan B","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11653}
 {"id":11659,"name":"Shatter the Orbs!","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":11660,"name":"Horn of the Ancient Mariner","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -3019,7 +3019,7 @@
 {"id":11728,"name":"Lupus Pupus","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11726}
 {"id":11729,"name":"The Ultrasonic Screwdriver","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":11730,"name":"Master and Servant","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":11731,"name":"Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":11731,"name":"Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11732,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11733,"name":"Traversing the Rift","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11682}
 {"id":11734,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
@@ -3042,7 +3042,7 @@
 {"id":11752,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11753,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11754,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
-{"id":11755,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}
+{"id":11755,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11756,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11757,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11758,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
@@ -3051,11 +3051,11 @@
 {"id":11761,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11762,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11763,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
-{"id":11764,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":11764,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11765,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
-{"id":11766,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":11766,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11767,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
-{"id":11768,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":11768,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11769,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11770,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11771,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
@@ -3068,10 +3068,10 @@
 {"id":11778,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11779,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11780,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
-{"id":11781,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":11781,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11782,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11783,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
-{"id":11784,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":11784,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11786,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11787,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11788,"name":"Lefty Loosey, Righty Tighty","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11712}
@@ -3087,7 +3087,7 @@
 {"id":11798,"name":"The Gearmaster","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11788}
 {"id":11799,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11800,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
-{"id":11801,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":11801,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11802,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11803,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11804,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
@@ -3165,15 +3165,15 @@
 {"id":11879,"name":"Kaw the Mammoth Destroyer","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11878}
 {"id":11880,"name":"The Multiphase Survey","level":25,"zone":"Nagrand","category":141,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":11881,"name":"Load'er Up!","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530}
-{"id":11882,"name":"Playing with Fire","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":11882,"name":"Playing with Fire","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11884,"name":"Nedar, Lord of Rhinos...","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530}
 {"id":11885,"name":"Adversarial Blood","level":15,"zone":"Terokkar Forest","category":207,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":11886,"name":"Unusual Activity","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":11886,"name":"Unusual Activity","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":11887,"name":"Emergency Supplies","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":11888,"name":"Ride to Taunka'le Village","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"prereq":[[11595,11596,11597]]}
 {"id":11889,"name":"Death From Above","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11797}
 {"id":11890,"name":"What Are They Up To?","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530}
-{"id":11891,"name":"An Innocent Disguise","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":11891,"name":"An Innocent Disguise","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":11892,"name":"The Assassination of Harold Lane","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530}
 {"id":11893,"name":"The Power of the Elements","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530,"prereq":11881}
 {"id":11894,"name":"Patching Up","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530,"prereq":11893}
@@ -3197,25 +3197,25 @@
 {"id":11912,"name":"Nuts for Berries","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530}
 {"id":11913,"name":"Take No Chances","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530}
 {"id":11914,"name":"Keep the Secret Safe","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11912}
-{"id":11915,"name":"Playing with Fire","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":11915,"name":"Playing with Fire","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11916,"name":"Hellscream's Champion","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530,"prereq":[11652,11705,11722]}
 {"id":11918,"name":"Basic Training","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530}
 {"id":11919,"name":"Drake Hunt","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11936}
 {"id":11920,"name":"Cultists Among Us","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":11921,"name":"More Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":11922,"name":"Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":11923,"name":"Torch Catching","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":11924,"name":"More Torch Catching","level":1,"zone":"Midsummer","category":133,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":11925,"name":"More Torch Catching","level":1,"zone":"Midsummer","category":133,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":11926,"name":"More Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":4,"faction":2,"race":61658034,"class":8191}
+{"id":11921,"name":"More Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":256}
+{"id":11922,"name":"Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
+{"id":11923,"name":"Torch Catching","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
+{"id":11924,"name":"More Torch Catching","level":1,"zone":"Midsummer","category":133,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":256}
+{"id":11925,"name":"More Torch Catching","level":1,"zone":"Midsummer","category":133,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":256}
+{"id":11926,"name":"More Torch Tossing","level":1,"zone":"Midsummer","category":133,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11927,"name":"Word on the Street","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":11928,"name":"Farshire","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":11929,"name":"The Fall of Taunka'le Village","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530}
 {"id":11930,"name":"Across Transborea","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":530,"prereq":11929}
 {"id":11931,"name":"Cracking the Code","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11919}
 {"id":11932,"name":"Cowards and Fools","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11604}
-{"id":11933,"name":"Stealing the Exodar's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":11935,"name":"Stealing Silvermoon's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":11933,"name":"Stealing the Exodar's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
+{"id":11935,"name":"Stealing Silvermoon's Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11936,"name":"Hatching a Plan","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11918}
 {"id":11938,"name":"Buying Some Time","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11956}
 {"id":11940,"name":"Drake Hunt","level":10,"zone":"Borean Tundra","category":29,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -3228,7 +3228,7 @@
 {"id":11949,"name":"Not Without a Fight!","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530}
 {"id":11950,"name":"Muahit's Wisdom","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11949}
 {"id":11951,"name":"Bait and Switch","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11946}
-{"id":11954,"name":"Striking Back","level":1,"zone":"Midsummer","category":133,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":11954,"name":"Striking Back","level":1,"zone":"Midsummer","category":133,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":11956,"name":"Finding the Phylactery","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530}
 {"id":11957,"name":"Saragosa's End","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11951}
 {"id":11958,"name":"Let Nothing Go To Waste","level":15,"zone":"Dragonblight","category":59,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":529}
@@ -3237,15 +3237,15 @@
 {"id":11961,"name":"Spirits Watch Over Us","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11950}
 {"id":11962,"name":"One Last Delivery","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11904}
 {"id":11963,"name":"Weapons for Farshire","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11962}
-{"id":11964,"name":"Incense for the Summer Scorchlings","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":11964,"name":"Incense for the Summer Scorchlings","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":11965,"name":"Call to Arms!","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":530,"prereq":11963}
-{"id":11966,"name":"Incense for the Festival Scorchlings","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":11966,"name":"Incense for the Festival Scorchlings","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":11967,"name":"Mustering the Reds","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11957}
 {"id":11968,"name":"The Tides Turn","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11961}
 {"id":11969,"name":"Springing the Trap","level":10,"zone":"Borean Tundra","category":29,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":530,"prereq":11967}
-{"id":11970,"name":"The Master of Summer Lore","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":11971,"name":"The Spinner of Summer Tales","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":11972,"name":"Shards of Ahune","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":11970,"name":"The Master of Summer Lore","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
+{"id":11971,"name":"The Spinner of Summer Tales","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
+{"id":11972,"name":"Shards of Ahune","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":11973,"name":"Prisoner of War","level":10,"zone":"The Nexus","category":224,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":11975,"name":"Now, When I Grow Up...","level":20,"zone":"Children's Week","category":37,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":2,"prereq":[10945,10951,10953]}
 {"id":11977,"name":"A Tauren Among Taunka","level":15,"zone":"Dragonblight","category":59,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -3279,7 +3279,7 @@
 {"id":12009,"name":"Tua'kea's Crab Traps","level":15,"zone":"Dragonblight","category":59,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":12010,"name":"The Fate of Orlond","level":15,"zone":"Grizzly Hills","category":88,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":537,"prereq":12003}
 {"id":12011,"name":"Signs of Big Watery Trouble","level":15,"zone":"Dragonblight","category":59,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":12012,"name":"Inform the Elder","level":10,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":12012,"name":"Inform the Elder","level":10,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":256}
 {"id":12013,"name":"End Arcanimus","level":15,"zone":"Dragonblight","category":59,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":12014,"name":"Steady as a Rock?","level":15,"zone":"Grizzly Hills","category":88,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":537,"prereq":12010}
 {"id":12016,"name":"The Bait","level":15,"zone":"Dragonblight","category":59,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -4185,28 +4185,28 @@
 {"id":13009,"name":"A New Beginning","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":535}
 {"id":13010,"name":"Krolmir, Hammer of Storms","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":535,"prereq":13051}
 {"id":13011,"name":"Culling Jorcuttar","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":13012,"name":"Sardis the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13013,"name":"Beldak the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13014,"name":"Morthie the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13015,"name":"Fargal the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13016,"name":"Northal the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13017,"name":"Jarten the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13018,"name":"Sandrene the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13019,"name":"Thoim the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13020,"name":"Stonebeard the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13021,"name":"Igasho the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13022,"name":"Nurgen the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13023,"name":"Kilias the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13024,"name":"Wanikaya the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13025,"name":"Lunaro the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13026,"name":"Bluewolf the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13027,"name":"Tauros the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13028,"name":"Graymane the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13029,"name":"Pamuya the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13030,"name":"Whurain the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13031,"name":"Skywarden the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13032,"name":"Muraco the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13033,"name":"Arp the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":13012,"name":"Sardis the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13013,"name":"Beldak the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13014,"name":"Morthie the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13015,"name":"Fargal the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13016,"name":"Northal the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13017,"name":"Jarten the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13018,"name":"Sandrene the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13019,"name":"Thoim the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13020,"name":"Stonebeard the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13021,"name":"Igasho the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13022,"name":"Nurgen the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13023,"name":"Kilias the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13024,"name":"Wanikaya the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13025,"name":"Lunaro the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13026,"name":"Bluewolf the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13027,"name":"Tauros the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13028,"name":"Graymane the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13029,"name":"Pamuya the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13030,"name":"Whurain the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13031,"name":"Skywarden the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13032,"name":"Muraco the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13033,"name":"Arp the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":13034,"name":"The Witness and the Hero","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":535,"prereq":13426}
 {"id":13035,"name":"Loken's Lackeys","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":535}
 {"id":13036,"name":"Honor Above All Else","level":25,"zone":"Icecrown","category":106,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":538}
@@ -4236,9 +4236,9 @@
 {"id":13062,"name":"Lok'lira's Parting Gift","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":535,"prereq":13061}
 {"id":13063,"name":"Deemed Worthy","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":535,"prereq":12856}
 {"id":13064,"name":"Sibling Rivalry","level":25,"zone":"The Storm Peaks","category":233,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":535,"prereq":12886}
-{"id":13065,"name":"Ohanzee the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13066,"name":"Yurauk the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":13067,"name":"Chogan'gada the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":13065,"name":"Ohanzee the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13066,"name":"Yurauk the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":13067,"name":"Chogan'gada the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":13068,"name":"A Tale of Valor","level":25,"zone":"Icecrown","category":106,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":538,"prereq":[13070,13086,13141]}
 {"id":13069,"name":"Shoot 'Em Up","level":25,"zone":"Icecrown","category":106,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":13070,"name":"A Cold Front Approaches","level":25,"zone":"Icecrown","category":106,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":538,"prereq":13045}
@@ -8229,7 +8229,7 @@
 {"id":27843,"name":"Reinforcements Denied","level":15,"zone":"Swamp of Sorrows","category":201,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":426}
 {"id":27844,"name":"Traitors!!!","level":7,"zone":"The Deadmines","category":215,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":27845,"name":"Marking the Fallen","level":15,"zone":"Swamp of Sorrows","category":201,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":426}
-{"id":27846,"name":"The Grateful Dead","level":1,"zone":"Day of the Dead","category":50,"type":64,"faction":1,"race":2048,"class":8191}
+{"id":27846,"name":"The Grateful Dead","level":1,"zone":"Day of the Dead","category":50,"type":64,"faction":1,"race":2048,"class":8191,"holiday":4}
 {"id":27847,"name":"Not Quite There","level":7,"zone":"The Deadmines","category":215,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":27848,"name":"Good Intentions...Poor Execution","level":7,"zone":"The Deadmines","category":215,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":27849,"name":"Assault on Stonard","level":15,"zone":"Swamp of Sorrows","category":201,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":426,"prereq":[27795,27843,27845]}
@@ -9175,13 +9175,13 @@
 {"id":28885,"name":"Mr. Goldmine's Wild Ride","level":30,"zone":"Twilight Highlands","category":252,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":546,"prereq":[27703,27659,27798]}
 {"id":28909,"name":"Sauranok Will Point the Way","level":30,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":28910,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
-{"id":28911,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":28911,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":28912,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":28913,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":28914,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":28915,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":28916,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":256}
-{"id":28917,"name":"Desecrate this Fire!","level":1,"zone":"Hallow's End","category":90,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":28917,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":28918,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":28919,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":28920,"name":"Desecrate this Fire!","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
@@ -9305,7 +9305,7 @@
 {"id":29088,"name":"Hyena Extermination","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":29089,"name":"Sludge Beast!","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":29090,"name":"A Burning Threat","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":29092,"name":"Inform the Elder","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":29092,"name":"Inform the Elder","level":1,"zone":"Midsummer","category":133,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":256}
 {"id":29093,"name":"Cruisin' the Chasm","level":10,"zone":"Children's Week","category":37,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":2}
 {"id":29094,"name":"The Short Way Home","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":509,"prereq":[14006,29015,29086]}
 {"id":29095,"name":"Report to Thork","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":509,"prereq":876}
@@ -9752,15 +9752,15 @@
 {"id":29730,"name":"Scouting Report: Hostile Natives","level":10,"zone":"The Jade Forest","category":221,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":552,"prereq":[29942,29939,31239]}
 {"id":29731,"name":"Scouting Report: On the Right Track","level":10,"zone":"The Jade Forest","category":221,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":552}
 {"id":29733,"name":"SI:7 Report: Lost in the Woods","level":10,"zone":"The Jade Forest","category":221,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":549}
-{"id":29734,"name":"Deepforge the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29735,"name":"Stonebrand the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29736,"name":"Darkfeather the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29737,"name":"Firebeard the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29738,"name":"Moonlance the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29739,"name":"Windsong the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29740,"name":"Evershade the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29741,"name":"Sekhemi the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":29742,"name":"Menkhaf the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":29734,"name":"Deepforge the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29735,"name":"Stonebrand the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29736,"name":"Darkfeather the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29737,"name":"Firebeard the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29738,"name":"Moonlance the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29739,"name":"Windsong the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29740,"name":"Evershade the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29741,"name":"Sekhemi the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":29742,"name":"Menkhaf the Elder","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":29743,"name":"Monstrosity","level":10,"zone":"The Jade Forest","category":221,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":29745,"name":"The Sprites' Plight","level":10,"zone":"The Jade Forest","category":221,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":554}
 {"id":29747,"name":"Break the Cycle","level":10,"zone":"The Jade Forest","category":221,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":554}
@@ -13036,7 +13036,7 @@
 {"id":36614,"name":"My Very Own Fortress","level":40,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":36615,"name":"My Very Own Castle","level":40,"zone":"Garrison Support","category":290,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":36616,"name":"An Angler on Our Team","level":20,"zone":"Fishing","category":80,"type":1,"faction":3,"race":67108863,"class":8191,"profession":16384}
-{"id":36617,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36617,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":36623,"name":"Ogre Invasion!","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":2,"race":61658034,"class":8191}
 {"id":36624,"name":"Ashran Appearance","level":10,"zone":"Stormshield","category":302,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":36626,"name":"Host Howell","level":10,"zone":"Stormshield","category":302,"type":1,"faction":1,"race":64175181,"class":8191}
@@ -16187,7 +16187,7 @@
 {"id":42755,"name":"Eye of Azshara: Azsunian Pearls","level":45,"zone":"Eye of Azshara ","category":1029,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":43341}
 {"id":42756,"name":"Hunger's End","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5748}
 {"id":42757,"name":"Maw of Souls: Menace of the Seas","level":45,"zone":"Maw of Souls ","category":1031,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":43341}
-{"id":42758,"name":"You're Gonna Need A Bigger Boat!","level":1,"zone":"Pirates' Day","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":42758,"name":"You're Gonna Need A Bigger Boat!","level":1,"zone":"Pirates' Day","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2048}
 {"id":42762,"name":"The Wanderer's Companion","level":10,"zone":"The Wandering Isle","category":1015,"type":1,"faction":3,"race":67108863,"class":512,"storyline":194}
 {"id":42764,"name":"Court of Stars: Wraith in the Machine","level":45,"zone":"Court of Stars ","category":1027,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":43341}
 {"id":42765,"name":"The Trial at the Temple","level":10,"zone":"The Wandering Isle","category":1015,"type":1,"faction":3,"race":67108863,"class":512,"storyline":194}
@@ -18279,7 +18279,7 @@
 {"id":47746,"name":"Holing Up","level":45,"zone":"The Deaths of Chromie","category":411,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":47747,"name":"Fight Plague with Fire","level":45,"zone":"The Deaths of Chromie","category":411,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":47750,"name":"For Emery","level":45,"zone":"The Deaths of Chromie","category":411,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":47751,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":47751,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":47754,"name":"Lightly Roasted","level":45,"zone":"Krokuun","category":1041,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":348}
 {"id":47755,"name":"Captured and Enraptured","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5437}
 {"id":47756,"name":"The Libation's Liberation","level":10,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"prereq":47245}
@@ -21644,7 +21644,7 @@
 {"id":54143,"name":"Bird's-Eye View","level":10,"zone":"Drustvar","category":1060,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":54144,"name":"Orders from Azshara","level":50,"zone":"Crucible of Storms","category":1101,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":851}
 {"id":54145,"name":"The Loa of Death","level":50,"zone":"The Shadow Hunter","category":1080,"type":0,"faction":2,"race":61658034,"class":8191,"storyline":805}
-{"id":54146,"name":"Strong New Allies","level":10,"zone":"Children's Week","category":37,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":54146,"name":"Strong New Allies","level":10,"zone":"Children's Week","category":37,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":2}
 {"id":54147,"name":"Confront The Val'kyr","level":50,"zone":"The Shadow Hunter","category":1006,"type":0,"faction":2,"race":61658034,"class":8191,"storyline":805}
 {"id":54154,"name":"The Hills Have Spies","level":10,"zone":"Vol'dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
 {"id":54156,"name":"A Path of Blood","level":50,"zone":"Horde War Campaign","category":1091,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":841}
@@ -22887,7 +22887,7 @@
 {"id":56328,"name":"Do Not Drink","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191,"prereq":55736}
 {"id":56334,"name":"Bots Gone Wild","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191,"prereq":55736}
 {"id":56335,"name":"Wanna Charge? Gotta Pay!","level":50,"zone":"Mechagon","category":1063,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":56341,"name":"Direbrew Cog","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191}
+{"id":56341,"name":"Direbrew Cog","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":1}
 {"id":56346,"name":"Ancient Technology","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":56347,"name":"An Abyssal Opportunity","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":56348,"name":"The Eternal Palace: We Can Make It Stronger...","level":50,"zone":"Nazjatar","category":1114,"type":1,"faction":1,"race":64175181,"class":8191}
@@ -22907,7 +22907,7 @@
 {"id":56365,"name":"Be Kind, Rewind","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":56370,"name":"Break a Few Eggs","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":56371,"name":"Young Twilight Scale","level":10,"zone":"Wetlands","category":272,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":56372,"name":"Hozen Totem","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191}
+{"id":56372,"name":"Hozen Totem","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":1}
 {"id":56373,"name":"A Gulper Ate the Rolly","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191,"profession":16384,"prereq":55736}
 {"id":56374,"name":"A Titanic Problem","level":50,"zone":"Black Empire Campaign","category":1132,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":950}
 {"id":56375,"name":"To Ramkahen","level":50,"zone":"Black Empire Campaign","category":1132,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":950}
@@ -23046,8 +23046,8 @@
 {"id":56648,"name":"Call to Arms: Nazjatar","level":50,"zone":"Nazjatar","category":1095,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":56649,"name":"Call to Arms: Mechagon","level":50,"zone":"Mechagon","category":1095,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":56650,"name":"Call to Arms: Mechagon","level":50,"zone":"Mechagon","category":1095,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":56715,"name":"Hozen Totem","level":1,"zone":"Brewfest","category":31,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":56716,"name":"Direbrew Cog","level":1,"zone":"Brewfest","category":31,"type":4,"faction":2,"race":61658034,"class":8191}
+{"id":56715,"name":"Hozen Totem","level":1,"zone":"Brewfest","category":31,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":1}
+{"id":56716,"name":"Direbrew Cog","level":1,"zone":"Brewfest","category":31,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":1}
 {"id":56719,"name":"This Ain't Mine","level":50,"zone":"Alliance War Campaign","category":1090,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":1004}
 {"id":56739,"name":"The Power of Worship","level":50,"zone":"Nazjatar","category":1064,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":56740,"name":"S.P.A.R.E. Crates","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -23108,12 +23108,12 @@
 {"id":56813,"name":"An Unexpected Friend","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":56830,"name":"Summons from the Deep","level":50,"zone":"Nazjatar","category":1065,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":56833,"name":"Leaders of the Horde","level":50,"zone":"War Campaign - Horde","category":1091,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":1003}
-{"id":56842,"name":"Lunar Preservation","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":56842,"name":"Lunar Preservation","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":56889,"name":"Wounded Wastewanderers","level":50,"zone":"Uldum","category":255,"type":4,"faction":3,"race":67108863,"class":8191,"prereq":57969}
-{"id":56903,"name":"Crown of Courage","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":56904,"name":"Crown of Prosperity","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":56905,"name":"Crown of Dark Blossoms","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
-{"id":56906,"name":"Crown of Good Fortune","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191}
+{"id":56903,"name":"Crown of Courage","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":56904,"name":"Crown of Prosperity","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":56905,"name":"Crown of Dark Blossoms","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
+{"id":56906,"name":"Crown of Good Fortune","level":1,"zone":"Lunar Festival","category":127,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":56907,"name":"Paint Bottle: Nukular Red","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":56908,"name":"Paint Bottle: Goblin Green","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":56909,"name":"Paint Bottle: Electric Blue","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -23278,8 +23278,8 @@
 {"id":57587,"name":"Spirit Drinker","level":50,"zone":"Uldum","category":255,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":57590,"name":"Spirit Drinker","level":50,"zone":"Uldum","category":255,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":57637,"name":"Disturbance Detected: Firelands","level":35,"zone":"Firelands","category":173,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":57642,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":0,"faction":3,"race":67108863,"class":0}
-{"id":57643,"name":"A Gently Shaken Gift","level":10,"zone":"Seasonal","category":173,"type":0,"faction":3,"race":67108863,"class":0}
+{"id":57642,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":0,"faction":3,"race":67108863,"class":0,"holiday":8}
+{"id":57643,"name":"A Gently Shaken Gift","level":10,"zone":"Seasonal","category":173,"type":0,"faction":3,"race":67108863,"class":0,"holiday":8}
 {"id":57670,"name":"Unbeelievable Quality","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":57718,"name":"Bound in Stone","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":57720,"name":"Champions of the Mogu","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -24588,8 +24588,8 @@
 {"id":60231,"name":"State of Decay","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60236,"name":"RSVP: Cryptkeeper Kassir","level":60,"zone":"Ember Court","category":1231,"type":4,"faction":3,"race":67108863,"class":8191,"covenant":4,"prereq":61704}
 {"id":60237,"name":"Old Stomping Grounds","level":60,"zone":"Abominable Stitching","category":1230,"type":128,"faction":3,"race":67108863,"class":8191,"covenant":16}
-{"id":60238,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":60239,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":60238,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
+{"id":60239,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":60242,"name":"Trading Favors: Necrotic Wake","level":60,"zone":"Oribos","category":1204,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60243,"name":"Trading Favors: Sanguine Depths","level":60,"zone":"Oribos","category":1204,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":60244,"name":"Trading Favors: Halls of Atonement","level":60,"zone":"Oribos","category":1204,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -26487,14 +26487,14 @@
 {"id":64567,"name":"The Missing Scholar","level":60,"zone":"The Archivists' Codex","category":1245,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64571,"name":"Tazavesh: Seek and Do Not Destroy","level":60,"zone":"Dungeon","category":1244,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":64579,"name":"Hollow Efforts","level":60,"zone":"Zereth Mortis","category":1207,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":64581,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":64581,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":64582,"name":"Yuni-Test","level":1,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64592,"name":"Historic Protection","level":60,"zone":"Zereth Mortis","category":1207,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":64597,"name":"Sanctum of Domination - Damned If You Don't","level":60,"zone":"Sanctum Of Domination","category":1711,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64598,"name":"Sanctum of Domination - Damned If You Don't","level":60,"zone":"Sanctum Of Domination","category":1711,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64599,"name":"Sanctum of Domination - Damned If You Don't","level":60,"zone":"Sanctum Of Domination","category":1711,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64607,"name":"Tazavesh: A Hard Bargain","level":60,"zone":"Dungeon","category":1244,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":64639,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":64639,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":64640,"name":"AubriesTestQuestForJeff","level":1,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64641,"name":"Mysterious Greenery","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1290}
 {"id":64642,"name":"Clearing the Ruins","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1290,"prereq":64641}
@@ -26903,8 +26903,8 @@
 {"id":66323,"name":"Idling Pie","level":1,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":66383,"name":"Legendary Assistance","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":66420,"name":"Happy Hour","level":1,"zone":"Stormwind City","category":194,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":66507,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":66508,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":66507,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
+{"id":66508,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":66579,"name":"Sounds of Healing","level":60,"zone":"Zereth Mortis","category":1207,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":66614,"name":"Valinor, the Light of Eons","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":66615,"name":"Nurgash Muckformed","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -30072,7 +30072,7 @@
 {"id":76528,"name":"Krazzworks Klash - Advanced","level":10,"zone":"Twilight Highlands","category":252,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":76529,"name":"Krazzworks Klash - Reverse","level":10,"zone":"Twilight Highlands","category":252,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":76530,"name":"Unliving Summons","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":16,"class":8191,"storyline":1391}
-{"id":76531,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":76531,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":76532,"name":"Assault on the Wellspring","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5472,"prereq":76345}
 {"id":76533,"name":"Dangerous Documentation","level":70,"zone":"Time Rifts","category":1347,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76536,"name":"Redridge Rally","level":10,"zone":"Redridge Mountains","category":161,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -30127,21 +30127,21 @@
 {"id":76993,"name":"Turtle Power","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77093,"name":"The Shadowflame Axe","level":70,"zone":"Legendary","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5462}
 {"id":77094,"name":"Basic Kill Quest [DNT]","level":1,"zone":"Content Playground","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77095,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77096,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77097,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77095,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77096,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77097,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77098,"name":"Getting to Ground","level":70,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5464,"prereq":76592}
-{"id":77099,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77099,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77100,"name":"Surveying the Cliffside","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":77487}
 {"id":77101,"name":"Ingredient Quest Template","level":70,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77102,"name":"Hellfire Hustle","level":10,"zone":"Hellfire Peninsula","category":96,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77103,"name":"Hellfire Hustle - Advanced","level":10,"zone":"Hellfire Peninsula","category":96,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77104,"name":"Hellfire Hustle - Reverse","level":10,"zone":"Hellfire Peninsula","category":96,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77151,"name":"The Cache in the Crag","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":77100}
-{"id":77152,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77153,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77152,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77153,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1306,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77154,"name":"A Taste of the Past","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":77151}
-{"id":77155,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1302,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77155,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77156,"name":"Botanical Redistribution","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77159,"name":"No Mushroom for Error","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77163,"name":"Seeing Reason","level":70,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5464,"prereq":77098}
@@ -30291,10 +30291,10 @@
 {"id":77714,"name":"Nature Sealed","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77715,"name":"Bubble Rescue","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77739,"name":"Smother the Flames","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77744,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77745,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77746,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77747,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1302,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77744,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77745,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77746,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77747,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77754,"name":"Pyromania Problems","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77755,"name":"Breaking Down the Camp","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77756,"name":"Flight of the Dragons","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -30449,7 +30449,7 @@
 {"id":78117,"name":"Emerald Amble - Reverse","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78118,"name":"Emerald Amble - Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78119,"name":"Emerald Amble - Reverse Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":78131,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":78131,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":78153,"name":"Handling It: Prototype Rune","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":78003}
 {"id":78154,"name":"To the Test: Rune of Shadowbinding","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485,"prereq":78153}
 {"id":78155,"name":"Handling It: Radiant Fleck of Ash","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484,"prereq":77833}
@@ -30546,7 +30546,7 @@
 {"id":78499,"name":"Citadel Sortie","level":10,"zone":"Icecrown","category":106,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78500,"name":"Citadel Sortie - Advanced","level":10,"zone":"Icecrown","category":106,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78501,"name":"Citadel Sortie - Reverse","level":10,"zone":"Icecrown","category":106,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":78504,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":78504,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":78558,"name":"Sholazar Spree","level":10,"zone":"Sholazar Basin","category":183,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78559,"name":"Sholazar Spree - Advanced","level":10,"zone":"Sholazar Basin","category":183,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78560,"name":"Sholazar Spree - Reverse","level":10,"zone":"Sholazar Basin","category":183,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -31421,8 +31421,8 @@
 {"id":80680,"name":"Tarnished Compass","level":80,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":80681,"name":"Broken Bracelet","level":80,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":80682,"name":"One Last Story","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5626,"prereq":80593}
-{"id":80684,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":80685,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":80684,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
+{"id":80685,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":80689,"name":"Tending to Ausgazur","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5620,"prereq":80404}
 {"id":81465,"name":"Artifacts Galore","level":70,"zone":"Isle Of Dorn","category":1405,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5589,"prereq":81621}
 {"id":81470,"name":"Dropping Eaves: Thieving Weave","level":80,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5573,"prereq":80573}
@@ -32199,7 +32199,7 @@
 {"id":83358,"name":"The Arena Calls","level":80,"zone":"Weekly Event","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77485,"name":"Technoscrying: Back to Eadweard!","level":70,"zone":"Unknown","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5469,"prereq":77425}
 {"id":81560,"name":"Winter's Presents","level":1,"zone":"Winter Veil","category":413,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":8}
-{"id":81561,"name":"Winter's Presents","level":1,"zone":"Unknown","category":1403,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":81561,"name":"Winter's Presents","level":1,"zone":"Unknown","category":1403,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":8}
 {"id":81696,"name":"Report to the Trading Post (D)","level":1,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":81714,"name":"Report to the Trading Post","level":1,"zone":"Unknown","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":81715,"name":"Report to the Trading Post","level":1,"zone":"Unknown","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -32778,12 +32778,12 @@
 {"id":89029,"name":"Chip Service","level":70,"zone":"Liberation of Undermine","category":1733,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":89251,"name":"Running Hot!","level":70,"zone":"Liberation of Undermine","category":1733,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":89295,"name":"The Flame Burns Eternal","level":70,"zone":"Hallowfall","category":1404,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":89317,"name":"Children's Week in Dornogal","level":10,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":89318,"name":"Bold for a Kobold","level":10,"zone":"Mereldar","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":89319,"name":"The Wondrous Weave","level":10,"zone":"The Weavers Lair","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":89320,"name":"The Eager Engineer","level":10,"zone":"Hovel Hill","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":89321,"name":"Recreation for Rooks","level":10,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":89322,"name":"A Brighter Tomorrow","level":10,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":89317,"name":"Children's Week in Dornogal","level":10,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2}
+{"id":89318,"name":"Bold for a Kobold","level":10,"zone":"Mereldar","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2}
+{"id":89319,"name":"The Wondrous Weave","level":10,"zone":"The Weavers Lair","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2}
+{"id":89320,"name":"The Eager Engineer","level":10,"zone":"Hovel Hill","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2}
+{"id":89321,"name":"Recreation for Rooks","level":10,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2}
+{"id":89322,"name":"A Brighter Tomorrow","level":10,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":2}
 {"id":89331,"name":"Flame Fortification","level":70,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":89332,"name":"Boot Camp","level":70,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":89349,"name":"Flame's Radiance Stipend","level":70,"zone":"Morgaen's Tears","category":1404,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -33257,12 +33257,12 @@
 {"id":90778,"name":"Ancient Curiosity: Utility","level":70,"zone":"Delvers Headquarters","category":1430,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":90781,"name":"Sparks of War: K'aresh","level":70,"zone":"K'aresh","category":1410,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":90869,"name":"It's All in the Image","level":1,"zone":"Kezan","category":118,"type":1,"faction":2,"race":256,"class":8191,"storyline":5439,"prereq":28349}
-{"id":90870,"name":"Gathering the Grub","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":90870,"name":"Gathering the Grub","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1}
 {"id":90938,"name":"A Skip Through the Void","level":80,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":90972,"name":"A Common Cause","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5770}
 {"id":91035,"name":"Construct De-Escalation","level":80,"zone":"Delvers Headquarters","category":1430,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5755,"prereq":91033}
 {"id":91044,"name":"Hunger of the Void","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5770,"prereq":89327}
-{"id":91067,"name":"Gathering the Grub","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":91067,"name":"Gathering the Grub","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1}
 {"id":91089,"name":"Defeating Ky'veza","level":70,"zone":"Unknown","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5973,"prereq":91782}
 {"id":91093,"name":"More Than Just a Phase","level":80,"zone":"Meta Quests","category":1410,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":89345}
 {"id":91138,"name":"I am the Creator and Destroyer","level":80,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":16,"storyline":5942,"prereq":91140}
@@ -34010,8 +34010,8 @@
 {"id":90873,"name":"These Violent Delights","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5933,"prereq":90872}
 {"id":90874,"name":"Their Violent Ends","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5933,"prereq":90873}
 {"id":90875,"name":"Across Worlds","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5933,"prereq":90874}
-{"id":90879,"name":"Brewmaster's Kitchen","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":90880,"name":"Serving with Style","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":90879,"name":"Brewmaster's Kitchen","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1}
+{"id":90880,"name":"Serving with Style","level":1,"zone":"Dun Morogh","category":63,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1}
 {"id":90882,"name":"Gnoll Way","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5934,"prereq":90885}
 {"id":90883,"name":"To Go'shek Farm","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5934,"prereq":90882}
 {"id":90885,"name":"My Beautiful Pumpkins","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5934}
@@ -34052,13 +34052,13 @@
 {"id":91023,"name":"Endeavor Reward","level":25,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91024,"name":"Endeavor Reward","level":25,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91040,"name":"Vexatious Vilebranch","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":91041,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":91042,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":91041,"name":"A Gently Shaken Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
+{"id":91042,"name":"A Winter Veil Gift","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":8}
 {"id":91062,"name":"Broken Bridges","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5724,"prereq":86693}
 {"id":91063,"name":"The Blooming Lattice","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5944}
 {"id":91065,"name":"Purloining Petals","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5944,"prereq":91063}
-{"id":91066,"name":"Brewmaster's Kitchen","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":91068,"name":"Serving with Style","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":91066,"name":"Brewmaster's Kitchen","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1}
+{"id":91068,"name":"Serving with Style","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1}
 {"id":91069,"name":"Vengeance for Tolbani","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5939,"prereq":94867}
 {"id":91070,"name":"Reclaim the Goods","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5939,"prereq":91069}
 {"id":91071,"name":"The Menace of Atal'Abasi","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5939,"prereq":91070}
@@ -34458,7 +34458,7 @@
 {"id":92092,"name":"Unlock Ability 6 - Level 7","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92093,"name":"Unlock Ability 7 - Level 8","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92099,"name":"Endeavor Reward","level":25,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":92104,"name":"Broomstick Express","level":1,"zone":"Eastern Kingdoms","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":92104,"name":"Broomstick Express","level":1,"zone":"Eastern Kingdoms","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":92105,"name":"Papers, Please!","level":90,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5986,"prereq":92138}
 {"id":92119,"name":"Bitterbloom Burn Down","level":90,"zone":"Harandar","category":1502,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5983,"prereq":91981}
 {"id":92120,"name":"To Understand Magic","level":90,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5986,"prereq":92139}
@@ -34535,7 +34535,7 @@
 {"id":92451,"name":"I Think I Can","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92450}
 {"id":92452,"name":"Not According to Plan","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92451}
 {"id":92453,"name":"Fearless","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92452}
-{"id":92455,"name":"Specter Inspector","level":1,"zone":"Eastern Kingdoms","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":92455,"name":"Specter Inspector","level":1,"zone":"Eastern Kingdoms","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":92492,"name":"Honorin' de Sacrifice","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6011}
 {"id":92493,"name":"What Remains of Idago","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6011,"prereq":92492}
 {"id":92495,"name":"Disruptin' de Blade","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6011,"prereq":92493}
@@ -34785,7 +34785,7 @@
 {"id":93437,"name":"In Their Own Blood","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6052,"prereq":[93435,93436]}
 {"id":93438,"name":"Special Assignment: Precision Excision","level":80,"zone":"Voidstorm","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":94743}
 {"id":93440,"name":"Personal History","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6052}
-{"id":93452,"name":"Retrieved Crumpled Present","level":1,"zone":"Brewfest","category":31,"type":4,"faction":2,"race":67108863,"class":8191,"holiday":1}
+{"id":93452,"name":"Retrieved Crumpled Present","level":1,"zone":"Winter Veil","category":413,"type":4,"faction":2,"race":67108863,"class":8191,"holiday":8}
 {"id":93453,"name":"A Grave Concern","level":80,"zone":"Delves","category":150,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":93499,"name":"Enshrouded in Arenas","level":90,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93501,"name":"The Season Starts: Midnight","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191}
