@@ -817,7 +817,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    new rows: quests the game hasn't confirmed, quests with no known giver or no pin, and places
    where CMaNGOS and our old Classic pins disagree.
    Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
-   recurring quests. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
+   recurring quests. The summary's "Storylines:" line is a watch on the client's `QuestLine` and
+   `QuestLineXQuest` tables, the only source of Forever's storylines: on build 70205 they had 3 and 22
+   rows, so 11 of our quests were in 1 storyline. A rise in any of them means Blizzard has started to
+   fill them in, and the menu and the quest list's storyline lines then have something to show. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
    Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
    that reward reputation in CMaNGOS; they get theirs once it answers.
    The level a character needs to take a quest (`minLevel`) is the game's, else CMaNGOS's
