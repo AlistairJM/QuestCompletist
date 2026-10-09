@@ -1,5 +1,7 @@
 # Plan: Quest Reputation Reward Data
 
+> Update 2026-10-09: the retail quest cache is a per-quest reputation source for the quests the API has no record of (see [retail-quest-cache.md](retail-quest-cache.md), "Reputation"). Where this plan says there is none, it means the API and the client's tables.
+
 > Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
 
 ## Goal
@@ -136,7 +138,7 @@ Final state: 35,023 entries of exactly 14 fields, and `qcQuestReputation` with 1
 `[2]` with the same values negated. It has no quest column. `QuestMoneyReward` and `QuestXP` have
 exactly the same shape (`ID` + `Difficulty_0..9`), which is the giveaway: these are reward *tier*
 tables, and the per-quest index into them lives in server-side `quest_template`, alongside the
-faction ID itself. The client never sees either.
+faction ID itself. The client's tables never do.
 
 Checks made across all 1,105 wago.tools DB2 tables:
 - Of the 26 `Quest*` tables, only `QuestFactionReward` mentions factions at all, and it isn't
