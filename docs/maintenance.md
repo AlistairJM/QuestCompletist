@@ -526,6 +526,13 @@ of another pin of that NPC within 1.5 points, the next rebuild merges the two, a
 now-known NPC that the client starts 1.5 points or more from its pin gets a pin of its own there.
 So after setting IDs, rerun the pipeline: apply what it changes, then check the rows again.
 
+After a probe run's NPC pass (`/qcprobe npcs`, [In the game](#in-the-game)), run
+`Compare-PinNpcNames.ps1 -Game retail` (and `-Game forever`): it compares the name on every pin that has
+an NPC ID with the name the game gives that creature, and writes the ones that differ to
+`tools\pin_npc_names_<game>.csv` with a class: `spacing` and `contains` are NAME rows for
+`pin-npc-id-decisions.csv` after a look, `differs` is an ID that names another creature (an ID row), and
+`not named` and `not asked` are listed for the record. It changes nothing.
+
 `Apply-ClientQuestGivers.ps1` (step 6c, first) takes quest givers from the client's own data,
 which names one for every quest whose reward has an appearance the collections can show
 (`CollectableSourceQuestSparse`, about 2,000 quests; see
@@ -1055,8 +1062,8 @@ git diff --stat
   own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).
   For `Build-ProbeLists.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File toolsTest-ProbeLists.ps1`
   (made-up data, nothing downloaded). Both must say "0 failed".
-  For `ProbeResults.ps1`, `Read-ForeverProbe.lua`, `Retype-ProbeRecurring.ps1` or
-  `Find-UnavailableQuestCandidates.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File
+  For `ProbeResults.ps1`, `Read-ForeverProbe.lua`, `Retype-ProbeRecurring.ps1`,
+  `Find-UnavailableQuestCandidates.ps1` or `Compare-PinNpcNames.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File
   toolsTest-ProbeResults.ps1` (both probes' files read the same, and the two scripts give the same answers
   on a scratch copy of the data). It must say "0 failed".
 

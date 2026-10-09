@@ -2,7 +2,8 @@
 Checks that the probe's saved variables and the retail type probe's (pull request #42) read the same way:
 Read-ForeverProbe.lua's quest and fact lines, ProbeResults.ps1's Get-ProbeQuests on a file of each kind made
 here, and Retype-ProbeRecurring.ps1 and Find-UnavailableQuestCandidates.ps1 run on a scratch copy of the
-data with each, which must retype and report the same. When the #42 probe's real results are in
+data with each, which must retype and report the same, and Compare-PinNpcNames.ps1 on made-up pins and
+NPC names. When the #42 probe's real results are in
 tools\quest_type_probe_results.lua (or -RealOld names a copy), they are converted to the probe's form and
 must read the same too. Nothing in the checkout is written.
 
@@ -172,6 +173,53 @@ try {
     Equal $byId['116'] '0' 'T7: refused is 0'
     Equal $byId['115'] '' 'T7: timed out is blank'
     Equal $byId['118'] '' 'T7: and so is a quest the probe never asked'
+
+    # --- Compare-PinNpcNames.ps1 -----------------------------------------------------------------
+    $root = Join-Path $Scratch 'names'
+    foreach ($dir in 'tools\retail_probe_69933', 'data', 'docs') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
+    $npcs = @(
+        '[1] = {build = "12.1.0.69933", result = "now", name = "Guard Roberts"}',
+        '[2] = {build = "12.1.0.69933", result = "poll", name = "Fizzi Liverzapper"}',
+        '[3] = {build = "12.1.0.69933", result = "now", name = "Andorgos"}',
+        '[4] = {build = "12.1.0.69933", result = "now", name = "Azj-Kahet Flame Guardian"}',
+        '[5] = {build = "12.1.0.69933", result = "now", name = "Other Person"}',
+        '[6] = {build = "12.1.0.69933", result = "none"}',
+        '[8] = {build = "1.60.1.70205", result = "now", name = "Old build"}'
+    ) -join ",`n"
+    [IO.File]::WriteAllText("$root\tools\retail_probe_69933\QCForeverProbe.lua", "QCForeverProbeDB = {`nquests = {},`nnpcs = {`n$npcs`n},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nruns = {},`nlogins = {},`n}`n")
+    $pins = @(
+        '{"map":1,"icon":1,"npc":1,"name":"Guard Roberts","x":10,"y":10,"quests":[100]}',
+        '{"map":1,"icon":1,"npc":2,"name":"Fizzi Liverzapper ","x":20,"y":20,"quests":[101]}',
+        '{"map":1,"icon":1,"npc":3,"name":"Andorgos <Brood of Malygos>","x":30,"y":30,"quests":[102,103]}',
+        '{"map":1,"icon":1,"npc":4,"name":"Azj","x":40,"y":40,"quests":[104]}',
+        '{"map":1,"icon":1,"npc":5,"name":"Someone","x":50,"y":50.5,"quests":[105,106,107,108]}',
+        '{"map":1,"icon":1,"npc":6,"name":"Lost","x":60,"y":60,"quests":[109]}',
+        '{"map":1,"icon":1,"npc":7,"name":"New","x":70,"y":70,"quests":[110]}',
+        '{"map":1,"icon":1,"npc":8,"name":"Old build","x":75,"y":75,"quests":[111]}',
+        '{"map":1,"icon":1,"npc":0,"name":"Object","x":80,"y":80,"quests":[112]}',
+        '{"map":1,"icon":1,"x":90,"y":90,"quests":[113]}'
+    )
+    [IO.File]::WriteAllText("$root\data\pins.jsonl", (($pins -join "`n") + "`n"))
+    [IO.File]::WriteAllText("$root\docs\decisions.csv", "Action,Map,X,Y,Name`r`nID,1,50.0,50.5,Someone`r`n")
+    $output = & powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot\Compare-PinNpcNames.ps1" -Game retail -ToolsDir "$root\tools" -DataDir "$root\data" -Decisions "$root\docs\decisions.csv" -LuaExe $LuaExe 2>&1 | ForEach-Object { "$_" }
+    $text = $output -join "`n"
+    Equal $LASTEXITCODE 0 'T8: the NPC-name comparison runs'
+    Check ($text -match 'build 12\.1\.0\.69933, 6 NPCs asked, 5 named') "T8: it takes the probe's build, not the other ($text)"
+    Check ($text -match 'Pins compared: 8 ') 'T8: the pins with an ID and a name are compared'
+    Check ($text -match '(?m)^  same\s+1\s*$') 'T8: one is the same'
+    Check ($text -match '(?m)^  spacing\s+2\s*\(2 without') 'T8: two differ only in spacing or a title'
+    Check ($text -match '(?m)^  contains\s+1\s*\(1 without') 'T8: one holds the other name'
+    Check ($text -match '(?m)^  differs\s+1\s*\(0 without') 'T8: one names another creature, and has a row in the decisions file'
+    Check ($text -match '(?m)^  not named\s+1\s*\(1 without') 'T8: one the game never named'
+    Check ($text -match '(?m)^  not asked\s+2\s*\(2 without') 'T8: two that the probe did not ask for (one only on another build)'
+    $csv = @(Import-Csv "$root\tools\pin_npc_names_retail.csv")
+    Equal $csv.Count 7 'T8: every pin that is not the same is in the file'
+    Equal ($csv | Where-Object Class -eq 'differs').Decided 'ID' 'T8: and says what the decisions file has for it'
+    Equal ($csv | Where-Object Class -eq 'differs').Quests '105 106 107' 'T8: with the first three quests'
+    Equal ($csv | Where-Object { $_.Name -like 'Andorgos*' }).GameNameForId 'Andorgos' 'T8: and the game''s name'
+    $saved = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $output = & powershell -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot\Compare-PinNpcNames.ps1" -Game forever -ToolsDir "$root\tools" -DataDir "$root\data" -LuaExe $LuaExe 2>&1 | ForEach-Object { "$_" } } finally { $ErrorActionPreference = $saved }
+    Check ($LASTEXITCODE -ne 0 -and ($output -join ' ') -match 'There are no probe results') 'T8: Forever with no Forever probe results is refused'
 
     # --- the real #42 results, when this checkout has them ---------------------------------------
     if (Test-Path $RealOld) {
