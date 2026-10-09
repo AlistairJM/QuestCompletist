@@ -218,6 +218,10 @@ end
 
 -- The holiday flags running now; nil until the calendar has answered, which restricts nothing.
 local qcActiveHolidays = nil
+-- Why the last read had no answer, for /qc holidays.
+local qcCalendarWhy = nil
+-- True while the addon moves the calendar's month itself, so the events that causes start no read.
+local qcCalendarBusy = false
 
 local function qcCalendarTimeValue(t)
 	return (((t.year * 100 + t.month) * 100 + t.monthDay) * 100 + t.hour) * 100 + t.minute
@@ -242,18 +246,18 @@ local function qcSetCalendarMonth(month, year)
 	return true
 end
 
--- nil when the calendar can't answer. A month with no events at all means it isn't ready, not that
--- no holiday is running. A quiet day in a month that has events is a day with no holiday: retail
--- always has some event, but WoW: Forever's calendar has empty days.
+-- nil, and why, when the calendar can't answer. A month with no events at all means it isn't ready,
+-- not that no holiday is running. A quiet day in a month that has events is a day with no holiday:
+-- retail always has some event, but WoW: Forever's calendar has empty days.
 local function qcReadActiveHolidays()
 	local now = C_DateAndTime.GetCurrentCalendarTime()
-	if not qcSetCalendarMonth(now.month, now.year) then return nil end
+	if not qcSetCalendarMonth(now.month, now.year) then return nil, "its window is open on another month" end
 	local numEvents = C_Calendar.GetNumDayEvents(0, now.monthDay)
 	if (numEvents == 0) then
 		for monthDay = 1, C_Calendar.GetMonthInfo(0).numDays do
 			if C_Calendar.GetNumDayEvents(0, monthDay) > 0 then return 0 end
 		end
-		return nil
+		return nil, "it has no events this month"
 	end
 	local nowValue = qcCalendarTimeValue(now)
 	local active = 0
@@ -269,9 +273,28 @@ end
 
 -- Keeps the last answer when the calendar can't be read, e.g. during chat lockdown.
 local function qcUpdateActiveHolidays()
-	local ok, active = pcall(qcReadActiveHolidays)
-	if (ok and active) then qcActiveHolidays = active end
+	qcCalendarBusy = true
+	local ok, active, why = pcall(qcReadActiveHolidays)
+	qcCalendarBusy = false
+	if (ok and active) then
+		qcActiveHolidays = active
+	else
+		qcCalendarWhy = ok and why or ("error: " .. tostring(active))
+	end
 	return qcActiveHolidays
+end
+
+-- The server sends the calendar's events when asked, as Blizzard's calendar does each time it opens.
+-- Nothing asks at login, and a calendar nobody has opened can read as empty.
+local function qcRequestCalendar()
+	if C_Calendar.OpenCalendar then pcall(C_Calendar.OpenCalendar) end
+end
+
+-- CALENDAR_UPDATE_EVENT_LIST: the events have arrived or changed. True when that changed the answer.
+local function qcCalendarDataArrived()
+	if qcCalendarBusy then return false end
+	local before = qcActiveHolidays
+	return qcUpdateActiveHolidays() ~= before
 end
 
 -- The holiday flags this game's quests have, so /qc holidays lists only its own.
@@ -315,13 +338,15 @@ local function qcPrintHolidays()
 	end
 	local active = qcUpdateActiveHolidays()
 	local inUse = qcHolidayFlagsInUse()
+	qcCalendarBusy = true
 	local ok, nextByFlag, untracked = pcall(qcScanCalendarHolidays, inUse)
+	qcCalendarBusy = false
 	if not ok then
 		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(nextByFlag))
 		return
 	end
 	if not active then
-		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet, so seasonal quests are all shown.")
+		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet (" .. tostring(qcCalendarWhy) .. "), so seasonal quests are all shown.")
 	end
 	print(QCADDON_CHAT_TITLE .. "Seasonal quests follow these calendar holidays:")
 	for _, holiday in ipairs(qcHolidays) do
@@ -2126,6 +2151,8 @@ local function qcEventHandler(self, event, ...)
 		qcQuestDataArrived(...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcMapDataProvider:RefreshAllData()
+	elseif (event == "CALENDAR_UPDATE_EVENT_LIST") then
+		if qcCalendarDataArrived() then qcRequestRefresh(nil, true) end
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
 		if (... == "player") then qcRequestRefresh(QC_REDRAW_ROWS) end
 	elseif (event == "ZONE_CHANGED_NEW_AREA") then
@@ -2158,6 +2185,7 @@ local function qcEventHandler(self, event, ...)
 			local isInitialLogin, isReloadingUi = ...
 			if (isInitialLogin or isReloadingUi) then
 				qcQuestQueryCompleted()
+				qcRequestCalendar()
 			end
 			qcZoneChangedNewArea()
 			qcSendNpcLoads()
@@ -2203,6 +2231,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED")
 	self:RegisterEvent("ADDON_LOADED")
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
+	self:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
 	self:RegisterEvent("QUEST_DATA_LOAD_RESULT")
 	self:RegisterEvent("TOOLTIP_DATA_UPDATE")
 	self:SetScript("OnEvent", qcEventHandler)

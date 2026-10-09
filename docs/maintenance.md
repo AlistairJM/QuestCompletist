@@ -849,6 +849,25 @@ A day with no events, in a month that has some, means no holiday is running: ret
 event on, but WoW: Forever's calendar has empty days. `/qc holidays` steps the calendar through the
 next 12 months, then sets it back to the current one.
 
+The calendar also has to be asked for its events. On WoW: Forever a fresh login showed every seasonal
+pin on the map, with the filter on, until the player opened and closed Blizzard's calendar window.
+That window calls `C_Calendar.OpenCalendar()` each time it opens, and nothing else does. So the addon
+calls it at login and on a reload, listens for CALENDAR_UPDATE_EVENT_LIST, and redraws the open map
+when the answer changes. Until the first answer every seasonal quest is shown. The addon's own month
+changes fire the same event, so reading the calendar and `/qc holidays` ignore it while they run.
+`/qc holidays` says why when there's no answer: no events in the month, the calendar window open on
+another month, or the error the read raised.
+
+To check it in game, log in fresh and open the map in a zone with seasonal pins out of season: they
+should vanish within a moment without the calendar window being opened. `Test-SeasonalCalendar.lua`
+checks the same offline, against a calendar that stays empty until it's asked, and fails if the addon
+stops asking or stops redrawing. Run it for both games' TOCs after any change to the calendar code:
+
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua QuestCompletist QuestCompletist_Camelot.toc
+```
+
 WoW: Forever's calendar uses Classic's Holidays IDs where they differ from retail's, such as 263 and
 264 for the Darkmoon Faire, so an entry in `qcHolidays` can list both games' IDs.
 
@@ -965,6 +984,8 @@ git diff --stat
 - For filter or data changes, run `Test-QuestReachability.lua` before and after, and compare the
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
   step 10 for Forever.
+- For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
+  [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 
