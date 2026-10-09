@@ -60,7 +60,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 **Notes the quest givers you meet**
 
 - Quest Completist can note the quest givers you meet and where you met them. It's on by default, kept on your computer only, and nothing is sent anywhere.
-- Untick *Note the Quest Givers I Meet* in the options, or type **/qc record off**, to stop it. **/qc report** shows what it holds.
+- Untick *Note the Quest Givers I Meet* in the options, or type **/qc record off**, to stop it. **/qc report** shows how much it holds.
 
 ## Handy clicks
 
