@@ -348,13 +348,13 @@ name a quest as a tracked collectable's source, but only per collectable, never 
 
 ### C_Calendar (90 functions, 13 events, both games)
 
-`SetAbsMonth`, `GetMonthInfo`, `GetNumDayEvents` and `GetDayEvent` are used, and `GetDayEvent`'s
+`SetAbsMonth`, `GetMonthInfo`, `GetNumDayEvents`, `GetDayEvent` and `OpenCalendar` are used, and `GetDayEvent`'s
 `title` already names a holiday in the player's language. `GetHolidayInfo(monthOffset, day, index)`
 adds the description and texture; `SetMonth`, `GetMinDate`, `GetMaxCreateDate`, `GetRaidInfo`,
-`GetEventIndex` and `GetClubCalendarEvents` no; the other 79 create, invite and manage events. No
-new data. Event CALENDAR_UPDATE_EVENT_LIST says when the calendar's data has arrived: the holiday
-filter could re-read then, instead of keeping "the last answer" until the next read
-(maintenance.md, "Holidays"). The other 12 no.
+`GetEventIndex` and `GetClubCalendarEvents` no; the other 78 create, invite and manage events. No
+new data. `OpenCalendar` asks the server for the calendar's events, and event CALENDAR_UPDATE_EVENT_LIST
+says they've arrived: the addon calls the one at login and redraws the open map on the other
+(maintenance.md, "Holidays"). The other 12 events no.
 
 ### C_EventScheduler (11 functions, 1 event, both games)
 
@@ -534,7 +534,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 4 | **Scaling-aware levels:** the low-level filter asks `IsQuestTrivial`, and list rows, tooltips and grey pins take `GetQuestDifficultyLevel` and `GetContentDifficultyQuestForPlayer`, for quests whose data is loaded (the quest-name queue already loads what's on screen), falling back to the stored level | addon (both games) | the right "low level" answer for scaling quests and Chromie Time; Blizzard's own colours | medium | needs the quest's data, so the map's pins would queue loads like the NPC names do |
 | 5 | **Text from the game:** the storyline name from `GetQuestLineInfo(questID, nil, false)`, the campaign from `C_CampaignInfo`, and a classification or tag line from `QuestUtil.GetQuestClassificationInfo` and `GetQuestTagInfo` (Dungeon, Raid, Group, Elite, Important, Campaign), all in the player's language | addon | the last English storyline names gone; Blizzard's own labels | small | as with names, an English client shows Blizzard's wording where ours differed |
 | 6 | **Waypoints without TomTom:** on a pin click, `C_Map.SetUserWaypoint` on the pin and `C_SuperTrack.SetSuperTrackedUserWaypoint(true)`, when TomTom isn't loaded or as an option; `SetSuperTrackedMapPin(QuestOffer, questID)` where the game lists the offer | addon | an arrow to a pin for everyone | small | `CanSetUserWaypointOnMap` must be checked per map, and on Forever at all |
-| 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN, PLAYER_LEVEL_UP and CALENDAR_UPDATE_EVENT_LIST redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md) | addon | gated pins change the moment the requirement is met; holidays read as soon as the calendar answers | small | none |
+| 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN and PLAYER_LEVEL_UP redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md); CALENDAR_UPDATE_EVENT_LIST already does, for the seasonal filter | addon | gated pins change the moment the requirement is met | small | none |
 | 8 | **Follow the game's tracking toggles:** read `C_Minimap.IsTrackingAccountCompletedQuests` and `IsTrackingHiddenQuests` as the defaults of the warband and low-level filters, or as a "follow the minimap" option | addon | one setting instead of two | small | a design decision: the addon's filters have their own defaults and a settings grid |
 | 9 | **Availability from the offers:** with the map open, mark the quests `GetAvailableQuestLines` lists as offered to this character now, in progress, or done by the warband, on our pins and in tooltips | addon | the server's own word on availability, for storyline starts, forced quests and tasks | medium | covers only what the game lists; depends on what probe 3 finds |
 | 10 | **Conversion check:** run the Forever importer's spawns through `C_Map.GetMapPosFromWorldPos` without an override, and retail's pins through `GetWorldPosFromMapPos` and back, and compare with the tools' results | probe, tool | the client's own map choice for overlapping frames (the importer's rules reach 98.2%); a check of the pipeline's formula | small to medium: the probe needs the world coordinates in its lists | none |
