@@ -132,6 +132,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "Clic gauche : afficher ou masquer la liste des quêtes", -- Needs review
 	MINIMAPRIGHTCLICK = "Clic droit : ouvrir les options", -- Needs review
 	MINIMAPDRAG = "Glisser : déplacer ce bouton autour de la minicarte", -- Needs review
+	RECORDGIVERS = "Noter les donneurs de quête rencontrés", -- Needs review
+	RECORDGIVERSTIP = "Garde une courte note des donneurs de quête que vous rencontrez et de l'endroit où vous les avez rencontrés. Elle n'est enregistrée que sur cet ordinateur et rien n'est envoyé nulle part. /qc report montre ce qu'elle contient.", -- Needs review
+	RECORDERNOTICE = "Quest Completist garde désormais une courte note des donneurs de quête que vous rencontrez et de l'endroit où vous les rencontrez, sur cet ordinateur uniquement. /qc report l'affiche ; /qc record off l'arrête.", -- Needs review
+	RECORDERSTATUS = "Notation des donneurs de quête : %s. /qc record on, /qc record off ou /qc record clear la modifie.", -- Needs review
+	RECORDERCOUNTS = "%d donneurs de quête, %d quêtes et %d quêtes commencées sans donneur notés jusqu'ici.", -- Needs review
+	RECORDERFULL = "Les notes sont pleines : les plus anciennes sont remplacées au fur et à mesure (%d jusqu'ici).", -- Needs review
+	RECORDERERRORS = "La notation des donneurs de quête a rencontré %d erreurs ; la dernière : %s", -- Needs review
+	RECORDERHIDDEN = "À %d reprises, le jeu a masqué qui parlait ; ces quêtes ont été notées sans le donneur.", -- Needs review
+	RECORDERFILE = "Rien n'est envoyé nulle part. Le jeu enregistre les notes à la déconnexion ou au rechargement, dans QuestCompletist.lua, dans le dossier SavedVariables de votre compte (dans le dossier WTF du jeu, sous Account). Pour aider à améliorer la carte, joignez ce fichier à un commentaire sur la page CurseForge de l'addon.", -- Needs review
+	RECORDERCLEARED = "Les notes ont été effacées.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

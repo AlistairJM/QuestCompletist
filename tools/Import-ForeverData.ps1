@@ -4,7 +4,7 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
 
   - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
     some start (QuestPOIBlob and QuestPOIPoint);
-  - the quest cache file Read-ForeverQuestCache.ps1 writes: what the server says about each quest it
+  - the quest cache file Read-QuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
     quests the beta didn't answer, and who starts each quest and where they stand;
@@ -115,7 +115,7 @@ $ProgressPreference = "SilentlyContinue"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
 if (-not $CacheFile) { $CacheFile = "$ToolsDir\forever_quest_cache_$Build.jsonl" }
-if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-ForeverQuestCache.ps1 first." }
+if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-QuestCache.ps1 first." }
 if (-not $ProbeFile) {
     $ProbeFile = Get-ChildItem "$ToolsDir\forever_probe_*\QCForeverProbe.lua" -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime | Select-Object -Last 1 -ExpandProperty FullName
@@ -535,7 +535,7 @@ foreach ($id in $ids) {
     $type = if ($recurs -eq 'daily') { 4 } elseif ($recurs -eq 'weekly') { 128 } elseif ($m -and ($m.Special -band 1)) { 2 }
         elseif ($holiday -or $category -eq $seasonalSort) { 64 } elseif ($profession) { 32 } else { 1 }
 
-    if ($c -and $null -eq $c.minLevel) { throw "$CacheFile gives quest $id no minLevel. Rerun Read-ForeverQuestCache.ps1." }
+    if ($c -and $null -eq $c.minLevel) { throw "$CacheFile gives quest $id no minLevel. Rerun Read-QuestCache.ps1." }
     $level = if ($c) { [int]$c.level } else { $m.Level }
     $minLevel = if ($c) { [int]$c.minLevel } else { $m.MinLevel }
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $level
@@ -546,7 +546,7 @@ foreach ($id in $ids) {
 }
 
 $previousByNext = @{}
-foreach ($c in $cache.Values) { if ($c.nextQuest) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
+foreach ($c in $cache.Values) { if ($c.nextQuest -and [int]$c.nextQuest -ne [int]$c.id) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
 foreach ($q in $records.Values) {
     $m = $cmQuest[$q.id]
     if ($m -and $m.Prev -gt 0 -and $records.ContainsKey($m.Prev)) { $q.prereq = $m.Prev }
@@ -582,7 +582,7 @@ $reputationLines = @(foreach ($id in ($records.Keys | Sort-Object)) {
     if ($null -eq $c.reputation) { continue }
     $rewarding++
     foreach ($reward in $c.reputation) {
-        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-ForeverQuestCache.ps1." }
+        if ($reward -isnot [array] -or $reward.Count -ne 2) { throw "$CacheFile gives quest $id's reputation without amounts. Rerun Read-QuestCache.ps1." }
         '{"quest":' + $id + ',"faction":' + $reward[0] + ',"amount":' + $reward[1] + '}'
     }
 })
@@ -802,6 +802,9 @@ Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; p
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
 Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} groups of which only one can be done." -f
     @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $exclusiveWith.Count, $exclusiveGroups)
+Write-Host ("Storylines: the client's QuestLine has {0} rows and QuestLineXQuest {1}; {2} of our quests belong to {3} storyline(s)." -f
+    @(Get-ClientTable 'QuestLine').Count, @(Get-ClientTable 'QuestLineXQuest').Count,
+    @($questList | Where-Object { $_.storyline }).Count, @($questList | Where-Object { $_.storyline } | Select-Object -ExpandProperty storyline -Unique).Count)
 Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f

@@ -133,6 +133,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "Clic izquierdo: mostrar u ocultar la lista de misiones", -- Needs review
 	MINIMAPRIGHTCLICK = "Clic derecho: abrir las opciones", -- Needs review
 	MINIMAPDRAG = "Arrastrar: mover este botón alrededor del minimapa", -- Needs review
+	RECORDGIVERS = "Anotar los dadores de misiones que encuentro", -- Needs review
+	RECORDGIVERSTIP = "Guarda una breve nota de los dadores de misiones que encuentras y de dónde los encontraste. Solo se guarda en este ordenador y no se envía nada a ningún sitio. /qc report muestra lo que contiene.", -- Needs review
+	RECORDERNOTICE = "Quest Completist ahora guarda una breve nota de los dadores de misiones que encuentras y de dónde los encuentras, solo en este ordenador. /qc report la muestra; /qc record off la detiene.", -- Needs review
+	RECORDERSTATUS = "Anotación de dadores de misiones: %s. /qc record on, /qc record off o /qc record clear la cambia.", -- Needs review
+	RECORDERCOUNTS = "Hasta ahora se han anotado %d dadores de misiones, %d misiones y %d misiones iniciadas sin dador.", -- Needs review
+	RECORDERFULL = "Las notas están llenas, así que las más antiguas se sustituyen a medida que llegan otras nuevas (%d hasta ahora).", -- Needs review
+	RECORDERERRORS = "La anotación de dadores de misiones ha tenido %d errores; el último: %s", -- Needs review
+	RECORDERHIDDEN = "%d veces el juego ocultó quién hablaba; esas misiones se anotaron sin el dador.", -- Needs review
+	RECORDERFILE = "No se envía nada a ningún sitio. El juego guarda las notas al cerrar sesión o recargar, en QuestCompletist.lua dentro de la carpeta SavedVariables de tu cuenta (en la carpeta WTF del juego, dentro de Account). Para ayudar a mejorar el mapa, adjunta ese archivo a un comentario en la página de CurseForge del addon.", -- Needs review
+	RECORDERCLEARED = "Las notas se han borrado.", -- Needs review
 	}, {__index = qcLocalize})
 
 end
