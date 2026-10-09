@@ -128,7 +128,7 @@ Neither CMaNGOS nor QuestieDB has these: each has only 3 of the 1,804 new quests
 1. **Beta probe and recorder** (#139, probe branch, not merged): a small addon with a `_Camelot` TOC, run
    in `_classic_beta_`. It does the quest pass and the NPC pass, and records while you play. The
    results, and copies of `questcache.wdb` and `creaturecache.wdb`, go into `tools/` (gitignored).
-2. **Cache reader** (tool, `tools/Read-ForeverQuestCache.ps1`, #141): decodes the cache records, checked
+2. **Cache reader** (tool, `tools/Read-QuestCache.ps1`, #141, called Read-ForeverQuestCache.ps1 until retail's layout was added): decodes the cache records, checked
    against CMaNGOS for the quests both have.
 3. **CMaNGOS importer** (tool, `tools/Import-ForeverData.ps1`, #142): turns the dump into
    `data/forever`, with spawns converted to map positions. It merges the probe, cache and recorder results, and lists every disagreement for
@@ -177,7 +177,7 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 - **The quest cache** (2,860 records) holds the server's quest record, laid out as TrinityCore's
   `QueryQuestInfoResponse`. Against CMaNGOS, the zone (the int32 at byte 24) matches for 1,802 of
   1,811 quests, the level (byte 8) for 1,795 and the minimum level (byte 16) for 1,743. It also has
-  the follow-up quest, the starting item, reputation rewards, objectives and texts.
+  the follow-up quest, the on-accept item, reputation rewards, objectives and texts.
   - The race mask (bytes 440–447) is −1, meaning no restriction, for 2,040 quests; a faction quest's
     faction comes from its giver. It's an Alliance or Horde race set for 526 quests, and a single race
     for the starting quests.
@@ -190,12 +190,14 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 
 ### Phase 2: the cache reader (5 October 2026)
 
-`tools/Read-ForeverQuestCache.ps1` reads `questcache.wdb` into
+`tools/Read-QuestCache.ps1` reads `questcache.wdb` into
 `tools/forever_quest_cache_<build>.jsonl`, one quest per line:
-- **Always:** id, title, level, minLevel and sort (the zone, or a negative QuestSort for class,
-  profession and holiday quests).
-- **Where they apply:** questInfo, groupSize, recurs, nextQuest, startItem, flags, reputation (each
-  faction with its amount, since 6 October), and races with their faction.
+- **Always:** id, title, level, minLevel, sort (the zone, or a negative QuestSort for class,
+  profession and holiday quests) and questType. Retail's lines carry contentTuning instead of level
+  and minLevel ([retail-quest-cache.md](retail-quest-cache.md)).
+- **Where they apply:** questInfo, groupSize, recurs, nextQuest, startItem (the item handed over on
+  accept), flags, flagsEx, scheduler, reputation (each faction with its amount, since 6 October), and
+  races with their faction.
 
 It reads every record to its last byte, or writes nothing. On the beta cache (2,860 quests, under 2
 seconds):
@@ -209,7 +211,7 @@ seconds):
     95 and 96). The races playable in Forever carry the flag 0x400000.
   - 404 quests are Alliance-only, 404 Horde-only, and 12 are for both Skyborne.
   - The other 2,040 leave it to the giver, including 1,172 that CMaNGOS gives one faction.
-- **Against CMaNGOS** (1,811 quests): the starting item matches for all 500 that have one, and the
+- **Against CMaNGOS** (1,811 quests): the on-accept item matches for all 500 that have one, and the
   faction for all 129 both give. The zone matches for 1,802, the level for 1,795, the minimum level
   for 1,743, and the follow-up quest for 746 of 795. The differences are Blizzard's, such as a cooking
   quest filed under Cooking, or Forever's new follow-ups such as 98298 after quest 99.
