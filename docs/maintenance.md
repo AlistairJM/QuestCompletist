@@ -173,22 +173,45 @@ then every tool refuses to save.
    and WoW: Forever, reads Blizzard's generated API documentation with `Read-ApiDocs.lua`, saves
    every function and event as `tools\api_docs-<branch>-<build>.tsv` (the files themselves stay
    in `tools\api_docs\`, for grepping how Blizzard uses a function), and lists what was added or
-   removed since the newest earlier list for that branch, with quest-related namespaces flagged.
-   It also checks that every function the addon calls, its `C_` calls and the documented globals
-   it uses, is still documented with the same arguments and returns: one gone or changed exits
-   with 1, so check the code before the sweep goes on. A function one game's documentation lacks
+   removed since the newest earlier build's list for that branch, with quest-related namespaces
+   flagged. It also checks that every function the addon calls, its `C_` calls, the documented
+   globals in the script's `-Globals` list and any other documented global its code names, is
+   still documented with the same arguments, returns and secrecy flags, and the same for every
+   event the addon listens for (any quoted name in its Lua that the documentation lists as an
+   event): one gone or changed exits with 1, so check the code before the sweep goes on.
+   The lists keep every flag with `Secret` in its name (`SecretArguments`, `SecretReturns`,
+   `SecretWhenInCombat`, `SecretPayloads`, a field's `NeverSecret` or `SecretValue` ...) and the
+   preconditions the documentation declares (`RequiresUnitAuraAccess` ...), on the function or
+   event, on each argument, return and payload field, and on the fields of the structures those
+   lead to, so a flag added to what `C_QuestLog.GetInfo` returns shows on `C_QuestLog.GetInfo`. A
+   flag that makes a value secret in combat or in an instance can stop the addon reading it, which
+   is why a change in the flags of something the addon relies on fails the check as a change of
+   shape does. Other functions and events whose flags changed are listed when they are
+   quest-related and counted otherwise (`-ListAll` lists them all). The recorder's events
+   (`GOSSIP_SHOW` and the `QUEST_*` ones) are documented in both games, so they are what the check
+   can see of it; its quest-window globals (`GetNumAvailableQuests`, `GetAvailableQuestInfo`,
+   `GetQuestID` and their kind) are in no documentation, and the contents of a structure are not
+   compared, only its flags: the closing line says what was not checked. A list saved before the
+   flags were kept is read again from its folder in `tools\api_docs\`, and a documentation file that
+   stopped loading (or started) is named, as what it documents shows as removed (or added).
+   A function one game's documentation lacks
    and the other's has is only reported: `C_SkillInfo.GetSkillLineInfoByID` is Forever's, and the
-   code falls back to the character's profession list without it. The documentation leaves out the
-   old globals (`GetQuestID`,
-   `GetAvailableQuestInfo` and their kind), which it can't check. Baseline on 2026-10-07: live
-   12.1.0.69933 had 5,539 functions and 1,782 events, Forever 1.60.1.70245 5,785 and 1,804, and
-   the addon's 45 functions were all documented on Forever and 44 on live. The first systematic
+   code falls back to the character's profession list without it. Baseline on 2026-10-09: live
+   12.1.0.69933 had 5,655 functions and 1,782 events (3,619 and 124 with secrecy flags), Forever
+   1.60.1.70245 5,903 and 1,804 (3,783 and 125); the addon calls 61 functions (60 documented on
+   live, 61 on Forever) and listens for 18 events, all documented in both. A function's own
+   `Namespace` wins over its system's: `InCombatLockdown` sits in the `C_RestrictedActions` system
+   but is the global `InCombatLockdown`. The counts of
+   2026-10-07 (5,539 and 5,785 functions) let the methods of different script objects with one name
+   overwrite each other. The first systematic
    review of the API (2026-10-07) is in [plans/game-api-review.md](plans/game-api-review.md). A
    new function or event that could serve the addon is a finding to plan, as a new table is.
    It ends with the functions the addon calls that one game documents and the other doesn't
    (`C_SkillInfo.GetSkillLineInfoByID`, Forever's), and exits with 1 when one of those turns up on
    the game that lacked it: that game has gained it, so check that the code reads it as its
-   fallback did, and share any feature gated on it.
+   fallback did, and share any feature gated on it. `-SourceDir <folder>` reads `live\` and
+   `forever\` (each with `version.txt` and the `*Documentation.lua` files) from a folder instead of
+   downloading; `Test-ApiDocs.ps1` checks all of this on made-up documentation.
    Which checks each game has, and why the rest differ, is
    [plans/game-parity.md](plans/game-parity.md): a check built for one game goes to both unless a
    game can't support it.
@@ -1328,6 +1351,10 @@ git diff --stat
   `Test-RecordedGivers.lua` (the reader: what it reads, and the hostile files it refuses) and
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-RecordedGivers.ps1` (the rules and the
   tool, on small data made in a scratch folder). Both must say "0 failed".
+- For changes to `Read-ApiDocs.lua` or `Compare-ApiDocs.ps1`, run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
+  scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also
+  checks the reader against them). It must say "0 failed".
 - For changes to `Audit-QuestTables.ps1` or `Remove-DuplicatePinQuests.ps1`, or to the data and tables they
   check on Forever, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverChecks.ps1`. It
   must say "0 failed". It makes small data in a scratch folder for both, and ends with the two run on Forever's

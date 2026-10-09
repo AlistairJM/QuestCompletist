@@ -110,8 +110,9 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 
 ## The sweep watches the gaps
 
-- **API gaps.** `tools\Compare-ApiDocs.ps1` (step 2b) lists the functions the addon calls that one
-  game documents and the other doesn't, today only `C_SkillInfo.GetSkillLineInfoByID` on Forever,
+- **API gaps.** `tools\Compare-ApiDocs.ps1` (step 2b) lists the functions the addon calls, and the
+  events it listens for, that one game documents and the other doesn't, today only
+  `C_SkillInfo.GetSkillLineInfoByID` on Forever, and compares both games' secrecy flags the same way,
   and exits with 1 when such a function turns up in the documentation of a game that lacked it in
   the earlier list: the game has gained it, so check that the code reads it as its fallback did,
   and share any feature gated on it. Checked
@@ -197,6 +198,9 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   `recorded-quest-givers.csv`, for both games' files; Forever only gets its ledger, as its pins are
   rebuilt by step 10. The pickup rule of the data row "Pickup sources for pins" now has the recorder as a
   source on both games once files exist ([quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool").
+- 2026-10-09: the API check compares secrecy flags and the events the addon listens for, on both games
+  (the same code, `Compare-ApiDocs.ps1`); the recorder's events are documented in both, its quest-window
+  globals in neither.
 - 2026-10-09: recommendations 4 and 5, the table checks on Forever (step 10, items 8 and 9 of the runbook):
   `Audit-QuestTables.ps1 -Game forever` (and `-OwnDataOnly` on either game) and
   `Remove-DuplicatePinQuests.ps1 -Game forever`, with `Test-ForeverChecks.ps1`. The audit found 6 things in

@@ -851,3 +851,11 @@ them.
 - 2026-10-09: recommendation 1, the merge tool: `Import-RecordedGivers.ps1` (sweep step 6d), with a
   sandboxed reader and a ledger, fills retail pins' NPC IDs and pins quests no source places, from the
   notes of both games; see [quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool".
+- 2026-10-09: recommendation 11, the secrecy watch: `Read-ApiDocs.lua` keeps every flag with `Secret` in its
+  name and the preconditions the documentation declares (on functions, events, arguments, returns, payload
+  and structure fields and the structures those lead to), `Compare-ApiDocs.ps1` fails the sweep when
+  they change on a function the addon calls or an event it listens for, and checks those events
+  (18, all documented in both games) for payload and for going. New baseline: live 12.1.0.69933 5,655
+  functions, 1,782 events (3,619 and 124 with flags); Forever 1.60.1.70245 5,903 and 1,804 (3,783 and
+  125). The counts of 7 October let script objects' methods of one name overwrite each other. Not
+  covered: the contents of structures, and the old globals the documentation leaves out.
