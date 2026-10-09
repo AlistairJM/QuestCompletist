@@ -22,7 +22,7 @@ local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
 
 --[[ Constants ]]--
-local QCADDON_VERSION = "112.5"
+local QCADDON_VERSION = "112.6"
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
@@ -189,7 +189,8 @@ qcCovenantsBits = {
 -- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
 -- calendar event can carry. WoW: Forever's Darkmoon Faire is 263 and 264, from Classic. The Scourge
 -- Invasion and the Ahn'Qiraj War Effort aren't on the calendar, so the seasonal filter always hides
--- their quests.
+-- their quests. filter names the calendar window's filter that holds the holiday's events, "HOLIDAYS"
+-- when it isn't given.
 local qcHolidays = {
 	{flag=1, name="Brewfest", eventIDs={372}},
 	{flag=2, name="Children's Week", eventIDs={201}},
@@ -204,11 +205,21 @@ local qcHolidays = {
 	{flag=1024, name="Pilgrim's Bounty", eventIDs={404}},
 	{flag=2048, name="Pirates' Day", eventIDs={398}},
 	{flag=4096, name="Trial of Style", eventIDs={691}},
-	{flag=8192, name="Darkmoon Faire", eventIDs={479, 263, 264}},
+	{flag=8192, name="Darkmoon Faire", eventIDs={479, 263, 264}, filter="DARKMOON"},
 	{flag=16384, name="Scourge Invasion", eventIDs={}},
 	{flag=32768, name="Ahn'Qiraj War Effort", eventIDs={}},
-	{flag=65536, name="Stranglethorn Fishing Extravaganza", eventIDs={301}},
+	{flag=65536, name="Stranglethorn Fishing Extravaganza", eventIDs={301}, filter="WEEKLY"},
 }
+-- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
+-- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
+local qcCalendarFilters = {
+	HOLIDAYS = {cvar="calendarShowHolidays", label="CALENDAR_FILTER_HOLIDAYS"},
+	DARKMOON = {cvar="calendarShowDarkmoon", label="CALENDAR_FILTER_DARKMOON"},
+	WEEKLY = {cvar="calendarShowWeeklyHolidays", label="CALENDAR_FILTER_WEEKLY_HOLIDAYS"},
+}
+local function qcHolidayFilter(holiday)
+	return qcCalendarFilters[holiday.filter or "HOLIDAYS"]
+end
 local qcHolidayFlagByEventID = {}
 local qcKnownHolidayFlags = {}
 for _, holiday in ipairs(qcHolidays) do
@@ -216,8 +227,11 @@ for _, holiday in ipairs(qcHolidays) do
 	for _, eventID in ipairs(holiday.eventIDs) do qcHolidayFlagByEventID[eventID] = holiday.flag end
 end
 
--- The holiday flags running now; nil until the calendar has answered, which restricts nothing.
+-- The holiday flags running now; nil until the calendar has answered, which restricts nothing. A
+-- holiday whose filter was unticked at the read counts as running, since the read couldn't see it.
 local qcActiveHolidays = nil
+-- The holiday flags whose filter is unticked in Blizzard's calendar window as of the last update.
+local qcFilteredHolidays = 0
 -- Why the last read had no answer, for /qc holidays.
 local qcCalendarWhy = nil
 -- True while the addon moves the calendar's month itself, so the events that causes start no read.
@@ -271,18 +285,37 @@ local function qcReadActiveHolidays()
 	return active
 end
 
+-- The flags of the holidays whose filter is unticked. Only an explicit false counts: a CVar the game
+-- doesn't have leaves nothing out. A holiday with no IDs is never on the calendar, whatever the filter.
+local function qcReadFilteredHolidays()
+	local filtered = 0
+	for _, holiday in ipairs(qcHolidays) do
+		if #holiday.eventIDs > 0 and GetCVarBool(qcHolidayFilter(holiday).cvar) == false then
+			filtered = bit.bor(filtered, holiday.flag)
+		end
+	end
+	return filtered
+end
+
+-- What the map filter tests a quest's holiday against: the running ones, plus those the calendar
+-- can't show. nil until the calendar has answered.
+local function qcShownHolidays()
+	return qcActiveHolidays and bit.bor(qcActiveHolidays, qcFilteredHolidays)
+end
+
 -- Keeps the last answer when the calendar can't be read, e.g. during chat lockdown.
 local function qcUpdateActiveHolidays()
+	qcFilteredHolidays = qcReadFilteredHolidays()
 	local wasBusy = qcCalendarBusy
 	qcCalendarBusy = true
 	local ok, active, why = pcall(qcReadActiveHolidays)
 	qcCalendarBusy = wasBusy
 	if (ok and active) then
-		qcActiveHolidays = active
+		qcActiveHolidays = bit.bor(active, qcFilteredHolidays)
 	else
 		qcCalendarWhy = ok and why or ("error: " .. tostring(active))
 	end
-	return qcActiveHolidays
+	return qcShownHolidays()
 end
 
 -- The server sends the calendar's events when asked, as Blizzard's calendar does each time it opens.
@@ -300,7 +333,7 @@ local function qcCalendarDataArrived()
 	if qcActiveHolidays == nil then return true end
 	local now, shown = C_DateAndTime.GetCurrentCalendarTime(), C_Calendar.GetMonthInfo(0)
 	if (shown.month ~= now.month or shown.year ~= now.year) then return false end
-	local before = qcActiveHolidays
+	local before = qcShownHolidays()
 	return qcUpdateActiveHolidays() ~= before
 end
 
@@ -355,14 +388,30 @@ local function qcPrintHolidays()
 	if not active then
 		print(QCADDON_CHAT_TITLE .. "The calendar hasn't answered yet (" .. tostring(qcCalendarWhy) .. "), so seasonal quests are all shown.")
 	end
+	local hidden, hiddenFilters = {}, {}
+	for _, holiday in ipairs(qcHolidays) do
+		if bit.band(qcFilteredHolidays, holiday.flag) ~= 0 and bit.band(inUse, holiday.flag) ~= 0 then
+			local filter = qcHolidayFilter(holiday)
+			if not hidden[filter] then
+				hidden[filter] = {}
+				hiddenFilters[#hiddenFilters + 1] = filter
+			end
+			table.insert(hidden[filter], holiday.name)
+		end
+	end
+	for _, filter in ipairs(hiddenFilters) do
+		print(string.format("%sThe calendar window's \"%s\" filter is unticked, so the calendar can't show these holidays and their quests are all shown: %s.",
+			QCADDON_CHAT_TITLE, _G[filter.label] or filter.cvar, table.concat(hidden[filter], ", ")))
+	end
 	print(QCADDON_CHAT_TITLE .. "Seasonal quests follow these calendar holidays:")
 	for _, holiday in ipairs(qcHolidays) do
 		local event = nextByFlag[holiday.flag]
-		local running = active and bit.band(active, holiday.flag) ~= 0
+		local unticked = bit.band(qcFilteredHolidays, holiday.flag) ~= 0
+		local running = not unticked and qcActiveHolidays and bit.band(qcActiveHolidays, holiday.flag) ~= 0
 		if event then
 			print(string.format("  %s%s (%d): %s to %s", running and "|cff00ff00Running|r " or "", event.title,
 				event.eventID, qcFormatCalendarTime(event.startTime), qcFormatCalendarTime(event.endTime)))
-		elseif bit.band(inUse, holiday.flag) ~= 0 then
+		elseif bit.band(inUse, holiday.flag) ~= 0 and not unticked then
 			print(string.format("  %s: not on the calendar in the next 12 months", holiday.name))
 		end
 	end
