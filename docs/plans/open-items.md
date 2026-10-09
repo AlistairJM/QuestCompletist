@@ -74,9 +74,11 @@ again.
     filter shows the quests), whether ticking a box fires `CVAR_UPDATE` (the map notices at its next
     draw; a listener was left out), and the map with a filter unticked (tested offline). The longer
     experiment is in [maintenance.md](../maintenance.md), "Holidays", for a puzzling result only.
-  - When it has run, change the "not yet seen in game" wording in maintenance.md ("Holidays") and in
-    the C_Calendar section of [game-api-review.md](game-api-review.md), and take this item off the
-    list. Until then the change stays out of the next release, unless the user says to ship it.
+  - The user decided on 9 October 2026 to go with #243 without this check, and to deal with any
+    problem when it shows, so it is in the next release. The seven lines stay for whoever wants to
+    run them. When they have been run, change the "not yet seen in game" wording in maintenance.md
+    ("Holidays") and in the C_Calendar section of [game-api-review.md](game-api-review.md), and take
+    this item off the list.
 
 ## Decisions waiting for the user
 
@@ -89,6 +91,12 @@ again.
 | 5 | The Landfall dailies (31 without a pin, 29 with one already) and the Silithus sigil quests (10), which look retired | flag them in `unavailable-quest-decisions.csv` after a look at the evidence | unavailable-quests.md |
 | 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
+| 8 | Refresh retail's levels from the API: 1,611 quests differ from it (large blocks in Zaralek Cavern, Mechagon Island and the Emerald Dream, where the API gives a much lower minimum than we store), 4,955 have no API record, 246 are 0 | yes, from the API, after a look at those zones; a campaign or Chromie Time may gate some | client-tables-review.md (the note on `level`); maintenance.md, the data files |
+| 9 | Scaling quests: the list bracket and the low-level filter read a scaling range's floor, so they judge a quest low level too early | probe first: what `IsQuestTrivial` and `GetQuestDifficultyLevel` return in game on both clients, then decide | game-api-review.md, recommendation 4 |
+| 10 | Holiday flags for the retail events `qcHolidays` has none for: the four Dragonriding cups (16 quests, 12 with pins, so those pins show all year), Secrets of Azeroth, WoW Anniversary, Dastardly Duos, the weekly bonus events, and the 54 Ahn'Qiraj War Effort and Scourge Invasion quests | a flag per event, tied to the calendar ID that `/qc holidays` lists under "Other calendar holidays" while it runs; one flag per cup or one shared is the user's call | `quest-holiday-decisions.csv`, the PENDING rows |
+| 11 | Two quests of the holiday record: 56322 "Contained Alemental" (Wowhead lists Event: Brewfest) and the 12 "Bar Tab Barrel" quests, tagged Brewfest but still filed under the Dragon Isles zones, unlike the ten already under Brewfest | tag 56322; refile the Barrels | `quest-holiday-decisions.csv` |
+| 12 | Forever's 29 untagged seasonal quests (none has a pin: 12 Children's Week and 6 Winter Veil by a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by an importer rule), and its calendar gaps: no dates for Children's Week or the Darkmoon Faire on the beta, and a nameless Winter Veil-like Holidays row, 1879, that the date decode puts from 15 November (not confirmed in game) | tag them in the importer; run `/qc holidays` on the beta before 15 November and add 1879 to Winter Veil's IDs if it reports it | forever.md; maintenance.md, "Holidays" |
+| 13 | A level of 0 or below reads as a level: 246 retail and 12 Forever quests show "[0]" in the list and count as low level for everyone | treat it as no level in the two readers | `qcCore.lua`, the list row and the low-level filter |
 
 ## Data to finish
 
