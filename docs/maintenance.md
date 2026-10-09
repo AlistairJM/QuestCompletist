@@ -385,9 +385,10 @@ add the `PENDING` or `KEEP` row that says why it stays as it is. It only sees ho
 `qcHolidays`; the pending quests of one with no flag show up once a flag is added.
 
 Baseline on 9 October 2026: 833 quests in an API category read as a holiday, 579 in a TrinityCore
-event read as one and 995 filed under a holiday heading. That is 59 findings, 58 covered (57
-`PENDING`, 1 `KEEP`) and 1 new: quest 43472, filed under Midsummer while its `PENDING` row says WoW
-Anniversary. The run takes about 20 seconds.
+event read as one and 994 filed under a holiday heading. That is 58 findings, all covered (57
+`PENDING`, 1 `KEEP`), so none is new. The first run also found quest 43472, filed under Midsummer
+while its `PENDING` row says WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
+run takes about 20 seconds.
 
 ### 3. Quest types
 
