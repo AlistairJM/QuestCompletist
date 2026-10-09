@@ -141,7 +141,7 @@ build pruning).
 Also unchanged: `Test-Localization.lua` ("No problems"), `Test-QuestReachability.lua` for both TOCs
 (retail 1 / 0 / 99 / 2 as on master, Forever 0, no Lua errors).
 
-## To try in game before it ships
+## To try in game (it shipped in 112.7 without this)
 
 The stand-ins say what the code does, not what the game answers. One session on a branch, loaded
 through the junctions; **fully close and restart WoW** (a new file and saved variable), and back up
@@ -281,8 +281,7 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
 
 ## What is left
 
-1. **The in-game session** above, then a release that ships the recorder (README, the changelog's
-   "fully close and restart", the numbers).
+1. **The in-game session** above. The recorder was released first, in 112.7, on the user's word.
 2. **The first real ingest** of the maintainer's own retail and Forever files: run step 6d `-WhatIf`,
    read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin
    pipeline. Open the call for players' files after one sweep has run clean.
@@ -315,3 +314,8 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
   documentation, so the events are what the watch can see of it). Two independent reviews (a mutation
   sweep of the tests among them) shaped it, the second round fixing a function's own namespace, a
   half-installed download and a stray list file; `Test-ApiDocs.ps1` has 231 checks. Step 2b of the runbook.
+- 2026-10-09 (later): merged (#228) and released in 112.7 without the in-game session, on the user's
+  word ("assume it works"). It is on by default; the README and the changelog say what it keeps and
+  that nothing is sent. The in-game session now checks what players already have. The in-game
+  `/qc report` text still invites players to attach their file to a comment; the README and the
+  changelog do not, because the call for players' files waits for one clean sweep (see "What is left").

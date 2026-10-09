@@ -57,6 +57,11 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 - The list and map update as soon as you accept, hand in or abandon a quest.
 - Dailies and weeklies clear themselves at the real daily and weekly reset.
 
+**Notes the quest givers you meet**
+
+- Quest Completist can note the quest givers you meet and where you met them. It's on by default, kept on your computer only, and nothing is sent anywhere.
+- Untick *Note the Quest Givers I Meet* in the options, or type **/qc record off**, to stop it. **/qc report** shows how much it holds.
+
 ## Handy clicks
 
 - **Left-click** a quest to set a waypoint to its quest giver (needs TomTom).
