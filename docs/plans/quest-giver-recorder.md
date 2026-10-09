@@ -286,12 +286,10 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
 2. **The first real ingest** of the maintainer's own retail and Forever files: run step 6d `-WhatIf`,
    read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin
    pipeline. Open the call for players' files after one sweep has run clean.
-3. **The API watch:** `Read-ApiDocs.lua` keeps only some `Secret*` flags; keep them all, so step 2b
-   sees a new secrecy flag on the functions the recorder uses.
-4. **One probe for both games** (recommendation 2).
-5. **Forever's importer** reads the ledger, and its recorded-spot merge radius moves from 3 to 1.5
+3. **One probe for both games** (recommendation 2).
+4. **Forever's importer** reads the ledger, and its recorded-spot merge radius moves from 3 to 1.5
    map points; the probe's own recorder (PR #139) is retired after one sweep.
-6. **Later, if wanted:** a copy-text window for the report; a novelty test so the file skips what the
+5. **Later, if wanted:** a copy-text window for the report; a novelty test so the file skips what the
    shipped pins hold; the map-frame conversion above; the instance rule; recorded recurrence and
    headings applied by steps 3 and the category steps rather than listed.
 
@@ -311,3 +309,9 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
   that would merge two pins, KEEP on any quest of a pin, a pin with no NPC and no name made for an unnamed
   giver, the icon, the near-miss and hand-in cases, Forever's lists, a total order for the ledger. The
   tests went from 253 and 125 checks to 367 and 267.
+- 2026-10-09: the API watch (`tools/api-secrecy-flags`): `Read-ApiDocs.lua` keeps every secrecy flag and
+  `Compare-ApiDocs.ps1` compares them, for the functions the addon calls and the events it listens for
+  (all six of the recorder's are documented in both games; its quest-window globals are in no
+  documentation, so the events are what the watch can see of it). Two independent reviews (a mutation
+  sweep of the tests among them) shaped it, the second round fixing a function's own namespace, a
+  half-installed download and a stray list file; `Test-ApiDocs.ps1` has 228 checks. Step 2b of the runbook.

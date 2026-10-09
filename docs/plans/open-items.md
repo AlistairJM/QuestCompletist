@@ -99,7 +99,7 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 3. **In progress:** the recorder on retail, with one probe for both games (recommendations 1 and 2).
    The addon half (#228) waits for its in-game session, and the merge tool (step 6d, `tools/recorded-givers`)
    is built and waits for a real recording ([quest-giver-recorder.md](quest-giver-recorder.md)); the
-   probe comes next.
+   secrecy watch of step 2b is built; the probe comes next.
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
    data (recommendations 4 and 5).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an
