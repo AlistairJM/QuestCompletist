@@ -244,14 +244,59 @@ ours strips.
   15,202, with an NPC ID 10,564, with neither 4,301, quests with no pin 10,361, quests whose only pins
   are nameless 3,696 counting every quest ID a pin lists as the table did (3,600 counting only ours).
 
+## Checks built
+
+### Reputation
+
+A pass in `Compare-QuestReputation.ps1` (retail only, report-only; tested by
+`Test-CompareQuestReputation.ps1`; the runbook is [maintenance.md](../maintenance.md), step 2). It
+reads the newest `tools\retail_quest_cache_<build>.jsonl` and the Faction table of that build, and
+puts every quest of ours in one class by comparing ours, the API's and the cache's rewards as sets of
+faction=amount, never by position: A agree; B the cache has the API's rewards and more, only on
+factions that are not shown; C differ (both list, factions or amounts differ); D lost (ours or the
+API lists a reward and the cache has the quest with none); E cache only, with a reward on a shown
+faction (backfill candidates); F cache only, on factions that are not shown; G not in the cache; H
+the cache's own extras (quests not in our data, empty-amount slots, a faction in two slots). It fails
+(exit 1) on a class C or D quest, and says the reader looks moved at 100 C quests or more. Its rows
+go in `quest_reputation_compare.csv` with the Kinds `cache-more`, `cache-differ`, `cache-lost`,
+`cache-only` and `cache-hidden`, which `Apply-ReputationBackfill.ps1` skips.
+
+A faction counts as **shown** when the Faction table lists it, its `ReputationIndex` is 0 or more and
+`ReputationFlags_0` lacks bit 4 (value 4, hidden). The index matters for one quest: 1833 (Uncrowned)
+is in the table, not hidden, but has an index of -1, which means the client keeps no standing for it,
+so its one reward (42,999, on quest 40839, which the API has a record of and lists nothing for) is F
+and not E. Flags 16 is not hidden (The Wardens and Dream Wardens are shown), and flags 6 is (Warsong
+Offensive is hidden by the flag yet the API lists it, which is harmless: the flag only decides
+whether a cache reward the API does not list is B or C, and whether a cache-only quest is E or F).
+
+The quests of B, E, F and G are kept in `quest-reputation-cache-baseline.csv`, one row for each
+(`Class`, `QuestID`), since the counts move with what a probe run asked for. Each run says how many
+are new and gone against it; `-UpdateBaseline` rewrites the file once they are explained. Baseline on
+9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914, Faction table 12.1.0.69933):
+
+| Class | Quests | Note |
+|---|---|---|
+| A | 10,786 | none of them a reward the API lists and ours lacks |
+| B | 3 | 73226 (2557, not in the Faction table), 43568 and 41138 (`Arcane Thirst` factions, hidden) |
+| C, D | 0, 0 | |
+| E | 2,043, with 2,986 rewards | all of them quests the API has no record of; `qcFactions` lacks 2574 (Dream Wardens, 5 rewards) |
+| F | 153 | 151 the API has a record of and 2 it has not (`GarInvasion_Shadowmoon`) |
+| G | 2,451, 246 with a reward row of ours | |
+| H | 141 quests only in the cache (43 with a reward), 0 empty-amount slots, 0 factions in two slots | |
+| | 19,587 with nothing listed anywhere | |
+| | 11,690 of the API's 11,690 rewards reproduced | |
+
+Nothing was backfilled: whether to is decision 2 below, and the quests are the `cache-only` rows of
+the CSV and the E rows of the baseline file.
+
 ## Checks to build
 
 None of these changes data; each prints what it found and keeps a baseline. They are not built yet.
-Baselines belong in a file keyed by quest, since counts move with what a probe run asked for.
+Baselines belong in a file keyed by quest, since counts move with what a probe run asked for; the
+reputation pass's is `quest-reputation-cache-baseline.csv`, in this folder.
 
 | Check | Where | Fails on |
 |---|---|---|
-| Reputation: the cache's rewards against ours and the API's, with the classes above | a pass in `Compare-QuestReputation.ps1`, retail | a reward that differs, or one ours or the API's lists that the cache lacks (both 0 today) |
 | Levels: ours against the tuning's range, coverage of tunings with no range | `Compare-QuestLevels.ps1` and the `ContentTuning` table, step 2b | a quest that was equal in the baseline and is not |
 | Recurrence: daily, weekly, repeatable and scheduler against our types | an input to `Retype-ProbeRecurring.ps1` | nothing; it proposes |
 | Races: the 30 race IDs of ours (26 bits) that each of ours and the cache allows | `Compare-QuestRaces.ps1`, a new step 1e | a difference without a decision row |
@@ -279,3 +324,8 @@ Baselines belong in a file keyed by quest, since counts move with what a probe r
   tripwire also compares recurs, faction and races, holds a content tuning to its commonest range, and
   counts the quests the API has no record of by their `.404` files; the tests gained the cases the
   reviewers named; these numbers are the recounted ones.
+- 2026-10-09 (later still): the first of the checks to build, Reputation, is built as the cache pass of
+  `Compare-QuestReputation.ps1` (above, "Checks built"), with `Test-CompareQuestReputation.ps1` and a
+  baseline file of the quests of classes B, E, F and G. It reproduced every number of the Reputation
+  section on the real files. The one judgement was 1833: the Faction table does not hide it, but its
+  index of -1 means no standing is kept, which puts quest 40839 in F, as the earlier count had it.
