@@ -38,6 +38,19 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
+- **The probe on both games** (`tools/ForeverProbe`, a dev-only addon built 9 October 2026, tested only
+  against stand-ins by `Test-Probe.lua`). Build the lists (`Build-ProbeLists.ps1 -Game forever` and
+  `-Game retail`), copy the folder into the game's AddOns and restart fully, then: on the **Forever
+  beta**, a regression run (`/qcprobe quests`, `npcs`, `maps`: about 10, 6 and 2 minutes) whose
+  results should match the October run's; on **retail**, ideally before 12.1.5 goes live on 13 or 14
+  October so the type probe's 29 September baseline still compares, `/qcprobe quests` (about two
+  hours, 35,023 quests, a 13 MB saved file), `npcs` (about 5 minutes, outside any instance) and `maps 1`
+  (5 minutes). Then copy `QCForeverProbe.lua` into `tools\retail_probe_<build>\` and run
+  `Retype-ProbeRecurring.ps1` (it only picks up new cases; `Test-ProbeResults.ps1` shows both probes'
+  files read the same), `Compare-PinNpcNames.ps1 -Game retail`, and
+  `Read-ForeverProbe.lua <file> facts` for the facts pass: which of `GetQuestExpansion`,
+  `IsBreadcrumbQuest` and `IsStoryQuest` exist (the run's row says), whether `GetQuestLineInfo` answers
+  for a quest the server refused, and whether `IsAccountQuest` needs loaded data.
 
 ## Decisions waiting for the user
 
