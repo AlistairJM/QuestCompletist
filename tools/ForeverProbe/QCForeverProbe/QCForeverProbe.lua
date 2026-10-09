@@ -31,7 +31,12 @@ stood, the quest log heading of each quest you accept, and quests started from i
 
 QCForeverProbeDB holds:
   quests[id]    build, result (ok, fail, timeout, late or cached), ms, title, level, tagID, tagName,
-                tagElite, elite, repeatable, questType, groupSize, classification
+                tagElite, elite, repeatable, questType, groupSize, classification, and the
+                facts of docs/plans/game-api-review.md, recommendation 2: isTask, isWorld, taskZone
+                (task quests), accountQuest, factionGroup, important, meta, questLineID, campaignID,
+                expansion, breadcrumb, story. Only a quest that loaded has facts, and a fact the client
+                does not answer is left out. The quest run's row (runs) has facts: for each, the
+                function that answered, or false when this client has none.
   npcs[id]      build, result (now, event, poll, late or none), ms, name, lines (tooltip lines 2-4)
   givers[key]   key "Creature:id" or "GameObject:id": kind, id, name, build, spots ("map x y" = times
                 seen), offers (questId = level, frequency, repeatable, lowestPlayerLevel, seenBy),
@@ -179,6 +184,56 @@ local function go(r)
 	r.ticker = C_Timer.NewTicker(TICK_SECONDS, tick)
 end
 
+-- What else is asked of a loaded quest (docs/plans/game-api-review.md, recommendation 2): each fact
+-- comes from the first of its functions this client has, and which that was goes in the run's row,
+-- so a function the client lacks is told apart from one that answers nothing.
+local FACTS = {
+	{key = "isTask", names = {"C_QuestLog.IsQuestTask"}},
+	{key = "isWorld", names = {"C_QuestLog.IsWorldQuest"}},
+	{key = "accountQuest", names = {"C_QuestLog.IsAccountQuest"}},
+	{key = "factionGroup", names = {"C_QuestLog.GetQuestFactionGroup", "GetQuestFactionGroup"}},
+	{key = "important", names = {"C_QuestLog.IsImportantQuest"}},
+	{key = "meta", names = {"C_QuestLog.IsMetaQuest"}},
+	{key = "questLineID", names = {"C_QuestLine.GetQuestLineInfo"}, field = "questLineID"},
+	{key = "campaignID", names = {"C_CampaignInfo.GetCampaignID"}},
+	{key = "taskZone", names = {"C_TaskQuest.GetQuestZoneID"}, when = "isTask"},
+	{key = "expansion", names = {"C_QuestLog.GetQuestExpansion", "GetQuestExpansion"}},
+	{key = "breadcrumb", names = {"C_QuestLog.IsBreadcrumbQuest", "IsBreadcrumbQuest"}},
+	{key = "story", names = {"C_QuestLog.IsStoryQuest", "IsStoryQuest"}},
+}
+local factCalls = {}
+
+local function resolveFacts()
+	local calls, found = {}, {}
+	for _, spec in ipairs(FACTS) do
+		found[spec.key] = false
+		for _, name in ipairs(spec.names) do
+			local value = _G
+			for part in name:gmatch("[^.]+") do
+				value = type(value) == "table" and value[part] or nil
+			end
+			if type(value) == "function" then
+				calls[spec.key] = value
+				found[spec.key] = name
+				break
+			end
+		end
+	end
+	return calls, found
+end
+
+local function askFacts(facts, questId)
+	for _, spec in ipairs(FACTS) do
+		local call = factCalls[spec.key]
+		if call and (not spec.when or facts[spec.when]) then
+			local value = try(call, questId)
+			if spec.field and type(value) == "table" then value = value[spec.field] end
+			local kind = type(value)
+			if (kind == "boolean" or kind == "number" or kind == "string") and not secret(value) then facts[spec.key] = value end
+		end
+	end
+end
+
 local function questFacts(questId, result, ms)
 	local facts = {build = build, result = result, ms = ms and math.floor(ms + 0.5) or nil}
 	if result == "fail" or result == "timeout" then return facts end
@@ -192,6 +247,7 @@ local function questFacts(questId, result, ms)
 	facts.questType = try(C_QuestLog.GetQuestType, questId)
 	facts.groupSize = try(C_QuestLog.GetSuggestedGroupSize, questId)
 	facts.classification = try(C_QuestInfoSystem and C_QuestInfoSystem.GetQuestClassification, questId)
+	askFacts(facts, questId)
 	return facts
 end
 
@@ -221,6 +277,9 @@ local function startQuests(all, inFlight)
 		return
 	end
 	local r = begin("quests", "quest pass", queue, inFlight)
+	local found
+	factCalls, found = resolveFacts()
+	r.extra = {facts = found}
 	local attempts = {}
 	r.send = function(questId)
 		if haveQuestData(questId) then

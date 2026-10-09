@@ -48,7 +48,7 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 | 3 | 82449 "The Call of the Worldsoul", a task-table quest | a hand entry on the Worldsoul pins | same |
 | 4 | Item-started quests with a start point but no NPC (about 13% of all pins) | keep pinning them, as before | quest-location-data-pipeline.md, "pins from TrinityCore" |
 | 5 | The Landfall dailies (31 without a pin, 29 with one already) and the Silithus sigil quests (10), which look retired | flag them in `unavailable-quest-decisions.csv` after a look at the evidence | unavailable-quests.md |
-| 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
+| 6 | The remaining decisions 1 to 7 of the API review (recorder on retail and the probe additions are agreed and built; scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
 
 ## Data to finish
