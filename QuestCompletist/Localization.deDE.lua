@@ -133,6 +133,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "Linksklick: Questliste ein-/ausblenden", -- Needs review
 	MINIMAPRIGHTCLICK = "Rechtsklick: Optionen öffnen", -- Needs review
 	MINIMAPDRAG = "Ziehen: Symbol um die Minikarte bewegen", -- Needs review
+	RECORDGIVERS = "Questgeber, die ich treffe, notieren", -- Needs review
+	RECORDGIVERSTIP = "Führt eine kurze Notiz über die Questgeber, denen du begegnest, und wo du sie getroffen hast. Sie wird nur auf diesem Computer gespeichert, und nichts wird irgendwohin gesendet. /qc report zeigt, was sie enthält.", -- Needs review
+	RECORDERNOTICE = "Quest Completist führt jetzt eine kurze Notiz über die Questgeber, denen du begegnest, und wo du sie getroffen hast – nur auf diesem Computer. /qc report zeigt sie an; /qc record off schaltet sie aus.", -- Needs review
+	RECORDERSTATUS = "Questgeber notieren: %s. Mit /qc record on, /qc record off oder /qc record clear änderst du das.", -- Needs review
+	RECORDERCOUNTS = "Bisher notiert: %d Questgeber, %d Quests und %d Quests, die ohne Questgeber begonnen wurden.", -- Needs review
+	RECORDERFULL = "Die Notizen sind voll, daher werden die ältesten durch neue ersetzt (bisher %d).", -- Needs review
+	RECORDERERRORS = "Beim Notieren der Questgeber sind %d Fehler aufgetreten; der letzte: %s", -- Needs review
+	RECORDERHIDDEN = "Das Spiel hat %d Mal verborgen, wer sprach; diese Quests wurden ohne Questgeber notiert.", -- Needs review
+	RECORDERFILE = "Nichts wird irgendwohin gesendet. Das Spiel speichert die Notizen beim Ausloggen oder Neuladen in der Datei QuestCompletist.lua im Ordner SavedVariables deines Kontos (im WTF-Ordner des Spiels unter Account). Um die Karte zu verbessern, hänge diese Datei an einen Kommentar auf der CurseForge-Seite des Addons an.", -- Needs review
+	RECORDERCLEARED = "Die Notizen wurden gelöscht.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

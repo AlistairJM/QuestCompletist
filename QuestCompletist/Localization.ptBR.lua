@@ -133,6 +133,16 @@ qcLocalize = setmetatable({
 	MINIMAPLEFTCLICK = "Clique esquerdo: mostrar ou ocultar a lista de missões", -- Needs review
 	MINIMAPRIGHTCLICK = "Clique direito: abrir as opções", -- Needs review
 	MINIMAPDRAG = "Arrastar: mover este botão ao redor do minimapa", -- Needs review
+	RECORDGIVERS = "Anotar os doadores de missão que encontro", -- Needs review
+	RECORDGIVERSTIP = "Guarda uma breve nota dos doadores de missão que você encontra e de onde os encontrou. Ela é salva somente neste computador e nada é enviado para lugar nenhum. /qc report mostra o que ela contém.", -- Needs review
+	RECORDERNOTICE = "O Quest Completist agora guarda uma breve nota dos doadores de missão que você encontra e de onde os encontra, somente neste computador. /qc report a mostra; /qc record off a interrompe.", -- Needs review
+	RECORDERSTATUS = "Anotação de doadores de missão: %s. /qc record on, /qc record off ou /qc record clear a altera.", -- Needs review
+	RECORDERCOUNTS = "Até agora foram anotados %d doadores de missão, %d missões e %d missões iniciadas sem doador.", -- Needs review
+	RECORDERFULL = "As notas estão cheias, então as mais antigas são substituídas conforme chegam novas (%d até agora).", -- Needs review
+	RECORDERERRORS = "A anotação de doadores de missão teve %d erros; o último: %s", -- Needs review
+	RECORDERHIDDEN = "Em %d ocasiões o jogo ocultou quem estava falando; essas missões foram anotadas sem o doador.", -- Needs review
+	RECORDERFILE = "Nada é enviado para lugar nenhum. O jogo salva as notas ao sair ou recarregar, em QuestCompletist.lua na pasta SavedVariables da sua conta (na pasta WTF do jogo, em Account). Para ajudar a melhorar o mapa, anexe esse arquivo a um comentário na página do addon no CurseForge.", -- Needs review
+	RECORDERCLEARED = "As notas foram apagadas.", -- Needs review
 	}, {__index = qcLocalize})
 
 end
