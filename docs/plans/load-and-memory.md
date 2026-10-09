@@ -181,3 +181,24 @@ Around 38 places read or write it today.
   before, and marks survived `/reload`. In the saved file afterwards, all 12,259 marks from the backup
   were present (0 changed, 0 lost, all plain numbers), plus the two test marks. The old variable is
   written as `qcCompletedQuests = nil`, and the file went from 355 KB to 171 KB.
+- 2026-10-09, `qcQuestMinLevel` (the level a character needs to take a quest; see
+  [data-structure.md](data-structure.md)), measured as above (Lua 5.1 on this PC, 32-bit, memory
+  after a full collection):
+  - Forever's `qcQuestData.lua` goes from 305,031 to 353,979 bytes (+48,948, +16%) and, once loaded,
+    from 1,275.2 to 1,531.2 KB (+256.0 KB, +20%). The whole addon loaded on Forever's TOC goes from
+    2,255.3 to 2,511.6 KB (+256.3 KB, +11%). The table has 4,180 keys, 82% of Forever's quests.
+  - Loading the file takes about 7.4 ms before and 8.6 ms after (40 loads a run, eight runs, the
+    medians), about 1.2 ms more (1.25 to 1.7 ms in the pairs a reviewer ran).
+  - WoW's 64-bit Lua was not measured, as this PC has Lua 5.1 only as a 32-bit build. The 1.8×
+    above is for the whole addon, mostly strings and row tables, and isn't known to hold for a table
+    of numbers, so no 64-bit figure is given.
+  - Against a ninth value in the rows, on the same footing (the 5,081 rows rebuilt by one script
+    from the loaded data, keeping only what each variant needs, less the bare interpreter's 19 KB):
+    the rows alone take 1,031 KB, with the keyed table 1,287 KB (+256.0 KB), with a ninth value
+    1,162 KB (+130.5 KB, a nil filler where a row has no storyline), and with a ninth value in every
+    row 1,190 KB (+158.6 KB). So the keyed table costs about twice what the ninth value would in
+    memory. It was chosen because the project prefers a keyed table for sparse data to a new field
+    in the row layout both games share (`qcQuestHoliday` and the other sparse tables were made so),
+    and it is the design the user approved.
+  - Retail's file gains an empty table (22 bytes), and its loaded size is unchanged: 15,174.0 KB
+    for the whole addon before and 15,173.5 KB after.

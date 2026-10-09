@@ -62,6 +62,7 @@ categories, the zone table, reputation rewards, storylines and so on).
 - `data\quests.jsonl`, one quest per line:
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
+  `minLevel` is left out when it's the same as `level`, and kept when it's 0 (no minimum).
   `class` is the game's own class mask, 1 shifted left by the class ID less one (Warrior 1,
   Paladin 2, … Monk 512, Druid 1024, Evoker 4096), so masks from Blizzard's API, the client
   tables and CMaNGOS are used as they are; `race` and the other masks are the addon's own bits,
@@ -91,9 +92,25 @@ line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
 In `qcQuestData.lua` a quest's row in `qcQuestDatabase` is `{name, level, category, type, faction,
 race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant and
-prerequisite, which most quests don't have, are in `qcQuestProfession`, `qcQuestHoliday`,
-`qcQuestCovenant` and `qcQuestPrereq`, keyed by quest ID, a list of prerequisites as a Lua table.
+prerequisite, which most quests don't have, and the minimum level, where it isn't the row's level,
+are in `qcQuestProfession`, `qcQuestHoliday`, `qcQuestCovenant`, `qcQuestPrereq` and
+`qcQuestMinLevel`, keyed by quest ID, a list of prerequisites as a Lua table.
 The zone text stays in the data file only: the game never reads it.
+
+`level` means two things, and the data keeps both. The row's level is the quest's own: the list's
+bracket (`[30] Name`), its sort and the low-level filter read it. `qcQuestMinLevel[questId]` is the
+level a character needs to take the quest, and the tooltip's "Requires Level" line, the grey pins
+and the requirements-not-met filter read `qcQuestMinLevel[questId] or level`. The table holds only
+the quests whose minimum is not their level, and it keeps a 0 (no minimum). Retail's table is empty
+because its `level` is already read as the minimum: it is meant to be the API's
+`min_character_level`. Today it equals the API's for 28,455 of the 30,066
+quests whose API record gives a minimum (94.6%) and differs for 1,611. Two records give none,
+4,955 of the 35,023 quests have no API record, and 246 have level 0 (counted on 9 October 2026,
+`data\quests.jsonl` against the API cache in `tools\quest_api_cache`). Refreshing retail's levels
+from the API is a separate decision. Forever's `level` is the quest's own level, so its table holds
+4,180 of its 5,081 quests (October 2026). The importer fills it from the game's quest cache, and
+from CMaNGOS where the game hasn't answered. The code doesn't ask which game it is on, only whether
+the table has an entry.
 
 **Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Sync-QuestProfessions.ps1`,
@@ -662,7 +679,7 @@ holiday, so it can't drift from the addon's own logic. It takes about 25 seconds
 & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua
 ```
 
-It writes `tools\reachability-report.txt`, a report only, listing:
+It writes `tools\reachability-report.txt`, a report apart from its last check below, listing:
 - Lua errors the addon raises. One bad value can stop a whole map's pins from drawing.
 - Quests and pins that never show, even with every filter off.
 - Quests and pins that every possible character is denied with the character filters on (faction,
@@ -673,11 +690,21 @@ It writes `tools\reachability-report.txt`, a report only, listing:
   hides from everyone, as it should. Retail has none.
 - Quests in categories the list can't browse to, pin maps missing from `tools\UiMap.csv`, and
   holiday values that aren't in `qcHolidays`.
+- The minimum level, for a character of level 1, 10, 30 and 60 with nothing else in its way: the
+  tooltip's "Requires Level" line, the grey pins and the requirements-not-met filter against each
+  quest's `minLevel`, else its `level`, in the data file `qcQuestData.lua` was built from. It reports
+  quests that need a level the character has, quests that need one it lacks, and pins greyed or not
+  wrongly. It checks the opposite mistake too: the low-level filter, and the bracket and sort of the
+  list (its first 16 rows in each category), must still follow the quest's own `level`. Retail's two
+  levels are the same for every quest, so only Forever's run can catch a mix-up there. The summary
+  has one line per level, and each must read 0. A wrong reading prints `FAILED` and ends the run
+  with exit status 1.
 
-It assumes best-case progress: max level, prerequisites done, max renown, every profession. The
-quest search finds every quest by name whatever this reports. Some results are expected. Pins whose
-quests aren't in the database stay hidden while "hide quests with no data" is on. A map missing
-from `UiMap.csv` can't be opened on retail; a newer build than the downloaded one may add it.
+It assumes best-case progress: max level (but for the minimum-level check), prerequisites done, max
+renown, every profession. The quest search finds every quest by name whatever this reports. Some
+results are expected. Pins whose quests aren't in the database stay hidden while "hide quests with
+no data" is on. A map missing from `UiMap.csv` can't be opened on retail; a newer build than the
+downloaded one may add it.
 
 This checks retail's files. Step 10 runs it on Forever's.
 
@@ -713,6 +740,11 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    recurring quests. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
    Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
    that reward reputation in CMaNGOS; they get theirs once it answers.
+   The level a character needs to take a quest (`minLevel`) is the game's, else CMaNGOS's
+   `MinLevel`, as given; it is kept only where it differs from the quest's own level (`level`), and
+   builds into `qcQuestMinLevel` (see the data files above). The summary's "Minimum levels:" line
+   counts them: 4,180 quests, 2,436 from the game and 1,744 from CMaNGOS, 26 of them above the
+   quest's level and 2 at 0 (no minimum), on build 1.60.1.70205 in October 2026.
    The profession a quest needs, and the skill level in it, come from CMaNGOS too: the game's
    records only say what skill a quest rewards. The summary's "Skills:" line counts them, 141
    quests, 102 of them with a level above 1, in October 2026.
@@ -771,10 +803,14 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    ```
    It writes `tools\reachability-report-QuestCompletist_Camelot.txt`. Every count in its summary was
    0 in October 2026, so anything else is new, apart from the 81 pins of events the calendar doesn't
-   show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's.
+   show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's. That includes the four
+   "character level" lines, the minimum-level check, which fails the run when one isn't 0.
 
-With the same sources, a rerun writes the same files byte for byte. So whatever changes comes from
-the game, the client's tables or CMaNGOS, and is for review before its pull request.
+With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
+`skills.jsonl` byte for byte. So whatever changes in them comes from the game, the client's tables or
+CMaNGOS, and is for review before its pull request. The committed `pins.jsonl` is not yet a rerun's:
+the importer's start point change of 8 October was never followed by an import, so the next one also
+moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753; see [plans/forever.md](plans/forever.md)).
 
 ## Text in other languages
 
@@ -986,7 +1022,8 @@ git diff --stat
   `QuestCompletist\Forever\` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` before and after, and compare the
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
-  step 10 for Forever.
+  step 10 for Forever. Its four "character level" lines (the minimum level) must read 0, and
+  the run exits with 1 when they don't.
 - For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
@@ -1025,7 +1062,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache` |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; Forever's quest cache, read by `Read-ForeverQuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns | `Audit-QuestTables.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1` |
