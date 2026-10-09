@@ -1064,6 +1064,9 @@ calendar code:
 WoW: Forever's calendar uses Classic's Holidays IDs where they differ from retail's, such as 263 and
 264 for the Darkmoon Faire, so an entry in `qcHolidays` can list both games' IDs.
 
+The minimum check, seven lines per game, is in [plans/open-items.md](plans/open-items.md), "To try in
+game"; what follows is the long experiment, for a puzzling result only.
+
 What the filters do in game is still to be seen, once in each game. Log in fresh and leave
 Blizzard's calendar window shut, then run these (each fits the chat box), waiting a couple of seconds
 after the first, and again after opening the window once:

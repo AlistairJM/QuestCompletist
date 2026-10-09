@@ -90,7 +90,8 @@ table's for 4,125 of 4,125.
 - 37 content tunings in use have no range (154 quests, none with an API record): they need the
   `ContentTuning` table. It would also say whether the API shows `MinLevel` or `MinLevelWithDelta`,
   and settle the rule for a quest of the other faction. Tuning 0 means no minimum.
-- **Decision for the user:** whether retail's gate comes from the tuning. Forever's structure
+- **Decision for the user** (open-items.md row 14, beside row 8's refresh from the API): whether
+  retail's gate comes from the tuning. Forever's structure
   already holds it: `level` stays the row's own (the list bracket and the sort) and the gate goes in
   `qcQuestMinLevel`, empty on retail today. It would touch 1,828 quests. The maximum would also fix
   the low-level filter hiding scaling quests early (21,972 quests have a maximum above our level).
@@ -260,7 +261,8 @@ Baselines belong in a file keyed by quest, since counts move with what a probe r
 
 ## Decisions waiting
 
-1. Retail's gate level from the tuning (Level, above).
+1. Retail's gate level from the tuning (Level, above): row 14 of open-items.md, the other way to row 8,
+   which takes the API's minimum and leaves the 4,955 quests it has no record of without a level.
 2. Backfill of the 2,043 quests' reputation from the cache, after a few checks in game.
 3. The type changes of Recurrence and flags.
 4. The race changes of Races: the two contradictions and the 19 stale masks recommended, the 49
