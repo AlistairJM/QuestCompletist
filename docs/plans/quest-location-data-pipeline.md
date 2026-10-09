@@ -495,5 +495,5 @@ covered by its quest and NPC pair and sits where the pipeline sorts it).
   else is listed (`quest offered away from its pins`).
 - **The holds the TrinityCore pass puts on a quest are waived when a creature offers it** (not in
   `QuestV2`, the template inferences, a task of another kind than world, bonus or hidden, Landfall,
-  holiday, profession); the ones that are definitions stay (unavailable, internal name, world, bonus or
+  holiday, profession, a quest type other than 0, 1, 2, 4 and 128); the ones that are definitions stay (unavailable, internal name, world, bonus or
   hidden task, system category), and the new pins are counted by class so the user sees what the waiver let in.
