@@ -29,6 +29,13 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 
 ## To try in game
 
+Keep the manual checking small. The user has said (9 October 2026) that long in-game test sheets are
+too much to ask. The code and the data are checked offline (the real addon files under stand-in APIs,
+counts recomputed a second way, the repo's test tools), so ask for in-game testing only for what the
+game alone can answer, such as what an API call returns or how retail and Forever differ, as a few
+lines per game and a few minutes in all, and say what was verified offline instead of asking for it
+again.
+
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
@@ -41,23 +48,37 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 - **The calendar window's filters, on both games (#243, merged 9 October 2026, not released).** The
   seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
   source that the game then leaves its events out of the calendar. Nobody has seen that in game.
-  The lines to paste on the Forever beta and on retail, and what each result means, are in
-  [maintenance.md](../maintenance.md), "Holidays". When they have been run:
-  - The results settle four things: whether `GetNumDayEvents` and `GetDayEvent` drop an unticked
-    filter's events (also before the calendar window has been opened in a session), whether each ID
-    in `qcHolidays` sits under the filter the table gives it (Forever's plain holidays are
-    `CalendarFilterType` 3, which is read from names, not from a Blizzard enum), whether
-    `GetCVarBool` returns real booleans for these CVars, and whether ticking a box fires
-    `CALENDAR_UPDATE_EVENT_LIST` or `CVAR_UPDATE`.
-  - Then change the "not yet seen in game" wording in maintenance.md ("Holidays", including the
-    paragraph that says what the filters do in game is still to be seen) and in the C_Calendar
-    section of [game-api-review.md](game-api-review.md), and take this item off the list.
-  - If the game does not drop the events, the handling is harmless but unneeded; decide whether to
-    keep it. If an ID is under another filter, fix its `filter=` in `qcHolidays`. If ticking a box
-    reaches the addon through `CVAR_UPDATE` and not the calendar event, a listener would redraw the
-    open map at once (today the map notices at its next draw); that was left out on purpose.
-  - The change is untested in game, so by the call above it stays out of the next release unless
-    the user says to ship it.
+  The whole check is seven lines per game, entered one at a time (a pasted block is joined into one
+  chat line), in a city with the calendar window shut:
+
+  ```text
+  /qc holidays
+  /run function QCL(c) local t,s={},"" for d=1,c.GetMonthInfo(0).numDays do for i=1,c.GetNumDayEvents(0,d) do local e=c.GetDayEvent(0,d,i) local k=e.calendarType:sub(1,6)..(e.eventID or 0) if not t[k] then t[k]=1 s=s..k.." " end end end print(s) end
+  /run QCL(C_Calendar)
+  /run print(SetCVar("calendarShowHolidays","0"),GetCVar("calendarShowHolidays"))
+  /run QCL(C_Calendar)
+  /qc holidays
+  /run print(SetCVar("calendarShowHolidays","1"),GetCVar("calendarShowHolidays"))
+  ```
+
+  Paste back the first `/qc holidays` (it also lists the other calendar holidays), the two lists, the
+  two read-backs (`nil 0` and `nil 1`, or `true` for `nil`) and the filter line of the second
+  `/qc holidays`.
+  - `HOLIDA324`, and `HOLIDA1405` on retail, are in the first list and missing from the second: the
+    game drops an unticked filter's events, and the handling is needed. In both lists: the game keeps
+    them, the handling is harmless but unneeded, and the user decides whether to keep it. Anything
+    else (another ID gone, an error, a read-back that did not change): the table `qcHolidays` or the
+    CVars need another look.
+  - It leaves unseen, on purpose: that Darkmoon and the fishing contest sit under their filters (the
+    table is the client's own `CalendarFilterType`, and the handling fails open, so an unticked
+    filter shows the quests), whether ticking a box fires `CVAR_UPDATE` (the map notices at its next
+    draw; a listener was left out), and the map with a filter unticked (tested offline). The longer
+    experiment is in [maintenance.md](../maintenance.md), "Holidays", for a puzzling result only.
+  - The user decided on 9 October 2026 to go with #243 without this check, and to deal with any
+    problem when it shows, so it is in the next release. The seven lines stay for whoever wants to
+    run them. When they have been run, change the "not yet seen in game" wording in maintenance.md
+    ("Holidays") and in the C_Calendar section of [game-api-review.md](game-api-review.md), and take
+    this item off the list.
 
 ## Decisions waiting for the user
 
@@ -70,6 +91,12 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 | 5 | The Landfall dailies (31 without a pin, 29 with one already) and the Silithus sigil quests (10), which look retired | flag them in `unavailable-quest-decisions.csv` after a look at the evidence | unavailable-quests.md |
 | 6 | The remaining decisions 1 to 7 of the API review (recorder on retail, probe additions, scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
+| 8 | Refresh retail's levels from the API: 1,611 quests differ from it (large blocks in Zaralek Cavern, Mechagon Island and the Emerald Dream, where the API gives a much lower minimum than we store), 4,955 have no API record, 246 are 0 | yes, from the API, after a look at those zones; a campaign or Chromie Time may gate some | client-tables-review.md (the note on `level`); maintenance.md, the data files |
+| 9 | Scaling quests: the list bracket and the low-level filter read a scaling range's floor, so they judge a quest low level too early | probe first: what `IsQuestTrivial` and `GetQuestDifficultyLevel` return in game on both clients, then decide | game-api-review.md, recommendation 4 |
+| 10 | Holiday flags for the retail events `qcHolidays` has none for: the four Dragonriding cups (16 quests, 12 with pins, so those pins show all year), Secrets of Azeroth, WoW Anniversary, Dastardly Duos, the weekly bonus events, and the 54 Ahn'Qiraj War Effort and Scourge Invasion quests | a flag per event, tied to the calendar ID that `/qc holidays` lists under "Other calendar holidays" while it runs; one flag per cup or one shared is the user's call | `quest-holiday-decisions.csv`, the PENDING rows |
+| 11 | Two quests of the holiday record: 56322 "Contained Alemental" (Wowhead lists Event: Brewfest) and the 12 "Bar Tab Barrel" quests, tagged Brewfest but still filed under the Dragon Isles zones, unlike the ten already under Brewfest | tag 56322; refile the Barrels | `quest-holiday-decisions.csv` |
+| 12 | Forever's 29 untagged seasonal quests (none has a pin: 12 Children's Week and 6 Winter Veil by a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by an importer rule), and its calendar gaps: no dates for Children's Week or the Darkmoon Faire on the beta, and a nameless Winter Veil-like Holidays row, 1879, that the date decode puts from 15 November (not confirmed in game) | tag them in the importer; run `/qc holidays` on the beta before 15 November and add 1879 to Winter Veil's IDs if it reports it | forever.md; maintenance.md, "Holidays" |
+| 13 | A level of 0 or below reads as a level: 246 retail and 12 Forever quests show "[0]" in the list and count as low level for everyone | treat it as no level in the two readers | `qcCore.lua`, the list row and the low-level filter |
 
 ## Data to finish
 
