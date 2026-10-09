@@ -38,6 +38,10 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
+- **The calendar window's filters, on both games.** The seasonal filter treats a holiday whose
+  filter is unticked as running, on the reading of Blizzard's source that the game then leaves its
+  events out of the calendar. Nobody has seen that in game: the lines to try, and what each result
+  means, are in [maintenance.md](../maintenance.md), "Holidays".
 
 ## Decisions waiting for the user
 

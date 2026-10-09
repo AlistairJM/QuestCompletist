@@ -157,8 +157,9 @@ then every tool refuses to save.
    plan docs, before the sweep goes on. A new table or column that could serve the addon is a
    finding to plan, not just to note. It also compares `qcHolidays` (see [Holidays](#holidays))
    with both games' calendar tables: an ID the client has under one of our holidays' names that
-   `qcHolidays` lacks exits with 1 too, and goes into `qcHolidays` before the sweep goes on.
-   Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
+   `qcHolidays` lacks exits with 1 too, and goes into `qcHolidays` before the sweep goes on, as
+   does a holiday whose calendar-window filter differs from the one the client's
+   `CalendarFilterType` puts it under. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
@@ -941,10 +942,39 @@ so reading the calendar and `/qc holidays` ignore it while they run. `/qc holida
 there's no answer: the month has no events, or the read raised an error. A map drawn while
 Blizzard's window is open on another month can't read either, and keeps the last answer.
 
+Blizzard's calendar window has a Filters menu, and its checkboxes are CVars: `calendarShowHolidays`,
+`calendarShowDarkmoon`, `calendarShowWeeklyHolidays`, `calendarShowBattlegrounds`,
+`calendarShowLockouts` and, on WoW: Forever, `calendarShowResets`. The window's own Lua filters
+nothing (in `Blizzard_Calendar` on the `live` and `forever` branches a checkbox only calls `SetCVar`
+and redraws from `C_Calendar.GetNumDayEvents` and `GetDayEvent`, and nothing else reads the CVars),
+so the game itself must leave the events of an unticked filter out of those lists. That is read from
+the source, and nobody has seen it in game. If it holds, a player who unticks Holidays leaves the
+addon a month without holiday events: with raid lockouts or weekly events on, the month counts as
+"ready, nothing running", and the seasonal filter hides the quests of a holiday that is running,
+which is worse than showing them. So each update also reads the CVars with `GetCVarBool` and counts
+every holiday whose filter is unticked as running, which shows its quests. Only an explicit `false`
+counts; a CVar the game doesn't have returns nil and is taken as ticked, since nothing is left out
+for it. The holidays with no IDs, which are never on the calendar, stay hidden whatever the filters. The other holidays are still judged by the calendar, and the addon never changes a setting.
+An answer read while a filter was unticked keeps those holidays as running until a read made with it
+ticked replaces it. The map notices a change at its next draw, or when the calendar fires its event.
+
+Each entry in `qcHolidays` names the filter that holds its events: Holidays unless it has `filter=`.
+The Darkmoon Faire is under Darkmoon Faire and the Stranglethorn Fishing Extravaganza under Weekly
+Holidays. That comes from the `CalendarFilterType` column of the client's Holidays table: 0 is a
+weekly holiday, 1 the Darkmoon Faire, 2 a battleground, and anything else (255 in retail, 3 on
+Forever) a plain holiday. The names fit in both games: retail's 0 rows are bonus events, dungeon
+events and the fishing derby, its 2 rows Calls to Arms and brawls, and Forever's 0 row the fishing
+contest. Step 2b compares each entry with the column, so a holiday that Blizzard moves to another
+filter, or one under the battlegrounds filter (which needs an entry in `qcCalendarFilters`), is a
+finding. `/qc holidays` names an unticked filter in the game's own words and lists the holidays
+under it, which it can't look up on the calendar.
+
 To check it in game, log in fresh and open the map in a zone with seasonal pins out of season: they
 should vanish within a moment without the calendar window being opened. `Test-SeasonalCalendar.lua`
-checks the same offline, against a calendar that stays empty until it's asked, and fails if the addon
-stops asking or stops redrawing. Run it for both games' TOCs after any change to the calendar code:
+checks the same offline, against a calendar that stays empty until it's asked and leaves out the
+events of an unticked filter, and fails if the addon stops asking, stops redrawing, or reads an
+unticked filter as a month with no holiday. Run it for both games' TOCs after any change to the
+calendar code:
 
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua
@@ -953,6 +983,47 @@ stops asking or stops redrawing. Run it for both games' TOCs after any change to
 
 WoW: Forever's calendar uses Classic's Holidays IDs where they differ from retail's, such as 263 and
 264 for the Darkmoon Faire, so an entry in `qcHolidays` can list both games' IDs.
+
+What the filters do in game is still to be seen, once in each game. Log in fresh and leave
+Blizzard's calendar window shut, then run these (each fits the chat box), waiting a couple of seconds
+after the first, and again after opening the window once:
+
+```text
+/run C_Calendar.OpenCalendar()
+/run local n=C_DateAndTime.GetCurrentCalendarTime() C_Calendar.SetAbsMonth(n.month,n.year)
+/run local c,t,s=C_Calendar,{},"" for d=1,c.GetMonthInfo(0).numDays do for i=1,c.GetNumDayEvents(0,d) do local e=c.GetDayEvent(0,d,i) local k=e.calendarType:sub(1,6)..(e.eventID or 0) if not t[k] then t[k]=1 s=s..k.." " end end end print(s)
+/run for _,c in ipairs({"Holidays","Darkmoon","WeeklyHolidays","Battlegrounds","Lockouts","Resets"}) do c="calendarShow"..c print(c,GetCVar(c),GetCVarBool(c)) end
+```
+
+The third line lists every event of the current month once, as its type and ID (`HOLIDA324` is
+Hallow's End). The fourth gives each CVar as the string and as the boolean; retail has no
+`calendarShowResets`, so it prints nil there. Then untick one filter, run the third line again, and tick
+it back:
+
+```text
+/run SetCVar("calendarShowHolidays",false)
+/run SetCVar("calendarShowHolidays",true)
+/run SetCVar("calendarShowDarkmoon",false)
+/run SetCVar("calendarShowDarkmoon",true)
+/run SetCVar("calendarShowWeeklyHolidays",false)
+/run SetCVar("calendarShowWeeklyHolidays",true)
+```
+
+If the game leaves out an unticked filter's events, the list loses the ordinary holidays (324, and
+1405 on retail) with Holidays, the Darkmoon Faire (479 on retail, 263 and 264 on Forever) with
+Darkmoon, and the fishing contest (301, Sundays, Forever) with Weekly Holidays, and nothing else
+changes; that is what the addon is built on. If the list never changes, the game leaves the events in
+and the addon's handling is harmless and unneeded. Any other result means `qcHolidays` has the wrong
+filter for an ID, or the game filters some other way, and the addon wants another look. To see
+whether a click on the checkbox tells the addon, register the events before unticking:
+
+```text
+/run QCE=CreateFrame("Frame") QCE:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST") QCE:RegisterEvent("CVAR_UPDATE") QCE:SetScript("OnEvent",function(_,e,a,b) print(e,a,b) end)
+```
+
+With the addon, unticking Holidays and typing `/qc holidays` should list the ordinary holidays as
+shown because the filter is unticked, and a map open on a zone with out-of-season seasonal pins should
+show them.
 
 ## In the game
 
