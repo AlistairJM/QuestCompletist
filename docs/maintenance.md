@@ -608,7 +608,7 @@ out of the CSV and its pin stays, so a rerun's CSV is shorter by these quests an
 existing pin at all" count is the number of new quests to review (1,453 in October 2026). To take a
 pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
-Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 4b). Its offers
+Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 3b). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
 quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
 run were within 10 yards of point 32; the pins are now within 1.5 points of 253 of them and more than
@@ -890,7 +890,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    notes in the ledger), and copy the addon's file for Forever as well (see "In the game").
 2. **The probe**, when Forever has a new build, the beta opens higher levels, or the probe's quest
    list has grown: see [In the game](#in-the-game). Otherwise the last run's results stand. Every
-   probe run includes the map pass (step 4b there), and the reader's totals are compared with the
+   probe run includes the map pass (step 3b there), and the reader's totals are compared with the
    last run's in [game-api-review.md](plans/game-api-review.md), "Map-offers probe": on build
    70245, no quest offers, 16 points of interest, no events, no dungeon entrances and no level
    ranges. A rise in any of them is a finding to plan, as a new client table is (step 2b under
@@ -1236,33 +1236,29 @@ results are enough.
 
 `Retype-ProbeRecurring.ps1` reads that copy.
 
-**Forever probe (`/qcprobe`).** A small addon of its own for the Forever client. It asks the server
+**Forever probe (`/qcprobe`).** A small addon of its own, for the maintainer only: it is not part of
+Quest Completist, and the ZIP, which holds `QuestCompletist\` alone, never has it. It asks the server
 about every quest in the client's `QuestV2` and every CMaNGOS quest `QuestV2` lacks, as it leaves out
 repeatable quests. It names the quest givers, and records quest givers while you play. Its map pass
 asks every map for the quest offers, points of interest, events, quest hubs and dungeon entrances
 the game lists ([game-api-review.md](plans/game-api-review.md), recommendation 3).
-It's pull request #139, which stays open and isn't for merging; its files are in
-`tools\ForeverProbe\` on the branch `tools/forever-probe`. Step 10 reads what it gathers.
+It began as pull request #139, which stays open as the record; its files are in
+`tools\ForeverProbe\`. Step 10 reads what it gathers. After a change to it, run `tools\Test-Probe.lua`
+(it plays a run against stand-ins for the game and must say "0 failed").
 
-1. The first time, check the branch out into a folder of its own beside the repository, so the main
-   checkout, which both games load the addon from, stays where it is:
+1. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`, and the CMaNGOS
+   quests it lacks) and of NPCs. They are generated, so they are not in git:
    ```powershell
-   git fetch origin tools/forever-probe
-   git worktree add ..\QuestCompletist-probe origin/tools/forever-probe
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Build <build> -ToolsDir tools
    ```
-2. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`, and the CMaNGOS
-   quests it lacks) and of NPCs:
-   ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File ..\QuestCompletist-probe\tools\ForeverProbe\Build-ProbeLists.ps1 -Build <build> -ToolsDir tools
-   ```
-3. Copy `..\QuestCompletist-probe\tools\ForeverProbe\QCForeverProbe` into
+2. Copy `tools\ForeverProbe\QCForeverProbe` from the checkout into
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\`, replacing any copy
    there, and restart the game fully.
-4. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
+3. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
    time; the first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered.
-4b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
+3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
    second. One run is enough. The results note the experience preset chosen once at Forever's login
    screen, Classic or Enhanced (Blizzard's code calls the second Modern): a starting-settings
@@ -1277,7 +1273,7 @@ It's pull request #139, which stays open and isn't for merging; its files are in
    (7 October 2026). Read it with `tools\Report-MapOffers.lua <saved variables> QuestCompletist` and
    compare the totals with the baseline in game-api-review.md, "Map-offers probe: retail run"; the
    offers and log quests depend on the character, so use a similar one.
-5. Log out fully, so the game writes the results and its caches. Then copy these from
+4. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
    - `Cache\WDB\enUS\questcache.wdb` and `creaturecache.wdb`;
@@ -1344,6 +1340,9 @@ git diff --stat
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
+- For changes to the probe (`tools\ForeverProbe\QCForeverProbe`), run `Test-Probe.lua`. It must say "0 failed".
+  It plays the quest, NPC and map passes and the recorder against stand-ins for the API, on a clock of its
+  own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).
 - For changes to the recorder (`qcRecorder.lua`) or what it reads, run `Test-Recorder.lua`. It must
   say "0 failed". It plays the events against stand-ins for the API, so it can't say what the game
   answers: that is the in-game list in [quest-giver-recorder.md](plans/quest-giver-recorder.md).
