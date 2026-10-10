@@ -1098,6 +1098,25 @@ do
 		find(now, 12, 1).rect[1] = 0.5001
 		equal(#compare(now, parsed), 0, "B2: a move under a twentieth of a map point is not a difference")
 	end
+	do
+		local function hitArea(cells, cx, cy)
+			local baseline, now = copy(), copy()
+			for _, rows in ipairs({baseline, now}) do
+				local r = find(rows, 12, 1)
+				r.cells, r.cx, r.cy = 100, 50, 50
+			end
+			local r = find(now, 12, 1)
+			r.cells, r.cx, r.cy = cells, cx, cy
+			return compare(now, baseline)
+		end
+		equal(#hitArea(100, 50.4, 50.4), 0, "B2: a hit area's centre moving under a point is not a difference")
+		equal(#hitArea(110, 50, 50), 0, "B2: nor is a tenth more cells")
+		local lines = hitArea(100, 52.5, 50)
+		equal(#lines, 1, "B2: a hit area's centre moving over a point is one difference")
+		contains(lines[1] or "", "hit area 100 cells at 50.0, 50.0 -> 100 cells at 52.5, 50.0", "B2: and shows both centres")
+		equal(#hitArea(70, 50, 50), 1, "B2: nearly a third of the cells gone is one")
+		equal(#hitArea(0, nil, nil), 1, "B2: a hit area that is gone is one")
+	end
 	one(function(rows) find(rows, 12, 1).mapType = 4 end, "mapType 3 -> 4", "B2: a map whose type changed")
 	one(function(rows) find(rows, 12, 1527).navBar = true end, "navBar false -> true", "B2: the nav bar listing")
 	one(function(rows) find(rows, 12, 1527).flags = 0 end, "flags 524288 -> 0", "B2: its flags")

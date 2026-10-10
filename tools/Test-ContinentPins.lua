@@ -299,6 +299,23 @@ if BY_AREA[895] then
 	check("with no rectangle of its own the game gives it no icon, whatever the table says", drawn == nil)
 	S.rects[895] = nil
 end
+-- Darkshore and Felwood, on the game that has each: left of the centre of the rectangle the game gives them, by eye.
+for _, row in ipairs({
+	{62, "Darkshore", {0.3818, 0.5575, 0.1666, 0.3423}, 0.458, 0.254}, {77, "Felwood", {0.4149, 0.5797, 0.2067, 0.3715}, 0.485, 0.289},
+	{1439, "Darkshore", {0.3838, 0.5618, 0.1821, 0.3601}, 0.463, 0.271}, {1448, "Felwood", {0.4192, 0.5754, 0.231, 0.3872}, 0.485, 0.309},
+}) do
+	local mapId, name, rect, x, y = row[1], row[2], row[3], row[4], row[5]
+	if BY_AREA[mapId] then
+		S.children[CONT + 9] = {zone(mapId, name)}
+		S.rects[mapId] = rect
+		local placed = code.Zones(CONT + 9)[1]
+		local centreX = (rect[1] + rect[2]) / 2
+		check(string.format("%s's icon (%d) sits at %.3f, %.3f, left of its rectangle's centre", name, mapId, x, y),
+			placed and math.abs(placed.x - x) < 1e-9 and math.abs(placed.y - y) < 1e-9 and placed.x < centreX and centreX - placed.x < 0.03,
+			placed and (placed.x .. ", " .. placed.y))
+		S.rects[mapId] = nil
+	end
+end
 
 S.children[CONT + 2] = {zone(CITY, "City")}
 S.rects[CITY] = {0.33, 0.37, 0.53, 0.57}

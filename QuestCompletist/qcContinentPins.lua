@@ -27,11 +27,14 @@ local QC_CITY_HOST = {
 	[1453] = 1429, [1455] = 1426, [1458] = 1420, [1456] = 1412, [1457] = 1438,
 }
 
--- Zones whose icon goes where the game's hit test names the zone rather than at the centre of its rectangle,
--- which lies off the zone: Tiragarde Sound's takes in the sea and Drustvar's edge (the rectangle's centre is
--- 0.476, 0.645). Read from the probe's grid: the "centre of a zone is over 3 map points from its rectangle's" line.
+-- Zones whose icon sits somewhere of its own rather than at the centre of its rectangle, because that centre
+-- looked wrong on the map. Tiragarde Sound's is the centre of the cells the game's hit test names it on (the
+-- CentroidX and CentroidY of its row in docs/plans/continent-geometry-baseline.csv, over 100); its rectangle
+-- takes in sea off Drustvar's edge, 0.476, 0.645. Darkshore's and Felwood's on both games are nudged left by eye.
 local QC_ZONE_ICON_AT = {
 	[895] = {0.574, 0.631},
+	[62] = {0.458, 0.254}, [77] = {0.485, 0.289},
+	[1439] = {0.463, 0.271}, [1448] = {0.485, 0.309},
 }
 
 local function qcRectCentre(zoneId, continentId)
