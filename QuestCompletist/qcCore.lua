@@ -1057,6 +1057,24 @@ function qcGetZoneCompletionStats(areaId)
 	return completed, total
 end
 
+-- The quests of some categories that count towards a zone's icon on a continent map: those the filter keeps
+-- (built with qcBuildViewFilter, and asked with forCount, as the list's zone counter does) that aren't
+-- daily, weekly, world or repeatable, whatever the filter says about those.
+function qcGetZoneQuests(categoryIds, keepQuest)
+	if not qcCategoryIndex then
+		qcBuildQuestIndexes()
+	end
+	local quests = {}
+	for _, categoryId in ipairs(categoryIds) do
+		for _, questId in ipairs(qcCategoryIndex[categoryId] or {}) do
+			if not qcIsRecurringQuest(questId) and keepQuest(questId, true) then
+				quests[#quests + 1] = questId
+			end
+		end
+	end
+	return quests
+end
+
 function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 	if not (qcQuestCompletistUI:IsVisible()) then return nil end
 	local stringFormat = string.format
@@ -2339,6 +2357,7 @@ QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIs
 QC.qcIsUnavailable, QC.qcMaskAllows, QC.qcPrereq = qcIsUnavailable, qcMaskAllows, qcPrereq
 QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides, qcFactionLevel
 QC.qcSkillRank, QC.qcSkillName = qcSkillRank, qcSkillName
+QC.qcZoneQuests = qcGetZoneQuests
 QC.CHAT_TITLE = QCADDON_CHAT_TITLE
 QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting

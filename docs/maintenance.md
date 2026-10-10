@@ -1502,6 +1502,11 @@ git diff --stat
   games' TOCs. It must say "All checks passed." It plays a pin's tooltip (opened, filled, redrawn by names
   and by Shift, closed) against stand-ins that write down every call; give it a file as a third argument
   and run it on the code before and after a change to compare the two records line by line.
+- For changes to the zone icons' counting (`qcContinentPins.lua`, `qcGetZoneQuests` in `qcCore.lua`), run
+  `Test-ContinentPins.lua` for both games' TOCs. It must say "All checks passed." It builds a made-up
+  continent from the game's own zones, counts a character step by step, checks every category against the
+  quest list's zone counter, and, with the client's UiMap table in `tools\`, gives every continent its
+  zones and times a pass.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 - **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or
