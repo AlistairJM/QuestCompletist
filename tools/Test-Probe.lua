@@ -48,13 +48,14 @@ local SECRET = newproxy()
 -- A world: the API stand-ins, what the game and the server answer (w.S), and the probe loaded into them.
 local function newWorld(options)
 	options = options or {}
-	local w = {printed = {}, tickers = {}, requests = {}, calls = {}, handlers = {}}
+	local w = {printed = {}, tickers = {}, requests = {}, calls = {}, handlers = {}, rangeCalls = {}}
 	local S = {
 		ms = 100000, locale = "enUS", map = 84, pos = {0.45349, 0.67812},
 		quests = {}, cached = {}, loaded = {}, answer = {}, sequence = {}, npcs = {}, npcCalls = 0,
 		guid = {}, names = {}, available = {}, active = {}, greetingAvailable = {}, greetingActive = {},
 		questId = 0, logIndex = {}, log = {}, maps = {}, lines = {}, mapAnswers = {}, level = 12,
 		faction = "Alliance", race = "NightElf", class = "ROGUE",
+		UnitQuestTrivialLevelRange = 5, UnitQuestTrivialLevelRangeScaling = 8,
 	}
 	w.S = S
 	local env = setmetatable({}, {__index = _G})
@@ -243,6 +244,19 @@ local function newWorld(options)
 		put(env.C_QuestLog, "IsAccountQuest", "accountQuest")
 		put(env.C_QuestLog, "IsImportantQuest", "important")
 		put(env.C_QuestLog, "IsMetaQuest", "meta")
+		put(env.C_QuestLog, "IsQuestTrivial", "trivial")
+		if not missing.contentDifficulty then env.C_PlayerInfo = {GetContentDifficultyQuestForPlayer = answer("contentDifficulty")} end
+		for _, name in ipairs({"UnitQuestTrivialLevelRange", "UnitQuestTrivialLevelRangeScaling"}) do
+			if not missing[name] then
+				env[name] = function(unit)
+					w.rangeCalls[name] = (w.rangeCalls[name] or 0) + 1
+					w.rangeUnit = unit
+					if w.rangeError == name then error(name .. " failed") end
+					if w.rangeHidden == name then return SECRET end
+					return S[name]
+				end
+			end
+		end
 		env.C_QuestLine = env.C_QuestLine or {}
 		if not missing.questLineID then
 			env.C_QuestLine.GetQuestLineInfo = function(questId) local id = fact(questId, "questLineID"); return id and {questLineID = id, questLineName = "A line"} or nil end
@@ -684,6 +698,122 @@ do
 	w4.run(60)
 	equal(w4.db().quests[1000].important, nil, "F5: a fact the game hides is left out")
 	equal(w4.db().quests[1000].meta, true, "F5: and the rest are kept")
+end
+
+-- The scaling-aware level facts (docs/plans/game-api-review.md, recommendation 4)
+do
+	local w = newWorld({questIds = quests(6)})
+	local S = w.S
+	S.level, S.UnitQuestTrivialLevelRange, S.UnitQuestTrivialLevelRangeScaling = 40, 7, 12
+	S.quests[1000] = {title = "Grey", level = 12, trivial = true, contentDifficulty = 0}
+	S.quests[1001] = {title = "Fair", level = 38, trivial = false, contentDifficulty = 2}
+	S.quests[1002] = {title = "Refused", trivial = true, contentDifficulty = 4}
+	S.quests[1003] = {title = "Never", trivial = true, contentDifficulty = 1}
+	S.quests[1004] = {title = "Cached", level = 41, trivial = false, contentDifficulty = 3}
+	S.quests[1005] = {title = "Odd", trivial = {true}, contentDifficulty = "hard"}
+	S.answer[1002] = "fail"
+	S.answer[1003] = "never"
+	S.cached[1004] = true
+	w.boot()
+	w.slash("quests")
+	w.run(300)
+	local db = w.db()
+	equal(db.quests[1000].trivial, true, "L1: IsQuestTrivial, true kept")
+	equal(db.quests[1000].contentDifficulty, 0, "L1: the content difficulty, Trivial (0) kept")
+	equal(db.quests[1001].trivial, false, "L1: IsQuestTrivial, false kept")
+	equal(db.quests[1001].contentDifficulty, 2, "L1: the content difficulty as a number")
+	equal(db.quests[1001].level, 38, "L1: beside the level the game gives for this character")
+	equal(db.quests[1004].result, "cached", "L1: a cached quest")
+	equal(db.quests[1004].trivial, false, "L1: has them too")
+	equal(db.quests[1004].contentDifficulty, 3, "L1: and the difficulty")
+	equal(db.quests[1002].trivial, nil, "L1: a refused quest keeps neither")
+	equal(db.quests[1002].contentDifficulty, nil, "L1: nor the difficulty")
+	equal(db.quests[1003].trivial, nil, "L1: nor a timed-out one")
+	equal(db.quests[1005].trivial, nil, "L1: an answer that is a table is not kept")
+	equal(db.quests[1005].contentDifficulty, "hard", "L1: a string is, as for the other facts")
+	local row = db.runs[#db.runs]
+	equal(row.facts.trivial, "C_QuestLog.IsQuestTrivial", "L2: the run row says which function answered IsQuestTrivial")
+	equal(row.facts.contentDifficulty, "C_PlayerInfo.GetContentDifficultyQuestForPlayer", "L2: and which gave the difficulty")
+	equal(row.trivialRange.UnitQuestTrivialLevelRange, 7, "L2: the row keeps the character's trivial range")
+	equal(row.trivialRange.UnitQuestTrivialLevelRangeScaling, 12, "L2: and the scaling one")
+	equal(row.level, 40, "L2: beside the level it was taken at")
+	equal(w.rangeUnit, "player", "L2: both are asked about the player")
+	equal(w.rangeCalls.UnitQuestTrivialLevelRange, 1, "L2: the range is read once per run, not per quest")
+	equal(w.rangeCalls.UnitQuestTrivialLevelRangeScaling, 1, "L2: and so is the scaling one")
+	local t = row.refusedFacts
+	equal(t.trivial.asked, 1, "L3: IsQuestTrivial is asked about the refused quest")
+	equal(t.trivial.positive, 1, "L3: where true counts")
+	equal(t.trivial.examples[1], 1002, "L3: and names it")
+	equal(t.contentDifficulty.asked, 1, "L3: so is the difficulty")
+	equal(t.contentDifficulty.positive, 1, "L3: where a number above 0 counts")
+	roundTrips(db, "L4")
+
+	local w2 = newWorld({questIds = quests(3), missing = {trivial = true, contentDifficulty = true, UnitQuestTrivialLevelRangeScaling = true}})
+	w2.S.quests[1000] = {title = "A", level = 5, trivial = true, contentDifficulty = 0, important = true}
+	w2.S.quests[1001] = {title = "B", level = 6, trivial = false, contentDifficulty = 1, meta = true}
+	w2.S.quests[1002] = {title = "C", important = true}
+	w2.S.answer[1002] = "fail"
+	w2.boot()
+	w2.slash("quests")
+	w2.run(120)
+	local db2 = w2.db()
+	local row2 = db2.runs[#db2.runs]
+	equal(row2.facts.trivial, false, "L5: a client without IsQuestTrivial says false in the run row")
+	equal(row2.facts.contentDifficulty, false, "L5: and without the difficulty call")
+	equal(row2.trivialRange.UnitQuestTrivialLevelRangeScaling, false, "L5: and without the scaling range")
+	equal(row2.trivialRange.UnitQuestTrivialLevelRange, 5, "L5: while the plain range is kept")
+	equal(db2.quests[1000].trivial, nil, "L5: so the rows have no answer")
+	equal(db2.quests[1000].contentDifficulty, nil, "L5: for either")
+	equal(db2.quests[1000].important, true, "L5: the other facts are kept")
+	equal(db2.quests[1001].level, 6, "L5: and the level")
+	equal(db2.quests[1001].result, "ok", "L5: and the quests still answer")
+	check(w2.said("Finished the quest pass: 3 of 3"), "L5: and the pass ends without a word of error")
+	equal(row2.refusedFacts.important.asked, 1, "L5: a refused quest is still tallied for the functions the client has")
+	equal(row2.refusedFacts.trivial, nil, "L5: but not for one it lacks")
+	equal(row2.refusedFacts.contentDifficulty, nil, "L5: either of them")
+
+	local w3 = newWorld({questIds = quests(2)})
+	w3.S.quests[1000] = {title = "A", trivial = true, contentDifficulty = 0, meta = true}
+	w3.S.quests[1001] = {title = "B", trivial = false, contentDifficulty = 2, meta = true}
+	w3.factError = "trivial"
+	w3.rangeError = "UnitQuestTrivialLevelRangeScaling"
+	w3.boot()
+	w3.slash("quests")
+	w3.run(120)
+	local row3 = w3.db().runs[#w3.db().runs]
+	equal(w3.db().quests[1000].trivial, nil, "L6: IsQuestTrivial that errors is left out")
+	equal(w3.db().quests[1000].contentDifficulty, 0, "L6: and the difficulty is still asked")
+	equal(w3.db().quests[1000].meta, true, "L6: with the other facts")
+	equal(row3.facts.trivial, "C_QuestLog.IsQuestTrivial", "L6: the row still says the function is there")
+	equal(row3.trivialRange.UnitQuestTrivialLevelRangeScaling, nil, "L6: a range call that errors is left out")
+	equal(row3.trivialRange.UnitQuestTrivialLevelRange, 5, "L6: and the other range is kept")
+	check(w3.said("Finished the quest pass: 2 of 2"), "L6: and the pass finishes")
+
+	local w4 = newWorld({questIds = quests(1)})
+	w4.S.quests[1000] = {title = "A", trivial = true, contentDifficulty = 3}
+	w4.factHidden = "contentDifficulty"
+	w4.rangeHidden = "UnitQuestTrivialLevelRange"
+	w4.S.UnitQuestTrivialLevelRangeScaling = "wide"
+	w4.boot()
+	w4.slash("quests")
+	w4.run(60)
+	local row4 = w4.db().runs[#w4.db().runs]
+	equal(w4.db().quests[1000].contentDifficulty, nil, "L7: a difficulty the game hides is left out")
+	equal(w4.db().quests[1000].trivial, true, "L7: and IsQuestTrivial is kept")
+	equal(row4.trivialRange.UnitQuestTrivialLevelRange, nil, "L7: a range the game hides is left out")
+	equal(row4.trivialRange.UnitQuestTrivialLevelRangeScaling, nil, "L7: and so is one that is not a number")
+
+	local w5 = newWorld({questIds = quests(2), missing = {UnitQuestTrivialLevelRange = true, UnitQuestTrivialLevelRangeScaling = true, trivial = true, contentDifficulty = true}})
+	w5.S.quests[1000] = {title = "A"}
+	w5.S.quests[1001] = {title = "B"}
+	w5.boot()
+	w5.slash("quests")
+	w5.run(60)
+	local row5 = w5.db().runs[#w5.db().runs]
+	equal(row5.trivialRange.UnitQuestTrivialLevelRange, false, "L8: a client with neither range says false for both")
+	equal(row5.trivialRange.UnitQuestTrivialLevelRangeScaling, false, "L8: the scaling range too")
+	equal(w5.db().quests[1001].result, "ok", "L8: and the pass runs")
+	roundTrips(w5.db(), "L8")
 end
 
 -- Refused quests: no facts are kept, but each function is tallied on them

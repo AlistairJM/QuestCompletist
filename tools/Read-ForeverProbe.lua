@@ -9,6 +9,10 @@
 --   accepted questId  heading  map  x  y
 --   started  questId  item  map  x  y
 --   run          n  kind  build  time  character  level  answered  asked          (only with "facts")
+--   runfact      n  fact  function                                                  (only with "facts": which function answered each fact in
+--                                                                                  the n-th run, or false when the client has none)
+--   trivialrange n  function  range                                                 (only with "facts": the n-th quest run's character's
+--                                                                                  trivial level ranges, or false when the client lacks the call)
 --   refusedfact  n  function  asked  answered  positive  examples                 (only with "facts": the n-th run's
 --                                                                                  tally of what a function says for refused quests)
 dofile(arg[1])
@@ -61,6 +65,8 @@ end
 if arg[2] == "facts" then
 	for i, run in ipairs(db.runs or {}) do
 		line("run", i, run.kind, run.build, run.time, run.character, run.level, run.answered, run.asked)
+		for _, key in ipairs(keys(run.facts)) do line("runfact", i, key, run.facts[key]) end
+		for _, key in ipairs(keys(run.trivialRange)) do line("trivialrange", i, key, run.trivialRange[key]) end
 		for _, key in ipairs(keys(run.refusedFacts)) do
 			local tally = run.refusedFacts[key]
 			line("refusedfact", i, key, tally.asked, tally.answered, tally.positive, table.concat(tally.examples or {}, ","))

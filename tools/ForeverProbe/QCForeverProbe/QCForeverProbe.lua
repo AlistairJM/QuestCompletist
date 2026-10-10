@@ -38,9 +38,13 @@ QCForeverProbeDB holds:
                 tagElite, elite, repeatable, questType, groupSize, classification, and the
                 facts of docs/plans/game-api-review.md, recommendation 2: isTask, isWorld, taskZone
                 (task quests), accountQuest, factionGroup, important, meta, questLineID, campaignID,
-                expansion, breadcrumb, story. Only a quest that loaded has facts, and a fact the client
+                expansion, breadcrumb, story, and for this character's level (recommendation 4)
+                trivial (IsQuestTrivial) and contentDifficulty (0 Trivial, 1 Easy, 2 Fair, 3 Difficult,
+                4 Impossible). Only a quest that loaded has facts, and a fact the client
                 does not answer is left out. The quest run's row (runs) has facts: for each, the
-                function that answered, or false when this client has none, and refusedFacts: for
+                function that answered, or false when this client has none, trivialRange: what
+                UnitQuestTrivialLevelRange and UnitQuestTrivialLevelRangeScaling gave for the
+                character (false for one the client lacks), and refusedFacts: for
                 each function, how many refused quests it was asked about (asked), how many it
                 answered anything for (answered), how many with true, a number above 0 or a
                 string (positive), and the first five of those (examples).
@@ -205,7 +209,9 @@ end
 
 -- What else is asked of a loaded quest (docs/plans/game-api-review.md, recommendation 2): each fact
 -- comes from the first of its functions this client has, and which that was goes in the run's row,
--- so a function the client lacks is told apart from one that answers nothing.
+-- so a function the client lacks is told apart from one that answers nothing. trivial and
+-- contentDifficulty (0 Trivial to 4 Impossible; recommendation 4) are answers for this character at this
+-- level, so the run's row also keeps the character's two trivial ranges (trivialRanges) to read them by.
 local FACTS = {
 	{key = "isTask", names = {"C_QuestLog.IsQuestTask"}},
 	{key = "isWorld", names = {"C_QuestLog.IsWorldQuest"}},
@@ -219,6 +225,8 @@ local FACTS = {
 	{key = "expansion", names = {"C_QuestLog.GetQuestExpansion", "GetQuestExpansion"}},
 	{key = "breadcrumb", names = {"C_QuestLog.IsBreadcrumbQuest", "IsBreadcrumbQuest"}},
 	{key = "story", names = {"C_QuestLog.IsStoryQuest", "IsStoryQuest"}},
+	{key = "trivial", names = {"C_QuestLog.IsQuestTrivial"}},
+	{key = "contentDifficulty", names = {"C_PlayerInfo.GetContentDifficultyQuestForPlayer"}},
 }
 local factCalls = {}
 
@@ -251,6 +259,22 @@ local function askFacts(facts, questId)
 			if (kind == "boolean" or kind == "number" or kind == "string") and not secret(value) then facts[spec.key] = value end
 		end
 	end
+end
+
+local RANGE_CALLS = {"UnitQuestTrivialLevelRange", "UnitQuestTrivialLevelRangeScaling"}
+
+local function trivialRanges()
+	local ranges = {}
+	for _, name in ipairs(RANGE_CALLS) do
+		local call = _G[name]
+		if type(call) ~= "function" then
+			ranges[name] = false
+		else
+			local value = try(call, "player")
+			if type(value) == "number" and not secret(value) then ranges[name] = value end
+		end
+	end
+	return ranges
 end
 
 -- A refused quest has no data, so no facts are kept for it, but the functions are still asked: for each,
@@ -328,7 +352,7 @@ local function startQuests(all, inFlight)
 	local found
 	factCalls, found = resolveFacts()
 	refusedFacts = {}
-	r.extra = {facts = found, refusedFacts = refusedFacts}
+	r.extra = {facts = found, refusedFacts = refusedFacts, trivialRange = trivialRanges()}
 	local attempts = {}
 	r.send = function(questId)
 		if haveQuestData(questId) then
