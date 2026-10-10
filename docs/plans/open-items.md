@@ -240,8 +240,6 @@ again.
 - **A start on a disabled map** is held back; 79085 and 81640 want hand entries on Hallowfall's map.
 - **README** says retail has "over 15,000" quest-giver pins and Forever "around 1,700"; check both at
   each release.
-- **`Build-CategoryClientNames.ps1`** still lists two expected differences, for categories 1221 and
-  1430, that the spelling fixes made stale.
 
 ## The agreed order of work
 
