@@ -20,7 +20,7 @@ and 10 October), and the addon list says "QC Forever probe". This is the plan; n
 | `tools/ForeverProbe/` and `tools/ForeverProbe/QCForeverProbe/` | `tools/Probe/` and `tools/Probe/QCProbe/` | `Build-ProbeLists.ps1` keeps its name and moves with the folder |
 | `tools/Read-ForeverProbe.lua` | `tools/Read-Probe.lua` | |
 | The saved file `WTF\Account\<account>\SavedVariables\QCForeverProbe.lua` | `QCProbe.lua` | the game writes it, named after the addon |
-| The probe's result files, `tools\<game>_probe_<revision>\QCForeverProbe.lua` | `QCProbe.lua` | the six files held now are renamed once |
+| The probe's result files, `tools\<game>_probe_<revision>\QCForeverProbe.lua` | `QCProbe.lua` | the files held now (seven, the dated copies included) are renamed once |
 
 Not renamed, on purpose:
 
@@ -54,8 +54,8 @@ Not renamed, on purpose:
 - **Docs:** `maintenance.md` (12 lines: steps 3 and 10, "In the game", the checks list), `game-api-review.md` (5, mostly
   paths of dated results), `open-items.md` (2) and `forever.md` (2, historical).
 - **On this PC, outside the repository:** `_retail_` and `_classic_beta_` `Interface\AddOns\QCForeverProbe`, the two
-  saved files (17.3 MB for retail, 2.0 MB for Forever), and the six result files in `tools\` (four Forever, retail's
-  and its dated copy).
+  saved files (17.3 MB for retail, 2.0 MB for Forever), and the seven result files in `tools\` (five Forever's, retail's
+  and its dated copy; more with every sweep).
 
 ## When
 
@@ -88,28 +88,48 @@ October. The rename is one pull request, with the local steps below once it is m
 4. **The readers accept both saved-variable names,** `QCProbeDB or QCForeverProbeDB`, in `Read-Probe.lua`,
    `Report-MapOffers.lua`, `Read-RecordedGivers.lua` and `ProbeResults.ps1`, so old files read as they did. The tools
    that find a result file by name look for `QCProbe.lua`.
-5. **`Get-LatestBuilds.ps1` gains a check:** an old `QCForeverProbe` folder still in a game's AddOns is `BEHIND`
-   ("remove it: both would load, and both answer `/qcprobe`"). It is the one mistake the rename invites.
+5. **`Get-LatestBuilds.ps1` gains two checks:** an old `QCForeverProbe` folder still in a game's AddOns is `BEHIND`
+   ("remove it: both would load, and both answer `/qcprobe`"), and so is a saved `QCForeverProbe.lua` with no
+   `QCProbe.lua` beside it ("copy it to `QCProbe.lua` before logging in, or the new addon starts empty"). They are
+   the two mistakes the rename invites.
 6. **Tests:** the existing ones follow the names; new ones for the adoption, for each reader on an old file and on a
    new one, for the new check, and for `.gitignore` (the generated lists are still ignored in their new place).
    All test scripts must pass, not only the ones near the change: that is how #256 went wrong.
 7. **Docs:** `maintenance.md`, `open-items.md`, `game-api-review.md` and this plan say the new names; where a doc
    records a dated result by its path, the path is the new one (the files are renamed on disk).
 
+## Before the rename: nothing unprocessed may be left in a saved file
+
+The probe's saved file is written when a game logs out or reloads, and it holds the recorder's notes from every
+session (who offered which quest, where) until a sweep has read them: the ledger, the importer's data and the
+copy in `tools\` only get them at that point. The user plays the Forever beta, so there will be notes. Nothing is
+renamed until, for each game:
+
+1. The game has been logged out, and the saved file copied into the newest results folder
+   (`tools\forever_probe_<revision>\`, `tools\retail_probe_<revision>\`), the earlier copy kept beside it under a
+   dated name. (Done for the Forever beta at 12:21 on 10 October: the file held 40 notes not yet read, 11 places,
+   13 offers, 6 turn-ins and 10 accepted quests, quests 97926, 97914, 95041 and 95065 among them.)
+2. A sweep has taken them in: `Import-RecordedGivers.ps1` (the ledger, step 6d), then `Import-ForeverData.ps1`
+   (step 10), as pull requests that are merged.
+
+The saved file then holds nothing the repository does not, and what the new addon adopts is a second copy.
+
 ## After the merge, on this PC
 
-1. Close both games.
-2. In each game's `Interface\AddOns`, delete `QCForeverProbe`.
-3. `Build-ProbeLists.ps1 -Game retail` and `-Game forever` (they take the installed builds), then copy
+1. Close both games, logging out fully first if one is running, so each saved file is complete.
+2. In each game's `WTF\Account\<account>\SavedVariables`, **copy `QCForeverProbe.lua` to `QCProbe.lua`, before the
+   first login with the new addon.** The probe adopts the table, with its runs, quests, givers and recorder notes.
+   The old file stays where it is, as a backup nothing writes to.
+3. In each game's `Interface\AddOns`, delete `QCForeverProbe`.
+4. `Build-ProbeLists.ps1 -Game retail` and `-Game forever` (they take the installed builds), then copy
    `tools\Probe\QCProbe` into `_retail_` and `_classic_beta_`.
-4. To keep the old results in the new addon: copy `WTF\Account\<account>\SavedVariables\QCForeverProbe.lua` to
-   `QCProbe.lua` in each game before the first login. The probe adopts the table. Skipping it loses nothing that
-   matters: the quest caches, the answer memory, the ledger and the result folders hold what the sweep uses, and
-   the probe asks again whatever has no answer on the build.
-5. Rename the six result files in `tools\*_probe_*` to `QCProbe.lua` (and the dated copy to `QCProbe.2026-10-07.lua`).
-6. `Get-LatestBuilds.ps1` must say everything is current and no old probe folder is installed.
-7. In the game: log in on each, see "QC probe: loaded", and `/qcprobe status`. The next real run is the first test of
-   the rest; it needs nothing extra from the user.
+5. Rename every `QCForeverProbe*.lua` in the `tools\*_probe_*` results folders to `QCProbe*.lua`, the dated copies
+   included (seven today).
+6. `Get-LatestBuilds.ps1` must say everything is current, no old probe folder is installed and no saved file is
+   unadopted.
+7. In the game: log in on each, see "QC probe: loaded", and `/qcprobe status`: its counts must be those of the
+   old file (`Read-Probe.lua <the copy in tools\> facts` and the copy are the reference). The next real run is the
+   first test of the rest; it needs nothing extra from the user.
 
 ## Rollback
 
@@ -121,6 +141,7 @@ writes `QCProbe.lua` beside them), so nothing is lost either way.
 | Risk | What stops it |
 |---|---|
 | A run in flight, or a result unread, when the names change | the first condition under "When" |
+| Recorder notes from a session left only in a saved file when the names change | "Before the rename": each file is copied into `tools\` and taken in by a sweep first; the new addon then adopts a second copy, and the old file is never deleted |
 | A conflict with other probe work | the second; #262 first |
 | Both folders installed, so two probes answer `/qcprobe` | step 2 after the merge, and the new check |
 | A tool still looks for the old file name and finds nothing | the tests run every reader on a new-named folder; the check on the real folders is `Get-LatestBuilds.ps1` and a full run of the importer with `-WhatIf` |
@@ -128,10 +149,10 @@ writes `QCProbe.lua` beside them), so nothing is lost either way.
 | A CRLF file rewritten as LF, or a BOM lost | the script's rules and the file-by-file diff check (`sed -i` is not used: it silently converts CRLF to LF) |
 | The generated lists left behind in `tools/ForeverProbe` | rebuilt in step 3 and the old folder deleted; they are ignored, so nothing is committed by mistake |
 
-## To decide
+## Decided (the user, 10 October 2026)
 
-- That the new name is `QCProbe` (the shortest that is neutral; `QCDevProbe` would say what it is for, at four
-  more letters).
-- Whether to keep the adoption of the old saved table (a few lines and a test, so that an old file can be moved
-  in), or to start the new saved file empty.
-- The week of 19 October as the target.
+- **The name is `QCProbe`.**
+- **The old saved data is kept.** The probe adopts the old table, and moving the old saved file in is a required
+  step, not an option: the user plays the Forever beta, and the probe's recorder notes from a session are the one
+  thing nothing else holds until the sweep has read them (see "Before the rename").
+- **The target is the week of 19 October**, after the conditions under "When".
