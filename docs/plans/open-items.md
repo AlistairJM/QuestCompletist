@@ -200,6 +200,7 @@ again.
 | 29 | Ordering rule for Retail's lists (R33) | keep the hand order | [menu-review.md](menu-review.md), question 29 |
 | 30 | Forever: split Seasonal, and Deeprun Tram and Special loose (F04, F05) | leave until after the 4 November launch | [menu-review.md](menu-review.md), question 30 |
 | 31 | Remove the 83 unused category definitions (R32) | yes, in a pass of its own, after 24 | [menu-review.md](menu-review.md), question 31 |
+| 32 | A start within a map point of an edge goes on the map the client's row for it names. 26064 was moved by hand to Stonetalon Mountains (10 October 2026); 15 other quests have the same shape and their client start on the edge map: Mulgore's Jin'Zil (5) and Devo (2), Stonetalon's Grimfang (2), Dread Wastes' Taran Zhu (4) and Garrosh (1), Crystalsong Forest's Xink (1). All were on the other map before "pins at the start" | leave them where the client puts them; if the user wants the rule ("prefer the map the other points are on", tried at 1 point, 16 quests including 26064), it is a small change to `Build-QuestLocationData.ps1` and a rerun of step 6, and the Mulgore camp's 7 quests are the nearest case to 26064 | [quest-location-data-pipeline.md](quest-location-data-pipeline.md), "a start on the edge of a map" |
 
 ## Data to finish
 
@@ -231,9 +232,6 @@ again.
 
 ## Code to finish
 
-- **One quest on the edge of a map**: 26064 sits at the top of Mulgore, where its other points say
-  Stonetalon. A start within about one map point of an edge should prefer the map its other
-  points are on.
 - **A start on a disabled map** is held back; 79085 and 81640 want hand entries on Hallowfall's map.
 - **README** says retail has "over 15,000" quest-giver pins and Forever "around 1,700"; check both at
   each release.

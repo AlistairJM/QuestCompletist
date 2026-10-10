@@ -510,3 +510,76 @@ covered by its quest and NPC pair and sits where the pipeline sorts it).
   `QuestV2`, the template inferences, a task of another kind than world, bonus or hidden, Landfall,
   holiday, profession, a quest type other than 0, 1, 2, 4 and 128); the ones that are definitions stay (unavailable, internal name, world, bonus or
   hidden task, system category), and the new pins are counted by class so the user sees what the waiver let in.
+
+## October 2026, a start on the edge of a map
+
+Quest 26064 ("Fight On Their Stomachs", Denni'ka, zone Stonetalon Mountains; the API's area for it
+is 406, Stonetalon's) was pinned on Mulgore's map, 0.39 map points from its top edge. Open item,
+10 October 2026: "a start within about one map point of an edge should prefer the map its other
+points are on". What the data says:
+
+- **The client lists no point for it.** `QuestPOIBlob` of 12.1.0.69933, and of the 12.1.5 PTR, has no
+  row for 26064; the pin came from TrinityCore's `quest_poi` ("pins from TrinityCore", above). Its
+  rows: point -1 (the quest's own point) on UiMapID 65 (Stonetalon Mountains), objective 0, an area,
+  on 65, and the start (ObjectiveIndex 32) on UiMapID 7 (Mulgore); the start and point -1 are one world
+  point on Kalimdor, (-183, -349). Denni'ka's spawn (3411, TrinityCore) stands at (-182.99, -348.69).
+- **Why Mulgore.** The tools don't choose between neighbouring maps. A start goes on the map its own
+  row names (apart from a start on the parent map of another start of the quest, which is dropped);
+  what they choose among is the rows of that one map in `UiMapAssignment` (the one containing the
+  point on the point's own instance first). The row names 7, and both maps' boxes contain the
+  point: Mulgore's northern edge (`Region_3`) is -168.75, 14 yards north of it, which is 0.39 points
+  down the map; Stonetalon's box reaches south to -529, so the point is at (72.05, 91.2) there.
+- **A rerun cannot move it.** Once a quest has a pin the TrinityCore pass leaves it out ("already
+  has a pin"), and the client lists nothing for it, so a change to the rule in the tool would not
+  reach 26064 without taking it off its pin first; a pin placed by hand stays (below).
+
+The rule was tried on a scratch copy of the tools, nothing kept: a start within 1 map point of an
+edge of its map, where all the quest's other points (every row that isn't point 32) are on one other
+map that is neither above nor below it, and the start lies inside that map's box and more than 1 point
+from its edges, goes on that map, on the client's path and on TrinityCore's. The four steps were
+run without it and with it, on pins without the 1,454 quests the TrinityCore pass first pinned, so
+that the pass ran again, and the pins compared (15,204 pins and 24,926 quests with a pin without the
+rule, 15,201 and 24,926 with it):
+
+| Quests | NPC | From | To |
+|---|---|---|---|
+| 26064 (TrinityCore only) | Denni'ka | Mulgore 7, 46.85 0.39 | Stonetalon Mountains 65, 72.05 91.2 |
+| 26060 26061 26062 26067 26073 | Witch Doctor Jin'Zil | Mulgore 7, 45.84 0.42 | Stonetalon Mountains 65, 71.12 91.22 (joins 26069's pin) |
+| 26066 26068 | Subjugator Devo | Mulgore 7, 45.89 0.28 | Stonetalon Mountains 65, 71.17 91.1 |
+| 13890 13920 | Commander Grimfang | Stonetalon Mountains 65, 49.14 0.82 | Ashenvale 63, 12.99 34.26 (joins 13923's pin) |
+| 30884 30893 30895 30901 | Taran Zhu | Dread Wastes 422, 64.45 0.41 | Townlong Steppes 388, 76.43 82.43 (joins 30898's pin) |
+| 12049 | Xink | Crystalsong Forest 127, 33.15 99.37 | Dragonblight 115, 55.03 23.43 |
+| 32108 | Garrosh Hellscream | Dread Wastes 422, 67.22 99.24 | Krasarang Wilds 418, 8.66 64.47 (joins 32250's pin) |
+
+That is 16 quests; 15 of them are in the client's table, with their start on the edge map, and the
+quest's zone text names the map the rule would move 14 of them to (32108's is Pandaren Campaign). The
+rule's reach grows with the margin: quests with an edge start of this shape, 13 at 0.5 points, 20 at
+1, 27 at 1.5, 36 at 2 and 62 at 3. The 20 at 1 point are the 16, and 4 that TrinityCore alone has a
+start for and that already have a pin a rule would not move (13923, 30682 and 31934 on the other
+map; 26069, whose hand-in is on Southern Barrens, on Stonetalon Mountains).
+
+Applied to TrinityCore's starts alone (the quests the client lists nothing for), the rule moves
+26064 and nothing else in this data.
+
+Where the 15 were before. All of them had a pin on the other map until "pins at the start" (b8cca3c,
+above) put them at their client start point: 12 of the 15 at the spot the rule gives (within 0.2
+points), the other 3 (26073, 30884, 30901) at their hand-ins, further along that map. So the rule
+would mostly restore earlier pins, at the same world point the client lists for the start; what it
+changes is the map the point is drawn on: the client names the edge map for the start and the other
+map for the hand-in.
+
+- **Done by hand: 26064 only.** Its pin is now on Stonetalon Mountains (65) at 72.05, 91.2, the
+  point's own conversion on that map, with Denni'ka's ID and name: its line in `data\pins.jsonl`, then
+  `Build-AddonData.ps1`, then the four steps of step 6 (which keep a pin the data has and no new row
+  replaces: the candidate was the file line for line, 8,973 preserved pairs and 15,214 pin groups,
+  as before) and `Assemble-PinDB.ps1 -Apply` for the file's order. 15,202 pins and 24,929 quests
+  with a pin before and after; the pins of map 7 go from 28 to 27 and of map 65 from 64 to 65.
+  The tools of step 6c and `Remove-DuplicatePinQuests.ps1` find nothing to change (step 6d was not
+  run; its ledger and decisions have no row for 26064 or Denni'ka). A later client build that lists 26064 with its start on Mulgore would put it back there: the
+  client's start wins.
+- **Not done: the rule.** The 15 other pins match the client's own start point, which is
+  Blizzard's data and stays; and the game's own map pass lists the start of 12049 on both maps,
+  Crystalsong Forest (33.2, 99.4) and Dragonblight (55, 23.4), so a pin at an edge can be where the
+  game itself draws the start. Whether to move any of them is decision 32 in
+  [open-items.md](open-items.md). The 7 Mulgore quests share Denni'ka's camp and are the nearest
+  case to 26064.

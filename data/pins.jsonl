@@ -75,7 +75,6 @@
 {"map":7,"icon":1,"x":49.38,"y":17.32,"quests":[24550]}
 {"map":7,"icon":1,"npc":38378,"name":"Commander Walpole","x":56.2,"y":1.96,"quests":[24862,24863]}
 {"map":7,"icon":1,"npc":3995,"name":"Witch Doctor Jin'Zil","x":45.84,"y":0.42,"quests":[26060,26061,26062,26067,26073]}
-{"map":7,"icon":1,"npc":3411,"name":"Denni'ka","x":46.85,"y":0.39,"quests":[26064]}
 {"map":7,"icon":1,"npc":42023,"name":"Subjugator Devo","x":45.89,"y":0.28,"quests":[26066,26068]}
 {"map":7,"icon":1,"npc":3055,"name":"Maur Raincaller","x":47.16,"y":56.68,"quests":[26188]}
 {"map":7,"icon":1,"x":49.21,"y":56.07,"quests":[31573]}
@@ -1497,6 +1496,7 @@
 {"map":65,"icon":1,"npc":41991,"name":"Sergeant Dontrag","x":67.14,"y":64.5,"quests":[26045,26048]}
 {"map":65,"icon":1,"npc":41990,"name":"Scout Utvoch","x":67.14,"y":64.5,"quests":[26046]}
 {"map":65,"icon":1,"npc":41992,"name":"Blastgineer Igore","x":67.14,"y":64.5,"quests":[26047]}
+{"map":65,"icon":1,"npc":3411,"name":"Denni'ka","x":72.05,"y":91.2,"quests":[26064]}
 {"map":65,"icon":1,"npc":3995,"name":"Witch Doctor Jin'Zil","x":71.12,"y":91.22,"quests":[26069]}
 {"map":65,"icon":1,"npc":42033,"name":"Jibbly Rakit","x":52.97,"y":39.13,"quests":[26075,26076,26077]}
 {"map":65,"icon":1,"npc":42050,"name":"General Grebo","x":45.12,"y":32.78,"quests":[26082]}
