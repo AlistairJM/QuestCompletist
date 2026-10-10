@@ -53,8 +53,6 @@ $handPicked = @{
 }
 $expectedDifferences = @{
     "1420" = "Awakening The Machine"
-    "1430" = "Delver's Headquarters"
-    "1221" = "Necrolord"
 }
 # Categories whose only match is a placeholder, not a name a player would recognise.
 $skip = @("1240")   # "9.1 Campaign" matches an area of that name

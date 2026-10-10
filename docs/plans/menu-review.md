@@ -127,8 +127,11 @@ one the report author would take.
 - A plain `Place-UncategorisedQuests.ps1 -Refile 0` would now move 30 more quests out of
   Uncategorized (28 by their pin's map, 2 by storyline: 91437 and 92430). They were left where they
   are; run it with `-WhatIf` to see the list.
-- `Build-CategoryClientNames.ps1` still lists two expected differences (categories 1221 and 1430)
-  that the spelling fixes made stale. They are harmless.
+- `Build-CategoryClientNames.ps1` listed two expected differences (categories 1221 and 1430) that
+  the spelling fixes made stale. Removed on 10 October 2026: the client's names now agree with ours,
+  and the one difference left is category 1420 ("Awakening The Machine" in the client, "Awakening
+  the Machine" here). With the entries gone the script runs clean and `qcQuest.lua` and `qcMenu.lua`
+  regenerate byte-identically.
 - Six categories (3, 248, 1244, 1344, 1402 and 1425) each appear twice in Retail's menu. They did
   already at master. Not touched.
 - Retail's `qcAreaIDToCategoryID` has duplicate keys: 219, 221 and 1670 (the same value twice) and
