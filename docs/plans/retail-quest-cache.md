@@ -102,7 +102,7 @@ table's for 4,125 of 4,125.
   22 have no record anywhere, and 23 have a minimum our 0 lacks (the 22 with one in the API, and
   90751). Of the 191, 1582 (Moonglow Vest) is level 18, minimum 8 in Classic's sources. On Forever's
   12 (level 0 or below) the game's cache says level 0 for 2 (8856, 96735) and lacks the other 10,
-  for which CMaNGOS gives level 0, or -1 for 9321.
+  for which CMaNGOS gives level 0, or -1 for 9321. The 22 with their own API minimum were set to it on 10 October 2026 (open-items.md row 33). The 191 stay 0: a 1 would hide them as low level for a high-level character, as every retail quest with a minimum of 1 is today.
 - **Decision for the user** (open-items.md row 14, beside row 8's refresh from the API): whether
   retail's gate comes from the tuning. Forever's structure
   already holds it: `level` stays the row's own (the list bracket and the sort) and the gate goes in
