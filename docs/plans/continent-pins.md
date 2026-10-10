@@ -169,8 +169,8 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
   the file; 11 `Localization` files get 2 keys.
 - `qcCore.lua`: the zone-quests function and its export, the setting's default and `qcApplySettings`
   line, the checkbox and its re-anchoring, the one refresh function.
-- `qcTooltips.lua` takes the map tooltip helpers out of `qcMapPins.lua` (lines 20-32 and 89-154);
-  `qcMapPins.lua` exports `qcPinQuestNeeds`.
+- `qcTooltips.lua` takes the map tooltip helpers out of `qcMapPins.lua` (its frame, its lines, icons,
+  dividers and bar); `qcMapPins.lua` exports `qcPinQuestNeeds`.
 - `tools\`: `Test-ContinentPins.lua`, `Test-Settings.lua`, the probe's geometry pass,
   `Report-ContinentGeometry.lua`; `.gitignore` lists the new tests.
 - `docs\`: this plan, `open-items.md`, `game-parity.md`, `game-api-review.md`, `maintenance.md`,
@@ -194,7 +194,11 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
    Merge it before the retail 12.1.5 run (13 or 14 October) so one session captures retail;
    Forever's comes with its next session.
 3. **The tooltip helpers move** to `qcTooltips.lua`, with the exports. No behaviour change: the
-   reachability report must come out byte-identical.
+   reachability report must come out byte-identical, and so must a record of every call a pin's
+   tooltip makes (`Test-MapTooltip.lua`, run on the code before and after). Done as `QC.qcMapTip`:
+   `Open`, `Close`, `Finish`, `Redraw`, `Line`, `LineIcon`, `Divider` and `Bar` over the one
+   `qcMapTooltip` frame, with `qcMapTooltipSetup` and `QC.RedrawMapTooltip` beside it; `qcPinMixin`
+   keeps its anchor rule, and `qcMapPins.lua` exports `qcPinQuestNeeds`.
 4. **Counting and the zone list**, with `Test-ContinentPins.lua`. Nothing visible yet.
 5. **Icons and the option**: template, mixin, provider, the checkbox, the localization keys,
    `Test-Settings.lua`, the documents.
@@ -272,4 +276,5 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 ## Status
 
 - 2026-10-10: investigated; this plan written and the decisions above taken. Nothing built.
-- 2026-10-10: PR 2 built (the probe's geometry pass, `Report-ContinentGeometry.lua`, 736 checks in `Test-Probe.lua`); not yet run in game.
+- 2026-10-10: PR 2 built (the probe's geometry pass, `Report-ContinentGeometry.lua`, 804 checks in `Test-Probe.lua`); not yet run in game.
+- 2026-10-10: PR 3 built (the map tooltip's helpers in `qcTooltips.lua` as `QC.qcMapTip`, `Test-MapTooltip.lua`): the reachability reports of both games and a record of 400-odd tooltip calls are identical to master's; not yet tried in game.

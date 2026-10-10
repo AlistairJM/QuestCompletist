@@ -1,11 +1,12 @@
---[[ The quest list's tooltip, and the quest status and progress bar helpers it shares with the map
-pins' tooltip in qcMapPins.lua. What it needs from qcCore.lua comes through the addon's own table. ]]--
+--[[ The quest list's tooltip, and the quest status, progress bar and map tooltip helpers it shares
+with the map pins' tooltip in qcMapPins.lua. What it needs from qcCore.lua comes through the addon's own
+table. ]]--
 local QC = select(2, ...)
 local qcL = qcLocalize
 local COLOUR_DRUID, COLOUR_HUNTER, COLOUR_MAGE = QC.COLOUR_DRUID, QC.COLOUR_HUNTER, QC.COLOUR_MAGE
 local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS
 local QC_ICON_COMPLETE, QC_ICON_UNATTAINABLE = QC.QC_ICON_COMPLETE, QC.QC_ICON_UNATTAINABLE
-local QC_FULL_TEXCOORDS = QC.QC_FULL_TEXCOORDS
+local QC_FULL_TEXCOORDS, qcSetIcon = QC.QC_FULL_TEXCOORDS, QC.qcSetIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
 local qcMaskAllows, qcQuestName, qcRequestQuestData, qcPrereq = QC.qcMaskAllows, QC.qcQuestName, QC.qcRequestQuestData, QC.qcPrereq
 local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
@@ -19,8 +20,8 @@ local qcTooltipIndex, qcTooltipQuestId
 
 local QC_STORYLINE_WINDOW = 15
 
---[[ Shared with the map pins' tooltip, which takes the two tables from the addon's own table (the end
-of this file). ]]--
+--[[ Shared with the map pins' tooltip, which takes these tables and the map tooltip's helpers from the
+addon's own table (the end of this file). ]]--
 
 -- How a quest stands for this character, with the quest list's order, icons and colours.
 local qcQuestStatus = {READY = 1, PROGRESS = 2, TODO = 3, RECURRING = 4, DONE = 5}
@@ -138,6 +139,119 @@ function qcTooltipDivider.Show(tooltip, leftText, rightText)
 	divider:SetPoint("LEFT", leftText, "LEFT")
 	divider:SetPoint("RIGHT", rightText, "RIGHT")
 	divider:Show()
+end
+
+-- The map's tooltip, one for every kind of pin: the frame, a line with an icon beside it, a divider and
+-- a progress bar. A pin opens it in its OnMouseEnter and fills it; Redraw asks the pin under the mouse
+-- to fill it again, when names arrive or Shift changes.
+local qcMapTip = {}
+local QC_MAP_TIP_BAR_MIN_WIDTH = 180
+-- The pin under the mouse.
+local qcMapTipPin
+
+function qcMapTooltipSetup() -- *
+	local tooltip = CreateFrame("GameTooltip", "qcMapTooltip", UIParent, "GameTooltipTemplate")
+	tooltip:SetFrameStrata("TOOLTIP")
+	WorldMapFrame:HookScript("OnSizeChanged",
+		function(self)
+			tooltip:SetScale(1/self:GetScale())
+		end
+	)
+	qcMapTip.frame = tooltip
+end
+
+local function qcHideMapTipDecorations()
+	local tooltip = qcMapTip.frame
+	tooltip.qcIcons = tooltip.qcIcons or {}
+	for _, icon in ipairs(tooltip.qcIcons) do
+		icon:Hide()
+	end
+	tooltip.qcIconsUsed = 0
+	qcTooltipBar.HideAll(tooltip)
+	qcTooltipDivider.HideAll(tooltip)
+end
+
+local function qcAcquireMapTipIcon()
+	local tooltip = qcMapTip.frame
+	tooltip.qcIconsUsed = tooltip.qcIconsUsed + 1
+	local icon = tooltip.qcIcons[tooltip.qcIconsUsed]
+	if not icon then
+		icon = tooltip:CreateTexture(nil, "OVERLAY")
+		icon:SetSize(16, 16)
+		tooltip.qcIcons[tooltip.qcIconsUsed] = icon
+	end
+	return icon
+end
+
+function qcMapTip.Open(pin, anchorPoint)
+	qcMapTipPin = pin
+	qcMapTip.frame:SetOwner(pin, anchorPoint)
+	qcMapTip.frame:ClearLines()
+	qcHideMapTipDecorations()
+end
+
+function qcMapTip.Close()
+	qcMapTipPin = nil
+	qcMapTip.frame:Hide()
+	qcHideMapTipDecorations()
+end
+
+function qcMapTip.Finish()
+	qcMapTip.frame:SetMinimumWidth(qcMapTip.frame.qcBarsUsed > 0 and QC_MAP_TIP_BAR_MIN_WIDTH or 0)
+	qcMapTip.frame:Show()
+end
+
+function qcMapTip.Redraw()
+	if qcMapTipPin and qcMapTip.frame:IsShown() then
+		qcMapTipPin:OnMouseEnter()
+	end
+end
+
+-- Every line sets the fonts of both its sides: the tooltip reuses its lines, keeping the last font.
+-- A different font brings its own colour, white, so the line then gets back the gold that adding it
+-- gave, which the giver's name has no colour code of its own to override.
+function qcMapTip.Line(left, right, leftFont, wrap)
+	local tooltip = qcMapTip.frame
+	if right then
+		tooltip:AddDoubleLine(left, right)
+	elseif wrap then
+		tooltip:AddLine(left, nil, nil, nil, true)
+	else
+		tooltip:AddLine(left)
+	end
+	local line = tooltip:NumLines()
+	local leftText, rightText = _G["qcMapTooltipTextLeft" .. line], _G["qcMapTooltipTextRight" .. line]
+	if leftText then
+		leftText:SetFontObject(leftFont or GameTooltipText)
+		leftText:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
+	end
+	if rightText then
+		rightText:SetFontObject(GameTooltipTextSmall)
+		rightText:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
+	end
+	return leftText, rightText
+end
+
+function qcMapTip.LineIcon(leftText, icon, dim)
+	if not leftText then return end
+	local texture = qcAcquireMapTipIcon()
+	qcSetIcon(texture, icon)
+	local shade = dim and 0.5 or 1
+	texture:SetVertexColor(shade, shade, shade)
+	texture:ClearAllPoints()
+	texture:SetPoint("LEFT", leftText, "LEFT", -6, 0)
+	texture:Show()
+end
+
+function qcMapTip.Divider()
+	local leftText, rightText = qcMapTip.Line(" ", " ")
+	if leftText and rightText then
+		qcTooltipDivider.Show(qcMapTip.frame, leftText, rightText)
+	end
+end
+
+function qcMapTip.Bar(leftText, rightText, done, total)
+	qcTooltipBar.Show(qcMapTip.frame, leftText, rightText, done, total)
 end
 
 -- The faction's name in the player's language, or the English one from qcFactions.
@@ -455,4 +569,10 @@ end
 
 QC.qcQuestStatus = qcQuestStatus
 QC.qcTooltipBar, QC.qcTooltipDivider = qcTooltipBar, qcTooltipDivider
+QC.qcMapTip = qcMapTip
 QC.qcFactionName = qcFactionName
+
+-- For qcCore.lua, when quest or NPC names arrive: redraw the tooltip of the pin under the mouse.
+function QC.RedrawMapTooltip()
+	qcMapTip.Redraw()
+end
