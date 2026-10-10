@@ -525,7 +525,7 @@
 {"map":1429,"icon":1,"name":"Rolf's corpse","x":79.8,"y":55.5,"quests":[71]}
 {"map":1429,"icon":1,"name":"Wanted Poster","x":24.55,"y":74.69,"quests":[176]}
 {"map":1429,"icon":1,"name":"Wanted Poster","x":24.57,"y":78.23,"quests":[176]}
-{"map":1429,"icon":1,"x":34.79,"y":37.52,"quests":[92750]}
+{"map":1429,"icon":1,"x":34.79,"y":37.52,"quests":[92751]}
 {"map":1431,"icon":1,"npc":263,"name":"Lord Ello Ebonlocke","x":71.93,"y":46.42,"quests":[146,251,253]}
 {"map":1431,"icon":1,"npc":264,"name":"Commander Althea Ebonlocke","x":73.54,"y":46.82,"quests":[56,57,58,80,98,228,229]}
 {"map":1431,"icon":1,"npc":265,"name":"Madame Eva","x":75.79,"y":45.32,"quests":[66,101,149,157,265]}
@@ -706,8 +706,8 @@
 {"map":1436,"icon":1,"name":"Captain's Footlocker","x":25.91,"y":47.75,"quests":[138]}
 {"map":1436,"icon":1,"name":"Broken Barrel","x":40.52,"y":47.79,"quests":[139]}
 {"map":1436,"icon":1,"name":"Old Footlocker","x":41.51,"y":66.73,"quests":[68]}
-{"map":1436,"icon":1,"x":38.68,"y":83.7,"quests":[92753,92819]}
-{"map":1436,"icon":1,"x":52.48,"y":52.97,"quests":[92742,92744,92745,92747,92752]}
+{"map":1436,"icon":1,"x":38.68,"y":83.7,"quests":[92819]}
+{"map":1436,"icon":1,"x":52.48,"y":52.97,"quests":[92742,92744,92745,92747,92748,92753]}
 {"map":1437,"icon":1,"npc":620,"name":"Chicken","x":25.56,"y":68.64,"quests":[3861]}
 {"map":1437,"icon":1,"npc":1071,"name":"Longbraid the Grim","x":49.8,"y":18.26,"quests":[304]}
 {"map":1437,"icon":1,"npc":1073,"name":"Ashlan Stonesmirk","x":50.05,"y":18.17,"quests":[274]}
@@ -769,7 +769,7 @@
 {"map":1438,"icon":1,"npc":7916,"name":"Erelas Ambersky","x":55.5,"y":92.05,"quests":[978,979,3661,4902]}
 {"map":1438,"icon":1,"npc":8583,"name":"Dirania Silvershine","x":60.9,"y":41.96,"quests":[3521,3522,4495]}
 {"map":1438,"icon":1,"npc":8584,"name":"Iverron","x":54.59,"y":32.99,"quests":[3519]}
-{"map":1438,"icon":1,"npc":10118,"name":"Nessa Shadowsong","x":56.26,"y":92.44,"quests":[6341]}
+{"map":1438,"icon":1,"npc":10118,"name":"Nessa Shadowsong","x":56.3,"y":92.4,"quests":[6341]}
 {"map":1438,"icon":5,"npc":15595,"name":"Elder Bladeleaf","x":57.3,"y":60.77,"quests":[8715]}
 {"map":1438,"icon":1,"npc":15624,"name":"Forest Wisp","x":37.55,"y":47.92,"quests":[8734]}
 {"map":1438,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":56.56,"y":91.94,"quests":[9319,9322,9323]}
@@ -799,13 +799,13 @@
 {"map":1439,"icon":1,"npc":6301,"name":"Gorbold Steelhand","x":38.11,"y":41.17,"quests":[982]}
 {"map":1439,"icon":1,"npc":6667,"name":"Gelkak Gyromast","x":56.66,"y":13.48,"quests":[2078,2098]}
 {"map":1439,"icon":1,"npc":8997,"name":"Gershala Nightwhisper","x":38.33,"y":43.04,"quests":[1275]}
-{"map":1439,"icon":1,"npc":10216,"name":"Gubber Blump","x":36.1,"y":44.93,"quests":[1138,1141]}
-{"map":1439,"icon":1,"npc":10219,"name":"Gwennyth Bly'Leggonde","x":36.62,"y":45.59,"quests":[3524,4681]}
+{"map":1439,"icon":1,"npc":10216,"name":"Gubber Blump","x":36.1,"y":45,"quests":[1138,1141]}
+{"map":1439,"icon":1,"npc":10219,"name":"Gwennyth Bly'Leggonde","x":36.6,"y":45.6,"quests":[3524,4681]}
 {"map":1439,"icon":1,"npc":11218,"name":"Kerlonian Evershade","x":44.4,"y":76.43,"quests":[5321]}
 {"map":1439,"icon":1,"npc":11711,"name":"Sentinel Aynasha","x":45.94,"y":90.29,"quests":[5713]}
 {"map":1439,"icon":5,"npc":15601,"name":"Elder Starweave","x":36.81,"y":46.77,"quests":[8721]}
 {"map":1439,"icon":1,"name":"Twilight Tome","x":38.54,"y":86.05,"quests":[950]}
-{"map":1439,"icon":1,"name":"Buzzbox 827","x":36.64,"y":46.26,"quests":[1001]}
+{"map":1439,"icon":1,"name":"Buzzbox 827","x":36.7,"y":46.3,"quests":[1001]}
 {"map":1439,"icon":1,"name":"Buzzbox 411","x":41.96,"y":28.62,"quests":[1002]}
 {"map":1439,"icon":1,"name":"Buzzbox 323","x":51.29,"y":24.57,"quests":[1003]}
 {"map":1439,"icon":1,"name":"Beached Sea Creature","x":36.01,"y":70.88,"quests":[4728]}
@@ -1297,7 +1297,7 @@
 {"map":1453,"icon":5,"npc":16788,"name":"Festival Flamekeeper","x":49.39,"y":71.86,"quests":[9319,9322,9323]}
 {"map":1453,"icon":5,"npc":16817,"name":"Festival Loremaster","x":50.03,"y":71.95,"quests":[9365,9367,9388,9389]}
 {"map":1453,"icon":1,"name":"Sealed Crate","x":42.46,"y":72.04,"quests":[74]}
-{"map":1453,"icon":1,"x":61.87,"y":30.58,"quests":[92748,92749,92751]}
+{"map":1453,"icon":1,"x":61.87,"y":30.58,"quests":[92749,92750,92752]}
 {"map":1454,"icon":1,"npc":3144,"name":"Eitrigg","x":34.28,"y":39.35,"quests":[787]}
 {"map":1454,"icon":1,"npc":3189,"name":"Kor'ghan","x":47.24,"y":53.58,"quests":[813]}
 {"map":1454,"icon":1,"npc":3216,"name":"Neeru Fireblade","x":49.47,"y":50.59,"quests":[809,3122,5730,5761]}

@@ -714,6 +714,29 @@ variables are `tools/retail_probe_69933/QCForeverProbe.lua` and the reader's row
 Nothing in the addon or the pipeline changed with these results. Decisions 8 and 9 below come from
 them.
 
+## Probe runs since (9 and 10 October 2026)
+
+The probe ran on both games, with the lists built for the installed builds (retail 12.1.0.69933, the
+Forever beta 1.60.1.70291, then 70338 the next day).
+
+- **Maps:** the totals of 7 October again. Retail: 439 offers, 77 forced quests, 459 points of
+  interest, 290 dungeon entrances, 14 hubs, 182 maps with a level range and 657 that allow a waypoint
+  (2,033 task quests and 46 log quests, which depend on the character and the day). Forever, on both
+  builds: no offers, forced quests, tasks, events, hubs or entrances, and 16 points of interest.
+- **The quest-facts pass (recommendation 2):** all twelve functions exist on both clients, among them
+  `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest`. Retail answers with real values (13
+  distinct expansion values, 13 campaigns, 1,570 quest lines among its 33,802 loaded quests, 871
+  account-wide quests, 191 meta quests). Forever's are inert: every expansion is -2, and none is a task, world
+  quest, campaign or story quest; 11 quests have a quest line. A refused quest saves no facts, so
+  whether `GetQuestLineInfo` answers for one, and whether `IsAccountQuest` needs loaded data, are still
+  open.
+- **The quest pass on retail:** all 35,023 quests answered, 33,802 loaded (31,425 on 29 September,
+  same build), so 183 newly loaded quests classify as Recurring.
+- **The quest pass on Forever differs between runs:** about 80 of 7,320 quests are answered in one run
+  and refused in the next (see [forever.md](forever.md), "The beta's answers differ between runs").
+- **Pin names:** 10,562 of 10,564 retail pins and 1,503 of 1,503 Forever pins carry the game's own
+  NPC name; the two retail ones differ by a trailing space.
+
 ## Decisions to take
 
 1. **The recorder on retail** (recommendation 1). Is it wanted, and is it on by default? It writes

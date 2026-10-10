@@ -126,19 +126,17 @@ again.
   whether the game hides who is speaking, whether the popup hook fires, what the options panel
   looks like in the longest language. It went out in 112.7 on the user's word, without this session
   (9 October 2026), so the session now checks what players already have.
-- **The probe on both games** (`tools/ForeverProbe`, a dev-only addon built 9 October 2026, tested only
-  against stand-ins by `Test-Probe.lua`). Build the lists (`Build-ProbeLists.ps1 -Game forever` and
-  `-Game retail`), copy the folder into the game's AddOns and restart fully, then: on the **Forever
-  beta**, a regression run (`/qcprobe quests`, `npcs`, `maps`: about 10, 6 and 2 minutes) whose
-  results should match the October run's; on **retail**, ideally before 12.1.5 goes live on 13 or 14
-  October so the type probe's 29 September baseline still compares, `/qcprobe quests` (about two
-  hours, 35,023 quests, a 13 MB saved file), `npcs` (about 5 minutes, outside any instance) and `maps 1`
-  (5 minutes). Then copy `QCForeverProbe.lua` into `tools\retail_probe_<build>\` and run
-  `Retype-ProbeRecurring.ps1` (it only picks up new cases; `Test-ProbeResults.ps1` shows both probes'
-  files read the same), `Compare-PinNpcNames.ps1 -Game retail`, and
-  `Read-ForeverProbe.lua <file> facts` for the facts pass: which of `GetQuestExpansion`,
-  `IsBreadcrumbQuest` and `IsStoryQuest` exist (the run's row says), whether `GetQuestLineInfo` answers
-  for a quest the server refused, and whether `IsAccountQuest` needs loaded data.
+- **The probe on both games** (`tools/ForeverProbe`): **run and read** on 9 October (retail 12.1.0.69933:
+  35,023 quests, 8,418 NPCs, 1,961 maps; the Forever beta, 70291) and 10 October (Forever, 70338); the
+  results are in `tools\retail_probe_69933\` and `tools\forever_probe_70338\`. Pin names: 10,562 of
+  10,564 retail pins and 1,503 of 1,503 Forever pins are the game's own. The map totals are those of 7
+  October (retail 439 offers; Forever none, 16 points of interest). All twelve fact functions exist on
+  both clients, `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` among them, but Forever
+  returns inert values for most (every expansion -2, no tasks, campaigns or story quests). Still open: whether
+  `GetQuestLineInfo` answers for a quest the server refused, and whether `IsAccountQuest` needs loaded
+  data, as a refused quest saves no facts (see "Code to finish"). The next run is retail's, once 12.1.5 is
+  live (13 or 14 October): run `Get-LatestBuilds.ps1` first, then the same three commands, so the 9
+  October results are the baseline.
 
 ## Decisions waiting for the user
 
@@ -180,6 +178,10 @@ again.
 
 ## Data to finish
 
+- **53 retail quests the probe says recur** (9 October 2026, build 12.1.0.69933), typed one-time:
+  5 to daily (type 2, among them the Highmountain jetpack upgrades) and 48 to 128 (Covenant Assaults,
+  Archaeology, Nazjatar, the Oasis and others). `Retype-ProbeRecurring.ps1` on a scratch copy of the data
+  finds them; the retail pull request that applies them (step 3) isn't made.
 - **Names for about 20 pet-battle tutorial quests** that stand nameless on their trainers' pins
   (Narzak, Ansel Fincap, Grady Bannson, Valeena, Will Larsons, Matty, Jarson Everlong, Lehna): one
   Wowhead check per city, then `FILL` rows in `pin-giver-decisions.csv`.
@@ -219,6 +221,12 @@ again.
   each release.
 - **`Build-CategoryClientNames.ps1`** still lists two expected differences, for categories 1221 and
   1430, that the spelling fixes made stale.
+- **`Read-RecordedGivers.lua` refuses a file over 8 MB**, and retail's probe file is 17 MB since the
+  facts pass, so its recorder notes (one entry so far) are not read by step 6d. Raise the cap for probe
+  files, or keep the recorder's notes out of the quest results.
+- **The probe's quest pass** saves facts only for the quests the server answered, and doesn't record
+  which character ran it (its map pass does). Record both, so a refused quest's `GetQuestLineInfo`
+  answer can be seen and a character-dependent answer from the beta can be told from a random one.
 
 ## The agreed order of work
 
@@ -230,7 +238,8 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
    (recommendations 1 and 2). The addon half (#228) is released (112.7, untried) and waits for its in-game session;
    the merge tool (step 6d) waits for a real recording
    ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
-   probe is on master as a dev-only addon (#232 to #237) and waits for its in-game runs.
+   probe is on master as a dev-only addon (#232 to #237), and both games' first runs are in (9 and 10
+   October; see "To try in game").
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
    data (recommendations 4 and 5): **done** (#238).
 5. Retail's profession skill data, after one in-game check of what `GetProfessionInfo` reports for an

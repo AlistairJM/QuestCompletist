@@ -766,6 +766,21 @@ no quest leaves the data without the user having seen it.
   `Show-RemovedQuests.ps1` makes the same check for either game against any git ref, before a pull request.
 - **Decisions so far:** KEEP for 79482, 79483, 79492 and 79495 (Winter Veil and Metzen the Reindeer),
   93188 (Return to Orgrul) and 93196 (Khan Jehn), which no run since 5 October has answered.
+- **The refresh of 10 October** (build 70338: the cache, the client's tables and the probe's answers
+  all from it; the 16 tables are byte for byte those of 70291), with the memory made from the caches of
+  70205, 70291 and 70338: **5,097 quests and 1,695 pins**, against 5,081 and 1,695 before. 16 quests
+  join (Shen'dralas and Desolace quests, Darkspear Islands Clash, "Ground to Keep", "A Cleansing
+  Cry", "Confounding Flash" and two Legacy Rewards) and none leave: 73 quests the game didn't answer on
+  70338 are kept from earlier runs (49 from 70291, among them the 18 Duskwood Missions, and 24 from
+  70205, among them the six KEEP ones), and none has missed more than two runs. 15 minimum levels, 4
+  race masks, 2 levels and 2 prerequisites change. The summary reads 4,194 minimum levels (2,462 from the
+  game), 26 above the quest's level and 4 at 0, 141 skill quests, and the same 3 and 22 storyline rows.
+  The pins are the 8 changed lines of quests 92748 to 92753, that the importer's start point change of
+  8 October still owed, and four NPC pins (Nessa Shadowsong, Gubber Blump, Gwennyth Bly'Leggonde and
+  "Buzzbox 827") that move by 0.04 to 0.07 of a map point, where a recorded spot replaced CMaNGOS's
+  spawn. The importer's 11 duplicate pins go as before. The reachability check, the table audit and
+  the pin names (1,503 of 1,503 the game's own) find nothing new, and the map pass again finds no
+  offers and 16 points of interest. The ledger takes in the probe's recorder notes: 77 rows.
 
 ## Decisions
 
