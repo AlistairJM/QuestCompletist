@@ -108,7 +108,7 @@ quests whose API record gives a minimum (94.6%) and differs for 1,611. Two recor
 4,955 of the 35,023 quests have no API record, and 246 have level 0 (counted on 9 October 2026,
 `data\quests.jsonl` against the API cache in `tools\quest_api_cache`). Refreshing retail's levels
 from the API is a separate decision. Forever's `level` is the quest's own level, so its table holds
-4,180 of its 5,081 quests (October 2026). The importer fills it from the game's quest cache, and
+4,194 of its 5,097 quests (10 October 2026). The importer fills it from the game's quest cache, and
 from CMaNGOS where the game hasn't answered. The code doesn't ask which game it is on, only whether
 the table has an entry.
 
@@ -965,7 +965,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    where CMaNGOS and our old Classic pins disagree.
    Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
    recurring quests. The summary's "Storylines:" line is a watch on the client's `QuestLine` and
-   `QuestLineXQuest` tables, the only source of Forever's storylines: on build 70205 they had 3 and 22
+   `QuestLineXQuest` tables, the only source of Forever's storylines: on builds 70205 to 70338 they had 3 and 22
    rows, so 11 of our quests were in 1 storyline. A rise in any of them means Blizzard has started to
    fill them in, and the menu and the quest list's storyline lines then have something to show. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
    Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
@@ -973,8 +973,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    The level a character needs to take a quest (`minLevel`) is the game's, else CMaNGOS's
    `MinLevel`, as given; it is kept only where it differs from the quest's own level (`level`), and
    builds into `qcQuestMinLevel` (see the data files above). The summary's "Minimum levels:" line
-   counts them: 4,180 quests, 2,436 from the game and 1,744 from CMaNGOS, 26 of them above the
-   quest's level and 2 at 0 (no minimum), on build 1.60.1.70205 in October 2026.
+   counts them: 4,194 quests, 2,462 from the game and 1,732 from CMaNGOS, 26 of them above the
+   quest's level and 4 at 0 (no minimum), on build 1.60.1.70338 on 10 October 2026 (4,180, 2,436,
+   1,744, 26 and 2 on build 70205).
    The profession a quest needs, and the skill level in it, come from CMaNGOS too: the game's
    records only say what skill a quest rewards. The summary's "Skills:" line counts them, 141
    quests, 102 of them with a level above 1, in October 2026.
@@ -1061,9 +1062,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
 
 With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
 `skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables or
-CMaNGOS, and is for review before its pull request. The committed `pins.jsonl` is not yet a rerun's:
-the importer's start point change of 8 October was never followed by an import, so the next one also
-moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753; see [plans/forever.md](plans/forever.md)).
+CMaNGOS, and is for review before its pull request. The committed `pins.jsonl` is a rerun's since the
+import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
+start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
+replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)).
 
 ## Text in other languages
 
@@ -1355,7 +1357,8 @@ It began as pull request #139, which stays open as the record; its files are in
    choice, whose Classic option turns the quest points of interest on the map off: the map
    filter's "Quest Objectives" entry, the `questPOI` setting, which the results note. The first
    run, on beta build 70245 (7 October 2026), had it on and found no offers on any map
-   (game-api-review.md, "Map-offers probe: first run"). Run it with every probe run all the same:
+   (game-api-review.md, "Map-offers probe: first run"), and so did the runs on 70291 and 70338 (9 and
+   10 October). Run it with every probe run all the same:
    a check stays in the sweep while it finds nothing, as the client's files and the game's API can
    start serving more at any build (decided 7 October 2026), and a change in its totals is a
    finding to plan. It works on retail too, and the retail sweep takes it as well: copy the folder
@@ -1417,7 +1420,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 15,202
-  pins for retail, and 5,081 quests and 1,706 pins for Forever.
+  pins for retail, and 5,097 quests and 1,695 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
