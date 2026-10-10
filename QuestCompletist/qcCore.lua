@@ -1215,7 +1215,7 @@ local qcRefreshScheduled = false
 -- The map's two kinds of pins: quest givers on a zone's map, and zones on a continent's.
 function qcRefreshMapProviders()
 	qcMapDataProvider:RefreshAllData()
-	qcContinentDataProvider:RefreshAllData()
+	if qcContinentDataProvider then qcContinentDataProvider:RefreshAllData() end
 end
 
 local function qcFlushRefresh()

@@ -103,7 +103,6 @@ end
 
 -- Where a frame's top edge is, from the anchors it was given: 0 is the top of the page.
 local panel
-local function bottomOf(frame) return nil end
 local function topOf(frame)
 	local anchor
 	for _, p in ipairs(frame.points) do
@@ -111,7 +110,6 @@ local function topOf(frame)
 	end
 	anchor = anchor or frame.points[1]
 	if not anchor then return nil end
-	local relTop = 0
 	local rel = anchor.rel
 	local relY
 	if not rel or rel == panel then
