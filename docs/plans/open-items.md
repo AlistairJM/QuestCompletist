@@ -183,10 +183,6 @@ again.
 
 ## Data to finish
 
-- **53 retail quests the probe says recur** (9 October 2026, build 12.1.0.69933), typed one-time:
-  5 to daily (type 2, among them the Highmountain jetpack upgrades) and 48 to 128 (Covenant Assaults,
-  Archaeology, Nazjatar, the Oasis and others). `Retype-ProbeRecurring.ps1` on a scratch copy of the data
-  finds them; the retail pull request that applies them (step 3) isn't made.
 - **Names for about 20 pet-battle tutorial quests** that stand nameless on their trainers' pins
   (Narzak, Ansel Fincap, Grady Bannson, Valeena, Will Larsons, Matty, Jarson Everlong, Lehna): one
   Wowhead check per city, then `FILL` rows in `pin-giver-decisions.csv`.

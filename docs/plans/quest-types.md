@@ -47,6 +47,7 @@ does:
 | #133 | 135 | October 2026, below. |
 | #153 | 587 | October 2026 review, below. |
 | #156 | 603 | October 2026, the last sets, below. |
+| 9 October probe | 53 | Typed one-time, and the game says Recurring, from the probe's first retail run (`Retype-ProbeRecurring.ps1`), below. |
 
 **#133, October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
 one-time, so its 79 weeklies got a permanent tick: Wintergrasp's, Wrath raids' "… Must Die!",
@@ -131,6 +132,19 @@ reset: dailies' and weeklies' as before, and repeatables' now with the dailies'.
       Revenge" and "Rearm, Reuse, Recycle". The last two now match their holiday's other quests.
 
 Only the type field changed.
+
+**The probe run of 9 October 2026.** The probe's first run on retail (build 12.1.0.69933, all 35,023
+quests, 33,802 loaded against the 29 September type probe's 31,425) gave `Retype-ProbeRecurring.ps1`
+53 quests that are typed one-time and that the game calls Recurring, among the 3,766 it does:
+
+- **5 became repeatable (2):** "The Scrapbot Construction Kit" and the four Highmountain jetpack
+  upgrades ("Upgrade Your Jetpack (Optional)", "Expedition GG-118 Micro-Jetpack" and the A.T.O.M.I.K.
+  Mk. II pair).
+- **48 became 128:** Covenant Assaults (7), Professions (9), The Oasis (7), The Forbidden Reach (5),
+  Suffusion Camps (4), Hallowfall (4), Zaralek Cavern (3), Archaeology (2), Nazjatar (2), Silvermoon City
+  (2) and a few others.
+- Only the type field changed, no quest left the data, and `Test-QuestReachability.lua` reads the same
+  before and after. Their pins now hide with the other repeatable and recurring quests by default.
 
 ## Still open
 
