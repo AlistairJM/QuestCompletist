@@ -67,7 +67,10 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             own go by their description: the Darkmoon Faire's building days, the fishing contest's
             announcers and judges, and the Scourge Invasion and Ahn'Qiraj War Effort, which the
             calendar doesn't show, so the addon keeps their quests off the map.
-  prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache.
+  prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache, or else the quest
+                    before it in its quest line (QuestLineXQuest's order), when the previous step is handed in on the
+                    map this one starts on (the client's QuestPOIBlob points -1 and 32). A line that doesn't
+                    chain that way, and a quest line that disagrees with another source, are listed in the review.
 Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
 it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
 rectangles and overlap, so a spawn goes on the first of these maps whose frame holds it:
@@ -131,6 +134,7 @@ $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
 . "$PSScriptRoot\QuestRemovals.ps1"
 . "$PSScriptRoot\ForeverAnswers.ps1"
+. "$PSScriptRoot\QuestLines.ps1"
 . "$PSScriptRoot\LatestBuilds.ps1"
 $Build = Resolve-ProbeBuild $Build 'forever' $ToolsDir 'Build'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -604,6 +608,24 @@ foreach ($q in $records.Values) {
     elseif ($previousByNext[$q.id].Count -eq 1 -and $records.ContainsKey($previousByNext[$q.id][0])) { $q.prereq = $previousByNext[$q.id][0] }
 }
 
+$startMaps = @{}; $endMaps = @{}
+foreach ($blob in $questBlobs) {
+    $map = [int]$blob.UiMapID
+    if (-not $map) { continue }
+    if ($blob.ObjectiveIndex -eq '32') { $startMaps[[int]$blob.QuestID] += @($map) } else { $endMaps[[int]$blob.QuestID] += @($map) }
+}
+foreach ($id in @($endMaps.Keys)) { if (-not $startMaps.ContainsKey($id)) { $startMaps[$id] = $endMaps[$id] } }
+$haveQuest = @{}
+foreach ($id in $records.Keys) { $haveQuest[[int]$id] = $true }
+$fromLine = 0
+foreach ($step in (Get-QuestLineSteps (Group-QuestLines (Get-ClientTable 'QuestLineXQuest')) $startMaps $endMaps $haveQuest)) {
+    $q = $records[$step.Quest]
+    $after = "$($records[$step.Previous].name) ($($step.Previous)), step $($step.Step) of quest line $($step.Line)"
+    if ($step.State -ne 'chain') { Add-Review "quest line order not used: $($step.State)" $step.Quest $step.Previous "$($q.name) after ${after}: $($step.Detail)"; continue }
+    if (-not $q.prereq) { $q.prereq = $step.Previous; $fromLine++; Add-Review 'prerequisite from the quest line order' $step.Quest $step.Previous "$($q.name) after $after" }
+    elseif ($q.prereq -ne $step.Previous) { Add-Review 'quest line order disagrees with the prerequisite' $step.Quest $step.Previous "$($q.name): the prerequisite is $($q.prereq), the quest line has $after" }
+}
+
 $linkable = @{}
 foreach ($q in $records.Values) { if (-not ($q.type -band (2 + 4 + 128))) { $linkable[$q.id] = $true } }
 $breadcrumbs = @{}; $groups = @{}
@@ -858,6 +880,8 @@ Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} gr
 Write-Host ("Storylines: the client's QuestLine has {0} rows and QuestLineXQuest {1}; {2} of our quests belong to {3} storyline(s)." -f
     @(Get-ClientTable 'QuestLine').Count, @(Get-ClientTable 'QuestLineXQuest').Count,
     @($questList | Where-Object { $_.storyline }).Count, @($questList | Where-Object { $_.storyline } | Select-Object -ExpandProperty storyline -Unique).Count)
+Write-Host ("Prerequisites: {0} quests have one, {1} of them from the quest line order (each step after the one before it, where the places agree)." -f
+    @($questList | Where-Object { $_.prereq }).Count, $fromLine)
 Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f

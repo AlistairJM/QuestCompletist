@@ -64,7 +64,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Covenant | 777 | 0 | nature | No |
 | Profession | 1,742 | 142 | both; retail's task quests from `QuestV2CliTask` | – |
 | Holiday | 1,095 (9 October 2026; it grows as quests are tagged) | 322 | both; retail's is hand data in `data\quests.jsonl` (no tool writes it; the record is [quest-holiday-decisions.csv](quest-holiday-decisions.csv)), Forever's comes from CMaNGOS's events | – |
-| Prerequisites | 8,306 | 2,296 | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS | – |
+| Prerequisites | 8,306 | 2,307 (2,297 before the quest line rule) | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS, the cache's follow-ups and, for 10 quests, the quest line order | – (see recommendation 13) |
 | Breadcrumbs, "only one of these" | 279 and 249 lines | 93 and 257 | both | – |
 | Reputation rewards | 11,035 | 1,837 quests | both; API against the quest cache | – |
 | Renown requirements | 96 | none | nature | No |
@@ -145,6 +145,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 10 | A Forever review of hidden and test quests | later | after launch |
 | 11 | One rule for nameless pins in both games: a pin per quest and place (retail) or per spot (Forever) | small | decide, then align the tool that differs |
 | 12 | Name retail's pins after the object or item that starts the quest, as Forever's are | small | `gameobject_queststarter` and `gameobject_template` give 62 object-started quests; 120 start from an item alone |
+| 13 | Prerequisites from the quest line order, on retail as on Forever | a decision | built for Forever on 10 October 2026, where it is the only source (`QuestLines.ps1`, `Import-ForeverData.ps1`). Retail has Blizzard's own prerequisites, and measured on its tables (12.1.0.69933 quest lines, 12.1.5 map points) the rule would add one to 8,654 of its 16,093 chained steps, 8,697 counting the steps whose places differ: where retail does have one, the previous step is it 93% of the time, so about 1 in 14 of those additions would be wrong, and a wrong prerequisite hides a quest the player can take. Not done; the choice is to leave retail to the API, or to use the rule for steps the API lists no prerequisite for, listed for review |
 
 ## Decisions (agreed 7 October 2026)
 

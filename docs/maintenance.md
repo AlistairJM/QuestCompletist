@@ -997,7 +997,16 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    recurring quests. The summary's "Storylines:" line is a watch on the client's `QuestLine` and
    `QuestLineXQuest` tables, the only source of Forever's storylines: on builds 70205 to 70338 they had 3 and 22
    rows, so 11 of our quests were in 1 storyline. A rise in any of them means Blizzard has started to
-   fill them in, and the menu and the quest list's storyline lines then have something to show. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
+   fill them in, and the menu and the quest list's storyline lines then have something to show.
+   A quest with no prerequisite from CMaNGOS or the cache's follow-up links gets the quest before it in
+   its quest line (the client's `QuestLineXQuest` order) when that one is handed in on the map this one
+   starts on (the client's `QuestPOIBlob` points -1 and 32), which is the case for the ten steps after
+   the first of "Toxic Soil", quest line 6026 (92742 to 92819, Westfall, Stormwind and Elwynn). The
+   summary's "Prerequisites:" line counts them (2,307 quests, 10 from the quest line order, on build
+   70338), and the review lists each as "prerequisite from the quest line order", a line whose places
+   don't match as "quest line order not used", and one that disagrees with another source as
+   "quest line order disagrees with the prerequisite". Look at all three after an import: a rise in
+   the first means Blizzard filled in more quest lines. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
    Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
    that reward reputation in CMaNGOS; they get theirs once it answers.
    The level a character needs to take a quest (`minLevel`) is the game's, else CMaNGOS's
@@ -1474,6 +1483,9 @@ git diff --stat
   run `Test-QuestCache.ps1`, `Test-CompareQuestCache.ps1` and `Test-CompareQuestReputation.ps1`.
   They build their own caches, API records and tables in a scratch folder; each must end "N checks
   passed, 0 failed".
+- For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
+  say "0 failed".
 - For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see

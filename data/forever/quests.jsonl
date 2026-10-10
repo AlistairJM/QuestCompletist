@@ -4356,21 +4356,21 @@
 {"id":92741,"name":"Unwelcome Visitors","level":13,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":8}
 {"id":92742,"name":"Testing the Wells","level":12,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
 {"id":92743,"name":"A Conqueror's Crown","level":40,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"prereq":1369,"minLevel":30}
-{"id":92744,"name":"Murloc Gills","level":12,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92745,"name":"The State of the Mines","level":14,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92747,"name":"Moonbrook Espionage","level":15,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92748,"name":"Explosive Consultation","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92749,"name":"A Dynamite Plan","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92750,"name":"Detonation at a Distance","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92751,"name":"Detonation at a Distance","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92752,"name":"Explosive Consultation","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
-{"id":92753,"name":"Destruction in Deadmines","level":18,"zone":"The Deadmines","category":1581,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
+{"id":92744,"name":"Murloc Gills","level":12,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92742,"minLevel":9}
+{"id":92745,"name":"The State of the Mines","level":14,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92744,"minLevel":9}
+{"id":92747,"name":"Moonbrook Espionage","level":15,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92745,"minLevel":9}
+{"id":92748,"name":"Explosive Consultation","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92747,"minLevel":9}
+{"id":92749,"name":"A Dynamite Plan","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92748,"minLevel":9}
+{"id":92750,"name":"Detonation at a Distance","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92749,"minLevel":9}
+{"id":92751,"name":"Detonation at a Distance","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92750,"minLevel":9}
+{"id":92752,"name":"Explosive Consultation","level":16,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92751,"minLevel":9}
+{"id":92753,"name":"Destruction in Deadmines","level":18,"zone":"The Deadmines","category":1581,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92752,"minLevel":9}
 {"id":92754,"name":"A New Need for Shadow Protection","level":35,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":92755,"name":"Mysterious Mysticism","level":35,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":92814,"name":"I Need a Tailor","level":35,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":92817,"name":"Leather Technique","level":35,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":92818,"name":"Big, No, MASSIVE Iron Axes","level":35,"zone":"Desolace","category":405,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
-{"id":92819,"name":"Destruction in Deadmines","level":18,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"minLevel":9}
+{"id":92819,"name":"Destruction in Deadmines","level":18,"zone":"Westfall","category":40,"type":1,"faction":1,"race":67108941,"class":8191,"storyline":6026,"prereq":92753,"minLevel":9}
 {"id":92834,"name":"Avenged Tenfold","level":11,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"prereq":92840,"minLevel":6}
 {"id":92840,"name":"Catching Wind","level":11,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"prereq":99260,"minLevel":5}
 {"id":92841,"name":"Valley of Bones","level":40,"zone":"Shen'dralas","category":16651,"type":1,"faction":3,"race":0,"class":8191,"prereq":92743,"minLevel":35}
