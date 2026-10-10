@@ -65,6 +65,7 @@ $Base = @{
     HasSelect = $true; HasExtra = $false; ForeverOnly = $false; EnumUser = 'plain'
     FooArg = 'number'; FooExtra = $false; HasQuestExtra = $false; HasQuestGone = $false; QuestUnusedRet = 'bool'
     HasOwnNs = $false; OwnNsFlag = ''; PredicatesFile = 'ok'
+    HasMapTables = $true; MapZone = 3; MapDetailsExtra = $false
 }
 function With([hashtable]$changes) {
     $v = $Base.Clone()
@@ -96,6 +97,10 @@ function Get-Docs([hashtable]$v) {
         (LuaCallback 'TestCallback' @((LuaField 'key' 'string' $v.CallbackFlag))),
         '{ Name = "TestMode", Type = "Enumeration", NumValues = 1, Fields = { { Name = "One", Type = "TestMode", EnumValue = 1 } } }'
     )
+    if ($v.HasMapTables) {
+        $tables += ('{ Name = "UIMapType", Type = "Enumeration", NumValues = 2, Fields = { { Name = "Continent", Type = "UIMapType", EnumValue = 2 }, { Name = "Zone", Type = "UIMapType", EnumValue = ' + $v.MapZone + ' } } }')
+        $tables += (LuaStructure 'UiMapDetails' (@((LuaField 'mapID' 'number'), (LuaField 'mapType' 'UIMapType')) + @(if ($v.MapDetailsExtra) { LuaField 'flags' 'number' })))
+    }
     $docs['TestDocumentation.lua'] = LuaSystem 'TestAPI' 'C_Test' $functions $events $tables
     $questFunctions = @(
         (LuaFunction 'Thing' $v.QuestThingFlag @() @((LuaField 'ok' 'bool'))),
@@ -719,7 +724,50 @@ try {
             $listed = @($realRows | Where-Object { $_ -match "^F\t" -and (($_ -split "`t")[7] -split '; ') -ccontains "SecretArguments=$kind" }).Count
             Equal $listed $raw "R9: every function the files give SecretArguments=$kind is listed with it, and no other"
         }
+        $mapType = @($realRows | Where-Object { $_ -match '^T\t[^\t]*\t[^\t]*\tUIMapType \(Enumeration\)\t' })
+        Check ($mapType.Count -eq 1 -and ($mapType[0] -split "`t")[4] -match 'Cosmic:UIMapType=0, World:UIMapType=1, Continent:UIMapType=2, Zone:UIMapType=3') 'R10: the real documentation numbers the map types as the addon and the probe read them: Continent 2, Zone 3'
+        $mapDetails = @($realRows | Where-Object { $_ -match '^T\t[^\t]*\t[^\t]*\tUiMapDetails \(Structure\)\t' })
+        Check ($mapDetails.Count -eq 1 -and ($mapDetails[0] -split "`t")[4] -match '^mapID:number, name:cstring, mapType:UIMapType, parentMapID:number') 'R10: and UiMapDetails has the fields the addon and the probe read'
     }
+    # --- Structures and enumerations the addon reads --------------------------------------------
+    $s = New-Scenario 'tables'
+    $r = Invoke-Build $s $Base '1.0.0.1'
+    Has $r.Text '2 structures and enumerations the addon relies on: 2 documented on this branch.' 'T1: both are documented on the first build'
+    Equal $r.Exit 0 'T1: and the first run exits 0'
+    $tsv = Read-Tsv "$($s.Tools)\api_docs-live-1.0.0.1.tsv"
+    Equal $tsv['T C_Test UIMapType (Enumeration)'][4] 'Continent:UIMapType=2, Zone:UIMapType=3' 'T1: the list keeps the enumeration with its values'
+    Equal $tsv['T C_Test UiMapDetails (Structure)'][4] 'mapID:number, mapType:UIMapType' 'T1: and the structure with its fields'
+    $r = Invoke-Build $s $Base '1.0.0.2'
+    Equal $r.Exit 0 'T2: the same again exits 0'
+    Has $r.Text '2 structures and enumerations the addon relies on: 2 documented on this branch.' 'T2: and both are still documented'
+    Lacks $r.Text 'its fields changed' 'T2: with no change'
+    Has $r.Text 'Not checked: the contents of structures beyond their flags, except the ones -Tables names' 'T2: the closing line says which structures are checked'
+    $r = Invoke-Build $s (With @{ MapZone = 4 }) '1.0.0.3'
+    Equal $r.Exit 1 'T3: an enumeration value renumbered exits 1'
+    Has $r.Text 'the addon relies on UIMapType: its fields changed, was Continent:UIMapType=2, Zone:UIMapType=3, now Continent:UIMapType=2, Zone:UIMapType=4' 'T3: and shows what it was and is'
+    Has $r.Text '1 structure(s) or enumeration(s) the addon relies on have changed or gone' 'T3: and counts it'
+    Lacks $r.Text 'function(s) or event(s) the addon relies on' 'T3: apart from the functions and events'
+    Lacks $r.Text 'the addon relies on UiMapDetails' 'T3: the structure did not change'
+    $r = Invoke-Build $s (With @{ MapZone = 4; MapDetailsExtra = $true }) '1.0.0.4'
+    Equal $r.Exit 1 'T4: a field added to a structure exits 1'
+    Has $r.Text 'the addon relies on UiMapDetails: its fields changed, was mapID:number, mapType:UIMapType, now mapID:number, mapType:UIMapType, flags:number' 'T4: and is shown'
+    Lacks $r.Text 'the addon relies on UIMapType' 'T4: the enumeration, now the same as the build before, is not'
+    $r = Invoke-Build $s (With @{ MapZone = 4; MapDetailsExtra = $true; HasMapTables = $false }) '1.0.0.5'
+    Equal $r.Exit 1 'T5: both gone exits 1'
+    Has $r.Text 'the addon relies on UIMapType: documented in api_docs-live-1.0.0.4.tsv, gone now' 'T5: the enumeration'
+    Has $r.Text 'the addon relies on UiMapDetails: documented in api_docs-live-1.0.0.4.tsv, gone now' 'T5: the structure'
+    Has $r.Text '2 structure(s) or enumeration(s) the addon relies on have changed or gone' 'T5: and counts both'
+    Has $r.Text '2 structures and enumerations the addon relies on: 0 documented on this branch.' 'T5: and says none is documented now'
+    $s = New-Scenario 'tablesnever'
+    [void](Invoke-Build $s (With @{ HasMapTables = $false }) '1.0.0.1')
+    $r = Invoke-Build $s (With @{ HasMapTables = $false }) '1.0.0.2'
+    Equal $r.Exit 0 'T6: tables a game never documented do not fail the run'
+    Has $r.Text '2 structures and enumerations the addon relies on: 0 documented on this branch; not documented here: UIMapType, UiMapDetails.' 'T6: they are listed as not documented'
+    $s = New-Scenario 'tablesoff'
+    [void](Invoke-Build $s $Base '1.0.0.1')
+    $r = Invoke-Build $s (With @{ MapZone = 4 }) '1.0.0.2' @{ Tables = @() }
+    Equal $r.Exit 0 'T7: with -Tables empty a renumbered enumeration is not looked at'
+    Has $r.Text '0 structures and enumerations the addon relies on: 0 documented on this branch.' 'T7: and the line counts none'
 }
 finally {
     Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue

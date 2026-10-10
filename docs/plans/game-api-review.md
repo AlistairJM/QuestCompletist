@@ -892,3 +892,12 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   its functions the client has, with the run's row saying which that was. The probe is `tools/ForeverProbe`,
   a dev-only addon; retail's list is every quest in `data\quests.jsonl` (QuestV2 is not asked), the
   recurring ones first. It still needs the in-game run (about two hours on retail) and readers.
+- 2026-10-10: the continent icons ([continent-pins.md](continent-pins.md)) made `C_Map.GetMapChildrenInfo`,
+  `GetMapRectOnMap`, `GetMapInfo` and `Enum.UIMapType` things the addon relies on, so `Compare-ApiDocs.ps1`
+  watches them: the C_ calls by name as all of them are, and `UIMapType` and `UiMapDetails` field by field
+  (`-Tables`), the first structures whose contents it compares. Real lists: both are documented the same on
+  live 12.1.0.69933 and Forever 1.60.1.70338 (Continent 2, Zone 3; `mapID`, `name`, `mapType`,
+  `parentMapID`, `flags`). The probe's geometry pass (retail and Forever, 10 October) answered the open
+  questions of `GetMapChildrenInfo` and `GetMapRectOnMap`: the type filter is exact, a rectangle may be
+  flat (zero width and height) rather than missing, and `GetMapInfoAtPosition` names a city's neighbour
+  at the city's own centre.

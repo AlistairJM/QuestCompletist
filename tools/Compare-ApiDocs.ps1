@@ -31,6 +31,11 @@ An earlier list saved before the flags were kept is read again from its document
 needs no download. A documentation file that stopped loading (or started) is named: what it
 documents shows as removed (or added).
 
+A few structures and enumerations the addon (or its probe) reads are watched field by field, as functions are:
+-Tables names them (UIMapType, whose Continent and Zone values the continent icons look for, and UiMapDetails, the
+map facts they read). A field added, removed or retyped, or an enumeration value renumbered, or one that goes,
+exits with 1: the code reads the value by its number or the field by its name.
+
 A function the addon calls that one game documents and the other doesn't (C_SkillInfo on retail)
 is listed at the end: the code guards each, with a fallback where it has one (the skill check
 reads the character's profession list without C_SkillInfo), and what is still that game's alone is
@@ -51,6 +56,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string[]]$Branches = @('live', 'forever'),
+    [string[]]$Tables = @('UIMapType', 'UiMapDetails'),
     [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe',
     [string]$DownloadDir = (Join-Path $env:TEMP 'api_docs'),
     [string]$SourceDir,
@@ -173,6 +179,7 @@ function Read-List([string]$path) {
     $functions = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
     $events = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
     $notLoaded = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
+    $tables = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
     $withSecrecy = $false; $withLoadInfo = $false
     foreach ($row in [IO.File]::ReadAllLines($path)) {
         if ($row.StartsWith('#')) {
@@ -188,6 +195,11 @@ function Read-List([string]$path) {
         $where = if ($f[2]) { $f[2] } else { $f[1] }
         if ($f[0] -eq 'F') { $table = $functions; $shape = "($($f[4])) -> $($f[5])" }
         elseif ($f[0] -eq 'E') { $table = $events; $key = $f[3]; $shape = "($($f[4]))" }
+        elseif ($f[0] -eq 'T') {
+            $name = $f[3] -replace ' \((Enumeration|Structure|CallbackType)\)$', ''
+            if (-not $tables.ContainsKey($name)) { $tables[$name] = $f[4] }
+            continue
+        }
         else { continue }
         if ($table.ContainsKey($key)) {
             $entry = $table[$key]
@@ -198,7 +210,7 @@ function Read-List([string]$path) {
             $table[$key] = @{ Where = $where; Bare = (-not $f[2]); Shapes = @($shape); Shape = $shape; Secrecy = $secrecy }
         }
     }
-    return @{ Functions = $functions; Events = $events; NotLoaded = $notLoaded; HasSecrecy = $withSecrecy; HasLoadInfo = $withLoadInfo }
+    return @{ Functions = $functions; Events = $events; Tables = $tables; NotLoaded = $notLoaded; HasSecrecy = $withSecrecy; HasLoadInfo = $withLoadInfo }
 }
 
 # What two secrecy texts differ by: "+flag; -flag", or nothing.
@@ -354,10 +366,28 @@ function Compare-Branch([string]$branch, $source) {
     }
     Write-Output "$($listened.Count) events the addon listens for are documented: $eventsPresent on this branch."
     $script:brokenTotal += $broken + $eventBroken
+
+    $tablesPresent = 0; $tablesAbsent = @()
+    foreach ($name in $Tables) {
+        if ($new.Tables.ContainsKey($name)) {
+            $tablesPresent++
+            if ($old -and $old.Tables.ContainsKey($name) -and $old.Tables[$name] -cne $new.Tables[$name]) {
+                Write-Output "  the addon relies on ${name}: its fields changed, was $($old.Tables[$name]), now $($new.Tables[$name])"
+                $script:tablesBroken++
+            }
+        } elseif ($old -and $old.Tables.ContainsKey($name)) {
+            Write-Output "  the addon relies on ${name}: documented in $($earlier.Name), gone now"
+            $script:tablesBroken++
+        } else {
+            $tablesAbsent += $name
+        }
+    }
+    Write-Output ("$($Tables.Count) structures and enumerations the addon relies on: $tablesPresent documented on this branch" + $(if ($tablesAbsent) { "; not documented here: $($tablesAbsent -join ', ')" } else { "" }) + ".")
 }
 
 $source = Get-AddonSource
 $script:brokenTotal = 0
+$script:tablesBroken = 0
 $script:documented = @{}
 $script:callsOf = @{}
 $script:listenedOn = @{}
@@ -379,11 +409,14 @@ if ($Branches.Count -gt 1) {
     }
     Write-Output ("Events the addon listens for that one game documents and another doesn't: " + $(if ($onlyEvents) { $onlyEvents -join '; ' } else { 'none' }) + ".")
 }
+if ($script:tablesBroken -gt 0) {
+    Write-Output "$script:tablesBroken structure(s) or enumeration(s) the addon relies on have changed or gone: check the code that reads them (-Tables lists them) before the sweep goes on."
+}
 if ($script:brokenTotal -gt 0) {
     Write-Output "$script:brokenTotal function(s) or event(s) the addon relies on have gone, changed (shape or secrecy), or newly appeared on a game that lacked them: check the code before the sweep goes on."
-    exit 1
 }
-$unchecked = "Not checked: the contents of structures beyond their flags, and the old globals (GetQuestID, GetNumAvailableQuests and the recorder's other quest-window calls), which the documentation leaves out."
+if ($script:brokenTotal -gt 0 -or $script:tablesBroken -gt 0) { exit 1 }
+$unchecked = "Not checked: the contents of structures beyond their flags, except the ones -Tables names, and the old globals (GetQuestID, GetNumAvailableQuests and the recorder's other quest-window calls), which the documentation leaves out."
 if ($script:notCompared.Count -gt 0 -or $script:notices.Count -gt 0) {
     Write-Output ("Nothing the addon relies on changed in what was compared." + $(if ($script:notCompared) { " Not compared: $($script:notCompared -join '; ')." } else { "" }) + $(if ($script:notices) { " See above: $($script:notices -join '; ')." } else { "" }) + " $unchecked")
     exit 0
