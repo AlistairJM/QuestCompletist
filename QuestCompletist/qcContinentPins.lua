@@ -7,6 +7,11 @@ local qcIsQuestCompletedOnAccount = QC.qcIsQuestCompletedOnAccount
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
 local qcMapTip, qcSetIcon = QC.qcMapTip, QC.qcSetIcon
 local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS
+-- A finished zone's green check: a 40 x 35 pixel atlas member, drawn at the icon's width and 35/40 of it high. The
+-- common check (QC_ICON_COMPLETE) has two members in the client's tables, of 256 and 22 pixels, and which one the
+-- game draws is not known; this one is a single, sharp one at the size the icon has.
+local QC_ICON_DONE = {atlas = "orderhalltalents-done-checkmark"}
+local QC_ICON_DONE_ASPECT = 35 / 40
 
 -- Zones whose quests the list files under the categories of their parts, as well as under their own, if
 -- they have one. Both games' map IDs: retail's are Stranglethorn Vale (Northern Stranglethorn, The Cape of
@@ -213,13 +218,20 @@ local function qcZoneLook(numbers)
 	if numbers.progress > 0 then return QC_ICON_PROGRESS, numbers.progress, false end
 end
 
--- The icons a continent map draws now: each zone with something left to do, with its look, count and shade.
+-- The icons a continent map draws now: each zone with something left to do, with its look, count and shade, and
+-- (while the map shows completed quests) a green check on each zone that has quests and nothing left of them.
 local function qcContinentIcons(continentId)
 	local keepQuest, countWarband = qcBuildViewFilter("M"), qcHides("M", "WARBANDS")
+	local showCompleted = not qcHides("M", "COMPLETED")
 	local icons = {}
 	for _, zone in ipairs(qcContinentZones(continentId)) do
-		local look, count, dim = qcZoneLook(qcZoneNumbers(zone, keepQuest, countWarband))
-		if look then icons[#icons + 1] = {zone = zone, look = look, count = count, dim = dim} end
+		local numbers = qcZoneNumbers(zone, keepQuest, countWarband)
+		local look, count, dim = qcZoneLook(numbers)
+		if look then
+			icons[#icons + 1] = {zone = zone, look = look, count = count, dim = dim}
+		elseif showCompleted and numbers.total > 0 then
+			icons[#icons + 1] = {zone = zone, look = QC_ICON_DONE, dim = false}
+		end
 	end
 	return icons
 end
@@ -249,14 +261,14 @@ function qcContinentPinMixin:OnAcquired(icon)
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
 	self:SetPosition(icon.zone.x, icon.zone.y)
 	local size = qcContinentIconSize()
-	self:SetSize(size, size)
+	self:SetSize(size, icon.look == QC_ICON_DONE and size * QC_ICON_DONE_ASPECT or size)
 	local progress = icon.look == QC_ICON_PROGRESS
 	qcSetIcon(self.Texture, progress and QC_ICON_READY or icon.look)
 	self.Texture:SetDesaturated(progress)
 	local shade = icon.dim and 0.5 or 1
 	self.Texture:SetVertexColor(shade, shade, shade)
 	self.Count:SetFontObject(size >= 30 and "NumberFontNormalLarge" or size >= 26 and "NumberFontNormal" or "NumberFontNormalSmall")
-	self.Count:SetText(icon.count)
+	self.Count:SetText(icon.count or "")
 	self.Count:SetTextColor(shade, shade, shade)
 end
 
@@ -280,7 +292,7 @@ function qcContinentPinMixin:OnMouseEnter()
 	qcMapTip.Open(self, anchorPoint)
 	local numbers = qcZoneNumbers(zone, qcBuildViewFilter("M"), qcHides("M", "WARBANDS"))
 	qcMapTip.Line(zone.name, nil, GameTooltipHeaderText)
-	if numbers.total >= 2 then
+	if numbers.total >= 2 or (numbers.total == 1 and numbers.done == 1) then
 		local leftText, rightText = qcMapTip.Line(" ", string.format("|cffc8c8c8%d/%d|r", numbers.done, numbers.total))
 		if leftText and rightText then
 			qcMapTip.Bar(leftText, rightText, numbers.done, numbers.total)

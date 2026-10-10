@@ -152,7 +152,7 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 			source = source .. [[
 
 return {Zones = qcContinentZones, Numbers = qcZoneNumbers, Look = qcZoneLook, Kind = qcQuestKind,
-	Icons = qcContinentIcons, Hubs = QC_CONTINENT_HUBS, Hosts = QC_SUBZONE_HOST, At = QC_ZONE_ICON_AT}]]
+	Icons = qcContinentIcons, Hubs = QC_CONTINENT_HUBS, Hosts = QC_SUBZONE_HOST, At = QC_ZONE_ICON_AT, Done = QC_ICON_DONE}]]
 		end
 		local chunk = assert(loadstring(source, "@" .. ADDON_DIR .. "/" .. file))
 		setfenv(chunk, env)
@@ -653,7 +653,43 @@ for _, icon in ipairs(icons) do
 		for _, questId in ipairs(categories[categoryId] or {}) do env.qcCharacterCompletions[questId] = 1 end
 	end
 end
-check("a zone with all its quests done is left out", #code.Icons(CONT) == 0)
+check("a zone with all its quests done is left out while the map hides completed quests", #code.Icons(CONT) == 0)
+settings({QC_M_HIDE_COMPLETED = 0})
+local checks = code.Icons(CONT)
+local allChecks = #checks == #zones and #checks > 0
+for _, icon in ipairs(checks) do
+	if icon.look ~= code.Done or icon.count ~= nil or icon.dim ~= false then allChecks = false end
+end
+check("and gets a green check, with no count, when the map shows them", allChecks, #checks .. " icons for " .. #zones .. " zones")
+env.qcCharacterCompletions = {}
+for _, categoryId in ipairs(icons[1].zone.categories) do
+	for _, questId in ipairs(categories[categoryId] or {}) do env.qcCharacterCompletions[questId] = 1 end
+end
+local oneDone = {}
+for _, icon in ipairs(code.Icons(CONT)) do oneDone[icon.zone.mapId] = icon end
+check("a zone that still has quests keeps its own icon", oneDone[icons[2].zone.mapId] and oneDone[icons[2].zone.mapId].look ~= code.Done
+	and oneDone[icons[2].zone.mapId].count > 0)
+check("beside the green check of the one that is all done", oneDone[icons[1].zone.mapId] and oneDone[icons[1].zone.mapId].look == code.Done)
+local recurringOnly, recurringOnlyMap
+for categoryId, list in pairs(categories) do
+	local all = #list > 0
+	for _, questId in ipairs(list) do if not isRecurring(questId) then all = false end end
+	if all then
+		for mapId, mapped in pairs(BY_AREA) do
+			if mapped == categoryId and (not recurringOnlyMap or mapId < recurringOnlyMap) then recurringOnly, recurringOnlyMap = categoryId, mapId end
+		end
+	end
+end
+if recurringOnlyMap then
+	S.children[CONT + 11] = {zone(recurringOnlyMap, "Dailies only")}
+	S.rects[recurringOnlyMap] = {0.1, 0.2, 0.1, 0.2}
+	check("a zone whose quests are all daily or weekly (none count) gets no check", #code.Icons(CONT + 11) == 0)
+	S.rects[recurringOnlyMap] = nil
+else
+	print("  (no category in this game's data holds only recurring quests: not checked)")
+end
+settings()
+check("with the map hiding completed quests again, it has none", #code.Icons(CONT) == #zones - 1)
 env.qcCharacterCompletions = {}
 
 print("The provider draws a continent's icons")
@@ -696,6 +732,10 @@ for _, pinned in ipairs(map.pins) do
 end
 provider:RefreshAllData()
 check("a continent with everything done gets none", #map.pins == 0)
+settings({QC_M_HIDE_COMPLETED = 0})
+provider:RefreshAllData()
+check("or a green check on each zone, when the map shows completed quests", #map.pins == expected and map.pins[1].data.look == code.Done)
+settings()
 env.qcCharacterCompletions = {}
 provider.GetMap = function() return nil end
 check("a provider on no map does nothing", pcall(provider.RefreshAllData, provider))
@@ -737,6 +777,15 @@ check("and its zone", pin.Icon.zone == zoneA)
 pin:OnAcquired({zone = zoneA, look = READY, count = 2, dim = false})
 check("a ready pin has the ready art, in colour, at full shade", pin.atlas == READY.atlas and pin.desaturated == false
 	and pin.shade == 1 and pin.countShade == 1 and pin.count == 2)
+pin:OnAcquired({zone = zoneA, look = code.Done, dim = false})
+check("a completed zone's pin is the green check, in colour, with no count", pin.atlas == code.Done.atlas and pin.desaturated == false
+	and pin.shade == 1 and pin.count == "")
+local function lastSize(sized)
+	for i = #sized.log, 1, -1 do if sized.log[i]:find("^size ") then return sized.log[i] end end
+end
+check("drawn as wide as the icon and 35/40 as high, as its art is", lastSize(pin) == "size 24x21", tostring(lastSize(pin)))
+pin:OnAcquired(bright)
+check("and the next look in the same pin is square again", lastSize(pin) == "size 24x24", tostring(lastSize(pin)))
 pin:OnAcquired({zone = zoneA, look = PROGRESS, count = 12, dim = false})
 check("the grey look of quests in the log is the ready art, in grey: the game's own grey file is 16 pixels", pin.desaturated == true
 	and pin.atlas == READY.atlas and pin.shade == 1 and pin.countShade == 1)
