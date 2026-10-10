@@ -35,7 +35,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 - A progress bar shows how many of each quest giver's quests you've done. The ones still to do come first, and done quests fold into one line: hold **Shift** to list them.
 - With the map's filters for them turned off, quests you can't take yet are greyed, with what stands in the way, like *Requires Level 50* or the quest to do first.
 - Holiday quest pins follow the in-game calendar. Brewfest, Hallow's End, Winter Veil, the Darkmoon Faire and the rest appear only while they're running. Type **/qc holidays** to see what's on now and what's coming up.
-- On the continent maps, each zone shows an icon for what you have left to do there, with the number: a yellow **!** for quests you can take, a **?** for quests ready to hand in. Hover one for the counts and what's done. Cities and hubs like Oribos, Dalaran and Undermine have their own, and a zone you've finished gets a green check. Untick *Show Zone Icons on Continent Maps* in the options to hide them.
+- On the continent maps, each zone shows an icon for what you have left to do there, with the number: a yellow **!** for quests you can take, a **?** for quests ready to hand in. Hover one for the counts and what's done. On Retail, hubs like Oribos, Dalaran and Undermine have their own. Untick *Hide Completed Quests* in the map's filters and a zone you've finished gets a green check. Untick *Show Zone Icons on Continent Maps* in the options to hide the icons.
 
 **Detailed quest tooltips**
 
