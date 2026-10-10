@@ -983,11 +983,19 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    without it; any other CMaNGOS quest it lacks comes in once the probe gets an answer for it. The
    review list names each kept quest `QuestV2` lacks. A quest `QuestV2` lacks that the beta refused
    at level 1 to 35, where it answers nearly everything, is left out until the server answers it.
-   The beta's answers differ between runs (about 80 of 7,320 quests each time), so a quest the game
-   answered in the run before this one and not in this one keeps that run's record, from the
-   previous `forever_quest_cache_<build>.jsonl` in `tools\` (keep each run's file), and the review
-   lists it as "kept from the previous run"; it drops out when two runs in a row refuse it. The
-   summary's "Carried over:" line counts them. `-NoCarry` reads the newest run alone.
+   The beta's answers differ between runs (about 80 of 7,320 quests each time), so the importer
+   keeps the game's last record of every quest it has ever answered, with the number of runs in a row
+   it has gone unanswered, in `data\forever\answers.jsonl` (a run is one client build's quest cache;
+   a quest the probe didn't ask about isn't counted). A quest not answered now keeps its last record
+   and the review lists it as "kept from an earlier run"; only after `-MaxMissedRuns` (10) runs in a
+   row does it stop being imported. With no answers file it is made from the `forever_quest_cache_<build>.jsonl`
+   files in `tools\`, so keep each run's. The summary's "Answer memory:" line counts them.
+   **No quest leaves the data unseen.** Before it writes anything, the importer compares its quests
+   with `data\forever\quests.jsonl` and stops, writing nothing, if any would go (ten missed runs, an
+   internal title, a CMaNGOS change): it lists them, with ID, name and zone, in the output and in
+   `tools\quest_removals_forever.csv`. Show that list to the user. Then add a row for each to
+   `docs\plans\quest-removal-decisions.csv` (`Game`, `Quest`, `Decision`, `Reason`): `REMOVE` once the
+   user has agreed, or `KEEP`, which keeps the quest from its last record whatever else would drop it.
    A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
@@ -1427,6 +1435,13 @@ git diff --stat
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
+- **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or
+  `data\forever\quests.jsonl`, run `powershell -NoProfile -ExecutionPolicy Bypass -File
+  tools\Show-RemovedQuests.ps1 -Game retail` (or `forever`): it lists the quests the file has lost since
+  `origin/master`, with ID, name and zone, and exits 1 for one with no `REMOVE` row in
+  `docs\plans\quest-removal-decisions.csv`. Show the list to the user and wait for their review before
+  committing the change; put it in the pull request. `Test-QuestRemovals.ps1` checks the tool and the
+  importer's answer memory on made-up data and must say "0 failed".
 - For changes to the probe (`tools\ForeverProbe\QCForeverProbe`), run `Test-Probe.lua`. It must say "0 failed".
   It plays the quest, NPC and map passes and the recorder against stand-ins for the API, on a clock of its
   own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).

@@ -21,10 +21,17 @@ listed giver the recorder didn't see offer the quest, when it saw another giver 
 Quests with internal titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows)
 are left out.
 The beta's answers differ between runs, whatever the build: about 80 of 7,320 quests are answered in one
-run and refused in the next. So a quest the game answered in the run before this one, the newest
-earlier forever_quest_cache_<build>.jsonl in -ToolsDir or -PreviousCacheFile, and didn't answer in this
-one, keeps that run's record and is listed for review; it drops out when two runs in a row refuse it.
--NoCarry reads this run alone.
+run and refused in the next. So the game's last record of every quest it has ever answered is kept in
+-AnswerFile (data\forever\answers.jsonl), with how many runs in a row it has gone unanswered (a run is
+one client build's quest cache, and a quest the probe didn't ask about isn't counted). A quest the
+game doesn't answer now keeps its last record and is listed for review; it only stops being imported
+after -MaxMissedRuns (10) runs in a row. With no answer file, it is made from the forever_quest_cache_<build>.jsonl
+files in -ToolsDir.
+Nothing leaves the data unseen. Before it writes anything, the importer compares its quests with
+the ones in -DataDir, and a quest that would go (it missed -MaxMissedRuns runs, its title is internal,
+CMaNGOS dropped it) is listed, in -RemovalsFile (tools\quest_removals_forever.csv) too, and the
+run stops until -DecisionsFile (docs\plans\quest-removal-decisions.csv) has a row for it: REMOVE lets
+it go, KEEP keeps it from its last record whatever else would drop it. Review the list with the user first.
 QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
 row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
 out until the game answers for it. With no row, a quest the probe asked about that failed at level 1
@@ -106,8 +113,10 @@ param(
     [string]$Build = "1.60.1.70205",
     [string]$EraBuild = "1.15.9.70003",
     [string]$CacheFile = "",
-    [string]$PreviousCacheFile = "",
-    [switch]$NoCarry,
+    [string]$AnswerFile = "",
+    [int]$MaxMissedRuns = 10,
+    [string]$DecisionsFile = (Join-Path $PSScriptRoot '..\docs\plans\quest-removal-decisions.csv'),
+    [string]$RemovalsFile = "",
     [string]$ProbeFile = "",
     [string]$CmangosDump = "",
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
@@ -119,8 +128,12 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestRemovals.ps1"
+. "$PSScriptRoot\ForeverAnswers.ps1"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
+if (-not $AnswerFile) { $AnswerFile = Join-Path $DataDir 'answers.jsonl' }
+if (-not $RemovalsFile) { $RemovalsFile = "$ToolsDir\quest_removals_forever.csv" }
 if (-not $CacheFile) { $CacheFile = "$ToolsDir\forever_quest_cache_$Build.jsonl" }
 if (-not (Test-Path $CacheFile)) { throw "There's no $CacheFile. Run Read-QuestCache.ps1 first." }
 if (-not $ProbeFile) {
@@ -454,21 +467,6 @@ $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Spl
 $cache = @{}
 $cacheLines = [IO.File]::ReadAllLines($CacheFile)
 foreach ($q in (('[' + ($cacheLines -join ',') + ']') | ConvertFrom-Json)) { $cache[[int]$q.id] = $q }
-$carried = @{}
-$previousBuild = ''
-if (-not $NoCarry) {
-    if (-not $PreviousCacheFile) {
-        $PreviousCacheFile = Get-ChildItem "$ToolsDir\forever_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -match '^forever_quest_cache_(\d+\.\d+\.\d+\.\d+)\.jsonl$' -and [version]$Matches[1] -lt [version]$Build } |
-            Sort-Object { [version]($_.Name -replace '^forever_quest_cache_(.*)\.jsonl$', '$1') } | Select-Object -Last 1 -ExpandProperty FullName
-    }
-    if ($PreviousCacheFile) {
-        $previousBuild = [regex]::Match($PreviousCacheFile, 'forever_quest_cache_(\d+\.\d+\.\d+\.\d+)\.jsonl$').Groups[1].Value
-        foreach ($q in (('[' + ([IO.File]::ReadAllLines($PreviousCacheFile) -join ',') + ']') | ConvertFrom-Json)) {
-            if (-not $cache.ContainsKey([int]$q.id)) { $cache[[int]$q.id] = $q; $carried[[int]$q.id] = $true }
-        }
-    }
-}
 $probeResult = @{}; $gameNpcName = @{}; $recordedSpots = @{}; $recordedName = @{}; $recordedOffers = @{}
 foreach ($line in $probeLines) {
     $f = $line.Split("`t")
@@ -487,21 +485,48 @@ foreach ($line in $probeLines) {
     }
 }
 
+$keep = @{}; $removeOk = @{}
+foreach ($d in (Read-RemovalDecisions $DecisionsFile 'forever')) {
+    if ($d.Decision -eq 'KEEP') { $keep[$d.Quest] = $d } else { $removeOk[$d.Quest] = $d }
+}
+$memory = Read-AnswerMemory $AnswerFile
+if (-not $memory.Runs.Count) {
+    $earlier = Get-ChildItem "$ToolsDir\forever_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match '^forever_quest_cache_(\d+\.\d+\.\d+\.\d+)\.jsonl$' -and [version]$Matches[1] -le [version]$Build } |
+        Sort-Object { [version]($_.Name -replace '^forever_quest_cache_(.*)\.jsonl$', '$1') }
+    foreach ($file in $earlier) {
+        Update-AnswerMemory $memory (Read-CacheLines $file.FullName) $null ($file.Name -replace '^forever_quest_cache_(.*)\.jsonl$', '$1')
+    }
+}
+Update-AnswerMemory $memory (Read-CacheLines $CacheFile) $probeResult $Build
+$carried = @{}
+foreach ($id in ($memory.Quests.Keys | Sort-Object)) {
+    if ($cache.ContainsKey($id) -or $removeOk[$id]) { continue }
+    $entry = $memory.Quests[$id]
+    if ($entry.Missed -ge $MaxMissedRuns -and -not $keep[$id]) { continue }
+    $cache[$id] = $entry.Raw | ConvertFrom-Json
+    $carried[$id] = $entry
+}
+$gone = @(Get-QuestsMissedSince $memory $MaxMissedRuns | Where-Object { -not $cache.ContainsKey($_) })
+
 $review = New-Object System.Collections.Generic.List[object]
 function Add-Review([string]$kind, $quest, $other, [string]$detail) {
     $review.Add([pscustomobject]@{ Kind = $kind; Quest = $quest; Other = $other; Detail = $detail })
 }
 
-$ids = @(@($cache.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] -or ($cmQuest[$_].Special -band 1) }) | Sort-Object -Unique)
+foreach ($id in $keep.Keys) {
+    if (-not $cache.ContainsKey($id) -and -not $cmQuest.ContainsKey($id)) { throw "$DecisionsFile says to keep quest $id, which neither the game's answers nor CMaNGOS have." }
+}
+$ids = @(@($cache.Keys) + @($keep.Keys) + @($cmQuest.Keys | Where-Object { $inClient[$_] -or ($cmQuest[$_].Special -band 1) }) | Sort-Object -Unique)
 $records = @{}
 $refiled = 0
 $gameGivers = 0
 foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
-    if ($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) { Add-Review 'left out: internal title' $id '' $title; continue }
-    if ($carried[$id]) { Add-Review 'kept from the previous run: not answered now' $id '' "$title (answered on $previousBuild)" }
-    if (-not $c -and -not $inClient[$id] -and $probeResult[$id] -eq 'fail' -and $m.Level -ge 1 -and $m.Level -le 35) {
+    if (($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) -and -not $keep[$id]) { Add-Review 'left out: internal title' $id '' $title; continue }
+    if ($carried[$id]) { Add-Review 'kept from an earlier run: not answered now' $id '' "$title (last answered on $($carried[$id].Seen), $($carried[$id].Missed) runs ago)" }
+    if (-not $c -and -not $inClient[$id] -and $probeResult[$id] -eq 'fail' -and $m.Level -ge 1 -and $m.Level -le 35 -and -not $keep[$id]) {
         Add-Review 'left out: failed on the beta below level 36' $id '' "$title (not in QuestV2)"
         continue
     }
@@ -820,7 +845,8 @@ $fromBoth = @($questList | Where-Object { $cache.ContainsKey($_.id) -and $cmQues
 $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $cmQuest.ContainsKey($_.id) }).Count
 Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, {3} from CMaNGOS only. {4} pins on {5} maps." -f
     $questList.Count, $fromBoth, $fromGame, ($questList.Count - $fromBoth - $fromGame), $pinList.Count, @($pinList | Select-Object -ExpandProperty map -Unique).Count)
-if ($previousBuild) { Write-Host ("Carried over: {0} quests the game answered on {1} and not in this run." -f @($questList | Where-Object { $carried[$_.id] }).Count, $previousBuild) }
+Write-Host ("Answer memory: {0} quests over {1} runs; {2} that the game didn't answer this run are kept from earlier ones; {3} have missed {4} runs in a row." -f
+    $memory.Quests.Count, $memory.Runs.Count, @($questList | Where-Object { $carried[$_.id] }).Count, $gone.Count, $MaxMissedRuns)
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
 Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; pinned there: {2}). Start points off their map: {3}. Quest records that name a giver: {4}." -f
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
@@ -839,6 +865,24 @@ Write-Host ("Minimum levels: {0} quests need another level than their own, {1} f
     @($withMinLevel | Where-Object { $_.minLevel -gt $_.level }).Count, @($withMinLevel | Where-Object { $_.minLevel -eq 0 }).Count)
 $review | Group-Object Kind | Sort-Object Name | ForEach-Object { Write-Host ("  {0}: {1}" -f $_.Name, $_.Count) }
 Write-Host "Review: $ReviewFile"
+
+$questIds = @{}
+foreach ($q in $questList) { $questIds[[int]$q.id] = $true }
+$oldQuestPath = Join-Path $DataDir 'quests.jsonl'
+$removed = @()
+if (Test-Path $oldQuestPath) { $removed = @(Find-RemovedQuests ([IO.File]::ReadAllText($oldQuestPath)) $questIds) }
+if ($removed.Count) {
+    $removed | Select-Object Id, Name, Zone, Level, @{ n = 'Decision'; e = { if ($removeOk[$_.Id]) { 'REMOVE' } else { 'UNDECIDED' } } } |
+        Export-Csv -Path $RemovalsFile -NoTypeInformation -Encoding UTF8
+    Write-Host "Quests that would leave the data ($($removed.Count)), also in ${RemovalsFile}:"
+    Format-RemovedQuests $removed $removeOk | ForEach-Object { Write-Host $_ }
+}
+elseif (Test-Path $RemovalsFile) { Remove-Item $RemovalsFile }
+$undecided = @($removed | Where-Object { -not $removeOk[$_.Id] })
+if ($undecided.Count) {
+    $message = "$($undecided.Count) quests would leave the data and have no decision in $DecisionsFile. Review them with the user, add a KEEP or a REMOVE row for each, and run again. Nothing was written."
+    if ($WhatIf) { Write-Host $message } else { throw $message }
+}
 if ($WhatIf) { return }
 
 $DataDir = (New-Item -ItemType Directory -Force $DataDir).FullName
@@ -855,4 +899,5 @@ $skillPath = Join-Path $DataDir 'skills.jsonl'
 [IO.File]::WriteAllText($linkPath, (($linkLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
 [IO.File]::WriteAllText($reputationPath, (($reputationLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
 [IO.File]::WriteAllText($skillPath, (($skillLines | ForEach-Object { "$_`n" }) -join ''), $Utf8)
-Write-Host "Written: $questPath, $pinPath, $linkPath, $reputationPath, $skillPath"
+[IO.File]::WriteAllText($AnswerFile, (ConvertTo-AnswerLines $memory), $Utf8)
+Write-Host "Written: $questPath, $pinPath, $linkPath, $reputationPath, $skillPath, $AnswerFile"

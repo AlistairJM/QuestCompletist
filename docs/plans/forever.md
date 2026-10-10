@@ -748,17 +748,24 @@ started. The runs don't say which character asked (the map pass does), so the ca
 character-dependent answer is one reading.
 
 Until now the importer trusted the newest run alone, so those quests came and went between imports: the
-Duskwood Missions, which only the game knows, would have left the data.
+Duskwood Missions, which only the game knows, would have left the data, and so would four Winter Veil
+quests. The user's calls of 10 October: the beta's API sometimes doesn't return what it has (Christmas
+quests wouldn't have been removed), so too much is better than a quest deleted that still exists; and
+no quest leaves the data without the user having seen it.
 
-- **The rule** now: a quest the game answered in the run before this one and not in this one keeps that
-  run's record (the newest earlier `tools\forever_quest_cache_<build>.jsonl`, or `-PreviousCacheFile`),
-  and is listed in the review as "kept from the previous run". It drops out when two runs in a row refuse
-  it. `-NoCarry` reads the newest run alone, as before; with it the import of 10 October is byte for
-  byte what it was without the change.
-- **Result, on the run of 10 October:** 49 quests come back from build 70291's records (the 52, less
-  three with internal titles), so 5,091 quests against 5,062 without it.
-- **Keep each run's cache file.** The window is the two newest `forever_quest_cache_<build>.jsonl` files
-  in `tools\`; `Read-QuestCache.ps1` writes one per run.
+- **The memory:** `data\forever\answers.jsonl` holds the game's last record of every quest it has
+  answered, when it was last answered, and how many runs in a row it has not been (a run is one client
+  build's quest cache; a quest the probe didn't ask about isn't counted, and the same build twice is
+  one run). The importer imports a quest until it has missed 10 runs in a row (`-MaxMissedRuns`), and
+  lists each one kept from an earlier run in the review. With no file the memory is built from the
+  `forever_quest_cache_<build>.jsonl` files in `tools\`, so keep each run's.
+- **The guard:** the importer compares its quests with the committed `quests.jsonl` before it writes,
+  and stops, writing nothing, if any would go for any reason (10 missed runs, an internal title, a change
+  in CMaNGOS). The list, with ID, name and zone, is in the output and `tools\quest_removals_forever.csv`;
+  `docs\plans\quest-removal-decisions.csv` takes the user's answer per quest, `REMOVE` or `KEEP`.
+  `Show-RemovedQuests.ps1` makes the same check for either game against any git ref, before a pull request.
+- **Decisions so far:** KEEP for 79482, 79483, 79492 and 79495 (Winter Veil and Metzen the Reindeer),
+  93188 (Return to Orgrul) and 93196 (Khan Jehn), which no run since 5 October has answered.
 
 ## Decisions
 
