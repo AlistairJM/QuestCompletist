@@ -79,10 +79,10 @@ function Test-RecordedTrusted($row) {
 
 # Runs the reader on a file with a time limit and returns its exit code and its lines. The reader refuses
 # what is not plain data, but a file is still a stranger's, so it does not get to take long.
-function Invoke-RecordedReader([string]$LuaExe, [string]$ReaderScript, [string]$Path, [string]$Tag, [int]$TimeoutSeconds = 120) {
+function Invoke-RecordedReader([string]$LuaExe, [string]$ReaderScript, [string]$Path, [string]$Tag, [int]$TimeoutSeconds = 120, [int]$MaxMegabytes = 8) {
     $info = New-Object System.Diagnostics.ProcessStartInfo
     $info.FileName = $LuaExe
-    $info.Arguments = '"' + $ReaderScript + '" "' + $Path + '" "' + $Tag + '"'
+    $info.Arguments = '"' + $ReaderScript + '" "' + $Path + '" "' + $Tag + '" "' + $MaxMegabytes + '"'
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
     $info.RedirectStandardOutput = $true
@@ -102,7 +102,7 @@ function Invoke-RecordedReader([string]$LuaExe, [string]$ReaderScript, [string]$
 
 # Runs Read-RecordedGivers.lua on a saved-variables file and turns its lines into a record: Refused is
 # the reason it would not read the file, or $null; the lists hold what the file says before any filter.
-function Read-RecordedFile([string]$Path, [string]$Tag, [string]$LuaExe, [string]$ReaderScript) {
+function Read-RecordedFile([string]$Path, [string]$Tag, [string]$LuaExe, [string]$ReaderScript, [int]$MaxMegabytes = 8) {
     $result = [pscustomobject]@{
         Tag = $Tag; Path = $Path; Refused = $null; Kind = ''; Schema = ''; Game = ''; Records = 0; Odd = 0
         Builds = @{}; Givers = (New-Object System.Collections.Generic.List[object]); Spots = (New-Object System.Collections.Generic.List[object])
@@ -110,7 +110,7 @@ function Read-RecordedFile([string]$Path, [string]$Tag, [string]$LuaExe, [string
         Quests = (New-Object System.Collections.Generic.List[object]); Starts = (New-Object System.Collections.Generic.List[object])
         Diag = @{}; Flagged = (New-Object System.Collections.Generic.List[object])
     }
-    $run = Invoke-RecordedReader $LuaExe $ReaderScript $Path $Tag
+    $run = Invoke-RecordedReader $LuaExe $ReaderScript $Path $Tag 120 $MaxMegabytes
     if ($run.TimedOut) { $result.Refused = 'the reader took more than two minutes'; return $result }
     if ($run.Exit -ne 0) {
         $first = if ($run.Lines.Count -gt 0) { [string]$run.Lines[0] } else { '' }

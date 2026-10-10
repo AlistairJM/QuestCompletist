@@ -42,11 +42,13 @@ param(
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data\forever'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist\Forever'),
     [string]$LocaleFile = (Join-Path $PSScriptRoot '..\QuestCompletist\Localization.enUS.lua'),
-    [string]$Build = "1.60.1.70205",
+    [string]$Build = "",
     [switch]$Check
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
+. "$PSScriptRoot\LatestBuilds.ps1"
+$Build = Resolve-ProbeBuild $Build 'forever' $ToolsDir 'Build'
 
 function Get-ClientTable([string]$table) {
     $path = "$ToolsDir\$table-$Build.csv"

@@ -2,7 +2,8 @@
 Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from five sources
 (docs/plans/forever.md, phase 3):
 
-  - the client's tables for -Build: the quests the game records as completed (QuestV2), and where
+  - the client's tables for -Build (left out, the build of the newest tools\forever_probe_<revision>
+    results, which the cache and the probe's answers must share): the quests the game records as completed (QuestV2), and where
     some start (QuestPOIBlob and QuestPOIPoint);
   - the quest cache file Read-QuestCache.ps1 writes: what the server says about each quest it
     answered;
@@ -110,7 +111,7 @@ only the review is written.
 param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data\forever'),
-    [string]$Build = "1.60.1.70205",
+    [string]$Build = "",
     [string]$EraBuild = "1.15.9.70003",
     [string]$CacheFile = "",
     [string]$AnswerFile = "",
@@ -130,6 +131,8 @@ $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
 . "$PSScriptRoot\QuestRemovals.ps1"
 . "$PSScriptRoot\ForeverAnswers.ps1"
+. "$PSScriptRoot\LatestBuilds.ps1"
+$Build = Resolve-ProbeBuild $Build 'forever' $ToolsDir 'Build'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
 if (-not $AnswerFile) { $AnswerFile = Join-Path $DataDir 'answers.jsonl' }

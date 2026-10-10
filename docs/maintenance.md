@@ -164,10 +164,14 @@ then every tool refuses to save.
      and edit `$GameProducts` in `tools\LatestBuilds.ps1`.
    - `Test-LatestBuilds.ps1` checks the script on a made-up game folder and made-up newest versions.
 2. **Pin the builds.** Scripts that take `-Build` should be given their game's current build:
-   retail's for steps 1 to 9, Forever's for step 10. The Forever tools default to the beta build
-   they were written on, so always pass it; the check lists every default older than the newest
-   build of its version. Downloading a table from wago.tools without a build number does *not*
-   reliably return the latest build.
+   retail's for steps 1 to 9, Forever's for step 10. The Forever tools (`Read-QuestCache.ps1`,
+   `Import-ForeverData.ps1`, `Build-ForeverMenu.ps1`, `Import-RecordedGivers.ps1` and
+   `Sync-QuestSortNames.ps1`'s `-ForeverBuild`) take the build of the newest `tools\forever_probe_<revision>`
+   results when it is left out, and say which: the importer needs the tables, the quest cache and the
+   probe's answers on one build, and the check says when those results are behind the installed client.
+   Retail's tools still carry a build as their default, which the check lists when it is older than the
+   newest build of its version: pass the build, or change the default, at the sweep for a new patch.
+   Downloading a table from wago.tools without a build number does *not* reliably return the latest build.
 2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
    table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
    and the tools read 26 of them (14 for Forever). Run
@@ -964,7 +968,7 @@ This checks retail's files. Step 10 runs it on Forever's.
 The Forever version loads through `QuestCompletist_Camelot.toc`, with the shared code and its own
 files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, is
 [plans/forever.md](plans/forever.md). Run these in order, with the main checkout's `tools\` as
-`-ToolsDir` and Forever's build as `-Build`:
+`-ToolsDir` and, if it isn't the newest probe results' build, Forever's build as `-Build`:
 
 1. **The recorder's notes, every time.** Copy the probe's saved variables, `QCForeverProbe.lua`,
    from the Forever client into the newest `tools\forever_probe_<build number>\` (see
@@ -1408,7 +1412,11 @@ After Forever's launch, use its live client's folder in place of `_classic_beta_
 `WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua` into `tools\retail_probe_<build number>\`
 (`retail_probe_69933` for build 12.1.0.69933), where step 3 of the sweep, step 7 and the map report find it;
 the retail quest cache is not read yet. `Read-ForeverProbe.lua <file> facts` prints every fact the quest
-pass saved, one per line.
+pass saved, one per line, then a `run` line for each run (its kind, build, time, the character that ran
+it, as faction, race and class and never a name, and its level) and a `refusedfact` line for each
+function the quest pass asked about the quests the server refused: how many it was asked about, how
+many it answered anything for, how many with something other than no, and the first of those. Two runs
+on different characters, with their answers compared, show whether the beta's answers follow the character.
 
 A map pass is read with `tools\Report-MapOffers.lua`, which prints each map's offers, with how far
 each is from the quest's pin, and the points of interest, events, hubs and entrances, and writes

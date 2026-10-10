@@ -179,7 +179,8 @@ and the first group are the user's standing rules, applied. An independent revie
 never runs it as it stands: it reads the text (a bare CR ends a comment, as it does in Lua 5.1) and
 refuses anything that is not assignments of tables, strings, numbers and `true`, `false` or `nil`
 to names (no call, operator, function, long string or comment, or name used as a value), a file over
-8 MB (checked before it is read), tables nested over 24 deep, and a file with more records than the
+8 MB (checked before it is read; the importer gives the maintainer's own files, the ones tagged `own-`,
+up to 64 MB, as retail's probe file is 17 MB), tables nested over 24 deep, and a file with more records than the
 addon can keep (5,000 givers, 10,000 quests, 4,000 starts, which also admits the smaller files of the
 addon's first version; a giver with more than four spots or sixty
 offers is an odd record). What passes is loaded with no globals and an instruction budget, and the
