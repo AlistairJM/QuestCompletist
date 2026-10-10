@@ -33,6 +33,11 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 - **A check stays in the sweep even while it finds nothing**, and every feature or check built for
   one game goes to both unless a game can't support it
   ([game-parity.md](game-parity.md)).
+- **Every change and sweep uses the newest version of every data source**: the client's files, the
+  in-game probes and the external databases (9 October 2026). The beta moved from 70245 to 70291 to
+  70338 in three days while the tables and the probe list stayed behind. `Get-LatestBuilds.ps1` is
+  step 0 of the sweep and is run again before each in-game session
+  ([maintenance.md](../maintenance.md), "Before a sweep").
 
 ## To try in game
 

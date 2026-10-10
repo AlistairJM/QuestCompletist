@@ -57,8 +57,15 @@ function Read-List([string]$path, [string]$variable) {
     return @{ Build = $parts[0]; Count = [int]$parts[1]; Ids = @($parts[2] -split ',' | Where-Object { $_ } | ForEach-Object { [int]$_ }) }
 }
 
+function Write-BuildInfo($w, [hashtable]$products) {
+    New-Item -ItemType Directory -Path "$($w.Root)\wow" -Force | Out-Null
+    $lines = @('Branch!STRING:0|Active!DEC:1|Version!STRING:0|Product!STRING:0')
+    foreach ($product in $products.Keys) { $lines += "us|1|$($products[$product])|$product" }
+    [IO.File]::WriteAllLines("$($w.Root)\wow\.build.info", [string[]]$lines)
+}
+
 function Run-Builder([hashtable]$w, [string[]]$more) {
-    $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Builder, '-ToolsDir', $w.Tools, '-DataDir', $w.Data, '-AddonDir', $w.Addon, '-LuaExe', $LuaExe) + $more
+    $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Builder, '-ToolsDir', $w.Tools, '-DataDir', $w.Data, '-AddonDir', $w.Addon, '-WowDir', "$($w.Root)\wow", '-LuaExe', $LuaExe) + $more
     $saved = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
     try { $output = @(& powershell @arguments 2>&1 | ForEach-Object { "$_" }) } finally { $ErrorActionPreference = $saved }
     return @{ Text = ($output -join "`n"); Exit = $LASTEXITCODE }
@@ -90,7 +97,17 @@ try {
     $r = Run-Builder $w @('-Game', 'classic', '-Build', '12.1.0.69933')
     Check ($r.Exit -ne 0) 'T2: so is a game that is not retail or forever'
     $r = Run-Builder $w @('-Game', 'retail')
-    Check ($r.Exit -ne 0) 'T2: and a run with no build'
+    Check ($r.Exit -ne 0 -and $r.Text -match 'has no wow client') 'T2: and a run with no build and no installed client'
+    Write-BuildInfo $w @{ wow = '12.1.0.69933'; wow_classic_beta = '1.60.1.70338' }
+    $r = Run-Builder $w @('-Game', 'retail')
+    Equal $r.Exit 0 'T2: with the client installed, a run with no build uses its build'
+    Check ($r.Text -match "Using the installed client's build, 12.1.0.69933") "T2: and says so ($($r.Text))"
+    Equal (Read-List "$($w.Addon)\QuestIDs_Retail.lua" 'questIds').Build '12.1.0.69933' 'T2: the list carries the installed build'
+    $r = Run-Builder $w @('-Game', 'retail', '-Build', '12.1.0.69933')
+    Check ($r.Exit -eq 0 -and $r.Text -notmatch 'WARNING') 'T2: the installed build given by hand is not warned about'
+    $r = Run-Builder $w @('-Game', 'retail', '-Build', '12.1.5.70077')
+    Check ($r.Exit -eq 0 -and $r.Text -match "is not the installed client's build, 12.1.0.69933") 'T2: another build is allowed but warned about'
+    Equal (Read-List "$($w.Addon)\QuestIDs_Retail.lua" 'questIds').Build '12.1.5.70077' 'T2: and is the one the list carries'
     [IO.File]::WriteAllText("$($w.Data)\quests.jsonl", "{`"id`":1,`"type`":1}`n")
     $r = Run-Builder $w @('-Game', 'retail', '-Build', '12.1.0.69933')
     Check ($r.Exit -ne 0 -and $r.Text -match 'has only 1 quests') 'T2: a quest file with almost nothing in it is refused'
@@ -137,6 +154,16 @@ try {
     Equal ($q.Ids[1099..1101] -join ',') '1100,1101,1102' 'T3: in order'
     $n = Read-List "$($w.Addon)\NpcIDs_Forever.lua" 'npcIds'
     Equal ($n.Ids -join ',') '500,501,503,9000,9001,9002,9003,9004' 'T3: the givers of listed quests (the one for quest 1500, which neither table has, is left out) and the NPCs on Forever pins'
+
+    Copy-Item "$($w.Tools)\QuestV2-1.60.1.70245.csv" "$($w.Tools)\QuestV2-1.60.1.70338.csv"
+    Write-BuildInfo $w @{ wow = '12.1.0.69933'; wow_classic_beta = '1.60.1.70338' }
+    $r = Run-Builder $w @('-Game', 'forever')
+    Equal $r.Exit 0 'T4: Forever with no build uses the beta client''s'
+    Check ($r.Text -match "Using the installed client's build, 1.60.1.70338" -and $r.Text -match 'in QuestV2 \(build 1.60.1.70338\)') "T4: and reads the table of that build ($($r.Text))"
+    Equal (Read-List "$($w.Addon)\QuestIDs_Forever.lua" 'questIds').Build '1.60.1.70338' 'T4: the list carries it'
+    Write-BuildInfo $w @{ wow = '12.1.0.69933' }
+    $r = Run-Builder $w @('-Game', 'forever')
+    Check ($r.Exit -ne 0 -and $r.Text -match 'has no wow_classic_beta client') 'T4: a Forever run with no beta client installed and no build is refused'
 }
 finally {
     Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue
