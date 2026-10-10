@@ -83,7 +83,7 @@ again.
   quests has a menu entry and a zone row, none is empty, and the reachability run leaves no quest out.
   What only the game can show is the four starter areas, whose quests are filed under their parent
   zone: walk into Camp Narache, Shadowglen, Valley of Trials and New Tinkertown and see the list follow
-  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)).
+  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)). The new Quel'Thalas, Gilneas and Tol Barad submenus under Eastern Kingdoms, and Founder's Point and Razorwind Shores under Midnight's Other Categories, are offline-checked too (the three names come from the client's maps, with English as the fallback).
 - **The calendar window's filters, on both games (#243, released in 112.6 on 9 October 2026).** The
   seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
   source that the game then leaves its events out of the calendar. Nobody has seen that in game.
@@ -195,8 +195,8 @@ again.
 | 19 | "Starts from" only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`, never from the cache's `startItem` | yes | same, "Start item" |
 | 20 | The 22 placeholder-named quests that still show in default lists (menu review R08) fail the step-7 evidence rules: flag them anyway? | yes, the 22 that show; the same call as 5 October on the 19 internal entries | [menu-review.md](menu-review.md), question 20 |
 | 21 | One submenu shape for every expansion (R28) | Main Zones and Other Categories for Draenor and The Broken Isles; Outland, Northrend and The Maelstrom stay flat | [menu-review.md](menu-review.md), question 21 |
-| 22 | Midnight: move Founder's Point and Razorwind Shores into Other Categories (R27) | yes | [menu-review.md](menu-review.md), question 22 |
-| 23 | Split Lordaeron into Lordaeron, Quel'Thalas, Gilneas and Tol Barad (R26) | yes, named from the client's maps | [menu-review.md](menu-review.md), question 23 |
+| 22 | Midnight: move Founder's Point and Razorwind Shores into Other Categories (R27) | **yes, 10 October 2026, done** | [menu-review.md](menu-review.md), question 22 |
+| 23 | Split Lordaeron into Lordaeron, Quel'Thalas, Gilneas and Tol Barad (R26) | **yes, 10 October 2026, done**: named from the client's maps | [menu-review.md](menu-review.md), question 23 |
 | 24 | Merge Darkmoon Island into Darkmoon Faire and four one-quest entries into their zones (R15, R31) | yes, in one pass, because a category merge changes how the sweep tools file new quests | [menu-review.md](menu-review.md), question 24 |
 | 25 | Names that repeat, groups and categories that share a name, Forever's "Invasion" (R17 to R21, R25, F03) | leave; if it matters, show the menu path in the list header (no new text) | [menu-review.md](menu-review.md), question 25 |
 | 26 | Entries empty by default and tiny entries (R29, R30, R39, F06, F07, F09) | keep them, and have an empty list say how many quests the filters hide | [menu-review.md](menu-review.md), question 26 |
