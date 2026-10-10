@@ -29,6 +29,7 @@ tools/*
 !tools/Read-SqlDump.lua
 !tools/Read-ForeverProbe.lua
 !tools/Report-MapOffers.lua
+!tools/Report-ContinentGeometry.lua
 !tools/Read-ApiDocs.lua
 !tools/Test-SeasonalCalendar.lua
 !tools/Test-Probe.lua

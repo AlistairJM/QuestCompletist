@@ -108,6 +108,63 @@ local function newWorld(options)
 		end,
 		CanSetUserWaypointOnMap = function() return true end,
 	}
+	-- The map tree and where each child sits on its parent: S.maps[id] has parent, mapType (3, a zone, when
+	-- left out), flags, group, navBarInvalid and rects[parentID] = {minX, maxX, minY, maxY}. The hit test
+	-- names the smallest rectangle holding a point, the first of equals.
+	local function childrenOf(mapID, mapType, allDescendants, into)
+		into = into or {}
+		local ids = {}
+		for id, m in pairs(S.maps) do
+			if (m.parent or 0) == mapID then ids[#ids + 1] = id end
+		end
+		table.sort(ids)
+		for _, id in ipairs(ids) do
+			local m = S.maps[id]
+			if mapType == nil or (m.mapType or 3) == mapType then
+				into[#into + 1] = {mapID = id, name = m.name, mapType = m.mapType or 3, parentMapID = mapID, flags = m.flags or 0}
+			end
+			if allDescendants then childrenOf(id, mapType, true, into) end
+		end
+		return into
+	end
+	if not options.noChildrenApi then
+		env.C_Map.GetMapChildrenInfo = function(mapID, mapType, allDescendants) return childrenOf(mapID, mapType, allDescendants) end
+		env.C_Map.GetMapRectOnMap = function(childID, topID)
+			local m = S.maps[childID]
+			local rect = m and m.rects and m.rects[topID]
+			if rect == "secret" then return SECRET, SECRET, SECRET, SECRET end
+			if rect then return rect[1], rect[2], rect[3], rect[4] end
+		end
+		env.C_Map.GetMapInfoAtPosition = function(mapID, x, y)
+			local best, bestArea
+			for _, child in ipairs(childrenOf(mapID)) do
+				local rect = S.maps[child.mapID].rects and S.maps[child.mapID].rects[mapID]
+				if type(rect) == "table" and x >= rect[1] and x <= rect[2] and y >= rect[3] and y <= rect[4] then
+					local area = (rect[2] - rect[1]) * (rect[4] - rect[3])
+					if not best or area < bestArea then best, bestArea = child, area end
+				end
+			end
+			return best
+		end
+		env.C_Map.IsMapValidForNavBarDropdown = function(mapID) return not (S.maps[mapID] and S.maps[mapID].navBarInvalid) end
+		env.C_Map.GetMapGroupID = function(mapID) return S.maps[mapID] and S.maps[mapID].group end
+	end
+	env.Enum = {UIMapType = {Cosmic = 0, World = 1, Continent = 2, Zone = 3, Dungeon = 4, Micro = 5, Orphan = 6}}
+	if options.worldMap then
+		local shown = options.worldMap
+		env.UIParent = {GetEffectiveScale = function() return 0.64 end}
+		env.WorldMapFrame = {
+			ScrollContainer = {
+				GetSize = function() return 697, 465 end,
+				Child = {GetSize = function() return 3840, 2560 end},
+				GetCanvasScale = function() return 0.1815 end,
+				zoomLevels = {{}, {}, {}, {}, {}, {}, {}, {}},
+			},
+			GetMapID = function() return 12 end,
+			IsShown = function() return shown ~= "hidden" end,
+			IsMaximized = function() return false end,
+		}
+	end
 	env.C_Timer = {
 		NewTicker = function(_, callback)
 			local ticker = {callback = callback, active = true}
@@ -802,6 +859,182 @@ do
 	w3.slash("maps")
 	check(w3.said("the client lists no maps."), "M3: a client with no maps says so")
 	check(not w3.running(), "M3: and runs nothing")
+end
+
+-- 4b. The geometry pass ----------------------------------------------------------------------------
+
+local function geometryMaps()
+	return {
+		[947] = {name = "Azeroth", mapType = 1},
+		[12] = {name = "Kalimdor", mapType = 2, parent = 947, rects = {[947] = {0.1, 0.5, 0.2, 0.8}}},
+		[1] = {name = "Durotar", parent = 12, rects = {[12] = {0.5, 0.7, 0.4, 0.6}}},
+		[3] = {name = "Orgrimmar", parent = 1, rects = {[1] = {0.1, 0.2, 0.1, 0.2}}},
+		[7] = {name = "Mulgore", parent = 12, rects = {[12] = {0.3, 0.55, 0.5, 0.75}}},
+		[88] = {name = "Thunder Bluff", parent = 12, rects = {[12] = {0.40, 0.45, 0.60, 0.65}}},
+		[249] = {name = "Uldum", parent = 12, flags = 0, group = 5, rects = {[12] = {0.2, 0.3, 0.1, 0.2}}},
+		[1527] = {name = "Uldum", parent = 12, flags = 524288, group = 5, navBarInvalid = true, rects = {[12] = {0.2, 0.3, 0.1, 0.2}}},
+		[2] = {name = "Lost Isle", parent = 12},
+		[4] = {name = "Hidden Isle", parent = 12, rects = {[12] = "secret"}},
+		[627] = {name = "Dalaran", mapType = 4, parent = 12, rects = {[12] = {0.8, 0.85, 0.8, 0.85}}},
+		[2537] = {name = "Quel'Thalas", mapType = 2, parent = 12, rects = {[12] = {0.6, 0.9, 0.0, 0.1}}},
+		[8] = {name = "Flat", parent = 12, rects = {[12] = {0.9, 0.9, 0.5, 0.6}}},
+	}
+end
+
+local function childOf(row, mapID)
+	for _, child in ipairs(row.children) do
+		if child.mapID == mapID then return child end
+	end
+end
+
+local function join(list)
+	local parts = {}
+	for _, v in ipairs(list) do parts[#parts + 1] = tostring(v) end
+	return table.concat(parts, ",")
+end
+
+do
+	local w = newWorld({forever = true, worldMap = true})
+	w.S.maps = geometryMaps()
+	w.boot()
+	w.slash("geometry")
+	check(w.said("geometry on 1.60.1.70245: 3 continent, world and cosmic maps with 11 child maps, 8 of them zones; 2 have no rectangle, and 2 have a centre the game assigns to another map."),
+		"G1: the command says what it found")
+	check(not w.running(), "G1: and runs nothing in the background")
+	local db = w.db()
+	local row = db.geometry[12]
+	check(row ~= nil, "G1: a continent has a row")
+	equal(row.name, "Kalimdor", "G1: its name")
+	equal(row.mapType, 2, "G1: its type")
+	equal(row.parent, 947, "G1: its parent")
+	equal(row.build, "1.60.1.70245", "G1: its build")
+	equal(row.toc, "camelot", "G1: the TOC, which says the game")
+	equal(row.preset, 0, "G1: Forever's preset")
+	equal(#row.children, 10, "G1: every direct child of any type")
+	equal(join(row.zoneCall), "1,2,4,7,8,88,249,1527", "G1: the zone filter's answer")
+	equal(join(row.zoneTree), "1,3,2,4,7,8,88,249,1527", "G1: and with descendants, which adds the nested zone")
+	local durotar = childOf(row, 1)
+	equal(join(durotar.rect), "0.5,0.7,0.4,0.6", "G1: a child's rectangle")
+	equal(durotar.hit.mapID, 1, "G1: the hit test at its centre names it")
+	equal(durotar.navBar, true, "G1: the nav bar lists it")
+	equal(childOf(row, 7).hit.mapID, 88, "G1: a zone whose centre lies in a smaller zone is named for that one")
+	equal(childOf(row, 7).hit.name, "Thunder Bluff", "G1: with the name")
+	equal(childOf(row, 1527).navBar, false, "G1: a map the nav bar leaves out")
+	equal(childOf(row, 1527).flags, 524288, "G1: its flags")
+	equal(childOf(row, 1527).group, 5, "G1: its map group")
+	equal(childOf(row, 1527).hit.mapID, 249, "G1: and its twin, which has the same rectangle, takes its centre")
+	equal(childOf(row, 2).noRect, true, "G1: a child with no rectangle")
+	equal(childOf(row, 2).rect, nil, "G1: has none kept")
+	equal(childOf(row, 4).noRect, true, "G1: a rectangle the game hides is no rectangle")
+	equal(childOf(row, 8).rect[1], 0.9, "G1: a flat rectangle is kept")
+	equal(childOf(row, 8).hit, nil, "G1: but its centre is not tested")
+	equal(childOf(row, 8).noHit, nil, "G1: and not counted as a miss")
+	equal(childOf(row, 627).mapType, 4, "G1: a dungeon child is kept")
+	equal(childOf(row, 2537).mapType, 2, "G1: and a nested continent")
+	equal(row.grid.columns, 60, "G1: the grid's columns")
+	equal(row.grid.rows, 40, "G1: and rows")
+	local cell = row.grid.cells[1]
+	check(cell and cell.n > 50, "G1: the grid sees Durotar in many cells")
+	check(cell and math.abs(cell.x - 60) < 1.5 and math.abs(cell.y - 50) < 1.5, "G1: and puts its centre near the rectangle's")
+	check(row.grid.none > 0, "G1: cells over no child count as none")
+	equal(row.grid.cells[3], nil, "G1: a nested zone is not on the grid")
+	equal(db.geometry[947].children[1].mapID, 12, "G1: the world map lists the continent")
+	equal(join(db.geometry[947].children[1].rect), "0.1,0.5,0.2,0.8", "G1: with its rectangle")
+	check(db.geometry[2537] ~= nil and #db.geometry[2537].children == 0, "G1: a continent with no children has a row with none")
+	equal(db.geometry[2537].grid, nil, "G1: and no grid")
+	equal(db.geometry[1], nil, "G1: a zone has no row")
+	local run = db.runs[#db.runs]
+	equal(run.kind, "geometry", "G1: the run row is a geometry run")
+	equal(run.geometry.continents, 3, "G1: it counts the continents")
+	equal(run.geometry.children, 11, "G1: the children")
+	equal(run.geometry.zones, 8, "G1: the zones")
+	equal(run.geometry.noRect, 2, "G1: the ones with no rectangle")
+	equal(run.geometry.hitsOther, 2, "G1: and the centres another map takes")
+	equal(run.view.width, 697, "G1: the map window's width")
+	equal(run.view.childWidth, 3840, "G1: the canvas's width")
+	equal(run.view.zoomLevels, 8, "G1: the zoom levels")
+	equal(run.view.maximized, false, "G1: whether it is maximised")
+	equal(run.view.mapID, 12, "G1: the map it showed")
+	equal(run.view.canvasScale, 0.1815, "G1: the canvas scale")
+	equal(run.view.uiScale, 0.64, "G1: the UI scale")
+	roundTrips(db, "G1")
+	w.slash("status")
+	check(w.said("Geometry on 1.60.1.70245: 3 continent, world and cosmic maps with 11 child maps."), "G1: status counts it")
+
+	local w2 = newWorld({toc = "plain"})
+	w2.S.maps = geometryMaps()
+	w2.boot()
+	w2.slash("geometry")
+	equal(w2.db().geometry[12].toc, "plain", "G2: retail's TOC")
+	equal(w2.db().geometry[12].preset, nil, "G2: and no preset")
+	equal(w2.db().runs[#w2.db().runs].view, nil, "G2: no map window, no view")
+	check(w2.said("The map window could not be read."), "G2: and it says so")
+
+	local w3 = newWorld({forever = true, worldMap = true, noChildrenApi = true})
+	w3.S.maps = geometryMaps()
+	w3.boot()
+	w3.slash("geometry")
+	equal(#w3.db().geometry[12].children, 0, "G3: a client without the child call gives no children")
+	equal(#w3.db().geometry[12].zoneCall, 0, "G3: nor a zone list")
+	equal(w3.db().geometry[12].grid, nil, "G3: and no grid is sampled for a map with no children")
+	equal(w3.db().runs[#w3.db().runs].geometry.children, 0, "G3: the run row counts none")
+
+	local w4 = newWorld({forever = true, worldMap = true})
+	w4.S.maps = geometryMaps()
+	w4.boot()
+	w4.slash("maps 1")
+	w4.run(3600)
+	check(w4.db().geometry[12] ~= nil, "G4: a map pass takes the geometry at its end")
+	local mapRun = w4.db().runs[#w4.db().runs]
+	equal(mapRun.kind, "maps", "G4: the run row is the map run's")
+	equal(mapRun.geometry.continents, 3, "G4: with the geometry's counts")
+	equal(mapRun.view.width, 697, "G4: and the view")
+	w4.db().geometry[12].time = 0
+	w4.slash("maps 1")
+	w4.slash("stop")
+	equal(w4.db().geometry[12].time, 0, "G4: a map pass stopped early takes no geometry")
+end
+
+-- The report reads what the pass saved.
+do
+	local report = assert(loadfile("tools/Report-ContinentGeometry.lua"))("module")
+	local w = newWorld({forever = true, worldMap = true})
+	w.S.maps = geometryMaps()
+	w.boot()
+	w.slash("geometry")
+	local lines, csv = report(w.db())
+	local text = table.concat(lines, "\n")
+	contains(text, "Geometry on 1.60.1.70245 (forever): 2 maps with children, 1 without (2537).", "G5: the summary line")
+	contains(text, "Map window when read: map 12, windowed, 697 x 465, canvas 3840 x 2560 at scale 0.1815, 8 zoom levels, UI scale 0.64.", "G5: the map window")
+	contains(text, "12 Kalimdor (type 2, parent 947): 10 children (1 of type 2, 8 of type 3, 1 of type 4); zone filter lists 8, with descendants 9.", "G5: a continent's header")
+	contains(text, "The zone filter is exact", "G5: the filter is exact in this world")
+	contains(text, "With descendants the call lists 1 more.", "G5: and the tree's extra")
+	contains(text, "No rectangle: Lost Isle (2), Hidden Isle (4).", "G5: no rectangle")
+	contains(text, "A rectangle with no width or height: Flat (8).", "G5: a flat one")
+	contains(text, "Zones listed under one name: Uldum: 249 (navbar true, flags 0), 1527 (navbar false, flags 524288).", "G5: the twins")
+	contains(text, "Zones the nav bar does not list: Uldum (1527).", "G5: the nav bar")
+	contains(text, "names another map: Mulgore (7) -> Thunder Bluff (88); Uldum (1527) -> Uldum (249).", "G5: the hit test")
+	contains(text, "Zones the hit test never names on the 60 x 40 grid: Lost Isle (2), Hidden Isle (4), Flat (8), Uldum (1527).", "G5: zones the grid never names, a twin of equal size among them")
+	contains(text, "At 700 px wide, 2 zone icon pairs are closer than 24 px: Mulgore / Thunder Bluff 0 px; Uldum / Uldum 0 px.", "G5: crowding")
+	contains(text, "At 697 px wide, 2 zone icon pairs are closer than 24 px.", "G5: and at the window's width")
+	equal(#csv, 11, "G5: a row for each child")
+	local prefix = '"forever","1.60.1.70245",12,"Kalimdor",1,"Durotar",3,0,true,,0.5,0.7,0.4,0.6,1,"Durotar",'
+	equal(csv[1]:sub(1, #prefix), prefix, "G5: a row's columns")
+	check(csv[1]:match(',%d+,[%d%.]+,[%d%.]+$') ~= nil, "G5: ending in the grid's cells and centre")
+
+	local back = roundTrips(w.db(), "G5")
+	back.geometry[12].zoneCall[#back.geometry[12].zoneCall + 1] = 999
+	local text2 = table.concat((report(back)), "\n")
+	contains(text2, "The zone filter DIFFERS from the direct children of type zone: only in the call 999; only among the children .", "G5: a filter that is not exact is said so")
+
+	local lines3 = report({geometry = {}, runs = {}})
+	contains(lines3[1], "No geometry in the file.", "G5: an empty file says what to do")
+	local back2 = roundTrips(w.db(), "G5")
+	back2.geometry[12].build = "1.60.1.70001"
+	local text4 = table.concat((report(back2)), "\n")
+	contains(text4, "Geometry on 1.60.1.70245 (forever): 1 maps with children", "G5: with two builds the one with most maps is read")
+	local text5 = table.concat((report(back2, "1.60.1.70001")), "\n")
+	contains(text5, "Geometry on 1.60.1.70001", "G5: and a build can be asked for")
 end
 
 -- 5. The recorder ----------------------------------------------------------------------------------

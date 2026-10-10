@@ -16,7 +16,11 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               Blizzard's map draws), points of interest, events, quest hubs and
                               dungeon entrances, and once for the events schedule
                               (docs/plans/game-api-review.md, recommendation 3). It waits the given
-                              seconds, 2 by default, for each map's answer. Runs on retail too.
+                              seconds, 2 by default, for each map's answer. Runs on retail too. At its
+                              end it takes the geometry below.
+/qcprobe geometry             takes the geometry alone, in a moment: where each child map sits on its
+                              continent (docs/plans/continent-pins.md). To also record the map window's
+                              size, open the world map on a continent first, maximised or not.
 /qcprobe stop                 stops the run in progress
 /qcprobe status               what's been gathered on this build
 /qcprobe record on|off        the recorder, on by default
@@ -52,8 +56,17 @@ QCForeverProbeDB holds:
                 questLines (the offers, each with its quest, storyline, x, y, startMapID and flags),
                 forceVisible, tasks, logQuests, pois, events, hubs, entrances, levels, waypoint.
                 Positions are map percentages, like the recorder's spots.
+  geometry[mapID]  for each cosmic, world and continent map: build, preset, toc, name, mapType, parent,
+                children (every child map the game lists: mapID, name, mapType, parent, flags, navBar
+                (IsMapValidForNavBarDropdown), group, rect = {minX, maxX, minY, maxY} on this map, or
+                noRect; hit = the map the game's hit test names at the rectangle's centre, or noHit),
+                zoneCall (the IDs GetMapChildrenInfo gives with the zone type filter), zoneTree (the
+                same with allDescendants), and grid = a 60 x 40 sampling of the hit test: cells[mapID] =
+                {n = cells, x, y = their centre in map percent} and none = cells that named no map;
+                a map with no children has no grid.
+                Rectangles are map fractions to four decimals.
   runs          one row per run, with the character (faction, race and class, never a name) and its
-                level; a map run also keeps the tracking toggles and the events schedule. logins: one row per build and TOC seen at login ]]--
+                level; a map run also keeps the tracking toggles and the events schedule, and it and a geometry run keep geometry (counts) and view (the map window's size, and the canvas's, for the map showing: mapID, shown, maximized, width, height, childWidth, childHeight, canvasScale, zoomLevels, uiScale). logins: one row per build and TOC seen at login ]]--
 
 local ADDON_NAME, probe = ...
 
@@ -68,6 +81,8 @@ local DEFAULT_MAP_WAIT_SECONDS = 2
 local MAP_PROGRESS_EVERY = 20
 local MAX_MAP_ID = 5000
 local MAX_MAP_REQUESTS = 3
+local GRID_COLUMNS, GRID_ROWS = 60, 40
+local MAP_TYPE = Enum and Enum.UIMapType or {Cosmic = 0, World = 1, Continent = 2, Zone = 3}
 
 local db, build, run
 
@@ -564,6 +579,139 @@ local function schedulerFacts()
 	return s
 end
 
+local function fraction(value)
+	value = plain(value)
+	if type(value) ~= "number" then return nil end
+	return math.floor(value * 10000 + 0.5) / 10000
+end
+
+local function tenth(value)
+	value = plain(value)
+	if type(value) ~= "number" then return nil end
+	return math.floor(value * 10 + 0.5) / 10
+end
+
+local function tocName()
+	return try(C_AddOns.GetAddOnMetadata, ADDON_NAME, "X-Probe-TOC") or "?"
+end
+
+local function childIds(mapID, mapType, allDescendants)
+	local ids = {}
+	for _, child in ipairs(listOf(C_Map.GetMapChildrenInfo, mapID, mapType, allDescendants)) do
+		if type(child) == "table" then ids[#ids + 1] = plain(child.mapID) end
+	end
+	return ids
+end
+
+local function childFacts(continentID, child)
+	local id = plain(child.mapID)
+	local facts = {mapID = id, name = plain(child.name), mapType = plain(child.mapType), parent = plain(child.parentMapID),
+		flags = plain(child.flags), navBar = plain(try(C_Map.IsMapValidForNavBarDropdown, id)),
+		group = plain(try(C_Map.GetMapGroupID, id))}
+	local ok, minX, maxX, minY, maxY = pcall(C_Map.GetMapRectOnMap, id, continentID)
+	minX, maxX, minY, maxY = fraction(minX), fraction(maxX), fraction(minY), fraction(maxY)
+	if ok and minX and maxX and minY and maxY then
+		facts.rect = {minX, maxX, minY, maxY}
+		if maxX > minX and maxY > minY then
+			local hit = try(C_Map.GetMapInfoAtPosition, continentID, (minX + maxX) / 2, (minY + maxY) / 2)
+			if type(hit) == "table" then
+				facts.hit = {mapID = plain(hit.mapID), name = plain(hit.name), mapType = plain(hit.mapType)}
+			else
+				facts.noHit = true
+			end
+		end
+	else
+		facts.noRect = true
+	end
+	return facts
+end
+
+-- Which map the game's own hit test names at each cell of a grid over the map: the shape each zone
+-- really has, where hovering and clicking land. Per map it keeps the number of cells and their centre.
+local function sampleGrid(mapID)
+	local cells, none = {}, 0
+	for row = 1, GRID_ROWS do
+		local y = (row - 0.5) / GRID_ROWS
+		for column = 1, GRID_COLUMNS do
+			local x = (column - 0.5) / GRID_COLUMNS
+			local ok, info = pcall(C_Map.GetMapInfoAtPosition, mapID, x, y)
+			local id = ok and type(info) == "table" and plain(info.mapID) or nil
+			if id then
+				local cell = cells[id] or {n = 0, x = 0, y = 0}
+				cell.n, cell.x, cell.y = cell.n + 1, cell.x + x, cell.y + y
+				cells[id] = cell
+			else
+				none = none + 1
+			end
+		end
+	end
+	for _, cell in pairs(cells) do
+		cell.x, cell.y = percent(cell.x / cell.n), percent(cell.y / cell.n)
+	end
+	return {columns = GRID_COLUMNS, rows = GRID_ROWS, cells = cells, none = none}
+end
+
+-- For every cosmic, world and continent map: its child maps of every type with their rectangles on it
+-- (docs/plans/continent-pins.md), what the game's hit test names at each rectangle's centre, the zone
+-- children the game lists with and without the type filter and as a tree, and the sampled grid.
+local function gatherGeometry()
+	local summary = {continents = 0, children = 0, zones = 0, noRect = 0, hitsOther = 0}
+	local preset = plain(try(C_GameRules and C_GameRules.GetForeverExperiencePreset))
+	for mapID = 1, MAX_MAP_ID do
+		local info = try(C_Map.GetMapInfo, mapID)
+		local mapType = type(info) == "table" and plain(info.mapType)
+		if mapType and mapType <= MAP_TYPE.Continent then
+			local row = {build = build, preset = preset, toc = tocName(), time = time(), name = plain(info.name),
+				mapType = mapType, parent = plain(info.parentMapID), children = {},
+				zoneCall = childIds(mapID, MAP_TYPE.Zone), zoneTree = childIds(mapID, MAP_TYPE.Zone, true)}
+			for _, child in ipairs(listOf(C_Map.GetMapChildrenInfo, mapID)) do
+				if type(child) == "table" and plain(child.mapID) then
+					local facts = childFacts(mapID, child)
+					row.children[#row.children + 1] = facts
+					summary.children = summary.children + 1
+					if facts.mapType == MAP_TYPE.Zone then summary.zones = summary.zones + 1 end
+					if facts.noRect then summary.noRect = summary.noRect + 1 end
+					if facts.hit and facts.hit.mapID ~= facts.mapID then summary.hitsOther = summary.hitsOther + 1 end
+				end
+			end
+			if #row.children > 0 then row.grid = sampleGrid(mapID) end
+			db.geometry[mapID] = row
+			summary.continents = summary.continents + 1
+		end
+	end
+	return summary
+end
+
+-- The map window as it stands: its size and the canvas's, which says how many screen pixels a zone's
+-- rectangle is. Taken of whichever map is showing, so open a continent first, maximised or not.
+local function viewFacts()
+	if not WorldMapFrame then return nil end
+	local ok, view = pcall(function()
+		local container = WorldMapFrame.ScrollContainer
+		local width, height = container:GetSize()
+		local childWidth, childHeight = container.Child:GetSize()
+		return {mapID = plain(WorldMapFrame:GetMapID()), shown = WorldMapFrame:IsShown() and true or false,
+			maximized = WorldMapFrame:IsMaximized() and true or false, width = tenth(width), height = tenth(height),
+			childWidth = tenth(childWidth), childHeight = tenth(childHeight),
+			canvasScale = fraction(container:GetCanvasScale()), zoomLevels = container.zoomLevels and #container.zoomLevels or nil,
+			uiScale = fraction(UIParent:GetEffectiveScale())}
+	end)
+	return ok and view or nil
+end
+
+local function startGeometry()
+	local started = debugprofilestop()
+	local summary = gatherGeometry()
+	local view = viewFacts()
+	table.insert(db.runs, {kind = "geometry", build = build, locale = GetLocale(), time = time(), character = character(),
+		level = UnitLevel("player"), geometry = summary, view = view,
+		preset = plain(try(C_GameRules and C_GameRules.GetForeverExperiencePreset)),
+		ms = math.floor(debugprofilestop() - started + 0.5)})
+	say(string.format("geometry on %s: %d continent, world and cosmic maps with %d child maps, %d of them zones; %d have no rectangle, and %d have a centre the game assigns to another map.%s",
+		build, summary.continents, summary.children, summary.zones, summary.noRect, summary.hitsOther,
+		view and "" or " The map window could not be read."))
+end
+
 local function startMaps(waitSeconds)
 	local queue = {}
 	for mapID = 1, MAX_MAP_ID do
@@ -617,6 +765,8 @@ local function startMaps(waitSeconds)
 	end
 	r.lastLook = function()
 		if not r.extra.scheduler then r.extra.scheduler = schedulerFacts() end
+		r.extra.geometry = gatherGeometry()
+		r.extra.view = viewFacts()
 	end
 	if C_EventScheduler then pcall(C_EventScheduler.RequestEvents) end
 	go(r)
@@ -782,11 +932,19 @@ local function status()
 	end
 	say(string.format("Maps on %s: %d asked, with %d quest offers, %d points of interest, %d events, %d quest hubs and %d dungeon entrances.",
 		build, maps, mapOffers, pois, events, hubs, entrances))
+	local continents, children = 0, 0
+	for _, row in pairs(db.geometry) do
+		if row.build == build then
+			continents = continents + 1
+			children = children + #row.children
+		end
+	end
+	say(string.format("Geometry on %s: %d continent, world and cosmic maps with %d child maps.", build, continents, children))
 	if run then say(string.format("Running: the %s, %d of %d.", run.label, run.done, run.total)) end
 end
 
 local function onLogin()
-	local toc = try(C_AddOns.GetAddOnMetadata, ADDON_NAME, "X-Probe-TOC") or "?"
+	local toc = tocName()
 	local last = db.logins[#db.logins]
 	if not last or last.build ~= build or last.toc ~= toc then
 		table.insert(db.logins, {build = build, locale = GetLocale(), toc = toc, time = time()})
@@ -798,7 +956,7 @@ end
 local function init()
 	QCForeverProbeDB = QCForeverProbeDB or {}
 	db = QCForeverProbeDB
-	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "runs", "logins"}) do
+	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "geometry", "runs", "logins"}) do
 		db[key] = db[key] or {}
 	end
 	if db.recording == nil then db.recording = true end
@@ -848,6 +1006,8 @@ SlashCmdList.QCFOREVERPROBE = function(argument)
 			return
 		end
 		startMaps(tonumber(option) or DEFAULT_MAP_WAIT_SECONDS)
+	elseif command == "geometry" then
+		startGeometry()
 	elseif command == "stop" then
 		if run then finish(true) else say("nothing is running.") end
 	elseif command == "status" then
@@ -856,6 +1016,6 @@ SlashCmdList.QCFOREVERPROBE = function(argument)
 		db.recording = option == "on"
 		say("the recorder is " .. option .. ".")
 	else
-		say("/qcprobe quests [all | in flight], npcs [all | in flight], maps [wait seconds], stop, status, record on|off.")
+		say("/qcprobe quests [all | in flight], npcs [all | in flight], maps [wait seconds], geometry, stop, status, record on|off.")
 	end
 end

@@ -179,14 +179,20 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
 ## Pull requests, in order
 
 1. **This plan** and its notes in the other documents.
-2. **The probe's geometry pass** (dev-only, ships nothing, so it can merge at once): for every
-   continent, each child of any type with its map type, flags and rectangle, a hit test
-   (`GetMapInfoAtPosition` at the rectangle's centre: does it name the zone itself?),
-   `IsMapValidForNavBarDropdown` for the alternate twins, and the canvas and viewport sizes. It rides
-   on `/qcprobe maps`, which each sweep already runs, plus `/qcprobe geometry` for a single
-   run. `Report-ContinentGeometry.lua` reads the saved file, and the first dump becomes
-   `docs/plans/continent-geometry-baseline.csv`. Merge it before the retail 12.1.5 run (13 or 14
-   October) so one session captures retail; Forever's comes with its next session.
+2. **The probe's geometry pass** (dev-only, ships nothing, so it can merge at once). For every
+   cosmic, world and continent map it saves each child of any type with its map type, flags,
+   nav-bar validity, map group and rectangle; a hit test (`GetMapInfoAtPosition` at the
+   rectangle's centre: does it name the zone itself?); the zone IDs `GetMapChildrenInfo` gives with
+   the type filter and with `allDescendants`, which settles whether the filter is exact; and a 60 x
+   40 grid of the hit test, which gives each zone's real centre where hovering and clicking land.
+   With the world map showing it also notes the window's and the canvas's size. It ends every
+   `/qcprobe maps` pass, which each sweep already runs, and `/qcprobe geometry` takes it alone.
+   `tools\Report-ContinentGeometry.lua` reads the saved file, lists what is odd on each continent
+   (no or flat rectangle, twins, a centre another map takes, icons closer than 24 px at 700, 1000
+   and 1500 px) and writes a row per child; the first dump becomes
+   `docs/plans/continent-geometry-baseline.csv`. `Test-Probe.lua` covers it with stand-in maps.
+   Merge it before the retail 12.1.5 run (13 or 14 October) so one session captures retail;
+   Forever's comes with its next session.
 3. **The tooltip helpers move** to `qcTooltips.lua`, with the exports. No behaviour change: the
    reachability report must come out byte-identical.
 4. **Counting and the zone list**, with `Test-ContinentPins.lua`. Nothing visible yet.
@@ -223,10 +229,11 @@ Offline, under `C:\Program Files (x86)\Lua\5.1\lua.exe` (the `lua` on the path i
 
 Only what the game alone can answer, a few lines per game.
 
-- **The probe's dump** (PR 2): no extra commands; it comes with the map pass of the next sweep. It
-  answers what `GetMapChildrenInfo` and `GetMapRectOnMap` return for each continent (nil, zeros,
-  which twin has a rectangle, what Eastern Kingdoms shows for Quel'Thalas), whether each centre
-  falls on its own zone, and the real canvas size.
+- **The probe's dump** (PR 2): it comes with the map pass of the next sweep. It answers what
+  `GetMapChildrenInfo` and `GetMapRectOnMap` return for each continent (nil, zeros, which twin has a
+  rectangle, what Eastern Kingdoms shows for Quel'Thalas), whether each centre falls on its own
+  zone, and where each zone really lies. The real canvas size needs one more step on each game:
+  open the world map on Kalimdor, type `/qcprobe geometry`, then maximise the map and type it again.
 - **One look at the finished icons, on each game** (about three minutes, five observations):
   1. The icons sit on their zones, not in the sea or on a neighbour, and nothing stacks.
   2. Hovering shows the tooltip, and its totals are close to the list's header for that zone.
@@ -265,3 +272,4 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 ## Status
 
 - 2026-10-10: investigated; this plan written and the decisions above taken. Nothing built.
+- 2026-10-10: PR 2 built (the probe's geometry pass, `Report-ContinentGeometry.lua`, 736 checks in `Test-Probe.lua`); not yet run in game.
