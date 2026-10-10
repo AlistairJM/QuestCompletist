@@ -818,6 +818,27 @@ prerequisite for any, and the pin offered every quest that starts at it, whateve
   offered out of turn, or one missing, is what would reopen it. Retail keeps Blizzard's API for its
   prerequisites, for now ([game-parity.md](game-parity.md), recommendation 13).
 
+### The recorder's notes from the beta session of 10 October 2026
+
+The user played the beta (build 70338) with the recorder on and closed it; the notes were only in the
+probe's saved file until a sweep read them. The file is kept in `tools\forever_probe_70338`, beside the
+copy taken at 09:57 that morning. Importing them, on the master that has the quest line prerequisites:
+
+- **The ledger** (`plans\recorded-quest-givers.csv`) goes from 77 to 121 rows: 13 new givers (12 NPCs
+  and the object "Misplaced Packages"), with their spots, the quests they offered and handed in. A
+  second run of the importer writes the same ledger.
+- **The data:** no quest changes, 5,097 as before, and the guard has nothing to list. **1,695 pins become
+  1,698**: Gilbert Gray (95065) in Stormwind, Jemma Quikswitch (95041) and the nameless "Misplaced
+  Packages" (97263) in Ironforge. Two quests join pins that were there: 97914 on Thundris Windweaver and
+  97926 on Baros Alexston. Seven pins that were already there move by 0.01 to 0.1 of a map point
+  (Thundris, Gorbold Steelhand, Grimand Elmore, Baros, Gerrig Bonegrip, Gnoarn and Bubulo Acerbus),
+  because a recorded spot replaces CMaNGOS's spawn, as before, and the recorder rounds to 0.1.
+- **Why the shifts stay:** keeping CMaNGOS's spawn where it lies within 0.15 of the recorded spot was
+  tried and dropped. The pins already in the data from earlier sessions sit at the recorder's rounded
+  positions (13 of them), so that rule would move those to CMaNGOS's instead, a larger change in the
+  other direction.
+- The reachability check, the table audit and the pin names find nothing new.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -931,3 +952,5 @@ prerequisite for any, and the pin offered every quest that starts at it, whateve
 - 2026-10-10: the beta answers about 80 quests differently on every run, so the importer keeps a quest's
   last record until the game has missed it for 10 runs in a row, and stops to ask the user before any quest
   leaves the data; see "The beta's answers differ between runs".
+- 2026-10-10: the recorder's notes from the user's beta session (build 70338, 13 new givers) are in the
+  ledger and the data: 1,698 pins and no quest changes; see "The recorder's notes from the beta session".

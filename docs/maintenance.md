@@ -1469,7 +1469,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 15,202
-  pins for retail, and 5,097 quests and 1,695 pins for Forever.
+  pins for retail, and 5,097 quests and 1,698 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
