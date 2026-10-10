@@ -84,8 +84,39 @@ function Get-ScriptPins([string]$toolsDir) {
 
 function Read-ListBuild([string]$path) {
     if (-not (Test-Path -LiteralPath $path)) { return $null }
-    foreach ($line in [System.IO.File]::ReadLines($path)) {
-        if ($line -match '^probe\.questBuild\s*=\s*"(\d+\.\d+\.\d+\.\d+)"') { return $Matches[1] }
+    $reader = New-Object System.IO.StreamReader($path)
+    try {
+        while ($null -ne ($line = $reader.ReadLine())) {
+            if ($line -match '^probe\.questBuild\s*=\s*"(\d+\.\d+\.\d+\.\d+)"') { return $Matches[1] }
+        }
     }
+    finally { $reader.Dispose() }
     return $null
+}
+
+function Get-ProbeBuild([string]$game, [string]$toolsDir) {
+    $folder = Get-ChildItem -LiteralPath $toolsDir -Directory -Filter "${game}_probe_*" -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match "^${game}_probe_(\d+)$" } |
+        Sort-Object { [int]($_.Name -replace '^.*_(\d+)$', '$1') } | Select-Object -Last 1
+    if (-not $folder) { return $null }
+    $file = Join-Path $folder.FullName 'QCForeverProbe.lua'
+    if (-not (Test-Path -LiteralPath $file)) { return $null }
+    $pattern = '"(\d+\.\d+\.\d+\.' + ($folder.Name -replace '^.*_(\d+)$', '$1') + ')"'
+    $reader = New-Object System.IO.StreamReader($file)
+    try {
+        while ($null -ne ($line = $reader.ReadLine())) {
+            $m = [regex]::Match($line, $pattern)
+            if ($m.Success) { return $m.Groups[1].Value }
+        }
+    }
+    finally { $reader.Dispose() }
+    return $null
+}
+
+function Resolve-ProbeBuild([string]$build, [string]$game, [string]$toolsDir, [string]$parameter) {
+    if ($build) { return $build }
+    $found = Get-ProbeBuild $game $toolsDir
+    if (-not $found) { throw "There is no -$parameter and no $game probe results under $toolsDir\${game}_probe_<revision> to take it from." }
+    Write-Host "Using build $found, the newest $game probe results' (-$parameter says another)."
+    return $found
 }

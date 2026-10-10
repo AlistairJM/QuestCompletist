@@ -69,8 +69,8 @@ function New-World([string]$name) {
     Write-File "$($w.Tools)\retail_quest_cache_12.1.0.69933.jsonl"
     Write-File "$($w.Tools)\api_docs-live-12.1.0.69933.tsv"
     Write-File "$($w.Tools)\api_docs-forever-1.60.1.70338.tsv"
-    Write-File "$($w.Tools)\retail_probe_69933\QCForeverProbe.lua"
-    Write-File "$($w.Tools)\forever_probe_70338\QCForeverProbe.lua"
+    Write-File "$($w.Tools)\retail_probe_69933\QCForeverProbe.lua" "QCForeverProbeDB = {`n[`"runs`"] = {{[`"build`"] = `"12.1.0.69933`"}},`n}`n"
+    Write-File "$($w.Tools)\forever_probe_70338\QCForeverProbe.lua" "QCForeverProbeDB = {`n[`"runs`"] = {{[`"build`"] = `"1.60.1.70205`"}, {[`"build`"] = `"1.60.1.70338`"}},`n}`n"
     Write-File "$($w.Tools)\ClassicDB_1_12_1_z2815.sql.gz"
     Write-File "$($w.Tools)\ClassicDB_1_12_1_z2900.sql.gz.20261005"
     Write-File "$($w.Tools)\tdb\TDB_full_world_1210.26091_2026_09_09.sql"
@@ -115,6 +115,26 @@ try {
     $published = Get-NewestPublished (Get-Content "$($w.Newest)" -Raw | ConvertFrom-Json).wago
     Equal $published.Product['wow_classic_beta'].Version '1.60.1.70338' 'L5: a product''s newest build is the latest published, not the highest version (5.5.0.62071 is older)'
     Equal $published.Track['1.60.1'].Version '1.60.1.70338' 'L5: and a version''s newest build is the highest across the products that carry it'
+
+    # --- the build of the newest probe results ---------------------------------------------------
+    $w = New-World 'probebuild'
+    Equal (Get-ProbeBuild 'forever' $w.Tools) '1.60.1.70338' 'P1: the build of the newest Forever results, not an older one in the same file'
+    Equal (Get-ProbeBuild 'retail' $w.Tools) '12.1.0.69933' 'P1: and of retail'
+    Write-File "$($w.Tools)\forever_probe_70205\QCForeverProbe.lua" "QCForeverProbeDB = {[`"runs`"] = {{[`"build`"] = `"1.60.1.70205`"}}}`n"
+    Equal (Get-ProbeBuild 'forever' $w.Tools) '1.60.1.70338' 'P2: an older folder doesn''t win'
+    Write-File "$($w.Tools)\forever_probe_70400\QCForeverProbe.lua" "QCForeverProbeDB = {[`"runs`"] = {{[`"build`"] = `"1.60.1.70400`"}}}`n"
+    Equal (Get-ProbeBuild 'forever' $w.Tools) '1.60.1.70400' 'P2: a newer one does, by its number and not its date'
+    Write-File "$($w.Tools)\forever_probe_70500\QCForeverProbe.lua" "nothing here`n"
+    Equal (Get-ProbeBuild 'forever' $w.Tools) $null 'P3: a newest folder whose file names no build of its own gives none'
+    Remove-Item "$($w.Tools)\forever_probe_70500" -Recurse
+    Remove-Item "$($w.Tools)\forever_probe_70400\QCForeverProbe.lua"
+    Equal (Get-ProbeBuild 'forever' $w.Tools) $null 'P3: and so does one with no file'
+    Equal (Get-ProbeBuild 'forever' "$($w.Root)\nowhere") $null 'P3: and a tools folder with no results'
+    Equal (Resolve-ProbeBuild '1.60.1.70001' 'forever' $w.Tools 'Build') '1.60.1.70001' 'P4: a build that is given is used as it is'
+    Remove-Item "$($w.Tools)\forever_probe_70400" -Recurse
+    Equal (Resolve-ProbeBuild '' 'forever' $w.Tools 'Build') '1.60.1.70338' 'P4: left out, it is the results'' build'
+    $threw = $false; try { Resolve-ProbeBuild '' 'forever' "$($w.Root)\nowhere" 'Build' | Out-Null } catch { $threw = $_.Exception.Message -match 'no -Build and no forever probe results' }
+    Check $threw 'P4: and with no results it is refused, naming the parameter'
 
     # --- everything is the newest ----------------------------------------------------------------
     $w = New-World 'current'

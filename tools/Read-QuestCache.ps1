@@ -36,11 +36,13 @@ or tools\retail_probe_*, or -CacheFile.
 param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$CacheFile = "",
-    [string]$Build = "1.60.1.70205",
+    [string]$Build = "",
     [string]$OutFile = ""
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
+. "$PSScriptRoot\LatestBuilds.ps1"
+$Build = Resolve-ProbeBuild $Build 'forever' $ToolsDir 'Build'
 
 $major = [int]$Build.Split('.')[0]
 $game = if ($major -eq 1) { 'forever' } elseif ($major -ge 10) { 'retail' } else { throw "-Build $Build is neither WoW: Forever (1.x) nor retail (12.x)." }
