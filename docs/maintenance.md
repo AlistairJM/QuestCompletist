@@ -1424,12 +1424,20 @@ It began as pull request #139, which stays open as the record; its files are in
    quest that loads it also saves the facts of API review recommendation 2 (whether the quest is
    account-wide, its faction group, whether it is important or meta, its quest line and campaign, its
    zone if it is a task, and the expansion, breadcrumb and story answers of three undocumented
-   functions), and the run's row says which functions the client has. Nothing reads them yet.
+   functions) and, for the character that runs it, what `IsQuestTrivial` and
+   `GetContentDifficultyQuestForPlayer` say about it (0 Trivial to 4 Impossible; recommendation 4,
+   scaling-aware levels), and the run's row says which functions the client has and what the
+   character's `UnitQuestTrivialLevelRange` and `UnitQuestTrivialLevelRangeScaling` were. Those two
+   answers depend on the character's level, so run it on one character, and on a build that was
+   probed before the level facts existed (Forever's 70338) type `/qcprobe quests all`, because a quest
+   already answered on a build isn't asked again. `Get-ProbeLevelFacts` in `ProbeResults.ps1` tallies them
+   (how many are trivial, how many at each difficulty, and both together); nothing else reads the
+   facts yet.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered. On retail the quest pass
    takes about two hours (35,023 quests, 4 at a time; the old type probe's run was 31,425 loaded and
-   3,598 refused), the NPC pass about five minutes (8,418 NPCs), and the saved variables about 13
-   MB; delete the addon's folder, or disable it, when you are not running it.
+   3,598 refused), the NPC pass about five minutes (8,418 NPCs), and the saved variables about 17.5
+   MB, 19 MB with the two level facts; delete the addon's folder, or disable it, when you are not running it.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
    second. One run is enough. The results note the experience preset chosen once at Forever's login
@@ -1489,7 +1497,10 @@ After Forever's launch, use its live client's folder in place of `_classic_beta_
 (`retail_probe_69933` for build 12.1.0.69933), where step 3 of the sweep, step 7 and the map report find it;
 the retail quest cache is not read yet. `Read-ForeverProbe.lua <file> facts` prints every fact the quest
 pass saved, one per line, then a `run` line for each run (its kind, build, time, the character that ran
-it, as faction, race and class and never a name, and its level) and a `refusedfact` line for each
+it, as faction, race and class and never a name, and its level), a `runfact` line for each fact of a
+quest run (the function that answered it, or `false` when the client has none), a `trivialrange` line
+for each of the character's two trivial level ranges (`false` when the client lacks the call) and a
+`refusedfact` line for each
 function the quest pass asked about the quests the server refused: how many it was asked about, how
 many it answered anything for, how many with something other than no, and the first of those. Two runs
 on different characters, with their answers compared, show whether the beta's answers follow the character.

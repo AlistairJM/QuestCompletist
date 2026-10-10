@@ -61,15 +61,46 @@ try {
     Check ($facts -contains "fact`t110`taccountQuest`tfalse") 'T1: facts lists each field of a row, false included'
     Check ($facts -contains "fact`t110`tlevel`t10") 'T1: a number'
     Check (@($facts | Where-Object { $_ -match "^fact`t\d+`t(build|result)`t" }).Count -eq 0) 'T1: but not the build or the result'
-    Check (@($facts | Where-Object { $_ -match "^(run|refusedfact)`t" }).Count -eq 0) 'T1: and a file with no runs has no run lines'
+    Check (@($facts | Where-Object { $_ -match "^(run|runfact|trivialrange|refusedfact)`t" }).Count -eq 0) 'T1: and a file with no runs has no run lines'
     $withRuns = "$Scratch\runs.lua"
-    [IO.File]::WriteAllText($withRuns, "QCForeverProbeDB = {`nquests = {},`nnpcs = {},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nlogins = {},`nruns = {`n{kind = `"quests`", build = `"1.60.1.70338`", time = 5, character = `"Alliance NightElf ROGUE`", level = 13, answered = 7, asked = 9,`nrefusedFacts = {questLineID = {asked = 2, answered = 1, positive = 1, examples = {1001, 1005}}, accountQuest = {asked = 2, answered = 2, positive = 0, examples = {}}}},`n{kind = `"maps`", build = `"1.60.1.70338`", time = 6, answered = 60, asked = 60},`n},`n}`n")
+    [IO.File]::WriteAllText($withRuns, "QCForeverProbeDB = {`nquests = {},`nnpcs = {},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nlogins = {},`nruns = {`n{kind = `"quests`", build = `"1.60.1.70338`", time = 5, character = `"Alliance NightElf ROGUE`", level = 13, answered = 7, asked = 9,`nfacts = {accountQuest = `"C_QuestLog.IsAccountQuest`", trivial = `"C_QuestLog.IsQuestTrivial`", contentDifficulty = `"C_PlayerInfo.GetContentDifficultyQuestForPlayer`", expansion = false},`ntrivialRange = {UnitQuestTrivialLevelRange = 6, UnitQuestTrivialLevelRangeScaling = false},`nrefusedFacts = {questLineID = {asked = 2, answered = 1, positive = 1, examples = {1001, 1005}}, accountQuest = {asked = 2, answered = 2, positive = 0, examples = {}}}},`n{kind = `"maps`", build = `"1.60.1.70338`", time = 6, answered = 60, asked = 60},`n},`n}`n")
     $runLines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $withRuns facts)
     Check ($runLines -contains "run`t1`tquests`t1.60.1.70338`t5`tAlliance NightElf ROGUE`t13`t7`t9") 'T1: facts gives each run, with its character and level'
     Check ($runLines -contains "run`t2`tmaps`t1.60.1.70338`t6`t`t`t60`t60") 'T1: and one that kept no character as empty fields'
+    Check ($runLines -contains "runfact`t1`ttrivial`tC_QuestLog.IsQuestTrivial") 'T1: and the function that answered each fact of a quest run'
+    Check ($runLines -contains "runfact`t1`tcontentDifficulty`tC_PlayerInfo.GetContentDifficultyQuestForPlayer") 'T1: the content difficulty too'
+    Check ($runLines -contains "runfact`t1`texpansion`tfalse") 'T1: false for a function the client lacks'
+    Check ($runLines -contains "trivialrange`t1`tUnitQuestTrivialLevelRange`t6") 'T1: and the run character''s trivial ranges'
+    Check ($runLines -contains "trivialrange`t1`tUnitQuestTrivialLevelRangeScaling`tfalse") 'T1: false for a range call the client lacks'
+    Check (@($runLines | Where-Object { $_ -match "^(runfact|trivialrange)`t2`t" }).Count -eq 0) 'T1: a run that kept neither has none of those lines'
     Check ($runLines -contains "refusedfact`t1`tquestLineID`t2`t1`t1`t1001,1005") 'T1: and what a function said for refused quests, with examples'
     Check ($runLines -contains "refusedfact`t1`taccountQuest`t2`t2`t0`t") 'T1: a function that only said no has no examples'
-    Check (@(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $withRuns | Where-Object { $_ -match "^(run|refusedfact)`t" }).Count -eq 0) 'T1: and the plain mode prints none of it'
+    Check (@(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $withRuns | Where-Object { $_ -match "^(run|runfact|trivialrange|refusedfact)`t" }).Count -eq 0) 'T1: and the plain mode prints none of it'
+    $levelRows = @(
+        '[1] = {build = "12.1.5.70400", result = "ok", level = 10, trivial = true, contentDifficulty = 0},',
+        '[2] = {build = "12.1.5.70400", result = "ok", level = 40, trivial = false, contentDifficulty = 2},',
+        '[3] = {build = "12.1.5.70400", result = "cached", level = 41, trivial = false, contentDifficulty = 3},',
+        '[4] = {build = "12.1.5.70400", result = "late", level = 20, trivial = true, contentDifficulty = 1},',
+        '[5] = {build = "12.1.5.70400", result = "ok", level = 30},',
+        '[6] = {build = "12.1.5.70400", result = "ok", level = 31, trivial = false, contentDifficulty = "hard"},',
+        '[7] = {build = "12.1.5.70400", result = "fail"},',
+        '[8] = {build = "12.1.0.69933", result = "ok", level = 5, trivial = true, contentDifficulty = 0},',
+        '[9] = {build = "12.1.5.70400", result = "timeout"},',
+        '[10] = {build = "12.1.5.70400", result = "ok", level = 12, trivial = true, contentDifficulty = 4},'
+    ) -join "`n"
+    $levelRuns = @(
+        '{kind = "quests", build = "12.1.5.70400", time = 5, character = "Horde Orc WARRIOR", level = 20, answered = 9, asked = 10, facts = {trivial = "C_QuestLog.IsQuestTrivial", contentDifficulty = "C_PlayerInfo.GetContentDifficultyQuestForPlayer"}, trivialRange = {UnitQuestTrivialLevelRange = 4, UnitQuestTrivialLevelRangeScaling = 7}},',
+        '{kind = "quests", build = "12.1.5.70400", time = 9, character = "Alliance Human MAGE", level = 40, answered = 9, asked = 10, facts = {trivial = "C_QuestLog.IsQuestTrivial", contentDifficulty = "C_PlayerInfo.GetContentDifficultyQuestForPlayer"}, trivialRange = {UnitQuestTrivialLevelRange = 6, UnitQuestTrivialLevelRangeScaling = false}},',
+        '{kind = "maps", build = "12.1.5.70400", time = 10, character = "Alliance Human MAGE", level = 40, answered = 60, asked = 60},',
+        '{kind = "quests", build = "12.1.5.70400", time = 11, character = "Alliance Human MAGE", level = 40, answered = 9, asked = 10, facts = {accountQuest = "C_QuestLog.IsAccountQuest"}},'
+    ) -join "`n"
+    $levelFile = "$Scratch\levels.lua"
+    [IO.File]::WriteAllText($levelFile, "QCForeverProbeDB = {`nquests = {`n$levelRows`n},`nnpcs = {},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nlogins = {},`nruns = {`n$levelRuns`n},`n}`n")
+    $levels = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $levelFile facts)
+    Check ($levels -contains "fact`t1`ttrivial`ttrue") 'T1: the content of IsQuestTrivial is a fact line, true'
+    Check ($levels -contains "fact`t2`ttrivial`tfalse") 'T1: and false'
+    Check ($levels -contains "fact`t10`tcontentDifficulty`t4") 'T1: the content difficulty, a number'
+    Check ($levels -contains "fact`t1`tcontentDifficulty`t0") 'T1: and Trivial (0), which is a value too'
 
     $a = Get-ProbeQuests $old $LuaExe
     $b = Get-ProbeQuests $new $LuaExe
@@ -112,6 +143,47 @@ try {
     Equal (Find-ProbeResults "$Scratch\tools") "$Scratch\tools\retail_probe_70100\QCForeverProbe.lua" 'T5: the newest retail probe copy'
     Remove-Item "$Scratch\tools\retail_probe_69933", "$Scratch\tools\retail_probe_70100" -Recurse
     Equal (Find-ProbeResults "$Scratch\tools") "$Scratch\tools\quest_type_probe_results.lua" 'T5: else the #42 file'
+
+    # the level facts: IsQuestTrivial and the content difficulty, tallied for the last quest run that asked
+    $lf = Get-ProbeLevelFacts $levelFile $LuaExe
+    Equal $lf.Build '12.1.5.70400' 'T9: the level facts are of the run''s build'
+    Equal $lf.Character 'Alliance Human MAGE' 'T9: of the last quest run that asked IsQuestTrivial (not the one before, not the map run, not a later one that did not ask)'
+    Equal $lf.CharacterLevel 40 'T9: with its character''s level'
+    Equal $lf.TrivialFunction 'C_QuestLog.IsQuestTrivial' 'T9: the function that answered IsQuestTrivial'
+    Equal $lf.DifficultyFunction 'C_PlayerInfo.GetContentDifficultyQuestForPlayer' 'T9: and the difficulty'
+    Equal $lf.TrivialRange 6 'T9: the character''s trivial range'
+    Check ($lf.TrivialRangeScaling -is [bool] -and -not $lf.TrivialRangeScaling) 'T9: and $false for a scaling range the client lacks'
+    Equal $lf.Loaded 7 'T9: seven loaded quests of that build (not the refused one, the timed-out one or the other build''s)'
+    Equal $lf.Trivial['true'] 3 'T9: three are trivial'
+    Equal $lf.Trivial['false'] 3 'T9: three are not'
+    Equal $lf.Trivial['none'] 1 'T9: and one has no answer'
+    foreach ($d in '0', '1', '2', '3', '4', 'none', 'other') { Equal $lf.Difficulty[$d] 1 "T9: one quest has difficulty $d" }
+    Equal $lf.Together['true/0'] 1 'T9: a trivial quest the game calls Trivial'
+    Equal $lf.Together['true/4'] 1 'T9: and one it calls Impossible, so the two do not always agree'
+    Equal $lf.Together['false/3'] 1 'T9: a quest that is not trivial and Difficult'
+    Equal $lf.Together['none/none'] 1 'T9: one with neither answer'
+    Equal $lf.Together['false/other'] 1 'T9: and one with an answer that is not 0 to 4'
+    Equal $lf.Quests['2'].Level 40 'T9: a quest keeps the level the game gave'
+    Check ($lf.Quests['2'].Trivial -is [bool] -and -not $lf.Quests['2'].Trivial) 'T9: and IsQuestTrivial, as a boolean'
+    Equal $lf.Quests['2'].Difficulty 2 'T9: and the difficulty, as a number'
+    Check ($lf.Quests['1'].Trivial -is [bool] -and $lf.Quests['1'].Trivial) 'T9: true as true'
+    Equal $lf.Quests['1'].Difficulty 0 'T9: Trivial (0) as 0'
+    Check ($null -eq $lf.Quests['5'].Trivial -and $null -eq $lf.Quests['5'].Difficulty) 'T9: a quest with no answer has none'
+    Check ($null -eq $lf.Quests['6'].Difficulty) 'T9: nor does one whose difficulty is not 0 to 4'
+    Check (-not $lf.Quests.ContainsKey('7') -and -not $lf.Quests.ContainsKey('8') -and -not $lf.Quests.ContainsKey('9')) 'T9: a refused, a timed-out and another build''s quest are left out'
+    $noFunctions = "$Scratch\no-functions.lua"
+    [IO.File]::WriteAllText($noFunctions, "QCForeverProbeDB = {`nquests = {`n[1] = {build = `"1.60.1.70338`", result = `"ok`", level = 3},`n},`nnpcs = {},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nlogins = {},`nruns = {`n{kind = `"quests`", build = `"1.60.1.70338`", time = 5, character = `"Alliance Human MAGE`", level = 3, answered = 1, asked = 1, facts = {trivial = false, contentDifficulty = false}},`n},`n}`n")
+    $nf = Get-ProbeLevelFacts $noFunctions $LuaExe
+    Check ($nf.TrivialFunction -is [bool] -and -not $nf.TrivialFunction -and $nf.DifficultyFunction -is [bool] -and -not $nf.DifficultyFunction) 'T9: a client without either function says $false for both'
+    Check ($null -eq $nf.TrivialRange -and $null -eq $nf.TrivialRangeScaling) 'T9: and a run that kept no ranges has none'
+    Equal $nf.Trivial['none'] 1 'T9: so its quest has no answer'
+    Equal $nf.Quests['1'].Level 3 'T9: but has its level'
+    $oldRun = "$Scratch\old-run.lua"
+    [IO.File]::WriteAllText($oldRun, "QCForeverProbeDB = {`nquests = {},`nnpcs = {},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nlogins = {},`nruns = {`n{kind = `"quests`", build = `"1.60.1.70338`", time = 5, level = 3, answered = 1, asked = 1, facts = {accountQuest = `"C_QuestLog.IsAccountQuest`"}},`n},`n}`n")
+    $threw = $false; try { Get-ProbeLevelFacts $oldRun $LuaExe } catch { $threw = "$_" -match 'asked IsQuestTrivial' }
+    Check $threw 'T9: a file whose quest runs never asked IsQuestTrivial is an error that says so'
+    $threw = $false; try { Get-ProbeLevelFacts "$Scratch\nothing.lua" $LuaExe } catch { $threw = $true }
+    Check $threw 'T9: and so is a file that is not there'
 
     # --- Retype-ProbeRecurring.ps1 on a scratch copy of the data ---------------------------------
     function New-World([string]$name) {

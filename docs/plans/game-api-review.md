@@ -131,7 +131,7 @@ about 20 retail category names, and our own strings, translated by us.
 | IsAccountQuest(questID) | both | – | whether the quest is account-wide, so one character's completion ends it for the warband (the quest log's "Account" legend) | probe: a new data field; addon: the completion counter and filters |
 | IsImportantQuest, IsMetaQuest, IsQuestCalling, IsQuestBounty, IsQuestInvasion, IsThreatQuest, IsQuestTask, IsQuestFromContentPush, QuestIgnoresAccountCompletedFiltering | both | type probe (IsQuestTask) | flags of the quest's record | probe: Important and Meta for an icon, if wanted; the rest no |
 | IsRepeatableQuest | both | both probes | said no to every quest Blizzard's API flags repeatable (quest-types.md) | no |
-| IsQuestTrivial(questID) | both | – | whether the quest is grey for this character, with scaling and Chromie Time taken into account; Blizzard's map hides trivial offers with it | addon: the low-level filter, which today compares our stored level with `UnitQuestTrivialLevelRange` |
+| IsQuestTrivial(questID) | both | – | whether the quest is grey for this character, with scaling and Chromie Time taken into account; Blizzard's map hides trivial offers with it | addon: the low-level filter, which today compares our stored level with `UnitQuestTrivialLevelRange`; probe: saved for every loaded quest by the next run (decision 3) |
 | GetQuestDifficultyLevel, GetSuggestedGroupSize, GetQuestType, GetQuestTagInfo | both | Forever probe (all), type probe (tag info) | the quest's level as scaled for the player; the group size; the tag ID; `QuestTagInfo` (tagName in the player's language, tagID, worldQuestType, quality, tradeskillLineID, isElite, displayExpiration) | addon: the scaled level, and a tag line ("Dungeon", "Group") in tooltips; probe: have |
 | GetQuestDetailsTheme | both | – | the quest window's art | no |
 | GetQuestsOnMap(uiMapID) | both | – | `QuestPOIMapInfo` for the player's own log quests on a map: questID, x, y, mapID, isQuestStart, inProgress, isDaily, isMeta, questTagType, numObjectives, childDepth, isMapIndicatorQuest. Not offers: those are `C_QuestLine`'s | no |
@@ -318,7 +318,7 @@ TOOLTIP_DATA_UPDATE is used; SHOW_HYPERLINK_TOOLTIP and HIDE_HYPERLINK_TOOLTIP n
 | C_CreatureInfo.GetCreatureFamilyIDs, GetCreatureFamilyInfo, GetCreatureTypeIDs, GetCreatureTypeInfo | both | – | beast families and creature types | no |
 | UnitGUID, UnitName | both | recorder, addon | the NPC's GUID (Creature, GameObject or Vehicle, with its ID) and name | recorder |
 | UnitLevel, UnitRace, UnitClass, UnitFactionGroup, UnitQuestTrivialLevelRange | both | addon | the character | have |
-| UnitQuestTrivialLevelRangeScaling | both | – | the trivial range for scaling quests | addon: pairs with `IsQuestTrivial`, which already allows for it |
+| UnitQuestTrivialLevelRangeScaling | both | – | the trivial range for scaling quests | addon: pairs with `IsQuestTrivial`, which already allows for it; probe: in the quest run's row, with `UnitQuestTrivialLevelRange`, for the next run |
 | UnitClassification(unit), UnitIsQuestBoss, UnitCreatureType, UnitExists | both | – | elite, rare, quest boss | no |
 | UnitPosition(unit) | both | – | world coordinates, for the player and party members only, not NPCs | no: the recorder stands beside the giver and takes the player's map position |
 | ClosestUnitPosition(creatureID), ClosestGameObjectPosition(objectID) | both | – | the nearest creature or object of that ID, which would place quest givers by ID, but the returns are secret values (`SecretReturns = true`), so an addon can neither read nor save them | no |
@@ -504,7 +504,8 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
    next probe run. If it answers, it's the per-quest link the menus' expansion groups lack.
 8. **`C_QuestLog.GetSuggestedGroupSize`:** both probes have it, and Forever's quest cache gives the
    same; a "Group (3)" tooltip line is the only new use.
-9. **`C_QuestLog.IsQuestTrivial`:** the scaling-aware low-level test (recommendation 4).
+9. **`C_QuestLog.IsQuestTrivial`:** the scaling-aware low-level test (recommendation 4). The quest
+   facts pass saves it, with `C_PlayerInfo.GetContentDifficultyQuestForPlayer`, from the next run on.
 10. **`C_QuestHub` (12.x):** hubs are named map POIs grouping offers; a probe can list them; no
     other use yet.
 
@@ -751,7 +752,10 @@ Forever beta 1.60.1.70291, then 70338 the next day).
    The map offers were built and run in October; the user said "go ahead with the facts pass" on
    9 October 2026, and it is built (below).
 3. **Scaling-aware levels** (4). It changes what "hide low level quests" hides for scaling quests.
-   **Recommendation:** yes, with the stored level as the fallback.
+   **Recommendation:** yes, with the stored level as the fallback. Probed since 10 October: the quest
+   facts pass saves `IsQuestTrivial` and `GetContentDifficultyQuestForPlayer` for every loaded quest and
+   the run's row the character's two trivial ranges, so the first run after 12.1.5 (retail) and the
+   next Forever run say how scaling quests read. The decision stays open until one has been read.
 4. **Text from the game** (5). English clients would show Blizzard's storyline names where ours
    differ, as quest and NPC names do. **Recommendation:** yes.
 5. **Waypoints** (6): a fallback when TomTom is absent, or always an option? **Recommendation:** a
@@ -799,6 +803,13 @@ Forever beta 1.60.1.70291, then 70338 the next day).
 - Does Forever allow user waypoints (`CanSetUserWaypointOnMap`), and does its client return area
   POIs, dungeon entrances, zone level ranges or scheduled events?
 - How large does the recorder's saved variable grow over a month of play?
+- How do scaling quests read? Does `IsQuestTrivial` call a quest grey that our stored level and
+  `UnitQuestTrivialLevelRange` keep, or the other way round; is `UnitQuestTrivialLevelRangeScaling` a
+  different number from the plain range; do `GetQuestDifficultyLevel` and
+  `GetContentDifficultyQuestForPlayer` agree with `IsQuestTrivial`; and do the two quest calls answer
+  for a quest the server refused? Probed from the next run on (the quest facts pass and the run's
+  row); read with `Get-ProbeLevelFacts` in `ProbeResults.ps1`. The two answers depend on the
+  character's level, so compare runs only for one character.
 
 ## Out of scope
 
@@ -901,3 +912,13 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   questions of `GetMapChildrenInfo` and `GetMapRectOnMap`: the type filter is exact, a rectangle may be
   flat (zero width and height) rather than missing, and `GetMapInfoAtPosition` names a city's neighbour
   at the city's own centre.
+- 2026-10-10: recommendation 4's probe half (decision 3 here, decision 9 of open-items.md): the quest
+  facts pass saves `trivial` (`C_QuestLog.IsQuestTrivial`) and `contentDifficulty`
+  (`C_PlayerInfo.GetContentDifficultyQuestForPlayer`, 0 Trivial to 4 Impossible) for every loaded quest,
+  and the quest run's row `trivialRange`, the character's `UnitQuestTrivialLevelRange` and
+  `UnitQuestTrivialLevelRangeScaling` (`false` for a call the client lacks); all four are documented on
+  live 12.1.0.69933 and Forever 1.60.1.70338. Forever also documents `C_QuestLog.GetTrivialRange`, which
+  the probe does not call. A quest's own `isScaling` exists only on `C_QuestLog.GetInfo` for log quests,
+  so which quests scale can only be guessed from a `level` that differs from our stored one. Cost: about 1.7 MB on
+  retail's 17.5 MB file. Checked offline with stand-ins, not run in game. The decision stays open until
+  the first run after 12.1.5 and the next Forever run are read (`Get-ProbeLevelFacts`).
