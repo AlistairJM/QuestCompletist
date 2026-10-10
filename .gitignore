@@ -33,6 +33,7 @@ tools/*
 !tools/Read-ApiDocs.lua
 !tools/Test-SeasonalCalendar.lua
 !tools/Test-Probe.lua
+!tools/Test-MapTooltip.lua
 !tools/ForeverProbe/
 tools/ForeverProbe/QCForeverProbe/QuestIDs_*.lua
 tools/ForeverProbe/QCForeverProbe/NpcIDs_*.lua

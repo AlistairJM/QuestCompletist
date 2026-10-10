@@ -13,23 +13,10 @@ local qcQuestName, qcMaskAllows, qcPrereq = QC.qcQuestName, QC.qcMaskAllows, QC.
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
 local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
-local qcQuestStatus, qcTooltipBar, qcTooltipDivider = QC.qcQuestStatus, QC.qcTooltipBar, QC.qcTooltipDivider
+local qcQuestStatus, qcMapTip = QC.qcQuestStatus, QC.qcMapTip
+local qcAddMapTooltipLine, qcSetMapTooltipLineIcon, qcAddMapTooltipDivider = qcMapTip.Line, qcMapTip.LineIcon, qcMapTip.Divider
 local qcFactionName, qcFactionLevel = QC.qcFactionName, QC.qcFactionLevel
 local qcSkillRank, qcSkillName = QC.qcSkillRank, QC.qcSkillName
-
-local qcMapTooltip
--- The pin under the mouse, so names arriving later can redraw its tooltip.
-local qcMapTooltipPin
-
-function qcMapTooltipSetup() -- *
-	qcMapTooltip = CreateFrame("GameTooltip", "qcMapTooltip", UIParent, "GameTooltipTemplate")
-	qcMapTooltip:SetFrameStrata("TOOLTIP")
-	WorldMapFrame:HookScript("OnSizeChanged",
-		function(self)
-			qcMapTooltip:SetScale(1/self:GetScale())
-		end
-	)
-end
 
 --[[ ##### MAP PINS START ##### ]]--
 -- The map's quest filter from its last refresh, for the tooltip's progress count.
@@ -86,72 +73,8 @@ local function qcTomTomLoaded()
     return C_AddOns.IsAddOnLoaded("TomTom") and TomTom and TomTom.AddWaypoint and true
 end
 
-local function qcHideTooltipDecorations()
-    qcMapTooltip.qcIcons = qcMapTooltip.qcIcons or {}
-    for _, icon in ipairs(qcMapTooltip.qcIcons) do
-        icon:Hide()
-    end
-    qcMapTooltip.qcIconsUsed = 0
-    qcTooltipBar.HideAll(qcMapTooltip)
-    qcTooltipDivider.HideAll(qcMapTooltip)
-end
-
-local function qcAcquireTooltipIcon()
-    qcMapTooltip.qcIconsUsed = qcMapTooltip.qcIconsUsed + 1
-    local icon = qcMapTooltip.qcIcons[qcMapTooltip.qcIconsUsed]
-    if not icon then
-        icon = qcMapTooltip:CreateTexture(nil, "OVERLAY")
-        icon:SetSize(16, 16)
-        qcMapTooltip.qcIcons[qcMapTooltip.qcIconsUsed] = icon
-    end
-    return icon
-end
-
--- The pin tooltip's width with a progress bar, and how many done quests fold into one line unless
--- Shift is held.
-local QC_PIN_TOOLTIP = {barMinWidth = 180, foldDone = 2}
-
--- Every line sets the fonts of both its sides: the tooltip reuses its lines, keeping the last font.
--- A different font brings its own colour, white, so the line then gets back the gold that adding it
--- gave, which the giver's name has no colour code of its own to override.
-local function qcAddMapTooltipLine(left, right, leftFont, wrap)
-    if right then
-        qcMapTooltip:AddDoubleLine(left, right)
-    elseif wrap then
-        qcMapTooltip:AddLine(left, nil, nil, nil, true)
-    else
-        qcMapTooltip:AddLine(left)
-    end
-    local line = qcMapTooltip:NumLines()
-    local leftText, rightText = _G["qcMapTooltipTextLeft" .. line], _G["qcMapTooltipTextRight" .. line]
-    if leftText then
-        leftText:SetFontObject(leftFont or GameTooltipText)
-        leftText:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
-    end
-    if rightText then
-        rightText:SetFontObject(GameTooltipTextSmall)
-        rightText:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
-    end
-    return leftText, rightText
-end
-
-local function qcSetMapTooltipLineIcon(leftText, icon, dim)
-    if not leftText then return end
-    local texture = qcAcquireTooltipIcon()
-    qcSetIcon(texture, icon)
-    local shade = dim and 0.5 or 1
-    texture:SetVertexColor(shade, shade, shade)
-    texture:ClearAllPoints()
-    texture:SetPoint("LEFT", leftText, "LEFT", -6, 0)
-    texture:Show()
-end
-
-local function qcAddMapTooltipDivider()
-    local leftText, rightText = qcAddMapTooltipLine(" ", " ")
-    if leftText and rightText then
-        qcTooltipDivider.Show(qcMapTooltip, leftText, rightText)
-    end
-end
+-- How many done quests fold into one line on a pin's tooltip unless Shift is held.
+local QC_PIN_TOOLTIP = {foldDone = 2}
 
 -- The client's names for the races, built when first needed.
 local qcRaceNames
@@ -302,7 +225,7 @@ local function qcAddPinQuestsToTooltip(pins)
     if total >= 2 then
         local leftText, rightText = qcAddMapTooltipLine(" ", string.format("|cffc8c8c8%d/%d|r", done, total))
         if leftText and rightText then
-            qcTooltipBar.Show(qcMapTooltip, leftText, rightText, done, total)
+            qcMapTip.Bar(leftText, rightText, done, total)
         end
     end
 
@@ -350,7 +273,6 @@ end
 function qcPinMixin:OnMouseEnter()
     local pinData = self.PinData
     if not pinData then return end
-    qcMapTooltipPin = self
     wipe(qcMapTooltipWaiting)
     wipe(qcNpcMapTooltipWaiting)
 
@@ -364,9 +286,7 @@ function qcPinMixin:OnMouseEnter()
         anchorPoint = "ANCHOR_BOTTOM"
     end
 
-    qcMapTooltip:SetOwner(self, anchorPoint)
-    qcMapTooltip:ClearLines()
-    qcHideTooltipDecorations()
+    qcMapTip.Open(self, anchorPoint)
 
     -- Pins with no quest giver name are listed last under one heading, as their quests needn't
     -- belong to the giver above them; pins sharing a name are listed as one giver.
@@ -406,14 +326,11 @@ function qcPinMixin:OnMouseEnter()
         qcAddMapTooltipLine("|cff808080" .. qcL.PINWAYPOINT .. "|r", nil, GameTooltipTextSmall)
     end
 
-    qcMapTooltip:SetMinimumWidth(qcMapTooltip.qcBarsUsed > 0 and QC_PIN_TOOLTIP.barMinWidth or 0)
-    qcMapTooltip:Show()
+    qcMapTip.Finish()
 end
 
 function qcPinMixin:OnMouseLeave()
-    qcMapTooltipPin = nil
-    qcMapTooltip:Hide()
-    qcHideTooltipDecorations()
+    qcMapTip.Close()
 end
 
 -- Clicking a pin sets a TomTom waypoint to it, as clicking a quest in the list does. The map hands a
@@ -432,8 +349,8 @@ end
 local qcShiftWatcher = CreateFrame("Frame")
 qcShiftWatcher:RegisterEvent("MODIFIER_STATE_CHANGED")
 qcShiftWatcher:SetScript("OnEvent", function(_, _, key)
-    if (key == "LSHIFT" or key == "RSHIFT") and qcMapTooltipPin and qcMapTooltip:IsShown() then
-        qcMapTooltipPin:OnMouseEnter()
+    if key == "LSHIFT" or key == "RSHIFT" then
+        qcMapTip.Redraw()
     end
 end)
 
@@ -521,9 +438,5 @@ WorldMapFrame:AddDataProvider(qcMapDataProvider)
 --[[ ##### MAP PINS END ##### ]]--
 
 
--- For qcCore.lua, when quest or NPC names arrive: redraw the tooltip of the pin under the mouse.
-function QC.RedrawMapTooltip()
-    if qcMapTooltipPin and qcMapTooltip:IsShown() then
-        qcMapTooltipPin:OnMouseEnter()
-    end
-end
+-- For the continent icons' file, which reads the same decision as a pin's tooltip.
+QC.qcPinQuestNeeds = qcPinQuestNeeds

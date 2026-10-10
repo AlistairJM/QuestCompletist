@@ -1471,8 +1471,8 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 20 left, `qcTooltips.lua` 164 and
-  `qcMapPins.lua` 144. Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
+  has its own 200: in October 2026, `qcCore.lua` had 20 left, `qcTooltips.lua` 158 and
+  `qcMapPins.lua` 149 (after the map's tooltip moved from one to the other). Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
@@ -1498,6 +1498,10 @@ git diff --stat
   say "0 failed".
 - For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
   [Holidays](#holidays)). It must say "All checks passed."
+- For changes to the map's tooltip (`qcTooltips.lua`, `qcMapPins.lua`), run `Test-MapTooltip.lua` for both
+  games' TOCs. It must say "All checks passed." It plays a pin's tooltip (opened, filled, redrawn by names
+  and by Shift, closed) against stand-ins that write down every call; give it a file as a third argument
+  and run it on the code before and after a change to compare the two records line by line.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 - **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or
