@@ -621,6 +621,54 @@ do
 	equal(w4.db().quests[1000].meta, true, "F5: and the rest are kept")
 end
 
+-- Refused quests: no facts are kept, but each function is tallied on them
+do
+	local w = newWorld({questIds = quests(4), factionGlobal = true})
+	local S = w.S
+	S.quests[1000] = {title = "Loads", questLineID = 3, accountQuest = true}
+	S.quests[1001] = {title = "Refused", questLineID = 5, accountQuest = false, important = true, isTask = true, taskZone = 7}
+	S.quests[1002] = {title = "Refused too", accountQuest = false, isTask = false}
+	S.quests[1003] = {title = "Never", questLineID = 9}
+	S.answer[1001] = "fail"
+	S.answer[1002] = "fail"
+	S.answer[1003] = "never"
+	w.boot()
+	w.slash("quests")
+	w.run(300)
+	local db = w.db()
+	local row = db.runs[#db.runs]
+	local t = row.refusedFacts
+	equal(db.quests[1001].questLineID, nil, "R1: a refused quest keeps no facts")
+	equal(db.quests[1001].result, "fail", "R1: only its result")
+	equal(t.questLineID.asked, 2, "R1: each function is asked about every refused quest")
+	equal(t.questLineID.answered, 1, "R1: how many answered anything")
+	equal(t.questLineID.positive, 1, "R1: and how many with something other than no")
+	equal(t.questLineID.examples[1], 1001, "R1: the first of them are named")
+	equal(t.accountQuest.answered, 2, "R2: a false is an answer")
+	equal(t.accountQuest.positive, 0, "R2: but not a positive one")
+	equal(#t.accountQuest.examples, 0, "R2: and has no example")
+	equal(t.important.asked, 2, "R3: asked of both")
+	equal(t.important.positive, 1, "R3: true counts")
+	equal(t.taskZone.asked, 1, "R4: a task zone is asked only where the quest is a task")
+	equal(t.taskZone.positive, 1, "R4: and a number above 0 counts")
+	equal(t.factionGroup.asked, 2, "R5: the faction group's function is there")
+	equal(t.factionGroup.answered, 0, "R5: and answered nothing")
+	equal(t.expansion, nil, "R6: a function the client lacks is not tallied")
+	equal(t.questLineID.asked + 0, 2, "R6: and a timed-out quest is not counted as refused")
+	roundTrips(db, "R7")
+
+	local w2 = newWorld({questIds = quests(2)})
+	for i = 1000, 1001 do w2.S.quests[i] = {title = "Q" .. i} end
+	w2.S.answer[1000] = "fail"
+	w2.boot()
+	w2.slash("quests")
+	w2.run(120)
+	local row2 = w2.db().runs[#w2.db().runs]
+	check(type(row2.character) == "string" and row2.character ~= "", "C1: a quest run's row says which character ran it")
+	equal(row2.level, w2.S.level, "C1: and its level")
+	check(not row2.character:find("%d%d%d"), "C1: and nothing that names it")
+end
+
 -- The progress line says how long is left
 do
 	local w = newWorld({questIds = quests(600)})

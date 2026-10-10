@@ -61,6 +61,15 @@ try {
     Check ($facts -contains "fact`t110`taccountQuest`tfalse") 'T1: facts lists each field of a row, false included'
     Check ($facts -contains "fact`t110`tlevel`t10") 'T1: a number'
     Check (@($facts | Where-Object { $_ -match "^fact`t\d+`t(build|result)`t" }).Count -eq 0) 'T1: but not the build or the result'
+    Check (@($facts | Where-Object { $_ -match "^(run|refusedfact)`t" }).Count -eq 0) 'T1: and a file with no runs has no run lines'
+    $withRuns = "$Scratch\runs.lua"
+    [IO.File]::WriteAllText($withRuns, "QCForeverProbeDB = {`nquests = {},`nnpcs = {},`ngivers = {},`nstarted = {},`naccepted = {},`nmaps = {},`nlogins = {},`nruns = {`n{kind = `"quests`", build = `"1.60.1.70338`", time = 5, character = `"Alliance NightElf ROGUE`", level = 13, answered = 7, asked = 9,`nrefusedFacts = {questLineID = {asked = 2, answered = 1, positive = 1, examples = {1001, 1005}}, accountQuest = {asked = 2, answered = 2, positive = 0, examples = {}}}},`n{kind = `"maps`", build = `"1.60.1.70338`", time = 6, answered = 60, asked = 60},`n},`n}`n")
+    $runLines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $withRuns facts)
+    Check ($runLines -contains "run`t1`tquests`t1.60.1.70338`t5`tAlliance NightElf ROGUE`t13`t7`t9") 'T1: facts gives each run, with its character and level'
+    Check ($runLines -contains "run`t2`tmaps`t1.60.1.70338`t6`t`t`t60`t60") 'T1: and one that kept no character as empty fields'
+    Check ($runLines -contains "refusedfact`t1`tquestLineID`t2`t1`t1`t1001,1005") 'T1: and what a function said for refused quests, with examples'
+    Check ($runLines -contains "refusedfact`t1`taccountQuest`t2`t2`t0`t") 'T1: a function that only said no has no examples'
+    Check (@(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $withRuns | Where-Object { $_ -match "^(run|refusedfact)`t" }).Count -eq 0) 'T1: and the plain mode prints none of it'
 
     $a = Get-ProbeQuests $old $LuaExe
     $b = Get-ProbeQuests $new $LuaExe

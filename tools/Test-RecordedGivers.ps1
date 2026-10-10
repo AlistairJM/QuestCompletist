@@ -1249,6 +1249,28 @@ try {
     Equal (Get-PinText $root) $before 'F18: and the pins are as they were'
     Check (Test-Path "$root\report.txt") 'F18: the report is written all the same'
     Check (Test-Path "$root\ledger.csv") 'F18: and so is the ledger'
+
+    # ---------- G1: a file over 8 MB is read when it is the maintainer's own, and refused when a player's ----------
+    $big = New-Object System.Text.StringBuilder
+    [void]$big.AppendLine('QCForeverProbeDB = {')
+    [void]$big.AppendLine('["givers"] = {["Creature:3702"] = {["kind"] = "Creature", ["id"] = 3702, ["name"] = "Test Giver", ["build"] = "1.60.1.70338"}},')
+    [void]$big.AppendLine('["quests"] = {')
+    foreach ($i in 1..140000) { [void]$big.AppendLine("[$i] = {[""build""] = ""1.60.1.70338"", [""result""] = ""fail"", [""ms""] = 100},") }
+    [void]$big.AppendLine('},')
+    [void]$big.AppendLine('}')
+    $bigText = $big.ToString()
+    Check ($bigText.Length -gt 8MB) 'G1: the file is over 8 MB'
+    $root = New-World 'g1own'
+    New-Item -ItemType Directory -Path "$root\tools\forever_probe_70000" -Force | Out-Null
+    [IO.File]::WriteAllText("$root\tools\forever_probe_70000\QCForeverProbe.lua", $bigText)
+    $run = Invoke-Tool $root
+    Check ($run.Report -match 'Read own-forever_probe_70000: forever, probe') "G1: the maintainer's probe file over 8 MB is read ($($run.Report.Substring(0, [Math]::Min(300, $run.Report.Length))))"
+    Check ($run.Report -notmatch 'Not read: own-forever_probe_70000') 'G1: and not reported as refused'
+    $root = New-World 'g1player'
+    New-Item -ItemType Directory -Path "$root\tools\recordings\players\p10" -Force | Out-Null
+    [IO.File]::WriteAllText("$root\tools\recordings\players\p10\QuestCompletist.lua", $bigText)
+    $run = Invoke-Tool $root
+    Check ($run.Report -match 'Not read: p10 .*larger than 8 MB') 'G1: the same file from a player is refused, at 8 MB'
 }
 finally {
     Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue

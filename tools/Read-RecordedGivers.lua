@@ -1,11 +1,13 @@
 -- Prints the quest giver notes in a saved-variables file as tab-separated lines for
--- Import-RecordedGivers.ps1. usage: lua Read-RecordedGivers.lua <QuestCompletist.lua> [tag]
+-- Import-RecordedGivers.ps1. usage: lua Read-RecordedGivers.lua <QuestCompletist.lua> [tag] [megabytes]
 --
 -- The file may come from a player, and a saved-variables file is Lua code, so this never runs it as
 -- it stands. It is read as text first and refused unless it is nothing but assignments of tables,
 -- strings, numbers and true, false or nil to names: no call, no operator, no function, no long
 -- string, no name used as a value. What passes is then loaded with no globals at all. The file may
--- not be larger than 8 MB or nest tables deeper than 24. A refused file ends the run with exit code 2
+-- not be larger than 8 MB (or the megabytes given, at most 64: the importer gives more only for the
+-- maintainer's own files, whose probe results hold a quest pass of 35,000 quests) or nest tables
+-- deeper than 24. A refused file ends the run with exit code 2
 -- and one line, "refused", a tab and the reason, as the whole of the output.
 --
 -- Two kinds of notes are read: qcQuestRecorder, the addon's own (schema 1; qcRecorder.lua has the
@@ -45,7 +47,7 @@ local function readAll(path)
 	end
 	if size > MAX_BYTES then
 		f:close()
-		return nil, "larger than 8 MB"
+		return nil, string.format("larger than %d MB", MAX_BYTES / (1024 * 1024))
 	end
 	f:seek("set", 0)
 	local text = f:read("*a")
@@ -204,7 +206,7 @@ end
 local function loadPlainData(path)
 	local text, err = readAll(path)
 	if not text then return nil, err end
-	if #text > MAX_BYTES then return nil, "larger than 8 MB" end
+	if #text > MAX_BYTES then return nil, string.format("larger than %d MB", MAX_BYTES / (1024 * 1024)) end
 	if #text == 0 then return nil, "empty" end
 	if text:sub(1, 3) == "\239\187\191" then text = text:sub(4) end
 	local ok, why = checkPlainData(text)
@@ -565,9 +567,11 @@ end
 local function main()
 	local path, tag = arg[1], arg[2]
 	if not path then
-		io.write("refused\tno file named; usage: lua Read-RecordedGivers.lua <QuestCompletist.lua> [tag]\n")
+		io.write("refused\tno file named; usage: lua Read-RecordedGivers.lua <QuestCompletist.lua> [tag] [megabytes]\n")
 		os.exit(2)
 	end
+	local megabytes = tonumber(arg[3])
+	if megabytes then MAX_BYTES = math.floor(math.max(1, math.min(megabytes, 64))) * 1024 * 1024 end
 	local lines, err = readFile(path, tag)
 	if not lines then
 		io.write("refused\t", clean(err), "\n")

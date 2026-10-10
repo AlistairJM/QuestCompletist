@@ -137,11 +137,14 @@ again.
   10,564 retail pins and 1,503 of 1,503 Forever pins are the game's own. The map totals are those of 7
   October (retail 439 offers; Forever none, 16 points of interest). All twelve fact functions exist on
   both clients, `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` among them, but Forever
-  returns inert values for most (every expansion -2, no tasks, campaigns or story quests). Still open: whether
-  `GetQuestLineInfo` answers for a quest the server refused, and whether `IsAccountQuest` needs loaded
-  data, as a refused quest saves no facts (see "Code to finish"). The next run is retail's, once 12.1.5 is
-  live (13 or 14 October): run `Get-LatestBuilds.ps1` first, then the same three commands, so the 9
-  October results are the baseline.
+  returns inert values for most (every expansion -2, no tasks, campaigns or story quests). Still open:
+  whether `GetQuestLineInfo` answers for a quest the server refused, and whether `IsAccountQuest` needs
+  loaded data. The probe now tallies every fact function on the quests it is refused (`refusedFacts` in
+  the quest run's row) and records the character and level of every run, so the next run answers both,
+  and says whether the beta's answers follow the character: copy the probe folder into the AddOns
+  folders again first, then read the file with `Read-ForeverProbe.lua <file> facts`. The next run is
+  retail's, once 12.1.5 is live (13 or 14 October): run `Get-LatestBuilds.ps1` first, then the same
+  three commands, so the 9 October results are the baseline.
 
 ## Decisions waiting for the user
 
@@ -222,12 +225,6 @@ again.
   each release.
 - **`Build-CategoryClientNames.ps1`** still lists two expected differences, for categories 1221 and
   1430, that the spelling fixes made stale.
-- **`Read-RecordedGivers.lua` refuses a file over 8 MB**, and retail's probe file is 17 MB since the
-  facts pass, so its recorder notes (one entry so far) are not read by step 6d. Raise the cap for probe
-  files, or keep the recorder's notes out of the quest results.
-- **The probe's quest pass** saves facts only for the quests the server answered, and doesn't record
-  which character ran it (its map pass does). Record both, so a refused quest's `GetQuestLineInfo`
-  answer can be seen and a character-dependent answer from the beta can be told from a random one.
 
 ## The agreed order of work
 

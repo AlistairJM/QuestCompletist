@@ -36,7 +36,10 @@ QCForeverProbeDB holds:
                 (task quests), accountQuest, factionGroup, important, meta, questLineID, campaignID,
                 expansion, breadcrumb, story. Only a quest that loaded has facts, and a fact the client
                 does not answer is left out. The quest run's row (runs) has facts: for each, the
-                function that answered, or false when this client has none.
+                function that answered, or false when this client has none, and refusedFacts: for
+                each function, how many refused quests it was asked about (asked), how many it
+                answered anything for (answered), how many with true, a number above 0 or a
+                string (positive), and the first five of those (examples).
   npcs[id]      build, result (now, event, poll, late or none), ms, name, lines (tooltip lines 2-4)
   givers[key]   key "Creature:id" or "GameObject:id": kind, id, name, build, spots ("map x y" = times
                 seen), offers (questId = level, frequency, repeatable, lowestPlayerLevel, seenBy),
@@ -49,8 +52,8 @@ QCForeverProbeDB holds:
                 questLines (the offers, each with its quest, storyline, x, y, startMapID and flags),
                 forceVisible, tasks, logQuests, pois, events, hubs, entrances, levels, waypoint.
                 Positions are map percentages, like the recorder's spots.
-  runs          one row per run; a map run also keeps the character, the tracking toggles and the
-                events schedule. logins: one row per build and TOC seen at login ]]--
+  runs          one row per run, with the character (faction, race and class, never a name) and its
+                level; a map run also keeps the tracking toggles and the events schedule. logins: one row per build and TOC seen at login ]]--
 
 local ADDON_NAME, probe = ...
 
@@ -135,7 +138,7 @@ local function finish(stopped)
 	local seconds = math.floor((debugprofilestop() - r.startedMs) / 1000 + 0.5)
 	local row = {kind = r.kind, build = build, locale = GetLocale(), inFlight = r.maxInFlight,
 		asked = r.total, answered = r.done, counts = r.counts, seconds = seconds, stopped = stopped or nil,
-		time = time()}
+		time = time(), character = character(), level = UnitLevel("player")}
 	for key, value in pairs(r.extra or {}) do row[key] = value end
 	table.insert(db.runs, row)
 	say(string.format("%s the %s: %d of %d in %d s (%s). Log out fully to save the results and the game's cache.",
@@ -234,8 +237,37 @@ local function askFacts(facts, questId)
 	end
 end
 
+-- A refused quest has no data, so no facts are kept for it, but the functions are still asked: for each,
+-- how many refused quests it was asked about, how many answered anything, how many with true, a number
+-- above 0 or a string, and the first five of those. That says whether a function needs a loaded quest.
+local refusedFacts
+
+local function tallyRefused(questId)
+	local facts = {}
+	askFacts(facts, questId)
+	for _, spec in ipairs(FACTS) do
+		if factCalls[spec.key] and (not spec.when or facts[spec.when]) then
+			local t = refusedFacts[spec.key]
+			if not t then
+				t = {asked = 0, answered = 0, positive = 0, examples = {}}
+				refusedFacts[spec.key] = t
+			end
+			t.asked = t.asked + 1
+			local value = facts[spec.key]
+			if value ~= nil then
+				t.answered = t.answered + 1
+				if value == true or (type(value) == "number" and value > 0) or (type(value) == "string" and value ~= "") then
+					t.positive = t.positive + 1
+					if #t.examples < 5 then t.examples[#t.examples + 1] = questId end
+				end
+			end
+		end
+	end
+end
+
 local function questFacts(questId, result, ms)
 	local facts = {build = build, result = result, ms = ms and math.floor(ms + 0.5) or nil}
+	if result == "fail" and refusedFacts then tallyRefused(questId) end
 	if result == "fail" or result == "timeout" then return facts end
 	local title = try(C_QuestLog.GetTitleForQuestID, questId)
 	if title ~= "" then facts.title = title end
@@ -279,7 +311,8 @@ local function startQuests(all, inFlight)
 	local r = begin("quests", "quest pass", queue, inFlight)
 	local found
 	factCalls, found = resolveFacts()
-	r.extra = {facts = found}
+	refusedFacts = {}
+	r.extra = {facts = found, refusedFacts = refusedFacts}
 	local attempts = {}
 	r.send = function(questId)
 		if haveQuestData(questId) then
