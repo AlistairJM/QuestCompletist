@@ -62,7 +62,7 @@ unless they say otherwise.
   player condition, beside the old Eversong and Ghostlands zones, so the zones Eastern Kingdoms
   shows may depend on the character.
 - **Gaps in a first version that takes direct zone children.** Dungeon-typed hubs (Dalaran,
-  Oribos, Mardum), nested continents and orphan starter maps hold the rest of the quests; sub-zone
+  Oribos, Mardum), nested continents (since given an icon, see Design) and orphan starter maps hold the rest of the quests; sub-zone
   categories (Undermine, Korthia, Garrison Support) under-report by about 770 quests (6%). Forever's
   Zephras Isle (112 quests) hangs off the world map only.
 
