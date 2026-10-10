@@ -737,6 +737,36 @@ these level 60 quests.
 - **Result:** the menu has 113 categories, with no Epic or Legendary. Nothing else in the data
   changes, and a rerun writes the same files.
 
+### The beta's answers differ between runs (10 October 2026)
+
+The probe runs of 5, 9 and 10 October asked the same list of quests, and the server answered about 80
+of 7,320 differently each time, whatever the build. Quests 329, 331 and 702 were answered on 5 October,
+refused on 9 October and answered on 10 October; the 18 "Duskwood Mission" quests (81730 to 81747),
+Winter Veil, Hallow's End and Love is in the Air quests, and PvP event quests were answered on 5 and 9
+October and refused on 10 October. 52 quests stopped answering between the last two runs and 30
+started. The runs don't say which character asked (the map pass does), so the cause isn't known; a
+character-dependent answer is one reading.
+
+Until now the importer trusted the newest run alone, so those quests came and went between imports: the
+Duskwood Missions, which only the game knows, would have left the data, and so would four Winter Veil
+quests. The user's calls of 10 October: the beta's API sometimes doesn't return what it has (Christmas
+quests wouldn't have been removed), so too much is better than a quest deleted that still exists; and
+no quest leaves the data without the user having seen it.
+
+- **The memory:** `data\forever\answers.jsonl` holds the game's last record of every quest it has
+  answered, when it was last answered, and how many runs in a row it has not been (a run is one client
+  build's quest cache; a quest the probe didn't ask about isn't counted, and the same build twice is
+  one run). The importer imports a quest until it has missed 10 runs in a row (`-MaxMissedRuns`), and
+  lists each one kept from an earlier run in the review. With no file the memory is built from the
+  `forever_quest_cache_<build>.jsonl` files in `tools\`, so keep each run's.
+- **The guard:** the importer compares its quests with the committed `quests.jsonl` before it writes,
+  and stops, writing nothing, if any would go for any reason (10 missed runs, an internal title, a change
+  in CMaNGOS). The list, with ID, name and zone, is in the output and `tools\quest_removals_forever.csv`;
+  `docs\plans\quest-removal-decisions.csv` takes the user's answer per quest, `REMOVE` or `KEEP`.
+  `Show-RemovedQuests.ps1` makes the same check for either game against any git ref, before a pull request.
+- **Decisions so far:** KEEP for 79482, 79483, 79492 and 79495 (Winter Veil and Metzen the Reindeer),
+  93188 (Return to Orgrul) and 93196 (Khan Jehn), which no run since 5 October has answered.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -847,3 +877,6 @@ these level 60 quests.
   so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
   with them. Since 9 October the committed `pins.jsonl` also has 11 pins fewer than an import writes:
   `Remove-DuplicatePinQuests.ps1 -Game forever` takes duplicates off after it (step 10, item 9).
+- 2026-10-10: the beta answers about 80 quests differently on every run, so the importer keeps a quest's
+  last record until the game has missed it for 10 runs in a row, and stops to ask the user before any quest
+  leaves the data; see "The beta's answers differ between runs".

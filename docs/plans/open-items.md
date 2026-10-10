@@ -13,6 +13,13 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   runbook for every sweep.** Retail: [maintenance.md](../maintenance.md) steps 5 and 6;
   Forever: step 10; the rule and its limits per game are in
   [game-parity.md](game-parity.md), data row "Pickup sources for pins".
+- **No quest leaves the data unseen, and a missed answer doesn't remove one** (10 October 2026). The
+  importer stops and lists any quest it would drop, with ID, name and zone, and waits for a KEEP or
+  REMOVE row in `quest-removal-decisions.csv`; `Show-RemovedQuests.ps1` does the same for either game
+  before a pull request. The beta's API sometimes doesn't return quests it has (Christmas quests among
+  them), so Forever's importer keeps a quest's last record until it has missed 10 runs in a row, and
+  then asks. Kept by the user: 79482, 79483, 79492, 79495, 93188 and 93196
+  ([forever.md](forever.md), "The beta's answers differ between runs").
 - **A pin stands where a quest starts (`QuestPOIBlob` point 32), never at the hand-in.**
   [quest-location-data-pipeline.md](quest-location-data-pipeline.md), "pins at the start".
 - **A quest that starts in several places gets a pin at each, up to six** (class and race quests
