@@ -697,6 +697,15 @@ no row of its own; the 15 other quests of that shape stay where the client puts 
 ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "a start on the edge
 of a map", and decision 32 in [plans/open-items.md](plans/open-items.md)).
 
+A quest whose only start is on a disabled map (a `UiMap` named "... - Disabled", held back as
+`start on a disabled map`) gets its pin by hand: a line in `data\pins.jsonl` on the disabled map's
+parent, the zone's own map, with the start's world point converted by that map's `UiMapAssignment`
+row. It has no name unless the client's giver table, or a starter's spawn within 1.5 map points,
+names one. The line goes where the pipeline orders its map's pins (lowest quest ID, then x, then y),
+the pipeline keeps it, and the quest leaves the review file at the next run. The two of October 2026
+are in [plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "A start on a
+disabled map".
+
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 3b; it takes the
 geometry of the continent maps as well, read with `tools\Report-ContinentGeometry.lua` and compared with its
 baseline by `tools\Compare-ContinentGeometry.lua`, step 2f). Its offers
@@ -1514,7 +1523,7 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 15,179
+  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 15,181
   pins for retail, and 5,097 quests and 1,698 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
