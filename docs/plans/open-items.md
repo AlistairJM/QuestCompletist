@@ -30,6 +30,12 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 - **Untested changes wait** unless the user says to ship them: a pull request that changes the addon
   and hasn't been tried in game is not in the release ([releasing.md](../releasing.md), step 1).
   #223 and #224 went out in 112.5 on the user's word.
+- **Continent maps get one icon per zone** (10 October 2026, "go with your picks"): the quests left
+  to do in the zone, counted from the quest list's categories with the map's filters and without
+  daily, weekly and repeatable quests, hovered for counts and progress, opened with a click, with a
+  child option of "Show Map Icons" that is on by default. Capitals fold into their host zone. Built in
+  seven pull requests, the first of them the probe's geometry pass
+  ([continent-pins.md](continent-pins.md)).
 - **A check stays in the sweep even while it finds nothing**, and every feature or check built for
   one game goes to both unless a game can't support it
   ([game-parity.md](game-parity.md)).
@@ -48,6 +54,9 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
+- **The continent icons** (planned, not built): the probe's geometry dump comes with the next map
+  pass of each game (retail's after 12.1.5 is live), then one look at the finished icons on each game,
+  five observations in about three minutes ([continent-pins.md](continent-pins.md), "To try in game").
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
@@ -246,6 +255,9 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
    reader on retail (**done**, #246, [retail-quest-cache.md](retail-quest-cache.md)), the importer's
    `QuestLine` row counts (**done**, #239) (recommendations 9, 6, 7).
 7. A review of Forever's hidden and test quests, after its launch on 4 November (recommendation 10).
+
+8. The continent icons ([continent-pins.md](continent-pins.md)): the plan, then the probe's geometry
+   pass before retail's 12.1.5 map pass, then the counting and the icons.
 
 Also: the 12.1.5 sweep when the patch is live (13 or 14 October; the TOC lists both interface
 numbers), a Warband-filter check on the Forever beta, and the dated change of 1 April 2027
