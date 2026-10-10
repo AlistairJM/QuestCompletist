@@ -689,6 +689,14 @@ out of the CSV and its pin stays, so a rerun's CSV is shorter by these quests an
 existing pin at all" count is the number of new quests to review (1,453 in October 2026). To take a
 pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
+A start goes on the map its own row names, the client's or TrinityCore's, even when it lies within a
+point of that map's edge and the quest's other points are on the neighbouring map. Quest 26064 was moved
+to the neighbour by hand (its line in `data\pins.jsonl`, then `Build-AddonData.ps1`, the four steps and
+`Assemble-PinDB.ps1 -Apply` for the file's order), which a rerun keeps because the quest has a pin and
+no row of its own; the 15 other quests of that shape stay where the client puts them
+([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "a start on the edge
+of a map", and decision 32 in [plans/open-items.md](plans/open-items.md)).
+
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 3b; it takes the
 geometry of the continent maps as well, read with `tools\Report-ContinentGeometry.lua` and compared with its
 baseline by `tools\Compare-ContinentGeometry.lua`, step 2f). Its offers
