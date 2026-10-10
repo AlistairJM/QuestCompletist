@@ -737,6 +737,29 @@ these level 60 quests.
 - **Result:** the menu has 113 categories, with no Epic or Legendary. Nothing else in the data
   changes, and a rerun writes the same files.
 
+### The beta's answers differ between runs (10 October 2026)
+
+The probe runs of 5, 9 and 10 October asked the same list of quests, and the server answered about 80
+of 7,320 differently each time, whatever the build. Quests 329, 331 and 702 were answered on 5 October,
+refused on 9 October and answered on 10 October; the 18 "Duskwood Mission" quests (81730 to 81747),
+Winter Veil, Hallow's End and Love is in the Air quests, and PvP event quests were answered on 5 and 9
+October and refused on 10 October. 52 quests stopped answering between the last two runs and 30
+started. The runs don't say which character asked (the map pass does), so the cause isn't known; a
+character-dependent answer is one reading.
+
+Until now the importer trusted the newest run alone, so those quests came and went between imports: the
+Duskwood Missions, which only the game knows, would have left the data.
+
+- **The rule** now: a quest the game answered in the run before this one and not in this one keeps that
+  run's record (the newest earlier `tools\forever_quest_cache_<build>.jsonl`, or `-PreviousCacheFile`),
+  and is listed in the review as "kept from the previous run". It drops out when two runs in a row refuse
+  it. `-NoCarry` reads the newest run alone, as before; with it the import of 10 October is byte for
+  byte what it was without the change.
+- **Result, on the run of 10 October:** 49 quests come back from build 70291's records (the 52, less
+  three with internal titles), so 5,091 quests against 5,062 without it.
+- **Keep each run's cache file.** The window is the two newest `forever_quest_cache_<build>.jsonl` files
+  in `tools\`; `Read-QuestCache.ps1` writes one per run.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -847,3 +870,5 @@ these level 60 quests.
   so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
   with them. Since 9 October the committed `pins.jsonl` also has 11 pins fewer than an import writes:
   `Remove-DuplicatePinQuests.ps1 -Game forever` takes duplicates off after it (step 10, item 9).
+- 2026-10-10: the beta answers about 80 quests differently on every run, so the importer keeps a quest
+  the game answered in the run before; results in "The beta's answers differ between runs".

@@ -983,6 +983,11 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    without it; any other CMaNGOS quest it lacks comes in once the probe gets an answer for it. The
    review list names each kept quest `QuestV2` lacks. A quest `QuestV2` lacks that the beta refused
    at level 1 to 35, where it answers nearly everything, is left out until the server answers it.
+   The beta's answers differ between runs (about 80 of 7,320 quests each time), so a quest the game
+   answered in the run before this one and not in this one keeps that run's record, from the
+   previous `forever_quest_cache_<build>.jsonl` in `tools\` (keep each run's file), and the review
+   lists it as "kept from the previous run"; it drops out when two runs in a row refuse it. The
+   summary's "Carried over:" line counts them. `-NoCarry` reads the newest run alone.
    A quest with no giver on a map gets a pin at its start point in the client's tables, when it has
    one. The summary counts those start points, and the quest records that name their giver. Both
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.

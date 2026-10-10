@@ -20,6 +20,11 @@ names come from the probe. A quest's givers are CMaNGOS's, the recorder's and th
 listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out.
 Quests with internal titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows)
 are left out.
+The beta's answers differ between runs, whatever the build: about 80 of 7,320 quests are answered in one
+run and refused in the next. So a quest the game answered in the run before this one, the newest
+earlier forever_quest_cache_<build>.jsonl in -ToolsDir or -PreviousCacheFile, and didn't answer in this
+one, keeps that run's record and is listed for review; it drops out when two runs in a row refuse it.
+-NoCarry reads this run alone.
 QuestV2 isn't a list of every quest: a repeatable quest is never recorded as completed, so it has no
 row. CMaNGOS's repeatable quests are kept without one; any other CMaNGOS quest QuestV2 lacks is left
 out until the game answers for it. With no row, a quest the probe asked about that failed at level 1
@@ -101,6 +106,8 @@ param(
     [string]$Build = "1.60.1.70205",
     [string]$EraBuild = "1.15.9.70003",
     [string]$CacheFile = "",
+    [string]$PreviousCacheFile = "",
+    [switch]$NoCarry,
     [string]$ProbeFile = "",
     [string]$CmangosDump = "",
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
@@ -447,6 +454,21 @@ $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Spl
 $cache = @{}
 $cacheLines = [IO.File]::ReadAllLines($CacheFile)
 foreach ($q in (('[' + ($cacheLines -join ',') + ']') | ConvertFrom-Json)) { $cache[[int]$q.id] = $q }
+$carried = @{}
+$previousBuild = ''
+if (-not $NoCarry) {
+    if (-not $PreviousCacheFile) {
+        $PreviousCacheFile = Get-ChildItem "$ToolsDir\forever_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '^forever_quest_cache_(\d+\.\d+\.\d+\.\d+)\.jsonl$' -and [version]$Matches[1] -lt [version]$Build } |
+            Sort-Object { [version]($_.Name -replace '^forever_quest_cache_(.*)\.jsonl$', '$1') } | Select-Object -Last 1 -ExpandProperty FullName
+    }
+    if ($PreviousCacheFile) {
+        $previousBuild = [regex]::Match($PreviousCacheFile, 'forever_quest_cache_(\d+\.\d+\.\d+\.\d+)\.jsonl$').Groups[1].Value
+        foreach ($q in (('[' + ([IO.File]::ReadAllLines($PreviousCacheFile) -join ',') + ']') | ConvertFrom-Json)) {
+            if (-not $cache.ContainsKey([int]$q.id)) { $cache[[int]$q.id] = $q; $carried[[int]$q.id] = $true }
+        }
+    }
+}
 $probeResult = @{}; $gameNpcName = @{}; $recordedSpots = @{}; $recordedName = @{}; $recordedOffers = @{}
 foreach ($line in $probeLines) {
     $f = $line.Split("`t")
@@ -478,6 +500,7 @@ foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
     if ($title -cmatch $internalTitle -or (-not $m -and $title -match $gameOnlyJunk)) { Add-Review 'left out: internal title' $id '' $title; continue }
+    if ($carried[$id]) { Add-Review 'kept from the previous run: not answered now' $id '' "$title (answered on $previousBuild)" }
     if (-not $c -and -not $inClient[$id] -and $probeResult[$id] -eq 'fail' -and $m.Level -ge 1 -and $m.Level -le 35) {
         Add-Review 'left out: failed on the beta below level 36' $id '' "$title (not in QuestV2)"
         continue
@@ -797,6 +820,7 @@ $fromBoth = @($questList | Where-Object { $cache.ContainsKey($_.id) -and $cmQues
 $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $cmQuest.ContainsKey($_.id) }).Count
 Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, {3} from CMaNGOS only. {4} pins on {5} maps." -f
     $questList.Count, $fromBoth, $fromGame, ($questList.Count - $fromBoth - $fromGame), $pinList.Count, @($pinList | Select-Object -ExpandProperty map -Unique).Count)
+if ($previousBuild) { Write-Host ("Carried over: {0} quests the game answered on {1} and not in this run." -f @($questList | Where-Object { $carried[$_.id] }).Count, $previousBuild) }
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
 Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; pinned there: {2}). Start points off their map: {3}. Quest records that name a giver: {4}." -f
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
