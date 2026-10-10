@@ -27,6 +27,13 @@ local QC_CITY_HOST = {
 	[1453] = 1429, [1455] = 1426, [1458] = 1420, [1456] = 1412, [1457] = 1438,
 }
 
+-- Zones whose icon goes where the game's hit test names the zone rather than at the centre of its rectangle,
+-- which lies off the zone: Tiragarde Sound's takes in the sea and Drustvar's edge (the rectangle's centre is
+-- 0.476, 0.645). Read from the probe's grid: the "centre of a zone is over 3 map points from its rectangle's" line.
+local QC_ZONE_ICON_AT = {
+	[895] = {0.574, 0.631},
+}
+
 local function qcRectCentre(zoneId, continentId)
 	local minX, maxX, minY, maxY = C_Map.GetMapRectOnMap(zoneId, continentId)
 	if type(minX) == "number" and type(maxX) == "number" and type(minY) == "number" and type(maxY) == "number"
@@ -60,6 +67,8 @@ local function qcContinentZones(continentId, inside)
 	local function addZone(child, categories)
 		local x, y = qcRectCentre(child.mapID, continentId)
 		if not x or owned[categories[1]] then return end
+		local at = QC_ZONE_ICON_AT[child.mapID]
+		if at then x, y = at[1], at[2] end
 		local zone = {mapId = child.mapID, name = child.name, x = x, y = y, categories = categories}
 		zones[#zones + 1] = zone
 		byId[child.mapID] = zone

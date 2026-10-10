@@ -283,6 +283,22 @@ if BY_AREA[14] then
 		#arathi == 1 and arathi[1].mapId == 14 and listOf(arathi[1].categories) == BY_AREA[14] .. ",1409", arathi[1] and listOf(arathi[1].categories))
 	S.rects[14] = nil
 end
+if BY_AREA[895] then
+	S.children[CONT + 8] = {zone(895, "Tiragarde Sound"), zone(p1, "One")}
+	S.rects[895] = {0.1935, 0.7592, 0.3622, 0.9278}
+	local sound = code.Zones(CONT + 8)
+	local at, other
+	for _, z in ipairs(sound) do if z.mapId == 895 then at = z else other = z end end
+	check("Tiragarde Sound's icon sits where the game names the zone, not at its rectangle's centre",
+		at and math.abs(at.x - 0.574) < 1e-9 and math.abs(at.y - 0.631) < 1e-9, at and (at.x .. ", " .. at.y))
+	check("another zone's icon is still at its rectangle's centre", other and math.abs(other.x - 0.15) < 1e-9 and math.abs(other.y - 0.20) < 1e-9)
+	S.rects[895] = {0.2, 0.2, 0.3, 0.9}
+	local flat = code.Zones(CONT + 8)
+	local drawn
+	for _, z in ipairs(flat) do if z.mapId == 895 then drawn = z end end
+	check("with no rectangle of its own the game gives it no icon, whatever the table says", drawn == nil)
+	S.rects[895] = nil
+end
 
 S.children[CONT + 2] = {zone(CITY, "City")}
 S.rects[CITY] = {0.33, 0.37, 0.53, 0.57}
