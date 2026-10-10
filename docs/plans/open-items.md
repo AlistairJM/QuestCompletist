@@ -250,3 +250,8 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 Also: the 12.1.5 sweep when the patch is live (13 or 14 October; the TOC lists both interface
 numbers), a Warband-filter check on the Forever beta, and the dated change of 1 April 2027
 (releasing.md).
+
+After the retail run of the 12.1.5 sweep has been read, and #262 (the probe's geometry pass) has merged, and
+before Forever's launch on 4 November: **rename the probe** from `QCForeverProbe` to `QCProbe`, as one pull
+request with local steps after it ([probe-rename.md](probe-rename.md), planned 10 October 2026, target the
+week of 19 October). Nothing is renamed before then.
