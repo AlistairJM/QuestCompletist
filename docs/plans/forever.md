@@ -877,5 +877,6 @@ no quest leaves the data without the user having seen it.
   so the next import also moves 4 pin lines (quests 92748, 92750, 92751, 92752 and 92753), and Forever's `qcPinDB.lua`
   with them. Since 9 October the committed `pins.jsonl` also has 11 pins fewer than an import writes:
   `Remove-DuplicatePinQuests.ps1 -Game forever` takes duplicates off after it (step 10, item 9).
-- 2026-10-10: the beta answers about 80 quests differently on every run, so the importer keeps a quest
-  the game answered in the run before; results in "The beta's answers differ between runs".
+- 2026-10-10: the beta answers about 80 quests differently on every run, so the importer keeps a quest's
+  last record until the game has missed it for 10 runs in a row, and stops to ask the user before any quest
+  leaves the data; see "The beta's answers differ between runs".
