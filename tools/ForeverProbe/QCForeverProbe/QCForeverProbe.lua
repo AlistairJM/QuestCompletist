@@ -62,7 +62,8 @@ QCForeverProbeDB holds:
                 noRect; hit = the map the game's hit test names at the rectangle's centre, or noHit),
                 zoneCall (the IDs GetMapChildrenInfo gives with the zone type filter), zoneTree (the
                 same with allDescendants), and grid = a 60 x 40 sampling of the hit test: cells[mapID] =
-                {n = cells, x, y = their centre in map percent} and none = cells that named no map;
+                {n = cells, x, y = their centre in map percent, name = the map's name as the hit test gives
+                it} and none = cells that named no map;
                 a map with no children has no grid.
                 Rectangles are map fractions to four decimals.
   runs          one row per run, with the character (faction, race and class, never a name) and its
@@ -627,7 +628,8 @@ local function childFacts(continentID, child)
 end
 
 -- Which map the game's own hit test names at each cell of a grid over the map: the shape each zone
--- really has, where hovering and clicking land. Per map it keeps the number of cells and their centre.
+-- really has, where hovering and clicking land. Per map it keeps the number of cells, their centre and the
+-- map's name (which a map that is no child has no other place for).
 local function sampleGrid(mapID)
 	local cells, none = {}, 0
 	for row = 1, GRID_ROWS do

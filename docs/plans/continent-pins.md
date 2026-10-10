@@ -50,7 +50,9 @@ unless they say otherwise.
   Thunder Bluff, Dun Morogh and Ironforge, Tirisfal and Undercity, Elwynn and Stormwind, Teldrassil and
   Darnassus, Azuremyst and the Exodar, Eversong and Silvermoon), plus a southern Eastern Kingdoms
   cluster and Darkshore/Felwood. Blizzard's own capital markers sit 1 to 9 px from a city zone's
-  centre.
+  centre. These counts are for the 24-unit icon; at the 29 units the icon is now on the user's screen
+  the windowed map has 14 pairs closer than an icon on retail (Eastern Kingdoms 13, Kalimdor 1) and 6 on
+  Forever, and the maximised one 1 on retail (Tol Barad's two, which have no quests) and none on Forever.
 - **Rectangles overlap.** A zone's rectangle is a bounding box: Mulgore sits inside The Barrens'
   box on Forever, and on retail's Kalimdor 22 of 28 centres land inside another zone's box (an
   offline model). Blizzard uses the
@@ -62,13 +64,14 @@ unless they say otherwise.
   player condition, beside the old Eversong and Ghostlands zones, so the zones Eastern Kingdoms
   shows may depend on the character.
 - **Gaps in a first version that takes direct zone children.** Dungeon-typed hubs (Dalaran,
-  Oribos, Mardum), nested continents (since given an icon, see Design) and orphan starter maps hold the rest of the quests; sub-zone
+  Oribos, Mardum), nested continents and orphan starter maps hold the rest of the quests; sub-zone
   categories (Undermine, Korthia, Garrison Support) under-report by about 770 quests (6%). Forever's
-  Zephras Isle (112 quests) hangs off the world map only.
+  Zephras Isle (112 quests) hangs off the world map only. Since then the hubs (but not Mardum), the nested
+  continents and the sub-zones except Garrison Support have an icon or count in their zone's, see Design.
 
 ### What the game said (10 October 2026)
 
-The probe's geometry pass was run on retail (12.1.0.69933, 15 continent maps, 434 child rows) and on
+The probe's geometry pass was run on retail (12.1.0.69933, 15 continent maps, 434 child rows, 442 rows in the baseline with the maps the hit test names that are no child) and on
 Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counting code.
 
 - **The type filter is exact.** `GetMapChildrenInfo(id, Zone)` returns only Zone maps, so the zone list
@@ -78,7 +81,7 @@ Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counti
 - **Phased twins arrive with flat rectangles** (zero width and height), not missing ones, so a twin is
   one point and folds into its category's icon.
 - **Forever gives 20 icons on Kalimdor and 22 on Eastern Kingdoms.** On the windowed map Eastern Kingdoms
-  still has pairs closer than 24 px after the folds.
+  still has pairs closer than an icon (24 units then, 29 now on the user's screen) after the folds.
 - **The map's canvas** is 3840 x 2560 with 8 zoom levels on retail and 1002 x 668 with 4 on Forever; the
   window shows 697 x 465 windowed and 1698 x 1131 maximised.
 - **The rectangle's centre is not always the middle of the zone.** The game's hit test names the zone at the
@@ -102,15 +105,22 @@ Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counti
   Undermine (218), Nazjatar (107, on both Zandalar's and Kul Tiras' maps) and Ahn'Qiraj: The Fallen Kingdom
   (4) each stand on a continent map without being a zone of it, and Korthia (115), Valdrakken (65), Dornogal
   (47), City of Threads (12), the Shrine of the Storm (2) and two sub-zones of Quel'Thalas (59) have no place
-  of their own (all now counted, see Design). Still uncounted, about 200 quests: zones with no rectangle that
-  the hit test never names (Founder's Point 52, Razorwind Shores 55, Siren Isle 45), scenarios and dungeons
-  (The Deaths of Chromie 24, Tazavesh 10, the Emerald Nightmare 6) and a few of three or fewer.
+  of their own (all now counted, see Design), and so are the Druid class hall's Dreamgrove (79). On
+  retail, of the 14,708 quests in a zone category, 13,459 are in an icon (12,606 before the hubs and
+  sub-zones, which added 853: 474 and 379) and 1,249 are in none; the largest of those (the test prints them each
+  run) are Lunarfall Excavation 154, Razorwind Shores 55, Founder's Point 52, Chamber of Heart 46, Siren
+  Isle 45, Exile's Reach 34, Manaforge Omega 28, Queen's Conservatory 28 and The Deaths of Chromie 24:
+  zones with no rectangle that the hit test never names, garrisons, scenarios and starter areas with no place
+  on a continent map. On Forever 1,657 of 1,810 are in an icon (Zephras Isle 90, Alterac Valley 26 and the
+  other battlegrounds are most of the rest).
 - **What the icon art can bear** (the client's atlas tables, build 12.1.0.69933). The "!" is the atlas
   member `QuestNormal`, 64 x 64 pixels drawn at 32; the ready "?" is `QuestTurnin`, 32 x 32; the grey "?" for
   quests in the log is the file `Interface\GossipFrame\IncompleteQuestIcon`, 16 x 16. The user's screen is
   1440p at UI scale 0.64 (the probe's `uiScale`), so one UI unit is 1.2 screen pixels; the 24-unit icon was
-  already 29 pixels, the "?" slightly stretched and the grey one almost twice. No 64-pixel "?" exists for
-  ordinary quests (the campaign, legendary, important, recurring and wrapper kinds have `-2x` ones).
+  29 pixels, a little under the "?" art (shrunk) and almost twice the grey file's 16. `QuestTurnin` has no
+  64-pixel twin; the nearest is `ui-questpoi-questbangturnin-2x` (64 x 72, drawn for the quest-number disc
+  family, its "?" only about 25 x 38 pixels inside the frame), which would want a frame well over 32 units and
+  was not tried. The campaign, legendary, important, recurring and wrapper kinds have `-2x` atlases too.
 
 ## Decisions
 
@@ -285,7 +295,7 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
    `/qcprobe maps` pass, which each sweep already runs, and `/qcprobe geometry` takes it alone.
    `tools\Report-ContinentGeometry.lua` reads the saved file, lists what is odd on each continent
    (no or flat rectangle, twins, a centre another map takes, icons closer than 24 px at 700, 1000
-   and 1500 px) and writes a row per child; the first dump becomes
+   and 1500 px; 32 units since PR 6d) and writes a row per child; the first dump becomes
    `docs/plans/continent-geometry-baseline.csv`. `Test-Probe.lua` covers it with stand-in maps.
    Merge it before the retail 12.1.5 run (13 or 14 October) so one session captures retail;
    Forever's comes with its next session.
@@ -319,7 +329,7 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
      `Compare-ContinentGeometry.lua <saved variables> <baseline>` lists the zones that came, went or
      moved (more than 0.05 of a map point) and the maps whose type, flags, group, nav-bar listing or
      hit-test answer changed; exit 1 on any, `--update` replaces that game's rows and keeps the other's;
-   - `docs/plans/continent-geometry-baseline.csv`, the two dumps above (retail 434 rows, Forever 53);
+   - `docs/plans/continent-geometry-baseline.csv`, the two dumps above (retail 434 rows, 442 since PR 6d, Forever 53);
    - `Compare-ApiDocs.ps1 -Tables` (default `UIMapType`, `UiMapDetails`), the first structures whose
      contents it compares, with `Test-ApiDocs.ps1` at 258 checks; both are documented the same on live
      and Forever today;
@@ -337,11 +347,15 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
    icon and in none of its own, one whose zone is not on the map counted nowhere, a hub whose category
    a zone counts already, a map the game doesn't know, Nazjatar on two continents, a click opening a
    hub; on the client's own table, that every hub shows on its continent with quests and every sub-zone's
-   category is in its zone's icon, 13,550 quests on retail with none counted twice, and that each hub is
-   at the baseline's centre); the pin's size, count font and grey art with their tests (a size for a
-   1440p, a 1080p and a 2160p screen and for none); `Report-ContinentGeometry.lua` lists the maps the hit
-   test names that are not children, the baseline holds them (8 rows), the probe keeps their names, and its
-   crowding limit is 30 units for the larger icon.
+   category is in its zone's icon and its zone is its parent in the client's table, that the tables hold
+   exactly the rows they should, that each hub is at the baseline's centre, and, with the baseline's own
+   children and rectangles in place of made-up ones, 13,459 quests on retail with none counted twice and
+   which are in no icon); the pin's size, count font and grey art with their tests (every size from 24 to 32,
+   a 1440p, a 1080p and a 2160p screen, an unreadable one, the 1.1 promise over a grid of screens, each look
+   `qcZoneLook` gives, the font resetting the colour as the game's does); `Report-ContinentGeometry.lua` lists
+   the maps the hit test names that are not children, the baseline holds them (8 rows), the probe keeps their
+   names, and its crowding limit is 32 units, the largest icon. The Dreamgrove (747 in Val'sharah) went in
+   after an independent review found its 79 quests in no icon.
 6c. **Icon places** (the first look): `QC_ZONE_ICON_AT` with Tiragarde Sound, then Darkshore and Felwood
    on both games, and their tests (the icon at the table's place, another zone's at its rectangle's centre,
    no icon when the game gives no usable rectangle, whatever the table says; the Tiragarde checks run on
@@ -386,7 +400,10 @@ Only what the game alone can answer, a few lines per game.
   zone, and where each zone really lies. The real canvas size needs one more step on each game:
   open the world map on Kalimdor, type `/qcprobe geometry`, then maximise the map and type it again.
 - **One look at the finished icons, on each game** (about three minutes, five observations):
-  1. The icons sit on their zones, not in the sea or on a neighbour, and nothing stacks. On retail,
+  1. The icons sit on their zones, not in the sea or on a neighbour, and nothing stacks (on the maximised
+     map; on the windowed one about 13 pairs on Eastern Kingdoms overlap at the larger size, by design of
+     the size, and are the thing to judge: if they bother, the size could step down on a small window, which
+     is not built). On retail,
      Eastern Kingdoms has an icon on Quel'Thalas and the Broken Isles one on Argus; the Shadowlands has
      one on Oribos, the Broken Isles on Dalaran, Khaz Algar on Undermine, Zandalar and Kul Tiras on
      Nazjatar, and Kalimdor on Ahn'Qiraj: The Fallen Kingdom, each where its art is. The icons are
@@ -413,8 +430,8 @@ Only what the game alone can answer, a few lines per game.
   doesn't meet. A level 10 character sees many dim icons; the switch is the answer.
 - Counts depend on the curated quest type. A one-time quest wrongly typed daily is left out of every
   count; the exclusion is a pure function of the stored type, so later retypes flow through.
-- Sub-zone categories under-report (above); the 773 quests are the price of keeping the list's
-  parity.
+- Zones with no place on a continent map are counted nowhere (above, about 1,250 quests on retail): the
+  continent icons are the list's zone counter for the zones the map shows, not a total.
 - Eastern Kingdoms may show different zone sets by character (Quel'Thalas). The client gates Argus (905,
   player condition 143958) and Quel'Thalas the same way; a character the game doesn't list them for sees
   no icon for them, so their quests count nowhere on that character's continent maps.
@@ -437,4 +454,4 @@ at the zone's category; zones with no place on the continent map (Founder's Poin
 - 2026-10-10: both games' geometry dumps read (see "What the game said"). PR 6 built (`Compare-ContinentGeometry.lua`, the baseline CSV, `Compare-ApiDocs.ps1 -Tables`, sweep step 2f): `Test-Probe.lua` 985 checks and `Test-ApiDocs.ps1` 258 pass; each game compares clean against its baseline.
 - 2026-10-10: PR 6b built (continents inside a continent, the Arathi extra, decision 5 changed): on the dump's geometry, retail's Eastern Kingdoms counts 2,326 quests on 27 icons (Quel'Thalas 870, Arathi's 24 more) and the Broken Isles 1,012 on 8 (Argus 147); Forever has none inside another and is unchanged (Kalimdor 20 icons, Eastern Kingdoms 22); no new pair of icons under 24 px; `Test-ContinentPins.lua` passes on both TOCs, each new check fails when its code is taken out; not yet tried in game.
 - 2026-10-10: PR 6c built after the user's first look (retail, maximised Kul Tiras): `QC_ZONE_ICON_AT` moves Tiragarde Sound's icon from its rectangle's centre (0.476, 0.645, in the sea off Drustvar's edge) to the centre of the cells that name it (0.574, 0.631), 98 px right of where it was at 1,000 px wide, and Darkshore's and Felwood's a little left on both games. `Test-ContinentPins.lua` passes on both TOCs (Tiragarde's checks on retail only) and each of Tiragarde's fails when its code is taken out; `Test-Probe.lua` 991 checks. Twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre at 1,698 px (see "What the game said") and are left for the user's eye. An independent review of the first commit found the wording "off the zone" unsupported (the hit test names the zone at the old point too), and that a moved hit area went unnoticed: both fixed here.
-- 2026-10-10: PR 6d built after more of the user's first look (retail Kalimdor, Eastern Kingdoms, Khaz Algar, the Shadowlands, Kul Tiras; Forever Eastern Kingdoms): the user's saved variables, replayed through the real counting code as an Alliance Human mage with the calendar quiet, give their screenshots' counts to within one on every zone. So no icon on Thousand Needles, Un'Goro Crater and Winterspring (all done), Durotar (only Trial of Style quests, hidden by the seasonal filter), and on every Eastern Kingdoms zone without one on retail (all done, or no quests) is as designed, and Forever's Eastern Kingdoms has all 22 it should (Deadwind Pass has no category). The real gaps were hubs and sub-zones: `QC_CONTINENT_HUBS` (6) and `QC_SUBZONE_HOST` (8), after which the quests in no icon fall from about 1,850 (counting the same quests under several maps) to about 200, and retail counts 13,550 quests on its continent maps, none twice. The icon is larger where its art allows (29 units on the user's screen, 24 where it would only blur) and the grey "?" is the ready one desaturated (the game's own is 16 pixels). `Test-ContinentPins.lua` passes on both TOCs, `Test-Probe.lua` 999 checks; not yet tried in game.
+- 2026-10-10: PR 6d built after more of the user's first look (retail Kalimdor, Eastern Kingdoms, Khaz Algar, the Shadowlands, Kul Tiras; Forever Eastern Kingdoms): the user's saved variables, replayed through the real counting code as an Alliance Human mage with the calendar quiet, give their screenshots' counts to within one on every zone. So no icon on Thousand Needles, Un'Goro Crater and Winterspring (all done), Durotar (only Trial of Style quests, hidden by the seasonal filter), and on every Eastern Kingdoms zone without one on retail (all done, or no quests) is as designed, and Forever's Eastern Kingdoms has all 22 it should (Deadwind Pass has no category). The real gaps were hubs and sub-zones: `QC_CONTINENT_HUBS` (6) and `QC_SUBZONE_HOST` (8), after which retail counts 13,459 of its 14,708 zone-category quests in an icon (853 more, 1,249 left in none: no place on a continent map), none twice, and the Dreamgrove (79) went in with them after the review. The icon is larger where its art allows (29 units on the user's screen, 24 where it would only blur) and the grey "?" is the ready one desaturated (the game's own is 16 pixels). `Test-ContinentPins.lua` passes on both TOCs, `Test-Probe.lua` 1,142 checks; an independent review of the commit found 27 confirmed points (counted once each, mostly wording and gaps in the tests), all fixed here; not yet tried in game.

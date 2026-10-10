@@ -60,7 +60,7 @@ end
 --[[ The map tree the stand-in game answers from: S.children[parent] is a list of {mapID, name, mapType}, S.rects[child]
 holds the rectangle {minX, maxX, minY, maxY} on a continent, S.nothing[parent] makes the game list nothing ]]--
 local S = {children = {}, rects = {}, nothing = {}, types = {}, level = 1000, inLog = {}, logComplete = {}, accountDone = {},
-	modifier = false, names = {}, unknown = {}}
+	modifier = false, names = {}, unknown = {}, rectsOn = {}}
 local ZONE, DUNGEON, CONTINENT = 3, 4, 2
 
 local env = {
@@ -87,8 +87,10 @@ local env = {
 			end
 			return list
 		end,
-		GetMapRectOnMap = function(childID)
+		GetMapRectOnMap = function(childID, continentID)
+			local on = S.rectsOn[continentID]
 			local rect = S.rects[childID]
+			if on and on[childID] ~= nil then rect = on[childID] end
 			if rect then return rect[1], rect[2], rect[3], rect[4] end
 		end,
 		GetMapInfo = function(mapID)
@@ -410,7 +412,7 @@ end
 
 print("Hubs and sub-zones")
 local hubIcon
-if BY_AREA[1670] and BY_AREA[1543] and BY_AREA[1961] and BY_AREA[1355] then
+if BY_AREA[1670] and BY_AREA[1543] and BY_AREA[1961] and BY_AREA[1355] and BY_AREA[627] and BY_AREA[630] then
 	S.names[1670], S.names[1355] = "Oribos", "Nazjatar"
 	S.children[1550] = {zone(1543, "The Maw")}
 	S.rects[1543] = {0.10, 0.30, 0.10, 0.30}
@@ -444,6 +446,18 @@ if BY_AREA[1670] and BY_AREA[1543] and BY_AREA[1961] and BY_AREA[1355] then
 	check("Nazjatar, linked in on two continents, is an icon on each", #on875 == 1 and on875[1].mapId == 1355 and #on876 == 1 and on876[1].mapId == 1355
 		and on875[1].x == on876[1].x and on875[1].y == on876[1].y)
 	check("a continent with no hub in the table has none", #code.Zones(877) == 0)
+	S.names[627] = "Dalaran"
+	S.children[619] = {zone(630, "Azsuna")}
+	S.rects[630] = {0.10, 0.20, 0.10, 0.20}
+	local isles = code.Zones(619)
+	check("a hub with a lower map ID than a zone comes first", #isles == 2 and isles[1].mapId == 627 and isles[2].mapId == 630)
+	S.children[619], S.rects[630] = nil, nil
+	S.children[1550] = {}
+	S.rects[1670] = {0.415, 0.52, 0.38, 0.605}
+	local withRect = code.Zones(1550)
+	check("a hub the game gives a rectangle is still at the table's place", #withRect == 1 and math.abs(withRect[1].x - 0.467) < 1e-9
+		and math.abs(withRect[1].y - 0.488) < 1e-9)
+	S.rects[1670] = nil
 else
 	print("  (this game has none of the hub maps and sub-zones the tables name: not checked)")
 end
@@ -700,7 +714,7 @@ local function newPin()
 		SetTexture = function(_, file) pin.file = file end, SetVertexColor = function(_, r) pin.shade = r end,
 		SetDesaturated = function(_, on) pin.desaturated = on end}
 	pin.Count = {SetText = function(_, t) pin.count = t end, SetTextColor = function(_, r) pin.countShade = r end,
-		SetFontObject = function(_, name) pin.font = name end}
+		SetFontObject = function(_, name) pin.font = name; pin.countShade = 1 end}
 	pin.GetMap = function() return pin.map end
 	return setmetatable(pin, {__index = mixin})
 end
@@ -716,11 +730,16 @@ check("it sits at the zone's centre", pin.log[2] == string.format("position %.4f
 check("at 24 by 24", pin.log[3] == "size 24x24")
 check("with the icon's art", (NORMAL.file and pin.file == NORMAL.file) or (NORMAL.atlas and pin.atlas == NORMAL.atlas))
 check("and its count, at full shade", pin.count == 7 and pin.shade == 1 and pin.countShade == 1)
-pin:OnAcquired({zone = zoneA, look = PROGRESS, count = 12, dim = true})
-check("a pin used again takes the new icon's count and shade", pin.count == 12 and pin.shade == 0.5 and pin.countShade == 0.5)
+pin:OnAcquired({zone = zoneA, look = NORMAL, count = 12, dim = true})
+check("a pin used again takes the new icon's count and a dim one's shade, whatever the font did to the colour",
+	pin.count == 12 and pin.shade == 0.5 and pin.countShade == 0.5 and pin.atlas == NORMAL.atlas and pin.desaturated == false)
 check("and its zone", pin.Icon.zone == zoneA)
+pin:OnAcquired({zone = zoneA, look = READY, count = 2, dim = false})
+check("a ready pin has the ready art, in colour, at full shade", pin.atlas == READY.atlas and pin.desaturated == false
+	and pin.shade == 1 and pin.countShade == 1 and pin.count == 2)
+pin:OnAcquired({zone = zoneA, look = PROGRESS, count = 12, dim = false})
 check("the grey look of quests in the log is the ready art, in grey: the game's own grey file is 16 pixels", pin.desaturated == true
-	and pin.atlas == QC.QC_ICON_READY.atlas)
+	and pin.atlas == READY.atlas and pin.shade == 1 and pin.countShade == 1)
 pin:OnAcquired(bright)
 check("and a pin used again for another look is no longer grey", pin.desaturated == false and pin.atlas == NORMAL.atlas)
 local function sizeOn(uiScale, screenHeight)
@@ -737,6 +756,31 @@ line, font = sizeOn(0.64, 2160)
 check("on a 2160p screen, where 24 units already take 43 pixels, it stays 24", line == "size 24x24" and font == "NumberFontNormalSmall", tostring(line) .. " " .. tostring(font))
 line = sizeOn(nil, nil)
 check("with the screen unreadable it stays 24", line == "size 24x24")
+line = sizeOn(0, 1080)
+local zeroScale = line
+line = sizeOn(0.64, 0)
+local zeroHeight = line
+line = sizeOn("x", 1080)
+check("nor does a UI scale or a screen height that is zero or not a number change it", zeroScale == "size 24x24" and zeroHeight == "size 24x24" and line == "size 24x24")
+local wrongSizes = {}
+for size = 24, 32 do
+	local sweepLine, sweepFont = sizeOn(32 * 1.1 * 768 / ((size + 0.2) * 1080), 1080)
+	local wantFont = size >= 30 and "NumberFontNormalLarge" or size >= 26 and "NumberFontNormal" or "NumberFontNormalSmall"
+	if sweepLine ~= string.format("size %dx%d", size, size) or sweepFont ~= wantFont then
+		wrongSizes[#wrongSizes + 1] = size .. ": " .. tostring(sweepLine) .. " " .. tostring(sweepFont)
+	end
+end
+check("every size from 24 to 32 has its own count font, the steps at 26 and 30", #wrongSizes == 0, table.concat(wrongSizes, "; "))
+local tooBig = {}
+for _, height in ipairs({1080, 1200, 1440, 1600, 1800}) do
+	for hundredths = 50, 100 do
+		local scale = hundredths / 100
+		local sizedLine = sizeOn(scale, height)
+		local units = tonumber(sizedLine:match("size (%d+)x"))
+		if units > 24 and units * scale * height / 768 > 32 * 1.1 + 1e-9 then tooBig[#tooBig + 1] = scale .. " at " .. height end
+	end
+end
+check("the icon is never more than 1.1 screen pixels to a pixel of art, unless it is at the 24-unit floor", #tooBig == 0, table.concat(tooBig, "; "))
 S.uiScale, S.screenHeight = nil, nil
 local opened
 pin.map = {SetMapID = function(_, mapId) opened = mapId end}
@@ -818,7 +862,7 @@ else
 	end
 	table.sort(continents, function(a, b) return a.id < b.id end)
 	table.sort(nested, function(a, b) return a.id < b.id end)
-	-- Every zone gets a rectangle of its own on its continent, so only the grouping is tested here.
+	-- Every zone gets a rectangle of its own on its continent (below, the geometry baseline's own take their place).
 	local n = 0
 	for _, children in pairs(S.children) do
 		for i, child in ipairs(children) do
@@ -826,6 +870,32 @@ else
 			S.rects[child.mapID] = {0.001 * (i % 500), 0.001 * (i % 500) + 0.0005, 0.001 * (i % 300), 0.001 * (i % 300) + 0.0005}
 		end
 	end
+	-- Where the geometry baseline has the continent, what the game listed under it and the rectangles it gave (none
+	-- where it gave nothing or a flat one) take their place, so the figures below are what the game would draw.
+	local baselineHandle = io.open("docs/plans/continent-geometry-baseline.csv", "rb")
+	local usedBaseline = 0
+	if baselineHandle then
+		local _, parseCsv = assert(loadfile("tools/Report-ContinentGeometry.lua"))("module")
+		local game = FOREVER and "forever" or "retail"
+		local perContinent = {}
+		for _, r in ipairs(parseCsv(baselineHandle:read("*a"))) do
+			if r.game == game and r.mapType then
+				perContinent[r.continent] = perContinent[r.continent] or {}
+				table.insert(perContinent[r.continent], r)
+			end
+		end
+		baselineHandle:close()
+		for continentId, list in pairs(perContinent) do
+			usedBaseline = usedBaseline + 1
+			S.children[continentId], S.rectsOn[continentId] = {}, {}
+			for _, r in ipairs(list) do
+				table.insert(S.children[continentId], {mapID = r.mapId, name = r.name, mapType = r.mapType})
+				local rect = r.rect
+				S.rectsOn[continentId][r.mapId] = (rect and rect[2] > rect[1] and rect[4] > rect[3]) and rect or false
+			end
+		end
+	end
+	print(string.format("  (%d continent maps take their children and rectangles from the geometry baseline)", usedBaseline))
 	local owner, total, groups, withZones = {}, 0, 0, 0
 	local doubled = {}
 	local onTwoMaps, hubMaps = {}, {}
@@ -925,13 +995,39 @@ else
 		end
 	end
 	for subZone, host in pairs(code.Hosts) do
-		if BY_AREA[subZone] and continentIds[1] ~= nil or BY_AREA[subZone] then
+		if BY_AREA[subZone] then
 			hostCount = hostCount + 1
 			local icon, found = iconOf[host], false
 			for _, categoryId in ipairs(icon and icon.categories or {}) do
 				if categoryId == BY_AREA[subZone] then found = true end
 			end
 			if not found then tableProblems[#tableProblems + 1] = "sub-zone " .. subZone .. " is not counted in " .. host end
+			if rowById[subZone] and rowById[subZone].parent ~= host then
+				tableProblems[#tableProblems + 1] = "sub-zone " .. subZone .. "'s zone is " .. tostring(rowById[subZone].parent) .. " in the client, not " .. host
+			end
+		end
+	end
+	-- The tables hold what they are meant to: a row taken out, or put in without a look, fails here.
+	if BY_AREA[1670] then
+		local wantedHubs = {[12] = {[327] = true}, [619] = {[627] = true}, [875] = {[1355] = true}, [876] = {[1355] = true},
+			[1550] = {[1670] = true}, [2274] = {[2346] = true}}
+		local wantedHosts = {[1961] = 1543, [2112] = 2025, [2339] = 2248, [2213] = 2255, [2216] = 2255, [2393] = 2395, [2444] = 2405,
+			[1039] = 942, [747] = 641}
+		for continentId, hubs in pairs(code.Hubs) do
+			for mapId in pairs(hubs) do
+				if not (wantedHubs[continentId] and wantedHubs[continentId][mapId]) then tableProblems[#tableProblems + 1] = "hub " .. mapId .. " on " .. continentId .. " is new" end
+			end
+		end
+		for continentId, hubs in pairs(wantedHubs) do
+			for mapId in pairs(hubs) do
+				if not (code.Hubs[continentId] and code.Hubs[continentId][mapId]) then tableProblems[#tableProblems + 1] = "hub " .. mapId .. " on " .. continentId .. " is gone" end
+			end
+		end
+		for subZone, host in pairs(code.Hosts) do
+			if wantedHosts[subZone] ~= host then tableProblems[#tableProblems + 1] = "sub-zone " .. subZone .. " is new or changed" end
+		end
+		for subZone in pairs(wantedHosts) do
+			if not code.Hosts[subZone] then tableProblems[#tableProblems + 1] = "sub-zone " .. subZone .. " is gone" end
 		end
 	end
 	if hubCount == 0 and hostCount == 0 then
@@ -940,6 +1036,39 @@ else
 		table.sort(tableProblems)
 		check(string.format("%d hub maps show on their continents and %d sub-zones count in their zone's icon", hubCount, hostCount),
 			#tableProblems == 0, table.concat(tableProblems, "; "))
+	end
+	-- What no icon counts: for the sweep to read (the next row of a table is among the largest), not a check.
+	do
+		local inIcon, mapsOf = {}, {}
+		for id in pairs(continentIds) do
+			for _, z in ipairs(code.Zones(id)) do
+				for _, categoryId in ipairs(z.categories) do inIcon[categoryId] = true end
+			end
+		end
+		for mapId, categoryId in pairs(BY_AREA) do
+			mapsOf[categoryId] = mapsOf[categoryId] or {}
+			table.insert(mapsOf[categoryId], mapId)
+		end
+		local inAnIcon, inNone, largest = 0, 0, {}
+		for categoryId in pairs(categories) do
+			local n = mapsOf[categoryId] and #counted({categoryId}, listKeep) or 0
+			if n > 0 then
+				if inIcon[categoryId] then
+					inAnIcon = inAnIcon + n
+				else
+					inNone = inNone + n
+					local ids = mapsOf[categoryId] or {}
+					table.sort(ids)
+					local name = ids[1] and rowById[ids[1]] and rowById[ids[1]].name or (ids[1] and ("map " .. ids[1]) or ("category " .. categoryId))
+					largest[#largest + 1] = {n = n, text = name .. " " .. n}
+				end
+			end
+		end
+		table.sort(largest, function(a, b) if a.n ~= b.n then return a.n > b.n end return a.text < b.text end)
+		local top = {}
+		for i = 1, math.min(10, #largest) do top[i] = largest[i].text end
+		print(string.format("  (%d quests of %d in a zone category are in an icon, %d in none; the largest of those: %s)",
+			inAnIcon, inAnIcon + inNone, inNone, table.concat(top, ", ")))
 	end
 	-- A pass over each continent, timed.
 	local worst, worstId = 0, nil

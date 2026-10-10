@@ -3,13 +3,14 @@
 -- where each sits on it, what the game's hit test names at each centre and over a grid, and which
 -- zone icons would crowd each other.
 -- usage: lua tools/Report-ContinentGeometry.lua <QCForeverProbe.lua> [rows.csv] [build]
---   rows.csv   one row per child map: Game, Build, Continent, ContinentName, MapID, Name, MapType, Flags,
+--   rows.csv   one row per child map, and one per map the hit test names that is no child (those hold no type,
+--              flags, nav-bar answer, group or rectangle): Game, Build, Continent, ContinentName, MapID, Name, MapType, Flags,
 --              NavBar, Group, MinX, MaxX, MinY, MaxY, HitID, HitName, Cells, CentroidX, CentroidY
 --   build      which build's rows to read; the one with most maps in the file when left out
 -- Under Lua 5.1: & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Report-ContinentGeometry.lua <file>
 
 local ASPECT = 2 / 3
-local CLOSE_PIXELS = 30
+local CLOSE_PIXELS = 32
 local WIDTHS = {700, 1000, 1500}
 local CENTROID_POINTS = 3
 local ZONE = 3
@@ -268,7 +269,7 @@ local function report(db, wanted)
 			for _, id in ipairs(linked) do
 				parts[#parts + 1] = string.format("%s (%d) %d cells at %.1f, %.1f", cells[id].name or nameOf[id] or "?", id, cells[id].n, cells[id].x, cells[id].y)
 			end
-			out("  The hit test names maps that are not children, which the hub table of the zone icons reads its places from: %s.", table.concat(parts, "; "))
+			out("  The hit test names maps that are not children: %s.", table.concat(parts, "; "))
 		end
 
 		local placed = {}

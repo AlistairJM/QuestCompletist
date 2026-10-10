@@ -1036,9 +1036,9 @@ do
 	contains(text, "Zones the nav bar does not list: Uldum (1527).", "G5: the nav bar")
 	contains(text, "names another map: Mulgore (7) -> Thunder Bluff (88); Uldum (1527) -> Uldum (249).", "G5: the hit test")
 	contains(text, "Zones the hit test never names on the 60 x 40 grid: Lost Isle (2), Hidden Isle (4), Flat (8), Uldum (1527).", "G5: zones the grid never names, a twin of equal size among them")
-	contains(text, "At 700 px wide, 2 zone icon pairs are closer than 30 px: Mulgore / Thunder Bluff 0 px; Uldum / Uldum 0 px.", "G5: crowding")
-	contains(text, "At 697 px wide, 2 zone icon pairs are closer than 30 px.", "G5: and at the window's width")
-	contains(text, "The hit test names maps that are not children, which the hub table of the zone icons reads its places from: Linked Isle (2346) 24 cells at 65.0, 70.0.", "G5: a map the hit test names that is no child")
+	contains(text, "At 700 px wide, 2 zone icon pairs are closer than 32 px: Mulgore / Thunder Bluff 0 px; Uldum / Uldum 0 px.", "G5: crowding")
+	contains(text, "At 697 px wide, 2 zone icon pairs are closer than 32 px.", "G5: and at the window's width")
+	contains(text, "The hit test names maps that are not children: Linked Isle (2346) 24 cells at 65.0, 70.0.", "G5: a map the hit test names that is no child")
 	equal(#csv, 12, "G5: a row for each child, and one for the map the hit test names that is none")
 	local linkedRow
 	for _, row in ipairs(csv) do if row:find(',2346,', 1, true) then linkedRow = row end end
@@ -1052,12 +1052,33 @@ do
 	local text2 = table.concat((report(back)), "\n")
 	contains(text2, "The zone filter DIFFERS from the direct children of type zone: only in the call 999; only among the children .", "G5: a filter that is not exact is said so")
 
+	do
+		local itself = roundTrips(w.db(), "G5")
+		itself.geometry[12].grid.cells[12] = {n = 100, x = 50, y = 50, name = "Kalimdor"}
+		local itselfLines, itselfCsv = report(itself)
+		check(not table.concat(itselfLines, "\n"):find("Kalimdor (12) 100 cells", 1, true), "G5: a continent the hit test names over empty ground is not a map that is no child")
+		equal(#itselfCsv, 12, "G5: and has no row of its own")
+		local unnamed = roundTrips(w.db(), "G5")
+		unnamed.geometry[12].grid.cells[2346].name = nil
+		local unnamedLines, unnamedCsv = report(unnamed)
+		contains(table.concat(unnamedLines, "\n"), "? (2346) 24 cells at 65.0, 70.0", "G5: a map nothing names, in an old dump, is a question mark")
+		local unnamedRow
+		for _, row in ipairs(unnamedCsv) do if row:find(',2346,', 1, true) then unnamedRow = row end end
+		contains(unnamedRow or "", '"Kalimdor",2346,"",', "G5: and its row has no name")
+		unnamed.geometry[947].children[#unnamed.geometry[947].children + 1] = {mapID = 2346, name = "Linked Isle", mapType = 3}
+		local namedLines, namedCsv = report(unnamed)
+		contains(table.concat(namedLines, "\n"), "Linked Isle (2346) 24 cells at 65.0, 70.0", "G5: a map some other map lists as a child is named from there")
+		local namedRow
+		for _, row in ipairs(namedCsv) do if row:find('"Kalimdor",2346,', 1, true) then namedRow = row end end
+		contains(namedRow or "", '"Kalimdor",2346,"Linked Isle",', "G5: and so is its row")
+	end
+
 	local back3 = roundTrips(w.db(), "G5")
 	table.insert(back3.runs, {kind = "geometry", build = "1.60.1.70245", view = {mapID = 12, maximized = true, width = 1517, height = 1011}})
 	local text3 = table.concat((report(back3)), "\n")
 	contains(text3, "Map window when read: map 12, windowed, 697 x 465", "G5: every map window is listed, the first")
 	contains(text3, "Map window when read: map 12, maximised, 1517 x 1011", "G5: and the second")
-	contains(text3, "At 1517 px wide, 2 zone icon pairs are closer than 30 px.", "G5: with its width used")
+	contains(text3, "At 1517 px wide, 2 zone icon pairs are closer than 32 px.", "G5: with its width used")
 
 	local lines3 = report({geometry = {}, runs = {}})
 	contains(lines3[1], "No geometry in the file.", "G5: an empty file says what to do")
@@ -1136,6 +1157,17 @@ do
 	one(function(rows) find(rows, 12, 7).hitId = 7 end, "hitId 88 -> 7", "B2: what the hit test names")
 	one(function(rows) find(rows, 12, 2).rect = {0.1, 0.2, 0.1, 0.2} end, "rectangle none -> 0.1000 0.2000 0.1000 0.2000", "B2: a zone that gained a rectangle")
 	one(function(rows) find(rows, 12, 1).name = "Durotar!" end, "name Durotar -> Durotar!", "B2: a name")
+	do
+		local withoutLinked = copy()
+		for i, r in ipairs(withoutLinked) do if r.continent == 12 and r.mapId == 2346 then table.remove(withoutLinked, i) break end end
+		local gone = compare(withoutLinked, parsed)
+		check(#gone == 1 and gone[1]:find("removed: Kalimdor (12): Linked Isle (2346)", 1, true), "B2: a map the hit test stopped naming")
+		local came = compare(parsed, withoutLinked)
+		check(#came == 1 and came[1]:find("added:   Kalimdor (12): Linked Isle (2346) (no child)", 1, true), "B2: and one it started to, which has no type to show")
+		local nameless = copy()
+		find(nameless, 12, 2346).name = ""
+		equal(#compare(copy(), nameless), 0, "B2: a baseline row from a dump with no names does not differ for gaining one")
+	end
 	local without = copy()
 	for i, r in ipairs(without) do if r.continent == 12 and r.mapId == 627 then table.remove(without, i) break end end
 	local lines = compare(without, parsed)

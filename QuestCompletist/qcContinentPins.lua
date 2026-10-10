@@ -55,9 +55,11 @@ local QC_CONTINENT_HUBS = {
 -- Sub-zones with no icon of their own, whose quests count in the icon of the zone they lie in, as a city's do:
 -- Korthia in The Maw, Valdrakken in Thaldraszus, Dornogal in the Isle of Dorn, both levels of City of Threads
 -- in Azj-Kahet, Silvermoon City and Slayer's Rise in the zones of Quel'Thalas that hold them, the Shrine of
--- the Storm in Stormsong Valley. Each is a descendant of the continent the game lists, not a child.
+-- the Storm in Stormsong Valley, the Druid class hall's Dreamgrove in Val'sharah. Each is a descendant of the
+-- continent the game lists, not a child.
 local QC_SUBZONE_HOST = {
 	[1961] = 1543, [2112] = 2025, [2339] = 2248, [2213] = 2255, [2216] = 2255, [2393] = 2395, [2444] = 2405, [1039] = 942,
+	[747] = 641,
 }
 
 local function qcSortedKeys(t)
@@ -231,7 +233,7 @@ local function qcContinentIconSize()
 	local _, height = GetPhysicalScreenSize()
 	local scale = UIParent:GetEffectiveScale()
 	if type(height) ~= "number" or height <= 0 or type(scale) ~= "number" or scale <= 0 then return QC_ICON_MIN end
-	local size = math.floor(QC_ICON_ART_PIXELS * 1.1 * 768 / (scale * height) + 0.5)
+	local size = math.floor(QC_ICON_ART_PIXELS * 1.1 * 768 / (scale * height))
 	return math.max(QC_ICON_MIN, math.min(QC_ICON_MAX, size))
 end
 

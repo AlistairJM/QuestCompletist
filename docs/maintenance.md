@@ -1425,7 +1425,7 @@ It began as pull request #139, which stays open as the record; its files are in
    showing, so for the pixel numbers open the map on a continent first, and run it once windowed and once
    maximised. Read it with `tools\Report-ContinentGeometry.lua <saved variables> [rows.csv]`, which lists
    what is odd on each continent (a rectangle that is missing or flat, twin zones, a centre another map
-   takes, zone icons closer than 30 UI units at 700, 1000 and 1500 px, the largest the icon is drawn) and
+   takes, zone icons closer than 32 UI units, the largest the icon is drawn, at 700, 1000 and 1500 px) and
    writes one row per child map, and per map the hit test names that is no child.
    Then compare it with the baseline kept in the repository (sweep step 2f), for each game:
    ```powershell
@@ -1438,10 +1438,12 @@ It began as pull request #139, which stays open as the record; its files are in
    moved or whose hit area changed ("hit area N cells at x, y -> ...") wants its row read again from its
    `CentroidX` and `CentroidY` (over 100) in the new rows. The same goes for a hub in `QC_CONTINENT_HUBS`
    (`qcContinentPins.lua`: Oribos, Dalaran, Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom), whose row is
-   the report's "the hit test names maps that are not children" line and the baseline's row of the same
-   map; a map newly named there, or a quest category of a zone-tree map that no icon counts (a sub-zone for
-   `QC_SUBZONE_HOST`, whose zone is the map's parent in the client's `UiMap` table), is a candidate for
-   the next row. When the differences are read, run it again with `--update`,
+   the baseline's row of the same map (Oribos, Dalaran and Ahn'Qiraj are child rows of their continents;
+   Undermine and Nazjatar are not children, so they are also in the report's "the hit test names maps that
+   are not children" line). A map newly named in that line, or a quest category that no icon counts (a
+   sub-zone for `QC_SUBZONE_HOST`, whose zone is the map's parent in the client's `UiMap` table), is a candidate
+   for the next row: `tools\Test-ContinentPins.lua` prints, at the end of its real-data pass, how many quests are
+   in no icon and the largest categories among them, for each game. When the differences are read, run it again with `--update`,
    which replaces that game's rows and keeps the other game's (it warns when the file has fewer rows than
    the baseline, which is a pass that stopped early), and commit the baseline. Names are compared as the
    client gives them, so take the dump on an English client, and a zone gated by a player condition
