@@ -13554,6 +13554,7 @@
 {"map":2215,"icon":1,"npc":214413,"name":"Faerin Lothar","x":55.13,"y":40.22,"quests":[78952]}
 {"map":2215,"icon":1,"npc":214413,"name":"Faerin Lothar","x":55.9,"y":43.08,"quests":[78952]}
 {"map":2215,"icon":1,"npc":221733,"name":"Faerin Lothar","x":55.78,"y":43.44,"quests":[78954,81690]}
+{"map":2215,"icon":1,"x":67.14,"y":24.52,"quests":[79085]}
 {"map":2215,"icon":1,"npc":215041,"name":"Miral Murder-Mittens","x":60.29,"y":21.16,"quests":[79110]}
 {"map":2215,"icon":1,"npc":215237,"name":"Alyza Bowblaze","x":41.69,"y":55.62,"quests":[79151]}
 {"map":2215,"icon":1,"npc":218062,"name":"Alyza Bowblaze","x":52.42,"y":50.18,"quests":[79152]}
@@ -13588,6 +13589,7 @@
 {"map":2215,"icon":1,"name":"Egg Basket","x":60.8,"y":27.9,"quests":[80382]}
 {"map":2215,"icon":1,"npc":220718,"name":"Maera Ashyld","x":60.49,"y":60.21,"quests":[80673,80677,80678,82810,82813]}
 {"map":2215,"icon":1,"npc":218486,"name":"Phillip Taversil","x":43.2,"y":55.4,"quests":[80679]}
+{"map":2215,"icon":1,"x":63.57,"y":29.54,"quests":[81640]}
 {"map":2215,"icon":1,"npc":221733,"name":"Faerin Lothar","x":55.13,"y":40.22,"quests":[81690]}
 {"map":2215,"icon":1,"npc":214380,"name":"Raen Dawncavalyr","x":43.29,"y":56.4,"quests":[81692,81910]}
 {"map":2215,"icon":1,"npc":218508,"name":"Joseph Brayvemarc","x":42.57,"y":55.24,"quests":[81797]}

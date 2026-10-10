@@ -210,7 +210,7 @@ again.
   old pins (Neeka Bloodscar, Merda Stronghoof, Keeper Remulos, Captain Verne, Bodrick Grey, Griff).
 - **Three holiday quests with no holiday tag** that were pinned: 47430 (Moonkin), 79178 and 79694
   (Hearthstone anniversary). They want their holiday value.
-- **The 157 quests in `quest_locations_tdb_review.csv`**: placeholder starts (raid-wing quests, the
+- **The 154 quests in `quest_locations_tdb_review.csv`**: placeholder starts (raid-wing quests, the
   Draenor garrison points, Mechagon, Nerub-ar Palace), starts outside every map, more than six
   places. Look through it after every run of step 6.
 - **2,766 quests TrinityCore has a start for that the database lacks**: a list to look through for
@@ -229,7 +229,6 @@ again.
 
 ## Code to finish
 
-- **A start on a disabled map** is held back; 79085 and 81640 want hand entries on Hallowfall's map.
 - **README** says retail has "over 15,000" quest-giver pins and Forever "around 1,700"; check both at
   each release.
 

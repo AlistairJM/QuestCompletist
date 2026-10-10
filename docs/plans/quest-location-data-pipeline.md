@@ -450,9 +450,10 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   Pins with an NPC ID went from 10,404 to 10,564 and pins with neither ID nor name from 3,031 to 4,301.
 - **Left for a person** (`tools\quest_locations_tdb_review.csv`, 157 quests): 130 at placeholder
   points, 17 starting outside every region of their map, 5 with more than six places, 3 with a start but
-  no point, 3 on a map without a region and 2 on a disabled map. The script also prints, per reason, the
-  quests TrinityCore has a start for that were not placed; among them are 2,766 that are not in our
-  quest data, a list to look through for the step that adds quests the database lacks.
+  no point, 3 on a map without a region and 2 on a disabled map (pinned by hand since, below). The
+  script also prints, per reason, the quests TrinityCore has a start for that were not placed; among
+  them are 2,766 that are not in our quest data, a list to look through for the step that adds quests
+  the database lacks.
 - **Names by hand.** Seven nameless pins got the starter the client's giver table puts at the
   start (Master Hight, Wavespeaker Tulra) by `FILL` rows. The 24 pet-battle tutorial quests
   ("Learning the Ropes", "On The Mend", "Got one!", "Level Up!") that stood nameless on their
@@ -464,6 +465,29 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   to 10,565 and pins with neither ID nor name from 4,301 to 4,277, and no quest lost its pin. Three
   quests of holidays have no holiday tag in our data (47430, 79178, 79694) and were pinned; they
   want the tag.
+- **A start on a disabled map (10 October 2026).** TrinityCore's start points for 79085 "A Pile of
+  Fish" and 81640 "Tenir and the Order of Night" are on UiMap 2311, "11.0 - Hallowfall - [Spreading
+  the Light] - Disabled", a child of Hallowfall (2215) that the client still marks disabled in
+  12.1.5, so the pass held them back. Its `UiMapAssignment` row is a box inside Hallowfall's (45 to
+  76 across, 5 to 37 down), so the same world point converts on Hallowfall's own row (2215,
+  instance 2601): 79085 at 67.14, 24.52 and 81640 at 63.57, 29.54 (through 2311's own box they are
+  70.72, 61.44 and 59.47, 77.23, the same spots). Both are ordinary quests in `QuestV2` of
+  12.1.0.69933 and 12.1.5.70077, neither is in the task table, and `QuestPOIBlob` has no row for
+  either in either build. 79085 is a weekly (the API's `is_weekly`); 81640 is started by an item
+  (219384, "Deliver this to Stage Manager Huberta"); TrinityCore puts its turn-in on the Isle of
+  Dorn, where Huberta's pin stands (56.4, 51.4), though that pin doesn't list the quest.
+  No source names a giver: TrinityCore has no starter or ender for either, the client's giver table
+  lacks both, and the only spawn within 4 map points of either start is Rubaen Hillhelm, 2.66 from
+  81640's. So two nameless pins went into `data\pins.jsonl` by hand, on map 2215, each at the place
+  the pipeline orders its map's pins. Pins went from 15,179 to 15,181 and quests with a pin from
+  24,929 to 24,931; the other 15,179 pins are byte for byte as they were. A rerun of the four
+  pipeline scripts on the new data writes `data\pins.jsonl` again byte for byte (the preserved-pairs
+  net keeps a pin with no NPC while the pipeline has no row for its quest), and the review file
+  loses the two rows (160 rows and 156 quests to 158 and 154).
+- **79085 and the server.** The retail probe of 9 October (12.1.0.69933) got "fail" from the server
+  for 79085 and for its sibling 79087 "A Pile of Clams" (no start point in any source, so no pin),
+  as it does for 515 quests that have pins, so the answer alone doesn't retire it (step 7 wants a
+  quest missing from `QuestV2` too). Read it again in the 12.1.5 probe run.
 - **A rerun.** Once a quest has a pin, the next run leaves it out of `quest_locations.csv` ("already
   has a pin"), and its pin stays through the preserved-pairs net, so the CSV is shorter by these
   quests and Join's "No existing pin at all" count is the number of new quests to review. A new
