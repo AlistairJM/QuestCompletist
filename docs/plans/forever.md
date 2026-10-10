@@ -782,6 +782,39 @@ no quest leaves the data without the user having seen it.
   the pin names (1,503 of 1,503 the game's own) find nothing new, and the map pass again finds no
   offers and 16 points of interest. The ledger takes in the probe's recorder notes: 77 rows.
 
+### Prerequisites from the quest line order (10 October 2026)
+
+A user's report: the pin in Stormwind at 61.87, 30.58 offered 92749, 92750 and 92752 ("A Dynamite
+Plan", "Detonation at a Distance", "Explosive Consultation") and none was offered in the game. They are
+steps 6, 7 and 9 of "Toxic Soil", quest line 6026, the one quest line Forever's quests are in:
+
+| Step | Quest | Starts in | Handed in at |
+|---|---|---|---|
+| 1 to 4 | 92742, 92744, 92745, 92747 | Westfall | Westfall |
+| 5 | 92748 Explosive Consultation | Westfall | Stormwind |
+| 6 | 92749 A Dynamite Plan | Stormwind | Stormwind |
+| 7 | 92750 Detonation at a Distance | Stormwind | Elwynn Forest |
+| 8 | 92751 Detonation at a Distance | Elwynn Forest | Stormwind |
+| 9 | 92752 Explosive Consultation | Stormwind | Westfall |
+| 10, 11 | 92753, 92819 Destruction in Deadmines | Westfall | Westfall |
+
+Every step starts on the map where the one before was handed in. The game's quest records give none
+of these a previous or next quest and the map points carry no `PlayerCondition`, so the data had no
+prerequisite for any, and the pin offered every quest that starts at it, whatever the character had done.
+
+- **The rule:** a quest with no prerequisite from CMaNGOS or the cache's follow-ups gets the quest before it
+  in its quest line, when that one is handed in on the map this one starts on. 10 quests get one.
+  Steps whose places don't match, that have no place, or that share an order index are listed, and not
+  chained; a quest the line gives another prerequisite than the one before it keeps its own, and is listed.
+  The addon already shows a quest's prerequisites as "Quests to do first", greys its pin, and hides it
+  under "Hide quests with unfinished requirements".
+- **How far to trust it:** on retail, where Blizzard's API gives a chained step a prerequisite, it is the
+  previous step 93% of the time (6,868 of 7,396 steps) and another quest 7% (528); where the places
+  differ or are missing it is the previous step 80% and 92% of the time. Forever has no other source for
+  these ten, and a missing prerequisite shows the player quests they can't take, so the rule is used;
+  the first test in the game is that 92742 is offered at Sentinel Hill and each step only after the
+  one before it.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
