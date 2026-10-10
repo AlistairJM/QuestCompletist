@@ -208,8 +208,6 @@ again.
   quests), 41852 and 41853 under Brewer Almai, 41627 and 26149 beside pins of their twins that carry
   an object's name, and six stacks where a new pin names an NPC whose sibling quests sit on nameless
   old pins (Neeka Bloodscar, Merda Stronghoof, Keeper Remulos, Captain Verne, Bodrick Grey, Griff).
-- **Three holiday quests with no holiday tag** that were pinned: 47430 (Moonkin), 79178 and 79694
-  (Hearthstone anniversary). They want their holiday value.
 - **The 154 quests in `quest_locations_tdb_review.csv`**: placeholder starts (raid-wing quests, the
   Draenor garrison points, Mechagon, Nerub-ar Palace), starts outside every map, more than six
   places. Look through it after every run of step 6.

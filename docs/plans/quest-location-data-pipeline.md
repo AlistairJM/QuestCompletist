@@ -463,8 +463,10 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   IDs and names, and the rebuild joined them to the trainers' pins at the same spots: 32 stacked
   pins at nine spots became nine, pins went from 15,202 to 15,179, pins with an NPC ID from 10,564
   to 10,565 and pins with neither ID nor name from 4,301 to 4,277, and no quest lost its pin. Three
-  quests of holidays have no holiday tag in our data (47430, 79178, 79694) and were pinned; they
-  want the tag.
+  quests of holidays had no holiday tag in our data (47430, 79178, 79694) and were pinned; they got
+  it on 2026-10-10, with a flag each for the Moonkin Festival and Hearthstone's 10th Anniversary
+  (and the four Hearthstone quests with no pin), recorded in
+  [quest-holiday-decisions.csv](quest-holiday-decisions.csv).
 - **A start on a disabled map (10 October 2026).** TrinityCore's start points for 79085 "A Pile of
   Fish" and 81640 "Tenir and the Order of Night" are on UiMap 2311, "11.0 - Hallowfall - [Spreading
   the Light] - Disabled", a child of Hallowfall (2215) that the client still marks disabled in

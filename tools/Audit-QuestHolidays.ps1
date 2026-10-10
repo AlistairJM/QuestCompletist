@@ -49,7 +49,7 @@ foreach ($q in (Read-QuestData $DataDir)) { $quests[[int]$q.id] = $q }
 
 $core = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcCore.lua'))
 $block = [regex]::Match($core, '(?s)local qcHolidays = \{(.*?)\r?\n\}').Groups[1].Value
-$holidays = @(foreach ($e in [regex]::Matches($block, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=\{([\d, ]*)\}\}')) {
+$holidays = @(foreach ($e in [regex]::Matches($block, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=\{([\d, ]*)\}(?:, filter="\w+")?\}')) {
     [pscustomobject]@{ Flag = [int]$e.Groups[1].Value; Name = $e.Groups[2].Value
         Ids = @($e.Groups[3].Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | ForEach-Object { [int]$_ }) }
 })
@@ -58,7 +58,7 @@ if ($holidays.Count -eq 0 -or $holidays.Count -ne ([regex]::Matches($block, 'fla
 function Get-Key([string]$name) { return ($name -replace '[\u2019'']', '').Trim().ToLowerInvariant() -replace '\s+', ' ' }
 # Names Blizzard's API and our headings give a holiday that qcHolidays spells otherwise.
 $aliases = [ordered]@{ 'Midsummer' = 'Midsummer Fire Festival'; 'Winter Veil' = 'Feast of Winter Veil'
-    "Ahn'Qiraj War" = "Ahn'Qiraj War Effort"; 'Invasion' = 'Scourge Invasion' }
+    "Ahn'Qiraj War" = "Ahn'Qiraj War Effort"; 'Invasion' = 'Scourge Invasion'; 'Hearthstone Anniversary' = "Hearthstone's 10th Anniversary" }
 $byName = @{}; $byEventId = @{}; $holidayOfFlag = @{}
 foreach ($h in $holidays) {
     $byName[(Get-Key $h.Name)] = $h; $holidayOfFlag[$h.Flag] = $h
