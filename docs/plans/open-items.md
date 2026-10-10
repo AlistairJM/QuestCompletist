@@ -54,9 +54,10 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
-- **The continent icons** (planned, not built): the probe's geometry dump comes with the next map
-  pass of each game (retail's after 12.1.5 is live), then one look at the finished icons on each game,
-  five observations in about three minutes ([continent-pins.md](continent-pins.md), "To try in game").
+- **The continent icons** (planned; the probe's geometry pass is built, the icons are not): the dump
+  comes with the next map pass of each game (retail's after 12.1.5 is live), plus `/qcprobe geometry`
+  with the world map open on a continent, windowed and then maximised. Once the icons are built, one
+  look at them on each game, five observations in about three minutes ([continent-pins.md](continent-pins.md), "To try in game").
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When

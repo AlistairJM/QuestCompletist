@@ -685,7 +685,8 @@ out of the CSV and its pin stays, so a rerun's CSV is shorter by these quests an
 existing pin at all" count is the number of new quests to review (1,453 in October 2026). To take a
 pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
-Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 3b). Its offers
+Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 3b; it takes the
+geometry of the continent maps as well, read with `tools\Report-ContinentGeometry.lua`). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
 quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
 run were within 10 yards of point 32; the pins are now within 1.5 points of 253 of them and more than
@@ -1411,6 +1412,15 @@ It began as pull request #139, which stays open as the record; its files are in
    (7 October 2026). Read it with `tools\Report-MapOffers.lua <saved variables> QuestCompletist` and
    compare the totals with the baseline in game-api-review.md, "Map-offers probe: retail run"; the
    offers and log quests depend on the character, so use a similar one.
+   The map pass ends by taking the **geometry** (the zone icons planned in
+   [continent-pins.md](plans/continent-pins.md) need it): for every cosmic, world and continent map, each
+   child map with its rectangle on it, what the game's hit test names at the rectangle's centre and over a
+   60 x 40 grid, and the zone lists `GetMapChildrenInfo` gives with and without the type filter. `/qcprobe
+   geometry` takes it alone, in a moment. It also notes the map window's size when the world map is
+   showing, so for the pixel numbers open the map on a continent first, and run it once windowed and once
+   maximised. Read it with `tools\Report-ContinentGeometry.lua <saved variables> [rows.csv]`, which lists
+   what is odd on each continent (a rectangle that is missing or flat, twin zones, a centre another map
+   takes, zone icons closer than 24 px at 700, 1000 and 1500 px) and writes one row per child map.
 4. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
