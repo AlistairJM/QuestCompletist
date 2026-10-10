@@ -59,7 +59,7 @@ param(
     [string]$NpcIdDecisionsFile = (Join-Path $PSScriptRoot '..\docs\plans\pin-npc-id-decisions.csv'),
     [string]$ReportFile = "",
     [string[]]$Builds = @(),
-    [string]$ForeverBuild = '1.60.1.70205',
+    [string]$ForeverBuild = '',
     [string[]]$ForgetTag = @(),
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [switch]$WhatIf
@@ -67,6 +67,8 @@ param(
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\AddonData.ps1"
 . "$PSScriptRoot\RecordedGivers.ps1"
+. "$PSScriptRoot\LatestBuilds.ps1"
+$ForeverBuild = Resolve-ProbeBuild $ForeverBuild 'forever' $ToolsDir 'ForeverBuild'
 $ReaderScript = Join-Path $PSScriptRoot 'Read-RecordedGivers.lua'
 if (-not $RecordingsDir) { $RecordingsDir = Join-Path $ToolsDir 'recordings' }
 if (-not $ReportFile) { $ReportFile = Join-Path $ToolsDir 'recorded-giver-report.txt' }

@@ -378,6 +378,12 @@ try {
     try { $text = (@(& $Tool @params -Build $Forever.Version 6>&1 | ForEach-Object { "$_" }) -join "`n") } catch { $text = $_.Exception.Message }
     Check (Test-Path "$dir\forever_quest_cache_1.60.1.70205.jsonl") 'D1: Forever writes forever_quest_cache_<build>.jsonl'
     Has ([IO.File]::ReadAllText("$dir\forever_quest_cache_1.60.1.70205.jsonl")) '"Plain"' 'D1: from the Forever probe''s cache'
+    Remove-Item "$dir\forever_quest_cache_1.60.1.70205.jsonl"
+    [IO.File]::WriteAllText("$dir\forever_probe_70205\QCForeverProbe.lua", "QCForeverProbeDB = {`n[`"logins`"] = {{[`"build`"] = `"1.60.1.70100`"}, {[`"build`"] = `"1.60.1.70205`"}},`n}`n")
+    try { $text = (@(& $Tool @params 6>&1 | ForEach-Object { "$_" }) -join "`n") } catch { $text = $_.Exception.Message }
+    Check (Test-Path "$dir\forever_quest_cache_1.60.1.70205.jsonl") 'D3: with no -Build, Forever is read at the build of its newest probe results'
+    Has $text 'Using build 1.60.1.70205, the newest forever probe results' 'D3: and says so'
+    Remove-Item "$dir\forever_probe_70205\QCForeverProbe.lua"
     New-Item -ItemType Directory "$dir\retail_probe_70000" | Out-Null
     Write-Cache $Retail @((New-Quest 160 'Older retail')) "$dir\retail_probe_70000\questcache.wdb"
     (Get-Item "$dir\retail_probe_70000\questcache.wdb").LastWriteTime = [datetime]'2020-01-01'
