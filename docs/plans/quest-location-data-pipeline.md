@@ -454,10 +454,16 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   quests TrinityCore has a start for that were not placed; among them are 2,766 that are not in our
   quest data, a list to look through for the step that adds quests the database lacks.
 - **Names by hand.** Seven nameless pins got the starter the client's giver table puts at the
-  start (Master Hight, Wavespeaker Tulra) by `FILL` rows. About twenty pet-battle tutorial
-  quests stand nameless on their trainers' pins, and want one Wowhead check per city before
-  `FILL` rows. Three quests of holidays have no holiday tag in our data (47430, 79178, 79694) and
-  were pinned; they want the tag.
+  start (Master Hight, Wavespeaker Tulra) by `FILL` rows. The 24 pet-battle tutorial quests
+  ("Learning the Ropes", "On The Mend", "Got one!", "Level Up!") that stood nameless on their
+  trainers' pins got theirs the same way, after one Wowhead check per trainer (Narzak, Naleen,
+  Ansel Fincap, Grady Bannson, Valeena, Will Larsons, Matty, Jarson Everlong, Lehna; Wowhead and
+  TrinityCore's quest enders agree on all nine). The 24 one-quest nameless pins took the trainers'
+  IDs and names, and the rebuild joined them to the trainers' pins at the same spots: 32 stacked
+  pins at nine spots became nine, pins went from 15,202 to 15,179, pins with an NPC ID from 10,564
+  to 10,565 and pins with neither ID nor name from 4,301 to 4,277, and no quest lost its pin. Three
+  quests of holidays have no holiday tag in our data (47430, 79178, 79694) and were pinned; they
+  want the tag.
 - **A rerun.** Once a quest has a pin, the next run leaves it out of `quest_locations.csv` ("already
   has a pin"), and its pin stays through the preserved-pairs net, so the CSV is shorter by these
   quests and Join's "No existing pin at all" count is the number of new quests to review. A new

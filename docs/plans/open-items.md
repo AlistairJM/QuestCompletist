@@ -204,9 +204,6 @@ again.
 
 ## Data to finish
 
-- **Names for about 20 pet-battle tutorial quests** that stand nameless on their trainers' pins
-  (Narzak, Ansel Fincap, Grady Bannson, Valeena, Will Larsons, Matty, Jarson Everlong, Lehna): one
-  Wowhead check per city, then `FILL` rows in `pin-giver-decisions.csv`.
 - **Names the TrinityCore pass left**: the Chromie Time breadcrumbs ("Onward to Adventure", 11
   quests), 41852 and 41853 under Brewer Almai, 41627 and 26149 beside pins of their twins that carry
   an object's name, and six stacks where a new pin names an NPC whose sibling quests sit on nameless
