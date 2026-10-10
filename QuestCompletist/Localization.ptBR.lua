@@ -143,6 +143,8 @@ qcLocalize = setmetatable({
 	RECORDERHIDDEN = "Em %d ocasiões o jogo ocultou quem estava falando; essas missões foram anotadas sem o doador.", -- Needs review
 	RECORDERFILE = "Nada é enviado para lugar nenhum. O jogo salva as notas ao sair ou recarregar, em QuestCompletist.lua na pasta SavedVariables da sua conta (na pasta WTF do jogo, em Account). Para ajudar a melhorar o mapa, anexe esse arquivo a um comentário na página do addon no CurseForge.", -- Needs review
 	RECORDERCLEARED = "As notas foram apagadas.", -- Needs review
+	SHOWCONTINENTICONS = "Mostrar ícones de zona nos mapas de continente", -- Needs review
+	SHOWCONTINENTICONSTIP = "Marca cada zona de um mapa de continente em que você ainda tem missões a fazer e mostra as contagens ao passar o mouse por cima. Missões diárias, semanais e repetíveis não são contadas. A opção Mostrar ícones no mapa também precisa estar ativada.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

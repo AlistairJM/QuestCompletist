@@ -158,6 +158,8 @@ local function load(events)
 		C_Calendar = setmetatable({}, {__index = function(_, key) return ctx.calendar.api[key] or dummy end}),
 		C_DateAndTime = stubTable({GetCurrentCalendarTime = function() return NOW end}),
 		C_Timer = {After = function(_, fn) ctx.timers[#ctx.timers + 1] = fn end},
+		C_Map = stubTable({GetMapInfo = function() return {mapType = 3} end}),
+		Enum = {UIMapType = {Continent = 2, Zone = 3}},
 		UnitFactionGroup = function() return "Alliance", "Alliance" end,
 		UnitRace = function() return "NightElf", "NightElf" end,
 		UnitClass = function() return "DRUID", "DRUID" end,
@@ -221,10 +223,15 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	-- A map that keeps what was drawn on it, as the player sees it.
 	local map = {drawn = {}}
 	function map:GetMapID() return self.mapId end
-	function map:RemoveAllPinsByTemplate() self.drawn = {} end
-	function map:AcquirePin(_, pinData) self.drawn[#self.drawn + 1] = pinData end
+	function map:RemoveAllPinsByTemplate(template)
+		if template == "qcPinTemplate" then self.drawn = {} end
+	end
+	function map:AcquirePin(template, pinData)
+		if template == "qcPinTemplate" then self.drawn[#self.drawn + 1] = pinData end
+	end
 	local provider = env.qcMapDataProvider
 	provider.GetMap = function() return map end
+	env.qcContinentDataProvider.GetMap = function() return map end
 	local draw = provider.RefreshAllData
 	provider.RefreshAllData = function(self) ctx.redraws = ctx.redraws + 1 return draw(self) end
 	ctx.map = map

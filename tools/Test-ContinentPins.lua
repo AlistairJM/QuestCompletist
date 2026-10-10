@@ -59,7 +59,8 @@ end
 
 --[[ The map tree the stand-in game answers from: S.children[parent] is a list of {mapID, name, mapType}, S.rects[child]
 holds the rectangle {minX, maxX, minY, maxY} on a continent, S.nothing[parent] makes the game list nothing ]]--
-local S = {children = {}, rects = {}, nothing = {}, level = 1000, inLog = {}, logComplete = {}, accountDone = {}}
+local S = {children = {}, rects = {}, nothing = {}, types = {}, level = 1000, inLog = {}, logComplete = {}, accountDone = {},
+	modifier = false}
 local ZONE, DUNGEON, CONTINENT = 3, 4, 2
 
 local env = {
@@ -90,13 +91,14 @@ local env = {
 			local rect = S.rects[childID]
 			if rect then return rect[1], rect[2], rect[3], rect[4] end
 		end,
+		GetMapInfo = function(mapID) return {mapID = mapID, mapType = S.types[mapID] or ZONE} end,
 	},
 	C_CreatureInfo = {GetRaceInfo = function() return nil end},
 	LOCALIZED_CLASS_NAMES_MALE = setmetatable({}, {__index = function(_, token) return token end}),
 	UIParent = dummy,
 	WorldMapFrame = {HookScript = function() end, AddDataProvider = function() end},
 	IsShiftKeyDown = function() return false end,
-	IsModifierKeyDown = function() return false end,
+	IsModifierKeyDown = function() return S.modifier end,
 	IsInInstance = function() return false end,
 	C_AddOns = {IsAddOnLoaded = function() return false end},
 	UnitFactionGroup = function() return "Alliance", "Alliance" end,
@@ -143,7 +145,7 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 		if file == "qcContinentPins.lua" then
 			source = source .. [[
 
-return {Zones = qcContinentZones, Numbers = qcZoneNumbers, Brightness = qcZoneBrightness, Kind = qcQuestKind,
+return {Zones = qcContinentZones, Numbers = qcZoneNumbers, Look = qcZoneLook, Kind = qcQuestKind,
 	Icons = qcContinentIcons}]]
 		end
 		local chunk = assert(loadstring(source, "@" .. ADDON_DIR .. "/" .. file))
@@ -390,25 +392,43 @@ check("in the same total", lowLevel.total == afterLog.total)
 check("what is done stays done, and the log stays the log", lowLevel.done == 3 and lowLevel.ready == 1 and lowLevel.progress == 1)
 S.level = 1000
 
-print("Whether a zone gets an icon, and how bright")
+print("Which icon a zone gets, and the count on it")
 env.qcCharacterCompletions = {}
 S.inLog, S.logComplete = {}, {}
+local NORMAL, READY, PROGRESS = QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS
+local function lookOf()
+	local numbers = code.Numbers(zoneNumbers, keep, false)
+	local icon, count, dim = code.Look(numbers)
+	return icon, count, dim, numbers
+end
 local function finishAllBut(questId)
 	env.qcCharacterCompletions = {}
 	for _, id in ipairs(counted1) do
 		if id ~= questId then env.qcCharacterCompletions[id] = 1 end
 	end
 end
-check("a zone with quests to take is bright", code.Brightness(zoneNumbers, keep, false) == true)
+local icon, count, dim, fresh = lookOf()
+check("a zone with quests to take gets the quest icon, bright, with their count", icon == NORMAL and not dim and count == fresh.available and count > 0)
 finishAllBut(nil)
-check("a zone with everything done has no icon", code.Brightness(zoneNumbers, keep, false) == nil)
+check("a zone with everything done gets no icon", lookOf() == nil)
 local takeable = sample[1]
 finishAllBut(takeable)
-check("a zone with one quest left that can be taken is bright", code.Brightness(zoneNumbers, keep, false) == true)
+icon, count, dim = lookOf()
+check("a zone with one quest left to take counts it", icon == NORMAL and count == 1 and not dim)
 S.inLog[takeable] = 1
-check("a zone with only a quest in the log is dim", code.Brightness(zoneNumbers, keep, false) == false)
+icon, count, dim = lookOf()
+check("a zone with only a quest in the log gets the log's icon", icon == PROGRESS and count == 1 and not dim)
 S.logComplete[takeable] = true
-check("with the quest ready to hand in it is bright again", code.Brightness(zoneNumbers, keep, false) == true)
+icon, count, dim = lookOf()
+check("a quest ready to hand in gets its icon", icon == READY and count == 1 and not dim)
+finishAllBut(nil)
+S.inLog, S.logComplete = {}, {}
+local ready, taken = counted1[1], counted1[2]
+env.qcCharacterCompletions = {}
+for _, id in ipairs(counted1) do if id ~= ready and id ~= taken then env.qcCharacterCompletions[id] = 1 end end
+S.inLog[ready], S.logComplete[ready] = 1, true
+icon, count = lookOf()
+check("a ready quest outranks one to take, and the count is the ready ones", icon == READY and count == 1)
 S.inLog, S.logComplete = {}, {}
 S.level = 1
 local locked
@@ -417,7 +437,8 @@ for _, questId in ipairs(counted1) do
 end
 check("a quest locked at level 1 was found", locked ~= nil)
 finishAllBut(locked)
-check("a zone with only a locked quest left is dim", code.Brightness(zoneNumbers, keep, false) == false)
+icon, count, dim = lookOf()
+check("a zone with only a locked quest left gets the quest icon, dimmed", icon == NORMAL and count == 1 and dim == true)
 S.level = 1000
 env.qcCharacterCompletions = {}
 
@@ -426,13 +447,103 @@ local icons = code.Icons(CONT)
 local iconIds = {}
 for _, icon in ipairs(icons) do iconIds[#iconIds + 1] = icon.zone.mapId end
 check("each zone with something to do gets an icon", #icons == #zones, #icons .. " icons for " .. #zones .. " zones")
-check("with its zone and whether it is bright", icons[1] and icons[1].zone.mapId == zones[1].mapId and type(icons[1].bright) == "boolean")
+check("with its zone, its icon, its count and its shade", icons[1] and icons[1].zone.mapId == zones[1].mapId and icons[1].look ~= nil
+	and icons[1].count > 0 and type(icons[1].dim) == "boolean")
 for _, icon in ipairs(icons) do
 	for _, categoryId in ipairs(icon.zone.categories) do
 		for _, questId in ipairs(categories[categoryId] or {}) do env.qcCharacterCompletions[questId] = 1 end
 	end
 end
 check("a zone with all its quests done is left out", #code.Icons(CONT) == 0)
+env.qcCharacterCompletions = {}
+
+print("The provider draws a continent's icons")
+S.types[CONT] = CONTINENT
+local map = {mapId = CONT, pins = {}, removed = {}}
+function map:GetMapID() return self.mapId end
+function map:RemoveAllPinsByTemplate(template) self.removed[#self.removed + 1] = template; self.pins = {} end
+function map:AcquirePin(template, data) self.pins[#self.pins + 1] = {template = template, data = data} end
+local provider = env.qcContinentDataProvider
+check("the provider exists", provider ~= nil and type(provider.RefreshAllData) == "function")
+provider.GetMap = function() return map end
+provider:RefreshAllData()
+local expected = #code.Icons(CONT)
+check("a continent's map gets a pin for each icon", expected > 0 and #map.pins == expected, #map.pins .. " pins for " .. expected .. " icons")
+check("of the continent pin's template", map.pins[1] and map.pins[1].template == "qcContinentPinTemplate")
+check("having first cleared that template and no other", #map.removed == 1 and map.removed[1] == "qcContinentPinTemplate")
+check("each pin is handed its icon", map.pins[1] and map.pins[1].data.zone ~= nil and map.pins[1].data.look ~= nil)
+provider:RefreshAllData()
+check("a second refresh draws them again, not twice", #map.pins == expected and #map.removed == 2)
+map.mapId = p1
+S.children[p1] = S.children[CONT]
+provider:RefreshAllData()
+check("a zone's map gets none of them, whatever it lists as children", #map.pins == 0)
+S.children[p1] = nil
+map.mapId = CONT
+settings({QC_M_SHOW_ICONS = 0})
+provider:RefreshAllData()
+check("with the map icons off it gets none", #map.pins == 0)
+settings({QC_M_SHOW_CONTINENT = 0})
+provider:RefreshAllData()
+check("with the continent icons off it gets none", #map.pins == 0)
+settings()
+check("the continent icons are on by default", env.qcSettings.QC_M_SHOW_CONTINENT == 1)
+provider:RefreshAllData()
+check("and back on they return", #map.pins == expected)
+for _, pinned in ipairs(map.pins) do
+	for _, categoryId in ipairs(pinned.data.zone.categories) do
+		for _, questId in ipairs(categories[categoryId] or {}) do env.qcCharacterCompletions[questId] = 1 end
+	end
+end
+provider:RefreshAllData()
+check("a continent with everything done gets none", #map.pins == 0)
+env.qcCharacterCompletions = {}
+provider.GetMap = function() return nil end
+check("a provider on no map does nothing", pcall(provider.RefreshAllData, provider))
+provider.GetMap = function() return map end
+
+print("A continent pin takes its icon, and a click opens the zone")
+local mixin = env.qcContinentPinMixin
+local function newPin()
+	local pin = {log = {}}
+	local function put(line) pin.log[#pin.log + 1] = line end
+	pin.UseFrameLevelType = function(_, name) put("level " .. name) end
+	pin.SetScalingLimits = function(_, ...) put("scaling " .. table.concat({...}, ",")) end
+	pin.SetPosition = function(_, x, y) put(string.format("position %.4f %.4f", x, y)) end
+	pin.SetSize = function(_, w, h) put("size " .. w .. "x" .. h) end
+	pin.Texture = {SetTexCoord = function() end, SetAtlas = function(_, atlas) pin.atlas = atlas end,
+		SetTexture = function(_, file) pin.file = file end, SetVertexColor = function(_, r) pin.shade = r end}
+	pin.Count = {SetText = function(_, t) pin.count = t end, SetTextColor = function(_, r) pin.countShade = r end}
+	pin.GetMap = function() return pin.map end
+	return setmetatable(pin, {__index = mixin})
+end
+local pin = newPin()
+pin:OnLoad()
+check("a pin is made at the area marker level, at a size that doesn't scale", pin.log[1] == "level PIN_FRAME_LEVEL_AREA_POI" and pin.log[2] == "scaling 1,1,1", table.concat(pin.log, "; "))
+local zoneA = zones[1]
+local bright = {zone = zoneA, look = NORMAL, count = 7, dim = false}
+pin = newPin()
+pin:OnAcquired(bright)
+check("its level is set before its position", pin.log[1] == "level PIN_FRAME_LEVEL_AREA_POI" and pin.log[2]:find("^position"), table.concat(pin.log, "; "))
+check("it sits at the zone's centre", pin.log[2] == string.format("position %.4f %.4f", zoneA.x, zoneA.y))
+check("at 24 by 24", pin.log[3] == "size 24x24")
+check("with the icon's art", (NORMAL.file and pin.file == NORMAL.file) or (NORMAL.atlas and pin.atlas == NORMAL.atlas))
+check("and its count, at full shade", pin.count == 7 and pin.shade == 1 and pin.countShade == 1)
+pin:OnAcquired({zone = zoneA, look = PROGRESS, count = 12, dim = true})
+check("a pin used again takes the new icon's count and shade", pin.count == 12 and pin.shade == 0.5 and pin.countShade == 0.5)
+check("and its zone", pin.Icon.zone == zoneA)
+local opened
+pin.map = {SetMapID = function(_, mapId) opened = mapId end}
+pin:OnMouseClickAction("RightButton")
+check("a right click does not open the zone", opened == nil)
+S.modifier = true
+pin:OnMouseClickAction("LeftButton")
+check("nor does a left click with a modifier", opened == nil)
+S.modifier = false
+pin:OnMouseClickAction("LeftButton")
+check("a left click opens the zone's map", opened == zoneA.mapId)
+pin.map = nil
+check("a click on a pin with no map does nothing", pcall(pin.OnMouseClickAction, pin, "LeftButton"))
 env.qcCharacterCompletions = {}
 
 --[[ The game's own continents, from its UiMap table ]]--

@@ -32,7 +32,8 @@ The user, 6 October 2026, taking the recommendation:
 - **A grid.** One row per filter, with a box for the map and one for the quest list.
   - Each view is set on its own: the user hides completed quests on the map but not in the list.
   - Seasonal and no-data pins keep only a map box.
-  - Show map icons sits above the grid.
+  - Show map icons sits above the grid, with a box under it for the zone icons on continent maps
+    (`QC_M_SHOW_CONTINENT`, on by default; the master switch hides both). The grid starts below it.
 - **New boxes start off,** so nothing changes until a player ticks one. A filter the two views shared
   keeps the player's choice in both.
 - **"Hide World Quests" becomes "Hide World and Weekly Quests":** world quests and weeklies share a

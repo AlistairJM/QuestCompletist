@@ -143,6 +143,8 @@ qcLocalize = setmetatable({
 	RECORDERHIDDEN = "게임이 말하는 대상을 %d번 숨겼으며, 해당 퀘스트는 제공자 없이 기록되었습니다.", -- Needs review
 	RECORDERFILE = "어디로도 전송되지 않습니다. 게임은 로그아웃하거나 UI를 다시 불러올 때 기록을 계정의 SavedVariables 폴더(게임의 WTF 폴더 안 Account 아래)에 있는 QuestCompletist.lua에 저장합니다. 지도 개선에 도움을 주시려면 해당 파일을 애드온의 CurseForge 페이지 댓글에 첨부해 주세요.", -- Needs review
 	RECORDERCLEARED = "기록이 삭제되었습니다.", -- Needs review
+	SHOWCONTINENTICONS = "대륙 지도에 지역 아이콘 표시", -- Needs review
+	SHOWCONTINENTICONSTIP = "대륙 지도에서 아직 할 퀘스트가 남은 각 지역을 표시하고, 마우스를 올리면 개수를 보여 줍니다. 일일, 주간, 반복 퀘스트는 세지 않습니다. 지도 아이콘 표시도 켜져 있어야 합니다.", -- Needs review
 	}, {__index = qcLocalize})
 
 end
