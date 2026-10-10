@@ -61,7 +61,9 @@ again.
   with the world map open on a continent, windowed and then maximised. One
   look at the icons on each game, five observations in about three minutes ([continent-pins.md](continent-pins.md), "To try in game").
   The first look moved Tiragarde Sound's icon and nudged Darkshore's and Felwood's on both games
-  (`QC_ZONE_ICON_AT`); twelve more retail zones and one Forever
+  (`QC_ZONE_ICON_AT`), added icons for the hubs and sub-zones it found missing on retail (Oribos, Dalaran,
+  Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom, Korthia and the rest) and enlarged the icon where
+  its art allows; twelve more retail zones and one Forever
   zone sit 50 px or more from their hit area's centre and wait for the user to say which to move.
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of

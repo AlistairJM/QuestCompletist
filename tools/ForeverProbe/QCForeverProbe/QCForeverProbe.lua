@@ -637,7 +637,7 @@ local function sampleGrid(mapID)
 			local ok, info = pcall(C_Map.GetMapInfoAtPosition, mapID, x, y)
 			local id = ok and type(info) == "table" and plain(info.mapID) or nil
 			if id then
-				local cell = cells[id] or {n = 0, x = 0, y = 0}
+				local cell = cells[id] or {n = 0, x = 0, y = 0, name = plain(info.name)}
 				cell.n, cell.x, cell.y = cell.n + 1, cell.x + x, cell.y + y
 				cells[id] = cell
 			else

@@ -96,11 +96,21 @@ Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counti
 - **What the first version left out** (checked against the quest list): Quel'Thalas, a Continent-type
   child of Eastern Kingdoms, holds 929 quests (870 on its own map's six icons) and Argus, a Continent-type
   child of Broken Isles, 147 (both now get an icon on the outer map, see Design); the alternate Arathi map
-  2372, whose category 1409 holds 24 quests that Arathi Highlands' icon missed (now an extra); and still
-  uncounted: sub-zone categories (Undermine 218, Korthia 115, Valdrakken 65, Dornogal 47; 59 in Quel'Thalas)
-  and zones that arrive with no rectangle (Founder's Point 52, Razorwind 55, Siren Isle 45).
-  With the two continents and the Arathi extra, Eastern Kingdoms counts 2,326 quests on 27 icons (it was
-  1,432 on 26) and the Broken Isles 1,012 on 8 (it was 865 on 7); no new pair of icons closer than 24 px.
+  2372, whose category 1409 holds 24 quests that Arathi Highlands' icon missed (now an extra). With those,
+  Eastern Kingdoms counts 2,326 quests on 27 icons (it was 1,432 on 26) and the Broken Isles 1,012 on 8 (it
+  was 865 on 7). The user's first look then found the hubs missing: Oribos (58 quests), Dalaran (87),
+  Undermine (218), Nazjatar (107, on both Zandalar's and Kul Tiras' maps) and Ahn'Qiraj: The Fallen Kingdom
+  (4) each stand on a continent map without being a zone of it, and Korthia (115), Valdrakken (65), Dornogal
+  (47), City of Threads (12), the Shrine of the Storm (2) and two sub-zones of Quel'Thalas (59) have no place
+  of their own (all now counted, see Design). Still uncounted, about 200 quests: zones with no rectangle that
+  the hit test never names (Founder's Point 52, Razorwind Shores 55, Siren Isle 45), scenarios and dungeons
+  (The Deaths of Chromie 24, Tazavesh 10, the Emerald Nightmare 6) and a few of three or fewer.
+- **What the icon art can bear** (the client's atlas tables, build 12.1.0.69933). The "!" is the atlas
+  member `QuestNormal`, 64 x 64 pixels drawn at 32; the ready "?" is `QuestTurnin`, 32 x 32; the grey "?" for
+  quests in the log is the file `Interface\GossipFrame\IncompleteQuestIcon`, 16 x 16. The user's screen is
+  1440p at UI scale 0.64 (the probe's `uiScale`), so one UI unit is 1.2 screen pixels; the 24-unit icon was
+  already 29 pixels, the "?" slightly stretched and the grey one almost twice. No 64-pixel "?" exists for
+  ordinary quests (the campaign, legendary, important, recurring and wrapper kinds have `-2x` ones).
 
 ## Decisions
 
@@ -113,7 +123,7 @@ agreed until they say otherwise.
 | 2 | Counted: a quest in the zone's categories that passes the **map's** filter built for counting, and is not daily, weekly or repeatable (type bits 2, 4 and 128, forced out whatever the filter boxes say). Holiday and profession quests follow the map's filters | the icon is a map element; the map's boxes default to showing dailies, so the exclusion cannot lean on them |
 | 3 | The icon shows when something is outstanding (counted and not done). It is bright when a quest is ready to hand in or can be taken now, and dim when only locked quests are left (the grey "?" for quests only in the log is grey already, so it is not dimmed again). No icon when nothing is outstanding | the dim state keeps the signal on a low-level character, as `qcPinGreyed` does for a pin |
 | 4 | Capitals are folded into their host zone's icon through a small keyed table, with a sub-line in the tooltip. Phased twins are one icon, deduplicated by category. Every other zone keeps its own icon | removes most crowding and the clash with Blizzard's capital markers without hiding a city's quests; the rows are chosen from the geometry dump |
-| 5 | First version: the direct Zone children of each continent map, and the continents the game lists inside one (Quel'Thalas on Eastern Kingdoms, Argus on the Broken Isles), each as one icon counting its own map's zones, a click opening that continent (changed 10 October, after the dump: 929 and 147 quests would otherwise be invisible). Hub maps, orphan starter maps and Zephras Isle come later | what the client enumerates by itself; the rest wants a look |
+| 5 | First version: the direct Zone children of each continent map, the continents the game lists inside one (Quel'Thalas on Eastern Kingdoms, Argus on the Broken Isles), each as one icon counting its own map's zones, and the hubs of a continent map (Oribos, Dalaran, Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom) as icons at the place the hit test gives them, a click opening that map; sub-zones count in the zone they lie in (changed 10 October, after the dump and the user's first look: those quests would otherwise be invisible). Zones with no place on the map and Zephras Isle come later | what the client enumerates by itself; the rest wants a look |
 | 6 | A child option of "Show Map Icons", on by default, saved as `QC_M_SHOW_CONTINENT`. The master switch hides the continent icons too | the user wants an off switch; an off-by-default feature would not be seen |
 | 7 | A left click without a modifier opens the zone's map; a right click still zooms out | what Blizzard's own pins and the map's own click do |
 | 8 | A new file `qcContinentPins.lua` in both TOCs, with its own data provider, template and mixin; the shared map tooltip helpers move to `qcTooltips.lua` | `qcPinMixin` differs in every method (position units, tooltip, click, template), and the repo prefers structure over a pile of `if continent` branches. The cost is the "restart WoW" line in the changelog |
@@ -137,8 +147,24 @@ none). One of them is an icon like a zone, at the centre of its rectangle on the
 categories of its own map's icons (the dump's 6 zones for Quel'Thalas, 3 for Argus) plus its own category
 if it has one, less any the outer map's zones count already, so nothing is counted twice. A click opens
 that continent, whose own map draws its zone icons as it would any continent's. Such a continent is not
-looked into further. The 59 quests of two sub-zone maps of Quel'Thalas (2393, 2444) stay uncounted, as
-sub-zone categories do everywhere.
+looked into further.
+
+**Hubs and sub-zones.** Two more keyed tables in `qcContinentPins.lua`, from the dump and the client's
+`UiMap` table. `QC_CONTINENT_HUBS` (by continent, then map) gives the maps that stand on a continent map
+without being a zone of it an icon at a place of their own, the centre of the cells the hit test names them
+on (`CentroidX` and `CentroidY` of their row in `docs/plans/continent-geometry-baseline.csv`, over 100;
+`Test-ContinentPins.lua` checks each against that file): Oribos 1670 on the Shadowlands, Dalaran 627 on the
+Broken Isles, Undermine 2346 on Khaz Algar, Nazjatar 1355 on Zandalar and on Kul Tiras, Ahn'Qiraj: The
+Fallen Kingdom 327 on Kalimdor. The map's name is the game's, its quests are those of its category, and
+the click opens it. `QC_SUBZONE_HOST` files a sub-zone's category under the icon of the zone the client
+says it lies in, as a city's is: Korthia 1961 in The Maw, Valdrakken 2112 in Thaldraszus, Dornogal 2339 in
+the Isle of Dorn, both levels of City of Threads 2213 and 2216 in Azj-Kahet, Silvermoon City 2393 and
+Slayer's Rise 2444 in the zones of Quel'Thalas that hold them, the Shrine of the Storm 1039 in Stormsong
+Valley; it applies where the zone has an icon. A hub whose category the map's zones count already gets no
+second icon, a map the game doesn't know gets none, and quests are counted once on a continent (Nazjatar's
+are on both its maps, as the banner is). These are retail's maps; Forever has none of them. The report
+(`Report-ContinentGeometry.lua`) lists the maps the hit test names that are not children, and the
+baseline holds a row for each, so a hub that moves is noticed at the sweep.
 
 **The sparse table.** One keyed table in `qcContinentPins.lua`, with both games' map IDs (they don't
 collide: Forever's are mostly 14xx), holds what the client can't tell us: a zone's extra categories
@@ -181,13 +207,19 @@ without it.
   timed at the look); the tooltip's numbers are read live on hover, because objective changes don't
   refresh the map.
 
-**The pin.** `qcContinentPinTemplate` (24 x 24, a texture and a count in `NumberFontNormalSmall`)
-and `qcContinentPinMixin`, scaling limits (1, 1, 1), frame level `PIN_FRAME_LEVEL_AREA_POI` like
+**The pin.** `qcContinentPinTemplate` (a texture and a count) and `qcContinentPinMixin`, scaling limits (1, 1, 1), frame level `PIN_FRAME_LEVEL_AREA_POI` like
 the zone pins and HandyNotes (the tie against Blizzard's capital markers, which
 the folding mostly removes, is settled at the look; the other candidates are the map-highlight and
 dig-site levels). The icon is the existing "?" for ready, "!" for takeable, "!" at half shade for
 locked and the grey "?" for in the log only (not dimmed again: it is grey already), with the count of the
-winning state in the icon's shade. No new art.
+winning state in the icon's shade. No new art, but the grey "?" is the ready "?" with the texture
+desaturated, because the game's own grey file is 16 pixels. The size follows the screen
+(`qcContinentIconSize`): the 32-pixel art is drawn at no more than 1.1 screen pixels to a pixel, where
+a UI unit is the UI scale times the screen's height over 768 pixels, never below the old 24 units
+and never above 32, and the count's font steps up with it (`NumberFontNormalSmall`, `NumberFontNormal`,
+`NumberFontNormalLarge`, which are vector fonts and don't pixelate). On the user's 1440p screen that is
+29 units, 35 pixels; on 1080p 32; on a 4K screen at the same UI scale it stays 24, which is already 43
+pixels there, since a bigger one would only be blurrier. An unreadable screen keeps 24.
 `UseFrameLevelType` goes before `SetPosition`, as in `qcPinMixin:OnAcquired`, and every field is
 reset on acquire, because pins are pooled. Right-click passthrough is left as Blizzard sets it, so
 a right click still zooms out; the left click is handled in `OnMouseClickAction` with
@@ -300,6 +332,16 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
    no quests left, one with no rectangle, one inside it left alone, a click opening it) and, on the
    client's own table, that each continent inside another gets an icon counting what its map's icons
    count.
+6d. **Hubs, sub-zones and a larger icon** (the first look): `QC_CONTINENT_HUBS` and `QC_SUBZONE_HOST`
+   with their tests (a hub at its place with the game's name and its category, a sub-zone in its zone's
+   icon and in none of its own, one whose zone is not on the map counted nowhere, a hub whose category
+   a zone counts already, a map the game doesn't know, Nazjatar on two continents, a click opening a
+   hub; on the client's own table, that every hub shows on its continent with quests and every sub-zone's
+   category is in its zone's icon, 13,550 quests on retail with none counted twice, and that each hub is
+   at the baseline's centre); the pin's size, count font and grey art with their tests (a size for a
+   1440p, a 1080p and a 2160p screen and for none); `Report-ContinentGeometry.lua` lists the maps the hit
+   test names that are not children, the baseline holds them (8 rows), the probe keeps their names, and its
+   crowding limit is 30 units for the larger icon.
 6c. **Icon places** (the first look): `QC_ZONE_ICON_AT` with Tiragarde Sound, then Darkshore and Felwood
    on both games, and their tests (the icon at the table's place, another zone's at its rectangle's centre,
    no icon when the game gives no usable rectangle, whatever the table says; the Tiragarde checks run on
@@ -308,7 +350,7 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
 7. **The release PR**: README (a bullet under "Quest givers on your world map", naming the option as
    the game shows it), a **New** bullet in the changelog, and the restart-WoW line.
 
-PRs 3 to 6c are stacked; retarget each to master before deleting its base.
+PRs 3 to 6d are stacked; retarget each to master before deleting its base.
 
 ## Tests
 
@@ -345,7 +387,11 @@ Only what the game alone can answer, a few lines per game.
   open the world map on Kalimdor, type `/qcprobe geometry`, then maximise the map and type it again.
 - **One look at the finished icons, on each game** (about three minutes, five observations):
   1. The icons sit on their zones, not in the sea or on a neighbour, and nothing stacks. On retail,
-     Eastern Kingdoms has an icon on Quel'Thalas and the Broken Isles one on Argus.
+     Eastern Kingdoms has an icon on Quel'Thalas and the Broken Isles one on Argus; the Shadowlands has
+     one on Oribos, the Broken Isles on Dalaran, Khaz Algar on Undermine, Zandalar and Kul Tiras on
+     Nazjatar, and Kalimdor on Ahn'Qiraj: The Fallen Kingdom, each where its art is. The icons are
+     crisp, not soft, at their new size (29 units on the user's screen); if they are soft, `QC_ICON_ART_PIXELS`
+     times its 1.1 comes down.
   2. Hovering shows the tooltip, and its totals are close to the list's header for that zone.
   3. A left click opens the zone (or, on those two, the continent); a right click zooms out.
   4. Unticking the option removes the icons at once; the options panel is intact in French, the
@@ -379,7 +425,7 @@ Only what the game alone can answer, a few lines per game.
 
 The world map; hub maps; a level range in the
 tooltip on retail; a toggle in the map's filter menu; `/qc continent`; Shift-click opening the list
-at the zone's category; adding Dalaran-style hubs to the groups table.
+at the zone's category; zones with no place on the continent map (Founder's Point, Razorwind Shores, Siren Isle).
 
 ## Status
 
@@ -391,3 +437,4 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 - 2026-10-10: both games' geometry dumps read (see "What the game said"). PR 6 built (`Compare-ContinentGeometry.lua`, the baseline CSV, `Compare-ApiDocs.ps1 -Tables`, sweep step 2f): `Test-Probe.lua` 985 checks and `Test-ApiDocs.ps1` 258 pass; each game compares clean against its baseline.
 - 2026-10-10: PR 6b built (continents inside a continent, the Arathi extra, decision 5 changed): on the dump's geometry, retail's Eastern Kingdoms counts 2,326 quests on 27 icons (Quel'Thalas 870, Arathi's 24 more) and the Broken Isles 1,012 on 8 (Argus 147); Forever has none inside another and is unchanged (Kalimdor 20 icons, Eastern Kingdoms 22); no new pair of icons under 24 px; `Test-ContinentPins.lua` passes on both TOCs, each new check fails when its code is taken out; not yet tried in game.
 - 2026-10-10: PR 6c built after the user's first look (retail, maximised Kul Tiras): `QC_ZONE_ICON_AT` moves Tiragarde Sound's icon from its rectangle's centre (0.476, 0.645, in the sea off Drustvar's edge) to the centre of the cells that name it (0.574, 0.631), 98 px right of where it was at 1,000 px wide, and Darkshore's and Felwood's a little left on both games. `Test-ContinentPins.lua` passes on both TOCs (Tiragarde's checks on retail only) and each of Tiragarde's fails when its code is taken out; `Test-Probe.lua` 991 checks. Twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre at 1,698 px (see "What the game said") and are left for the user's eye. An independent review of the first commit found the wording "off the zone" unsupported (the hit test names the zone at the old point too), and that a moved hit area went unnoticed: both fixed here.
+- 2026-10-10: PR 6d built after more of the user's first look (retail Kalimdor, Eastern Kingdoms, Khaz Algar, the Shadowlands, Kul Tiras; Forever Eastern Kingdoms): the user's saved variables, replayed through the real counting code as an Alliance Human mage with the calendar quiet, give their screenshots' counts to within one on every zone. So no icon on Thousand Needles, Un'Goro Crater and Winterspring (all done), Durotar (only Trial of Style quests, hidden by the seasonal filter), and on every Eastern Kingdoms zone without one on retail (all done, or no quests) is as designed, and Forever's Eastern Kingdoms has all 22 it should (Deadwind Pass has no category). The real gaps were hubs and sub-zones: `QC_CONTINENT_HUBS` (6) and `QC_SUBZONE_HOST` (8), after which the quests in no icon fall from about 1,850 (counting the same quests under several maps) to about 200, and retail counts 13,550 quests on its continent maps, none twice. The icon is larger where its art allows (29 units on the user's screen, 24 where it would only blur) and the grey "?" is the ready one desaturated (the game's own is 16 pixels). `Test-ContinentPins.lua` passes on both TOCs, `Test-Probe.lua` 999 checks; not yet tried in game.

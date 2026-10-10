@@ -60,7 +60,7 @@ end
 --[[ The map tree the stand-in game answers from: S.children[parent] is a list of {mapID, name, mapType}, S.rects[child]
 holds the rectangle {minX, maxX, minY, maxY} on a continent, S.nothing[parent] makes the game list nothing ]]--
 local S = {children = {}, rects = {}, nothing = {}, types = {}, level = 1000, inLog = {}, logComplete = {}, accountDone = {},
-	modifier = false}
+	modifier = false, names = {}, unknown = {}}
 local ZONE, DUNGEON, CONTINENT = 3, 4, 2
 
 local env = {
@@ -91,11 +91,15 @@ local env = {
 			local rect = S.rects[childID]
 			if rect then return rect[1], rect[2], rect[3], rect[4] end
 		end,
-		GetMapInfo = function(mapID) return {mapID = mapID, mapType = S.types[mapID] or ZONE} end,
+		GetMapInfo = function(mapID)
+			if S.unknown[mapID] then return nil end
+			return {mapID = mapID, name = S.names[mapID], mapType = S.types[mapID] or ZONE}
+		end,
 	},
 	C_CreatureInfo = {GetRaceInfo = function() return nil end},
 	LOCALIZED_CLASS_NAMES_MALE = setmetatable({}, {__index = function(_, token) return token end}),
-	UIParent = dummy,
+	UIParent = setmetatable({GetEffectiveScale = function() return S.uiScale end}, {__index = function() return dummy end}),
+	GetPhysicalScreenSize = function() return S.screenWidth, S.screenHeight end,
 	WorldMapFrame = {HookScript = function() end, AddDataProvider = function() end},
 	IsShiftKeyDown = function() return false end,
 	IsModifierKeyDown = function() return S.modifier end,
@@ -146,7 +150,7 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 			source = source .. [[
 
 return {Zones = qcContinentZones, Numbers = qcZoneNumbers, Look = qcZoneLook, Kind = qcQuestKind,
-	Icons = qcContinentIcons}]]
+	Icons = qcContinentIcons, Hubs = QC_CONTINENT_HUBS, Hosts = QC_SUBZONE_HOST, At = QC_ZONE_ICON_AT}]]
 		end
 		local chunk = assert(loadstring(source, "@" .. ADDON_DIR .. "/" .. file))
 		setfenv(chunk, env)
@@ -404,6 +408,79 @@ do
 	check("a pass over the continent draws it like any other zone's icon", drawn and drawn.look ~= nil and drawn.count > 0)
 end
 
+print("Hubs and sub-zones")
+local hubIcon
+if BY_AREA[1670] and BY_AREA[1543] and BY_AREA[1961] and BY_AREA[1355] then
+	S.names[1670], S.names[1355] = "Oribos", "Nazjatar"
+	S.children[1550] = {zone(1543, "The Maw")}
+	S.rects[1543] = {0.10, 0.30, 0.10, 0.30}
+	local shadow = {}
+	local ordered = code.Zones(1550)
+	for _, z in ipairs(ordered) do shadow[z.mapId] = z end
+	hubIcon = shadow[1670]
+	check("a map the hub table names gets an icon at its place, named by the game", hubIcon and hubIcon.name == "Oribos"
+		and math.abs(hubIcon.x - 0.467) < 1e-9 and math.abs(hubIcon.y - 0.488) < 1e-9, hubIcon and (tostring(hubIcon.name) .. " " .. hubIcon.x .. ", " .. hubIcon.y))
+	check("counting its own category", hubIcon and listOf(hubIcon.categories) == tostring(BY_AREA[1670]))
+	check("a sub-zone counts in its zone's icon", shadow[1543] and listOf(shadow[1543].categories) == BY_AREA[1543] .. "," .. BY_AREA[1961],
+		shadow[1543] and listOf(shadow[1543].categories))
+	check("and has no icon of its own", shadow[1961] == nil)
+	check("the icons are in map ID order, hubs among the zones", #ordered == 2 and ordered[1].mapId == 1543 and ordered[2].mapId == 1670)
+	S.children[1550] = {}
+	local alone = code.Zones(1550)
+	check("a sub-zone whose zone is not on the map is counted nowhere", #alone == 1 and alone[1].mapId == 1670
+		and listOf(alone[1].categories) == tostring(BY_AREA[1670]))
+	if BY_AREA[1671] == BY_AREA[1670] then
+		S.children[1550] = {zone(1671, "Oribos, upper floor")}
+		S.rects[1671] = {0.40, 0.50, 0.40, 0.50}
+		local twin = code.Zones(1550)
+		check("a hub whose category a zone of the map counts already gets no second icon", #twin == 1 and twin[1].mapId == 1671)
+		S.rects[1671] = nil
+	end
+	S.children[1550] = {}
+	S.unknown[1670] = true
+	check("a hub the game has no map for gets no icon", #code.Zones(1550) == 0)
+	S.unknown[1670] = nil
+	local on875, on876 = code.Zones(875), code.Zones(876)
+	check("Nazjatar, linked in on two continents, is an icon on each", #on875 == 1 and on875[1].mapId == 1355 and #on876 == 1 and on876[1].mapId == 1355
+		and on875[1].x == on876[1].x and on875[1].y == on876[1].y)
+	check("a continent with no hub in the table has none", #code.Zones(877) == 0)
+else
+	print("  (this game has none of the hub maps and sub-zones the tables name: not checked)")
+end
+
+print("The places the tables hold agree with the geometry baseline")
+do
+	local handle = io.open("docs/plans/continent-geometry-baseline.csv", "rb")
+	local report, parseCsv = assert(loadfile("tools/Report-ContinentGeometry.lua"))("module")
+	if not handle then
+		print("  (no docs/plans/continent-geometry-baseline.csv: not checked)")
+	else
+		local rows = parseCsv(handle:read("*a"))
+		handle:close()
+		local function rowOf(continentId, mapId)
+			for _, r in ipairs(rows) do
+				if r.game == "retail" and r.continent == continentId and r.mapId == mapId then return r end
+			end
+		end
+		local problems, count = {}, 0
+		for continentId, hubs in pairs(code.Hubs) do
+			for mapId, place in pairs(hubs) do
+				count = count + 1
+				local r = rowOf(continentId, mapId)
+				if not (r and r.cx and r.cy and math.abs(r.cx / 100 - place[1]) < 0.0006 and math.abs(r.cy / 100 - place[2]) < 0.0006) then
+					problems[#problems + 1] = string.format("%d on %d is %.3f, %.3f, the baseline's %s", mapId, continentId, place[1], place[2],
+						r and r.cx and string.format("%.3f, %.3f", r.cx / 100, r.cy / 100) or "none")
+				end
+			end
+		end
+		table.sort(problems)
+		check(count .. " hubs are at the centre of the cells the baseline says name them", count > 0 and #problems == 0, table.concat(problems, "; "))
+		local tiragarde = rowOf(876, 895)
+		check("and Tiragarde Sound is at the centre of its own", tiragarde and math.abs(tiragarde.cx / 100 - code.At[895][1]) < 0.0006
+			and math.abs(tiragarde.cy / 100 - code.At[895][2]) < 0.0006)
+	end
+end
+
 print("What counts in a zone")
 local function counted(categoryIds, keep)
 	return env.qcGetZoneQuests(categoryIds, keep or QC.qcBuildViewFilter("M"))
@@ -620,8 +697,10 @@ local function newPin()
 	pin.SetPosition = function(_, x, y) put(string.format("position %.4f %.4f", x, y)) end
 	pin.SetSize = function(_, w, h) put("size " .. w .. "x" .. h) end
 	pin.Texture = {SetTexCoord = function() end, SetAtlas = function(_, atlas) pin.atlas = atlas end,
-		SetTexture = function(_, file) pin.file = file end, SetVertexColor = function(_, r) pin.shade = r end}
-	pin.Count = {SetText = function(_, t) pin.count = t end, SetTextColor = function(_, r) pin.countShade = r end}
+		SetTexture = function(_, file) pin.file = file end, SetVertexColor = function(_, r) pin.shade = r end,
+		SetDesaturated = function(_, on) pin.desaturated = on end}
+	pin.Count = {SetText = function(_, t) pin.count = t end, SetTextColor = function(_, r) pin.countShade = r end,
+		SetFontObject = function(_, name) pin.font = name end}
 	pin.GetMap = function() return pin.map end
 	return setmetatable(pin, {__index = mixin})
 end
@@ -640,6 +719,25 @@ check("and its count, at full shade", pin.count == 7 and pin.shade == 1 and pin.
 pin:OnAcquired({zone = zoneA, look = PROGRESS, count = 12, dim = true})
 check("a pin used again takes the new icon's count and shade", pin.count == 12 and pin.shade == 0.5 and pin.countShade == 0.5)
 check("and its zone", pin.Icon.zone == zoneA)
+check("the grey look of quests in the log is the ready art, in grey: the game's own grey file is 16 pixels", pin.desaturated == true
+	and pin.atlas == QC.QC_ICON_READY.atlas)
+pin:OnAcquired(bright)
+check("and a pin used again for another look is no longer grey", pin.desaturated == false and pin.atlas == NORMAL.atlas)
+local function sizeOn(uiScale, screenHeight)
+	S.uiScale, S.screenHeight = uiScale, screenHeight
+	local sized = newPin()
+	sized:OnAcquired(bright)
+	return sized.log[3], sized.font
+end
+local line, font = sizeOn(0.64, 1440)
+check("on a 1440p screen at the user's UI scale the icon is 29 units, 35 pixels of 32-pixel art, and the count is in the next font", line == "size 29x29" and font == "NumberFontNormal", tostring(line) .. " " .. tostring(font))
+line, font = sizeOn(0.64, 1080)
+check("on a 1080p screen it is the largest, 32, with the largest count", line == "size 32x32" and font == "NumberFontNormalLarge", tostring(line) .. " " .. tostring(font))
+line, font = sizeOn(0.64, 2160)
+check("on a 2160p screen, where 24 units already take 43 pixels, it stays 24", line == "size 24x24" and font == "NumberFontNormalSmall", tostring(line) .. " " .. tostring(font))
+line = sizeOn(nil, nil)
+check("with the screen unreadable it stays 24", line == "size 24x24")
+S.uiScale, S.screenHeight = nil, nil
 local opened
 pin.map = {SetMapID = function(_, mapId) opened = mapId end}
 pin:OnMouseClickAction("RightButton")
@@ -656,6 +754,14 @@ nestedPin:OnAcquired({zone = nestedIcon, look = NORMAL, count = 3, dim = false})
 nestedPin.map = {SetMapID = function(_, mapId) opened = mapId end}
 nestedPin:OnMouseClickAction("LeftButton")
 check("a click on the icon of a continent inside this one opens that continent's map", opened == NEST, tostring(opened))
+if hubIcon then
+	local hubPin = newPin()
+	hubPin:OnAcquired({zone = hubIcon, look = NORMAL, count = 3, dim = false})
+	hubPin.map = {SetMapID = function(_, mapId) opened = mapId end}
+	opened = nil
+	hubPin:OnMouseClickAction("LeftButton")
+	check("a click on a hub's icon opens its map", opened == 1670, tostring(opened))
+end
 pin.map = nil
 check("a click on a pin with no map does nothing", pcall(pin.OnMouseClickAction, pin, "LeftButton"))
 env.qcCharacterCompletions = {}
@@ -722,6 +828,13 @@ else
 	end
 	local owner, total, groups, withZones = {}, 0, 0, 0
 	local doubled = {}
+	local onTwoMaps, hubMaps = {}, {}
+	for _, hubs in pairs(code.Hubs) do
+		for mapId in pairs(hubs) do
+			if hubMaps[mapId] then onTwoMaps[mapId] = true end
+			hubMaps[mapId] = true
+		end
+	end
 	for _, continent in ipairs(continents) do
 		local zonesOf = code.Zones(continent.id)
 		if #zonesOf > 0 then withZones = withZones + 1 end
@@ -736,12 +849,15 @@ else
 	check(string.format("%d continents give %d icons for zones with a category", withZones, groups), groups > 0)
 	check("no category belongs to two icons", #doubled == 0, #doubled .. " do")
 	-- The sum of what the icons count, with the list's filter, against the distinct quests: nothing counted twice.
-	local distinct, sum = {}, 0
+	local distinct, sum, seenTwice = {}, 0, {}
 	for _, continent in ipairs(continents) do
 		for _, z in ipairs(code.Zones(continent.id)) do
-			local quests = counted(z.categories, listKeep)
-			sum = sum + #quests
-			for _, questId in ipairs(quests) do distinct[questId] = true end
+			if not (onTwoMaps[z.mapId] and seenTwice[z.mapId]) then
+				seenTwice[z.mapId] = true
+				local quests = counted(z.categories, listKeep)
+				sum = sum + #quests
+				for _, questId in ipairs(quests) do distinct[questId] = true end
+			end
 		end
 	end
 	local distinctCount = 0
@@ -782,6 +898,48 @@ else
 	else
 		check(string.format("%d continents inside another, %d with an icon there counting their map's zones", #nested, withIcon), #problems == 0 and withIcon > 0,
 			table.concat(problems, "; "))
+	end
+	-- Hubs and sub-zones the tables name: each exists in this game's data with quests and shows where it should.
+	local continentIds, iconOf, tableProblems = {}, {}, {}
+	for _, list in ipairs({continents, nested}) do
+		for _, continent in ipairs(list) do continentIds[continent.id] = true end
+	end
+	for continentId in pairs(continentIds) do
+		for _, z in ipairs(code.Zones(continentId)) do iconOf[z.mapId] = iconOf[z.mapId] or z end
+	end
+	local hubCount, hostCount = 0, 0
+	for continentId, hubs in pairs(code.Hubs) do
+		if continentIds[continentId] then
+			local onMap = {}
+			for _, z in ipairs(code.Zones(continentId)) do onMap[z.mapId] = true end
+			for mapId in pairs(hubs) do
+				hubCount = hubCount + 1
+				if not BY_AREA[mapId] then
+					tableProblems[#tableProblems + 1] = "hub " .. mapId .. " has no category"
+				elseif #counted({BY_AREA[mapId]}, listKeep) == 0 then
+					tableProblems[#tableProblems + 1] = "hub " .. mapId .. " has no quests"
+				elseif not onMap[mapId] then
+					tableProblems[#tableProblems + 1] = "hub " .. mapId .. " has no icon on " .. continentId
+				end
+			end
+		end
+	end
+	for subZone, host in pairs(code.Hosts) do
+		if BY_AREA[subZone] and continentIds[1] ~= nil or BY_AREA[subZone] then
+			hostCount = hostCount + 1
+			local icon, found = iconOf[host], false
+			for _, categoryId in ipairs(icon and icon.categories or {}) do
+				if categoryId == BY_AREA[subZone] then found = true end
+			end
+			if not found then tableProblems[#tableProblems + 1] = "sub-zone " .. subZone .. " is not counted in " .. host end
+		end
+	end
+	if hubCount == 0 and hostCount == 0 then
+		print("  (this game has none of the hub maps and sub-zones the tables name)")
+	else
+		table.sort(tableProblems)
+		check(string.format("%d hub maps show on their continents and %d sub-zones count in their zone's icon", hubCount, hostCount),
+			#tableProblems == 0, table.concat(tableProblems, "; "))
 	end
 	-- A pass over each continent, timed.
 	local worst, worstId = 0, nil
