@@ -19,8 +19,9 @@ never shows, such as the Scourge Invasion, can't be on, so its pins get a sectio
 The minimum level is checked at character levels 1, 10, 30 and 60: the tooltip's "Requires Level" line,
 the grey pins and the requirements filter must follow each quest's minLevel (else its level) in the data
 file qcQuestData.lua was built from, while the low-level filter and the bracket and sort of the list (its
-first 16 rows in each category) must still follow its level. Any wrong reading fails the run (exit
-status 1).
+first 16 rows in each category) must still follow its level. A level of 0 or below is no level: the
+row prints the bare name and the low-level filter keeps the quest, which made-up quests check apart from
+the data. Any wrong reading fails the run (exit status 1).
 
 Trying every race, class, covenant and holiday together is ~28k combinations per map, far too slow.
 Each filter group only reads its own part of the character (faction and race/class read race,
@@ -157,7 +158,7 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file == "qcCore.lua" then
 		core = runFile(file,
-			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, Holidays = qcHolidays}")
+			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, BuildMapFilter = function() return qcBuildViewFilter(\"M\") end, Holidays = qcHolidays}")
 	elseif file == "qcMapPins.lua" then
 		pinCode = runFile(file, "\nreturn {Needs = qcPinQuestNeeds, Greyed = qcPinGreyed}")
 	elseif file and file:sub(1, 4) ~= "Libs" then
@@ -692,6 +693,13 @@ do
 	end
 end
 
+local buttons = {}
+for i = 1, 16 do
+	buttons[i] = stubTable({QuestName = stubTable({SetText = function(self, text) self.text = text end})})
+	_G["qcMenuButton" .. i] = buttons[i]
+end
+env.qcMenuSlider = stubTable({SetValue = function(self, value) self.value = value end, GetValue = function(self) return self.value end})
+
 local levelProblems = 0
 if next(minimumLevels) then
 	local todo = ADDON_TABLE.qcQuestStatus.TODO
@@ -704,12 +712,7 @@ if next(minimumLevels) then
 		for id in pairs(set) do if pairsByQuest[id] then n = n + 1 end end
 		return n
 	end
-	local buttons, categories = {}, {}
-	for i = 1, 16 do
-		buttons[i] = stubTable({QuestName = stubTable({SetText = function(self, text) self.text = text end})})
-		_G["qcMenuButton" .. i] = buttons[i]
-	end
-	env.qcMenuSlider = stubTable({SetValue = function(self, value) self.value = value end, GetValue = function(self) return self.value end})
+	local categories = {}
 	for _, e in pairs(QUESTS) do categories[e[3]] = true end
 	for _, level in ipairs({1, 10, 30, 60}) do
 		P.level, P.faction, P.race, P.class = level, nil, nil, nil
@@ -750,7 +753,7 @@ if next(minimumLevels) then
 		applySettings({QC_L_HIDE_LOWLEVEL = true})
 		local lowLevelFilter = core.BuildListFilter()
 		for id, own in pairs(ownLevels) do
-			if QUESTS[id] and lowLevelFilter(id) == (own < level - env.UnitQuestTrivialLevelRange()) then lowLevel[id] = true end
+			if QUESTS[id] and lowLevelFilter(id) == (own > 0 and own < level - env.UnitQuestTrivialLevelRange()) then lowLevel[id] = true end
 		end
 		applySettings({})
 		for categoryId in pairs(categories) do
@@ -760,7 +763,7 @@ if next(minimumLevels) then
 				local id, text = button.QuestID, button.QuestName.text
 				local own = ownLevels[id]
 				if text == "#" then break end
-				if own and tonumber(text:match("^%[(%-?%d+)%]")) ~= own then bracket[id] = true end
+				if own and text ~= (own > 0 and string.format("[%d] %s", own, QUESTS[id][1]) or QUESTS[id][1]) then bracket[id] = true end
 				if own and own < previous then order[id] = true end
 				previous = own or previous
 			end
@@ -778,8 +781,8 @@ if next(minimumLevels) then
 		out("  requirements filter shows a quest the character lacks the level for: " .. ids(shown))
 		out(string.format("  pins greyed although a quest on them can be taken: %d; not greyed although none can: %d",
 			count(greyWrongly), count(plainWrongly)))
-		out("  low-level filter not following the quest's own level: " .. ids(lowLevel))
-		out("  list bracket not the quest's own level (first 16 rows of each category): " .. ids(bracket))
+		out("  low-level filter not following the quest's own level (a level of 0 or below is never low): " .. ids(lowLevel))
+		out("  list row not '[level] name', or not the bare name for a level of 0 or below (first 16 rows of each category): " .. ids(bracket))
 		out("  list sort not by the quest's own level (first 16 rows of each category): " .. ids(order))
 		out("  quests in qcQuestData.lua that the data file lacks: " .. ids(notInData))
 		out()
@@ -797,6 +800,94 @@ else
 	levelProblems = 1
 end
 
+--[[ A level of 0 or below is no level ]]--
+-- Made-up quests, apart from the data: a level of 0 or below prints the bare name and is never low, in the
+-- list and on the map, and asks for no minimum level; a quest with a level is still bracketed and hidden once low.
+local noLevelChecks, noLevelWrong = 0, 0
+do
+	local BASE, CHARACTER, SEARCH, MINIMUM = 4000000000, 80, "ZZ LEVEL TEST", 50
+	local LEVELS, MINIMUM_ID = {0, -1, 1, 74, 75, 80}, 4000000100
+	local questIds = {}
+	for index, level in ipairs(LEVELS) do
+		questIds[index] = BASE + index
+		QUESTS[questIds[index]] = {"zz level test " .. level, level, 99999, 1, 0, 0, 0}
+	end
+	QUESTS[MINIMUM_ID] = {"zz level test minimum " .. MINIMUM, 0, 99999, 1, 0, 0, 0}
+	env.qcQuestMinLevel[MINIMUM_ID] = MINIMUM
+	local noLevelIds = {questIds[1], questIds[2]}
+	local function kept(value) return value and "kept" or "hidden" end
+
+	local function check(ok, text)
+		noLevelChecks = noLevelChecks + 1
+		if not ok then
+			noLevelWrong = noLevelWrong + 1
+			out("  wrong: " .. text)
+		end
+	end
+
+	out("== A level of 0 or below is no level (made-up quests)")
+	P.level, P.faction, P.race, P.class = CHARACTER, nil, nil, nil
+	applySettings({QC_L_HIDE_LOWLEVEL = true, QC_M_HIDE_LOWLEVEL = true})
+	local lowBelow = CHARACTER - env.UnitQuestTrivialLevelRange()
+	for _, view in ipairs({{"list", core.BuildListFilter}, {"map", core.BuildMapFilter}}) do
+		local filter = view[2]()
+		for index, level in ipairs(LEVELS) do
+			local got, want = filter(questIds[index]), level <= 0 or level >= lowBelow
+			check(got == want, string.format("low-level filter, %s, character level %d, quest level %d: %s, should be %s",
+				view[1], CHARACTER, level, kept(got), kept(want)))
+		end
+		local got = filter(MINIMUM_ID)
+		check(got == true, string.format("low-level filter, %s, character level %d, quest level 0 with minimum %d: %s, should be kept",
+			view[1], CHARACTER, MINIMUM, kept(got)))
+	end
+
+	local todo = ADDON_TABLE.qcQuestStatus.TODO
+	for _, character in ipairs({1, MINIMUM}) do
+		P.level = character
+		applySettings({QC_L_HIDE_REQUIREMENTSNOTMET = true})
+		local filter = core.BuildListFilter()
+		for _, id in ipairs(noLevelIds) do
+			local got, line = filter(id), pinCode.Needs(id, todo)
+			check(got == true, string.format("requirements filter, character level %d, quest level %d: %s, should be kept",
+				character, QUESTS[id][2], kept(got)))
+			check(line == nil, string.format("'Requires Level' line, character level %d, quest level %d: %s, should be none",
+				character, QUESTS[id][2], tostring(line)))
+		end
+		local needed = character < MINIMUM
+		local got, line = filter(MINIMUM_ID), pinCode.Needs(MINIMUM_ID, todo)
+		check(got == not needed, string.format("requirements filter, character level %d, quest level 0 with minimum %d: %s, should be %s",
+			character, MINIMUM, kept(got), kept(not needed)))
+		local want = needed and string.format(env.ITEM_MIN_LEVEL, MINIMUM) or nil
+		check(line == want, string.format("'Requires Level' line, character level %d, quest level 0 with minimum %d: %s, should be %s",
+			character, MINIMUM, tostring(line), tostring(want)))
+	end
+
+	P.level = CHARACTER
+	applySettings({})
+	env.qcUpdateQuestList(nil, 1, SEARCH)
+	local rowText = {}
+	for _, button in ipairs(buttons) do
+		if button.QuestName.text ~= "#" then rowText[button.QuestID] = button.QuestName.text end
+	end
+	for index, level in ipairs(LEVELS) do
+		local id = questIds[index]
+		local name = QUESTS[id][1]
+		local want = level > 0 and string.format("[%d] %s", level, name) or name
+		check(rowText[id] == want, string.format("list row, quest level %d: %s, should be %s", level, tostring(rowText[id]), want))
+	end
+	local name = QUESTS[MINIMUM_ID][1]
+	check(rowText[MINIMUM_ID] == name, string.format("list row, quest level 0 with minimum %d: %s, should be %s",
+		MINIMUM, tostring(rowText[MINIMUM_ID]), name))
+
+	for _, id in ipairs(questIds) do QUESTS[id] = nil end
+	QUESTS[MINIMUM_ID], env.qcQuestMinLevel[MINIMUM_ID] = nil, nil
+	P.level = nil
+	out(string.format("  %d checks, %d wrong", noLevelChecks, noLevelWrong))
+	out()
+	note(string.format("level 0 or below, made-up quests: %d of %d checks wrong", noLevelWrong, noLevelChecks))
+	levelProblems = levelProblems + noLevelWrong
+end
+
 local handle = assert(io.open(REPORT_FILE, "wb"))
 handle:write(table.concat(lines, "\n"), "\n")
 handle:close()
@@ -806,6 +897,6 @@ for _, text in ipairs(summary) do realPrint("  " .. text) end
 realPrint()
 realPrint("Full report: " .. REPORT_FILE)
 if levelProblems > 0 then
-	realPrint(string.format("FAILED: the minimum level check found %d problems", levelProblems))
+	realPrint(string.format("FAILED: the level checks found %d problems", levelProblems))
 	os.exit(1)
 end

@@ -98,9 +98,11 @@ are in `qcQuestProfession`, `qcQuestHoliday`, `qcQuestCovenant`, `qcQuestPrereq`
 The zone text stays in the data file only: the game never reads it.
 
 `level` means two things, and the data keeps both. The row's level is the quest's own: the list's
-bracket (`[30] Name`), its sort and the low-level filter read it. `qcQuestMinLevel[questId]` is the
-level a character needs to take the quest, and the tooltip's "Requires Level" line, the grey pins
-and the requirements-not-met filter read `qcQuestMinLevel[questId] or level`. The table holds only
+bracket (`[30] Name`), its sort and the low-level filter read it. A level of 0 or below is no level:
+the list prints the bare name with no bracket, the low-level filter (the map's too) never counts the
+quest as low, and the sort puts it first. `qcQuestMinLevel[questId]` is the level a character needs to
+take the quest, and the tooltip's "Requires Level" line, the grey pins and the requirements-not-met
+filter read `qcQuestMinLevel[questId] or level`, where 0 or below asks for nothing. The table holds only
 the quests whose minimum is not their level, and it keeps a 0 (no minimum). Retail's table is empty
 because its `level` is already read as the minimum: it is meant to be the API's
 `min_character_level`. Today it equals the API's for 28,455 of the 30,066
@@ -973,10 +975,12 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   quest's `minLevel`, else its `level`, in the data file `qcQuestData.lua` was built from. It reports
   quests that need a level the character has, quests that need one it lacks, and pins greyed or not
   wrongly. It checks the opposite mistake too: the low-level filter, and the bracket and sort of the
-  list (its first 16 rows in each category), must still follow the quest's own `level`. Retail's two
-  levels are the same for every quest, so only Forever's run can catch a mix-up there. The summary
-  has one line per level, and each must read 0. A wrong reading prints `FAILED` and ends the run
-  with exit status 1.
+  list (its first 16 rows in each category), must still follow the quest's own `level`, where 0 or
+  below is no level (no bracket, never low). Retail's two levels are the same for every quest, so only
+  Forever's run can catch a mix-up there. Made-up quests with those levels check the same, and the
+  minimum level at 0, apart from the data (33 checks). The summary has one line per level and one for
+  the made-up quests, and each must read 0. A wrong reading prints `FAILED` and ends the run with
+  exit status 1.
 
 It assumes best-case progress: max level (but for the minimum-level check), prerequisites done, max
 renown, every profession. The quest search finds every quest by name whatever this reports. Some
@@ -1110,7 +1114,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    It writes `tools\reachability-report-QuestCompletist_Camelot.txt`. Every count in its summary was
    0 in October 2026, so anything else is new, apart from the 81 pins of events the calendar doesn't
    show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's. That includes the four
-   "character level" lines, the minimum-level check, which fails the run when one isn't 0.
+   "character level" lines, the minimum-level check, and the "made-up quests" line (0 of 33 checks wrong),
+   which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
    run of 9 October 2026 found 6 on 2,296 prerequisites and 350 table entries: five kept in
@@ -1544,8 +1549,8 @@ git diff --stat
   `QuestCompletist\Forever\` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` before and after, and compare the
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
-  step 10 for Forever. Its four "character level" lines (the minimum level) must read 0, and
-  the run exits with 1 when they don't.
+  step 10 for Forever. Its four "character level" lines (the minimum level) and its "made-up quests"
+  line (a level of 0 or below) must read 0, and the run exits with 1 when they don't.
 - For changes to `Read-QuestCache.ps1`, `Compare-QuestCache.ps1` or `Compare-QuestReputation.ps1`,
   run `Test-QuestCache.ps1`, `Test-CompareQuestCache.ps1` and `Test-CompareQuestReputation.ps1`.
   They build their own caches, API records and tables in a scratch folder; each must end "N checks
