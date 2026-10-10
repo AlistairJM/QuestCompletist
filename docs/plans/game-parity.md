@@ -64,7 +64,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Storylines (`storyline`, `qcQuestLines`) | 16,950 quests, 1,474 storylines | 11 quests, 1 storyline | **data:** Forever's client `QuestLine` has 3 rows, and no other source has storylines | Watch the table: have the importer's summary print `QuestLine` and `QuestLineXQuest` row counts, as it prints start points |
 | Covenant | 777 | 0 | nature | No |
 | Profession | 1,742 | 142 | both; retail's task quests from `QuestV2CliTask` | – |
-| Holiday | 1,102 (10 October 2026; it grows as quests are tagged) | 322 | both; retail's is hand data in `data\quests.jsonl` (no tool writes it; the record is [quest-holiday-decisions.csv](quest-holiday-decisions.csv)), Forever's comes from CMaNGOS's events | – |
+| Holiday | 1,103 (10 October 2026; it grows as quests are tagged) | 322 | both; retail's is hand data in `data\quests.jsonl` (no tool writes it; the record is [quest-holiday-decisions.csv](quest-holiday-decisions.csv)), Forever's comes from CMaNGOS's events | – |
 | Prerequisites | 8,306 | 2,307 (2,297 before the quest line rule) | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS, the cache's follow-ups and, for 10 quests, the quest line order | No: retail keeps the API's (recommendation 13) |
 | Breadcrumbs, "only one of these" | 279 and 249 lines | 93 and 257 | both | – |
 | Reputation rewards | 11,035 | 1,837 quests | both; API against the quest cache | – |

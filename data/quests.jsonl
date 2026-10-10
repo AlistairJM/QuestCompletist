@@ -22879,7 +22879,7 @@
 {"id":56319,"name":"The Quickcharge Contract","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":959}
 {"id":56320,"name":"Your First Charge is Free!","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":953}
 {"id":56321,"name":"Saving Corin","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":948}
-{"id":56322,"name":"Contained Alemental","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191}
+{"id":56322,"name":"Contained Alemental","level":1,"zone":"Brewfest","category":31,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":1}
 {"id":56324,"name":"Your First Charge Ain't Free!","level":50,"zone":"Mechagon","category":1063,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":56325,"name":"Changing Tides","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":975}
 {"id":56326,"name":"Ravenous Rescue","level":50,"zone":"Mechagon","category":1063,"type":4,"faction":3,"race":67108863,"class":8191,"prereq":55736}
@@ -30072,7 +30072,7 @@
 {"id":76528,"name":"Krazzworks Klash - Advanced","level":10,"zone":"Twilight Highlands","category":252,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":76529,"name":"Krazzworks Klash - Reverse","level":10,"zone":"Twilight Highlands","category":252,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":76530,"name":"Unliving Summons","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":16,"class":8191,"storyline":1391}
-{"id":76531,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":76531,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":76532,"name":"Assault on the Wellspring","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5472,"prereq":76345}
 {"id":76533,"name":"Dangerous Documentation","level":70,"zone":"Time Rifts","category":1347,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76536,"name":"Redridge Rally","level":10,"zone":"Redridge Mountains","category":161,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -30127,21 +30127,21 @@
 {"id":76993,"name":"Turtle Power","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77093,"name":"The Shadowflame Axe","level":70,"zone":"Legendary","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5462}
 {"id":77094,"name":"Basic Kill Quest [DNT]","level":1,"zone":"Content Playground","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77095,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
-{"id":77096,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
-{"id":77097,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77095,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77096,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77097,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77098,"name":"Getting to Ground","level":70,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5464,"prereq":76592}
-{"id":77099,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77099,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77100,"name":"Surveying the Cliffside","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":77487}
 {"id":77101,"name":"Ingredient Quest Template","level":70,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77102,"name":"Hellfire Hustle","level":10,"zone":"Hellfire Peninsula","category":96,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77103,"name":"Hellfire Hustle - Advanced","level":10,"zone":"Hellfire Peninsula","category":96,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77104,"name":"Hellfire Hustle - Reverse","level":10,"zone":"Hellfire Peninsula","category":96,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77151,"name":"The Cache in the Crag","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":77100}
-{"id":77152,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
-{"id":77153,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1306,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77152,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77153,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77154,"name":"A Taste of the Past","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":77151}
-{"id":77155,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77155,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77156,"name":"Botanical Redistribution","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77159,"name":"No Mushroom for Error","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77163,"name":"Seeing Reason","level":70,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5464,"prereq":77098}
@@ -30291,10 +30291,10 @@
 {"id":77714,"name":"Nature Sealed","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77715,"name":"Bubble Rescue","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77739,"name":"Smother the Flames","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77744,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1305,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
-{"id":77745,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1301,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
-{"id":77746,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1303,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
-{"id":77747,"name":"Bar Tab Barrel","level":10,"zone":"Eastern Kingdoms","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77744,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77745,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77746,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
+{"id":77747,"name":"Bar Tab Barrel","level":10,"zone":"Brewfest","category":31,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1}
 {"id":77754,"name":"Pyromania Problems","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77755,"name":"Breaking Down the Camp","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":77756,"name":"Flight of the Dragons","level":70,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
