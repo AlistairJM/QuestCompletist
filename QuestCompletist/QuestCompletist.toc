@@ -30,6 +30,7 @@ qcUnavailableQuests.lua
 qcCore.lua
 qcTooltips.lua
 qcMapPins.lua
+qcContinentPins.lua
 qcMinimap.lua
 qcRecorder.lua
 QuestCompletist.xml

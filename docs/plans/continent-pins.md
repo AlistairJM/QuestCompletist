@@ -97,10 +97,13 @@ the one with a rectangle. The zone list is read on every refresh, not cached: th
 **The sparse table.** One keyed table in `qcContinentPins.lua`, with both games' map IDs (they don't
 collide: Forever's are mostly 14xx), holds what the client can't tell us: a zone's extra categories
 (Stranglethorn Vale 224 gets categories 147 and 214; Vashj'ir 203 gets 117, 182, 264 and 1) and a
-folded city's host (Stormwind City 84, Orgrimmar 85, Ironforge 87, Thunder Bluff 88, Darnassus 89,
-Undercity 90, the Exodar 103, Silvermoon 110; Forever 1453 to 1458). The rows come from the
-geometry dump. If they pass about 25 per game, they become a decisions CSV that a tool turns into a
-generated file, as `qcUnavailableQuests.lua` is.
+folded city's host (retail's Stormwind City 84 into Elwynn Forest 37, Ironforge 87 into Dun Morogh 27,
+Undercity 90 into Tirisfal Glades 18, Silvermoon City 110 into Eversong Woods 94, Thunder Bluff 88 into
+Mulgore 7, Darnassus 89 into Teldrassil 57, the Exodar 103 into Azuremyst Isle 97; Forever's Stormwind
+1453, Ironforge 1455, Thunder Bluff 1456, Darnassus 1457 and Undercity 1458 into their zones). Orgrimmar
+sits far from Durotar's icon and is left out until the geometry dump says otherwise. The rows come from
+the offline analysis, and the dump confirms or trims them. If they pass about 25 per game, they become
+a decisions CSV that a tool turns into a generated file, as `qcUnavailableQuests.lua` is.
 
 **Counting.** Two halves, split by where the code lives (the load order is `qcCore.lua`,
 `qcTooltips.lua`, `qcMapPins.lua`, then the new file).
@@ -199,7 +202,11 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
    `Open`, `Close`, `Finish`, `Redraw`, `Line`, `LineIcon`, `Divider` and `Bar` over the one
    `qcMapTooltip` frame, with `qcMapTooltipSetup` and `QC.RedrawMapTooltip` beside it; `qcPinMixin`
    keeps its anchor rule, and `qcMapPins.lua` exports `qcPinQuestNeeds`.
-4. **Counting and the zone list**, with `Test-ContinentPins.lua`. Nothing visible yet.
+4. **Counting and the zone list**, with `Test-ContinentPins.lua`. Nothing visible yet. Done as
+   `qcGetZoneQuests` in `qcCore.lua` (exported as `QC.qcZoneQuests`) and the new
+   `qcContinentPins.lua` (in both TOCs, after `qcMapPins.lua`): `qcContinentZones`, `qcQuestKind`,
+   `qcZoneNumbers`, `qcZoneBrightness` and `qcContinentIcons`. Nothing calls them in the game yet; PR 5
+   adds the provider and the pin.
 5. **Icons and the option**: template, mixin, provider, the checkbox, the localization keys,
    `Test-Settings.lua`, the documents.
 6. **Sweep integration**: the geometry baseline compared on each sweep, `Compare-ApiDocs.ps1` watching
@@ -220,9 +227,9 @@ Offline, under `C:\Program Files (x86)\Lua\5.1\lua.exe` (the `lua` on the path i
   the log doesn't count; unticking "hide completed" doesn't light a zone; with the list's own filter
   the totals equal `qcGetZoneCompletionStats` for every group of both games, and with the map's they
   differ only by what its seasonal filter hides; a real-data pass with the icon and quest counts per
-  continent and its timing. The reachability harness gets `C_Map.GetMapInfo` and `Enum.UIMapType`
-  stand-ins, and the new file stays inert at load, because the harness runs files against a
-  catch-all dummy with no `pcall`.
+  continent and its timing. The reachability harness needs no stand-ins yet: the new file stays inert
+  at load, because the harness runs files against a catch-all dummy with no `pcall`, and its report is
+  unchanged. PR 5's provider will need `C_Map.GetMapInfo` and `Enum.UIMapType` there.
 - **`tools\Test-Settings.lua`** (the "90 checks" harness of `settings-grid.md` was never committed):
   defaults on a fresh table, an explicit 0 kept, the migration untouched, the panel builds on both
   TOCs, the box's click saves and refreshes, the keys exist in 11 files, and the panel's lowest edge
@@ -278,3 +285,4 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 - 2026-10-10: investigated; this plan written and the decisions above taken. Nothing built.
 - 2026-10-10: PR 2 built (the probe's geometry pass, `Report-ContinentGeometry.lua`, 804 checks in `Test-Probe.lua`); not yet run in game.
 - 2026-10-10: PR 3 built (the map tooltip's helpers in `qcTooltips.lua` as `QC.qcMapTip`, `Test-MapTooltip.lua`): the reachability reports of both games and a record of 400-odd tooltip calls are identical to master's; not yet tried in game.
+- 2026-10-10: PR 4 built (`qcGetZoneQuests`, `qcContinentPins.lua`, `Test-ContinentPins.lua`): every category counts as many quests as the list's zone counter says (485 retail, 113 Forever); retail's 15 continents give 139 icons and Forever's 2 give 42, with no quest in two icons; a continent pass takes 6 ms at most offline; not yet in game, and nothing draws yet.
