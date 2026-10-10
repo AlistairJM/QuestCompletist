@@ -129,6 +129,7 @@ function Invoke-Tool([string]$root, [string[]]$more = @()) {
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Tool, '-ToolsDir', "$root\tools", '-DataDir', "$root\data", '-AddonDir', "$root\addon",
         '-LedgerFile', "$root\ledger.csv", '-DecisionsFile', "$root\decisions.csv", '-ReportFile', "$root\report.txt", '-LuaExe', $LuaExe)
     # The decision files of the checkout are not the test's: unless a test gives its own, there are none.
+    if ($more -notcontains '-ForeverBuild') { $arguments += @('-ForeverBuild', '1.60.1.70205') }
     if ($more -notcontains '-GiverDecisionsFile') { $arguments += @('-GiverDecisionsFile', "$root\no-giver-decisions.csv") }
     if ($more -notcontains '-NpcIdDecisionsFile') { $arguments += @('-NpcIdDecisionsFile', "$root\no-npc-decisions.csv") }
     $arguments += $more
@@ -1231,7 +1232,7 @@ try {
     # ---------- F18: a change that would move a pin saves nothing, end to end ----------
     $mutant = Join-Path $Scratch 'mutant'
     New-Item -ItemType Directory -Path $mutant -Force | Out-Null
-    foreach ($name in 'Import-RecordedGivers.ps1', 'RecordedGivers.ps1', 'AddonData.ps1', 'Read-RecordedGivers.lua') { Copy-Item (Join-Path $PSScriptRoot $name) $mutant }
+    foreach ($name in 'Import-RecordedGivers.ps1', 'RecordedGivers.ps1', 'AddonData.ps1', 'LatestBuilds.ps1', 'Read-RecordedGivers.lua') { Copy-Item (Join-Path $PSScriptRoot $name) $mutant }
     $text = [IO.File]::ReadAllText("$mutant\RecordedGivers.ps1")
     $needle = "if (`$fill.Npc) { Set-RecordField `$pin 'npc' `$fill.Npc; `$done.Filled++ }"
     Check ($text.Contains($needle)) 'F18: the line the mutation changes is there'
@@ -1240,7 +1241,7 @@ try {
     Put-RawOwn $root @((G 'Creature:3702' 'Stable Master Gil' 69933 '37 50.4 50.2 3' '102' ''))
     $before = Get-PinText $root
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "$mutant\Import-RecordedGivers.ps1", '-ToolsDir', "$root\tools", '-DataDir', "$root\data", '-AddonDir', "$root\addon",
-        '-LedgerFile', "$root\ledger.csv", '-DecisionsFile', "$root\decisions.csv", '-ReportFile', "$root\report.txt", '-LuaExe', $LuaExe)
+        '-LedgerFile', "$root\ledger.csv", '-DecisionsFile', "$root\decisions.csv", '-ReportFile', "$root\report.txt", '-ForeverBuild', '1.60.1.70205', '-LuaExe', $LuaExe)
     $saved = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
     try { $output = @(& powershell @arguments 2>&1) } finally { $ErrorActionPreference = $saved }
     Check ($LASTEXITCODE -ne 0) 'F18: the run stops'

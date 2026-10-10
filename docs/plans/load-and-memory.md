@@ -206,13 +206,15 @@ Around 38 places read or write it today.
 ## The quest giver recorder (8 October 2026)
 
 `qcRecorder.lua` keeps `qcQuestRecorder`, an account-wide saved variable, with one packed string per
-record and caps of 2,500 givers, 5,000 quests and 500 quests started away from a giver
-([quest-giver-recorder.md](quest-giver-recorder.md)). Measured offline with a synthetic full file in
-plain Lua (32-bit, so the game's numbers are larger):
+record and caps of 5,000 givers, 10,000 quests and 4,000 quests started away from a giver (2,500,
+5,000 and 500 until 10 October 2026; [quest-giver-recorder.md](quest-giver-recorder.md)). Measured
+offline with a synthetic full file in plain Lua (32-bit, so the game's numbers are larger):
 
 | | Records | File | Memory once loaded | Load |
 |---|---|---|---|---|
-| At the caps | 8,000 | 514 KB | 0.8 MB (about 1.5 MB in the game) | 6 ms |
+| At the first caps (2,500 + 5,000 + 500) | 8,000 | 514 KB | 0.8 MB (about 1.5 MB in the game) | 6 ms |
+| At the caps of 10 October 2026 (5,000 + 10,000 + 4,000), the same method as the line below | 19,000 | 1.25 MB | 3.3 MB | 15 ms |
+| The first caps again, in that method (a heavier synthetic record) | 8,000 | 555 KB | 1.45 MB | 4.3 ms |
 | A table per record instead | the same | | 2.2 to 3 times as much | |
 
 The code itself adds a file of about 590 lines and nothing at login but one pass over the three

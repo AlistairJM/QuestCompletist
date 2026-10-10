@@ -368,12 +368,30 @@ qcQuestRecorder = {v = 1, bv = {[69933] = "12.1.0"}, g = {["Creature:1"] = "Bob|
 	check(lines ~= nil and kinds(lines).bad == 1 and not find(lines, "giver"), "a giver with 61 offers is odd")
 	lines = reader.readFile(write("qcQuestRecorder = {v = 1, bv = {[69933] = \"12.1.0\"}, g = {[\"Creature:1\"] = \"Bob|69933|1|84 1.0 2.0 1;84 5.0 5.0 1;84 9.0 9.0 1;84 13.0 13.0 1;84 17.0 17.0 1||1|0\"}}\n"), "t")
 	check(lines ~= nil and kinds(lines).bad == 1, "and a giver with five spots")
-	local giverRecords = {}
-	for i = 1, 2501 do giverRecords[#giverRecords + 1] = string.format("[\"Creature:%d\"] = \"Bob|69933|1||1||0\",", i) end
-	refused("qcQuestRecorder = {v = 1, bv = {[69933] = \"12.1.0\"}, g = {" .. table.concat(giverRecords) .. "}}\n", "more records than the addon keeps", "a file with 2,501 givers")
-	local startRecords = {}
-	for i = 1, 501 do startRecords[#startRecords + 1] = string.format("[%d] = \"1|5|84|1.0|2.0|69933|1\",", i) end
-	refused("qcQuestRecorder = {v = 1, bv = {[69933] = \"12.1.0\"}, s = {" .. table.concat(startRecords) .. "}}\n", "more records than the addon keeps", "and 501 starts")
+	local function giverText(n)
+		local records = {}
+		for i = 1, n do records[#records + 1] = string.format("[\"Creature:%d\"] = \"Bob|69933|1||1||0\",", i) end
+		return "qcQuestRecorder = {v = 1, bv = {[69933] = \"12.1.0\"}, g = {" .. table.concat(records) .. "}}\n"
+	end
+	local function questText(n)
+		local records = {}
+		for i = 1, n do records[#records + 1] = string.format("[%d] = \"69933|1|32|1|1|1|\",", i) end
+		return "qcQuestRecorder = {v = 1, bv = {[69933] = \"12.1.0\"}, q = {" .. table.concat(records) .. "}}\n"
+	end
+	local function startText(n)
+		local records = {}
+		for i = 1, n do records[#records + 1] = string.format("[%d] = \"1|5|84|1.0|2.0|69933|1\",", i) end
+		return "qcQuestRecorder = {v = 1, bv = {[69933] = \"12.1.0\"}, s = {" .. table.concat(records) .. "}}\n"
+	end
+	lines = reader.readFile(write(giverText(5000)), "t")
+	check(lines ~= nil and kinds(lines).giver == 5000, "a file with 5,000 givers, the addon's cap, is read")
+	refused(giverText(5001), "more records than the addon keeps", "a file with 5,001 givers")
+	lines = reader.readFile(write(questText(10000)), "t")
+	check(lines ~= nil and kinds(lines).quest == 10000, "a file with 10,000 quests is read")
+	refused(questText(10001), "more records than the addon keeps", "a file with 10,001 quests")
+	lines = reader.readFile(write(startText(4000)), "t")
+	check(lines ~= nil and kinds(lines).start == 4000, "a file with 4,000 starts is read")
+	refused(startText(4001), "more records than the addon keeps", "a file with 4,001 starts")
 
 	-- A name or heading a spreadsheet would run, or that carries the field separator.
 	for _, bad in ipairs({"=HYPERLINK(1)", "+1+1", "@SUM(1)", "-1+1", "a|b", "|cffff0000Free Gold|r"}) do
