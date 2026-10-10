@@ -1154,10 +1154,44 @@ do
 	equal(run(savedFile .. " " .. baselineFile .. " --update"), 0, "B3: --update takes it in")
 	equal(run(savedFile .. " " .. baselineFile), 0, "B3: and the next comparison is clean")
 	equal(run(otherFile .. " " .. baselineFile), 1, "B3: the other game has no rows yet, exit 1")
+	local function textOf(game)
+		local handle = assert(io.open(baselineFile, "rb"))
+		local rows = {}
+		for line in handle:read("*a"):gmatch("[^\r\n]+") do
+			if line:sub(1, #game + 3) == '"' .. game .. '",' then rows[#rows + 1] = line end
+		end
+		handle:close()
+		return table.concat(rows, "\n")
+	end
+	local foreverBefore = textOf("forever")
+	check(#foreverBefore > 0, "B3: the first game's rows are in the file")
 	equal(run(otherFile .. " " .. baselineFile .. " --update"), 0, "B3: --update adds them")
+	equal(textOf("forever"), foreverBefore, "B3: and leaves the first game's rows as they were, byte for byte")
 	equal(rowsOf("retail") > 0 and rowsOf("forever") == #records, true, "B3: and keeps the first game's rows")
 	equal(run(savedFile .. " " .. baselineFile), 0, "B3: each game still compares as the same")
 	equal(run(otherFile .. " " .. baselineFile), 0, "B3: both of them")
+	do
+		local handle = assert(io.open(baselineFile, "rb"))
+		local rows = parseCsv(handle:read("*a"))
+		handle:close()
+		local extra = {}
+		for _, r in ipairs(rows) do
+			if r.game == "forever" then for k, v in pairs(r) do extra[k] = v end break end
+		end
+		extra.mapId = 999999
+		rows[#rows + 1] = extra
+		local lines = {HEADER}
+		for _, r in ipairs(rows) do lines[#lines + 1] = recordLine(r) end
+		handle = assert(io.open(baselineFile, "wb"))
+		handle:write(table.concat(lines, "\r\n"), "\r\n")
+		handle:close()
+		local pipe = assert(io.popen(lua .. " tools/Compare-ContinentGeometry.lua " .. savedFile .. " " .. baselineFile .. " --update 2>&1"))
+		local said = pipe:read("*a")
+		pipe:close()
+		contains(said, "1 fewer forever rows", "B3: --update says when the baseline loses rows")
+		equal(run(savedFile .. " " .. baselineFile), 0, "B3: and the baseline is the dump's again")
+	end
+	equal(select(2, pcall(parseCsv, HEADER .. "\r\n" .. "\"forever\",\"1.60\r\n")):find("is not closed", 1, true) ~= nil, true, "B3: a row with an unclosed quote is named, not a crash on nil")
 	equal(run(emptyFile .. " " .. baselineFile), 2, "B3: a file with no geometry gives exit 2")
 	equal(run(""), 2, "B3: no arguments give exit 2")
 	for _, file in ipairs({savedFile, otherFile, emptyFile, baselineFile}) do os.remove(file) end

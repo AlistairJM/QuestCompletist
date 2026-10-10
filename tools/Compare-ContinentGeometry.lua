@@ -105,6 +105,10 @@ if handle then
 end
 
 if update then
+	if #current < #baselineOfGame then
+		print(string.format("Warning: %d fewer %s rows than the baseline had (%d against %d): is the dump complete?",
+			#baselineOfGame - #current, game, #current, #baselineOfGame))
+	end
 	for _, r in ipairs(current) do kept[#kept + 1] = r end
 	sortRecords(kept)
 	local out = assert(io.open(baselineFile, "wb"))

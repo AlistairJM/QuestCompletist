@@ -1434,8 +1434,11 @@ It began as pull request #139, which stays open as the record; its files are in
    maps whose type, flags, group, nav-bar listing or hit-test answer changed, and exits with 1 when
    there is any. A different zone list is a prompt to look at that continent's icons, not a failure of the
    addon, which asks the game each time. When the differences are read, run it again with `--update`,
-   which replaces that game's rows and keeps the other game's, and commit the baseline. 12.1.5's six new
-   maps will be the first differences on retail.
+   which replaces that game's rows and keeps the other game's (it warns when the file has fewer rows than
+   the baseline, which is a pass that stopped early), and commit the baseline. Names are compared as the
+   client gives them, so take the dump on an English client, and a zone gated by a player condition
+   (Quel'Thalas on Eastern Kingdoms) can come or go with the character: a difference there may be the
+   character, not the game. 12.1.5's six new maps will be the first differences on retail.
 4. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):

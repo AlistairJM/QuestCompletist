@@ -66,7 +66,7 @@ local function parseCsv(text)
 				if line:sub(position, position) == '"' then
 					local parts, from = {}, position + 1
 					while true do
-						local quote = line:find('"', from, true)
+						local quote = line:find('"', from, true) or error("a quoted field is not closed in the row: " .. line)
 						if line:sub(quote + 1, quote + 1) == '"' then
 							parts[#parts + 1] = line:sub(from, quote)
 							from = quote + 2
