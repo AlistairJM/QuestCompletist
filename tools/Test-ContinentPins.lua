@@ -275,6 +275,14 @@ if EXTRA then
 	local v = code.Zones(CONT + 1)[1]
 	check("Vashj'ir counts its own category and its three parts'", v and listOf(v.categories) == "264,117,182,1", v and listOf(v.categories))
 end
+if BY_AREA[14] then
+	S.children[CONT + 7] = {zone(2372, "Arathi Highlands (other map)"), zone(14, "Arathi Highlands")}
+	S.rects[14] = {0.10, 0.20, 0.10, 0.20}
+	local arathi = code.Zones(CONT + 7)
+	check("Arathi Highlands counts its own category and its other map's, which the game gives no rectangle",
+		#arathi == 1 and arathi[1].mapId == 14 and listOf(arathi[1].categories) == BY_AREA[14] .. ",1409", arathi[1] and listOf(arathi[1].categories))
+	S.rects[14] = nil
+end
 
 S.children[CONT + 2] = {zone(CITY, "City")}
 S.rects[CITY] = {0.33, 0.37, 0.53, 0.57}
@@ -295,6 +303,73 @@ end
 S.nothing[CONT + 4] = true
 check("a continent the game lists nothing for has no zones", #code.Zones(CONT + 4) == 0)
 check("nor one with no children", #code.Zones(CONT + 5) == 0)
+
+print("A continent inside a continent")
+local nestedIcon, NEST
+do
+	local function countOf(categoryIds) return #env.qcGetZoneQuests(categoryIds, QC.qcBuildViewFilter("M")) end
+	local function questZone(after)
+		local mapId = nextWith(function(m) return notSpecial(m) and not usedCategories[BY_AREA[m]] and countOf({BY_AREA[m]}) > 0 end, after)
+		usedCategories[BY_AREA[mapId]] = true
+		return mapId
+	end
+	local n1 = questZone(p4)
+	local n2 = questZone(n1)
+	local n3 = questZone(n2)
+	local WITH_CATEGORY = questZone(n3)
+	local itsZone = questZone(WITH_CATEGORY)
+	local PARENT, INNER_OF_NEST, EMPTY_NEST, NO_RECT_NEST = CONT + 10, 8802, 8803, 8804
+	NEST = 8801
+	S.children[PARENT] = {zone(p1, "One"), zone(NEST, "Inner", CONTINENT), zone(EMPTY_NEST, "Nothing new", CONTINENT),
+		zone(NO_RECT_NEST, "No rectangle", CONTINENT), zone(WITH_CATEGORY, "With a category", CONTINENT)}
+	S.children[WITH_CATEGORY] = {zone(itsZone, "Its zone")}
+	S.rects[WITH_CATEGORY] = {0.70, 0.80, 0.70, 0.80}
+	S.rects[itsZone] = {0.10, 0.20, 0.10, 0.20}
+	S.children[NEST] = {zone(n2, "Inner Two"), zone(p1, "One again"), zone(n1, "Inner One"), zone(INNER_OF_NEST, "Innermost", CONTINENT)}
+	S.children[INNER_OF_NEST] = {zone(n3, "Innermost Zone")}
+	S.children[EMPTY_NEST] = {zone(p1, "One again")}
+	S.children[NO_RECT_NEST] = {zone(n3, "Innermost Zone")}
+	S.rects[NEST] = {0.50, 0.70, 0.20, 0.40}
+	S.rects[INNER_OF_NEST] = {0.10, 0.20, 0.10, 0.20}
+	S.rects[EMPTY_NEST] = {0.80, 0.90, 0.60, 0.70}
+	S.rects[n1] = {0.10, 0.20, 0.10, 0.30}
+	S.rects[n2] = {0.30, 0.40, 0.10, 0.30}
+	S.rects[n3] = {0.50, 0.60, 0.50, 0.60}
+	S.rects[p1] = {0.10, 0.20, 0.10, 0.30}
+	local function byIdOf(list)
+		local map = {}
+		for _, z in ipairs(list) do map[z.mapId] = z end
+		return map
+	end
+	local outer = byIdOf(code.Zones(PARENT))
+	nestedIcon = outer[NEST]
+	check("a continent the game lists inside the continent gets an icon", nestedIcon ~= nil)
+	check("at the centre of its rectangle, with its name from the game", nestedIcon and math.abs(nestedIcon.x - 0.60) < 1e-9
+		and math.abs(nestedIcon.y - 0.30) < 1e-9 and nestedIcon.name == "Inner")
+	check("it counts what the zones of its own map count, in map ID order", nestedIcon and listOf(nestedIcon.categories) == BY_AREA[n1] .. "," .. BY_AREA[n2],
+		nestedIcon and listOf(nestedIcon.categories))
+	check("less what the continent's own zones count already", outer[p1] and listOf(outer[p1].categories) == tostring(BY_AREA[p1]))
+	local inIcon = {}
+	for _, categoryId in ipairs(nestedIcon and nestedIcon.categories or {}) do inIcon[categoryId] = true end
+	check("and not what a continent inside that one counts", nestedIcon and not inIcon[BY_AREA[n3]])
+	check("a continent whose zones the continent counts already has no icon", outer[EMPTY_NEST] == nil)
+	check("nor one the game gives no rectangle", outer[NO_RECT_NEST] == nil)
+	check("a continent with a category of its own counts it, then its zones'", outer[WITH_CATEGORY]
+		and listOf(outer[WITH_CATEGORY].categories) == BY_AREA[WITH_CATEGORY] .. "," .. BY_AREA[itsZone], outer[WITH_CATEGORY] and listOf(outer[WITH_CATEGORY].categories))
+	local innerList = code.Zones(NEST)
+	local inner = byIdOf(innerList)
+	check("its own map keeps its zones' icons", inner[n1] ~= nil and inner[n2] ~= nil and inner[p1] ~= nil)
+	check("and the icon of the continent inside it", inner[INNER_OF_NEST] and listOf(inner[INNER_OF_NEST].categories) == tostring(BY_AREA[n3]),
+		inner[INNER_OF_NEST] and listOf(inner[INNER_OF_NEST].categories))
+	local sum = 0
+	for _, categoryId in ipairs({BY_AREA[n1], BY_AREA[n2]}) do sum = sum + countOf({categoryId}) end
+	check("the icon counts the quests of both zones, and no more", nestedIcon and countOf(nestedIcon.categories) == sum and sum > 0,
+		nestedIcon and (countOf(nestedIcon.categories) .. " against " .. sum))
+	local icons = code.Icons(PARENT)
+	local drawn
+	for _, icon in ipairs(icons) do if icon.zone.mapId == NEST then drawn = icon end end
+	check("a pass over the continent draws it like any other zone's icon", drawn and drawn.look ~= nil and drawn.count > 0)
+end
 
 print("What counts in a zone")
 local function counted(categoryIds, keep)
@@ -542,6 +617,12 @@ check("nor does a left click with a modifier", opened == nil)
 S.modifier = false
 pin:OnMouseClickAction("LeftButton")
 check("a left click opens the zone's map", opened == zoneA.mapId)
+opened = nil
+local nestedPin = newPin()
+nestedPin:OnAcquired({zone = nestedIcon, look = NORMAL, count = 3, dim = false})
+nestedPin.map = {SetMapID = function(_, mapId) opened = mapId end}
+nestedPin:OnMouseClickAction("LeftButton")
+check("a click on the icon of a continent inside this one opens that continent's map", opened == NEST, tostring(opened))
 pin.map = nil
 check("a click on a pin with no map does nothing", pcall(pin.OnMouseClickAction, pin, "LeftButton"))
 env.qcCharacterCompletions = {}
@@ -578,15 +659,26 @@ else
 	end
 	handle:close()
 	S.children, S.rects = {}, {}
-	local continents = {}
+	local continents, nested, rowById = {}, {}, {}
+	for _, row in ipairs(rows) do rowById[row.id] = row end
 	for _, row in ipairs(rows) do
+		local parent = row.parent and rowById[row.parent]
 		if row.mapType == ZONE and row.parent and row.parent ~= 0 then
 			S.children[row.parent] = S.children[row.parent] or {}
 			table.insert(S.children[row.parent], {mapID = row.id, name = row.name, mapType = ZONE})
 		end
-		if row.mapType == CONTINENT and row.system == 0 then continents[#continents + 1] = row end
+		if row.mapType == CONTINENT and row.system == 0 then
+			if parent and parent.mapType == CONTINENT then
+				S.children[row.parent] = S.children[row.parent] or {}
+				table.insert(S.children[row.parent], {mapID = row.id, name = row.name, mapType = CONTINENT})
+				nested[#nested + 1] = row
+			else
+				continents[#continents + 1] = row
+			end
+		end
 	end
 	table.sort(continents, function(a, b) return a.id < b.id end)
+	table.sort(nested, function(a, b) return a.id < b.id end)
 	-- Every zone gets a rectangle of its own on its continent, so only the grouping is tested here.
 	local n = 0
 	for _, children in pairs(S.children) do
@@ -622,14 +714,52 @@ else
 	local distinctCount = 0
 	for _ in pairs(distinct) do distinctCount = distinctCount + 1 end
 	check("no quest is counted in two icons, " .. sum .. " quests", sum == distinctCount, sum .. " counted, " .. distinctCount .. " distinct")
+	-- A continent the game lists inside another gets an icon there counting what its own map's icons count, less
+	-- what the other continent's own zones count already.
+	local problems, withIcon = {}, 0
+	for _, inside in ipairs(nested) do
+		local parentZones = code.Zones(inside.parent)
+		local icon, elsewhere = nil, {}
+		for _, z in ipairs(parentZones) do
+			if z.mapId == inside.id then
+				icon = z
+			else
+				for _, categoryId in ipairs(z.categories) do elsewhere[categoryId] = true end
+			end
+		end
+		local mine, left = {}, 0
+		for _, z in ipairs(code.Zones(inside.id)) do
+			for _, categoryId in ipairs(z.categories) do
+				mine[categoryId] = true
+				if not elsewhere[categoryId] then left = left + 1 end
+			end
+		end
+		local iconHas = {}
+		for _, categoryId in ipairs(icon and icon.categories or {}) do
+			iconHas[categoryId] = true
+			if not mine[categoryId] and BY_AREA[inside.id] ~= categoryId then problems[#problems + 1] = inside.id .. " counts " .. categoryId end
+		end
+		for categoryId in pairs(mine) do
+			if not iconHas[categoryId] and not elsewhere[categoryId] then problems[#problems + 1] = inside.id .. " misses " .. categoryId end
+		end
+		if icon then withIcon = withIcon + 1 elseif left > 0 then problems[#problems + 1] = inside.id .. " has no icon" end
+	end
+	if #nested == 0 then
+		print("  (this game lists no continent inside another)")
+	else
+		check(string.format("%d continents inside another, %d with an icon there counting their map's zones", #nested, withIcon), #problems == 0 and withIcon > 0,
+			table.concat(problems, "; "))
+	end
 	-- A pass over each continent, timed.
 	local worst, worstId = 0, nil
 	local started = os.clock()
-	for _, continent in ipairs(continents) do
-		local before = os.clock()
-		code.Icons(continent.id)
-		local took = (os.clock() - before) * 1000
-		if took > worst then worst, worstId = took, continent.id end
+	for _, list in ipairs({continents, nested}) do
+		for _, continent in ipairs(list) do
+			local before = os.clock()
+			code.Icons(continent.id)
+			local took = (os.clock() - before) * 1000
+			if took > worst then worst, worstId = took, continent.id end
+		end
 	end
 	print(string.format("  (every continent in %.0f ms; the slowest, map %s, %.1f ms)", (os.clock() - started) * 1000, tostring(worstId), worst))
 end

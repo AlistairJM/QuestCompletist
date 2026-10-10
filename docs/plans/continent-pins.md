@@ -81,11 +81,14 @@ Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counti
   still has pairs closer than 24 px after the folds.
 - **The map's canvas** is 3840 x 2560 with 8 zoom levels on retail and 1002 x 668 with 4 on Forever; the
   window shows 697 x 465 windowed and 1698 x 1131 maximised.
-- **What the first version leaves out** (checked against the quest list): Quel'Thalas, a Continent-type
-  child of Eastern Kingdoms, holds 929 quests and Argus, a Continent-type child of Broken Isles, 147;
-  sub-zone categories (Undermine 218, Korthia 115, Valdrakken 65, Dornogal 47); zones that arrive with
-  no rectangle (Founder's Point 52, Razorwind 55, Siren Isle 45); and the alternate Arathi map 2372,
-  whose category 1409 holds 24 quests that Arathi Highlands' icon misses.
+- **What the first version left out** (checked against the quest list): Quel'Thalas, a Continent-type
+  child of Eastern Kingdoms, holds 929 quests (870 on its own map's six icons) and Argus, a Continent-type
+  child of Broken Isles, 147 (both now get an icon on the outer map, see Design); the alternate Arathi map
+  2372, whose category 1409 holds 24 quests that Arathi Highlands' icon missed (now an extra); and still
+  uncounted: sub-zone categories (Undermine 218, Korthia 115, Valdrakken 65, Dornogal 47; 59 in Quel'Thalas)
+  and zones that arrive with no rectangle (Founder's Point 52, Razorwind 55, Siren Isle 45).
+  With the two continents and the Arathi extra, Eastern Kingdoms counts 2,326 quests on 27 icons (it was
+  1,432 on 26) and the Broken Isles 1,012 on 8 (it was 865 on 7); no new pair of icons closer than 24 px.
 
 ## Decisions
 
@@ -98,7 +101,7 @@ agreed until they say otherwise.
 | 2 | Counted: a quest in the zone's categories that passes the **map's** filter built for counting, and is not daily, weekly or repeatable (type bits 2, 4 and 128, forced out whatever the filter boxes say). Holiday and profession quests follow the map's filters | the icon is a map element; the map's boxes default to showing dailies, so the exclusion cannot lean on them |
 | 3 | The icon shows when something is outstanding (counted and not done). It is bright when a quest is ready to hand in or can be taken now, and dim when only locked quests are left (the grey "?" for quests only in the log is grey already, so it is not dimmed again). No icon when nothing is outstanding | the dim state keeps the signal on a low-level character, as `qcPinGreyed` does for a pin |
 | 4 | Capitals are folded into their host zone's icon through a small keyed table, with a sub-line in the tooltip. Phased twins are one icon, deduplicated by category. Every other zone keeps its own icon | removes most crowding and the clash with Blizzard's capital markers without hiding a city's quests; the rows are chosen from the geometry dump |
-| 5 | First version: the direct Zone children of each continent map. Hub maps, nested continents (Quel'Thalas, Argus), orphan starter maps and Zephras Isle come later | what the client enumerates by itself; the rest wants the dump and a look |
+| 5 | First version: the direct Zone children of each continent map, and the continents the game lists inside one (Quel'Thalas on Eastern Kingdoms, Argus on the Broken Isles), each as one icon counting its own map's zones, a click opening that continent (changed 10 October, after the dump: 929 and 147 quests would otherwise be invisible). Hub maps, orphan starter maps and Zephras Isle come later | what the client enumerates by itself; the rest wants a look |
 | 6 | A child option of "Show Map Icons", on by default, saved as `QC_M_SHOW_CONTINENT`. The master switch hides the continent icons too | the user wants an off switch; an off-by-default feature would not be seen |
 | 7 | A left click without a modifier opens the zone's map; a right click still zooms out | what Blizzard's own pins and the map's own click do |
 | 8 | A new file `qcContinentPins.lua` in both TOCs, with its own data provider, template and mixin; the shared map tooltip helpers move to `qcTooltips.lua` | `qcPinMixin` differs in every method (position units, tooltip, click, template), and the repo prefers structure over a pile of `if continent` branches. The cost is the "restart WoW" line in the changelog |
@@ -115,9 +118,19 @@ category. The icon sits at the rectangle's centre. Two children with the same ca
 the one with a rectangle. The zone list is read on every refresh, not cached: the call is dynamic
 (scenario maps appear as children during quests).
 
+**Continents inside a continent.** `GetMapChildrenInfo(continentId, Enum.UIMapType.Continent)` lists them
+(retail only today: Quel'Thalas 2537 on Eastern Kingdoms, Argus 905 on the Broken Isles; Forever has
+none). One of them is an icon like a zone, at the centre of its rectangle on the outer map, counting the
+categories of its own map's icons (the dump's 6 zones for Quel'Thalas, 3 for Argus) plus its own category
+if it has one, less any the outer map's zones count already, so nothing is counted twice. A click opens
+that continent, whose own map draws its zone icons as it would any continent's. Such a continent is not
+looked into further. The 59 quests of two sub-zone maps of Quel'Thalas (2393, 2444) stay uncounted, as
+sub-zone categories do everywhere.
+
 **The sparse table.** One keyed table in `qcContinentPins.lua`, with both games' map IDs (they don't
 collide: Forever's are mostly 14xx), holds what the client can't tell us: a zone's extra categories
-(Stranglethorn Vale 224 gets categories 147 and 214; Vashj'ir 203 gets 117, 182, 264 and 1) and a
+(Stranglethorn Vale 224 gets categories 147 and 214; Vashj'ir 203 gets 117, 182, 264 and 1; Arathi
+Highlands 14 gets 1409, the category of its other map 2372, which the game gives no rectangle) and a
 folded city's host (retail's Stormwind City 84 into Elwynn Forest 37, Ironforge 87 into Dun Morogh 27,
 Undercity 90 into Tirisfal Glades 18, Silvermoon City 110 into Eversong Woods 94, Thunder Bluff 88 into
 Mulgore 7, Darnassus 89 into Teldrassil 57, the Exodar 103 into Azuremyst Isle 97; Forever's Stormwind
@@ -254,10 +267,18 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
      contents it compares, with `Test-ApiDocs.ps1` at 258 checks; both are documented the same on live
      and Forever today;
    - sweep step 2f and the step 3b instructions in `maintenance.md`, a row in `game-parity.md`.
+6b. **Nested continents and the Arathi extra** (decision 5 changed): `qcContinentZones` also lists the
+   continents inside a continent, each counting its own map's zones (`qcChildrenOfType` is the shared
+   child lookup), and Arathi Highlands 14 counts category 1409 through the extras table.
+   `Test-ContinentPins.lua` plays the made-up cases (an icon at the rectangle's centre, its name, the
+   categories in order, the ones the outer zones own left out, one with a category of its own, one with
+   no quests left, one with no rectangle, one inside it left alone, a click opening it) and, on the
+   client's own table, that each continent inside another gets an icon counting what its map's icons
+   count.
 7. **The release PR**: README (a bullet under "Quest givers on your world map", naming the option as
    the game shows it), a **New** bullet in the changelog, and the restart-WoW line.
 
-PRs 3 to 6 are stacked; retarget each to master before deleting its base.
+PRs 3 to 6b are stacked; retarget each to master before deleting its base.
 
 ## Tests
 
@@ -265,7 +286,8 @@ Offline, under `C:\Program Files (x86)\Lua\5.1\lua.exe` (the `lua` on the path i
 `loadstring` and `setfenv`):
 
 - **`tools\Test-ContinentPins.lua`**, for both TOCs: a synthetic map world (continent, zones with
-  rectangles, a nil and a zero rectangle, twins, a folded city, Stranglethorn's extras); a daily in
+  rectangles, a nil and a zero rectangle, twins, a folded city, Stranglethorn's, Vashj'ir's and Arathi's
+  extras, continents inside the continent); a daily in
   the log doesn't count; unticking "hide completed" doesn't light a zone; with the list's own filter
   the totals equal `qcGetZoneCompletionStats` for every group of both games, and with the map's they
   differ only by what its seasonal filter hides; a real-data pass with the icon and quest counts per
@@ -288,13 +310,14 @@ Only what the game alone can answer, a few lines per game.
 
 - **The probe's dump** (PR 2): it comes with the map pass of the next sweep. It answers what
   `GetMapChildrenInfo` and `GetMapRectOnMap` return for each continent (nil, zeros, which twin has a
-  rectangle, what Eastern Kingdoms shows for Quel'Thalas), whether each centre falls on its own
+  rectangle, what Eastern Kingdoms lists for Quel'Thalas), whether each centre falls on its own
   zone, and where each zone really lies. The real canvas size needs one more step on each game:
   open the world map on Kalimdor, type `/qcprobe geometry`, then maximise the map and type it again.
 - **One look at the finished icons, on each game** (about three minutes, five observations):
-  1. The icons sit on their zones, not in the sea or on a neighbour, and nothing stacks.
+  1. The icons sit on their zones, not in the sea or on a neighbour, and nothing stacks. On retail,
+     Eastern Kingdoms has an icon on Quel'Thalas and the Broken Isles one on Argus.
   2. Hovering shows the tooltip, and its totals are close to the list's header for that zone.
-  3. A left click opens the zone; a right click zooms out.
+  3. A left click opens the zone (or, on those two, the continent); a right click zooms out.
   4. Unticking the option removes the icons at once; the options panel is intact in French, the
      widest language (its filter grid has never been seen in game).
   5. Opening a continent map once in combat raises no error (`/console scriptErrors 1`). Setting
@@ -316,13 +339,15 @@ Only what the game alone can answer, a few lines per game.
   count; the exclusion is a pure function of the stored type, so later retypes flow through.
 - Sub-zone categories under-report (above); the 773 quests are the price of keeping the list's
   parity.
-- Eastern Kingdoms may show different zone sets by character (Quel'Thalas).
+- Eastern Kingdoms may show different zone sets by character (Quel'Thalas). The client gates Argus (905,
+  player condition 143958) and Quel'Thalas the same way; a character the game doesn't list them for sees
+  no icon for them, so their quests count nowhere on that character's continent maps.
 - A new Lua file: an error at load would break both games, and players must restart WoW.
 - 12.1.5 changes six maps and no zone relations; the tree is re-read from the client at run time.
 
 ## Left for later
 
-The world map; hub maps and nested continents; a level range in the
+The world map; hub maps; a level range in the
 tooltip on retail; a toggle in the map's filter menu; `/qc continent`; Shift-click opening the list
 at the zone's category; adding Dalaran-style hubs to the groups table.
 
@@ -333,4 +358,5 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 - 2026-10-10: PR 3 built (the map tooltip's helpers in `qcTooltips.lua` as `QC.qcMapTip`, `Test-MapTooltip.lua`): the reachability reports of both games and a record of 400-odd tooltip calls are identical to master's; not yet tried in game.
 - 2026-10-10: PR 4 built (`qcGetZoneQuests`, `qcContinentPins.lua`, `Test-ContinentPins.lua`): every category counts as many quests as the list's zone counter says (485 retail, 113 Forever); retail's 15 continents give 139 icons and Forever's 2 give 42, with no quest in two icons; a continent pass takes 6 ms at most offline; not yet in game, and nothing draws yet.
 - 2026-10-10: PR 5 built (`qcContinentPinTemplate`, `qcContinentPinMixin`, `qcContinentDataProvider`, `qcRefreshMapProviders`, the `QC_M_SHOW_CONTINENT` option and its two strings, `Test-Settings.lua`): the reachability reports of both games and the zone pins' tooltip record are unchanged; the continent pin's tooltip, click, provider and the page's layout (33 px to spare) are checked offline only; not yet tried in game.
-- 2026-10-10: both games' geometry dumps read (see "What the game said"). PR 6 built (`Compare-ContinentGeometry.lua`, the baseline CSV, `Compare-ApiDocs.ps1 -Tables`, sweep step 2f): `Test-Probe.lua` 980 checks and `Test-ApiDocs.ps1` 258 pass; each game compares clean against its baseline.
+- 2026-10-10: both games' geometry dumps read (see "What the game said"). PR 6 built (`Compare-ContinentGeometry.lua`, the baseline CSV, `Compare-ApiDocs.ps1 -Tables`, sweep step 2f): `Test-Probe.lua` 985 checks and `Test-ApiDocs.ps1` 258 pass; each game compares clean against its baseline.
+- 2026-10-10: PR 6b built (continents inside a continent, the Arathi extra, decision 5 changed): on the dump's geometry, retail's Eastern Kingdoms counts 2,326 quests on 27 icons (Quel'Thalas 870, Arathi's 24 more) and the Broken Isles 1,012 on 8 (Argus 147); Forever has none inside another and is unchanged (Kalimdor 20 icons, Eastern Kingdoms 22); no new pair of icons under 24 px; `Test-ContinentPins.lua` passes on both TOCs, each new check fails when its code is taken out; not yet tried in game.

@@ -33,8 +33,9 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
 - **Continent maps get one icon per zone** (10 October 2026, "go with your picks"): the quests left
   to do in the zone, counted from the quest list's categories with the map's filters and without
   daily, weekly and repeatable quests, hovered for counts and progress, opened with a click, with a
-  child option of "Show Map Icons" that is on by default. Capitals fold into their host zone. Built in
-  seven pull requests, the first of them the probe's geometry pass
+  child option of "Show Map Icons" that is on by default. Capitals fold into their host zone, and the
+  continents inside a continent (Quel'Thalas, Argus) get an icon on the outer map that opens them. Built
+  in eight pull requests, the first of them the probe's geometry pass
   ([continent-pins.md](continent-pins.md)).
 - **A check stays in the sweep even while it finds nothing**, and every feature or check built for
   one game goes to both unless a game can't support it

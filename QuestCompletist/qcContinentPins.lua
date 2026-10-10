@@ -10,10 +10,12 @@ local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC
 
 -- Zones whose quests the list files under the categories of their parts, as well as under their own, if
 -- they have one. Both games' map IDs: retail's are Stranglethorn Vale (Northern Stranglethorn, The Cape of
--- Stranglethorn) and Vashj'ir (Kelp'thar Forest, Shimmering Expanse, Abyssal Depths).
+-- Stranglethorn), Vashj'ir (Kelp'thar Forest, Shimmering Expanse, Abyssal Depths) and Arathi Highlands
+-- (its other map, 2372, which the game gives no rectangle).
 local QC_ZONE_EXTRA_CATEGORIES = {
 	[224] = {147, 214},
 	[203] = {117, 182, 1},
+	[14] = {1409},
 }
 
 -- A city's map and the zone it sits in, which get one icon between them: Stormwind City and Elwynn Forest,
@@ -33,18 +35,26 @@ local function qcRectCentre(zoneId, continentId)
 	end
 end
 
--- The icons a continent map gets, in map ID order: {mapId, name, x, y, categories} for each zone the game
--- lists as a child of the continent, with a rectangle on it and a category. The game may list nothing, or
--- a rectangle of nothing. Zones sharing a category are one icon: the first with a rectangle. A city in
--- QC_CITY_HOST adds its categories to its zone's icon.
-local function qcContinentZones(continentId)
-	local listed = C_Map.GetMapChildrenInfo(continentId, Enum.UIMapType.Zone)
+-- What the game lists as children of a map, of one type, in map ID order. The game may list nothing.
+local function qcChildrenOfType(mapId, mapType)
+	local listed = C_Map.GetMapChildrenInfo(mapId, mapType)
 	if type(listed) ~= "table" then return {} end
 	local children = {}
 	for _, child in ipairs(listed) do
-		if child.mapType == Enum.UIMapType.Zone then children[#children + 1] = child end
+		if child.mapType == mapType then children[#children + 1] = child end
 	end
 	table.sort(children, function(a, b) return a.mapID < b.mapID end)
+	return children
+end
+
+-- The icons a continent map gets, in map ID order: {mapId, name, x, y, categories} for each zone the game
+-- lists as a child of the continent, with a rectangle on it and a category. The game may list nothing, or
+-- a rectangle of nothing. Zones sharing a category are one icon: the first with a rectangle. A city in
+-- QC_CITY_HOST adds its categories to its zone's icon. A continent the game lists inside this one
+-- (Quel'Thalas on Eastern Kingdoms, Argus on the Broken Isles) gets an icon too, counting the zones of its
+-- own map, less any this map's zones count already; it is not looked into further (inside is set for it).
+local function qcContinentZones(continentId, inside)
+	local children = qcChildrenOfType(continentId, Enum.UIMapType.Zone)
 
 	local zones, byId, owned, cities = {}, {}, {}, {}
 	local function addZone(child, categories)
@@ -82,6 +92,22 @@ local function qcContinentZones(continentId)
 			end
 		else
 			addZone(city.child, city.categories)
+		end
+	end
+	if not inside then
+		for _, continent in ipairs(qcChildrenOfType(continentId, Enum.UIMapType.Continent)) do
+			local categories, counted = {}, {}
+			local function take(categoryId)
+				if not owned[categoryId] and not counted[categoryId] then
+					counted[categoryId] = true
+					categories[#categories + 1] = categoryId
+				end
+			end
+			for _, categoryId in ipairs(categoriesOf(continent.mapID)) do take(categoryId) end
+			for _, zone in ipairs(qcContinentZones(continent.mapID, true)) do
+				for _, categoryId in ipairs(zone.categories) do take(categoryId) end
+			end
+			if #categories > 0 then addZone(continent, categories) end
 		end
 	end
 	table.sort(zones, function(a, b) return a.mapId < b.mapId end)
