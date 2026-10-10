@@ -142,6 +142,8 @@ qcLocalize = setmetatable({
 	RECORDERHIDDEN = "À %d reprises, le jeu a masqué qui parlait ; ces quêtes ont été notées sans le donneur.", -- Needs review
 	RECORDERFILE = "Rien n'est envoyé nulle part. Le jeu enregistre les notes à la déconnexion ou au rechargement, dans QuestCompletist.lua, dans le dossier SavedVariables de votre compte (dans le dossier WTF du jeu, sous Account). Pour aider à améliorer la carte, joignez ce fichier à un commentaire sur la page CurseForge de l'addon.", -- Needs review
 	RECORDERCLEARED = "Les notes ont été effacées.", -- Needs review
+	SHOWCONTINENTICONS = "Afficher les icônes de zone sur les cartes de continent", -- Needs review
+	SHOWCONTINENTICONSTIP = "Marque chaque zone d'une carte de continent où il vous reste des quêtes à faire, et affiche les totaux au survol. Les quêtes journalières, hebdomadaires et répétables ne sont pas comptées. L'option d'affichage des points d'exclamation sur la carte doit aussi être cochée.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

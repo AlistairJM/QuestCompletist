@@ -54,7 +54,7 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
-- **The continent icons** (planned; the probe's geometry pass is built, the icons are not): the dump
+- **The continent icons** (built, untried; the probe's geometry pass is built too): the dump
   comes with the next map pass of each game (retail's after 12.1.5 is live), plus `/qcprobe geometry`
   with the world map open on a continent, windowed and then maximised. Once the icons are built, one
   look at them on each game, five observations in about three minutes ([continent-pins.md](continent-pins.md), "To try in game").

@@ -1212,6 +1212,12 @@ local qcPendingListRefresh = 0
 local qcPendingMapRefresh = false
 local qcRefreshScheduled = false
 
+-- The map's two kinds of pins: quest givers on a zone's map, and zones on a continent's.
+function qcRefreshMapProviders()
+	qcMapDataProvider:RefreshAllData()
+	qcContinentDataProvider:RefreshAllData()
+end
+
 local function qcFlushRefresh()
 	local list, map = qcPendingListRefresh, qcPendingMapRefresh
 	qcPendingListRefresh, qcPendingMapRefresh, qcRefreshScheduled = 0, false, false
@@ -1221,7 +1227,7 @@ local function qcFlushRefresh()
 		qcUpdateQuestList(nil, qcMenuSlider:GetValue())
 	end
 	if map and WorldMapFrame:IsShown() then
-		qcMapDataProvider:RefreshAllData()
+		qcRefreshMapProviders()
 	end
 end
 
@@ -2090,6 +2096,9 @@ function qcCheckSettings()
     if (qcSettings.QC_M_SHOW_ICONS == nil) then
         qcSettings.QC_M_SHOW_ICONS = 1
     end
+    if (qcSettings.QC_M_SHOW_CONTINENT == nil) then
+        qcSettings.QC_M_SHOW_CONTINENT = 1
+    end
     if (qcSettings.QC_MINIMAP_SHOW == nil) then
         qcSettings.QC_MINIMAP_SHOW = 1
     end
@@ -2109,6 +2118,7 @@ local qcFilterBoxes = {}
 
 function qcApplySettings()
     qcIO_M_SHOW_ICONS:SetChecked(qcSettings.QC_M_SHOW_ICONS ~= 0)
+    qcIO_M_SHOW_CONTINENT:SetChecked(qcSettings.QC_M_SHOW_CONTINENT ~= 0)
     qcIO_MINIMAP_SHOW:SetChecked(qcSettings.QC_MINIMAP_SHOW ~= 0)
     qcIO_RECORD_GIVERS:SetChecked(qcSettings.QC_RECORD_GIVERS ~= 0)
     for key, box in pairs(qcFilterBoxes) do
@@ -2131,7 +2141,7 @@ end
 
 function qcApplyFilterChange()
     qcRefreshQuestList()
-    qcMapDataProvider:RefreshAllData()
+    qcRefreshMapProviders()
 end
 
 function qcInterfaceOptions_OnShow(self)
@@ -2158,12 +2168,26 @@ function qcInterfaceOptions_OnShow(self)
         qcApplyFilterChange()
     end)
 
+    qcIO_M_SHOW_CONTINENT = CreateFrame("CheckButton", "qcIO_M_SHOW_CONTINENT", self, "InterfaceOptionsCheckButtonTemplate")
+    qcIO_M_SHOW_CONTINENT:SetPoint("TOPLEFT", qcIO_M_SHOW_ICONS, "BOTTOMLEFT", 16, -2)
+    _G[qcIO_M_SHOW_CONTINENT:GetName().."Text"]:SetText(qcL.SHOWCONTINENTICONS)
+    qcIO_M_SHOW_CONTINENT:SetScript("OnClick", function(self)
+        qcSettings.QC_M_SHOW_CONTINENT = self:GetChecked() and 1 or 0
+        qcApplyFilterChange()
+    end)
+    qcIO_M_SHOW_CONTINENT:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(qcL.SHOWCONTINENTICONSTIP, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    qcIO_M_SHOW_CONTINENT:SetScript("OnLeave", GameTooltip_Hide)
+
     -- A row for each filter: its label, then a box for each view it applies to, under the view's
     -- name. The boxes line up after the longest label, which depends on the language.
     local labels, labelWidth = {}, 0
     for i, filter in ipairs(QC_FILTERS) do
         local label = self:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-        label:SetPoint("TOPLEFT", qcIO_M_SHOW_ICONS, "BOTTOMLEFT", 4, -32 - (i - 1) * 24)
+        label:SetPoint("TOPLEFT", qcIO_M_SHOW_CONTINENT, "BOTTOMLEFT", -12, -32 - (i - 1) * 24)
         label:SetText(qcL[filter.text])
         labels[i] = label
         labelWidth = math.max(labelWidth, label:GetStringWidth())
@@ -2252,7 +2276,7 @@ local function qcEventHandler(self, event, ...)
 	elseif (event == "QUEST_DATA_LOAD_RESULT") then
 		qcQuestDataArrived(...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
-		qcMapDataProvider:RefreshAllData()
+		qcRefreshMapProviders()
 	elseif (event == "CALENDAR_UPDATE_EVENT_LIST") then
 		local ok, redraw = pcall(qcCalendarDataArrived)
 		if (ok and redraw) then qcRequestRefresh(nil, true) end

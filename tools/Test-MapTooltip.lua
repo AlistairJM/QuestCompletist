@@ -175,6 +175,8 @@ env = {
 	ITEM_CLASSES_ALLOWED = "Classes: %s", ITEM_MIN_LEVEL = "Requires Level %d", ITEM_REQ_SKILL = "Requires %s",
 	ITEM_REQ_REPUTATION = "Requires %s - %s", ITEM_MIN_SKILL = "Requires %s (%d)", RENOWN_LEVEL_LABEL = "Renown %d",
 	UNKNOWN = "Unknown",
+	QUEST_WATCH_QUEST_READY = "Ready for turn-in", AVAILABLE_QUESTS = "Available Quests", IN_PROGRESS = "In Progress",
+	UNAVAILABLE = "Unavailable", FLIGHT_MAP_CLICK_TO_ZOOM_IN = "<Click to Zoom In>",
 	C_Covenants = stubTable({GetActiveCovenantID = function() return 0 end}),
 	C_MajorFactions = stubTable({GetCurrentRenownLevel = function() return 1000 end}),
 	C_SkillInfo = stubTable({GetSkillLineInfoByID = function() return {rank = 1000, modifier = 0} end}),
@@ -389,6 +391,58 @@ if RECORD_FILE then
 	ctx.level = 1000
 	for _, line in ipairs(record) do out:write(line, "\n") end
 	out:close()
+end
+
+-- The zone icons on a continent map are a second kind of pin on the same tooltip. The code before this one
+-- has no such pin, so the record above stays comparable with it.
+if rawget(env, "qcContinentPinMixin") then
+	print("A continent pin's tooltip, through the same kit")
+	local function newContinentPin(icon)
+		counters.pin = (counters.pin or 0) + 1
+		local pin = {__name = "pin" .. counters.pin, Icon = icon}
+		return setmetatable(pin, {__index = function(_, key) return env.qcContinentPinMixin[key] end})
+	end
+	local tooltip = env.qcMapTooltip
+	local zoneCategory = QUESTS[pinA[6][3]][3]
+	local zone = {mapId = 12, name = "Test Zone", x = 0.4, y = 0.4, categories = {zoneCategory}}
+	local icon = {zone = zone, look = QC.QC_ICON_NORMAL, count = 3, dim = false}
+	local continentPin = newContinentPin(icon)
+	record = {}
+	continentPin:OnMouseEnter()
+	check("it opens on the pin, to its right", record[1] == tooltip.__name .. ":SetOwner(" .. continentPin.__name .. ",ANCHOR_RIGHT)", record[1])
+	check("it clears its lines next", record[2] == tooltip.__name .. ":ClearLines()", record[2])
+	check("the zone's name heads it", count(":AddLine(Test Zone,") == 1)
+	check("what is done of it is a bar", count(":SetMinMaxValues(0,") == 1 and count("|cffc8c8c8") == 1)
+	check("the quests in the log are a row", count("In Progress|r") == 1)
+	check("the quests to take are a row", count("Available Quests|r") == 1)
+	check("a row with nothing in it is left out", count("Ready for turn-in") == 0)
+	check("the last line says what a click does", count("<Click to Zoom In>") == 1)
+	check("the bar widens it", count(":SetMinimumWidth(180)") == 1)
+	check("it ends by showing itself", record[#record] == tooltip.__name .. ":Show()", record[#record])
+	local first = #record
+	record = {}
+	QC.RedrawMapTooltip()
+	check("a redraw runs this pin's tooltip, now the one under the mouse", record[1] == tooltip.__name .. ":SetOwner(" .. continentPin.__name .. ",ANCHOR_RIGHT)" and #record <= first, tostring(#record))
+	record = {}
+	ctx.shift = true
+	shiftWatcher()(nil, "MODIFIER_STATE_CHANGED", "LSHIFT")
+	ctx.shift = false
+	check("Shift redraws it too", record[1] == tooltip.__name .. ":SetOwner(" .. continentPin.__name .. ",ANCHOR_RIGHT)")
+	record = {}
+	continentPin:OnMouseLeave()
+	check("leaving hides it", record[1] == tooltip.__name .. ":Hide()", record[1])
+	record = {}
+	QC.RedrawMapTooltip()
+	check("and nothing is redrawn after", #record == 0, tostring(#record))
+	record = {}
+	newContinentPin({zone = {mapId = 13, name = "Far", x = 0.8, y = 0.2, categories = {zoneCategory}}, look = QC.QC_ICON_NORMAL, count = 1}):OnMouseEnter()
+	check("a zone near the right edge opens to its left", record[1]:find(",ANCHOR_LEFT)", 1, true) ~= nil, record[1])
+	record = {}
+	newContinentPin({zone = {mapId = 14, name = "Low", x = 0.2, y = 0.8, categories = {zoneCategory}}, look = QC.QC_ICON_NORMAL, count = 1}):OnMouseEnter()
+	check("one near the bottom opens below it", record[1]:find(",ANCHOR_BOTTOM)", 1, true) ~= nil, record[1])
+	record = {}
+	newContinentPin(nil):OnMouseEnter()
+	check("a pin with no icon leaves the tooltip alone", #record == 0)
 end
 
 print(failures == 0 and "All checks passed." or (failures .. " checks failed."))

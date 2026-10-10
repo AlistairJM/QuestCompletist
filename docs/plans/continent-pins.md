@@ -117,16 +117,18 @@ a decisions CSV that a tool turns into a generated file, as `qcUnavailableQuests
 - `qcContinentPins.lua` sorts those quests into total, done, ready, in the log, available now and
   locked, with `qcQuestStatus.Of` and `qcPinQuestNeeds(..., true)`; PR 3 exports the second from
   `qcMapPins.lua`, where it is file-local. Done follows the pin bar: `qcIsQuestCompleted`, or another
-  character's completion while the warband filter is on. The icon's bright or dim state is worked out
-  at each refresh and stops at the first takeable quest; the tooltip's numbers are read live on
-  hover, because objective changes don't refresh the map.
+  character's completion while the warband filter is on. The icon's look and count are worked out at each
+  refresh from those numbers (a continent takes 12 ms offline at most, so perhaps 25 to 35 in game: to be
+  timed at the look); the tooltip's numbers are read live on hover, because objective changes don't
+  refresh the map.
 
 **The pin.** `qcContinentPinTemplate` (24 x 24, a texture and a count in `NumberFontNormalSmall`)
 and `qcContinentPinMixin`, scaling limits (1, 1, 1), frame level `PIN_FRAME_LEVEL_AREA_POI` like
 the zone pins and HandyNotes (the tie against Blizzard's capital markers, which
 the folding mostly removes, is settled at the look; the other candidates are the map-highlight and
 dig-site levels). The icon is the existing "?" for ready, "!" for takeable, "!" at half shade for
-locked and the grey "?" for in the log only, with the count of the winning state. No new art.
+locked and the grey "?" for in the log only (not dimmed again: it is grey already), with the count of the
+winning state in the icon's shade. No new art.
 `UseFrameLevelType` goes before `SetPosition`, as in `qcPinMixin:OnAcquired`, and every field is
 reset on acquire, because pins are pooled. Right-click passthrough is left as Blizzard sets it, so
 a right click still zooms out; the left click is handled in `OnMouseClickAction` with
@@ -205,10 +207,20 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
 4. **Counting and the zone list**, with `Test-ContinentPins.lua`. Nothing visible yet. Done as
    `qcGetZoneQuests` in `qcCore.lua` (exported as `QC.qcZoneQuests`) and the new
    `qcContinentPins.lua` (in both TOCs, after `qcMapPins.lua`): `qcContinentZones`, `qcQuestKind`,
-   `qcZoneNumbers`, `qcZoneBrightness` and `qcContinentIcons`. Nothing calls them in the game yet; PR 5
-   adds the provider and the pin.
+   `qcZoneNumbers`, `qcZoneBrightness` (PR 5 replaced it with `qcZoneLook`) and `qcContinentIcons`.
+   Nothing called them in the game until PR 5 added the provider and the pin.
 5. **Icons and the option**: template, mixin, provider, the checkbox, the localization keys,
-   `Test-Settings.lua`, the documents.
+   `Test-Settings.lua`, the documents. Done as:
+   - `qcContinentPinTemplate` in `QuestCompletist.xml` (24 x 24, the art and a count in
+     `NumberFontNormalSmall`) and, in `qcContinentPins.lua`, `qcContinentPinMixin` (position, art, count and
+     shade; the tooltip through `QC.qcMapTip`; a left click opens the zone) and `qcContinentDataProvider`
+     (continent maps only, and only with both switches on), added to `WorldMapFrame`;
+   - `qcZoneLook` in place of `qcZoneBrightness`: the icon and count come from the same numbers the tooltip
+     shows, so the count of the winning state is on the icon;
+   - `qcRefreshMapProviders` in `qcCore.lua` refreshes both kinds of pin, and replaces the three direct
+     calls to `qcMapDataProvider:RefreshAllData()`;
+   - `QC_M_SHOW_CONTINENT` (default 1), its checkbox under "Show Map Icons", the filter grid re-anchored
+     to it, and the two keys `SHOWCONTINENTICONS` and `SHOWCONTINENTICONSTIP` in all 11 locale files.
 6. **Sweep integration**: the geometry baseline compared on each sweep, `Compare-ApiDocs.ps1` watching
    the values of `Enum.UIMapType` and the fields of `UiMapDetails` (it compares neither), and the
    runbook step.
@@ -227,13 +239,17 @@ Offline, under `C:\Program Files (x86)\Lua\5.1\lua.exe` (the `lua` on the path i
   the log doesn't count; unticking "hide completed" doesn't light a zone; with the list's own filter
   the totals equal `qcGetZoneCompletionStats` for every group of both games, and with the map's they
   differ only by what its seasonal filter hides; a real-data pass with the icon and quest counts per
-  continent and its timing. The reachability harness needs no stand-ins yet: the new file stays inert
-  at load, because the harness runs files against a catch-all dummy with no `pcall`, and its report is
-  unchanged. PR 5's provider will need `C_Map.GetMapInfo` and `Enum.UIMapType` there.
+  continent and its timing. The reachability harness needs no stand-ins: the new file stays inert at
+  load, because the harness runs files against a catch-all dummy with no `pcall`, and it never calls the
+  continent provider; its report is unchanged. `Test-SeasonalCalendar.lua` does call it (through
+  `qcRefreshMapProviders`), so it got `C_Map` and `Enum.UIMapType` stand-ins and a map that keeps the
+  two kinds of pin apart. PR 5 adds the provider's gates, the pin's art, shade, count and click, and
+  `Test-MapTooltip.lua` plays the continent pin's tooltip through the same kit as a zone pin's.
 - **`tools\Test-Settings.lua`** (the "90 checks" harness of `settings-grid.md` was never committed):
   defaults on a fresh table, an explicit 0 kept, the migration untouched, the panel builds on both
-  TOCs, the box's click saves and refreshes, the keys exist in 11 files, and the panel's lowest edge
-  stays inside 601 px with a margin.
+  TOCs, the box's click saves and redraws both kinds of pin, its tip, and the panel's lowest edge: 568 px
+  down a 601 px page, 33 px to spare, worked out from the anchors and the game's font heights. (That the
+  keys exist in all 11 files is `Test-Localization.lua`'s.)
 - `Test-Localization.lua` must say "No problems".
 
 ## To try in game
@@ -286,3 +302,4 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 - 2026-10-10: PR 2 built (the probe's geometry pass, `Report-ContinentGeometry.lua`, 804 checks in `Test-Probe.lua`); not yet run in game.
 - 2026-10-10: PR 3 built (the map tooltip's helpers in `qcTooltips.lua` as `QC.qcMapTip`, `Test-MapTooltip.lua`): the reachability reports of both games and a record of 400-odd tooltip calls are identical to master's; not yet tried in game.
 - 2026-10-10: PR 4 built (`qcGetZoneQuests`, `qcContinentPins.lua`, `Test-ContinentPins.lua`): every category counts as many quests as the list's zone counter says (485 retail, 113 Forever); retail's 15 continents give 139 icons and Forever's 2 give 42, with no quest in two icons; a continent pass takes 6 ms at most offline; not yet in game, and nothing draws yet.
+- 2026-10-10: PR 5 built (`qcContinentPinTemplate`, `qcContinentPinMixin`, `qcContinentDataProvider`, `qcRefreshMapProviders`, the `QC_M_SHOW_CONTINENT` option and its two strings, `Test-Settings.lua`): the reachability reports of both games and the zone pins' tooltip record are unchanged; the continent pin's tooltip, click, provider and the page's layout (33 px to spare) are checked offline only; not yet tried in game.

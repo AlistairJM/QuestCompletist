@@ -5,6 +5,8 @@ local QC = select(2, ...)
 local qcQuestStatus, qcZoneQuests, qcPinQuestNeeds = QC.qcQuestStatus, QC.qcZoneQuests, QC.qcPinQuestNeeds
 local qcIsQuestCompletedOnAccount = QC.qcIsQuestCompletedOnAccount
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
+local qcMapTip, qcSetIcon = QC.qcMapTip, QC.qcSetIcon
+local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS
 
 -- Zones whose quests the list files under the categories of their parts, as well as under their own, if
 -- they have one. Both games' map IDs: retail's are Stranglethorn Vale (Northern Stranglethorn, The Cape of
@@ -110,26 +112,120 @@ local function qcZoneNumbers(zone, keepQuest, countWarband)
 	return numbers
 end
 
--- Whether a zone gets an icon, and how bright it is: nil when nothing is left to do, true when a quest is
--- ready to hand in or can be taken, false when only quests in the log or locked ones are left.
-local function qcZoneBrightness(zone, keepQuest, countWarband)
-	local left = false
-	for _, questId in ipairs(qcZoneQuests(zone.categories, keepQuest)) do
-		local kind = qcQuestKind(questId, countWarband)
-		if kind == "ready" or kind == "available" then return true end
-		if kind ~= "done" then left = true end
-	end
-	if left then return false end
-	return nil
+-- The icon a zone gets from what is left to do in it, and the count on it: the quests ready to hand in, else
+-- the ones that can be taken, else the locked ones (dimmed), else the ones in the log. Nothing is returned when
+-- nothing is left.
+local function qcZoneLook(numbers)
+	if numbers.ready > 0 then return QC_ICON_READY, numbers.ready, false end
+	if numbers.available > 0 then return QC_ICON_NORMAL, numbers.available, false end
+	if numbers.locked > 0 then return QC_ICON_NORMAL, numbers.locked, true end
+	if numbers.progress > 0 then return QC_ICON_PROGRESS, numbers.progress, false end
 end
 
--- The icons a continent map draws now: each zone with something left to do, and whether it is bright.
+-- The icons a continent map draws now: each zone with something left to do, with its look, count and shade.
 local function qcContinentIcons(continentId)
 	local keepQuest, countWarband = qcBuildViewFilter("M"), qcHides("M", "WARBANDS")
 	local icons = {}
 	for _, zone in ipairs(qcContinentZones(continentId)) do
-		local bright = qcZoneBrightness(zone, keepQuest, countWarband)
-		if bright ~= nil then icons[#icons + 1] = {zone = zone, bright = bright} end
+		local look, count, dim = qcZoneLook(qcZoneNumbers(zone, keepQuest, countWarband))
+		if look then icons[#icons + 1] = {zone = zone, look = look, count = count, dim = dim} end
 	end
 	return icons
 end
+
+qcContinentPinMixin = CreateFromMixins(MapCanvasPinMixin)
+
+function qcContinentPinMixin:OnLoad()
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
+	self:SetScalingLimits(1, 1.0, 1.0)
+end
+
+function qcContinentPinMixin:OnAcquired(icon)
+	self.Icon = icon
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
+	self:SetPosition(icon.zone.x, icon.zone.y)
+	self:SetSize(24, 24)
+	qcSetIcon(self.Texture, icon.look)
+	local shade = icon.dim and 0.5 or 1
+	self.Texture:SetVertexColor(shade, shade, shade)
+	self.Count:SetText(icon.count)
+	self.Count:SetTextColor(shade, shade, shade)
+end
+
+-- The rows of the tooltip, in order: what each says, in the game's words, with its colour and icon.
+local QC_CONTINENT_ROWS = {
+	{key = "ready", text = QUEST_WATCH_QUEST_READY, colour = "ffd100", icon = QC_ICON_READY},
+	{key = "available", text = AVAILABLE_QUESTS, colour = "ffffff", icon = QC_ICON_NORMAL},
+	{key = "locked", text = UNAVAILABLE, colour = "9d9d9d", icon = QC_ICON_NORMAL, dim = true},
+	{key = "progress", text = IN_PROGRESS, colour = "949694", icon = QC_ICON_PROGRESS},
+}
+
+-- The zone's name, what is done of it, a row for each state with quests in it, and what a click does. The
+-- numbers are counted now, not when the icon was drawn: a quest changes state without the map refreshing.
+function qcContinentPinMixin:OnMouseEnter()
+	local icon = self.Icon
+	if not icon then return end
+	local zone = icon.zone
+	local anchorPoint = "ANCHOR_RIGHT"
+	if zone.x > 0.75 then anchorPoint = "ANCHOR_LEFT" end
+	if zone.y > 0.75 then anchorPoint = "ANCHOR_BOTTOM" end
+	qcMapTip.Open(self, anchorPoint)
+	local numbers = qcZoneNumbers(zone, qcBuildViewFilter("M"), qcHides("M", "WARBANDS"))
+	qcMapTip.Line(zone.name, nil, GameTooltipHeaderText)
+	if numbers.total >= 2 then
+		local leftText, rightText = qcMapTip.Line(" ", string.format("|cffc8c8c8%d/%d|r", numbers.done, numbers.total))
+		if leftText and rightText then
+			qcMapTip.Bar(leftText, rightText, numbers.done, numbers.total)
+		end
+	end
+	for _, row in ipairs(QC_CONTINENT_ROWS) do
+		local count = numbers[row.key]
+		if count > 0 then
+			local leftText = qcMapTip.Line(string.format("    |cff%s%s|r", row.colour, row.text),
+				string.format("|cff%s%d|r", row.colour, count))
+			qcMapTip.LineIcon(leftText, row.icon, row.dim)
+		end
+	end
+	qcMapTip.Line("|cff808080" .. FLIGHT_MAP_CLICK_TO_ZOOM_IN .. "|r", nil, GameTooltipTextSmall)
+	qcMapTip.Finish()
+end
+
+function qcContinentPinMixin:OnMouseLeave()
+	qcMapTip.Close()
+end
+
+-- A left click opens the zone's map. The map hands a pin's clicks to OnMouseClickAction and its right-clicks
+-- to itself, to zoom out.
+function qcContinentPinMixin:OnMouseClickAction(button)
+	if button ~= "LeftButton" or IsModifierKeyDown() then return end
+	local icon, map = self.Icon, self:GetMap()
+	if icon and map then
+		map:SetMapID(icon.zone.mapId)
+	end
+end
+
+qcContinentDataProvider = CreateFromMixins(MapCanvasDataProviderMixin)
+
+function qcContinentDataProvider:RemoveAllData()
+	if self:GetMap() then
+		self:GetMap():RemoveAllPinsByTemplate("qcContinentPinTemplate")
+	end
+end
+
+-- Zone icons on a continent's map, when the map icons and this kind of them are on.
+function qcContinentDataProvider:RefreshAllData()
+	if not self:GetMap() then return end
+	self:RemoveAllData()
+
+	if qcSettings.QC_M_SHOW_ICONS == 0 or qcSettings.QC_M_SHOW_CONTINENT == 0 then return end
+
+	local mapId = self:GetMap():GetMapID()
+	local info = mapId and C_Map.GetMapInfo(mapId)
+	if not (info and info.mapType == Enum.UIMapType.Continent) then return end
+
+	for _, icon in ipairs(qcContinentIcons(mapId)) do
+		self:GetMap():AcquirePin("qcContinentPinTemplate", icon)
+	end
+end
+
+WorldMapFrame:AddDataProvider(qcContinentDataProvider)

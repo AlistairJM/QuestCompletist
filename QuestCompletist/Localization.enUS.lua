@@ -169,4 +169,6 @@ qcLocalize = {
 	RECORDERHIDDEN = "%d times the game hid who was speaking; those quests were noted without the giver.",
 	RECORDERFILE = "Nothing is sent anywhere. The game saves the notes when you log out or reload, in QuestCompletist.lua in your account's SavedVariables folder (in the game's WTF folder, under Account). To help improve the map, attach that file to a comment on the addon's CurseForge page.",
 	RECORDERCLEARED = "The notes have been cleared.",
+	SHOWCONTINENTICONS = "Show Zone Icons on Continent Maps",
+	SHOWCONTINENTICONSTIP = "Marks each zone on a continent map where you still have quests to do, and shows the counts when you hover over it. Daily, weekly and repeatable quests aren't counted. Show Map Icons must also be ticked.",
 	}

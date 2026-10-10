@@ -143,6 +143,8 @@ qcLocalize = setmetatable({
 	RECORDERHIDDEN = "遊戲有 %d 次隱藏了說話者；這些任務已在沒有提供者的情況下記錄。", -- Needs review
 	RECORDERFILE = "不會傳送到任何地方。遊戲會在你登出或重新載入介面時，把記錄儲存到你帳號 SavedVariables 資料夾（遊戲的 WTF 資料夾中的 Account 底下）裡的 QuestCompletist.lua。若想協助改進地圖，請把該檔案附在插件 CurseForge 頁面的留言中。", -- Needs review
 	RECORDERCLEARED = "記錄已清除。", -- Needs review
+	SHOWCONTINENTICONS = "在大陸地圖上顯示區域圖示", -- Needs review
+	SHOWCONTINENTICONSTIP = "在大陸地圖上標出你仍有任務可做的每個區域，滑鼠移上去時顯示數量。每日、每週和可重複任務不計入。同時必須勾選「顯示地圖小圖示」。", -- Needs review
 	}, {__index = qcLocalize})
 
 end

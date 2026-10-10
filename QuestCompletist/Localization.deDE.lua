@@ -143,6 +143,8 @@ qcLocalize = setmetatable({
 	RECORDERHIDDEN = "Das Spiel hat %d Mal verborgen, wer sprach; diese Quests wurden ohne Questgeber notiert.", -- Needs review
 	RECORDERFILE = "Nichts wird irgendwohin gesendet. Das Spiel speichert die Notizen beim Ausloggen oder Neuladen in der Datei QuestCompletist.lua im Ordner SavedVariables deines Kontos (im WTF-Ordner des Spiels unter Account). Um die Karte zu verbessern, hänge diese Datei an einen Kommentar auf der CurseForge-Seite des Addons an.", -- Needs review
 	RECORDERCLEARED = "Die Notizen wurden gelöscht.", -- Needs review
+	SHOWCONTINENTICONS = "Zonensymbole auf Kontinentkarten anzeigen", -- Needs review
+	SHOWCONTINENTICONSTIP = "Markiert jedes Gebiet auf einer Kontinentkarte, in dem du noch Quests zu erledigen hast, und zeigt die Anzahlen, wenn du mit der Maus darüberfährst. Tägliche, wöchentliche und wiederholbare Quests werden nicht gezählt. Die Option Zeige Kartensymbole muss ebenfalls aktiviert sein.", -- Needs review
 	}, {__index = qcLocalize})
 
 end

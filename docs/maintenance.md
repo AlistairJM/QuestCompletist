@@ -1502,6 +1502,9 @@ git diff --stat
   games' TOCs. It must say "All checks passed." It plays a pin's tooltip (opened, filled, redrawn by names
   and by Shift, closed) against stand-ins that write down every call; give it a file as a third argument
   and run it on the code before and after a change to compare the two records line by line.
+- For changes to the saved settings or the options panel, run `Test-Settings.lua` for both games' TOCs. It must
+  say "All checks passed." It builds the panel against frames that keep their anchors and heights, so it
+  also says how much room the page has left (33 px with the continent box in).
 - For changes to the zone icons' counting (`qcContinentPins.lua`, `qcGetZoneQuests` in `qcCore.lua`), run
   `Test-ContinentPins.lua` for both games' TOCs. It must say "All checks passed." It builds a made-up
   continent from the game's own zones, counts a character step by step, checks every category against the
