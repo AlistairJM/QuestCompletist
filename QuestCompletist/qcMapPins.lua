@@ -340,8 +340,7 @@ function qcPinMixin:OnMouseClickAction(button)
     local pinData = self.PinData
     local mapId = pinData and self:GetMap() and self:GetMap():GetMapID()
     if not mapId then return end
-    local first = pinData.stack and pinData.stack[1] or pinData
-    TomTom:AddWaypoint(mapId, pinData[4] / 100, pinData[5] / 100, {title = qcNpcName(first) or qcQuestName(first[6][1])})
+    TomTom:AddWaypoint(mapId, pinData[4] / 100, pinData[5] / 100, {title = qcNpcName(pinData) or qcQuestName(pinData[6][1])})
     TomTom:SetClosestWaypoint()
 end
 
@@ -357,8 +356,17 @@ end)
 -- Pins drawn within half a map point of each other overlap at any zoom, and only the top one can be
 -- hovered. After the filters have run, pins within that distance of a group's first pin join it,
 -- and each group gets a single pin standing in for them all. Measuring from the first pin, not any
--- member, stops a row of pins chaining into one group. qcPinDB itself keeps one pin per quest giver.
+-- member, stops a row of pins chaining into one group. The pin stands at the first pin's point, so
+-- every member is within the distance of it, and is named for the group's first named pin, else its
+-- first. qcPinDB itself keeps one pin per quest giver.
 local QC_PIN_MERGE_DISTANCE = 0.5
+local function qcStackAnchor(stack)
+    for _, member in ipairs(stack) do
+        if member[3] then return member end
+    end
+    return stack[1]
+end
+
 local function qcMergeStackedPins(pins)
     local merged = {}
     local limit = QC_PIN_MERGE_DISTANCE * QC_PIN_MERGE_DISTANCE
@@ -381,13 +389,13 @@ local function qcMergeStackedPins(pins)
         if #stack == 1 then
             merged[i] = stack[1]
         else
-            local first, quests = stack[1], {}
+            local first, anchor, quests = stack[1], qcStackAnchor(stack), {}
             for _, member in ipairs(stack) do
                 for _, questId in ipairs(member[6]) do
                     table.insert(quests, questId)
                 end
             end
-            merged[i] = {first[1], first[2], first[3], first[4], first[5], quests, stack = stack}
+            merged[i] = {anchor[1], anchor[2], anchor[3], first[4], first[5], quests, stack = stack}
         end
     end
     return merged

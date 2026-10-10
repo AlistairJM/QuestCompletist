@@ -393,6 +393,112 @@ if RECORD_FILE then
 	out:close()
 end
 
+print("A stack of pins is named for its first named giver")
+local realPinDB = env.qcPinDB
+local provider = env.qcMapDataProvider
+local stackMap = {drawn = {}}
+stackMap.mapId = 84
+function stackMap:GetMapID() return self.mapId end
+function stackMap:RemoveAllPinsByTemplate() self.drawn = {} end
+function stackMap:AcquirePin(_, data) self.drawn[#self.drawn + 1] = data end
+provider.GetMap = function() return stackMap end
+local waypoints
+env.C_AddOns.IsAddOnLoaded = function(name) return name == "TomTom" end
+env.TomTom = {
+	AddWaypoint = function(_, mapId, x, y, options) waypoints[#waypoints + 1] = {mapId = mapId, x = x, y = y, title = options.title} end,
+	SetClosestWaypoint = function() end,
+}
+local function draw(pins)
+	env.qcPinDB = {[84] = pins}
+	provider:RefreshAllData()
+	return stackMap.drawn
+end
+local function click(data)
+	waypoints = {}
+	local clicked = newPin(data)
+	clicked.GetMap = function() return stackMap end
+	clicked:OnMouseClickAction("LeftButton")
+	return waypoints[1]
+end
+local function firstHeading(data)
+	record = {}
+	local hovered = newPin(data)
+	hovered:OnMouseEnter()
+	hovered:OnMouseLeave()
+	for _, line in ipairs(record) do
+		if line:find(":AddDoubleLine(", 1, true) then return line end
+	end
+end
+local otherQuests = env.qcLocalize.OTHERQUESTS
+
+local nameless = {1, 0, nil, 50, 50, {pinA[6][3]}}
+local namelessNear = {1, 0, nil, 50.2, 50, {pinA[6][1]}}
+local namedA = {pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1], pinA[6][2]}}
+local namedB = {pinB[1], pinB[2], pinB[3], 50.1, 50.4, pinB[6]}
+
+local drawn = draw({nameless, namedA})
+check("a nameless pin and a named one, 0.36 points apart, are one pin", #drawn == 1 and drawn[1].stack ~= nil and #drawn[1].stack == 2)
+check("the nameless pin is still the group's first, which decides who joins", drawn[1].stack[1][3] == nil and drawn[1].stack[2][3] == pinA[3])
+check("the pin takes the named giver's NPC and name", drawn[1][2] == pinA[2] and drawn[1][3] == pinA[3])
+check("and stays at the first pin's point", drawn[1][4] == 50 and drawn[1][5] == 50)
+check("it holds the quests of both", #drawn[1][6] == 3)
+local waypoint = click(drawn[1])
+check("a click's waypoint is titled with the named giver, not a quest", waypoint and waypoint.title == pinA[3], waypoint and waypoint.title)
+check("and sits at the first pin's point on the map's ID", waypoint and waypoint.mapId == 84 and waypoint.x == 0.5 and waypoint.y == 0.5)
+local heading = firstHeading(drawn[1])
+check("the tooltip's first heading is the same giver", heading and heading:find(":AddDoubleLine(" .. pinA[3] .. ",", 1, true) ~= nil, heading)
+check("and the nameless pin's quests follow under the other quests", count(otherQuests, 1) == 1)
+
+drawn = draw({namedA, nameless})
+check("a stack whose first pin is named stays named for it", drawn[1][3] == pinA[3] and drawn[1][4] == 50.3 and drawn[1][5] == 50.2)
+check("its waypoint is titled with that giver", click(drawn[1]).title == pinA[3])
+
+drawn = draw({nameless, namedB, namedA})
+check("of two named givers the first in the stack gives the name", drawn[1][3] == pinB[3] and drawn[1][2] == pinB[2])
+check("and its waypoint is titled with that one", click(drawn[1]).title == pinB[3])
+drawn = draw({nameless, namedA, namedB})
+check("in the other order the other one does", drawn[1][3] == pinA[3] and click(drawn[1]).title == pinA[3])
+
+drawn = draw({nameless, namelessNear})
+check("a stack with no named pin takes its first pin's fields", drawn[1][2] == 0 and drawn[1][3] == nil and drawn[1][1] == nameless[1])
+check("and its waypoint takes the name of its first quest", click(drawn[1]).title == QC.qcQuestName(nameless[6][1]), click(drawn[1]).title)
+
+drawn = draw({nameless, {1, pinB[2], pinB[3], 50.4, 50, {pinB[6][1]}}, {1, pinA[2], pinA[3], 50.8, 50, {pinA[6][2]}}})
+check("a pin out of reach of the first stays out, so a row doesn't chain", #drawn == 2 and #drawn[1].stack == 2 and drawn[2].stack == nil)
+check("the first two are named for the named one", drawn[1][3] == pinB[3] and click(drawn[1]).title == pinB[3])
+check("the pin on its own keeps its own name", drawn[2][3] == pinA[3] and click(drawn[2]).title == pinA[3])
+
+drawn = draw({nameless})
+check("a single nameless pin is titled with its quest", #drawn == 1 and drawn[1].stack == nil and click(drawn[1]).title == QC.qcQuestName(nameless[6][1]))
+drawn = draw({namedA})
+check("a single named pin is titled with its giver", drawn[1].stack == nil and click(drawn[1]).title == pinA[3])
+
+env.qcPinDB = realPinDB
+local stacks, firstNameless, unnamed = 0, 0, 0
+for _, mapId in ipairs(mapIds) do
+	stackMap.mapId = mapId
+	provider:RefreshAllData()
+	for _, data in ipairs(stackMap.drawn) do
+		if data.stack then
+			stacks = stacks + 1
+			local named
+			for _, member in ipairs(data.stack) do
+				if member[3] and not named then named = member end
+			end
+			if named and not data.stack[1][3] then firstNameless = firstNameless + 1 end
+			if named and not (data[2] == named[2] and data[3] == named[3] and click(data).title == named[3]) then
+				unnamed = unnamed + 1
+			end
+		end
+	end
+end
+stackMap.mapId = 84
+check("every stack in the data with a named pin is named for its first one", unnamed == 0,
+	string.format("%d stacks, %d with a nameless first pin", stacks, firstNameless))
+
+env.C_AddOns.IsAddOnLoaded = function() return false end
+env.TomTom = nil
+
 -- The zone icons on a continent map are a second kind of pin on the same tooltip. The code before this one
 -- has no such pin, so the record above stays comparable with it.
 if rawget(env, "qcContinentPinMixin") then
