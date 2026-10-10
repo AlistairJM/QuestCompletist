@@ -811,9 +811,12 @@ prerequisite for any, and the pin offered every quest that starts at it, whateve
 - **How far to trust it:** on retail, where Blizzard's API gives a chained step a prerequisite, it is the
   previous step 93% of the time (6,868 of 7,396 steps) and another quest 7% (528); where the places
   differ or are missing it is the previous step 80% and 92% of the time. Forever has no other source for
-  these ten, and a missing prerequisite shows the player quests they can't take, so the rule is used;
-  the first test in the game is that 92742 is offered at Sentinel Hill and each step only after the
-  one before it.
+  these ten, and a missing prerequisite shows the player quests they can't take, so the rule is used.
+  It stands on the data (the places agree at every step, and on retail the previous step is the
+  prerequisite 93% of the time). The user dropped the check in the game, that 92742 is offered at
+  Sentinel Hill and each step only after the one before it, on 10 October 2026; a report of a step
+  offered out of turn, or one missing, is what would reopen it. Retail keeps Blizzard's API for its
+  prerequisites, for now ([game-parity.md](game-parity.md), recommendation 13).
 
 ## Decisions
 
