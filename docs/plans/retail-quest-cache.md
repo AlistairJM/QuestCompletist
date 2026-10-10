@@ -90,6 +90,19 @@ table's for 4,125 of 4,125.
 - 37 content tunings in use have no range (154 quests, none with an API record): they need the
   `ContentTuning` table. It would also say whether the API shows `MinLevel` or `MinLevelWithDelta`,
   and settle the rule for a quest of the other faction. Tuning 0 means no minimum.
+- **Our 0** (246 quests, counted on 10 October 2026 against the API cache, the cache's tuning, the
+  retail probe of build 12.1.0.69933 and, for old quests, Forever's cache and CMaNGOS). The API's
+  minimum is 1 for 191 (a range from 1 to the cap: a quest with no level of its own, as the list now
+  shows it), 10 for 16 Garrison "Your Second ... Work Order" quests (35172, 36838 to 36842, 36844,
+  36845, 37584, 37587, 37589 to 37594) and 80 or 90 for six (62355, 64159, 64162, 64163, 89403,
+  91632); two records give none and 31 quests have no record. The tuning is 0 for 10; 90751 has no
+  record, and its tuning's one other quest has 80 to 90. The probe's `GetQuestDifficultyLevel`, asked
+  as a level 90 character, says 0 for 14 (those 10 and 38204, 38205, 57277, 61565), 90 for 187, 89
+  for 2, 10 for 1, and nothing for 42. So 201 are confirmed as having no level (the 191 and the 10),
+  22 have no record anywhere, and 23 have a minimum our 0 lacks (the 22 with one in the API, and
+  90751). Of the 191, 1582 (Moonglow Vest) is level 18, minimum 8 in Classic's sources. On Forever's
+  12 (level 0 or below) the game's cache says level 0 for 2 (8856, 96735) and lacks the other 10,
+  for which CMaNGOS gives level 0, or -1 for 9321.
 - **Decision for the user** (open-items.md row 14, beside row 8's refresh from the API): whether
   retail's gate comes from the tuning. Forever's structure
   already holds it: `level` stays the row's own (the list bracket and the sort) and the gate goes in

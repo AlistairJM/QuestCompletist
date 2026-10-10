@@ -788,7 +788,7 @@ local function qcBuildQuestFilter(view)
 	local professions, covenants = qcQuestProfession, qcQuestCovenant
 	return function(questId, e)
 		if (BitBand(e[4], hiddenTypes) ~= 0) then return false end
-		if greenCutoff and (e[2] or 0) < greenCutoff then return false end
+		if greenCutoff and (e[2] or 0) > 0 and e[2] < greenCutoff then return false end
 		local profession = professions[questId]
 		if professionBitmask and profession and BitBand(profession, professionBitmask) == 0 then return false end
 		if factionFlag and not qcMaskAllows(e[5], factionFlag) then return false end
@@ -1121,7 +1121,8 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			local e = qcQuestDatabase[questId]
 			local questType = e[4]
 			local questFaction = e[5]
-			questRecord.QuestName:SetText(stringFormat("[%d] %s",e[2],qcQuestName(questId)))
+			local questName = qcQuestName(questId)
+			questRecord.QuestName:SetText((e[2] or 0) > 0 and stringFormat("[%d] %s",e[2],questName) or questName)
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
