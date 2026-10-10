@@ -727,9 +727,10 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest`. Retail answers with real values (13
   distinct expansion values, 13 campaigns, 1,570 quest lines among its 33,802 loaded quests, 871
   account-wide quests, 191 meta quests). Forever's are inert: every expansion is -2, and none is a task, world
-  quest, campaign or story quest; 11 quests have a quest line. A refused quest saves no facts, so
-  whether `GetQuestLineInfo` answers for one, and whether `IsAccountQuest` needs loaded data, are still
-  open.
+  quest, campaign or story quest; 11 quests have a quest line. A refused quest saved no facts, so
+  whether `GetQuestLineInfo` answers for one, and whether `IsAccountQuest` needs loaded data, were not
+  known; the probe now tallies each function on the refused quests (`refusedFacts` in the quest run's
+  row), and records the character and level of every run.
 - **The quest pass on retail:** all 35,023 quests answered, 33,802 loaded (31,425 on 29 September,
   same build), so 183 newly loaded quests classify as Recurring.
 - **The quest pass on Forever differs between runs:** about 80 of 7,320 quests are answered in one run

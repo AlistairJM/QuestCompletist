@@ -1408,7 +1408,11 @@ After Forever's launch, use its live client's folder in place of `_classic_beta_
 `WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua` into `tools\retail_probe_<build number>\`
 (`retail_probe_69933` for build 12.1.0.69933), where step 3 of the sweep, step 7 and the map report find it;
 the retail quest cache is not read yet. `Read-ForeverProbe.lua <file> facts` prints every fact the quest
-pass saved, one per line.
+pass saved, one per line, then a `run` line for each run (its kind, build, time, the character that ran
+it, as faction, race and class and never a name, and its level) and a `refusedfact` line for each
+function the quest pass asked about the quests the server refused: how many it was asked about, how
+many it answered anything for, how many with something other than no, and the first of those. Two runs
+on different characters, with their answers compared, show whether the beta's answers follow the character.
 
 A map pass is read with `tools\Report-MapOffers.lua`, which prints each map's offers, with how far
 each is from the quest's pin, and the points of interest, events, hubs and entrances, and writes

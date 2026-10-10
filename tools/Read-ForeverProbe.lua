@@ -8,6 +8,9 @@
 --   turnin   kind  id  questId
 --   accepted questId  heading  map  x  y
 --   started  questId  item  map  x  y
+--   run          n  kind  build  time  character  level  answered  asked          (only with "facts")
+--   refusedfact  n  function  asked  answered  positive  examples                 (only with "facts": the n-th run's
+--                                                                                  tally of what a function says for refused quests)
 dofile(arg[1])
 local db = QCForeverProbeDB or error("no QCForeverProbeDB in " .. arg[1])
 
@@ -54,4 +57,13 @@ end
 for _, id in ipairs(keys(db.started)) do
 	local started = db.started[id]
 	line("started", id, started.item, started.map, started.x, started.y)
+end
+if arg[2] == "facts" then
+	for i, run in ipairs(db.runs or {}) do
+		line("run", i, run.kind, run.build, run.time, run.character, run.level, run.answered, run.asked)
+		for _, key in ipairs(keys(run.refusedFacts)) do
+			local tally = run.refusedFacts[key]
+			line("refusedfact", i, key, tally.asked, tally.answered, tally.positive, table.concat(tally.examples or {}, ","))
+		end
+	end
 end

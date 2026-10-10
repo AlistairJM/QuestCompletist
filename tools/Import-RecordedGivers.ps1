@@ -126,7 +126,8 @@ $flaggedFacts = New-Object System.Collections.Generic.List[object]
 foreach ($source in $sources) {
     if ($ForgetTag -contains $source.Tag) { $report.Add("Not read: $($source.Tag): forgotten for this run."); continue }
     try {
-        $file = Read-RecordedFile $source.Path $source.Tag $LuaExe $ReaderScript
+        $limit = if ($source.Tag -like 'own-*') { 64 } else { 8 }
+        $file = Read-RecordedFile $source.Path $source.Tag $LuaExe $ReaderScript $limit
         $facts = Get-RecordedFacts $file $Builds $MapIds $QuestIds
         if ($facts.Refused) {
             $report.Add("Not read: $($source.Tag) ($($source.Path)): $($facts.Refused).")
