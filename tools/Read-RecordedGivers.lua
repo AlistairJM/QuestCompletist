@@ -31,7 +31,7 @@ local MAX_ID = 9999999
 
 -- The most the addon's recorder keeps (qcRecorder.lua); a file with more was not written by it. The
 -- probe kept everything, so its limits are only there to bound the work.
-local MAX_GIVERS, MAX_QUESTS, MAX_STARTS, MAX_SPOTS, MAX_LIST = 2500, 5000, 500, 4, 60
+local MAX_GIVERS, MAX_QUESTS, MAX_STARTS, MAX_SPOTS, MAX_LIST = 5000, 10000, 4000, 4, 60
 local MAX_PROBE_ENTRIES, MAX_PROBE_PARTS = 20000, 1000
 local MAX_INSTRUCTIONS = 50000000
 

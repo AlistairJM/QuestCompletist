@@ -20,7 +20,7 @@ recorder paragraph of recommendation 1), taken as agreed until the user says oth
 | 2 | Nothing identifying: no character or realm name, no GUID, no time. A giver is its kind and ID, a quest is its ID | a file a player sends must be safe to read and keep |
 | 3 | Names and headings only from an English client (`GetLocale() == "enUS"`); IDs, offers, hand-ins and positions from every client | a wrong NPC name is worse than none, and the tool needs the English name |
 | 4 | One packed string per record, not a table per record | 514 KB on disk and 0.8 MB of memory at the caps, against three times that |
-| 5 | Caps: 2,500 givers, 5,000 quests, 500 quests started away from a giver; when a table is full its oldest tenth goes | a full file must not block new content such as 12.1.5 or Forever's launch zones |
+| 5 | Caps: 5,000 givers, 10,000 quests, 4,000 quests started away from a giver (2,500, 5,000 and 500 until 10 October 2026, when the user doubled the first two and raised the third eightfold); when a table is full its oldest tenth goes | a full file must not block new content such as 12.1.5 or Forever's launch zones |
 | 6 | Faction, race and class are kept as a union bit mask per quest, in the quest data's own bit values | answers "was this ever offered to a Horde, orc, warrior" without making the account's character list a fingerprint |
 | 7 | No world, bonus or hidden quests | the addon pins none of them and they would use the cap |
 | 8 | A quest with no giver gets a position only from an item, an area trigger or an auto-accept popup, and the first place seen stays | the window a player clicks later opens wherever they are |
@@ -71,9 +71,13 @@ than the code is left alone.
   `skip:task|hidden|adv|noid`; `bit:unk`; `near:true|false`; `hook:none`; `api:greeting`. They answer,
   from real play, the questions that can't be settled offline.
 
-Measured offline for a full file (2,500 + 5,000 + 500 records, plain Lua on this PC, 32-bit): 514 KB
-on disk, 0.8 MB of memory (about 1.5 MB in the game), 6 ms to load, and the login pass over the keys
-costs under a millisecond. Today's account file is about 1 KB. [load-and-memory.md](load-and-memory.md)
+Measured offline for a full file at the first caps (2,500 + 5,000 + 500 records, plain Lua on this PC,
+32-bit): 514 KB on disk, 0.8 MB of memory (about 1.5 MB in the game), 6 ms to load. At the caps of 10
+October 2026 (5,000 + 10,000 + 4,000 records, 19,000 in all), measured again with one synthetic file
+for both sizes (555 KB then, 1,249 KB now): 2.25 times the size and memory, about 3.5 times the load,
+so about 1.2 MB on disk, 3.3 MB of memory in plain Lua and 15 ms to load, still under a fifth of the
+addon's 17.8 MB. Making room scans a table once, 7 ms at 10,000 records, and happens once for every
+thousand new quests. The login pass over the keys costs about a millisecond. Today's account file is about 1 KB. [load-and-memory.md](load-and-memory.md)
 has the addon's own numbers.
 
 ## Events
@@ -176,7 +180,8 @@ never runs it as it stands: it reads the text (a bare CR ends a comment, as it d
 refuses anything that is not assignments of tables, strings, numbers and `true`, `false` or `nil`
 to names (no call, operator, function, long string or comment, or name used as a value), a file over
 8 MB (checked before it is read), tables nested over 24 deep, and a file with more records than the
-addon can keep (2,500 givers, 5,000 quests, 500 starts; a giver with more than four spots or sixty
+addon can keep (5,000 givers, 10,000 quests, 4,000 starts, which also admits the smaller files of the
+addon's first version; a giver with more than four spots or sixty
 offers is an odd record). What passes is loaded with no globals and an instruction budget, and the
 tool gives the reader two minutes. A refused or unreadable file is named in the report and the run
 goes on. Names and headings are kept only if they are 64 bytes or fewer, have no `|` or control

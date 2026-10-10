@@ -607,18 +607,18 @@ do
 		w.S.map, w.S.pos = 84 + i % 50, {(i % 100) / 100, ((i * 7) % 100) / 100}
 		w.fire("GOSSIP_SHOW")
 	end
-	check(count(db.g) <= 2500, "givers stay within the cap (" .. count(db.g) .. ")")
-	check(count(db.g) > 2200, "and only the oldest tenth goes (" .. count(db.g) .. ")")
-	check(count(db.q) <= 5000, "quests stay within the cap (" .. count(db.q) .. ")")
+	check(count(db.g) <= 5000, "givers stay within the cap (" .. count(db.g) .. ")")
+	check(count(db.g) > 4400, "and only the oldest tenth goes (" .. count(db.g) .. ")")
+	check(count(db.q) <= 10000, "quests stay within the cap (" .. count(db.q) .. ")")
 	check(db.ev > 0, "evictions are counted")
 	check(db.g["Creature:6000"] ~= nil, "the newest giver is kept")
 	check(db.g["Creature:1"] == nil, "the oldest giver is gone")
-	for i = 1, 700 do
+	for i = 1, 4700 do
 		w.S.time = w.S.time + 100
 		w.S.pos = {(i % 100) / 100, 0.5}
 		w.env.QuestObjectiveTracker:AddAutoQuestPopUp(500000 + i, "OFFER", 9000 + i)
 	end
-	check(count(db.s) <= 500 and count(db.s) > 400, "starts stay within the cap (" .. count(db.s) .. ")")
+	check(count(db.s) <= 4000 and count(db.s) > 3600, "starts stay within the cap (" .. count(db.s) .. ")")
 	-- A full table still updates a giver it already has.
 	local known = next(db.g)
 	local id = tonumber(known:match(":(%d+)"))
@@ -648,7 +648,7 @@ do
 		return out
 	end
 	local text = table.concat(serialize(db, {}))
-	check(#text < 600 * 1024, "the saved table at the caps is under 600 KB (" .. math.floor(#text / 1024) .. " KB)")
+	check(#text < 1024 * 1024, "the saved table at the caps is under 1 MB (" .. math.floor(#text / 1024) .. " KB)")
 	check(loadstring("return " .. text) ~= nil, "and it loads back")
 end
 
@@ -1035,15 +1035,15 @@ do
 	w = newWorld()
 	w.login()
 	db = w.db()
-	for i = 1, 2501 do
+	for i = 1, 5001 do
 		w.S.time = w.S.time + 100
 		w.giver("npc", "Creature", i, "G")
 		w.S.available = {{questID = 1}}
 		w.fire("GOSSIP_SHOW")
 	end
-	equal(count(db.g), 2251, "2,501 givers leave 2,250 and the new one")
-	equal(db.ev, 250, "250 evicted")
-	check(db.g["Creature:250"] == nil and db.g["Creature:251"] ~= nil, "the 250 oldest went")
+	equal(count(db.g), 4501, "5,001 givers leave 4,500 and the new one")
+	equal(db.ev, 500, "500 evicted")
+	check(db.g["Creature:500"] == nil and db.g["Creature:501"] ~= nil, "the 500 oldest went")
 
 	-- Builds: no more than eight, and the current one stays.
 	w = newWorld({saved = {v = 1, bv = {[1] = "a", [2] = "b", [3] = "c", [4] = "d", [5] = "e", [6] = "f", [7] = "g", [8] = "h", [90000] = "z"}},
