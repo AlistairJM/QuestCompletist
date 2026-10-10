@@ -483,7 +483,7 @@ A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore
 reads `qcHolidays` from `qcCore.lua`, and writes `tools\quest_holiday_audit.csv`, one row per
 finding. Three signals, each independent, can name a holiday: the quest's category in Blizzard's
 API, the game event TrinityCore puts it in (with the event's holiday), and the heading our data
-files it under. A name is a holiday's when it is a name in `qcHolidays` or one of four spellings
+files it under. A name is a holiday's when it is a name in `qcHolidays` or one of five spellings
 the script lists. The summary prints every category and event it read as a holiday, so a spelling
 that stopped matching shows as a name missing there.
 - **untagged**, **wrong tag** (a signal names another holiday), and **untagged, an event with no
@@ -498,7 +498,7 @@ exits with 1 on a new finding: tag the quest in the data file and record a `SET`
 add the `PENDING` or `KEEP` row that says why it stays as it is. It only sees holidays with a flag in
 `qcHolidays`; the pending quests of one with no flag show up once a flag is added.
 
-Baseline on 9 October 2026: 833 quests in an API category read as a holiday, 579 in a TrinityCore
+Baseline on 10 October 2026: 840 quests in an API category read as a holiday, 579 in a TrinityCore
 event read as one and 994 filed under a holiday heading. That is 58 findings, all covered (57
 `PENDING`, 1 `KEEP`), so none is new. The first run also found quest 43472, filed under Midsummer
 while its `PENDING` row says WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
@@ -1185,8 +1185,10 @@ out of season, and only a pin whose quests are all tagged, for holidays that are
 
 `/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
 running, each one's next dates, and any calendar holiday that isn't tied to a quest. Retail's list
-now includes Pirates' Day, because 42758 is the first retail quest tagged with it. A holiday there
-that should match one of ours, under a new ID, means an entry in `qcHolidays` needs that ID adding.
+now includes Pirates' Day, because 42758 is the first retail quest tagged with it, and the Moonkin
+Festival and Hearthstone's 10th Anniversary, whose quests were tagged on 10 October 2026 (47430,
+and six Hearthstone quests, two of them pinned). A holiday there that should match one of ours,
+under a new ID, means an entry in `qcHolidays` needs that ID adding.
 Step 2b of a sweep finds the same offline, from the client's Holidays and HolidayNames tables: for
 each entry in `qcHolidays`, every ID the client has under that name in either game, against the
 IDs the entry lists. A new holiday with quests needs a new flag, an entry, and its quests' `holiday`
@@ -1238,6 +1240,16 @@ and in game it shows up as a calendar holiday not tied to a quest: add its ID. R
 problem with the Stranglethorn Fishing Extravaganza: `qcHolidays` carries it for Forever (event 301),
 but retail's Holidays table has no such row, so a retail quest tagged with it would be hidden for
 good, and its retail quests stay `PENDING` for that reason.
+
+Hearthstone's 10th Anniversary is on retail's calendar for 2024 only. The client's Holidays table has
+two rows under that name, 1462 (from 11 March 2024) and 1578 (from 26 September 2024, one region),
+and none for a later year. Its entry lists both, so its pins stay hidden until the game dates the
+event again, and `/qc holidays` says it isn't on the calendar in the next 12 months. A later
+anniversary would be a row under a new name, which step 2b doesn't match to this entry: it shows in
+`/qc holidays` under "Other calendar holidays", and its ID goes into this entry. Step 2d reads
+Blizzard's quest category "Hearthstone Anniversary" as this entry through an alias in
+`Audit-QuestHolidays.ps1`. Neither this event nor the Moonkin Festival (694) is in Forever's Holidays
+table.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it

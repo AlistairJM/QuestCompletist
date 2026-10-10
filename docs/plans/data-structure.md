@@ -85,7 +85,7 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
 - **The row** is `{name, level, category, type, faction, race, class, storyline}`, with storyline
   left off when it's 0 (half the quests have none; a missing last value costs nothing).
 - **Profession, holiday, covenant and prereq** are in `qcQuestProfession` (1,742 quests),
-  `qcQuestHoliday` (1,095 on 9 October 2026; it grows as holiday quests are tagged), `qcQuestCovenant`
+  `qcQuestHoliday` (1,102 on 10 October 2026; it grows as holiday quests are tagged), `qcQuestCovenant`
   (777) and `qcQuestPrereq` (8,306), keyed by quest ID.
   Since 6 October 2026 a prereq can also be a list, and 8,306 quests have one
   ([quest-table-checks.md](quest-table-checks.md)).

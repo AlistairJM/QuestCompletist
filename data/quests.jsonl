@@ -18126,7 +18126,7 @@
 {"id":47422,"name":"Dire Situation","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":338}
 {"id":47423,"name":"Forbidden Practices","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":338}
 {"id":47428,"name":"Kitty?","level":20,"zone":"Drustvar","category":1060,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5447,"prereq":47289}
-{"id":47430,"name":"Moonkin Monitoring","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":47430,"name":"Moonkin Monitoring","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":131072}
 {"id":47431,"name":"Gathering Light","level":45,"zone":"Krokuun","category":1041,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":348}
 {"id":47432,"name":"The Bargain is Struck","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":338}
 {"id":47433,"name":"Offensively Defensive","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":338}
@@ -30654,10 +30654,10 @@
 {"id":79135,"name":"Quacking Down","level":1,"zone":"Noblegarden","category":145,"type":4,"faction":2,"race":67108863,"class":8191,"holiday":512}
 {"id":79136,"name":"A Spring Awakening","level":1,"zone":"Noblegarden","category":145,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":512}
 {"id":79137,"name":"The Wall Between Us","level":70,"zone":"Gilneas Reclamation","category":1345,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":5538,"prereq":78597}
-{"id":79178,"name":"Play Hearthstone!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":79184,"name":"It's Hearthstone's Anniversary!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":79186,"name":"It's Hearthstone's Anniversary!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":79189,"name":"It's Hearthstone's Anniversary!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":79178,"name":"Play Hearthstone!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":262144}
+{"id":79184,"name":"It's Hearthstone's Anniversary!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":262144}
+{"id":79186,"name":"It's Hearthstone's Anniversary!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":262144}
+{"id":79189,"name":"It's Hearthstone's Anniversary!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":262144}
 {"id":79199,"name":"Renowned with Keg Leg's Crew","level":70,"zone":"The Waking Shores","category":1305,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":79223,"name":"Finally, An Archivist!","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5528,"prereq":77328}
 {"id":79226,"name":"The Big Dig: Traitor's Rest","level":70,"zone":"Azerothian Archives","category":1343,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -30707,8 +30707,8 @@
 {"id":79576,"name":"A Fowl Concoction","level":1,"zone":"Noblegarden","category":145,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":512}
 {"id":79577,"name":"Duck Tales","level":1,"zone":"Noblegarden","category":145,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":512}
 {"id":79578,"name":"Just a Waddle Away","level":1,"zone":"Noblegarden","category":145,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":512}
-{"id":79693,"name":"Play Hearthstone!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":79694,"name":"Play Hearthstone!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":79693,"name":"Play Hearthstone!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":262144}
+{"id":79694,"name":"Play Hearthstone!","level":0,"zone":"Hearthstone Anniversary","category":0,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":262144}
 {"id":79965,"name":"Learn the Ropes or Walk the Plank","level":1,"zone":"Arathi Highlands","category":10,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":79989,"name":"An Ancient Awakening","level":10,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":80012,"name":"Skyriding","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5546}
