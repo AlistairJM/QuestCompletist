@@ -765,7 +765,8 @@ local function startMaps(waitSeconds)
 	end
 	r.lastLook = function()
 		if not r.extra.scheduler then r.extra.scheduler = schedulerFacts() end
-		r.extra.geometry = gatherGeometry()
+		local ok, summary = pcall(gatherGeometry)
+		if ok then r.extra.geometry = summary else r.extra.geometryError = tostring(summary) end
 		r.extra.view = viewFacts()
 	end
 	if C_EventScheduler then pcall(C_EventScheduler.RequestEvents) end

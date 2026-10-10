@@ -993,6 +993,18 @@ do
 	w4.slash("maps 1")
 	w4.slash("stop")
 	equal(w4.db().geometry[12].time, 0, "G4: a map pass stopped early takes no geometry")
+
+	local w5 = newWorld({forever = true})
+	w5.S.maps = geometryMaps()
+	w5.boot()
+	w5.db().geometry = nil
+	w5.slash("maps 1")
+	w5.run(3600)
+	check(not w5.running(), "G4: a geometry that fails does not stop the map pass from finishing")
+	local failedRun = w5.db().runs[#w5.db().runs]
+	equal(failedRun.kind, "maps", "G4: the map run is recorded")
+	check(type(failedRun.geometryError) == "string", "G4: with the geometry's error")
+	equal(failedRun.geometry, nil, "G4: and no counts")
 end
 
 -- The report reads what the pass saved.
@@ -1026,6 +1038,13 @@ do
 	back.geometry[12].zoneCall[#back.geometry[12].zoneCall + 1] = 999
 	local text2 = table.concat((report(back)), "\n")
 	contains(text2, "The zone filter DIFFERS from the direct children of type zone: only in the call 999; only among the children .", "G5: a filter that is not exact is said so")
+
+	local back3 = roundTrips(w.db(), "G5")
+	table.insert(back3.runs, {kind = "geometry", build = "1.60.1.70245", view = {mapID = 12, maximized = true, width = 1517, height = 1011}})
+	local text3 = table.concat((report(back3)), "\n")
+	contains(text3, "Map window when read: map 12, windowed, 697 x 465", "G5: every map window is listed, the first")
+	contains(text3, "Map window when read: map 12, maximised, 1517 x 1011", "G5: and the second")
+	contains(text3, "At 1517 px wide, 2 zone icon pairs are closer than 24 px.", "G5: with its width used")
 
 	local lines3 = report({geometry = {}, runs = {}})
 	contains(lines3[1], "No geometry in the file.", "G5: an empty file says what to do")

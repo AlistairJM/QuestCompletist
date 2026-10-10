@@ -46,7 +46,7 @@ local function label(child)
 	return string.format("%s (%s)", child.name or "?", tostring(child.mapID))
 end
 
-local function newestBuild(geometry)
+local function fullestBuild(geometry)
 	local counts, best = {}, nil
 	for _, row in pairs(geometry) do counts[row.build] = (counts[row.build] or 0) + 1 end
 	for build, n in pairs(counts) do
@@ -55,10 +55,10 @@ local function newestBuild(geometry)
 	return best
 end
 
-local function viewOf(db, build)
-	local found
+local function viewsOf(db, build)
+	local found = {}
 	for _, run in ipairs(db.runs or {}) do
-		if run.build == build and run.view then found = run.view end
+		if run.build == build and run.view then found[#found + 1] = run.view end
 	end
 	return found
 end
@@ -75,7 +75,7 @@ local function report(db, wanted)
 	local lines, csv = {}, {}
 	local function out(format, ...) lines[#lines + 1] = select("#", ...) > 0 and string.format(format, ...) or format end
 	local geometry = db.geometry or {}
-	local build = wanted or newestBuild(geometry)
+	local build = wanted or fullestBuild(geometry)
 	if not build then
 		out("No geometry in the file. Type /qcprobe geometry in the game, log out fully and copy the file again.")
 		return lines, csv
@@ -90,15 +90,16 @@ local function report(db, wanted)
 	local first = geometry[rows[1] or empty[1] or next(geometry)]
 	local game = first and first.toc == "camelot" and "forever" or "retail"
 	out("Geometry on %s (%s): %d maps with children, %d without (%s).", build, game, #rows, #empty, idList(empty))
-	local view = viewOf(db, build)
-	local widths = {unpack(WIDTHS)}
-	if view then
+	local widths, aspect = {unpack(WIDTHS)}, ASPECT
+	for _, view in ipairs(viewsOf(db, build)) do
 		out("Map window when read: map %s, %s, %s x %s, canvas %s x %s at scale %s, %s zoom levels, UI scale %s.",
 			tostring(view.mapID), view.maximized and "maximised" or "windowed", tostring(view.width), tostring(view.height),
 			tostring(view.childWidth), tostring(view.childHeight), tostring(view.canvasScale), tostring(view.zoomLevels), tostring(view.uiScale))
-		if view.width and view.width > 0 then widths[#widths + 1] = view.width end
+		if view.width and view.height and view.width > 0 then
+			widths[#widths + 1] = view.width
+			aspect = view.height / view.width
+		end
 	end
-	local aspect = view and view.width and view.height and view.width > 0 and view.height / view.width or ASPECT
 
 	for _, mapID in ipairs(rows) do
 		local row = geometry[mapID]
