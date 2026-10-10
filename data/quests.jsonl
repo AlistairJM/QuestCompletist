@@ -12443,7 +12443,7 @@
 {"id":35169,"name":"And Justice for Thrall","level":35,"zone":"Nagrand - Dreanor","category":314,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":27,"prereq":[34957,34596,35062]}
 {"id":35170,"name":"Consumed by Vengeance","level":35,"zone":"Nagrand - Dreanor","category":314,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":35171,"name":"And Justice for Thrall","level":35,"zone":"Nagrand - Dreanor","category":314,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":28,"prereq":[35158,35098,34918]}
-{"id":35172,"name":"Your Second Blacksmithing Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":35172,"name":"Your Second Blacksmithing Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":35174,"name":"Pale Moonlight","level":10,"zone":"Shadowmoon Valley - Draenor","category":315,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":39}
 {"id":35176,"name":"Keeping it Together","level":10,"zone":"Shadowmoon Valley - Draenor","category":315,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":39}
 {"id":35185,"name":"Garrison Campaign: The Sargerei","level":40,"zone":"Garrison Campaign","category":289,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":99}
@@ -13167,14 +13167,14 @@
 {"id":36832,"name":"Get the Xuk Outta Here!","level":15,"zone":"Gorgrond","category":291,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":36833,"name":"May I Be of Service?","level":15,"zone":"Gorgrond","category":291,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":36834,"name":"Gorgrond Ogre Gateway - Tracking","level":0,"zone":"Garrison Support","category":290,"type":128,"faction":2,"race":61658034,"class":8191}
-{"id":36838,"name":"Your Second Alchemy Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36839,"name":"Your Second Enchanting Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36840,"name":"Your Second Engineering Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":36841,"name":"Your Second Inscription Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36842,"name":"Your Second Jewelcrafting Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36838,"name":"Your Second Alchemy Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36839,"name":"Your Second Enchanting Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36840,"name":"Your Second Engineering Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":36841,"name":"Your Second Inscription Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36842,"name":"Your Second Jewelcrafting Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":36843,"name":"They Came From Above","level":20,"zone":"Talador","category":305,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36844,"name":"Your Second Leatherworking Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":36845,"name":"Your Second Tailoring Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36844,"name":"Your Second Leatherworking Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":36845,"name":"Your Second Tailoring Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":36848,"name":"Ogre Waygates","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":36861,"name":"Pinchwhistle Gearworks","level":30,"zone":"Spires of Arak","category":301,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":36862,"name":"Pinchwhistle Gearworks","level":30,"zone":"Spires of Arak","category":301,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -13588,14 +13588,14 @@
 {"id":37573,"name":"Your First Jewelcrafting Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":37574,"name":"Your First Leatherworking Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":37575,"name":"Your First Tailoring Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":37584,"name":"Your Second Alchemy Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37587,"name":"Your Second Blacksmithing Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37589,"name":"Your Second Enchanting Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37590,"name":"Your Second Engineering Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":37591,"name":"Your Second Inscription Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37592,"name":"Your Second Jewelcrafting Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37593,"name":"Your Second Leatherworking Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":37594,"name":"Your Second Tailoring Work Order","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37584,"name":"Your Second Alchemy Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37587,"name":"Your Second Blacksmithing Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37589,"name":"Your Second Enchanting Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37590,"name":"Your Second Engineering Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":37591,"name":"Your Second Inscription Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37592,"name":"Your Second Jewelcrafting Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37593,"name":"Your Second Leatherworking Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":37594,"name":"Your Second Tailoring Work Order","level":10,"zone":"Garrison Support","category":290,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":37638,"name":"Bronze Tracker","level":40,"zone":"","category":0,"type":128,"faction":0,"race":0,"class":8191}
 {"id":37639,"name":"Silver Tracker","level":40,"zone":"","category":0,"type":128,"faction":0,"race":0,"class":8191}
 {"id":37640,"name":"Gold Tracker","level":40,"zone":"","category":0,"type":128,"faction":0,"race":0,"class":8191}
@@ -25636,7 +25636,7 @@
 {"id":62352,"name":"Classic 50","level":50,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":62353,"name":"Shadowlands (50-59) E","level":50,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":62354,"name":"Shadowlands (50-59) E","level":50,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":62355,"name":"Shadowlands (50-59) E","level":0,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
+{"id":62355,"name":"Shadowlands (50-59) E","level":90,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":62356,"name":"Shadowlands (50-59) E","level":50,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":62357,"name":"Shadowlands (50-59) E","level":50,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":62358,"name":"Shadowlands (50-59) E","level":50,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
@@ -26928,9 +26928,9 @@
 {"id":54943,"name":"The Dark Ranger's Pupil","level":50,"zone":"Tirisfal Glades","category":245,"type":1,"faction":2,"race":67108863,"class":4,"storyline":884}
 {"id":59969,"name":"A Shaman's Duty","level":1,"zone":"Exile's Reach","category":1202,"type":1,"faction":3,"race":67108863,"class":64}
 {"id":62394,"name":"House In Decline","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":64159,"name":"Repatriate Rare Supplies","level":0,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":64162,"name":"Ritual Rival","level":0,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":64163,"name":"Revenge Against Renegades","level":0,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":64159,"name":"Repatriate Rare Supplies","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":64162,"name":"Ritual Rival","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":64163,"name":"Revenge Against Renegades","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":64768,"name":"Lightsprocket's Artifact Hunt","level":10,"zone":"The Waking Shores","category":1305,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":64863,"name":"Arcane Guardians","level":10,"zone":"The Forbidden Reach","category":1304,"type":1,"faction":3,"race":8388608,"class":4096,"storyline":1261,"prereq":64864}
 {"id":64864,"name":"Awaken, Dracthyr","level":10,"zone":"The Forbidden Reach","category":1304,"type":1,"faction":3,"race":8388608,"class":4096,"storyline":1261}
@@ -33292,7 +33292,7 @@
 {"id":92031,"name":"Meet the Vandals","level":70,"zone":"Manaforge Omega","category":1734,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92330,"name":"Valorstones","level":70,"zone":"K'aresh","category":1410,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":88754,"name":"Short-Supply","level":10,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":89403,"name":"11.2.5 Delves - Mid-Season Refresh - Player Choice Affix - TEST - ZGS","level":0,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":89403,"name":"11.2.5 Delves - Mid-Season Refresh - Player Choice Affix - TEST - ZGS","level":90,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":89404,"name":"Time Crisis","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899}
 {"id":89405,"name":"Mean Streets of Dalaran","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899,"prereq":89404}
 {"id":89406,"name":"Seal and Protect","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5899,"prereq":89405}
@@ -33432,7 +33432,7 @@
 {"id":91620,"name":"Noggenfogger's Reasonable Request","level":10,"zone":"Rogue Campaign","category":1003,"type":1,"faction":3,"race":67108863,"class":8,"storyline":5853,"prereq":42730}
 {"id":91621,"name":"A Taste For Blood","level":45,"zone":"Shaman Campaign","category":54,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5865,"prereq":42995}
 {"id":91631,"name":"Epoch Progress","level":10,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":91632,"name":"The End of an Epoch Journey","level":0,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":91632,"name":"The End of an Epoch Journey","level":90,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91639,"name":"Embrace Your Own Legend","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5968}
 {"id":91721,"name":"Surpass Your Own Legend","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5968,"prereq":91639}
 {"id":91722,"name":"Shape a New Legend","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5968,"prereq":91721}

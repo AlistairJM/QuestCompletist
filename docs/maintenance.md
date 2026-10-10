@@ -105,9 +105,9 @@ take the quest, and the tooltip's "Requires Level" line, the grey pins and the r
 filter read `qcQuestMinLevel[questId] or level`, where 0 or below asks for nothing. The table holds only
 the quests whose minimum is not their level, and it keeps a 0 (no minimum). Retail's table is empty
 because its `level` is already read as the minimum: it is meant to be the API's
-`min_character_level`. Today it equals the API's for 28,455 of the 30,066
-quests whose API record gives a minimum (94.6%) and differs for 1,611. Two records give none,
-4,955 of the 35,023 quests have no API record, and 246 have level 0 (counted on 9 October 2026,
+`min_character_level`. Today it equals the API's for 28,477 of the 30,066
+quests whose API record gives a minimum (94.7%) and differs for 1,589. Two records give none,
+4,955 of the 35,023 quests have no API record, and 224 have level 0 (246 when counted on 9 October 2026,
 `data\quests.jsonl` against the API cache in `tools\quest_api_cache`). Refreshing retail's levels
 from the API is a separate decision. Forever's `level` is the quest's own level, so its table holds
 4,194 of its 5,097 quests (10 October 2026). The importer fills it from the game's quest cache, and
