@@ -29,7 +29,7 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   that NPC starts it, and by-hand names go in `pin-giver-decisions.csv`, each read on Wowhead.
 - **Untested changes wait** unless the user says to ship them: a pull request that changes the addon
   and hasn't been tried in game is not in the release ([releasing.md](../releasing.md), step 1).
-  #223 and #224 went out in 112.5 on the user's word.
+  #223 and #224 went out in 112.5 on the user's word, and #276 and #280 in 112.9 (10 October 2026).
 - **Continent maps get one icon per zone** (10 October 2026, "go with your picks"): the quests left
   to do in the zone, counted from the quest list's categories with the map's filters and without
   daily, weekly and repeatable quests, hovered for counts and progress, opened with a click, with a
@@ -55,7 +55,7 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
-- **The continent icons** (built, untried; the probe's geometry pass is built too): both games'
+- **The continent icons** (released in 112.8; the first look is done, the final build is untried; the probe's geometry pass is run): both games'
   dumps were read on 10 October and are the baseline (`continent-geometry-baseline.csv`, sweep step
   2f); retail's next dump comes with its map pass once 12.1.5 is live, plus `/qcprobe geometry`
   with the world map open on a continent, windowed and then maximised. One
@@ -65,6 +65,11 @@ again.
   Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom, Korthia and the rest), enlarged the icon where
   its art allows and put a green check on finished zones (while the map shows completed quests);
   twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre and wait for the user to say which to move.
+- **Stacked pins and two new holidays** (#276 and #280, released in 112.9 untried; two optional lines on
+  retail). Click a stacked pin whose first quest has no giver name and see the named giver's icon, name and
+  TomTom title (Durotar around 45.7, 15.9 has one). `/qc holidays` should list the Moonkin Festival (694)
+  with dates and say Hearthstone's 10th Anniversary is not on the calendar in the next 12 months; if Moonkin
+  shows under "Other calendar holidays" with another ID, add that ID to its `qcHolidays` entry.
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
@@ -252,7 +257,7 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 7. A review of Forever's hidden and test quests, after its launch on 4 November (recommendation 10).
 
 8. The continent icons ([continent-pins.md](continent-pins.md)): the plan, then the probe's geometry
-   pass before retail's 12.1.5 map pass, then the counting and the icons.
+   pass before retail's 12.1.5 map pass, then the counting and the icons: **done** (#261 to #272, released in 112.8).
 
 Also: the 12.1.5 sweep when the patch is live (13 or 14 October; the TOC lists both interface
 numbers), a Warband-filter check on the Forever beta, and the dated change of 1 April 2027
