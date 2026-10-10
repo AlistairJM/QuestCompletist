@@ -137,13 +137,37 @@ then every tool refuses to save.
 
 ## Before a sweep
 
-1. **Find the current builds** at <https://wago.tools/api/builds/latest>: retail is product `wow`,
-   and WoW: Forever is `wow_classic_beta` (version 1.60) during its beta. Check which product carries
-   Forever after its launch on 4 November 2026.
+1. **Check that every source is the newest,** at the start of a sweep and again just before each
+   in-game session:
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Get-LatestBuilds.ps1
+   ```
+   Every change and sweep uses the newest version of every data source: the client's files, the
+   in-game probes and the external databases (the user's rule, 9 October 2026). The script compares
+   what the checkout holds with what is published, and changes nothing: the installed clients
+   (`.build.info`) against wago.tools' newest build of the same product; the probe lists, in the
+   checkout and in each game's AddOns folder, and the probe results against the installed client;
+   the client tables in `tools\` for the current version of retail live, the retail PTR, Forever's
+   beta and Classic Era (a version with no table at all counts as behind for retail live and
+   Forever); the `-Build` defaults pinned in scripts; the API docs against Gethe/wow-ui-source;
+   CMaNGOS's dump and TrinityCore's TDB; and the Blizzard API cache against the newest live build.
+   Each source reads `ok`, `BEHIND`, `none` (nothing held) or `unknown` (could not be reached). It
+   exits 1 when anything is behind and 2 when nothing is but a source was unreachable. A `BEHIND`
+   is fixed before the sweep goes on: refresh the source and rerun what depends on it.
+   - **A client that is behind** is updated through Battle.net, with the game closed, before a
+     probe run, or its results are for the build before.
+   - **Forever's beta moves about daily** (70245 on 6 October, 70291 on 8, 70338 on 9), which is why
+     the check runs again before the game session, and why every result and report names the build
+     it was taken on.
+   - **Forever's product** is `wow_classic_beta` during its beta, retail's `wow`. After Forever's
+     launch on 4 November 2026 find which product carries it in <https://wago.tools/api/builds>
+     and edit `$GameProducts` in `tools\LatestBuilds.ps1`.
+   - `Test-LatestBuilds.ps1` checks the script on a made-up game folder and made-up newest versions.
 2. **Pin the builds.** Scripts that take `-Build` should be given their game's current build:
    retail's for steps 1 to 9, Forever's for step 10. The Forever tools default to the beta build
-   they were written on, so always pass it. Downloading a table from wago.tools without a build
-   number does *not* reliably return the latest build.
+   they were written on, so always pass it; the check lists every default older than the newest
+   build of its version. Downloading a table from wago.tools without a build number does *not*
+   reliably return the latest build.
 2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
    table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
    and the tools read 26 of them (14 for Forever). Run
@@ -226,12 +250,13 @@ then every tool refuses to save.
    Get-Item tools\ClassicDB_*.sql.gz | Rename-Item -NewName { "$($_.Name).$(Get-Date -Format yyyyMMdd)" }
    ```
    The Forever tools take the `ClassicDB_*.sql.gz` already in `tools\`, and only download one when
-   there's none.
+   there's none. `Get-LatestBuilds.ps1` says whether the one held is the newest in Full_DB, which is
+   what decides whether to move it aside.
 5. **Get TrinityCore's latest world database** for steps 2b, 2c, 2d, 6 and 6c. Download the newest
    `TDB_full_*.7z` from [TrinityCore's releases](https://github.com/TrinityCore/TrinityCore/releases),
    extract its `TDB_full_world_*.sql` into `tools\tdb\` with 7-Zip, and move the older one aside.
    Those steps read the newest one there and name it in their summaries. Step 6 also needs Lua 5.1
-   (one-time setup).
+   (one-time setup). `Get-LatestBuilds.ps1` says whether a newer release is out.
 
 Run a script with:
 ```powershell
@@ -250,6 +275,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 
 | # | Area | Scripts, in order | Edits the addon? |
 |---|---|---|---|
+| 0 | Everything is the newest version: clients, probe lists and results, tables, API docs, databases | `Get-LatestBuilds.ps1` ([Before a sweep](#before-a-sweep), item 1) | No |
 | 1 | Faction, race and class | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
 | 1b | Second source for race and class, and the task-quest tables 1d and 2c read | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
@@ -1307,13 +1333,19 @@ It began as pull request #139, which stays open as the record; its files are in
 `tools\ForeverProbe\`. Step 10 reads what it gathers. After a change to it, run `tools\Test-Probe.lua`
 (it plays a run against stand-ins for the game and must say "0 failed").
 
-1. For a new build, rebuild the probe's lists of quests (the client's `QuestV2`, and the CMaNGOS
+1. Close the game, let Battle.net update it, and run `Get-LatestBuilds.ps1` ([Before a sweep](#before-a-sweep),
+   item 1). Then rebuild the probe's lists of quests (the client's `QuestV2`, and the CMaNGOS
    quests it lacks) and of NPCs. They are generated, so they are not in git, and each game has its
    own (`QuestIDs_Forever.lua`, `NpcIDs_Forever.lua`; the retail TOC loads the `_Retail` ones):
    ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Game forever -Build <Forever build> -ToolsDir tools
-   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Game retail -Build <retail build>
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Game forever -ToolsDir tools
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\ForeverProbe\Build-ProbeLists.ps1 -Game retail
    ```
+   Without `-Build` the builder takes the build of the client installed under `-WowDir` (from
+   `.build.info`), which is the build the probe will run on; it says which. A `-Build` that isn't
+   the installed client's is allowed, for a client not installed yet, but warned about. The beta
+   can update between building the lists and the run: run `Get-LatestBuilds.ps1` again before the
+   session, and rebuild if the list is behind.
    The retail lists need no download: every quest in `data\quests.jsonl`, the daily, repeatable and
    128 ones first, and the NPC of every pin in `data\pins.jsonl`. The Forever NPCs are CMaNGOS's
    givers of the listed quests and the NPCs of `data\forever\pins.jsonl`. `Test-ProbeLists.ps1` checks
@@ -1426,7 +1458,9 @@ git diff --stat
   It plays the quest, NPC and map passes and the recorder against stand-ins for the API, on a clock of its
   own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).
   For `Build-ProbeLists.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ProbeLists.ps1`
-  (made-up data, nothing downloaded). Both must say "0 failed".
+  (made-up data, nothing downloaded). For `Get-LatestBuilds.ps1` or `LatestBuilds.ps1`, run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-LatestBuilds.ps1` (a made-up game folder and
+  made-up newest versions, nothing downloaded or read from the real game). All must say "0 failed".
   For `ProbeResults.ps1`, `Read-ForeverProbe.lua`, `Retype-ProbeRecurring.ps1`,
   `Find-UnavailableQuestCandidates.ps1` or `Compare-PinNpcNames.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File
   tools\Test-ProbeResults.ps1` (both probes' files read the same, and the two scripts give the same answers

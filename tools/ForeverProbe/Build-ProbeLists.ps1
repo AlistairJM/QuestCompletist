@@ -14,13 +14,18 @@ git). The retail TOC loads the _Retail lists and the _Camelot TOC (WoW: Forever)
     - NpcIDs_Forever.lua: the creatures CMaNGOS names as givers of those quests, plus the NPC of every
       pin in data\forever\pins.jsonl.
 
--Build is the client's build as the probe reads it (12.1.0.69933, 1.60.1.70245); the probe says so when
-its list is from another. Rerun for every new build. The CMaNGOS dump (Full_DB in cmangos/classic-db) is
-downloaded into -ToolsDir unless -CmangosDump names a copy.
+-Build is the client's build as the probe reads it (12.1.0.69933, 1.60.1.70338); the probe says so when
+its list is from another. Left out, it is the build of the client installed in -WowDir, from .build.info,
+which is the one the probe will run on: close the game and let Battle.net update it first, and run
+Get-LatestBuilds.ps1 to see whether it is the newest published. A -Build that is not the installed
+client's is allowed (a list for a client not yet installed) but warned about. Rerun for every new build.
+The CMaNGOS dump (Full_DB in cmangos/classic-db) is downloaded into -ToolsDir unless -CmangosDump names a
+copy.
 #>
 param(
     [string]$Game,
     [string]$Build,
+    [string]$WowDir = "C:\Program Files (x86)\World of Warcraft",
     [string]$ToolsDir,
     [string]$DataDir,
     [string]$AddonDir,
@@ -30,8 +35,16 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
+. "$PSScriptRoot\..\LatestBuilds.ps1"
 if ($Game -notin 'retail', 'forever') { throw "-Game must be retail or forever." }
+$installed = Get-InstalledBuild $Game $WowDir
+if (-not $Build) {
+    if (-not $installed) { throw "-Build was not given, and $WowDir\.build.info has no $($GameProducts[$Game]) client: give -Build or -WowDir." }
+    $Build = $installed
+    Write-Host "Using the installed client's build, $Build (.build.info)."
+}
 if ($Build -notmatch '^\d+\.\d+\.\d+\.\d+$') { throw "-Build '$Build' is not a build number like 12.1.0.69933." }
+if ($installed -and $installed -ne $Build) { Write-Warning "-Build $Build is not the installed client's build, ${installed}: the probe will say its list is from another build." }
 if (-not $ToolsDir) { $ToolsDir = Join-Path $PSScriptRoot '..' }
 if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot '..\..\data' }
 if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot 'QCForeverProbe' }
