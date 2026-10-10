@@ -1433,7 +1433,9 @@ It began as pull request #139, which stays open as the record; its files are in
    It lists the zones that came, went or moved (more than 0.05 of a map point) on a continent map, and the
    maps whose type, flags, group, nav-bar listing or hit-test answer changed, and exits with 1 when
    there is any. A different zone list is a prompt to look at that continent's icons, not a failure of the
-   addon, which asks the game each time. When the differences are read, run it again with `--update`,
+   addon, which asks the game each time; a zone in `QC_ZONE_ICON_AT` (`qcContinentPins.lua`) whose rectangle
+   moved or whose hit area changed ("hit area N cells at x, y -> ...") wants its row read again from its
+   `CentroidX` and `CentroidY` (over 100) in the new rows. When the differences are read, run it again with `--update`,
    which replaces that game's rows and keeps the other game's (it warns when the file has fewer rows than
    the baseline, which is a pass that stopped early), and commit the baseline. Names are compared as the
    client gives them, so take the dump on an English client, and a zone gated by a player condition

@@ -81,6 +81,18 @@ Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counti
   still has pairs closer than 24 px after the folds.
 - **The map's canvas** is 3840 x 2560 with 8 zoom levels on retail and 1002 x 668 with 4 on Forever; the
   window shows 697 x 465 windowed and 1698 x 1131 maximised.
+- **The rectangle's centre is not always the middle of the zone.** The game's hit test names the zone at the
+  centre of its rectangle for every one of them (the dump's `HitID`), but the cells that name it can lie
+  well to one side. At the maximised map (1,698 px wide) 13 of the 135 retail icons with a hit area sit 50 px
+  or more from the centre of the cells that name their zone:
+  Tiragarde Sound 167 px, Thaldraszus 107, Gorgrond 106, The Jade Forest 95, Townlong Steppes 92, The
+  Coiled Isle 85, Hallowfall 84, Dread Wastes 82, Shadowmoon Valley 66, Stormheim 57, Spires of Arak 54,
+  Stormsong Valley 54, Durotar 51; on Forever 1 of 42 (Stranglethorn Vale, 55 px). The user saw the first at
+  the first look at the finished icons and asked for it to move right, which is `QC_ZONE_ICON_AT` below.
+  The others are candidates, not changes. Tiragarde Sound's new place is about 326 px from the nearest icon
+  on Kul Tiras (Drustvar) at that width, 134 px windowed, and 0.574, 0.631 is the cells' centre, not a cell:
+  that it lies on a Tiragarde cell is not in the dump and is for the look (`/dump
+  C_Map.GetMapInfoAtPosition(876, 0.574, 0.631).name` says).
 - **What the first version left out** (checked against the quest list): Quel'Thalas, a Continent-type
   child of Eastern Kingdoms, holds 929 quests (870 on its own map's six icons) and Argus, a Continent-type
   child of Broken Isles, 147 (both now get an icon on the outer map, see Design); the alternate Arathi map
@@ -114,7 +126,8 @@ agreed until they say otherwise.
 nothing precomputed. A child is kept when its `mapType` is Zone, its rectangle on the continent is
 real (`C_Map.GetMapRectOnMap` gives four numbers with `maxX > minX` and `maxY > minY`; it may give
 nothing or zeros, and the calls are `MayReturnNothing`) and `qcAreaIDToCategoryID[mapId]` names a
-category. The icon sits at the rectangle's centre. Two children with the same category are one icon,
+category. The icon sits at the rectangle's centre, or at the place `QC_ZONE_ICON_AT` gives the zone (see "The
+sparse table"). Two children with the same category are one icon,
 the one with a rectangle. The zone list is read on every refresh, not cached: the call is dynamic
 (scenario maps appear as children during quests).
 
@@ -138,6 +151,18 @@ Mulgore 7, Darnassus 89 into Teldrassil 57, the Exodar 103 into Azuremyst Isle 9
 sits far from Durotar's icon and is left out until the geometry dump says otherwise. The rows come from
 the offline analysis, and the dump confirms or trims them. If they pass about 25 per game, they become
 a decisions CSV that a tool turns into a generated file, as `qcUnavailableQuests.lua` is.
+
+A second keyed table, `QC_ZONE_ICON_AT`, gives a zone's icon a place of its own (map fractions) where the
+centre of its rectangle looked wrong on the map. It holds Tiragarde Sound (895) at 0.574, 0.631, the centre
+of the grid cells that name it: its rectangle's centre, 0.476, 0.645, is one the game's hit test also names
+Tiragarde Sound at, but sits in the sea off Drustvar's edge, 98 px left of it at 1,000 px wide. Darkshore
+(62 and Forever's 1439) and Felwood (77 and 1448) are nudged 0.01 to 0.012 left by eye, at the user's asking
+on both games. A row for a hit-cell centre is read from the zone's `CentroidX` and `CentroidY` in
+`docs/plans/continent-geometry-baseline.csv` (over 100); the report's "centre of a zone is over 3 map points"
+line only names the zone and its distance. A row applies only while the game gives the zone a rectangle, and
+`Compare-ContinentGeometry.lua` flags a hit area that moved over a point or changed by 15% of its cells, so
+a stale row is noticed at the sweep. The report's other candidates wait for the user's eye, as no pin moves
+without it.
 
 **Counting.** Two halves, split by where the code lives (the load order is `qcCore.lua`,
 `qcTooltips.lua`, `qcMapPins.lua`, then the new file).
@@ -275,10 +300,15 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
    no quests left, one with no rectangle, one inside it left alone, a click opening it) and, on the
    client's own table, that each continent inside another gets an icon counting what its map's icons
    count.
+6c. **Icon places** (the first look): `QC_ZONE_ICON_AT` with Tiragarde Sound, then Darkshore and Felwood
+   on both games, and their tests (the icon at the table's place, another zone's at its rectangle's centre,
+   no icon when the game gives no usable rectangle, whatever the table says; the Tiragarde checks run on
+   retail only, the nudges on whichever game has the zone). `Compare-ContinentGeometry.lua` also compares
+   a map's hit area (its cells and their centre).
 7. **The release PR**: README (a bullet under "Quest givers on your world map", naming the option as
    the game shows it), a **New** bullet in the changelog, and the restart-WoW line.
 
-PRs 3 to 6b are stacked; retarget each to master before deleting its base.
+PRs 3 to 6c are stacked; retarget each to master before deleting its base.
 
 ## Tests
 
@@ -360,3 +390,4 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 - 2026-10-10: PR 5 built (`qcContinentPinTemplate`, `qcContinentPinMixin`, `qcContinentDataProvider`, `qcRefreshMapProviders`, the `QC_M_SHOW_CONTINENT` option and its two strings, `Test-Settings.lua`): the reachability reports of both games and the zone pins' tooltip record are unchanged; the continent pin's tooltip, click, provider and the page's layout (33 px to spare) are checked offline only; not yet tried in game.
 - 2026-10-10: both games' geometry dumps read (see "What the game said"). PR 6 built (`Compare-ContinentGeometry.lua`, the baseline CSV, `Compare-ApiDocs.ps1 -Tables`, sweep step 2f): `Test-Probe.lua` 985 checks and `Test-ApiDocs.ps1` 258 pass; each game compares clean against its baseline.
 - 2026-10-10: PR 6b built (continents inside a continent, the Arathi extra, decision 5 changed): on the dump's geometry, retail's Eastern Kingdoms counts 2,326 quests on 27 icons (Quel'Thalas 870, Arathi's 24 more) and the Broken Isles 1,012 on 8 (Argus 147); Forever has none inside another and is unchanged (Kalimdor 20 icons, Eastern Kingdoms 22); no new pair of icons under 24 px; `Test-ContinentPins.lua` passes on both TOCs, each new check fails when its code is taken out; not yet tried in game.
+- 2026-10-10: PR 6c built after the user's first look (retail, maximised Kul Tiras): `QC_ZONE_ICON_AT` moves Tiragarde Sound's icon from its rectangle's centre (0.476, 0.645, in the sea off Drustvar's edge) to the centre of the cells that name it (0.574, 0.631), 98 px right of where it was at 1,000 px wide, and Darkshore's and Felwood's a little left on both games. `Test-ContinentPins.lua` passes on both TOCs (Tiragarde's checks on retail only) and each of Tiragarde's fails when its code is taken out; `Test-Probe.lua` 991 checks. Twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre at 1,698 px (see "What the game said") and are left for the user's eye. An independent review of the first commit found the wording "off the zone" unsupported (the hit test names the zone at the old point too), and that a moved hit area went unnoticed: both fixed here.

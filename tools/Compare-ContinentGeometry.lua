@@ -1,8 +1,9 @@
 -- Compares what the probe's geometry pass gathered (docs/plans/continent-pins.md) with the baseline kept in
 -- docs/plans/continent-geometry-baseline.csv, so a sweep notices a zone that moved, appeared or went on a
 -- continent map, a map whose type, flags, group or nav-bar listing changed, or one the game's hit test now
--- names differently. A change in a zone's place is a prompt to look at the zone icons, not a failure of the
--- addon: it reads the places from the game each time.
+-- names differently or over other cells. A change in a zone's place is a prompt to look at the zone icons (and
+-- at the rows of QC_ZONE_ICON_AT in qcContinentPins.lua, which are read from the hit cells' centres), not a
+-- failure of the addon: it reads the places from the game each time.
 -- usage: lua tools/Compare-ContinentGeometry.lua <QCForeverProbe.lua> <baseline.csv> [--update] [build]
 --   Compares the game the file is from (its build, or the one given) with that game's rows in the baseline.
 --   Exit 0: the same. Exit 1: something differs, or the baseline has no rows for the game. Exit 2: no geometry.
@@ -11,6 +12,8 @@
 -- Under Lua 5.1: & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Compare-ContinentGeometry.lua <file> <baseline.csv>
 
 local TOLERANCE = 0.0005
+local CENTROID_POINTS = 1
+local CELLS_SHARE = 0.15
 local FIELDS = {"name", "mapType", "flags", "navBar", "group", "hitId"}
 
 local here = (arg and arg[0] or ""):match("^(.*)[/\\][^/\\]*$") or "."
@@ -35,6 +38,22 @@ local function rectsDiffer(a, b)
 	return false
 end
 
+-- The cells of the probe's grid that the game's hit test names a map on: how many, and their centre in map
+-- percent. It differs when the count changes by more than 15% (and 2 cells) or the centre moves over a point.
+local function hitAreaDiffers(a, b)
+	local was, now = a.cells or 0, b.cells or 0
+	if math.abs(was - now) > math.max(2, was * CELLS_SHARE) then return true end
+	if was > 0 and now > 0 and a.cx and a.cy and b.cx and b.cy then
+		return math.abs(a.cx - b.cx) > CENTROID_POINTS or math.abs(a.cy - b.cy) > CENTROID_POINTS
+	end
+	return false
+end
+
+local function hitAreaText(r)
+	if (r.cells or 0) == 0 then return "none" end
+	return string.format("%d cells at %.1f, %.1f", r.cells, r.cx or 0, r.cy or 0)
+end
+
 -- What changed from the baseline's records to the current ones: the lines to print, and how many.
 local function compare(current, baseline)
 	local old, new = {}, {}
@@ -51,6 +70,7 @@ local function compare(current, baseline)
 				if o[field] ~= r[field] then diffs[#diffs + 1] = string.format("%s %s -> %s", field, tostring(o[field]), tostring(r[field])) end
 			end
 			if rectsDiffer(o.rect, r.rect) then diffs[#diffs + 1] = string.format("rectangle %s -> %s", rectText(o.rect), rectText(r.rect)) end
+			if hitAreaDiffers(o, r) then diffs[#diffs + 1] = string.format("hit area %s -> %s", hitAreaText(o), hitAreaText(r)) end
 			if #diffs > 0 then changed[#changed + 1] = "changed: " .. describe(r) .. ": " .. table.concat(diffs, "; ") end
 		end
 	end

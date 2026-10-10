@@ -283,6 +283,39 @@ if BY_AREA[14] then
 		#arathi == 1 and arathi[1].mapId == 14 and listOf(arathi[1].categories) == BY_AREA[14] .. ",1409", arathi[1] and listOf(arathi[1].categories))
 	S.rects[14] = nil
 end
+if BY_AREA[895] then
+	S.children[CONT + 8] = {zone(895, "Tiragarde Sound"), zone(p1, "One")}
+	S.rects[895] = {0.1935, 0.7592, 0.3622, 0.9278}
+	local sound = code.Zones(CONT + 8)
+	local at, other
+	for _, z in ipairs(sound) do if z.mapId == 895 then at = z else other = z end end
+	check("Tiragarde Sound's icon sits where the game names the zone, not at its rectangle's centre",
+		at and math.abs(at.x - 0.574) < 1e-9 and math.abs(at.y - 0.631) < 1e-9, at and (at.x .. ", " .. at.y))
+	check("another zone's icon is still at its rectangle's centre", other and math.abs(other.x - 0.15) < 1e-9 and math.abs(other.y - 0.20) < 1e-9)
+	S.rects[895] = {0.2, 0.2, 0.3, 0.9}
+	local flat = code.Zones(CONT + 8)
+	local drawn
+	for _, z in ipairs(flat) do if z.mapId == 895 then drawn = z end end
+	check("with no rectangle of its own the game gives it no icon, whatever the table says", drawn == nil)
+	S.rects[895] = nil
+end
+-- Darkshore and Felwood, on the game that has each: left of the centre of the rectangle the game gives them, by eye.
+for _, row in ipairs({
+	{62, "Darkshore", {0.3818, 0.5575, 0.1666, 0.3423}, 0.458, 0.254}, {77, "Felwood", {0.4149, 0.5797, 0.2067, 0.3715}, 0.485, 0.289},
+	{1439, "Darkshore", {0.3838, 0.5618, 0.1821, 0.3601}, 0.463, 0.271}, {1448, "Felwood", {0.4192, 0.5754, 0.231, 0.3872}, 0.485, 0.309},
+}) do
+	local mapId, name, rect, x, y = row[1], row[2], row[3], row[4], row[5]
+	if BY_AREA[mapId] then
+		S.children[CONT + 9] = {zone(mapId, name)}
+		S.rects[mapId] = rect
+		local placed = code.Zones(CONT + 9)[1]
+		local centreX = (rect[1] + rect[2]) / 2
+		check(string.format("%s's icon (%d) sits at %.3f, %.3f, left of its rectangle's centre", name, mapId, x, y),
+			placed and math.abs(placed.x - x) < 1e-9 and math.abs(placed.y - y) < 1e-9 and placed.x < centreX and centreX - placed.x < 0.03,
+			placed and (placed.x .. ", " .. placed.y))
+		S.rects[mapId] = nil
+	end
+end
 
 S.children[CONT + 2] = {zone(CITY, "City")}
 S.rects[CITY] = {0.33, 0.37, 0.53, 0.57}
