@@ -66,6 +66,27 @@ unless they say otherwise.
   categories (Undermine, Korthia, Garrison Support) under-report by about 770 quests (6%). Forever's
   Zephras Isle (112 quests) hangs off the world map only.
 
+### What the game said (10 October 2026)
+
+The probe's geometry pass was run on retail (12.1.0.69933, 15 continent maps, 434 child rows) and on
+Forever (1.60.1.70338, 53 rows), and the dumps were read through the real counting code.
+
+- **The type filter is exact.** `GetMapChildrenInfo(id, Zone)` returns only Zone maps, so the zone list
+  needs no second check.
+- **The hit test at a zone's centre names the zone itself,** except where a city sits next to its host:
+  there it names the neighbour. The capital folds (decision 4) cover those rows.
+- **Phased twins arrive with flat rectangles** (zero width and height), not missing ones, so a twin is
+  one point and folds into its category's icon.
+- **Forever gives 20 icons on Kalimdor and 22 on Eastern Kingdoms.** On the windowed map Eastern Kingdoms
+  still has pairs closer than 24 px after the folds.
+- **The map's canvas** is 3840 x 2560 with 8 zoom levels on retail and 1002 x 668 with 4 on Forever; the
+  window shows 697 x 465 windowed and 1698 x 1131 maximised.
+- **What the first version leaves out** (checked against the quest list): Quel'Thalas, a Continent-type
+  child of Eastern Kingdoms, holds 929 quests and Argus, a Continent-type child of Broken Isles, 147;
+  sub-zone categories (Undermine 218, Korthia 115, Valdrakken 65, Dornogal 47); zones that arrive with
+  no rectangle (Founder's Point 52, Razorwind 55, Siren Isle 45); and the alternate Arathi map 2372,
+  whose category 1409 holds 24 quests that Arathi Highlands' icon misses.
+
 ## Decisions
 
 The user said to go with the recommendations (10 October 2026), so the calls below are taken as
@@ -223,11 +244,20 @@ cursor is over an icon (cosmetic, Forever only). `game-parity.md` gets a row for
      to it, and the two keys `SHOWCONTINENTICONS` and `SHOWCONTINENTICONSTIP` in all 11 locale files.
 6. **Sweep integration**: the geometry baseline compared on each sweep, `Compare-ApiDocs.ps1` watching
    the values of `Enum.UIMapType` and the fields of `UiMapDetails` (it compares neither), and the
-   runbook step.
+   runbook step. Done as:
+   - `Report-ContinentGeometry.lua` returns its rows (and reads them back from a CSV), and
+     `Compare-ContinentGeometry.lua <saved variables> <baseline>` lists the zones that came, went or
+     moved (more than 0.05 of a map point) and the maps whose type, flags, group, nav-bar listing or
+     hit-test answer changed; exit 1 on any, `--update` replaces that game's rows and keeps the other's;
+   - `docs/plans/continent-geometry-baseline.csv`, the two dumps above (retail 434 rows, Forever 53);
+   - `Compare-ApiDocs.ps1 -Tables` (default `UIMapType`, `UiMapDetails`), the first structures whose
+     contents it compares, with `Test-ApiDocs.ps1` at 258 checks; both are documented the same on live
+     and Forever today;
+   - sweep step 2f and the step 3b instructions in `maintenance.md`, a row in `game-parity.md`.
 7. **The release PR**: README (a bullet under "Quest givers on your world map", naming the option as
    the game shows it), a **New** bullet in the changelog, and the restart-WoW line.
 
-PRs 3 to 5 are stacked; retarget each to master before deleting its base.
+PRs 3 to 6 are stacked; retarget each to master before deleting its base.
 
 ## Tests
 
@@ -303,3 +333,4 @@ at the zone's category; adding Dalaran-style hubs to the groups table.
 - 2026-10-10: PR 3 built (the map tooltip's helpers in `qcTooltips.lua` as `QC.qcMapTip`, `Test-MapTooltip.lua`): the reachability reports of both games and a record of 400-odd tooltip calls are identical to master's; not yet tried in game.
 - 2026-10-10: PR 4 built (`qcGetZoneQuests`, `qcContinentPins.lua`, `Test-ContinentPins.lua`): every category counts as many quests as the list's zone counter says (485 retail, 113 Forever); retail's 15 continents give 139 icons and Forever's 2 give 42, with no quest in two icons; a continent pass takes 6 ms at most offline; not yet in game, and nothing draws yet.
 - 2026-10-10: PR 5 built (`qcContinentPinTemplate`, `qcContinentPinMixin`, `qcContinentDataProvider`, `qcRefreshMapProviders`, the `QC_M_SHOW_CONTINENT` option and its two strings, `Test-Settings.lua`): the reachability reports of both games and the zone pins' tooltip record are unchanged; the continent pin's tooltip, click, provider and the page's layout (33 px to spare) are checked offline only; not yet tried in game.
+- 2026-10-10: both games' geometry dumps read (see "What the game said"). PR 6 built (`Compare-ContinentGeometry.lua`, the baseline CSV, `Compare-ApiDocs.ps1 -Tables`, sweep step 2f): `Test-Probe.lua` 980 checks and `Test-ApiDocs.ps1` 258 pass; each game compares clean against its baseline.

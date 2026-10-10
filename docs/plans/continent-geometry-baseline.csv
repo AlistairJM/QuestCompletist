@@ -1,0 +1,488 @@
+Game,Build,Continent,ContinentName,MapID,Name,MapType,Flags,NavBar,Group,MinX,MaxX,MinY,MaxY,HitID,HitName,Cells,CentroidX,CentroidY
+"forever","1.60.1.70338",947,"Azeroth",1414,"Kalimdor",2,0,true,,-0.1859,0.6341,0.0677,0.8877,1414,"Kalimdor",434,22.3,50.3
+"forever","1.60.1.70338",947,"Azeroth",1415,"Eastern Kingdoms",2,0,true,,0.3715,1.1592,0.0815,0.8691,1415,"Eastern Kingdoms",346,75.9,49.1
+"forever","1.60.1.70338",947,"Azeroth",2521,"Zephras Isle",3,2,true,,0,0,0,0,,,0,,
+"forever","1.60.1.70338",1414,"Kalimdor",1411,"Durotar",3,2,true,,0.5171,0.6608,0.448,0.5917,1411,"Durotar",24,61.4,52.7
+"forever","1.60.1.70338",1414,"Kalimdor",1412,"Mulgore",3,2,true,,0.3964,0.5636,0.5109,0.6781,1412,"Mulgore",16,47.4,60.8
+"forever","1.60.1.70338",1414,"Kalimdor",1413,"The Barrens",3,2,true,,0.3925,0.6679,0.456,0.7314,1413,"The Barrens",36,53.5,58.2
+"forever","1.60.1.70338",1414,"Kalimdor",1438,"Teldrassil",3,2,true,,0.3601,0.4985,0.0395,0.1778,1438,"Teldrassil",37,43.6,11.2
+"forever","1.60.1.70338",1414,"Kalimdor",1439,"Darkshore",3,2,true,,0.3838,0.5618,0.1821,0.3601,1439,"Darkshore",36,44.4,26.9
+"forever","1.60.1.70338",1414,"Kalimdor",1440,"Ashenvale",3,2,true,,0.4176,0.5743,0.3313,0.4879,1440,"Ashenvale",29,49.7,41.3
+"forever","1.60.1.70338",1414,"Kalimdor",1441,"Thousand Needles",3,2,true,,0.4755,0.5951,0.6834,0.803,1441,"Thousand Needles",11,54.5,74.9
+"forever","1.60.1.70338",1414,"Kalimdor",1442,"Stonetalon Mountains",3,2,true,,0.3756,0.5083,0.4029,0.5356,1442,"Stonetalon Mountains",21,44.6,46.6
+"forever","1.60.1.70338",1414,"Kalimdor",1443,"Desolace",3,2,true,,0.3487,0.4709,0.5033,0.6255,1443,"Desolace",27,40.2,56.3
+"forever","1.60.1.70338",1414,"Kalimdor",1444,"Feralas",3,2,true,,0.3159,0.5048,0.6182,0.8071,1444,"Feralas",50,39.6,70.9
+"forever","1.60.1.70338",1414,"Kalimdor",1445,"Dustwallow Marsh",3,2,true,,0.4903,0.6329,0.6046,0.7473,1445,"Dustwallow Marsh",29,58.5,67.4
+"forever","1.60.1.70338",1414,"Kalimdor",1446,"Tanaris",3,2,true,,0.4697,0.6572,0.7612,0.9487,1446,"Tanaris",49,57.4,86.4
+"forever","1.60.1.70338",1414,"Kalimdor",1447,"Azshara",3,2,true,,0.5528,0.6906,0.304,0.4418,1447,"Azshara",31,63.7,37.9
+"forever","1.60.1.70338",1414,"Kalimdor",1448,"Felwood",3,2,true,,0.4192,0.5754,0.231,0.3872,1448,"Felwood",10,49.5,31
+"forever","1.60.1.70338",1414,"Kalimdor",1449,"Un'Goro Crater",3,2,true,,0.4493,0.5498,0.7649,0.8655,1449,"Un'Goro Crater",13,50.2,82.2
+"forever","1.60.1.70338",1414,"Kalimdor",1450,"Moonglade",3,2,true,,0.5013,0.564,0.1756,0.2384,1450,"Moonglade",6,53.3,21.3
+"forever","1.60.1.70338",1414,"Kalimdor",1451,"Silithus",3,2,true,,0.3948,0.4895,0.7646,0.8593,1451,"Silithus",13,43.7,81.1
+"forever","1.60.1.70338",1414,"Kalimdor",1452,"Winterspring",3,2,true,,0.4724,0.6653,0.1739,0.3668,1452,"Winterspring",23,58.7,26.9
+"forever","1.60.1.70338",1414,"Kalimdor",1454,"Orgrimmar",3,0,true,,0.5638,0.6019,0.4291,0.4672,1454,"Orgrimmar",3,58.6,45.4
+"forever","1.60.1.70338",1414,"Kalimdor",1456,"Thunder Bluff",3,0,true,,0.4497,0.4781,0.5564,0.5847,1456,"Thunder Bluff",0,,
+"forever","1.60.1.70338",1414,"Kalimdor",1457,"Darnassus",3,0,true,,0.3839,0.4127,0.1044,0.1332,1457,"Darnassus",2,40,11.3
+"forever","1.60.1.70338",1414,"Kalimdor",2482,"Mount Hyjal",3,2,true,,0.4888,0.5832,0.2648,0.3591,2482,"Mount Hyjal",14,53.9,31.1
+"forever","1.60.1.70338",1414,"Kalimdor",2524,"Darkspear Islands",6,0,false,,0,0,0,0,,,0,,
+"forever","1.60.1.70338",1414,"Kalimdor",2652,"Shen'dralas",3,2,true,,0.4087,0.4644,0.5992,0.6549,2652,"Shen'dralas",2,44.2,62.5
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1416,"Alterac Mountains",3,2,true,,0.4323,0.5118,0.2543,0.3338,1416,"Alterac Mountains",7,46.8,29.5
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1417,"Arathi Highlands",3,2,true,,0.4792,0.5814,0.3239,0.4261,1417,"Arathi Highlands",14,53.9,38.9
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1418,"Badlands",3,2,true,,0.5136,0.5843,0.5692,0.6398,1418,"Badlands",5,55.2,60.8
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1419,"Blasted Lands",3,2,true,,0.4898,0.585,0.7685,0.8636,1419,"Blasted Lands",8,54.4,81.6
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1420,"Tirisfal Glades",3,2,true,,0.3684,0.4967,0.1546,0.283,1420,"Tirisfal Glades",31,43.1,20
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1421,"Silverpine Forest",3,2,true,,0.3565,0.4759,0.2472,0.3665,1421,"Silverpine Forest",24,39.6,30.6
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1422,"Western Plaguelands",3,2,true,,0.4427,0.5649,0.1747,0.2969,1422,"Western Plaguelands",10,51.2,24
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1423,"Eastern Plaguelands",3,2,true,,0.5186,0.6409,0.1609,0.283,1423,"Eastern Plaguelands",31,57.8,21
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1424,"Hillsbrad Foothills",3,2,true,,0.4242,0.5152,0.3011,0.392,1424,"Hillsbrad Foothills",12,47.6,35.6
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1425,"The Hinterlands",3,2,true,,0.4993,0.6087,0.2557,0.3651,1425,"The Hinterlands",21,56.9,32.1
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1426,"Dun Morogh",3,2,true,,0.4034,0.5433,0.4834,0.6233,1426,"Dun Morogh",23,46.6,55.7
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1427,"Searing Gorge",3,2,true,,0.4637,0.5271,0.5781,0.6415,1427,"Searing Gorge",5,49.5,60.3
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1428,"Burning Steppes",3,2,true,,0.4621,0.5453,0.6178,0.701,1428,"Burning Steppes",12,51,65.6
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1429,"Elwynn Forest",3,2,true,,0.4109,0.5095,0.6565,0.7551,1429,"Elwynn Forest",13,46.5,70.3
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1430,"Deadwind Pass",3,2,true,,0.4782,0.5492,0.7386,0.8097,1430,"Deadwind Pass",3,51.4,77.9
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1431,"Duskwood",3,2,true,,0.4309,0.5076,0.7322,0.8089,1431,"Duskwood",8,46.7,77.5
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1432,"Loch Modan",3,2,true,,0.5112,0.5895,0.5094,0.5878,1432,"Loch Modan",10,55.7,55.8
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1433,"Redridge Mountains",3,2,true,,0.5023,0.564,0.6836,0.7453,1433,"Redridge Mountains",8,53.3,72.5
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1434,"Stranglethorn Vale",3,2,true,,0.3915,0.5727,0.7941,0.9754,1434,"Stranglethorn Vale",52,45,88.8
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1435,"Swamp of Sorrows",3,2,true,,0.5177,0.5829,0.7282,0.7933,1435,"Swamp of Sorrows",6,55.8,76.3
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1436,"Westfall",3,2,true,,0.3688,0.4683,0.7187,0.8182,1436,"Westfall",15,39.8,77.3
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1437,"Wetlands",3,2,true,,0.4656,0.5831,0.4097,0.5272,1437,"Wetlands",26,52.4,46.4
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1453,"Stormwind City",3,0,true,,0.4056,0.455,0.6589,0.7083,1453,"Stormwind City",4,42.1,68.1
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1455,"Ironforge",3,0,true,,0.4748,0.4973,0.5129,0.5354,1455,"Ironforge",0,,
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",1458,"Undercity",3,0,true,,0.4297,0.457,0.2382,0.2654,1458,"Undercity",1,44.2,26.3
+"forever","1.60.1.70338",1415,"Eastern Kingdoms",2548,"Riverglades",3,2,true,,0.5083,0.6461,0.5937,0.7315,2548,"Riverglades",28,60.2,66.5
+"retail","12.1.0.69933",12,"Kalimdor",1,"Durotar",3,6,true,,0.5171,0.6608,0.428,0.5717,1,"Durotar",27,61.9,50.3
+"retail","12.1.0.69933",12,"Kalimdor",7,"Mulgore",3,6,true,,0.4039,0.552,0.5086,0.6567,7,"Mulgore",14,47.6,58.9
+"retail","12.1.0.69933",12,"Kalimdor",10,"Northern Barrens",3,6,true,,0.4583,0.6144,0.4279,0.5841,10,"Northern Barrens",20,54.3,51.3
+"retail","12.1.0.69933",12,"Kalimdor",57,"Teldrassil",3,6,true,,0.3487,0.5083,0.0188,0.1785,57,"Teldrassil",35,44.6,9
+"retail","12.1.0.69933",12,"Kalimdor",62,"Darkshore",3,6,true,,0.3818,0.5575,0.1666,0.3423,62,"Darkshore",25,45.8,24.6
+"retail","12.1.0.69933",12,"Kalimdor",63,"Ashenvale",3,6,true,,0.4176,0.5743,0.3113,0.4679,63,"Ashenvale",27,49.9,39.1
+"retail","12.1.0.69933",12,"Kalimdor",64,"Thousand Needles",3,6,true,,0.4755,0.5951,0.6634,0.783,64,"Thousand Needles",16,53.8,73
+"retail","12.1.0.69933",12,"Kalimdor",65,"Stonetalon Mountains",3,6,true,,0.3577,0.5181,0.363,0.5233,65,"Stonetalon Mountains",29,44.3,45
+"retail","12.1.0.69933",12,"Kalimdor",66,"Desolace",3,6,true,,0.3487,0.4709,0.4833,0.6055,66,"Desolace",26,39.9,54.5
+"retail","12.1.0.69933",12,"Kalimdor",69,"Feralas",3,6,true,,0.3159,0.5048,0.5982,0.7871,69,"Feralas",55,40.3,68.5
+"retail","12.1.0.69933",12,"Kalimdor",70,"Dustwallow Marsh",3,6,true,,0.4903,0.6329,0.5846,0.7273,70,"Dustwallow Marsh",28,58.3,65.9
+"retail","12.1.0.69933",12,"Kalimdor",71,"Tanaris",3,6,true,,0.4655,0.6615,0.737,0.933,71,"Tanaris",39,58.1,84.1
+"retail","12.1.0.69933",12,"Kalimdor",76,"Azshara",3,6,true,,0.5554,0.7053,0.2824,0.4323,76,"Azshara",39,64.3,35.7
+"retail","12.1.0.69933",12,"Kalimdor",77,"Felwood",3,6,true,,0.4149,0.5797,0.2067,0.3715,77,"Felwood",13,49.7,28.6
+"retail","12.1.0.69933",12,"Kalimdor",78,"Un'Goro Crater",3,6,true,,0.4493,0.5498,0.7449,0.8455,78,"Un'Goro Crater",14,50.4,80
+"retail","12.1.0.69933",12,"Kalimdor",80,"Moonglade",3,6,true,,0.5013,0.564,0.1556,0.2184,80,"Moonglade",6,53.3,18.8
+"retail","12.1.0.69933",12,"Kalimdor",81,"Silithus",3,6,true,,0.3827,0.493,0.7411,0.8514,81,"Silithus",20,43.3,80.3
+"retail","12.1.0.69933",12,"Kalimdor",83,"Winterspring",3,6,true,,0.4907,0.6578,0.1433,0.3104,83,"Winterspring",32,59.6,21.6
+"retail","12.1.0.69933",12,"Kalimdor",85,"Orgrimmar",3,7,true,142,0.5591,0.6063,0.4004,0.4476,85,"Orgrimmar",2,58.3,43.8
+"retail","12.1.0.69933",12,"Kalimdor",88,"Thunder Bluff",3,6,true,,0.4497,0.4781,0.5364,0.5647,88,"Thunder Bluff",1,45.8,56.3
+"retail","12.1.0.69933",12,"Kalimdor",89,"Darnassus",3,7,true,,0.3772,0.419,0.0752,0.1171,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",97,"Azuremyst Isle",3,6,true,,0.2708,0.3815,0.2114,0.322,97,"Azuremyst Isle",12,33.6,27.9
+"retail","12.1.0.69933",12,"Kalimdor",103,"The Exodar",3,6,true,,0.2862,0.3149,0.2446,0.2734,97,"Azuremyst Isle",1,30.8,26.3
+"retail","12.1.0.69933",12,"Kalimdor",106,"Bloodmyst Isle",3,6,true,,0.2593,0.3479,0.1284,0.2171,106,"Bloodmyst Isle",11,30.2,18.5
+"retail","12.1.0.69933",12,"Kalimdor",198,"Mount Hyjal",3,6,true,,0.489,0.6044,0.2492,0.3646,198,"Mount Hyjal",19,54.9,31.5
+"retail","12.1.0.69933",12,"Kalimdor",199,"Southern Barrens",3,6,true,,0.4269,0.6283,0.4934,0.6948,199,"Southern Barrens",14,52,60.9
+"retail","12.1.0.69933",12,"Kalimdor",249,"Uldum",3,6,true,,0.3974,0.5657,0.829,0.9973,249,"Uldum",38,48.6,93.6
+"retail","12.1.0.69933",12,"Kalimdor",327,"Ahn'Qiraj: The Fallen Kingdom",6,2,false,,0.358,0.4681,0.8292,0.9392,327,"Ahn'Qiraj: The Fallen Kingdom",14,41.4,89.5
+"retail","12.1.0.69933",12,"Kalimdor",524,"Battle on the High Seas",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",775,"The Exodar",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",776,"Azuremyst Isle",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",782,"The Emerald Nightmare",4,64,false,248,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",785,"The Emerald Nightmare",4,64,false,248,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",891,"Azuremyst Isle",4,64,false,273,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",907,"Seething Shore",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",1203,"Darkshore",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",1332,"Darkshore",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",1333,"Darkshore",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",1338,"Darkshore",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",1469,"Vision of Orgrimmar",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",1534,"Orgrimmar",6,0,false,,0.5588,0.6065,0.4,0.4481,85,"Orgrimmar",0,,
+"retail","12.1.0.69933",12,"Kalimdor",1535,"Durotar",6,0,false,,0.573,0.6041,0.4343,0.4653,1,"Durotar",0,,
+"retail","12.1.0.69933",12,"Kalimdor",2091,"War of the Shifting Sands",6,4098,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",2351,"Razorwind Shores",3,131076,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",2354,"Silithus",3,528390,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",2394,"Labyrinth",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",12,"Kalimdor",2403,"Vision of Orgrimmar",3,524288,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",14,"Arathi Highlands",3,6,true,,0.4824,0.5659,0.4511,0.5347,14,"Arathi Highlands",9,52.9,50.1
+"retail","12.1.0.69933",13,"Eastern Kingdoms",15,"Badlands",3,6,true,,0.501,0.5748,0.657,0.7308,15,"Badlands",8,53.3,70
+"retail","12.1.0.69933",13,"Eastern Kingdoms",17,"Blasted Lands",3,6,true,,0.484,0.572,0.8275,0.9155,17,"Blasted Lands",11,53.6,88.5
+"retail","12.1.0.69933",13,"Eastern Kingdoms",18,"Tirisfal Glades",3,6,true,,0.3824,0.491,0.3077,0.4163,18,"Tirisfal Glades",23,43.2,34.8
+"retail","12.1.0.69933",13,"Eastern Kingdoms",21,"Silverpine Forest",3,6,true,,0.3724,0.4733,0.3859,0.4869,21,"Silverpine Forest",15,40.8,43.8
+"retail","12.1.0.69933",13,"Eastern Kingdoms",22,"Western Plaguelands",3,6,true,,0.4453,0.5486,0.3246,0.428,22,"Western Plaguelands",9,50.3,37.9
+"retail","12.1.0.69933",13,"Eastern Kingdoms",23,"Eastern Plaguelands",3,6,true,,0.5103,0.6071,0.3125,0.4094,23,"Eastern Plaguelands",10,55.8,37.5
+"retail","12.1.0.69933",13,"Eastern Kingdoms",25,"Hillsbrad Foothills",3,6,true,,0.4108,0.5277,0.3926,0.5095,25,"Hillsbrad Foothills",11,47.3,45.3
+"retail","12.1.0.69933",13,"Eastern Kingdoms",26,"The Hinterlands",3,6,true,,0.4931,0.5857,0.3931,0.4857,26,"The Hinterlands",12,54.6,44.4
+"retail","12.1.0.69933",13,"Eastern Kingdoms",27,"Dun Morogh",3,6,true,,0.4039,0.5216,0.5881,0.7058,27,"Dun Morogh",18,46,65
+"retail","12.1.0.69933",13,"Eastern Kingdoms",32,"Searing Gorge",3,6,true,,0.4631,0.5167,0.6659,0.7195,32,"Searing Gorge",3,48.6,70.4
+"retail","12.1.0.69933",13,"Eastern Kingdoms",36,"Burning Steppes",3,6,true,,0.4665,0.5422,0.6978,0.7735,36,"Burning Steppes",9,51,74
+"retail","12.1.0.69933",13,"Eastern Kingdoms",37,"Elwynn Forest",3,6,true,,0.4184,0.5018,0.7322,0.8156,37,"Elwynn Forest",8,46.9,77.2
+"retail","12.1.0.69933",13,"Eastern Kingdoms",42,"Deadwind Pass",3,6,true,,0.4753,0.5354,0.8017,0.8617,42,"Deadwind Pass",2,50.8,82.5
+"retail","12.1.0.69933",13,"Eastern Kingdoms",47,"Duskwood",3,6,true,,0.4353,0.5001,0.7963,0.8611,47,"Duskwood",6,47.5,82.5
+"retail","12.1.0.69933",13,"Eastern Kingdoms",48,"Loch Modan",3,6,true,,0.5032,0.5695,0.6078,0.6741,48,"Loch Modan",5,53.8,65.3
+"retail","12.1.0.69933",13,"Eastern Kingdoms",49,"Redridge Mountains",3,6,true,,0.4908,0.5526,0.7529,0.8147,49,"Redridge Mountains",3,52.5,78.8
+"retail","12.1.0.69933",13,"Eastern Kingdoms",51,"Swamp of Sorrows",3,6,true,,0.5053,0.5656,0.7897,0.85,51,"Swamp of Sorrows",6,54.2,82.5
+"retail","12.1.0.69933",13,"Eastern Kingdoms",52,"Westfall",3,6,true,,0.3828,0.4669,0.7848,0.869,52,"Westfall",13,41.2,82.2
+"retail","12.1.0.69933",13,"Eastern Kingdoms",56,"Wetlands",3,6,true,,0.4647,0.564,0.5234,0.6228,56,"Wetlands",15,50.5,56.9
+"retail","12.1.0.69933",13,"Eastern Kingdoms",84,"Stormwind City",3,7,true,,0.4139,0.4556,0.7342,0.776,84,"Stormwind City",4,43.3,75
+"retail","12.1.0.69933",13,"Eastern Kingdoms",87,"Ironforge",3,6,true,,0.4724,0.4914,0.6107,0.6297,87,"Ironforge",1,47.5,61.3
+"retail","12.1.0.69933",13,"Eastern Kingdoms",179,"Gilneas",6,6,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",203,"Vashj'ir",3,6,true,,0.2449,0.4118,0.5801,0.7471,203,"Vashj'ir",45,32.7,66.2
+"retail","12.1.0.69933",13,"Eastern Kingdoms",217,"Ruins of Gilneas",3,6,true,,0.3726,0.4482,0.4652,0.5409,217,"Ruins of Gilneas",13,41.3,51.3
+"retail","12.1.0.69933",13,"Eastern Kingdoms",224,"Stranglethorn Vale",3,6,true,,0.3837,0.5412,0.8412,0.9987,224,"Stranglethorn Vale",42,44.7,92.8
+"retail","12.1.0.69933",13,"Eastern Kingdoms",241,"Twilight Highlands",3,6,true,,0.5139,0.6405,0.5237,0.6504,241,"Twilight Highlands",28,58.6,58.7
+"retail","12.1.0.69933",13,"Eastern Kingdoms",244,"Tol Barad",3,0,true,,0.3483,0.3893,0.532,0.559,244,"Tol Barad",1,37.5,53.8
+"retail","12.1.0.69933",13,"Eastern Kingdoms",245,"Tol Barad Peninsula",3,0,true,,0.3402,0.3775,0.5131,0.5377,245,"Tol Barad Peninsula",2,35,53.8
+"retail","12.1.0.69933",13,"Eastern Kingdoms",501,"Dalaran",4,0,false,215,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",502,"Dalaran",4,0,false,215,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",773,"Tol Barad",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",783,"The Emerald Nightmare",4,64,false,248,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",784,"The Emerald Nightmare",4,64,false,248,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",906,"Arathi Highlands",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",908,"Ruins of Lordaeron",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",943,"Arathi Highlands",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",1012,"Stormwind City",6,0,false,278,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",1013,"The Stockade",6,0,false,278,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",1044,"Arathi Highlands",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",1470,"Vision of Stormwind",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",1476,"Twilight Highlands",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",1577,"Gilneas City",3,0,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2070,"Tirisfal Glades",3,4098,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2090,"The Gnoll War",6,4098,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2352,"Founder's Point",3,131076,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2372,"Arathi Highlands",3,524292,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2404,"Vision of Stormwind",3,524292,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2451,"Arathi Highlands",3,528388,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",13,"Eastern Kingdoms",2537,"Quel'Thalas",2,258,true,,0.515,0.78,0,0.355,2537,"Quel'Thalas",259,64.3,18.3
+"retail","12.1.0.69933",101,"Outland",100,"Hellfire Peninsula",3,6,true,,0.4269,0.7227,0.3728,0.6686,100,"Hellfire Peninsula",137,59.1,52.3
+"retail","12.1.0.69933",101,"Outland",102,"Zangarmarsh",3,6,true,,0.2016,0.4894,0.3338,0.6217,102,"Zangarmarsh",103,34.4,48
+"retail","12.1.0.69933",101,"Outland",104,"Shadowmoon Valley",3,6,true,,0.5022,0.8171,0.6673,0.9823,104,"Shadowmoon Valley",112,68.1,82.5
+"retail","12.1.0.69933",101,"Outland",105,"Blade's Edge Mountains",3,6,true,,0.2376,0.5483,0.1213,0.432,105,"Blade's Edge Mountains",108,39.7,28.3
+"retail","12.1.0.69933",101,"Outland",107,"Nagrand",3,6,true,,0.1546,0.471,0.4964,0.8128,107,"Nagrand",114,30.8,67.2
+"retail","12.1.0.69933",101,"Outland",108,"Terokkar Forest",3,6,true,,0.3385,0.6477,0.5859,0.8951,108,"Terokkar Forest",105,49.5,76.6
+"retail","12.1.0.69933",101,"Outland",109,"Netherstorm",3,6,true,,0.4302,0.7494,0.0313,0.3506,109,"Netherstorm",104,58.9,21.7
+"retail","12.1.0.69933",101,"Outland",111,"Shattrath City",3,6,true,,0.3928,0.4676,0.6266,0.7014,111,"Shattrath City",8,43.3,66.3
+"retail","12.1.0.69933",113,"Northrend",114,"Borean Tundra",3,6,true,,0.0633,0.3692,0.4943,0.8003,114,"Borean Tundra",106,22.6,63.4
+"retail","12.1.0.69933",113,"Northrend",115,"Dragonblight",3,6,true,,0.3257,0.6234,0.4404,0.7381,115,"Dragonblight",110,49.5,60.1
+"retail","12.1.0.69933",113,"Northrend",116,"Grizzly Hills",3,6,true,,0.5771,0.8558,0.445,0.7237,116,"Grizzly Hills",92,71.6,59.2
+"retail","12.1.0.69933",113,"Northrend",117,"Howling Fjord",3,6,true,,0.5924,0.9133,0.6361,0.957,117,"Howling Fjord",132,75.6,78.9
+"retail","12.1.0.69933",113,"Northrend",118,"Icecrown",3,6,true,,0.2292,0.5621,0.1337,0.4666,118,"Icecrown",174,38.5,28.8
+"retail","12.1.0.69933",113,"Northrend",119,"Sholazar Basin",3,6,true,,0.1504,0.3816,0.304,0.5352,119,"Sholazar Basin",50,26.5,44
+"retail","12.1.0.69933",113,"Northrend",120,"The Storm Peaks",3,6,true,,0.4204,0.798,0.0723,0.4498,120,"The Storm Peaks",193,62.6,23.6
+"retail","12.1.0.69933",113,"Northrend",121,"Zul'Drak",3,6,true,,0.55,0.8151,0.2737,0.5387,121,"Zul'Drak",69,69.7,43.4
+"retail","12.1.0.69933",113,"Northrend",123,"Wintergrasp",3,6,true,,0.2884,0.4463,0.4291,0.587,123,"Wintergrasp",34,36.7,52
+"retail","12.1.0.69933",113,"Northrend",127,"Crystalsong Forest",3,6,true,,0.4416,0.5861,0.3666,0.511,127,"Crystalsong Forest",15,52.1,45.6
+"retail","12.1.0.69933",113,"Northrend",170,"Hrothgar's Landing",3,6,true,,0.3697,0.5649,0.0259,0.2211,170,"Hrothgar's Landing",20,48.5,11.8
+"retail","12.1.0.69933",113,"Northrend",871,"The Lost Glacier",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",113,"Northrend",897,"The Deaths of Chromie",4,64,false,274,0,0,0,0,,,0,,
+"retail","12.1.0.69933",113,"Northrend",1334,"Wintergrasp",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",113,"Northrend",2092,"Azmerloth",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",424,"Pandaria",371,"The Jade Forest",3,6,true,,0.4706,0.9206,0.2927,0.7426,371,"The Jade Forest",306,75,49.9
+"retail","12.1.0.69933",424,"Pandaria",376,"Valley of the Four Winds",3,6,true,,0.3915,0.6444,0.5398,0.7928,376,"Valley of the Four Winds",70,51.9,67.8
+"retail","12.1.0.69933",424,"Pandaria",379,"Kun-Lai Summit",3,6,true,,0.2522,0.6556,0.1025,0.506,379,"Kun-Lai Summit",229,46.5,27.9
+"retail","12.1.0.69933",424,"Pandaria",388,"Townlong Steppes",3,6,true,,0.1079,0.4781,0.205,0.5752,388,"Townlong Steppes",241,24,40.5
+"retail","12.1.0.69933",424,"Pandaria",390,"Vale of Eternal Blossoms",3,6,true,,0.4042,0.5675,0.4574,0.6206,390,"Vale of Eternal Blossoms",33,49.6,55.5
+"retail","12.1.0.69933",424,"Pandaria",418,"Krasarang Wilds",3,6,true,,0.3741,0.6763,0.6564,0.9585,418,"Krasarang Wilds",124,53.7,84.2
+"retail","12.1.0.69933",424,"Pandaria",422,"Dread Wastes",3,6,true,,0.1684,0.5134,0.5088,0.8538,422,"Dread Wastes",172,29.5,70.5
+"retail","12.1.0.69933",424,"Pandaria",433,"The Veiled Stair",3,6,true,,0.5118,0.6274,0.4824,0.598,433,"The Veiled Stair",9,58.2,55.1
+"retail","12.1.0.69933",424,"Pandaria",504,"Isle of Thunder",3,6,true,,0.1359,0.302,0.0401,0.2061,504,"Isle of Thunder",83,20.9,10
+"retail","12.1.0.69933",424,"Pandaria",507,"Isle of Giants",3,6,true,,0.435,0.5502,-0.0018,0.1134,507,"Isle of Giants",25,50.4,6.8
+"retail","12.1.0.69933",424,"Pandaria",516,"Isle of Thunder",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",424,"Pandaria",554,"Timeless Isle",3,6,true,,0.8273,0.982,0.6232,0.7779,554,"Timeless Isle",53,91,70.1
+"retail","12.1.0.69933",424,"Pandaria",1502,"Snowblossom Village",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",424,"Pandaria",2088,"Pandaren Revolution",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",572,"Draenor",525,"Frostfire Ridge",3,6,true,,0.2084,0.4773,0.1926,0.4615,525,"Frostfire Ridge",124,33.5,31.7
+"retail","12.1.0.69933",572,"Draenor",534,"Tanaan Jungle",3,6,true,,0.4633,0.6942,0.347,0.5779,534,"Tanaan Jungle",88,59.8,46.8
+"retail","12.1.0.69933",572,"Draenor",535,"Talador",3,6,true,,0.2819,0.5442,0.4463,0.7085,535,"Talador",81,42.7,57.6
+"retail","12.1.0.69933",572,"Draenor",539,"Shadowmoon Valley",3,6,true,,0.4387,0.7334,0.5629,0.8576,539,"Shadowmoon Valley",141,62.5,70.7
+"retail","12.1.0.69933",572,"Draenor",542,"Spires of Arak",3,6,true,,0.3326,0.5991,0.6472,0.9137,542,"Spires of Arak",106,44.5,81.6
+"retail","12.1.0.69933",572,"Draenor",543,"Gorgrond",3,6,true,,0.3156,0.6753,0.1058,0.4654,543,"Gorgrond",166,55.1,24.2
+"retail","12.1.0.69933",572,"Draenor",550,"Nagrand",3,6,true,,0.1291,0.3787,0.4137,0.6633,550,"Nagrand",136,24.7,54.7
+"retail","12.1.0.69933",572,"Draenor",577,"Tanaan Jungle",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",572,"Draenor",588,"Ashran",3,0,true,,0.656,0.7934,0.3705,0.5078,588,"Ashran",35,74.2,43.8
+"retail","12.1.0.69933",572,"Draenor",594,"Shattrath City",6,4096,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",572,"Draenor",933,"Forge of Aeons",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",572,"Draenor",1478,"Ashran",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",626,"Dalaran",4,0,false,227,0.4472,0.4634,0.6418,0.658,627,"Dalaran",0,,
+"retail","12.1.0.69933",619,"Broken Isles",627,"Dalaran",4,32768,true,227,0.4367,0.4804,0.6247,0.6684,627,"Dalaran",6,45.8,65
+"retail","12.1.0.69933",619,"Broken Isles",628,"Dalaran",4,0,false,227,0.4456,0.4694,0.6311,0.6548,627,"Dalaran",0,,
+"retail","12.1.0.69933",619,"Broken Isles",629,"Dalaran",4,0,false,227,0.4518,0.466,0.6374,0.6516,627,"Dalaran",0,,
+"retail","12.1.0.69933",619,"Broken Isles",630,"Azsuna",3,6,true,,0.1735,0.5233,0.4344,0.7843,630,"Azsuna",117,34.3,62.6
+"retail","12.1.0.69933",619,"Broken Isles",634,"Stormheim",3,6,true,,0.4282,0.7362,0.166,0.4741,634,"Stormheim",100,61.5,33.2
+"retail","12.1.0.69933",619,"Broken Isles",641,"Val'sharah",3,6,true,,0.1855,0.478,0.1829,0.4754,641,"Val'sharah",85,32.5,33
+"retail","12.1.0.69933",619,"Broken Isles",645,"Twisting Nether",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",646,"Broken Shore",3,6,true,,0.4344,0.6388,0.5786,0.783,646,"Broken Shore",61,55.9,69.4
+"retail","12.1.0.69933",619,"Broken Isles",647,"Acherus: The Ebon Hold",5,0,false,228,0.6271,0.6519,0.6857,0.7105,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",648,"Acherus: The Ebon Hold",5,0,false,228,0.6271,0.6519,0.6857,0.7105,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",650,"Highmountain",3,6,true,,0.2872,0.6626,0.0239,0.3991,650,"Highmountain",98,46.2,21.6
+"retail","12.1.0.69933",619,"Broken Isles",671,"The Cove of Nashal",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",672,"Mardum, the Shattered Abyss",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",676,"Broken Shore",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",680,"Suramar",3,6,true,,0.342,0.6367,0.3039,0.5987,680,"Suramar",85,48.7,47.4
+"retail","12.1.0.69933",619,"Broken Isles",694,"Helmouth Shallows",6,4130,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",695,"Skyhold",4,64,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",696,"Stormheim",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",702,"Netherlight Temple",4,64,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",709,"The Wandering Isle",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",714,"Niskara",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",717,"Dreadscar Rift",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",718,"Dreadscar Rift",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",719,"Mardum, the Shattered Abyss",4,64,false,247,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",726,"The Maelstrom",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",740,"Shadowgore Citadel",4,64,false,255,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",741,"Shadowgore Citadel",4,64,false,255,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",748,"Niskara",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",790,"Eye of Azshara",3,6,true,,0.3818,0.5324,0.7768,0.9274,790,"Eye of Azshara",52,46.1,84.8
+"retail","12.1.0.69933",619,"Broken Isles",858,"Assault on Broken Shore",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",905,"Argus",2,1024,true,,0.6986,1,0,0.4162,905,"Argus",306,85,21.2
+"retail","12.1.0.69933",619,"Broken Isles",971,"Telogrus Rift",6,4,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",972,"Telogrus Rift",6,4,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",1642,"Val'sharah",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",619,"Broken Isles",1971,"Skyhold",6,64,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",875,"Zandalar",862,"Zuldazar",3,6,true,,0.2209,0.8401,0.3459,0.965,862,"Zuldazar",385,55.2,66
+"retail","12.1.0.69933",875,"Zandalar",863,"Nazmir",3,6,true,,0.3865,0.7708,0.1102,0.4945,863,"Nazmir",185,59.2,29.5
+"retail","12.1.0.69933",875,"Zandalar",864,"Vol'dun",3,6,true,,0.1492,0.6476,0.0213,0.5197,864,"Vol'dun",185,39,29.9
+"retail","12.1.0.69933",875,"Zandalar",1181,"Zuldazar",6,4098,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",895,"Tiragarde Sound",3,6,true,,0.1935,0.7592,0.3622,0.9278,895,"Tiragarde Sound",325,57.4,63.1
+"retail","12.1.0.69933",876,"Kul Tiras",896,"Drustvar",3,6,true,,0.1691,0.6069,0.4819,0.9196,896,"Drustvar",196,36.9,71.4
+"retail","12.1.0.69933",876,"Kul Tiras",942,"Stormsong Valley",3,6,true,,0.3187,0.7519,0.0358,0.4688,942,"Stormsong Valley",234,56.5,27
+"retail","12.1.0.69933",876,"Kul Tiras",1169,"Tol Dagor",3,4,true,,0.7549,0.8102,0.5849,0.6402,1169,"Tol Dagor",8,78.3,62.5
+"retail","12.1.0.69933",876,"Kul Tiras",1462,"Mechagon Island",3,6,true,,0.0687,0.247,0.2053,0.3836,1462,"Mechagon Island",56,18.1,29.6
+"retail","12.1.0.69933",876,"Kul Tiras",1490,"Mechagon",4,0,false,399,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1491,"Mechagon",4,0,false,399,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1493,"Mechagon",4,0,false,399,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1494,"Mechagon",4,0,false,399,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1497,"Mechagon",4,0,false,399,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1501,"Crestfall",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1573,"Mechagon City",4,0,false,406,0,0,0,0,,,0,,
+"retail","12.1.0.69933",876,"Kul Tiras",1574,"Mechagon City",4,0,false,406,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",830,"Krokuun",3,6,true,,0.5309,0.7745,0.5284,0.8084,830,"Krokuun",154,65,66.3
+"retail","12.1.0.69933",905,"Argus",882,"Eredath",3,6,true,,0.514,0.7295,0.1123,0.4281,882,"Eredath",169,62.5,26.3
+"retail","12.1.0.69933",905,"Argus",885,"Antoran Wastes",3,6,true,,0.2046,0.4441,0.3458,0.6916,885,"Antoran Wastes",210,32.5,52.5
+"retail","12.1.0.69933",905,"Argus",921,"Invasion Point: Aurinor",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",922,"Invasion Point: Bonich",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",923,"Invasion Point: Cen'gar",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",924,"Invasion Point: Naigtal",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",925,"Invasion Point: Sangua",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",926,"Invasion Point: Val",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",927,"Greater Invasion Point: Pit Lord Vilemus",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",928,"Greater Invasion Point: Mistress Alluradel",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",929,"Greater Invasion Point: Matron Folnuna",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",930,"Greater Invasion Point: Inquisitor Meto",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",931,"Greater Invasion Point: Sotanathor",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",932,"Greater Invasion Point: Occularus",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",1691,"Shattered Grove",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",1715,"Vestibule Of Eternity",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",1717,"Chill's Reach",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",905,"Argus",2205,"Ulderoth",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",946,"Cosmic",101,"Outland",2,0,true,,0.04,0.345,0.565,0.92,101,"Outland",266,19.2,75
+"retail","12.1.0.69933",946,"Cosmic",572,"Draenor",2,0,true,,0.685,0.982,0.41,0.785,572,"Draenor",270,83.3,58.8
+"retail","12.1.0.69933",946,"Cosmic",947,"Azeroth",1,4354,true,,0.348,0.68,0.25,0.745,947,"Azeroth",400,51.7,50
+"retail","12.1.0.69933",946,"Cosmic",1550,"The Shadowlands",2,2304,true,,0.015,0.348,0.075,0.42,1550,"The Shadowlands",280,18.3,25
+"retail","12.1.0.69933",946,"Cosmic",2202,"Azewrath",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",12,"Kalimdor",2,0,true,,-0.0595,0.4145,0.3032,0.7763,12,"Kalimdor",157,18.5,53.5
+"retail","12.1.0.69933",947,"Azeroth",13,"Eastern Kingdoms",2,0,true,,0.6745,1.0738,0.2817,0.7351,13,"Eastern Kingdoms",118,88.5,50.8
+"retail","12.1.0.69933",947,"Azeroth",113,"Northrend",2,0,true,,0.3684,0.6309,0.0252,0.2761,113,"Northrend",118,49.6,15.8
+"retail","12.1.0.69933",947,"Azeroth",378,"The Wandering Isle",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",407,"Darkmoon Island",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",424,"Pandaria",2,0,true,,0.3665,0.5956,0.6947,0.9239,424,"Pandaria",103,47.7,81.7
+"retail","12.1.0.69933",947,"Azeroth",619,"Broken Isles",2,2,true,,0.4814,0.7091,0.3123,0.54,619,"Broken Isles",83,59,40.7
+"retail","12.1.0.69933",947,"Azeroth",824,"Islands",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",875,"Zandalar",2,0,true,,0.4559,0.6313,0.5444,0.7197,875,"Zandalar",56,54.8,64.3
+"retail","12.1.0.69933",947,"Azeroth",876,"Kul Tiras",2,0,true,,0.6293,0.8016,0.4004,0.5728,876,"Kul Tiras",65,72.2,49.2
+"retail","12.1.0.69933",947,"Azeroth",938,"Gilneas Island",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",939,"Tropical Isle 8.0",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",948,"The Maelstrom",2,0,true,,0.38,0.5215,0.35,0.5888,948,"The Maelstrom",80,45,47.5
+"retail","12.1.0.69933",947,"Azeroth",981,"Un'gol Ruins",6,4,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1156,"The Great Sea",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1157,"The Great Sea",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1355,"Nazjatar",3,6,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1528,"Nazjatar",6,68,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1580,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1581,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1582,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1590,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1591,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1592,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1593,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1594,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1595,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1596,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1597,"Ny'alotha",4,0,false,407,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",1978,"Dragon Isles",2,0,true,,0.6529,0.8816,0.0976,0.3262,1978,"Dragon Isles",113,76.2,21.3
+"retail","12.1.0.69933",947,"Azeroth",2089,"The Black Empire",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2176,"The Maelstrom",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2201,"Azq'roth",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2207,"The Warlands",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2228,"The Black Empire",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2274,"Khaz Algar",2,2097152,true,,0.238,0.342,0.78,0.884,2274,"Khaz Algar",82,28.4,83.7
+"retail","12.1.0.69933",947,"Azeroth",2305,"Dalaran",4,0,false,449,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2306,"Dalaran",4,0,false,449,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2307,"Dalaran",4,0,false,449,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2366,"The Wandering Isle",3,528390,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2379,"Ny'alotha, the Waking City",4,0,false,457,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2381,"Ny'alotha, the Waking City",4,0,false,457,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2382,"Ny'alotha, the Waking City",4,0,false,457,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2383,"Ny'alotha, the Waking City",4,0,false,457,0,0,0,0,,,0,,
+"retail","12.1.0.69933",947,"Azeroth",2384,"Ny'alotha, the Waking City",4,0,false,457,0,0,0,0,,,0,,
+"retail","12.1.0.69933",948,"The Maelstrom",174,"The Lost Isles",3,6,true,,0.0249,0.2744,0.3982,0.6477,174,"The Lost Isles",149,14.1,52.4
+"retail","12.1.0.69933",948,"The Maelstrom",194,"Kezan",3,6,true,,0.1855,0.5448,0.5689,0.9281,194,"Kezan",294,37.4,75.7
+"retail","12.1.0.69933",948,"The Maelstrom",207,"Deepholm",3,6,true,,0.4491,0.6088,0.1946,0.3543,207,"Deepholm",60,53.3,27.5
+"retail","12.1.0.69933",948,"The Maelstrom",276,"The Maelstrom",3,6,true,,0.3044,0.4321,0.2096,0.3373,276,"The Maelstrom",40,36.7,26.2
+"retail","12.1.0.69933",948,"The Maelstrom",725,"The Maelstrom",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",948,"The Maelstrom",839,"The Maelstrom",4,64,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",948,"The Maelstrom",1474,"The Maelstrom - Heart of Azeroth",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",993,"Broken Isles",1187,"Azsuna",3,0,true,,0.1735,0.5233,0.4344,0.7843,1187,"Azsuna",99,34.1,60.3
+"retail","12.1.0.69933",993,"Broken Isles",1188,"Val'sharah",3,0,true,,0.1855,0.478,0.1829,0.4754,1188,"Val'sharah",85,32.5,33
+"retail","12.1.0.69933",993,"Broken Isles",1189,"Highmountain",3,0,true,,0.2872,0.6626,0.0239,0.3991,1189,"Highmountain",98,46.2,21.6
+"retail","12.1.0.69933",993,"Broken Isles",1190,"Stormheim",3,0,true,,0.4282,0.7362,0.166,0.4741,1190,"Stormheim",103,61.8,32.9
+"retail","12.1.0.69933",993,"Broken Isles",1191,"Suramar",3,0,true,,0.342,0.6367,0.3039,0.5987,1191,"Suramar",84,48.8,47.5
+"retail","12.1.0.69933",993,"Broken Isles",1192,"Broken Shore",3,0,true,,0.4344,0.6388,0.5786,0.783,1192,"Broken Shore",42,56,68.7
+"retail","12.1.0.69933",1011,"Zandalar",1193,"Zuldazar",3,0,true,,0.2208,0.8402,0.3459,0.9651,1193,"Zuldazar",385,55.2,66
+"retail","12.1.0.69933",1011,"Zandalar",1194,"Nazmir",3,0,true,,0.3865,0.7708,0.1101,0.4945,1194,"Nazmir",185,59.2,29.5
+"retail","12.1.0.69933",1011,"Zandalar",1195,"Vol'dun",3,0,true,,0.1491,0.6476,0.0212,0.5197,1195,"Vol'dun",185,39,29.9
+"retail","12.1.0.69933",1014,"Kul Tiras",1196,"Tiragarde Sound",3,0,true,,0.1925,0.7625,0.3594,0.9257,1196,"Tiragarde Sound",340,57.6,62.1
+"retail","12.1.0.69933",1014,"Kul Tiras",1197,"Drustvar",3,0,true,,0.168,0.6091,0.4793,0.9176,1197,"Drustvar",196,36.9,71.4
+"retail","12.1.0.69933",1014,"Kul Tiras",1198,"Stormsong Valley",3,0,true,,0.3187,0.7552,0.0326,0.4661,1198,"Stormsong Valley",227,56.1,25.8
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1244,"Arathi Highlands",3,0,true,,0.4737,0.559,0.4476,0.5328,1244,"Arathi Highlands",10,52.5,50
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1245,"Badlands",3,0,true,,0.4927,0.5681,0.6576,0.7327,1245,"Badlands",8,53.3,70
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1246,"Blasted Lands",3,0,true,,0.4753,0.5652,0.8313,0.9211,1246,"Blasted Lands",11,53.3,88.8
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1247,"Tirisfal Glades",3,0,true,,0.3716,0.4825,0.3014,0.4121,1247,"Tirisfal Glades",24,42.4,34.4
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1248,"Silverpine Forest",3,0,true,,0.3614,0.4644,0.3812,0.4841,1248,"Silverpine Forest",14,40.5,42.7
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1249,"Western Plaguelands",3,0,true,,0.4358,0.5414,0.3187,0.4241,1249,"Western Plaguelands",9,49.4,38.5
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1250,"Eastern Plaguelands",3,0,true,,0.5022,0.6011,0.3063,0.4051,1250,"Eastern Plaguelands",18,55.3,35.6
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1251,"Hillsbrad Foothills",3,0,true,,0.4006,0.52,0.388,0.5071,1251,"Hillsbrad Foothills",12,46.4,45.6
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1252,"The Hinterlands",3,0,true,,0.4847,0.5792,0.3885,0.4829,1252,"The Hinterlands",13,54.6,44.1
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1253,"Dun Morogh",3,0,true,,0.3936,0.5138,0.5873,0.7072,1253,"Dun Morogh",21,44.8,64.9
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1254,"Searing Gorge",3,0,true,,0.454,0.5087,0.6666,0.7212,1254,"Searing Gorge",5,47.8,70.2
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1255,"Burning Steppes",3,0,true,,0.4574,0.5348,0.6991,0.7763,1255,"Burning Steppes",6,50.6,74.6
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1256,"Elwynn Forest",3,0,true,,0.4083,0.4935,0.7342,0.8192,1256,"Elwynn Forest",11,46.6,78.3
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1257,"Deadwind Pass",3,0,true,,0.4665,0.5279,0.805,0.8662,1257,"Deadwind Pass",1,50.8,86.3
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1258,"Duskwood",3,0,true,,0.4256,0.4919,0.7995,0.8656,1258,"Duskwood",9,46.9,84.6
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1259,"Loch Modan",3,0,true,,0.495,0.5627,0.6073,0.6749,1259,"Loch Modan",5,52.8,65.3
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1260,"Redridge Mountains",3,0,true,,0.4823,0.5454,0.7553,0.8182,1260,"Redridge Mountains",6,52.5,79.2
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1261,"Swamp of Sorrows",3,0,true,,0.4971,0.5587,0.7928,0.8543,1261,"Swamp of Sorrows",5,54.2,82.8
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1262,"Westfall",3,0,true,,0.372,0.4579,0.7879,0.8736,1262,"Westfall",12,40,83.8
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1263,"Wetlands",3,0,true,,0.4556,0.5571,0.5214,0.6226,1263,"Wetlands",16,49.1,57.5
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1264,"Stormwind City",3,0,true,,0.4037,0.4464,0.7363,0.7788,1264,"Stormwind City",6,42.5,75
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1265,"Ironforge",3,0,true,,0.4636,0.483,0.6103,0.6297,1265,"Ironforge",1,47.5,61.3
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1266,"Undercity",3,0,true,,0.4246,0.4482,0.3734,0.3969,1266,"Undercity",1,44.2,38.8
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1267,"Eversong Woods",3,0,true,,0.4973,0.6182,0.0934,0.2143,1267,"Eversong Woods",11,56,16.7
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1268,"Ghostlands",3,0,true,,0.5168,0.5978,0.1956,0.2766,1268,"Ghostlands",9,55.8,23.8
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1269,"Silvermoon City",3,0,true,,0.5442,0.574,0.1261,0.1558,1267,"Eversong Woods",0,,
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1270,"Isle of Quel'Danas",3,0,true,,0.5173,0.5989,0.0003,0.082,1270,"Isle of Quel'Danas",5,56.5,4.2
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1271,"Gilneas",3,0,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1272,"Vashj'ir",3,0,true,,0.2312,0.4016,0.5792,0.7493,1272,"Vashj'ir",50,31.9,65.6
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1273,"Ruins of Gilneas",3,0,true,,0.3616,0.4388,0.462,0.5391,1273,"Ruins of Gilneas",11,40.2,50.6
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1274,"Stranglethorn Vale",3,0,true,,0.373,0.5338,0.8453,1.0059,1274,"Stranglethorn Vale",39,43.5,93.5
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1275,"Twilight Highlands",3,0,true,,0.5059,0.6352,0.5217,0.6508,1275,"Twilight Highlands",30,58.3,58.4
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1276,"Tol Barad",3,0,true,,0.3271,0.3809,0.4942,0.5479,1276,"Tol Barad",6,35.8,52.5
+"retail","12.1.0.69933",1208,"Eastern Kingdoms",1277,"Tol Barad Peninsula",3,0,true,,0.3164,0.3654,0.4567,0.5057,1277,"Tol Barad Peninsula",6,34.2,47.5
+"retail","12.1.0.69933",1209,"Kalimdor",1305,"Durotar",3,0,true,,0.5171,0.6608,0.428,0.5717,1305,"Durotar",27,61.9,50.3
+"retail","12.1.0.69933",1209,"Kalimdor",1306,"Mulgore",3,0,true,,0.4039,0.552,0.5086,0.6567,1306,"Mulgore",14,47.6,58.9
+"retail","12.1.0.69933",1209,"Kalimdor",1307,"Northern Barrens",3,0,true,,0.4583,0.6144,0.4279,0.5841,1307,"Northern Barrens",20,54.3,51.3
+"retail","12.1.0.69933",1209,"Kalimdor",1308,"Teldrassil",3,0,true,,0.3487,0.5083,0.0188,0.1784,1308,"Teldrassil",35,44.6,9
+"retail","12.1.0.69933",1209,"Kalimdor",1309,"Darkshore",3,0,true,,0.3818,0.5575,0.1666,0.3423,1309,"Darkshore",25,45.8,24.6
+"retail","12.1.0.69933",1209,"Kalimdor",1310,"Ashenvale",3,0,true,,0.4176,0.5743,0.3113,0.4679,1310,"Ashenvale",27,49.9,39.1
+"retail","12.1.0.69933",1209,"Kalimdor",1311,"Thousand Needles",3,0,true,,0.4755,0.5951,0.6634,0.783,1311,"Thousand Needles",16,53.8,73
+"retail","12.1.0.69933",1209,"Kalimdor",1312,"Stonetalon Mountains",3,0,true,,0.3577,0.5181,0.363,0.5233,1312,"Stonetalon Mountains",29,44.3,45
+"retail","12.1.0.69933",1209,"Kalimdor",1313,"Desolace",3,0,true,,0.3487,0.4709,0.4833,0.6055,1313,"Desolace",26,39.9,54.5
+"retail","12.1.0.69933",1209,"Kalimdor",1314,"Feralas",3,0,true,,0.3159,0.5048,0.5982,0.7871,1314,"Feralas",55,40.3,68.5
+"retail","12.1.0.69933",1209,"Kalimdor",1315,"Dustwallow Marsh",3,0,true,,0.4903,0.6329,0.5846,0.7273,1315,"Dustwallow Marsh",28,58.3,65.9
+"retail","12.1.0.69933",1209,"Kalimdor",1316,"Tanaris",3,0,true,,0.4655,0.6615,0.737,0.933,1316,"Tanaris",39,58.1,84.1
+"retail","12.1.0.69933",1209,"Kalimdor",1317,"Azshara",3,0,true,,0.5554,0.7053,0.2824,0.4323,1317,"Azshara",39,64.3,35.7
+"retail","12.1.0.69933",1209,"Kalimdor",1318,"Felwood",3,0,true,,0.4149,0.5797,0.2067,0.3715,1318,"Felwood",13,49.7,28.6
+"retail","12.1.0.69933",1209,"Kalimdor",1319,"Un'Goro Crater",3,0,true,,0.4493,0.5498,0.7449,0.8455,1319,"Un'Goro Crater",14,50.4,80
+"retail","12.1.0.69933",1209,"Kalimdor",1320,"Moonglade",3,0,true,,0.5013,0.564,0.1556,0.2184,1320,"Moonglade",6,53.3,18.8
+"retail","12.1.0.69933",1209,"Kalimdor",1321,"Silithus",3,0,true,,0.3827,0.493,0.7411,0.8514,1321,"Silithus",20,43.3,80.3
+"retail","12.1.0.69933",1209,"Kalimdor",1322,"Winterspring",3,0,true,,0.4907,0.6578,0.1433,0.3104,1322,"Winterspring",32,59.6,21.6
+"retail","12.1.0.69933",1209,"Kalimdor",1323,"Thunder Bluff",3,0,true,,0.4497,0.4781,0.5364,0.5647,1323,"Thunder Bluff",1,45.8,56.3
+"retail","12.1.0.69933",1209,"Kalimdor",1324,"Darnassus",3,0,true,,0.3772,0.419,0.0752,0.1171,,,0,,
+"retail","12.1.0.69933",1209,"Kalimdor",1325,"Azuremyst Isle",3,0,true,,0.2708,0.3815,0.2114,0.322,1325,"Azuremyst Isle",12,33.6,27.9
+"retail","12.1.0.69933",1209,"Kalimdor",1326,"The Exodar",3,0,true,,0.2862,0.3149,0.2446,0.2734,1325,"Azuremyst Isle",1,30.8,26.3
+"retail","12.1.0.69933",1209,"Kalimdor",1327,"Bloodmyst Isle",3,0,true,,0.2593,0.3479,0.1284,0.2171,1327,"Bloodmyst Isle",11,30.2,18.5
+"retail","12.1.0.69933",1209,"Kalimdor",1328,"Mount Hyjal",3,0,true,,0.489,0.6044,0.2492,0.3646,1328,"Mount Hyjal",19,54.9,31.5
+"retail","12.1.0.69933",1209,"Kalimdor",1329,"Southern Barrens",3,0,true,,0.4269,0.6283,0.4934,0.6948,1329,"Southern Barrens",14,52,60.9
+"retail","12.1.0.69933",1209,"Kalimdor",1330,"Uldum",3,0,true,,0.3974,0.5657,0.829,0.9973,1330,"Uldum",38,48.6,93.6
+"retail","12.1.0.69933",1209,"Kalimdor",1331,"The Exodar",3,0,true,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1384,"Northrend",1396,"Borean Tundra",3,0,true,,0.0633,0.3692,0.4943,0.8003,1396,"Borean Tundra",106,22.6,63.4
+"retail","12.1.0.69933",1384,"Northrend",1397,"Dragonblight",3,0,true,,0.3257,0.6234,0.4404,0.7381,1397,"Dragonblight",110,49.5,60.1
+"retail","12.1.0.69933",1384,"Northrend",1398,"Grizzly Hills",3,0,true,,0.5771,0.8558,0.445,0.7237,1398,"Grizzly Hills",92,71.6,59.2
+"retail","12.1.0.69933",1384,"Northrend",1399,"Howling Fjord",3,0,true,,0.5924,0.9133,0.6361,0.957,1399,"Howling Fjord",132,75.6,78.9
+"retail","12.1.0.69933",1384,"Northrend",1400,"Icecrown",3,0,true,,0.2292,0.5621,0.1337,0.4666,1400,"Icecrown",174,38.5,28.8
+"retail","12.1.0.69933",1384,"Northrend",1401,"Sholazar Basin",3,0,true,,0.1504,0.3816,0.304,0.5352,1401,"Sholazar Basin",50,26.5,44
+"retail","12.1.0.69933",1384,"Northrend",1402,"The Storm Peaks",3,0,true,,0.4204,0.798,0.0723,0.4498,1402,"The Storm Peaks",193,62.6,23.6
+"retail","12.1.0.69933",1384,"Northrend",1403,"Zul'Drak",3,0,true,,0.55,0.8151,0.2737,0.5387,1403,"Zul'Drak",69,69.7,43.4
+"retail","12.1.0.69933",1384,"Northrend",1404,"Wintergrasp",3,0,true,,0.2884,0.4463,0.4291,0.587,1404,"Wintergrasp",34,36.7,52
+"retail","12.1.0.69933",1384,"Northrend",1405,"Crystalsong Forest",3,0,true,,0.4416,0.5861,0.3666,0.511,1405,"Crystalsong Forest",15,52.1,45.6
+"retail","12.1.0.69933",1384,"Northrend",1406,"Hrothgar's Landing",3,0,true,,0.3697,0.5649,0.0259,0.2211,1406,"Hrothgar's Landing",20,48.5,11.8
+"retail","12.1.0.69933",1550,"The Shadowlands",1525,"Revendreth",3,6,true,,0.1305,0.3634,0.4145,0.6475,1525,"Revendreth",126,25,53.8
+"retail","12.1.0.69933",1550,"The Shadowlands",1533,"Bastion",3,6,true,,0.5791,0.8552,0.4467,0.7228,1533,"Bastion",163,71.3,57.8
+"retail","12.1.0.69933",1550,"The Shadowlands",1536,"Maldraxxus",3,6,true,,0.4944,0.7552,0.094,0.3549,1536,"Maldraxxus",150,62.5,22.5
+"retail","12.1.0.69933",1550,"The Shadowlands",1543,"The Maw",3,6,true,,0.07,0.38,0.02,0.3,1543,"The Maw",209,22.5,16.3
+"retail","12.1.0.69933",1550,"The Shadowlands",1565,"Ardenweald",3,6,true,,0.3415,0.6371,0.6638,0.9594,1565,"Ardenweald",195,48.1,81.4
+"retail","12.1.0.69933",1550,"The Shadowlands",1603,"Ardenweald",6,68,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1648,"The Maw",6,70,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1656,"Torghast - Map Floor 10 [Deprecated]",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1659,"Alpha_TG_R03",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1661,"Alpha_TG_R05",4,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1670,"Oribos",4,98304,true,411,0.415,0.52,0.38,0.605,1670,"Oribos",54,46.7,48.8
+"retail","12.1.0.69933",1550,"The Shadowlands",1671,"Oribos",4,65540,false,411,0.4541,0.4806,0.4934,0.5199,1670,"Oribos",0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1672,"Oribos",4,65536,false,411,0.4649,0.4805,0.4993,0.5149,1670,"Oribos",0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1673,"Oribos",4,65536,false,411,0.4607,0.4675,0.5037,0.5105,1670,"Oribos",0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1688,"Revendreth",6,2,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1689,"Maldraxxus",6,4162,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1734,"Revendreth",6,128,false,,0.1305,0.3634,0.4145,0.6475,1525,"Revendreth",0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1970,"Zereth Mortis",3,6,true,,0.76,0.96,0.67,0.96,1970,"Zereth Mortis",132,86.7,81.2
+"retail","12.1.0.69933",1550,"The Shadowlands",1989,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1990,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1991,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1992,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1993,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1995,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",1996,"Tazavesh, the Veiled Market",4,0,false,423,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",2005,"Ardenweald",6,4098,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1550,"The Shadowlands",2016,"Tazavesh, the Veiled Market",6,4,false,,0.2664,0.3257,0.734,0.7933,,,0,,
+"retail","12.1.0.69933",1647,"The Shadowlands",1569,"Bastion",3,16384,true,,0.5791,0.8552,0.4467,0.7228,1569,"Bastion",173,71.9,58.5
+"retail","12.1.0.69933",1647,"The Shadowlands",1738,"Revendreth",6,0,false,,0.1305,0.3634,0.4145,0.6475,1742,"Revendreth",0,,
+"retail","12.1.0.69933",1647,"The Shadowlands",1739,"Ardenweald",6,0,false,,0.3415,0.6371,0.6638,0.9594,1740,"Ardenweald",0,,
+"retail","12.1.0.69933",1647,"The Shadowlands",1740,"Ardenweald",3,16384,true,,0.3415,0.6371,0.6638,0.9594,1740,"Ardenweald",195,48.1,81.4
+"retail","12.1.0.69933",1647,"The Shadowlands",1741,"Maldraxxus",3,16384,true,,0.4944,0.7552,0.094,0.3549,1741,"Maldraxxus",150,62.5,22.5
+"retail","12.1.0.69933",1647,"The Shadowlands",1742,"Revendreth",3,16384,true,,0.1305,0.3634,0.4145,0.6475,1742,"Revendreth",126,25,53.8
+"retail","12.1.0.69933",1647,"The Shadowlands",1813,"Bastion",6,0,false,,0.5791,0.8552,0.4467,0.7228,1569,"Bastion",0,,
+"retail","12.1.0.69933",1647,"The Shadowlands",1814,"Maldraxxus",6,0,false,,0.4944,0.7552,0.094,0.3549,1741,"Maldraxxus",0,,
+"retail","12.1.0.69933",1978,"Dragon Isles",2022,"The Waking Shores",3,6,true,,0.3409,0.6542,0.1803,0.4936,2022,"The Waking Shores",164,48.7,33.5
+"retail","12.1.0.69933",1978,"Dragon Isles",2023,"Ohn'ahran Plains",3,6,true,,0.2558,0.5532,0.4129,0.7104,2023,"Ohn'ahran Plains",93,42,56.7
+"retail","12.1.0.69933",1978,"Dragon Isles",2024,"The Azure Span",3,6,true,,0.308,0.7354,0.5513,0.9787,2024,"The Azure Span",224,52.2,75.5
+"retail","12.1.0.69933",1978,"Dragon Isles",2025,"Thaldraszus",3,6,true,,0.4012,0.7987,0.249,0.6465,2025,"Thaldraszus",151,65.9,48.1
+"retail","12.1.0.69933",1978,"Dragon Isles",2093,"The Nokhud Offensive",4,64,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1978,"Dragon Isles",2133,"Zaralek Cavern",3,6,true,,0.7913,1,0.6946,1,2133,"Zaralek Cavern",156,89.2,85
+"retail","12.1.0.69933",1978,"Dragon Isles",2135,"Valdrakken",6,0,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",1978,"Dragon Isles",2151,"The Forbidden Reach",3,6,true,,0.5603,0.739,0.0136,0.1923,2151,"The Forbidden Reach",48,65.5,10.8
+"retail","12.1.0.69933",1978,"Dragon Isles",2200,"Emerald Dream",3,6,true,,0.281,0.339,0.515,0.604,2200,"Emerald Dream",9,30.8,56.3
+"retail","12.1.0.69933",1978,"Dragon Isles",2239,"Amirdrassil",3,4,true,,0.164,0.3274,0.5065,0.67,2239,"Amirdrassil",41,24.6,59.5
+"retail","12.1.0.69933",2057,"Dragon Isles",2127,"The Waking Shores",3,4,true,,0.3409,0.6542,0.1803,0.4936,2127,"The Waking Shores",164,48.7,33.5
+"retail","12.1.0.69933",2057,"Dragon Isles",2128,"The Azure Span",3,4,true,,0.308,0.7354,0.5513,0.9787,2128,"The Azure Span",224,52.2,75.5
+"retail","12.1.0.69933",2057,"Dragon Isles",2129,"Ohn'ahran Plains",3,4,true,,0.2558,0.5532,0.4129,0.7104,2129,"Ohn'ahran Plains",99,41.4,56.7
+"retail","12.1.0.69933",2057,"Dragon Isles",2130,"Thaldraszus",3,4,true,,0.4012,0.7987,0.249,0.6465,2130,"Thaldraszus",151,65.9,48.1
+"retail","12.1.0.69933",2057,"Dragon Isles",2175,"Zaralek Cavern",3,131076,true,,0.7913,1,0.6946,1,2175,"Zaralek Cavern",156,89.2,85
+"retail","12.1.0.69933",2057,"Dragon Isles",2268,"Amirdrassil",3,4,true,,0.164,0.3274,0.5065,0.67,2268,"Amirdrassil",44,24.9,59.3
+"retail","12.1.0.69933",2274,"Khaz Algar",2214,"The Ringing Deeps",3,6,true,,0.3829,0.7208,0.4181,0.7561,2214,"The Ringing Deeps",69,57.3,60.2
+"retail","12.1.0.69933",2274,"Khaz Algar",2215,"Hallowfall",3,6,true,,0.1933,0.5821,0.3402,0.729,2215,"Hallowfall",211,34.3,50.3
+"retail","12.1.0.69933",2274,"Khaz Algar",2248,"Isle of Dorn",3,6,true,,0.5,0.948,0.01,0.456,2248,"Isle of Dorn",478,72.8,22.2
+"retail","12.1.0.69933",2274,"Khaz Algar",2255,"Azj-Kahet",3,6,true,453,0.2835,0.6058,0.5784,0.9007,2255,"Azj-Kahet",102,46.1,75.9
+"retail","12.1.0.69933",2274,"Khaz Algar",2256,"Azj-Kahet - Lower",3,6,true,453,0.2835,0.6058,0.5784,0.9007,2255,"Azj-Kahet",10,46.2,80
+"retail","12.1.0.69933",2274,"Khaz Algar",2369,"Siren Isle",3,524292,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",2274,"Khaz Algar",2371,"K'aresh",3,6,true,,0.098,0.255,0.07,0.319,2371,"K'aresh",90,17.5,20
+"retail","12.1.0.69933",2276,"Khaz Algar",2270,"Azj' Kahet",3,524324,false,,0.3845,0.4969,0.788,0.9004,2270,"Azj' Kahet",17,42.8,85.7
+"retail","12.1.0.69933",2276,"Khaz Algar",2271,"Isle of Dorn",3,524324,false,,0.5405,0.916,0.0418,0.4156,2271,"Isle of Dorn",286,73.7,23.7
+"retail","12.1.0.69933",2276,"Khaz Algar",2272,"The Ringing Deeps",3,524324,false,,0.4111,0.7138,0.427,0.7298,2272,"The Ringing Deeps",64,57,59.2
+"retail","12.1.0.69933",2276,"Khaz Algar",2273,"Hallowfall",3,524292,false,,0.2214,0.5475,0.317,0.6431,2273,"Hallowfall",205,35.3,48
+"retail","12.1.0.69933",2481,"Eastern Kingdoms",2567,"Eversong Woods",3,4102,true,,0.4425,0.6736,0.0667,0.2979,2481,"Eastern Kingdoms",24,50.4,23.3
+"retail","12.1.0.69933",2481,"Eastern Kingdoms",2568,"Zul'Aman",3,4102,true,,0.5354,0.7551,0.1354,0.3552,2568,"Zul'Aman",72,64.8,26
+"retail","12.1.0.69933",2481,"Eastern Kingdoms",2569,"Isle of Quel'Danas",3,4102,true,,0.518,0.5966,0.0004,0.0789,2481,"Eastern Kingdoms",4,50.4,10.6
+"retail","12.1.0.69933",2537,"Quel'Thalas",2395,"Eversong Woods",3,6,true,,-0.0379,0.5721,0.2249,0.835,2395,"Eversong Woods",256,26.7,55.6
+"retail","12.1.0.69933",2537,"Quel'Thalas",2405,"Voidstorm",3,6,true,,0.435,0.63,0.065,0.4,2405,"Voidstorm",156,53.3,23.8
+"retail","12.1.0.69933",2537,"Quel'Thalas",2413,"Harandar",3,6,true,,0.73,0.905,0.035,0.3,2413,"Harandar",110,81.7,16.3
+"retail","12.1.0.69933",2537,"Quel'Thalas",2424,"Isle of Quel'Danas",3,6,true,,0.1614,0.3688,0.0498,0.2571,2424,"Isle of Quel'Danas",32,27.6,14.5
+"retail","12.1.0.69933",2537,"Quel'Thalas",2432,"Isle of Quel'Danas",3,528390,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",2537,"Quel'Thalas",2437,"Zul'Aman",3,6,true,,0.2073,0.7873,0.4062,0.986,2437,"Zul'Aman",352,49,70.1
+"retail","12.1.0.69933",2537,"Quel'Thalas",2512,"The Coiled Isle",3,6,true,,0.4444,0.9757,0.377,0.9083,2512,"The Coiled Isle",346,76,65.2
+"retail","12.1.0.69933",2537,"Quel'Thalas",2533,"March on Quel'Danas",4,0,false,467,0,0,0,0,,,0,,
+"retail","12.1.0.69933",2537,"Quel'Thalas",2541,"Arcantina",4,524288,false,,0,0,0,0,,,0,,
+"retail","12.1.0.69933",2537,"Quel'Thalas",2565,"Isle of Quel'Danas",3,524292,false,,0,0,0,0,,,0,,

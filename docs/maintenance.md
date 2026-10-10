@@ -219,7 +219,10 @@ then every tool refuses to save.
    (`GOSSIP_SHOW` and the `QUEST_*` ones) are documented in both games, so they are what the check
    can see of it; its quest-window globals (`GetNumAvailableQuests`, `GetAvailableQuestInfo`,
    `GetQuestID` and their kind) are in no documentation, and the contents of a structure are not
-   compared, only its flags: the closing line says what was not checked. A list saved before the
+   compared, only its flags, except for the two the continent icons and the probe read by name,
+   `UIMapType` (its `Continent` and `Zone` numbers) and `UiMapDetails` (its `mapID`, `name`, `mapType`,
+   `parentMapID` and `flags`), which `-Tables` names: their fields and values are compared as a
+   function's shape is, and a change exits with 1. The closing line says what was not checked. A list saved before the
    flags were kept is read again from its folder in `tools\api_docs\`, and a documentation file that
    stopped loading (or started) is named, as what it documents shows as removed (or added).
    A function one game's documentation lacks
@@ -289,6 +292,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2c | Prerequisites from Blizzard's API, the client's task quests and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
+| 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -686,7 +690,8 @@ existing pin at all" count is the number of new quests to review (1,453 in Octob
 pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
 Run the retail map pass each retail sweep too ([In the game](#in-the-game), step 3b; it takes the
-geometry of the continent maps as well, read with `tools\Report-ContinentGeometry.lua`). Its offers
+geometry of the continent maps as well, read with `tools\Report-ContinentGeometry.lua` and compared with its
+baseline by `tools\Compare-ContinentGeometry.lua`, step 2f). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
 quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
 run were within 10 yards of point 32; the pins are now within 1.5 points of 253 of them and more than
@@ -1421,6 +1426,19 @@ It began as pull request #139, which stays open as the record; its files are in
    maximised. Read it with `tools\Report-ContinentGeometry.lua <saved variables> [rows.csv]`, which lists
    what is odd on each continent (a rectangle that is missing or flat, twin zones, a centre another map
    takes, zone icons closer than 24 px at 700, 1000 and 1500 px) and writes one row per child map.
+   Then compare it with the baseline kept in the repository (sweep step 2f), for each game:
+   ```powershell
+   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Compare-ContinentGeometry.lua tools\<game>_probe_<build number>\QCForeverProbe.lua docs\plans\continent-geometry-baseline.csv
+   ```
+   It lists the zones that came, went or moved (more than 0.05 of a map point) on a continent map, and the
+   maps whose type, flags, group, nav-bar listing or hit-test answer changed, and exits with 1 when
+   there is any. A different zone list is a prompt to look at that continent's icons, not a failure of the
+   addon, which asks the game each time. When the differences are read, run it again with `--update`,
+   which replaces that game's rows and keeps the other game's (it warns when the file has fewer rows than
+   the baseline, which is a pass that stopped early), and commit the baseline. Names are compared as the
+   client gives them, so take the dump on an English client, and a zone gated by a player condition
+   (Quel'Thalas on Eastern Kingdoms) can come or go with the character: a difference there may be the
+   character, not the game. 12.1.5's six new maps will be the first differences on retail.
 4. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
@@ -1519,7 +1537,8 @@ git diff --stat
   `docs\plans\quest-removal-decisions.csv`. Show the list to the user and wait for their review before
   committing the change; put it in the pull request. `Test-QuestRemovals.ps1` checks the tool and the
   importer's answer memory on made-up data and must say "0 failed".
-- For changes to the probe (`tools\ForeverProbe\QCForeverProbe`), run `Test-Probe.lua`. It must say "0 failed".
+- For changes to the probe (`tools\ForeverProbe\QCForeverProbe`) or to `Report-ContinentGeometry.lua` or
+  `Compare-ContinentGeometry.lua`, run `Test-Probe.lua`. It must say "0 failed".
   It plays the quest, NPC and map passes and the recorder against stand-ins for the API, on a clock of its
   own, so it can't say what the game answers: that is the run under [In the game](#in-the-game).
   For `Build-ProbeLists.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ProbeLists.ps1`

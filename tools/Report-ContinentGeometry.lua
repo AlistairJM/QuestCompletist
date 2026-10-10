@@ -42,6 +42,62 @@ local function field(value)
 	return tostring(value)
 end
 
+local HEADER = "Game,Build,Continent,ContinentName,MapID,Name,MapType,Flags,NavBar,Group,MinX,MaxX,MinY,MaxY,HitID,HitName,Cells,CentroidX,CentroidY"
+
+-- One child map of a continent, the shape the rows file keeps it in.
+local function recordLine(r)
+	local rect = r.rect or {}
+	return table.concat({field(r.game), field(r.build), field(r.continent), field(r.continentName), field(r.mapId), field(r.name),
+		field(r.mapType), field(r.flags), field(r.navBar), field(r.group), field(rect[1]), field(rect[2]), field(rect[3]), field(rect[4]),
+		field(r.hitId), field(r.hitName), field(r.cells), field(r.cx), field(r.cy)}, ",")
+end
+
+-- The rows file read back into records: numbers are numbers, an empty field is nothing.
+local function parseCsv(text)
+	local records = {}
+	local first = true
+	for line in text:gmatch("[^\r\n]+") do
+		if first then
+			first = false
+		else
+			local fields, position = {}, 1
+			while position <= #line + 1 do
+				local value
+				if line:sub(position, position) == '"' then
+					local parts, from = {}, position + 1
+					while true do
+						local quote = line:find('"', from, true) or error("a quoted field is not closed in the row: " .. line)
+						if line:sub(quote + 1, quote + 1) == '"' then
+							parts[#parts + 1] = line:sub(from, quote)
+							from = quote + 2
+						else
+							parts[#parts + 1] = line:sub(from, quote - 1)
+							position = quote + 2
+							break
+						end
+					end
+					value = table.concat(parts)
+				else
+					local comma = line:find(",", position, true) or (#line + 1)
+					value = line:sub(position, comma - 1)
+					position = comma + 1
+				end
+				fields[#fields + 1] = value
+			end
+			local function number(i) return fields[i] ~= "" and tonumber(fields[i]) or nil end
+			local rect
+			if fields[11] ~= "" then rect = {tonumber(fields[11]), tonumber(fields[12]), tonumber(fields[13]), tonumber(fields[14])} end
+			local navBar
+			if fields[9] == "true" then navBar = true elseif fields[9] == "false" then navBar = false end
+			records[#records + 1] = {game = fields[1], build = fields[2], continent = number(3), continentName = fields[4], mapId = number(5),
+				name = fields[6], mapType = number(7), flags = number(8), navBar = navBar,
+				group = number(10), rect = rect, hitId = number(15), hitName = fields[16] ~= "" and fields[16] or nil,
+				cells = number(17), cx = number(18), cy = number(19)}
+		end
+	end
+	return records
+end
+
 local function label(child)
 	return string.format("%s (%s)", child.name or "?", tostring(child.mapID))
 end
@@ -72,13 +128,13 @@ local function validRect(rect)
 end
 
 local function report(db, wanted)
-	local lines, csv = {}, {}
+	local lines, csv, records = {}, {}, {}
 	local function out(format, ...) lines[#lines + 1] = select("#", ...) > 0 and string.format(format, ...) or format end
 	local geometry = db.geometry or {}
 	local build = wanted or fullestBuild(geometry)
 	if not build then
 		out("No geometry in the file. Type /qcprobe geometry in the game, log out fully and copy the file again.")
-		return lines, csv
+		return lines, csv, records
 	end
 	local rows, empty = {}, {}
 	for _, mapID in ipairs(sortedKeys(geometry)) do
@@ -221,18 +277,18 @@ local function report(db, wanted)
 
 		for _, child in ipairs(row.children) do
 			local cell = cells[child.mapID]
-			local rect = child.rect or {}
-			csv[#csv + 1] = table.concat({field(game), field(build), field(mapID), field(row.name), field(child.mapID),
-				field(child.name), field(child.mapType), field(child.flags), field(child.navBar), field(child.group),
-				field(rect[1]), field(rect[2]), field(rect[3]), field(rect[4]),
-				field(child.hit and child.hit.mapID), field(child.hit and child.hit.name),
-				field(cell and cell.n or 0), field(cell and cell.x), field(cell and cell.y)}, ",")
+			local record = {game = game, build = build, continent = mapID, continentName = row.name, mapId = child.mapID, name = child.name,
+				mapType = child.mapType, flags = child.flags, navBar = child.navBar, group = child.group, rect = child.rect,
+				hitId = child.hit and child.hit.mapID, hitName = child.hit and child.hit.name, cells = cell and cell.n or 0,
+				cx = cell and cell.x, cy = cell and cell.y}
+			records[#records + 1] = record
+			csv[#csv + 1] = recordLine(record)
 		end
 	end
-	return lines, csv
+	return lines, csv, records
 end
 
-if (...) == "module" then return report end
+if (...) == "module" then return report, parseCsv, recordLine, HEADER end
 
 local savedFile, csvFile, wanted = arg[1], arg[2], arg[3]
 if not savedFile then
@@ -245,7 +301,7 @@ local lines, csv = report(db, wanted)
 for _, line in ipairs(lines) do print(line) end
 if csvFile and #csv > 0 then
 	local f = assert(io.open(csvFile, "w"))
-	f:write("Game,Build,Continent,ContinentName,MapID,Name,MapType,Flags,NavBar,Group,MinX,MaxX,MinY,MaxY,HitID,HitName,Cells,CentroidX,CentroidY\n")
+	f:write(HEADER, "\n")
 	for _, row in ipairs(csv) do f:write(row, "\n") end
 	f:close()
 	print(string.format("Wrote %d rows to %s.", #csv, csvFile))

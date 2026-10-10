@@ -1056,6 +1056,147 @@ do
 	contains(text5, "Geometry on 1.60.1.70001", "G5: and a build can be asked for")
 end
 
+-- The baseline: the rows the report writes, read back, and what a sweep compares them with.
+do
+	local report, parseCsv, recordLine, HEADER = assert(loadfile("tools/Report-ContinentGeometry.lua"))("module")
+	local compare = assert(loadfile("tools/Compare-ContinentGeometry.lua"))("module")
+	local w = newWorld({forever = true, worldMap = true})
+	w.S.maps = geometryMaps()
+	w.boot()
+	w.slash("geometry")
+	local _, csv, records = report(w.db())
+	local parsed = parseCsv(HEADER .. "\r\n" .. table.concat(csv, "\r\n") .. "\r\n")
+	equal(#parsed, #records, "B1: every row reads back")
+	local function find(list, continent, mapId)
+		for _, r in ipairs(list) do if r.continent == continent and r.mapId == mapId then return r end end
+	end
+	local back = find(parsed, 12, 1527)
+	equal(back.navBar, false, "B1: a nav bar answer of false stays false, not nothing")
+	equal(find(parsed, 12, 1).navBar, true, "B1: and true stays true")
+	equal(find(parsed, 947, 12).group, nil, "B1: an empty field is nothing")
+	equal(back.flags, 524288, "B1: numbers are numbers")
+	equal(back.name, "Uldum", "B1: names are names")
+	equal(find(parsed, 12, 2).rect, nil, "B1: a child with no rectangle has none")
+	equal(find(parsed, 12, 1).rect[2], 0.7, "B1: a rectangle's numbers")
+	equal(find(parsed, 12, 1).hitId, 1, "B1: the hit test's map")
+	equal(find(parsed, 12, 1).game, "forever", "B1: the game")
+	equal(#compare(records, parsed), 0, "B1: the rows compared with themselves read back differ in nothing")
+
+	local function copy()
+		return parseCsv(HEADER .. "\r\n" .. table.concat(csv, "\r\n") .. "\r\n")
+	end
+	local function one(changeFn, expected, message)
+		local now = copy()
+		changeFn(now)
+		local lines = compare(now, parsed)
+		equal(#lines, 1, message .. ": one difference")
+		contains(lines[1], expected, message)
+	end
+	one(function(rows) find(rows, 12, 1).rect[1] = 0.55 end, "changed: Kalimdor (12): Durotar (1): rectangle 0.5000 0.7000 0.4000 0.6000 -> 0.5500 0.7000 0.4000 0.6000", "B2: a zone that moved")
+	do
+		local now = copy()
+		find(now, 12, 1).rect[1] = 0.5001
+		equal(#compare(now, parsed), 0, "B2: a move under a twentieth of a map point is not a difference")
+	end
+	one(function(rows) find(rows, 12, 1).mapType = 4 end, "mapType 3 -> 4", "B2: a map whose type changed")
+	one(function(rows) find(rows, 12, 1527).navBar = true end, "navBar false -> true", "B2: the nav bar listing")
+	one(function(rows) find(rows, 12, 1527).flags = 0 end, "flags 524288 -> 0", "B2: its flags")
+	one(function(rows) find(rows, 12, 7).hitId = 7 end, "hitId 88 -> 7", "B2: what the hit test names")
+	one(function(rows) find(rows, 12, 2).rect = {0.1, 0.2, 0.1, 0.2} end, "rectangle none -> 0.1000 0.2000 0.1000 0.2000", "B2: a zone that gained a rectangle")
+	one(function(rows) find(rows, 12, 1).name = "Durotar!" end, "name Durotar -> Durotar!", "B2: a name")
+	local without = copy()
+	for i, r in ipairs(without) do if r.continent == 12 and r.mapId == 627 then table.remove(without, i) break end end
+	local lines = compare(without, parsed)
+	check(#lines == 1 and lines[1]:find("removed: Kalimdor (12): Dalaran (627)", 1, true), "B2: a child that went")
+	lines = compare(parsed, without)
+	check(#lines == 1 and lines[1]:find("added:   Kalimdor (12): Dalaran (627) (type 4)", 1, true), "B2: a child that came")
+
+	-- The command line, on files written to the temp folder: its exit status is what a sweep reads.
+	local dir = os.getenv("TEMP") or "."
+	local stamp = tostring(os.time()) .. tostring(math.random(1000, 9999))
+	local savedFile, otherFile, emptyFile, baselineFile = dir .. "\\qcgeo-" .. stamp .. "-a.lua", dir .. "\\qcgeo-" .. stamp .. "-b.lua",
+		dir .. "\\qcgeo-" .. stamp .. "-c.lua", dir .. "\\qcgeo-" .. stamp .. ".csv"
+	local function save(file, db)
+		local out = {}
+		serialize(db, out, {})
+		local h = assert(io.open(file, "wb"))
+		h:write("QCForeverProbeDB = " .. table.concat(out))
+		h:close()
+	end
+	save(savedFile, w.db())
+	local retail = newWorld({toc = "plain", worldMap = true})
+	retail.S.maps = geometryMaps()
+	retail.boot()
+	retail.slash("geometry")
+	save(otherFile, retail.db())
+	save(emptyFile, {geometry = {}, runs = {}})
+	local lua = '"' .. (arg and arg[-1] or "lua") .. '"'
+	local function run(args)
+		return os.execute(lua .. " tools/Compare-ContinentGeometry.lua " .. args .. " > NUL 2>&1")
+	end
+	local function rowsOf(game)
+		local h = assert(io.open(baselineFile, "rb"))
+		local rows = parseCsv(h:read("*a"))
+		h:close()
+		local n = 0
+		for _, r in ipairs(rows) do if r.game == game then n = n + 1 end end
+		return n
+	end
+	equal(run(savedFile .. " " .. baselineFile), 1, "B3: with no baseline the exit status is 1")
+	equal(run(savedFile .. " " .. baselineFile .. " --update"), 0, "B3: --update makes it, exit 0")
+	equal(rowsOf("forever"), #records, "B3: with a row for each child map")
+	equal(run(savedFile .. " " .. baselineFile), 0, "B3: the same file compares as the same, exit 0")
+	local h = assert(io.open(baselineFile, "rb")); local baselineText = h:read("*a"); h:close()
+	local moved = baselineText:gsub("0%.5,0%.7,0%.4,0%.6", "0.5,0.7,0.4,0.61", 1)
+	check(moved ~= baselineText, "B3: a zone is moved in the baseline")
+	h = assert(io.open(baselineFile, "wb")); h:write(moved); h:close()
+	equal(run(savedFile .. " " .. baselineFile), 1, "B3: a rectangle that differs gives exit 1")
+	equal(run(savedFile .. " " .. baselineFile .. " --update"), 0, "B3: --update takes it in")
+	equal(run(savedFile .. " " .. baselineFile), 0, "B3: and the next comparison is clean")
+	equal(run(otherFile .. " " .. baselineFile), 1, "B3: the other game has no rows yet, exit 1")
+	local function textOf(game)
+		local handle = assert(io.open(baselineFile, "rb"))
+		local rows = {}
+		for line in handle:read("*a"):gmatch("[^\r\n]+") do
+			if line:sub(1, #game + 3) == '"' .. game .. '",' then rows[#rows + 1] = line end
+		end
+		handle:close()
+		return table.concat(rows, "\n")
+	end
+	local foreverBefore = textOf("forever")
+	check(#foreverBefore > 0, "B3: the first game's rows are in the file")
+	equal(run(otherFile .. " " .. baselineFile .. " --update"), 0, "B3: --update adds them")
+	equal(textOf("forever"), foreverBefore, "B3: and leaves the first game's rows as they were, byte for byte")
+	equal(rowsOf("retail") > 0 and rowsOf("forever") == #records, true, "B3: and keeps the first game's rows")
+	equal(run(savedFile .. " " .. baselineFile), 0, "B3: each game still compares as the same")
+	equal(run(otherFile .. " " .. baselineFile), 0, "B3: both of them")
+	do
+		local handle = assert(io.open(baselineFile, "rb"))
+		local rows = parseCsv(handle:read("*a"))
+		handle:close()
+		local extra = {}
+		for _, r in ipairs(rows) do
+			if r.game == "forever" then for k, v in pairs(r) do extra[k] = v end break end
+		end
+		extra.mapId = 999999
+		rows[#rows + 1] = extra
+		local lines = {HEADER}
+		for _, r in ipairs(rows) do lines[#lines + 1] = recordLine(r) end
+		handle = assert(io.open(baselineFile, "wb"))
+		handle:write(table.concat(lines, "\r\n"), "\r\n")
+		handle:close()
+		local pipe = assert(io.popen(lua .. " tools/Compare-ContinentGeometry.lua " .. savedFile .. " " .. baselineFile .. " --update 2>&1"))
+		local said = pipe:read("*a")
+		pipe:close()
+		contains(said, "1 fewer forever rows", "B3: --update says when the baseline loses rows")
+		equal(run(savedFile .. " " .. baselineFile), 0, "B3: and the baseline is the dump's again")
+	end
+	equal(select(2, pcall(parseCsv, HEADER .. "\r\n" .. "\"forever\",\"1.60\r\n")):find("is not closed", 1, true) ~= nil, true, "B3: a row with an unclosed quote is named, not a crash on nil")
+	equal(run(emptyFile .. " " .. baselineFile), 2, "B3: a file with no geometry gives exit 2")
+	equal(run(""), 2, "B3: no arguments give exit 2")
+	for _, file in ipairs({savedFile, otherFile, emptyFile, baselineFile}) do os.remove(file) end
+end
+
 -- 5. The recorder ----------------------------------------------------------------------------------
 
 do
