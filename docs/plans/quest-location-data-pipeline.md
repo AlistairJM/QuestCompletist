@@ -473,9 +473,22 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   TrinityCore's starter list is stale in places such as Orgrimmar's class hubs, and the quest points
   agree with the client where the client lists them. 1036 "Avast Ye, Scallywag" is pinned where the
   client puts its end, not at "Pretty Boy" Duncan: it wants a look in game. Item-started quests
-  with a start point, and auto-accepts that have a starter, are pinned at that point, as before. The addon draws a nameless new pin as the
-  anchor of a stack whose old pin was named in 53 stacks, so clicking it sets a waypoint titled
-  with a quest's name; a named pin should anchor the stack in `qcMergeStackedPins`.
+  with a start point, and auto-accepts that have a starter, are pinned at that point, as before.
+- **Stacks on the map.** `qcMergeStackedPins` draws one pin for the pins within 0.5 map points of
+  the first, and that pin was the first one's: a click set a TomTom waypoint titled with its NPC, or
+  with its first quest when it had no name. Where a nameless pin came first and a named pin joined
+  it, the click gave a quest's name. Over the whole data with every map filter off, that is 267 of
+  retail's 3,060 stacks (141 of 1,972 with the default filters, for a maximum-level Alliance night
+  elf druid with nothing done); Forever has none among its 206. The 53 the pass above counted are
+  the 267's stacks whose first pin that pass added (47 with a named pin from before it).
+  The pin now takes its icon, NPC and name from the group's first named pin, else from its first
+  pin. Who joins a group is still measured from its first pin, and the pin stays at the first pin's
+  point, so none moved and every member is within 0.5 points of it, which the named pin's point
+  could not promise (it lies up to 0.496 from the first pin in 129 of the 267, and at the same
+  point in 138). `Test-MapTooltip.lua` checks it, on made-up stacks and on every stack in the data.
+  The tooltip needed no change: it lists the members by name, so the first named one already
+  headed it, and its lines are the same for every stack in the data.
+
 ## October 2026, pins from the addon's recorder
 
 `Import-RecordedGivers.ps1` (sweep step 6d, after 6c; the rules and the reasons are in

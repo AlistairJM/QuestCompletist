@@ -231,9 +231,6 @@ again.
 
 ## Code to finish
 
-- **`qcMergeStackedPins`** (`qcMapPins.lua`) should let a named pin anchor a stack. In 53 stacks a
-  new nameless pin now sorts first, so a click sets a waypoint titled with a quest's name, not the
-  NPC's.
 - **One quest on the edge of a map**: 26064 sits at the top of Mulgore, where its other points say
   Stonetalon. A start within about one map point of an edge should prefer the map its other
   points are on.
