@@ -443,6 +443,21 @@ if rawget(env, "qcContinentPinMixin") then
 	record = {}
 	newContinentPin(nil):OnMouseEnter()
 	check("a pin with no icon leaves the tooltip alone", #record == 0)
+	do
+		local before = env.qcCharacterCompletions
+		local done = {}
+		for questId, entry in pairs(QUESTS) do
+			if entry[3] == zoneCategory then done[questId] = 1 end
+		end
+		local inLog = ctx.inLog
+		env.qcCharacterCompletions, ctx.inLog = done, {}
+		record = {}
+		newContinentPin({zone = zone, look = QC.QC_ICON_COMPLETE, dim = false}):OnMouseEnter()
+		check("a completed zone's tooltip is its name and a bar, no row, and what a click does", count(":AddLine(Test Zone,") == 1
+			and count(":SetMinMaxValues(0,") == 1 and count("Available Quests|r") == 0 and count("In Progress|r") == 0
+			and count("<Click to Zoom In>") == 1)
+		env.qcCharacterCompletions, ctx.inLog = before, inLog
+	end
 end
 
 print(failures == 0 and "All checks passed." or (failures .. " checks failed."))

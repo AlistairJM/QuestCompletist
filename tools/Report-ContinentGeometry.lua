@@ -3,13 +3,14 @@
 -- where each sits on it, what the game's hit test names at each centre and over a grid, and which
 -- zone icons would crowd each other.
 -- usage: lua tools/Report-ContinentGeometry.lua <QCForeverProbe.lua> [rows.csv] [build]
---   rows.csv   one row per child map: Game, Build, Continent, ContinentName, MapID, Name, MapType, Flags,
+--   rows.csv   one row per child map, and one per map the hit test names that is no child (those hold no type,
+--              flags, nav-bar answer, group or rectangle): Game, Build, Continent, ContinentName, MapID, Name, MapType, Flags,
 --              NavBar, Group, MinX, MaxX, MinY, MaxY, HitID, HitName, Cells, CentroidX, CentroidY
 --   build      which build's rows to read; the one with most maps in the file when left out
 -- Under Lua 5.1: & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Report-ContinentGeometry.lua <file>
 
 local ASPECT = 2 / 3
-local CLOSE_PIXELS = 24
+local CLOSE_PIXELS = 32
 local WIDTHS = {700, 1000, 1500}
 local CENTROID_POINTS = 3
 local ZONE = 3
@@ -157,6 +158,13 @@ local function report(db, wanted)
 		end
 	end
 
+	local nameOf = {}
+	for _, row in pairs(geometry) do
+		if row.build == build then
+			for _, child in ipairs(row.children) do nameOf[child.mapID] = nameOf[child.mapID] or child.name end
+		end
+	end
+
 	for _, mapID in ipairs(rows) do
 		local row = geometry[mapID]
 		local byType = {}
@@ -249,6 +257,20 @@ local function report(db, wanted)
 		if #others > 0 then out("  The hit test at a zone's rectangle centre names another map: %s.", table.concat(others, "; ")) end
 		if #unseen > 0 then out("  Zones the hit test never names on the %d x %d grid: %s.", row.grid and row.grid.columns or 0, row.grid and row.grid.rows or 0, table.concat(unseen, ", ")) end
 		if #shifted > 0 then out("  The grid's centre of a zone is over %d map points from its rectangle's: %s.", CENTROID_POINTS, table.concat(shifted, "; ")) end
+		local childIds, linked = {}, {}
+		for _, child in ipairs(row.children) do childIds[child.mapID] = true end
+		for _, id in ipairs(sortedKeys(cells)) do
+			if id ~= mapID and not childIds[id] then
+				linked[#linked + 1] = id
+			end
+		end
+		if #linked > 0 then
+			local parts = {}
+			for _, id in ipairs(linked) do
+				parts[#parts + 1] = string.format("%s (%d) %d cells at %.1f, %.1f", cells[id].name or nameOf[id] or "?", id, cells[id].n, cells[id].x, cells[id].y)
+			end
+			out("  The hit test names maps that are not children: %s.", table.concat(parts, "; "))
+		end
 
 		local placed = {}
 		for _, child in ipairs(zones) do
@@ -281,6 +303,13 @@ local function report(db, wanted)
 				mapType = child.mapType, flags = child.flags, navBar = child.navBar, group = child.group, rect = child.rect,
 				hitId = child.hit and child.hit.mapID, hitName = child.hit and child.hit.name, cells = cell and cell.n or 0,
 				cx = cell and cell.x, cy = cell and cell.y}
+			records[#records + 1] = record
+			csv[#csv + 1] = recordLine(record)
+		end
+		for _, id in ipairs(linked) do
+			local name = cells[id].name or nameOf[id]
+			local record = {game = game, build = build, continent = mapID, continentName = row.name, mapId = id, name = name or "",
+				hitId = id, hitName = name, cells = cells[id].n, cx = cells[id].x, cy = cells[id].y}
 			records[#records + 1] = record
 			csv[#csv + 1] = recordLine(record)
 		end

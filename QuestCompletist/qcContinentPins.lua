@@ -7,6 +7,11 @@ local qcIsQuestCompletedOnAccount = QC.qcIsQuestCompletedOnAccount
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
 local qcMapTip, qcSetIcon = QC.qcMapTip, QC.qcSetIcon
 local QC_ICON_NORMAL, QC_ICON_READY, QC_ICON_PROGRESS = QC.QC_ICON_NORMAL, QC.QC_ICON_READY, QC.QC_ICON_PROGRESS
+-- A finished zone's green check: a 40 x 35 pixel atlas member, drawn at the icon's width and 35/40 of it high. The
+-- common check (QC_ICON_COMPLETE) has two members in the client's tables, of 256 and 22 pixels, and which one the
+-- game draws is not known; this one is a single, sharp one at the size the icon has.
+local QC_ICON_DONE = {atlas = "orderhalltalents-done-checkmark"}
+local QC_ICON_DONE_ASPECT = 35 / 40
 
 -- Zones whose quests the list files under the categories of their parts, as well as under their own, if
 -- they have one. Both games' map IDs: retail's are Stranglethorn Vale (Northern Stranglethorn, The Cape of
@@ -37,6 +42,39 @@ local QC_ZONE_ICON_AT = {
 	[1439] = {0.463, 0.271}, [1448] = {0.485, 0.309},
 }
 
+-- Maps that stand on a continent map without being one of its zones, each with the icon's place: the centre of
+-- the cells the game's hit test names it on (CentroidX and CentroidY of its row in
+-- docs/plans/continent-geometry-baseline.csv, over 100). Retail's Oribos (a hub city of the Shadowlands) and
+-- Dalaran (of the Broken Isles), Undermine (a map the client links in at the Ringing Deeps' side of Khaz Algar),
+-- Nazjatar (linked in on both Zandalar and Kul Tiras) and Ahn'Qiraj: The Fallen Kingdom (an orphan map on
+-- Kalimdor). Keyed by continent, then by the map; the click opens that map.
+local QC_CONTINENT_HUBS = {
+	[12] = {[327] = {0.414, 0.895}},
+	[619] = {[627] = {0.458, 0.650}},
+	[875] = {[1355] = {0.867, 0.150}},
+	[876] = {[1355] = {0.867, 0.150}},
+	[1550] = {[1670] = {0.467, 0.488}},
+	[2274] = {[2346] = {0.800, 0.750}},
+}
+
+-- Sub-zones with no icon of their own, whose quests count in the icon of the zone they lie in, as a city's do:
+-- Korthia in The Maw, Valdrakken in Thaldraszus, Dornogal in the Isle of Dorn, both levels of City of Threads
+-- in Azj-Kahet, Silvermoon City and Slayer's Rise in the zones of Quel'Thalas that hold them, the Shrine of
+-- the Storm in Stormsong Valley, the Druid class hall's Dreamgrove in Val'sharah. Each is a descendant of the
+-- continent the game lists, not a child.
+local QC_SUBZONE_HOST = {
+	[1961] = 1543, [2112] = 2025, [2339] = 2248, [2213] = 2255, [2216] = 2255, [2393] = 2395, [2444] = 2405, [1039] = 942,
+	[747] = 641,
+}
+
+local function qcSortedKeys(t)
+	local keys = {}
+	for key in pairs(t) do keys[#keys + 1] = key end
+	table.sort(keys)
+	return keys
+end
+local QC_SUBZONES = qcSortedKeys(QC_SUBZONE_HOST)
+
 local function qcRectCentre(zoneId, continentId)
 	local minX, maxX, minY, maxY = C_Map.GetMapRectOnMap(zoneId, continentId)
 	if type(minX) == "number" and type(maxX) == "number" and type(minY) == "number" and type(maxY) == "number"
@@ -60,17 +98,19 @@ end
 -- The icons a continent map gets, in map ID order: {mapId, name, x, y, categories} for each zone the game
 -- lists as a child of the continent, with a rectangle on it and a category. The game may list nothing, or
 -- a rectangle of nothing. Zones sharing a category are one icon: the first with a rectangle. A city in
--- QC_CITY_HOST adds its categories to its zone's icon. A continent the game lists inside this one
--- (Quel'Thalas on Eastern Kingdoms, Argus on the Broken Isles) gets an icon too, counting the zones of its
--- own map, less any this map's zones count already; it is not looked into further (inside is set for it).
+-- QC_CITY_HOST adds its categories to its zone's icon, and a sub-zone in QC_SUBZONE_HOST to its zone's. A map in
+-- QC_CONTINENT_HUBS gets an icon at its place. A continent the game lists inside this one (Quel'Thalas on
+-- Eastern Kingdoms, Argus on the Broken Isles) gets an icon too, counting the zones of its own map, less any
+-- this map's zones count already; it is not looked into further (inside is set for it).
 local function qcContinentZones(continentId, inside)
 	local children = qcChildrenOfType(continentId, Enum.UIMapType.Zone)
 
 	local zones, byId, owned, cities = {}, {}, {}, {}
-	local function addZone(child, categories)
-		local x, y = qcRectCentre(child.mapID, continentId)
+	local function addZone(child, categories, place)
+		local x, y
+		if place then x, y = place[1], place[2] else x, y = qcRectCentre(child.mapID, continentId) end
 		if not x or owned[categories[1]] then return end
-		local at = QC_ZONE_ICON_AT[child.mapID]
+		local at = not place and QC_ZONE_ICON_AT[child.mapID]
 		if at then x, y = at[1], at[2] end
 		local zone = {mapId = child.mapID, name = child.name, x = x, y = y, categories = categories}
 		zones[#zones + 1] = zone
@@ -104,6 +144,24 @@ local function qcContinentZones(continentId, inside)
 			end
 		else
 			addZone(city.child, city.categories)
+		end
+	end
+	for _, subZone in ipairs(QC_SUBZONES) do
+		local host = byId[QC_SUBZONE_HOST[subZone]]
+		if host then
+			for _, categoryId in ipairs(categoriesOf(subZone)) do
+				if not owned[categoryId] then
+					host.categories[#host.categories + 1] = categoryId
+					owned[categoryId] = true
+				end
+			end
+		end
+	end
+	local hubs = QC_CONTINENT_HUBS[continentId]
+	if hubs then
+		for _, mapId in ipairs(qcSortedKeys(hubs)) do
+			local info, categories = C_Map.GetMapInfo(mapId), categoriesOf(mapId)
+			if info and #categories > 0 then addZone(info, categories, hubs[mapId]) end
 		end
 	end
 	if not inside then
@@ -160,15 +218,35 @@ local function qcZoneLook(numbers)
 	if numbers.progress > 0 then return QC_ICON_PROGRESS, numbers.progress, false end
 end
 
--- The icons a continent map draws now: each zone with something left to do, with its look, count and shade.
+-- The icons a continent map draws now: each zone with something left to do, with its look, count and shade, and
+-- (while the map shows completed quests) a green check on each zone that has quests and nothing left of them.
 local function qcContinentIcons(continentId)
 	local keepQuest, countWarband = qcBuildViewFilter("M"), qcHides("M", "WARBANDS")
+	local showCompleted = not qcHides("M", "COMPLETED")
 	local icons = {}
 	for _, zone in ipairs(qcContinentZones(continentId)) do
-		local look, count, dim = qcZoneLook(qcZoneNumbers(zone, keepQuest, countWarband))
-		if look then icons[#icons + 1] = {zone = zone, look = look, count = count, dim = dim} end
+		local numbers = qcZoneNumbers(zone, keepQuest, countWarband)
+		local look, count, dim = qcZoneLook(numbers)
+		if look then
+			icons[#icons + 1] = {zone = zone, look = look, count = count, dim = dim}
+		elseif showCompleted and numbers.total > 0 then
+			icons[#icons + 1] = {zone = zone, look = QC_ICON_DONE, dim = false}
+		end
 	end
 	return icons
+end
+
+-- How large the icon is drawn, in UI units. Its art is the quest atlas's 32-pixel "?" (the "!" is a 64-pixel one, the
+-- grey "?" the game files separately only 16), so it is drawn at no more than 1.1 screen pixels to a pixel of
+-- art, where the screen allows: a unit is the UI scale times the screen's height over 768 pixels. The old 24
+-- stays on a screen that needs it, and where the screen can't be read.
+local QC_ICON_MIN, QC_ICON_MAX, QC_ICON_ART_PIXELS = 24, 32, 32
+local function qcContinentIconSize()
+	local _, height = GetPhysicalScreenSize()
+	local scale = UIParent:GetEffectiveScale()
+	if type(height) ~= "number" or height <= 0 or type(scale) ~= "number" or scale <= 0 then return QC_ICON_MIN end
+	local size = math.floor(QC_ICON_ART_PIXELS * 1.1 * 768 / (scale * height))
+	return math.max(QC_ICON_MIN, math.min(QC_ICON_MAX, size))
 end
 
 qcContinentPinMixin = CreateFromMixins(MapCanvasPinMixin)
@@ -182,11 +260,15 @@ function qcContinentPinMixin:OnAcquired(icon)
 	self.Icon = icon
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
 	self:SetPosition(icon.zone.x, icon.zone.y)
-	self:SetSize(24, 24)
-	qcSetIcon(self.Texture, icon.look)
+	local size = qcContinentIconSize()
+	self:SetSize(size, icon.look == QC_ICON_DONE and size * QC_ICON_DONE_ASPECT or size)
+	local progress = icon.look == QC_ICON_PROGRESS
+	qcSetIcon(self.Texture, progress and QC_ICON_READY or icon.look)
+	self.Texture:SetDesaturated(progress)
 	local shade = icon.dim and 0.5 or 1
 	self.Texture:SetVertexColor(shade, shade, shade)
-	self.Count:SetText(icon.count)
+	self.Count:SetFontObject(size >= 30 and "NumberFontNormalLarge" or size >= 26 and "NumberFontNormal" or "NumberFontNormalSmall")
+	self.Count:SetText(icon.count or "")
 	self.Count:SetTextColor(shade, shade, shade)
 end
 
@@ -210,7 +292,7 @@ function qcContinentPinMixin:OnMouseEnter()
 	qcMapTip.Open(self, anchorPoint)
 	local numbers = qcZoneNumbers(zone, qcBuildViewFilter("M"), qcHides("M", "WARBANDS"))
 	qcMapTip.Line(zone.name, nil, GameTooltipHeaderText)
-	if numbers.total >= 2 then
+	if numbers.total >= 2 or (numbers.total == 1 and numbers.done == 1) then
 		local leftText, rightText = qcMapTip.Line(" ", string.format("|cffc8c8c8%d/%d|r", numbers.done, numbers.total))
 		if leftText and rightText then
 			qcMapTip.Bar(leftText, rightText, numbers.done, numbers.total)

@@ -22,7 +22,8 @@ local report, parseCsv, recordLine, HEADER = assert(loadfile(here .. "/Report-Co
 local function key(r) return r.game .. "|" .. r.continent .. "|" .. r.mapId end
 
 local function describe(r)
-	return string.format("%s (%d): %s (%d)", r.continentName or "?", r.continent, r.name or "?", r.mapId)
+	local name = (r.name ~= nil and r.name ~= "") and r.name or "?"
+	return string.format("%s (%d): %s (%d)", r.continentName or "?", r.continent, name, r.mapId)
 end
 
 local function rectText(rect)
@@ -63,11 +64,11 @@ local function compare(current, baseline)
 	for k, r in pairs(new) do
 		local o = old[k]
 		if not o then
-			added[#added + 1] = "added:   " .. describe(r) .. string.format(" (type %s)", tostring(r.mapType))
+			added[#added + 1] = "added:   " .. describe(r) .. (r.mapType and string.format(" (type %s)", r.mapType) or " (no child)")
 		else
 			local diffs = {}
 			for _, field in ipairs(FIELDS) do
-				if o[field] ~= r[field] then diffs[#diffs + 1] = string.format("%s %s -> %s", field, tostring(o[field]), tostring(r[field])) end
+				if o[field] ~= r[field] and not (field == "name" and (o.name == nil or o.name == "")) then diffs[#diffs + 1] = string.format("%s %s -> %s", field, tostring(o[field]), tostring(r[field])) end
 			end
 			if rectsDiffer(o.rect, r.rect) then diffs[#diffs + 1] = string.format("rectangle %s -> %s", rectText(o.rect), rectText(r.rect)) end
 			if hitAreaDiffers(o, r) then diffs[#diffs + 1] = string.format("hit area %s -> %s", hitAreaText(o), hitAreaText(r)) end
@@ -146,10 +147,10 @@ end
 local lines = compare(current, baselineOfGame)
 local baselineBuild = baselineOfGame[1].build
 if #lines == 0 then
-	print(string.format("Continent geometry on %s (%s): %d child maps, the same as the baseline of build %s.", build, game, #current, baselineBuild))
+	print(string.format("Continent geometry on %s (%s): %d maps, the same as the baseline of build %s.", build, game, #current, baselineBuild))
 	os.exit(0)
 end
-print(string.format("Continent geometry on %s (%s): %d child maps against the baseline of build %s, %d differences:", build, game, #current, baselineBuild, #lines))
+print(string.format("Continent geometry on %s (%s): %d maps against the baseline of build %s, %d differences:", build, game, #current, baselineBuild, #lines))
 for _, line in ipairs(lines) do print("  " .. line) end
 print("Look at the zone icons on the continents named above (docs/plans/continent-pins.md), then --update.")
 os.exit(1)
