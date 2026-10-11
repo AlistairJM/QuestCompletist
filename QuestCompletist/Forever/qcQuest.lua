@@ -2458,9 +2458,6 @@ qcMutuallyExclusive={
 [1881]={1883},
 [1883]={1881},
 [1885]={1859},
-[2205]={2218,2241},
-[2218]={2205,2241},
-[2241]={2205,2218},
 [2378]={2380},
 [2380]={2378},
 [2983]={1522,1523,2984},
@@ -2678,5 +2675,6 @@ qcMutuallyExclusive={
 [9270]={9257,9269,9271},
 [9271]={9257,9269,9270},
 }
+qcFormerlyExclusive={2205,2218,2241}
 qcOverrideDailyExclusiveQuest={}
 qcOverrideWeeklyExclusiveQuest={}

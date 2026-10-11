@@ -79,6 +79,14 @@ again.
   Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom, Korthia and the rest), enlarged the icon where
   its art allows and put a green check on finished zones (while the map shows completed quests);
   twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre and wait for the user to say which to move.
+- **The level 10 rogue lead-ins on Forever** (#297, 11 October 2026, not yet tried in game, so not for a
+  release until tried or the user says so). Two looks on the beta: on Rothro after `/reload`, Road to
+  Salvation (2218) shows as not done; on a new Human rogue, Snatch and Grab (2206) on Master Mathias
+  Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Optionally, a
+  third: after handing in Deliver Thomas' Report (39), Guard Thomas offers Bounty on Murlocs (46),
+  which his pin greys until then. Destiny Calls needing The Apple Falls, and a hand-in ticking no other
+  lead-in, are checked offline by `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the
+  server requires").
 - **Stacked pins** (#276, released in 112.9 untried; one optional line on retail). Click a stacked pin
   whose first quest has no giver name and see the named giver's icon, name and TomTom title (Durotar
   around 45.7, 15.9 has one). The holidays half of this item (#280) is answered: the user's
@@ -251,6 +259,12 @@ again.
   places. Look through it after every run of step 6.
 - **2,766 quests TrinityCore has a start for that the database lacks**: a list to look through for
   the step that adds quests the database lacks (`Fetch-GapQuestData.ps1`).
+- **Forever's other CMaNGOS links**: the rogue lead-ins showed that a CMaNGOS breadcrumb can be a
+  lead-in the server requires, and an `ExclusiveGroup` a choice it doesn't enforce. The other 84 groups
+  and 124 breadcrumbs are to be reviewed against first-hand reports (Questie's issues, QuestieDB's Era
+  corrections, Wowhead's comments) and the game; each correction is a row in
+  `forever-quest-link-decisions.csv`, and the login clean-up covers its ticks
+  ([forever.md](forever.md), "Lead-ins the server requires").
 - **Forever's 1,414 pinless quests** have no pickup data in any source; the recorder is the way
   ([forever.md](forever.md)). About 60 of the new retail pins are for quests started by an object and about 120 by an
   item alone, and have no name; Forever names its pins after the object or item (game-parity.md, recommendation 12).
@@ -294,8 +308,8 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
    pass before retail's 12.1.5 map pass, then the counting and the icons: **done** (#261 to #272, released in 112.8).
 
 Also: the 12.1.5 sweep when the patch is live (13 or 14 October; the TOC lists both interface
-numbers), a Warband-filter check on the Forever beta, and the dated change of 1 April 2027
-(releasing.md).
+numbers), a Warband-filter check on the Forever beta, and the dated changes of 1 April 2027
+(releasing.md: the old completions format, and the login clean-up of `qcFormerlyExclusive` ticks).
 
 After the retail run of the 12.1.5 sweep has been read, and #262 (the probe's geometry pass) has merged, and
 before Forever's launch on 4 November: **rename the probe** from `QCForeverProbe` to `QCProbe`, as one pull

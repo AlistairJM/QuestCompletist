@@ -38,6 +38,7 @@ tools/*
 !tools/Test-QuestTooltip.lua
 !tools/Test-ContinentPins.lua
 !tools/Test-Settings.lua
+!tools/Test-Completions.lua
 !tools/ForeverProbe/
 tools/ForeverProbe/QCForeverProbe/QuestIDs_*.lua
 tools/ForeverProbe/QCForeverProbe/NpcIDs_*.lua

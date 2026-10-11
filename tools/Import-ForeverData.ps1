@@ -26,6 +26,10 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
   - -HolidayFile, docs\plans\forever-quest-holiday-decisions.csv: the holiday of quests no other
     source ties to one, with the evidence for each (Quest, Name, Holiday, Decision, Evidence). Holiday
     is a name in qcHolidays in qcCore.lua and Decision is SET.
+  - -LinkFile, docs\plans\forever-quest-link-decisions.csv: links the other sources get wrong, with
+    the evidence for each (Quest, Name, Link, Other, Decision, Evidence). A prereq row SETs Other as
+    the quest's prerequisite; an exclusive row REMOVEs Other from the quests the quest shuts out,
+    both ways round.
 
 The game wins wherever it speaks. Title, level, minimum level, zone, recurrence and race restrictions
 come from the cache when it has the quest, a recorded place wins over CMaNGOS's spawns for that giver, and NPC
@@ -82,8 +86,8 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             war effort's own heading (Ahn'Qiraj War) is its, and so is one CMaNGOS files under
             Invasion; Forever's own Invasion quest, which CMaNGOS lacks, is not. -HolidayFile's
             holiday wins over all of these, and the review says when another source disagrees.
-  prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache, or else the quest
-                    before it in its quest line (QuestLineXQuest's order), when the previous step is handed in on the
+  prereq    -LinkFile's prerequisite, else CMaNGOS's previous quest, or the quest whose follow-up this is in the cache, or
+                    else the quest before it in its quest line (QuestLineXQuest's order), when the previous step is handed in on the
                     map this one starts on (the client's QuestPOIBlob points -1 and 32). A line that doesn't
                     chain that way, and a quest line that disagrees with another source, are listed in the review.
 Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's places for the givers
@@ -114,9 +118,9 @@ profession skill, and the quest window's warnings:
   links.jsonl       a line for each quest with links: its breadcrumbs, the quests that lead to it
                     and close once it's done (CMaNGOS's BreadcrumbForQuestId), and the quests it
                     shuts out, the rest of its CMaNGOS ExclusiveGroup when that's positive, as only
-                    one quest of such a group can be done. Recurring quests are left out of both:
-                    CMaNGOS also groups repeatable quests that only shut each other out while one is
-                    in the quest log.
+                    one quest of such a group can be done, less the pairs -LinkFile removes. Recurring
+                    quests are left out of both: CMaNGOS also groups repeatable quests that only shut
+                    each other out while one is in the quest log.
   reputation.jsonl  a line for each reputation reward, from the game's records only. CMaNGOS's
                     amounts are mostly The Burning Crusade's, which raised most quests' rewards (a
                     city's 100 became 250), so a quest the game hasn't answered gets its reputation
@@ -143,6 +147,7 @@ param(
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
     [string]$ZoneFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-zones.csv'),
     [string]$HolidayFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-holiday-decisions.csv'),
+    [string]$LinkFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-link-decisions.csv'),
     [string]$LedgerFile = (Join-Path $PSScriptRoot '..\docs\plans\recorded-quest-givers.csv'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string[]]$Builds = @(),
@@ -471,6 +476,22 @@ foreach ($row in Import-Csv $HolidayFile) {
     if ($handHoliday.ContainsKey([int]$row.Quest)) { throw "$HolidayFile lists quest $($row.Quest) twice." }
     $handHoliday[[int]$row.Quest] = $holidayFlagByName[$row.Holiday]
 }
+$handPrereq = @{}; $handUnlinks = @{}
+foreach ($row in Import-Csv $LinkFile) {
+    if ($row.Quest -notmatch '^\d+$' -or $row.Other -notmatch '^\d+$') { throw "$LinkFile has a row whose quests, '$($row.Quest)' and '$($row.Other)', aren't both numbers." }
+    $quest = [int]$row.Quest; $other = [int]$row.Other
+    if ($quest -eq $other) { throw "$LinkFile links quest $quest to itself." }
+    if ($row.Link -eq 'prereq' -and $row.Decision -eq 'SET') {
+        if ($handPrereq.ContainsKey($quest)) { throw "$LinkFile gives quest $quest two prerequisites." }
+        $handPrereq[$quest] = $other
+    } elseif ($row.Link -eq 'exclusive' -and $row.Decision -eq 'REMOVE') {
+        $pair = "$([Math]::Min($quest, $other))|$([Math]::Max($quest, $other))"
+        if ($handUnlinks.ContainsKey($pair)) { throw "$LinkFile removes the link between quests $quest and $other twice." }
+        $handUnlinks[$pair] = @($quest, $other)
+    } else {
+        throw "$LinkFile gives quest $quest the link '$($row.Link)' with the decision '$($row.Decision)': a prereq must be SET, an exclusive REMOVEd."
+    }
+}
 $creatureEnders = @{}; $enderNpcs = @{}
 foreach ($line in $dump.creature_involvedrelation) {
     $f = $line.Split("`t")
@@ -693,6 +714,14 @@ foreach ($q in $records.Values) {
     if ($m -and $m.Prev -gt 0 -and $records.ContainsKey($m.Prev)) { $q.prereq = $m.Prev }
     elseif ($previousByNext[$q.id].Count -eq 1 -and $records.ContainsKey($previousByNext[$q.id][0])) { $q.prereq = $previousByNext[$q.id][0] }
 }
+foreach ($id in ($handPrereq.Keys | Sort-Object)) {
+    $need = $handPrereq[$id]
+    if (-not $records.ContainsKey($id) -or -not $records.ContainsKey($need)) { Add-Review 'hand-kept link for a quest not imported' $id $need 'prereq'; continue }
+    $q = $records[$id]
+    if ($q.prereq -eq $need) { Add-Review 'hand-kept prerequisite not needed: another source gives it' $id $need $q.name }
+    elseif ($q.prereq) { Add-Review 'hand-kept prerequisite differs from the other sources' $id $need "$($q.name) (they say $($q.prereq))" }
+    $q.prereq = $need
+}
 
 $startMaps = @{}; $endMaps = @{}
 foreach ($blob in $questBlobs) {
@@ -722,12 +751,21 @@ foreach ($id in ($cmQuest.Keys | Sort-Object)) {
     if ($m.Group -gt 0) { $groups[$m.Group] += @($id) }
 }
 $exclusiveWith = @{}
-$exclusiveGroups = 0
 foreach ($members in $groups.Values) {
     if ($members.Count -lt 2) { continue }
-    $exclusiveGroups++
     foreach ($id in $members) { $exclusiveWith[$id] = @($members | Where-Object { $_ -ne $id }) }
 }
+$unlinked = 0
+foreach ($pair in ($handUnlinks.Keys | Sort-Object)) {
+    $a, $b = $handUnlinks[$pair]
+    if (-not $records.ContainsKey($a) -or -not $records.ContainsKey($b)) { Add-Review 'hand-kept link for a quest not imported' $a $b 'exclusive'; continue }
+    if ($exclusiveWith[$a] -notcontains $b) { Add-Review 'hand-kept link removal not needed: the quests don''t shut each other out' $a $b "$($records[$a].name) / $($records[$b].name)"; continue }
+    $exclusiveWith[$a] = @($exclusiveWith[$a] | Where-Object { $_ -ne $b })
+    $exclusiveWith[$b] = @($exclusiveWith[$b] | Where-Object { $_ -ne $a })
+    $unlinked++
+}
+foreach ($id in @($exclusiveWith.Keys)) { if (-not $exclusiveWith[$id].Count) { $exclusiveWith.Remove($id) } }
+$exclusiveGroups = @($groups.Values | Where-Object { @($_ | Where-Object { $exclusiveWith.ContainsKey($_) }).Count }).Count
 $linkLines = @(foreach ($id in (@($breadcrumbs.Keys) + @($exclusiveWith.Keys) | Sort-Object -Unique)) {
     $line = '{"quest":' + $id
     if ($breadcrumbs[$id]) { $line += ',"breadcrumbs":[' + ($breadcrumbs[$id] -join ',') + ']' }
@@ -955,13 +993,13 @@ Write-Host ("Answer memory: {0} quests over {1} runs; {2} that the game didn't a
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
 Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; pinned there: {2}). Start points off their map: {3}. Quest records that name a giver: {4}." -f
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
-Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} groups of which only one can be done." -f
-    @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $exclusiveWith.Count, $exclusiveGroups)
+Write-Host ("Links: {0} breadcrumbs lead to {1} quests; {2} quests are in {3} groups of which only one can be done, after {4} of {5} pairs removed by hand." -f
+    @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $exclusiveWith.Count, $exclusiveGroups, $unlinked, $handUnlinks.Count)
 Write-Host ("Storylines: the client's QuestLine has {0} rows and QuestLineXQuest {1}; {2} of our quests belong to {3} storyline(s)." -f
     @(Get-ClientTable 'QuestLine').Count, @(Get-ClientTable 'QuestLineXQuest').Count,
     @($questList | Where-Object { $_.storyline }).Count, @($questList | Where-Object { $_.storyline } | Select-Object -ExpandProperty storyline -Unique).Count)
-Write-Host ("Prerequisites: {0} quests have one, {1} of them from the quest line order (each step after the one before it, where the places agree)." -f
-    @($questList | Where-Object { $_.prereq }).Count, $fromLine)
+Write-Host ("Prerequisites: {0} quests have one, {1} of them from the quest line order (each step after the one before it, where the places agree) and {2} by hand." -f
+    @($questList | Where-Object { $_.prereq }).Count, $fromLine, @($handPrereq.Keys | Where-Object { $records.ContainsKey($_) -and $records[$_].prereq -eq $handPrereq[$_] }).Count)
 Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f

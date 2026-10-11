@@ -1,0 +1,330 @@
+--[[
+Checks the quests the addon ticks for a character (qcCharacterCompletions): what the login sync and
+a hand-in tick, and the clean-up of the ticks that links since removed gave (qcFormerlyExclusive,
+until 1 April 2027).
+
+Loads the addon's own files with stand-ins for the WoW API and for a server whose completed quests
+each check sets, then fires PLAYER_ENTERING_WORLD and QUEST_TURNED_IN through the addon's own event
+handler. The clean-up is checked on one of the game's groups of quests of which only one can be done,
+listed in place of the real list, as retail's list is empty. On WoW: Forever's TOC it also walks the
+quests whose links were found wrong on 11 October 2026 (docs/plans/forever-quest-link-decisions.csv):
+the level 10 rogue quests, and Guard Thomas's Bounty on Murlocs. Retail has only Snatch and Grab
+and Bounty on Murlocs of them, neither with the quest it needs on Forever.
+
+Usage, from the repository root (Lua 5.1, the version WoW runs):
+  & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua
+  & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua QuestCompletist QuestCompletist_Camelot.toc
+Prints each check and exits with 1 if one fails. Run it for both games' TOCs.
+]]
+
+local ADDON_DIR = arg and arg[1] or "QuestCompletist"
+local TOC_FILE = arg and arg[2] or "QuestCompletist.toc"
+
+--[[ Lua 5.1 has no bit library; WoW's masks here are all non-negative and under 2^32. ]]--
+local function bitop(a, b, both)
+	local result, place = 0, 1
+	while a > 0 or b > 0 do
+		local x, y = a % 2, b % 2
+		if (both and x == 1 and y == 1) or (not both and (x == 1 or y == 1)) then
+			result = result + place
+		end
+		a, b, place = (a - x) / 2, (b - y) / 2, place * 2
+	end
+	return result
+end
+local bit = {
+	band = function(a, b) return bitop(a, b, true) end,
+	bor = function(a, b) return bitop(a, b, false) end,
+}
+
+local dummy
+dummy = setmetatable({}, {
+	__index = function() return dummy end,
+	__call = function() return dummy end,
+	__newindex = function() end,
+	__concat = function() return "" end,
+})
+local function stubTable(t)
+	return setmetatable(t, {__index = function() return dummy end})
+end
+
+local function readFile(path)
+	local handle = assert(io.open(path, "rb"))
+	local text = handle:read("*a")
+	handle:close()
+	return text
+end
+
+--[[ The map tooltip writes down its lines, so a pin's quests can be read back ]]--
+local lines = {}
+local function newTooltip()
+	local tooltip = stubTable({count = 0})
+	tooltip.AddLine = function(self, text) lines[#lines + 1] = tostring(text); self.count = self.count + 1 end
+	tooltip.AddDoubleLine = function(self, left) lines[#lines + 1] = tostring(left); self.count = self.count + 1 end
+	tooltip.ClearLines = function(self) self.count = 0 end
+	tooltip.NumLines = function(self) return self.count end
+	tooltip.IsShown = function() return false end
+	return tooltip
+end
+
+--[[ Load the addon in TOC order ]]--
+local ctx = {server = {}, inLog = {}, race = "Human", class = "ROGUE", level = 16}
+local env
+env = {
+	bit = bit,
+	print = function() end,
+	GetLocale = function() return "enUS" end,
+	GetText = function(key) return key end,
+	wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
+	tinsert = table.insert, tremove = table.remove,
+	strupper = string.upper, strlower = string.lower, strfind = string.find, strsub = string.sub,
+	strlen = string.len, format = string.format, strtrim = function(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end,
+	floor = math.floor, ceil = math.ceil, max = math.max, min = math.min, abs = math.abs,
+	date = os.date, time = os.time,
+	CreateFromMixins = function() return {} end,
+	CreateFrame = function(kind, name)
+		if kind == "GameTooltip" then
+			env[name] = newTooltip()
+			return env[name]
+		end
+		return stubTable({RegisterEvent = function() end, SetScript = function() end})
+	end,
+	WorldMapFrame = stubTable({GetCanvas = function() return {GetSize = function() return 1000, 700 end} end, GetScale = function() return 1 end}),
+	IsShiftKeyDown = function() return false end,
+	IsModifierKeyDown = function() return false end,
+	IsInInstance = function() return false end,
+	C_AddOns = {IsAddOnLoaded = function() return false end},
+	UnitFactionGroup = function() return "Alliance", "Alliance" end,
+	UnitRace = function() return ctx.race, ctx.race end,
+	UnitClass = function() return ctx.class, ctx.class end,
+	UnitLevel = function() return ctx.level end,
+	UnitName = function() return "Tester" end,
+	UnitQuestTrivialLevelRange = function() return 5 end,
+	GetQuestResetTime = function() return 3600 end,
+	GetProfessions = function() return end,
+	GetProfessionInfo = function() return end,
+	ITEM_REQ_ALLIANCE = "Alliance", ITEM_REQ_HORDE = "Horde", ITEM_RACES_ALLOWED = "Races: %s",
+	ITEM_CLASSES_ALLOWED = "Classes: %s", ITEM_MIN_LEVEL = "Requires Level %d", ITEM_REQ_SKILL = "Requires %s",
+	ITEM_REQ_REPUTATION = "Requires %s - %s", ITEM_MIN_SKILL = "Requires %s (%d)", RENOWN_LEVEL_LABEL = "Renown %d",
+	UNKNOWN = "Unknown",
+	C_Covenants = stubTable({GetActiveCovenantID = function() return 0 end}),
+	C_MajorFactions = stubTable({GetCurrentRenownLevel = function() return 1000 end}),
+	C_SkillInfo = stubTable({GetSkillLineInfoByID = function() return {rank = 1000, modifier = 0} end}),
+	C_QuestLog = stubTable({
+		GetLogIndexForQuestID = function(questId) return ctx.inLog[questId] end,
+		IsComplete = function() return false end,
+		IsQuestFlaggedCompleted = function(questId) return ctx.server[questId] == true end,
+		IsQuestFlaggedCompletedOnAccount = function() return false end,
+		GetAllCompletedQuestIDs = function()
+			local ids = {}
+			for questId in pairs(ctx.server) do ids[#ids + 1] = questId end
+			table.sort(ids)
+			return ids
+		end,
+		GetTitleForQuestID = function() return nil end,
+		RequestLoadQuestByID = function() end,
+		IsWorldQuest = function() return false end,
+	}),
+	C_TaskQuest = stubTable({GetQuestInfoByQuestID = function() return nil end}),
+	C_TooltipInfo = stubTable({GetHyperlink = function() return nil end}),
+	C_DateAndTime = stubTable({GetCurrentCalendarTime = function() return {year = 2026, month = 10, monthDay = 11, hour = 14, minute = 30} end}),
+}
+env._G = env
+setmetatable(env, {__index = function(_, key)
+	local value = _G[key]
+	if value ~= nil then return value end
+	return dummy
+end})
+
+local QC = {}
+for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
+	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
+	if file and file:sub(1, 4) ~= "Libs" then
+		local chunk = assert(loadstring(readFile(ADDON_DIR .. "/" .. file), "@" .. ADDON_DIR .. "/" .. file))
+		setfenv(chunk, env)
+		chunk("QuestCompletist", QC)
+	end
+end
+
+env.qcSettings = {}
+env.qcCheckSettings()
+for key in pairs(env.qcSettings) do
+	if key:match("^QC_.*HIDE") then env.qcSettings[key] = 0 end
+end
+env.qcSettings.QC_M_SHOW_ICONS = 1
+env.qcCharacterCompletions = {}
+
+local ui = stubTable({})
+ui.SetScript = function(self, _, handler) self.handler = handler end
+env.qcQuestCompletistUI_OnLoad(ui)
+assert(ui.handler, "the main frame's OnLoad set no event handler")
+
+--[[ Checks ]]--
+local failures = 0
+local function check(label, passed, detail)
+	if not passed then failures = failures + 1 end
+	print(string.format("  [%s] %s%s", passed and "ok" or "FAIL", label, detail and (" (" .. detail .. ")") or ""))
+end
+
+local function fire(event, ...)
+	local ok, err = pcall(ui.handler, ui, event, ...)
+	if not ok then check(event .. " runs", false, tostring(err)) end
+end
+
+-- A character whose server has done the quests given, and whose saved ticks are those given.
+local function character(race, done, ticks)
+	ctx.race, ctx.server, ctx.inLog = race, {}, {}
+	for _, questId in ipairs(done) do ctx.server[questId] = true end
+	env.qcCharacterCompletions = {}
+	for questId, mark in pairs(ticks) do env.qcCharacterCompletions[questId] = mark end
+end
+
+local function login() fire("PLAYER_ENTERING_WORLD", true, false) end
+
+local function turnIn(questId)
+	ctx.inLog[questId] = nil
+	ctx.server[questId] = true
+	fire("QUEST_TURNED_IN", questId)
+end
+
+local QUESTS = env.qcQuestDatabase
+local function oneTime(questId) return QUESTS[questId] and bit.band(QUESTS[questId][4], 2 + 4 + 128) == 0 end
+local function sortedKeys(t)
+	local keys = {}
+	for key in pairs(t) do keys[#keys + 1] = key end
+	table.sort(keys)
+	return keys
+end
+
+print("The list of quests whose links were removed")
+local listed, twice, missing = {}, false, {}
+check("qcFormerlyExclusive is a list", type(env.qcFormerlyExclusive) == "table")
+for _, questId in ipairs(env.qcFormerlyExclusive) do
+	if listed[questId] then twice = true end
+	listed[questId] = true
+	if not QUESTS[questId] then missing[#missing + 1] = questId end
+end
+check("it names each quest once", not twice)
+check("every quest it names is in the data", #missing == 0, table.concat(missing, ", "))
+
+-- X and Y shut each other out; W is a quest whose completion ticks nothing else.
+local X, Y, W
+for _, questId in ipairs(sortedKeys(env.qcMutuallyExclusive)) do
+	local other = env.qcMutuallyExclusive[questId][1]
+	if oneTime(questId) and oneTime(other) then X, Y = questId, other; break end
+end
+for _, questId in ipairs(sortedKeys(QUESTS)) do
+	if oneTime(questId) and questId ~= X and questId ~= Y and not env.qcMutuallyExclusive[questId] and not env.qcBreadcrumbQuests[questId] then W = questId; break end
+end
+assert(X and Y and W, "no group of two one-time quests in the data")
+
+print(string.format("The clean-up, with %d listed (%d shuts it out; %d ticks nothing else)", X, Y, W))
+local realList = env.qcFormerlyExclusive
+env.qcFormerlyExclusive = {X}
+character("Human", {W}, {[X] = 1})
+login()
+check("a tick the server doesn't confirm goes", env.qcCharacterCompletions[X] == nil, tostring(env.qcCharacterCompletions[X]))
+character("Human", {W, X}, {[X] = 1})
+login()
+check("a tick the server confirms stays", env.qcCharacterCompletions[X] == 1)
+character("Human", {Y}, {[X] = 1})
+login()
+check("a tick a remaining link gives comes back", env.qcCharacterCompletions[X] == 1, tostring(env.qcCharacterCompletions[X]))
+for _, mark in ipairs({0, 2}) do
+	character("Human", {W}, {[X] = mark})
+	login()
+	check("a hand mark of " .. mark .. " stays", env.qcCharacterCompletions[X] == mark, tostring(env.qcCharacterCompletions[X]))
+end
+character("Human", {W}, {[Y] = 1})
+login()
+check("a quest not listed keeps a tick the server doesn't confirm", env.qcCharacterCompletions[Y] == 1)
+character("Human", {}, {[X] = 1})
+login()
+check("with no completed quests from the server, nothing goes", env.qcCharacterCompletions[X] == 1)
+character("Human", {}, {})
+turnIn(X)
+check("handing in a quest still ticks the rest of its group", env.qcCharacterCompletions[X] == 1 and env.qcCharacterCompletions[Y] == 1)
+env.qcFormerlyExclusive = realList
+
+if not QUESTS[2205] then
+	print("Forever's corrected links: not in this game's data")
+else
+	local SEEK, SNATCH, ROAD, APPLE, DESTINY = 2205, 2206, 2218, 2241, 2242
+
+	print("The level 10 rogue quests' links")
+	check("the three cities' lead-ins no longer shut each other out",
+		not env.qcMutuallyExclusive[SEEK] and not env.qcMutuallyExclusive[ROAD] and not env.qcMutuallyExclusive[APPLE])
+	check("and are all listed for the clean-up", listed[SEEK] and listed[ROAD] and listed[APPLE])
+	check("Snatch and Grab needs Seek out SI: 7", env.qcQuestPrereq[SNATCH] == SEEK)
+	check("Destiny Calls needs The Apple Falls", env.qcQuestPrereq[DESTINY] == APPLE)
+
+	print("Rothro, a Night Elf rogue who did The Apple Falls, Destiny Calls, then Seek out SI: 7")
+	character("NightElf", {SEEK, APPLE, DESTINY}, {[SEEK] = 1, [ROAD] = 1, [APPLE] = 1, [DESTINY] = 1})
+	login()
+	check("the addon's tick on Road to Salvation goes", env.qcCharacterCompletions[ROAD] == nil, tostring(env.qcCharacterCompletions[ROAD]))
+	check("so it shows as still to do", QC.qcQuestStatus.Of(ROAD, QUESTS[ROAD]) == QC.qcQuestStatus.TODO)
+	check("the three he did stay ticked", env.qcCharacterCompletions[SEEK] == 1 and env.qcCharacterCompletions[APPLE] == 1 and env.qcCharacterCompletions[DESTINY] == 1)
+	character("NightElf", {APPLE, DESTINY}, {[SEEK] = 1, [ROAD] = 1, [APPLE] = 1, [DESTINY] = 1})
+	login()
+	check("before Seek out SI: 7, its tick went too", env.qcCharacterCompletions[SEEK] == nil and env.qcCharacterCompletions[ROAD] == nil)
+
+	local shaw
+	for _, mapId in ipairs(sortedKeys(env.qcPinDB)) do
+		for _, pin in ipairs(env.qcPinDB[mapId]) do
+			for _, questId in ipairs(pin[6]) do
+				if pin[2] == 332 and questId == SNATCH then shaw = pin end
+			end
+		end
+	end
+	local function snatchLine()
+		lines = {}
+		setmetatable({PinData = shaw, GetCenter = function() return 100, 100 end, GetMap = function() end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		for _, text in ipairs(lines) do
+			if text:find("Snatch and Grab", 1, true) then return text end
+		end
+	end
+
+	print("A new Human rogue at Master Mathias Shaw's pin")
+	check("Shaw has a pin with Snatch and Grab", shaw ~= nil)
+	character("Human", {}, {})
+	login()
+	local before = shaw and snatchLine()
+	check("Snatch and Grab is grey, needing Seek out SI: 7", before ~= nil and before:find("|cff9d9d9dSnatch and Grab|r |cff808080(Requires Seek out SI: 7)|r", 1, true) ~= nil, before)
+	check("Destiny Calls needs The Apple Falls", QC.qcPinQuestNeeds(DESTINY, QC.qcQuestStatus.Of(DESTINY, QUESTS[DESTINY])) == "Requires The Apple Falls")
+	turnIn(SEEK)
+	check("handing in Seek out SI: 7 ticks it", env.qcCharacterCompletions[SEEK] == 1)
+	check("and neither Road to Salvation nor The Apple Falls", env.qcCharacterCompletions[ROAD] == nil and env.qcCharacterCompletions[APPLE] == nil)
+	local after = shaw and snatchLine()
+	check("then Snatch and Grab can be taken", after ~= nil and not after:find("Requires", 1, true), after)
+
+	local REPORT, MURLOCS = 39, 46
+	local thomas
+	for _, mapId in ipairs(sortedKeys(env.qcPinDB)) do
+		for _, pin in ipairs(env.qcPinDB[mapId]) do
+			for _, questId in ipairs(pin[6]) do
+				if pin[2] == 261 and questId == MURLOCS then thomas = pin end
+			end
+		end
+	end
+	local function pinLine(pin, name)
+		lines = {}
+		setmetatable({PinData = pin, GetCenter = function() return 100, 100 end, GetMap = function() end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		for _, text in ipairs(lines) do
+			if text:find(name, 1, true) then return text end
+		end
+	end
+
+	print("A level 16 Human at Guard Thomas's pin")
+	check("Bounty on Murlocs needs Deliver Thomas' Report", env.qcQuestPrereq[MURLOCS] == REPORT)
+	check("Guard Thomas has a pin with Bounty on Murlocs", thomas ~= nil)
+	character("Human", {}, {})
+	login()
+	local murlocs = thomas and pinLine(thomas, "Bounty on Murlocs")
+	check("Bounty on Murlocs is grey, needing Deliver Thomas' Report", murlocs ~= nil and murlocs:find("|cff9d9d9dBounty on Murlocs|r |cff808080(Requires Deliver Thomas' Report)|r", 1, true) ~= nil, murlocs)
+	turnIn(REPORT)
+	murlocs = thomas and pinLine(thomas, "Bounty on Murlocs")
+	check("then Bounty on Murlocs can be taken", murlocs ~= nil and not murlocs:find("Requires", 1, true), murlocs)
+end
+
+print(failures == 0 and "All checks passed." or (failures .. " checks failed."))
+os.exit(failures == 0 and 0 or 1)

@@ -165,3 +165,12 @@ change in its own pull request before the release.
     not logged in since 110.7 loses the quests marked on it by hand; the server resyncs the rest.
 
   Why it waits: [plans/load-and-memory.md](plans/load-and-memory.md), decision 2.
+- **From 1 April 2027: drop the clean-up of ticks that removed "only one of these" links gave.**
+  - Delete `qcDropFormerlyExclusiveTicks` and its call in `qcQuestQueryCompleted` (`qcCore.lua`).
+  - Delete `qcFormerlyExclusive` from retail's `qcQuest.lua`, and the lines of
+    `Build-ForeverMenu.ps1` that write it into Forever's (then rerun it).
+  - If `docs\plans\forever-quest-link-decisions.csv` gained a `REMOVE` row after Forever's launch on
+    4 November 2026, wait until five months after that row instead, so players have logged in.
+
+  Why it waits: a character keeps the wrong ticks until it logs in with the clean-up
+  ([plans/forever.md](plans/forever.md), "Lead-ins the server requires").

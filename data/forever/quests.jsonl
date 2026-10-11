@@ -36,7 +36,7 @@
 {"id":39,"name":"Deliver Thomas' Report","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":71,"minLevel":7}
 {"id":40,"name":"A Fishy Peril","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"minLevel":7}
 {"id":45,"name":"Discover Rolf's Fate","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":37,"minLevel":7}
-{"id":46,"name":"Bounty on Murlocs","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"minLevel":7}
+{"id":46,"name":"Bounty on Murlocs","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":39,"minLevel":7}
 {"id":47,"name":"Gold Dust Exchange","level":7,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"minLevel":4}
 {"id":48,"name":"Sweet Amber","level":44,"zone":"Westfall","category":40,"type":1,"faction":1,"race":0,"class":8191,"minLevel":40}
 {"id":49,"name":"Sweet Amber","level":44,"zone":"Westfall","category":40,"type":1,"faction":1,"race":0,"class":8191,"prereq":48,"minLevel":40}
@@ -1525,13 +1525,13 @@
 {"id":2203,"name":"Badlands Reagent Run II","level":44,"zone":"Badlands","category":3,"type":32,"faction":2,"race":0,"class":8191,"profession":1,"prereq":2202,"minLevel":40}
 {"id":2204,"name":"Restoring the Necklace","level":44,"zone":"Uldaman","category":1337,"type":1,"faction":1,"race":0,"class":8191,"prereq":2201,"minLevel":37}
 {"id":2205,"name":"Seek out SI: 7","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8}
-{"id":2206,"name":"Snatch and Grab","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8}
+{"id":2206,"name":"Snatch and Grab","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8,"prereq":2205}
 {"id":2218,"name":"Road to Salvation","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8}
 {"id":2238,"name":"Simple Subterfugin'","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":0,"class":8,"prereq":2218}
 {"id":2239,"name":"Onin's Report","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8,"prereq":2238}
 {"id":2240,"name":"The Hidden Chamber","level":40,"zone":"Uldaman","category":1337,"type":1,"faction":1,"race":0,"class":8191,"prereq":2398,"minLevel":35}
 {"id":2241,"name":"The Apple Falls","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8}
-{"id":2242,"name":"Destiny Calls","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8}
+{"id":2242,"name":"Destiny Calls","level":10,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":67108941,"class":8,"prereq":2241}
 {"id":2258,"name":"Badlands Reagent Run","level":39,"zone":"Badlands","category":3,"type":1,"faction":2,"race":0,"class":8191,"minLevel":36}
 {"id":2259,"name":"Erion Shadewhisper","level":16,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":0,"class":8}
 {"id":2260,"name":"Erion's Behest","level":16,"zone":"Rogue","category":-162,"type":1,"faction":1,"race":0,"class":8,"prereq":2259}
