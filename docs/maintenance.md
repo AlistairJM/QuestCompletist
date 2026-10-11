@@ -107,11 +107,11 @@ the quests whose minimum is not their level, and it keeps a 0 (no minimum); a mi
 a level of 0 or 1 is no difference and gets no entry. Retail's table is filled by
 `Apply-QuestMinLevels.ps1` ([step 2g](#2g-minimum-levels)) from Blizzard's data, the API's
 `min_character_level` where the API has a record and else the client's level range for the quest's
-content tuning, and holds 1,628 of the 35,023 quests (11 October 2026). Retail's `level` is not
+content tuning, and holds 1,623 of the 35,023 quests (11 October 2026). Retail's `level` is not
 refreshed: of the 30,066 quests whose API record gives a minimum it equals the API's for 28,477, is a 0
 against a 1 for 191 (the same thing), and differed for 1,398, which now have the API's number in the
 table; 463 quests no source speaks for, and one whose tuning has a minimum beyond the level cap, keep
-what they had. Forever's `level` is the quest's own level, so its table holds 4,194 of its 5,097
+what they had, and the 17 on tuning 0 have no entry, so their own level is their gate. Forever's `level` is the quest's own level, so its table holds 4,194 of its 5,097
 quests (10 October 2026). The importer fills it from the game's quest cache, and from CMaNGOS where
 the game hasn't answered. The code doesn't ask which game it is on, only whether the table has an
 entry.
@@ -585,9 +585,13 @@ Where a minimum comes from (`QuestLevels.ps1`), the first that has one:
   holds and in the task table for task quests (the cache's wins; they agree), and the `ContentTuning`
   table gives the range. A tuning's minimum is `MinLevelSquish` plus a base that
   `MinLevelScalingOffset` picks: 0 adds nothing, 1 adds 1, 2 adds the level cap (90) and 3 the cap before
-  it (80). The bases are what the API's own minimums say, not a documented rule. Tuning 0 is no range and
-  no minimum. A minimum beyond the cap (tuning 949's 255, which marks a quest nobody can take) is no level
-  and gives none.
+  it (80). The bases are what the API's own minimums say, not a documented rule. A minimum beyond the cap
+  (tuning 949's 255, which marks a quest nobody can take) is no level and gives none.
+- **Tuning 0**, no range: nothing says what the minimum is, so the quest gets no `minLevel` (one it holds
+  is taken away) and its own level stays its gate, as before step 2g. That is the user's decision of 11
+  October 2026: no quest the API gives a minimum for is on tuning 0 in the cache or the task table, and on
+  tuning 0 TrinityCore falls back to the quest's own `MinLevel`, which our files don't hold, so nothing
+  can test that tuning 0 means no minimum. An API minimum would still decide for a quest on tuning 0.
 - **Nothing**, for a quest in neither the cache nor the task table, or on a tuning the formula can't
   vouch for: it keeps what it had.
 
@@ -607,27 +611,31 @@ none in the table. The API shows the minimum without `AllowedMinOffset` (-1, -2 
 tested quests, nearly all of the newer expansions): none of them agrees with the minimum plus the offset. Whether
 the game lets a character take such a quest that many levels early is not known.
 
-It writes `minLevel` only where the minimum differs from `level`, treating 0 and 1 as the same, and keeps
-a 0 where the sources say no minimum and the level is above 0. A second run changes nothing, byte for
+It writes `minLevel` only where the minimum differs from `level`, treating 0 and 1 as the same, and
+writes none for a quest on tuning 0 with no API minimum. A second run changes nothing, byte for
 byte; after step 6 has added quests (or the task quests of open-items.md decision 1 are merged) a rerun
 covers just those and any quest whose source has moved. `-WhatIf` reports the sources, the changes by
 direction (the gate lowered or raised) and examples, and writes no data (a missing ContentTuning table is still downloaded into `tools\` first); `-Check` is the same and exits 1
-when the data isn't what the sources say, for a Test- or Audit- step to call. First run, 11 October
-2026: 1,628 quests changed, all of them a `minLevel` added (no other field of any quest, and no pin):
-1,398 from the API (1,180 lowered, 218 raised), 225 from the client's ranges (187 lowered, 38 raised)
-and 5 from tuning 0 (lowered to 0). The biggest blocks are Zaralek Cavern (265), Mechagon (226) and the
-Emerald Dream (201), all lowered. The tuning 0 five are 9422, 50341, 54255, 54256 and 89346.
+when the data isn't what the sources say, for a Test- or Audit- step to call. The run of 11 October
+2026: 1,623 quests changed, all of them a `minLevel` added (no other field of any quest, and no pin):
+1,398 from the API (1,180 lowered, 218 raised) and 225 from the client's ranges (187 lowered, 38
+raised), 1,367 lowered and 256 raised in all. The biggest blocks are Zaralek Cavern (265), Mechagon (226)
+and the Emerald Dream (201), all lowered. The 17 quests on tuning 0 got none: an earlier rule gave the
+five of them whose level is above 0 (9422, 50341, 54255, 54256 and 89346) a gate of 0, and the user chose
+to leave them as they were; the other 12 are level 0.
 
 `Compare-QuestLevels.ps1` is the check, which writes nothing: the formula's test, then every quest
 against its sources, in two classes kept in `docs\plans\quest-levels-baseline.csv` (`-UpdateBaseline`
 rewrites it once the differences are read). Class D is a quest whose `minLevel` is not what its sources say:
 a quest that matched in the baseline and doesn't now (a hotfix to a tuning, a quest added or its level
 changed by another step) fails the run, and `Apply-QuestMinLevels.ps1 -WhatIf` says what to set. Class N is
-a quest no source speaks for (464 on 11 October 2026: 463 that neither the quest cache nor the task table
-has, and 38708); a new one is listed, since a source was lost, and doesn't fail. Baseline: D 0, N 464.
+a quest no source speaks for (481 on 11 October 2026: 463 that neither the quest cache nor the task table
+has, 38708, and the 17 on tuning 0); a new one is listed, since a source was lost, and doesn't fail. A
+quest on tuning 0 that holds a `minLevel` is class D, so one of them gaining a gate again fails the run.
+Baseline: D 0, N 481.
 Because the formula is tested against the API on every run, a new level cap, or a change in what
 `MinLevelScalingOffset` means, fails here. `Test-QuestLevels.ps1` tests all three scripts on made-up quests
-and, with the real files, on a copy of the data (160 checks).
+and, with the real files, on a copy of the data (177 checks).
 
 ### 3. Quest types
 
@@ -1084,9 +1092,9 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   quests that need a level the character has, quests that need one it lacks, and pins greyed or not
   wrongly. It checks the opposite mistake too: the low-level filter, and the bracket and sort of the
   list (its first 16 rows in each category), must still follow the quest's own `level`, where 0 or
-  below is no level (no bracket, never low). Since step 2g retail's two levels differ for 1,628 quests,
+  below is no level (no bracket, never low). Since step 2g retail's two levels differ for 1,623 quests,
   so both games' runs can catch a mix-up there (with the requirements filter ignoring `qcQuestMinLevel`,
-  retail's run finds 2,840 problems; with the grey pins and the tooltip line ignoring it, 6,763). Made-up quests with those levels check the same, and the
+  retail's run finds 2,828 problems; with the grey pins and the tooltip line ignoring it, 6,748). Made-up quests with those levels check the same, and the
   minimum level at 0, apart from the data (33 checks). The summary has one line per level and one for
   the made-up quests, and each must read 0. A wrong reading prints `FAILED` and ends the run with
   exit status 1.

@@ -93,7 +93,8 @@ table's for 4,125 of 4,125.
   none. Together 34,371 quests have a Blizzard level range.
 - 37 content tunings in use have no range (154 quests, none with an API record): they need the
   `ContentTuning` table. It would also say whether the API shows `MinLevel` or `MinLevelWithDelta`,
-  and settle the rule for a quest of the other faction. Tuning 0 means no minimum. (With the table: every
+  and settle the rule for a quest of the other faction. Tuning 0 is no range (and, by the user's decision
+  of 11 October 2026, no source of a minimum: the last bullet). (With the table: every
   tuning in use has a row, so those quests have a range, and the API shows the minimum without
   `AllowedMinOffset`, that is `MinLevel`. The other-faction rule, a per-player maximum level for a quest
   tuned for the other side, is not in any data file and is not applied.)
@@ -118,7 +119,7 @@ table's for 4,125 of 4,125.
   early, is not used: 21,972 quests have a maximum above our level. That is decision 9.)
   - **Built:** `QuestLevels.ps1` (the sources and the formula), `Apply-QuestMinLevels.ps1` (sets
     `minLevel`; `-WhatIf` and `-Check`), `Compare-QuestLevels.ps1` (the sweep's check, with
-    `quest-levels-baseline.csv` in this folder) and `Test-QuestLevels.ps1` (160 checks), as step 2g of
+    `quest-levels-baseline.csv` in this folder) and `Test-QuestLevels.ps1` (177 checks), as step 2g of
     [maintenance.md](../maintenance.md); `Compare-ClientTables.ps1` caches the table and fails on a
     missing column. No addon code changed: the readers already took `qcQuestMinLevel[id] or level`.
   - **The formula:** a quest's minimum is its tuning's `MinLevelSquish` plus a base that
@@ -137,20 +138,28 @@ table's for 4,125 of 4,125.
     6424: 251; 962: 91; 1958: 93), which is a marker and no level; only 949 is used by a quest of ours,
     38708 "Purge the River" (level 45), which keeps what it had.
   - **Sources, counted on 11 October 2026:** the API's minimum for 30,066 quests; of the 4,957 without,
-    the range for 4,476 (4,305 were counted before the table: it covers 171 more), tuning 0, which means
-    no minimum, for 17 (among them the 2 API records that give none), and none for 464 (463 in neither
-    the cache nor the task table, and 38708). API and range disagree for none of the 29,289 quests that
-    have both.
-  - **Changes: 1,628 quests get a `minLevel`** (1,828 were expected from the counts of 9 October, which
+    the range for 4,476 (4,305 were counted before the table: it covers 171 more), tuning 0, no range,
+    for 17 (among them the 2 API records that give none), and none for 464 (463 in neither the cache
+    nor the task table, and 38708). API and range disagree for none of the 29,289 quests that have both.
+  - **Changes: 1,623 quests get a `minLevel`** (1,828 were expected from the counts of 9 October, which
     included the 191 quests that are 0 against 1, the same thing, and the 22 set to their API minimum on
-    10 October; no other field of any quest and no pin changed): 1,372 have the gate lowered and 256
+    10 October; no other field of any quest and no pin changed): 1,367 have the gate lowered and 256
     raised. From the API 1,398 (the 1,180 over-gated, 218
-    under-gated); from the ranges 225 (187 lowered, 38 raised); from tuning 0 five, lowered to 0 (9422,
-    50341, 54255, 54256, 89346: level 5, 35, 50, 50 and 11). Large blocks lowered: Zaralek Cavern 265,
+    under-gated); from the ranges 225 (187 lowered, 38 raised). Large blocks lowered: Zaralek Cavern 265,
     Mechagon 226, the Emerald Dream 201, as the plan for row 8 expected.
-  - **Cost:** `qcQuestData.lua` goes from 2,373,371 to 2,394,388 bytes (+21,017, +0.9%); loaded, +64.0 KB
+  - **Tuning 0, the user's decision of 11 October 2026 ("leave them as they were"):** a quest on tuning
+    0 with no API minimum gets no `minLevel`, so its gate stays its own level, as before. A first rule
+    read tuning 0 as no minimum and gave the five such quests whose level is above 0 a gate of 0 (9422,
+    50341, 54255, 54256, 89346: level 5, 35, 50, 50 and 11); the other 12 are level 0 and got nothing
+    either way. Nothing in the data can test that rule: no quest the API gives a minimum for is on
+    tuning 0 in the cache or the task table, and on tuning 0 TrinityCore falls back to the quest's own
+    `MinLevel`, which our files do not hold. An API minimum would still decide for a quest on tuning 0.
+    `Compare-QuestLevels.ps1` counts the 17 among the quests no source speaks for (class N) and fails if
+    one of them holds a `minLevel` again.
+  - **Cost:** `qcQuestData.lua` goes from 2,373,371 to 2,394,329 bytes (+20,958, +0.9%); loaded, +64.0 KB
     (9,175.8 to 9,239.8 KB, +0.7%, a hash part of 2,048 slots), and about 1.5 to 2 ms more to load
-    (66 to 68 ms, Lua 5.1, 32-bit); [load-and-memory.md](load-and-memory.md) has the method.
+    (66 to 68 ms, Lua 5.1, 32-bit; timed with the first rule's 1,628 entries, five lines more);
+    [load-and-memory.md](load-and-memory.md) has the method.
 
 ### Reputation
 
@@ -389,7 +398,9 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   index of -1 means no standing is kept, which puts quest 40839 in F, as the earlier count had it.
 - 2026-10-11: the user decided option C of rows 14 and 8 (see "Level"): `ContentTuning-12.1.0.69933.csv`
   was downloaded once, the formula was found against the API's own minimums (29,289 of 29,289 agree), and
-  retail's `qcQuestMinLevel` was filled for 1,628 quests (`Apply-QuestMinLevels.ps1`); the second of the
+  retail's `qcQuestMinLevel` was filled for 1,623 quests (`Apply-QuestMinLevels.ps1`); the second of the
   checks to build, Levels, is `Compare-QuestLevels.ps1` with its baseline. A first run took the tuning
   949's minimum of 255 for a level (quest 38708 got a gate of 255); a minimum beyond the level cap is now
-  no level, and the data was rebuilt from master.
+  no level, and the data was rebuilt from master. The same day the user chose to leave the quests on
+  tuning 0 as they were: the five that a first rule gave a gate of 0 lost it (1,628 entries became 1,623),
+  and the 17 on tuning 0 are in the baseline's class N.
