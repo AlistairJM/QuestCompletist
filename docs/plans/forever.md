@@ -222,9 +222,10 @@ seconds):
 the client's `QuestV2`, the quest cache file, CMaNGOS's dump and the probe's saved variables. It
 downloads the dump and any client tables it lacks. Since 6 October a fifth source,
 `forever-quest-givers.csv` and `forever-quest-zones.csv`, adds givers and zones looked up by hand
-(see "Race headings" and "Treasure Map" below).
+(see "Race headings" and "Treasure Map" below). Since 11 October the recorder's givers, places and offers
+come from the ledger, not from the probe's file (see "The importer reads the ledger").
 - **The game wins wherever it speaks.** Title, level, minimum level, zone, recurrence and race
-  restrictions come from the cache, and recorded spots and NPC names from the probe.
+  restrictions come from the cache, recorded places from the ledger, and NPC names from the probe.
 - **The files use retail's fields and conventions** (see the tool's header), so the existing build
   turns them into Lua. `level` is the quest's own level, which the list shows; since 9 October 2026
   `minLevel`, the level a character needs to take it, is kept beside it where it differs (see the
@@ -354,7 +355,8 @@ the importer didn't read all the ones that could place a quest:
   "The Defias Brotherhood" (quest 65) it's exactly where CMaNGOS has the hand-in NPC in Lakeshire.
   It doesn't say where a quest starts, so it isn't used.
 - **The recorder's notes:** a sweep now copies the probe's saved variables every time, not only
-  after a probe run, as the recorder adds to them whenever you play.
+  after a probe run, as the recorder adds to them whenever you play. Since 11 October they reach the
+  pins through the ledger (step 6d, then the importer).
 
 The importer's summary prints the start point and giver counts, so a sweep shows when either grows.
 
@@ -840,6 +842,153 @@ copy taken at 09:57 that morning. Importing them, on the master that has the que
   other direction.
 - The reachability check, the table audit and the pin names find nothing new.
 
+### The addon's own recorder file, first ingest (11 October 2026)
+
+The user's beta file of the addon's recorder (`qcQuestRecorder`, builds 70291 and 70338, 87 records) went
+through `Import-RecordedGivers.ps1` for the first time; the numbers are in
+[quest-giver-recorder.md](quest-giver-recorder.md), "The first real run".
+
+- **The ledger** goes from 121 to 231 Forever rows: 53 givers, 59 spots, 68 offers and 51 turn-ins.
+- **The data is as it was:** 5,097 quests and 1,698 pins; 3,672 quests have a pin and 1,425 have none. The tool
+  writes only retail's pins, and `Import-ForeverData.ps1` then read the probe's file, not the ledger or the
+  addon's, so the addon's notes reached no Forever pin (it reads the ledger since: below).
+- **What they would change:** the tool's rules pointed at Forever's pins by hand, in memory, fill no pin, find
+  nothing for review and add one pin: quest 990 "Trek to Ashenvale", offered by Sentinel Selarin (3694) at
+  Darkshore 39.3, 43.5. She runs in after a quest at Terenthis is handed in; CMaNGOS names her as the quest's
+  starter but has no spawn for her (she is script-spawned), so only a recorded spot can place her. Of the 68 quests the notes show offered, 65 already have a pin, none further than 3
+  points from where its giver stood, and the name of every recorded giver is its pin's. The other two, 6661 and
+  6662 (Monty and Nipsy in the Deeprun Tram), cannot get a pin from the notes: the game named no map there.
+- **The probe's own file says the same and more:** its saved file in the game (11 October) is newer than the
+  copy in `tools\forever_probe_70338` and holds 53 givers against 33, including everything the addon's file
+  holds, so step 10's copy of it should bring quest 990 in by the probe's route (not run); it would also move 25 existing pins by 0.02 to 0.36 map points, because the importer lets a recorded spot win over CMaNGOS's spawn (a reviewer's scratch run, not in this PR).
+- **So that the beta's new givers keep reaching the pins,** the importer now reads the ledger, and both
+  recorders are kept (below).
+
+### The importer reads the ledger (11 October 2026)
+
+Until now `Import-ForeverData.ps1` took the recorder's givers, spots and offers straight out of the probe's
+own saved file, and the addon's notes, which step 6d keeps in the ledger, reached nothing. The importer now takes
+them from the ledger's Forever rows ([quest-giver-recorder.md](quest-giver-recorder.md), "Forever's importer") and
+reads the probe's file for the game's answers and NPC names only. The user, 11 October: "yes, build it as a PR".
+Both recorders are kept: the probe's is not retired (the user, the same day: "yes, keep both, go ahead"). Both
+feed the ledger through step 6d and the importer reads the ledger, so what they saw is combined. Nothing was
+regenerated: no `data/` file changes, and nothing displays differently until step 10 is next run.
+
+- **What it takes:** a giver's name (the one its trusted rows agree on), its places (the merge tool's own
+  grouping: rows on one map within 1.5 map points are one place, the most visited first, only trusted ones with
+  a position) and the quests it offered (trusted offers). What one player alone saw decides nothing. A place
+  still wins over CMaNGOS's spawns for that giver.
+- **The radius** was a 3-point box on the probe's spots and is now the merge tool's 1.5-point distance. No
+  giver in the ledger has two places 1.5 to 3 points apart (the widest two rows of one giver are 0.14 apart),
+  so the change alone moves nothing in today's data. In the test world a giver with places 1.4 apart is one pin
+  and one with places 1.6 apart is two; master gives one pin for both. At the edge, places exactly 1.5 apart are
+  one (the merge tool's `Test-NearPlace`: a distance of at most 1.5) and 1.51 apart two.
+- **The stop:** the probe's file is read as step 6d reads it, and the import stops, writing nothing (`-WhatIf`
+  too), unless the ledger holds every giver, spot and offer in it under the file's own source tag with at least
+  the file's number. With the live file of setup 3 below and the ledger of setup 2 it stops after about 2
+  seconds of wall time, PowerShell's start-up included (1.5 seconds with the smaller file in
+  `tools\forever_probe_70338` and today's ledger short of one of its rows). Only the probe's file is checked:
+  the addon's file and players' files are not, and for them the import relies on running step 6d first
+  (maintenance.md, step 10, item 1, which also gives the order on a new build).
+- **New in the review:** trusted names that disagree, and offers of quests the data lacked when step 6d ran
+  ("recorded offer not in the ledger yet"). The summary gains a line for what the ledger gave.
+
+**What the next import would do**, measured on scratch copies (the client tables and quest cache of build
+1.60.1.70338, the newest installed and held, classic-db z2815 and the committed `data/forever`; each import
+followed by step 9, `Remove-DuplicatePinQuests.ps1 -Game forever`, on a scratch copy of the Forever addon folder;
+nothing in the checkout or in `tools\` was written). "Old" is master's importer (448bd64), "new" this one. The four
+setups differ in what the ledger and the probe's file hold:
+
+| Setup | Ledger | The probe's file |
+|---|---|---|
+| 1 | today's: 121 rows, from the four probe files | the copy in `tools\forever_probe_70338`, 33 givers |
+| 2 | the ledger of #298 (231 rows: the addon's 42 givers on top) | the same file |
+| 3 | #2 and the probe's saved file of 11 October, 14:16, read in by step 6d (290 rows) | that file: 71 givers, 79 spots, 88 offers, 51 turn-ins |
+| 4 | #2 and step 6d on a copy of #3's file cut to the 53 givers #2 holds | that copy: 53 givers, 68 offers, 50 turn-ins, the counts of the earlier scratch run |
+
+| Setup | Importer | Pins | Moved, largest | Added | Removed | Quests gaining a pin |
+|---|---|---|---|---|---|---|
+| committed | | 1,698 | | | | (3,672 quests have a pin) |
+| 1 | old | 1,698 | 0 | 0 | 0 | 0 |
+| 1 | new | 1,698 | 1, 0.10 | 0 | 0 | 0 |
+| 2 | old (reads the file in `tools`) | 1,698 | 0 | 0 | 0 | 0 |
+| 2 | new | 1,699 | 21, 0.36 | 1 | 0 | 990 |
+| 3 | old | 1,704 | 38, 1.10 | 6 | 0 | 990, 91723, 91725, 91732, 91733, 95999 |
+| 3 | new | 1,704 | 36, 1.10 | 6 | 0 | the same six |
+| 4 | old | 1,699 | 25, 0.36 | 1 | 0 | 990 |
+| 4 | new | 1,699 | 23, 0.36 | 1 | 0 | 990 |
+
+Setup 4 with the old importer is the earlier scratch run (25 pins moved by 0.02 to 0.36, Beached Sea Creature
+0.36 and Beached Sea Turtle 0.23 the largest, 1,698 to 1,699 pins, quest 990 added), reproduced to the pin. The
+live file has grown since that run, which is why setup 3 has more. Moves are compared by map and giver; none is
+further than 3 points, so no pin is counted as removed and added.
+
+- **The 36 pins that move in setup 3 (new):** 32 are givers the committed ledger never had (19 of 23 in setup 4,
+  19 of 21 in setup 2): the recorded place replaces CMaNGOS's spawn, as the rule has always said. The
+  distances run from 0.02 to 0.36, median 0.045, and 27 are under 0.15, because the recorder keeps where the
+  player stood beside the NPC. One is over a point: Darcy (map 1433, 21.53,44.3 to 21.6,45.4, 1.10), the
+  review's only "recorded spot far from CMaNGOS" row. She walks: CMaNGOS gives her a 16-point path in Lakeshire
+  (`MovementType` 2, about 1.4 points end to end), her spawn is one end of it, and the recorded place is 0.11
+  from the point where she waits longest, 32 seconds ([open-items.md](open-items.md), decision 38, asks whether
+  such a place should still win). The largest ten, in map points: Darcy 1.10, Beached Sea
+  Creature 0.36 and 0.27, Guard Parker 0.26, Beached Sea Turtle 0.23 and 0.12, then Terenthis, Gubber Blump,
+  Wizbang Cranktoggle and Sentinel Glynda Nal'Shea at 0.10 each. The other 4 (2 in setup 2) are givers the
+  ledger had, whose pin sat on one row of a cluster of rows 0.1 apart and now moves to the row with more visits
+  (Terenthis, Gubber Blump, Wizbang Cranktoggle, Sentinel Glynda Nal'Shea; in setup 2 Glynda and Thundris
+  Windweaver, where the addon's file brings the second row). In setup 3 the old importer moves all four as
+  well, so the cause is the newer file's second row, not this change; the new importer moves no pin the old
+  one leaves.
+- **The six pins added in setup 3 (old and new):** quest 990 (Sentinel Selarin: CMaNGOS names her as the starter
+  and has no spawn for her), 91723, 91725, 91732 and 91733 (Hamish Bergwort, Blixie Fitzwink, Hagar Lowe and
+  Ormin Pelford in map 1429, quests only the game knew) and 95999 (Wanted: Incinerator Gar'im). In setup 2 only
+  990 is added, and it is the ledger that brings it: the old importer, given the same file, adds nothing.
+- **Nothing else changes.** `quests.jsonl`, `links.jsonl`, `reputation.jsonl`, `skills.jsonl` and `answers.jsonl`
+  are byte for byte the old importer's in every setup. The review lists are the same rows in setups 1, 3 and 4;
+  in setup 2 the row "no pin: giver not on a Forever map" for quest 990 is gone, because it has a pin.
+- **Which cause:** the radius alone (the old code with the 1.5-point distance) changes no pin in setups 1, 3 or
+  4. The ledger alone (the new code with the old 3-point box) changes 1 pin in setup 1, 2 in setups 3 and 4, and
+  in setup 2 all 21 moves and the added pin. The new code at 3 points and at 1.5 give the same pins in all
+  four. The two pins of setups 3 and 4 that the old importer moves and the new one does not are Cerellean
+  Whiteclaw (35.7,43.7 old, 35.8,43.7 new) and "WANTED: Murkdeep!" (37.2,44.2 old, 37.3,44.2 new): the probe's
+  file has two rows 0.1 apart with one visit each and the old importer takes the lower, while the ledger has
+  the same two rows with 2 and 4 visits and takes the one seen 4 times. The committed pins are at the
+  ledger's choice, so the new importer leaves them where they are and the old one moves them.
+- **The same visits are counted once per probe file.** The probe's file is cumulative, so a spot seen 3 times is
+  3 in each of four files and 12 in the ledger's sum for the maintainer's own sources, and that decides which of two
+  rows 0.1 apart seeds a place. It is why Thundris Windweaver (37.4,40.1 in the newest file: 4 visits, against
+  37.4,40.2: 3, in all four files) moves 0.1 in setup 1, where nothing else does. The rule is the merge tool's
+  and is left as it is until the user decides ([open-items.md](open-items.md), decision 36;
+  quest-giver-recorder.md, "Known limits", 5).
+- **Equivalence:** a ledger built by step 6d from the one probe file alone (121 rows), run through the new
+  importer, gives the old importer's files byte for byte: `quests.jsonl`, `pins.jsonl` (as written, and after
+  step 9), `links.jsonl`, `reputation.jsonl`, `skills.jsonl`, `answers.jsonl` and the review list. The old
+  code with the 1.5-point distance is the same; the new code with the old box too. `Test-ForeverImport.ps1`
+  section H keeps this true on its own world, against the files master's importer wrote there once. It found
+  one difference the real data did not show: the review's "recorded spot far from CMaNGOS" printed a whole
+  coordinate as the ledger spells it ("52 51", where master printed the probe's "52.0 51.0"); the importer
+  now prints one decimal, as master did, and the recorders write one.
+- **A rerun** of the new importer from the same inputs, and on its own output, writes every file and the review
+  list byte for byte as before.
+- **Beached Sea Creature and Beached Sea Turtle** are ten object entries of two names (CMaNGOS has an entry for
+  each of their quests), each with one spawn; nine start a quest and have a pin. The recorder keys a
+  giver by its ID, so five entries (175226, 175233, 176190, 176196, 176197) have a recorded place and move to it,
+  by 0.36, 0.27, 0.02, 0.12 and 0.23 points, and the other four keep CMaNGOS's spawn. The 1.5-point rule applies to
+  one giver's places, never across entries of one name, so the names are not merged. Step 9 takes a shared quest
+  off one of two pins of one name only when they are within 0.5 points (the addon draws them as one); up to 3
+  points apart it leaves both and lists them.
+- **A giver with two recorded places 1.5 to 3 points apart** does not exist in the data yet. The old importer
+  gave one pin, at the more visited place; the new one gives two pins, each with the giver's quests, a pin per
+  place as the user's pin spacing verdict allows (1.5 points apart, no closer). The CMaNGOS spawns of a giver and
+  a quest's start points are still grouped by the old 3-point box; only recorded places moved.
+- **The spawns and start points at 1.5 points**, measured, not applied ([open-items.md](open-items.md), decision
+  37): grouped by `Test-NearPlace` instead of the box, on today's ledger and on #298's alike, the start points
+  change nothing and the spawns give 4 more pins (1,698 to 1,702) for three givers whose spawns stand 1.5 to 2.2
+  points apart: Theramore Lieutenant (Dustwallow Marsh, quest 1220) 2, Lunar Festival Emissary (Ironforge, 8870
+  to 8872) 1 and Argent Quartermaster (Darnassus, six Scourge Invasion quests) 1; 10 quests gain a pin and none
+  loses one. The CLUCK! chicken (3861), pinned once per map at its biggest group of spawns, moves on 3 of its 9
+  maps, by 1.9 (Elwynn Forest), 4.6 (Duskwood) and 9.0 points (Wetlands), as smaller groups make another group
+  the biggest.
+
 ### Seasonal quests with no holiday (11 October 2026)
 
 The importer gave a quest its holiday from CMaNGOS's events, from the game's heading or from the events
@@ -1000,3 +1149,15 @@ Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
   from a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by heading. 351 quests carry a holiday,
   none of the 29 has a pin, and the nameless Holidays row 1879, which `/qc holidays` on the beta did not list on 11 October, needs nothing (#288);
   see "Seasonal quests with no holiday".
+- 2026-10-11: the addon's own recorder file from the beta went through the merge tool for the first time: the
+  Forever ledger has 231 rows and the data is as it was (5,097 quests, 1,698 pins); the importer does not read
+  the ledger yet; see "The addon's own recorder file, first ingest".
+- 2026-10-11: the importer reads the recorder ledger for its givers, places and offers, with the recorded-place
+  radius at 1.5 map points, and stops when the probe's file holds notes the ledger lacks (step 6d first). No data
+  regenerated. A step 10 run on today's ledger moves 1 existing pin by 0.1 of a map point; with the addon's
+  42 givers in the ledger (PR #298) it moves 21 pins by 0.02 to 0.36 and adds quest 990's pin; with the probe's
+  newest file read in as well it moves 36 pins by 0.02 to 1.1 and adds 6 (see "The importer reads the ledger").
+  Both recorders are kept (the user, the same day). Three questions wait in open-items.md: how a place's visits
+  are counted (36), whether CMaNGOS's spawns and the start points should be grouped at 1.5 points too (37: 4 more
+  pins and the chicken moved on 3 maps, measured) and whether a recorded place more than a point from the spawn
+  should still win (38: Darcy, who walks a path).
