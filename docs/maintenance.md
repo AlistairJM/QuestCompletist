@@ -981,6 +981,19 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   minimum level at 0, apart from the data (33 checks). The summary has one line per level and one for
   the made-up quests, and each must read 0. A wrong reading prints `FAILED` and ends the run with
   exit status 1.
+- The line an empty quest list says. When the filters hid every quest of the selected category, the
+  list says how many ("Quests hidden by your filters: 22", `qcL.QUESTSHIDDEN`, drawn by
+  `qcShowHiddenQuests` in `qcCore.lua` into `qcHiddenQuests`, a one-line text over the list's first
+  rows in `QuestCompletist.xml`). It counts the category's whole quest list only when that list is
+  empty, so a list with rows costs nothing; a search, a category with no quests and a list with rows
+  say nothing, and the header's "x/y Complete" and the rows are as before. Made-up quests in made-up
+  categories, each kind hidden by one of the list's 13 filters (and one by two), check the line against
+  the number the real filter hides, with that filter on and with all of them, then with a search, a
+  redraw and a change of filters in between; every category of the data is then listed at the default
+  settings and its line, its hidden count and its header are checked (1,036 checks on retail, 292 on
+  Forever, on 11 October 2026). The report ends with the categories whose list is empty by default for
+  the made-up character, a Horde Blood Elf Death Knight (60 of retail's 485, 15 of Forever's 113). A
+  wrong reading ends the run with exit status 1, as the level checks do.
 
 It assumes best-case progress: max level (but for the minimum-level check), prerequisites done, max
 renown, every profession. The quest search finds every quest by name whatever this reports. Some
@@ -1583,8 +1596,9 @@ git diff --stat
   `QuestCompletist\Forever\` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` before and after, and compare the
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
-  step 10 for Forever. Its four "character level" lines (the minimum level) and its "made-up quests"
-  line (a level of 0 or below) must read 0, and the run exits with 1 when they don't.
+  step 10 for Forever. Its four "character level" lines (the minimum level), its "made-up quests"
+  line (a level of 0 or below) and its "empty list's line" line (what an empty list says) must read 0,
+  and the run exits with 1 when they don't.
 - For changes to `Read-QuestCache.ps1`, `Compare-QuestCache.ps1` or `Compare-QuestReputation.ps1`,
   run `Test-QuestCache.ps1`, `Test-CompareQuestCache.ps1` and `Test-CompareQuestReputation.ps1`.
   They build their own caches, API records and tables in a scratch folder; each must end "N checks

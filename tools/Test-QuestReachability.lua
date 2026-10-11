@@ -23,6 +23,12 @@ first 16 rows in each category) must still follow its level. A level of 0 or bel
 row prints the bare name and the low-level filter keeps the quest, which made-up quests check apart from
 the data. Any wrong reading fails the run (exit status 1).
 
+An empty quest list says how many quests the filters hide (qcUpdateQuestList's line): made-up quests in
+made-up categories, each kind hidden by a filter of its own, check that the line gives the number the
+filters hide, with several filters at once, and shows only on the empty list of a category that holds
+quests, with no search. Every category of the data is then listed at the default settings, and the line,
+the number and the header's count are checked on each. A wrong reading fails the run the same way.
+
 Trying every race, class, covenant and holiday together is ~28k combinations per map, far too slow.
 Each filter group only reads its own part of the character (faction and race/class read race,
 faction and class; covenant reads the covenant; seasonal reads the calendar), so each group is swept on
@@ -158,7 +164,7 @@ for line in readFile(ADDON_DIR .. "/" .. TOC_FILE):gmatch("[^\r\n]+") do
 	local file = line:match("^%s*([^#%s][^%s]*%.lua)%s*$")
 	if file == "qcCore.lua" then
 		core = runFile(file,
-			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, BuildMapFilter = function() return qcBuildViewFilter(\"M\") end, Holidays = qcHolidays}")
+			"\nreturn {BuildListFilter = function() return qcBuildViewFilter(\"L\") end, BuildMapFilter = function() return qcBuildViewFilter(\"M\") end, Holidays = qcHolidays,\n\tForgetQuestIndexes = function() qcCategoryIndex, qcQuestNameUpperCache, qcClientNameUpperCache = nil, nil, nil end}")
 	elseif file == "qcMapPins.lua" then
 		pinCode = runFile(file, "\nreturn {Needs = qcPinQuestNeeds, Greyed = qcPinGreyed}")
 	elseif file and file:sub(1, 4) ~= "Libs" then
@@ -888,6 +894,305 @@ do
 	levelProblems = levelProblems + noLevelWrong
 end
 
+--[[ An empty list says how many quests the filters hide ]]--
+-- Driven through the real list (qcUpdateQuestList) on made-up categories, each quest hidden by a filter of
+-- its own, then on every category of the data at the default settings. The line must give the number the
+-- filters hide, worked out here from the real filter with every filter on and off, and it must show only
+-- on the empty list of a category that holds quests, with no search. The header's count and the rows
+-- must be what they'd be without it.
+local emptyListChecks, emptyListWrong = 0, 0
+do
+	local FIRST_ID, CHARACTER, SEARCH, NO_MATCH = 4000001000, 80, "ZZ EMPTYLIST TEST", "ZZ NOTHING IS CALLED THIS"
+	local FIRST_CATEGORY, EMPTY, VISIBLE = 99200, 99190, 99191
+	local template = env.qcLocalize.QUESTSHIDDEN
+
+	local function check(ok, text)
+		emptyListChecks = emptyListChecks + 1
+		if not ok then
+			emptyListWrong = emptyListWrong + 1
+			out("  wrong: " .. text)
+		end
+	end
+	local function lineFor(number) return template and string.format(template, number) end
+	-- Whether the line shown is the one for number quests hidden, or none when number is nil.
+	local function says(line, number)
+		if number == nil then return line == nil end
+		return line ~= nil and line == lineFor(number)
+	end
+
+	for key, value in pairs(profile()) do P[key] = value end
+	P.level = CHARACTER
+
+	local hiddenLine = {shown = false, SetText = function(self, text) self.text = text end,
+		Show = function(self) self.shown = true end, Hide = function(self) self.shown = false end}
+	local headerCount = {SetText = function(self, text) self.text = text end}
+	env.qcQuestCompletistUI = stubTable({IsVisible = function() return true end,
+		qcHiddenQuests = hiddenLine, qcCurrentCategoryQuestCount = headerCount})
+
+	local function view()
+		local rows = 0
+		for _, button in ipairs(buttons) do
+			if button.QuestName.text ~= "#" then rows = rows + 1 end
+		end
+		local line = hiddenLine.shown and hiddenLine.text ~= "" and hiddenLine.text or nil
+		return rows, line
+	end
+
+	-- The quests of the data, by category, and the list's filter with every filter off.
+	local byCategory, categoryOrder = {}, {}
+	for id, entry in pairs(QUESTS) do
+		local category = entry[3]
+		if not byCategory[category] then
+			byCategory[category] = {}
+			categoryOrder[#categoryOrder + 1] = category
+		end
+		table.insert(byCategory[category], id)
+	end
+	table.sort(categoryOrder)
+	applySettings({})
+	local filterKeys = {}
+	for key in pairs(env.qcSettings) do
+		if key:match("^QC_L_HIDE_") then filterKeys[#filterKeys + 1] = key end
+	end
+	table.sort(filterKeys)
+	local allOn = {}
+	for _, key in ipairs(filterKeys) do allOn[key] = true end
+	local everythingShows = core.BuildListFilter()
+
+	local doneIds, inLogIds, accountIds = {}, {}, {}
+	local function settle(keepOn)
+		applySettings(keepOn)
+		for id in pairs(doneIds) do env.qcCharacterCompletions[id] = 1 end
+	end
+	local function hiding(ids, keepOn)
+		settle(keepOn)
+		local keeps, n = core.BuildListFilter(), 0
+		for _, id in ipairs(ids) do
+			if everythingShows(id) and not keeps(id) then n = n + 1 end
+		end
+		return n
+	end
+	local function show(category, keepOn)
+		settle(keepOn)
+		env.qcUpdateQuestList(category, 1)
+		return view()
+	end
+	local function on(...)
+		local keepOn = {}
+		for _, key in ipairs({...}) do keepOn["QC_L_HIDE_" .. key] = true end
+		return keepOn
+	end
+
+	out("== An empty list says how many quests the filters hide")
+	check(template ~= nil, "the English text has no QUESTSHIDDEN")
+
+	-- Every category of the data at the default settings.
+	local defaults = {}
+	do
+		env.qcSettings = {}
+		env.qcCheckSettings()
+		env.qcCharacterCompletions = {}
+		P.level = nil
+		local keeps = core.BuildListFilter()
+		for _, category in ipairs(categoryOrder) do
+			assert(not (category >= FIRST_CATEGORY - 1 and category <= FIRST_CATEGORY + 20) and category ~= EMPTY and category ~= VISIBLE,
+				"category " .. category .. " is one the made-up quests use")
+			env.qcUpdateQuestList(category, 1)
+			local rows, line = view()
+			local ids = byCategory[category]
+			local hidden, counted = 0, 0
+			for _, id in ipairs(ids) do
+				if everythingShows(id) and not keeps(id) then hidden = hidden + 1 end
+				if keeps(id, true) then counted = counted + 1 end
+			end
+			if rows == 0 then
+				defaults[#defaults + 1] = {category = category, quests = #ids}
+				check(hidden == #ids and says(line, hidden),
+					string.format("category %d, default settings: empty list of %d quests, %d hidden by the filters, line %s",
+						category, #ids, hidden, tostring(line)))
+			else
+				check(line == nil, string.format("category %d, default settings: %d rows and the line %s", category, rows, tostring(line)))
+			end
+			local header = string.format(env.qcLocalize.PROGRESS, 0, counted, 0)
+			check(headerCount.text == header, string.format("category %d, default settings: header %s, should be %s",
+				category, tostring(headerCount.text), header))
+		end
+		P.level = CHARACTER
+	end
+
+	-- Made-up quests: how many each kind makes, the filters that hide it and what else it needs.
+	local ownFaction = env.qcFactionBits[string.upper(P.faction)]
+	local otherFaction = ownFaction == 1 and 2 or 1
+	local otherRace = env.qcRaceBits[P.race] == 1 and 2 or 1
+	local otherClass = env.qcClassBits[P.class] == 1 and 2 or 1
+	local otherCovenant = env.qcCovenantsBits[P.covenant] == 2 and 4 or 2
+	local kinds = {
+		{count = 1, filters = {"COMPLETED"}, done = true},
+		{count = 2, filters = {"INPROGRESS"}, inLog = true},
+		{count = 3, filters = {"LOWLEVEL"}, entry = {[2] = 1}},
+		{count = 1, filters = {"REQUIREMENTSNOTMET"}, entry = {[2] = CHARACTER + 5}},
+		{count = 2, filters = {"PROFESSION"}, profession = 1},
+		{count = 1, filters = {"DAILYQUEST"}, entry = {[4] = 4}},
+		{count = 2, filters = {"REPEATABLEQUEST"}, entry = {[4] = 2}},
+		{count = 1, filters = {"WORLDQUEST"}, entry = {[4] = 128}},
+		{count = 2, filters = {"FACTION"}, entry = {[5] = otherFaction}},
+		{count = 1, filters = {"RACECLASS"}, entry = {[6] = otherRace}},
+		{count = 1, filters = {"RACECLASS"}, entry = {[7] = otherClass}},
+		{count = 1, filters = {"COVENANTS"}, covenant = otherCovenant},
+		{count = 2, filters = {"WARBANDS"}, account = true},
+		{count = 1, filters = {"UNAVAILABLE"}, unavailable = true},
+		{count = 1, filters = {"DAILYQUEST", "FACTION"}, entry = {[4] = 4, [5] = otherFaction}},
+	}
+	local made, nextId = {}, FIRST_ID
+	local function make(category, kind, count)
+		local ids = {}
+		for _ = 1, count or kind.count do
+			local id = nextId
+			nextId = nextId + 1
+			local entry = {"zz emptylist test " .. id, CHARACTER, category, 1, 0, 0, 0}
+			for index, value in pairs(kind.entry or {}) do entry[index] = value end
+			QUESTS[id] = entry
+			made[#made + 1] = id
+			ids[#ids + 1] = id
+			if kind.done then doneIds[id] = true end
+			if kind.inLog then inLogIds[id] = true end
+			if kind.account then accountIds[id] = true end
+			if kind.unavailable then env.qcUnavailableQuests[id] = true end
+			if kind.profession then env.qcQuestProfession[id] = kind.profession end
+			if kind.covenant then env.qcQuestCovenant[id] = kind.covenant end
+		end
+		return ids
+	end
+
+	env.qcCharacterCompletions = {}
+	local savedLogIndex = env.C_QuestLog.GetLogIndexForQuestID
+	local savedOnAccount = env.C_QuestLog.IsQuestFlaggedCompletedOnAccount
+	env.C_QuestLog.GetLogIndexForQuestID = function(id) return inLogIds[id] and 1 or nil end
+	env.C_QuestLog.IsQuestFlaggedCompletedOnAccount = function(id) return accountIds[id] or false end
+	local savedProfessions = {}
+	for index, value in pairs(PROFESSION_INDEXES) do savedProfessions[index] = value end
+	for index in pairs(savedProfessions) do PROFESSION_INDEXES[index] = nil end
+	core.ForgetQuestIndexes()
+
+	-- Each kind alone in a category, with only its filters on: the list is empty and the line counts them.
+	local categoryOf, idsOf = {}, {}
+	for index, kind in ipairs(kinds) do
+		local category = FIRST_CATEGORY + index
+		categoryOf[index], idsOf[index] = category, make(category, kind)
+	end
+	core.ForgetQuestIndexes()
+	for index, kind in ipairs(kinds) do
+		local keepOn = on(unpack(kind.filters))
+		local label = table.concat(kind.filters, " + ") .. (kind.entry and kind.entry[7] and " (class)" or "")
+		check(hiding(idsOf[index], keepOn) == kind.count, string.format("%s: the filters hide %d of the %d quests",
+			label, hiding(idsOf[index], keepOn), kind.count))
+		local rows, line = show(categoryOf[index], keepOn)
+		check(rows == 0 and says(line, kind.count),
+			string.format("%s only, %d quests: %d rows, line %s, should be no rows and %s", label, kind.count, rows,
+				tostring(line), tostring(lineFor(kind.count))))
+		local rowsOff, lineOff = show(categoryOf[index], {})
+		check(rowsOff == math.min(kind.count, 16) and lineOff == nil, string.format("%s, every filter off: %d rows, line %s",
+			label, rowsOff, tostring(lineOff)))
+	end
+
+	-- One category of every kind: all the filters on hide all, one of them hides a part and leaves rows.
+	local MIXED = FIRST_CATEGORY
+	local mixedIds, total = {}, 0
+	for _, kind in ipairs(kinds) do
+		for _, id in ipairs(make(MIXED, kind)) do mixedIds[#mixedIds + 1] = id end
+		total = total + kind.count
+	end
+	core.ForgetQuestIndexes()
+	check(hiding(mixedIds, allOn) == total, string.format("every filter on hides %d of the %d quests", hiding(mixedIds, allOn), total))
+	local rows, line = show(MIXED, allOn)
+	check(rows == 0 and says(line, total), string.format("all %d filters on, %d quests: %d rows, line %s, should be no rows and %s",
+		#filterKeys, total, rows, tostring(line), tostring(lineFor(total))))
+
+	-- The header's count and the rows are what the list's own filter says, with or without the line.
+	do
+		local keeps, completed, counted = core.BuildListFilter(), 0, 0
+		for _, id in ipairs(mixedIds) do
+			if keeps(id, true) then
+				counted = counted + 1
+				if env.qcCharacterCompletions[id] == 1 or accountIds[id] then completed = completed + 1 end
+			end
+		end
+		local want = string.format(env.qcLocalize.PROGRESS, completed, counted, counted > 0 and math.floor(completed / counted * 100) or 0)
+		check(headerCount.text == want, string.format("header with the line: %s, should be %s", tostring(headerCount.text), want))
+	end
+
+	-- A redraw of the rows alone (scrolling, a name that loaded) leaves the line as it is.
+	env.qcUpdateQuestList(nil, 1)
+	rows, line = view()
+	check(rows == 0 and says(line, total), string.format("a redraw of the rows: %d rows, line %s", rows, tostring(line)))
+
+	-- A search says nothing, with results and with none, and the category's line comes back after it.
+	env.qcUpdateQuestList(nil, 1, SEARCH)
+	rows, line = view()
+	check(rows == 16 and line == nil, string.format("a search with results: %d rows, line %s", rows, tostring(line)))
+	show(MIXED, allOn)
+	env.qcUpdateQuestList(nil, 1, NO_MATCH)
+	rows, line = view()
+	check(rows == 0 and line == nil, string.format("a search with no results: %d rows, line %s", rows, tostring(line)))
+	rows, line = show(MIXED, allOn)
+	check(rows == 0 and says(line, total), string.format("the category after a search: %d rows, line %s", rows, tostring(line)))
+
+	-- A category with no quests says nothing, and the line clears when the list changes category.
+	rows, line = show(EMPTY, allOn)
+	check(rows == 0 and line == nil, string.format("a category with no quests, every filter on: %d rows, line %s", rows, tostring(line)))
+	show(MIXED, allOn)
+	rows, line = show(EMPTY, {})
+	check(rows == 0 and line == nil, string.format("a category with no quests, no filter on: %d rows, line %s", rows, tostring(line)))
+
+	-- A list with rows says nothing, even with quests hidden from it.
+	local visible = make(VISIBLE, {count = 2})
+	make(VISIBLE, kinds[6])
+	core.ForgetQuestIndexes()
+	show(MIXED, allOn)
+	rows, line = show(VISIBLE, allOn)
+	check(rows == #visible and line == nil, string.format("a list with rows and a hidden quest: %d rows, line %s", rows, tostring(line)))
+	rows, line = show(MIXED, on("DAILYQUEST"))
+	check(rows == 16 and line == nil, string.format("a part of the quests hidden: %d rows, line %s", rows, tostring(line)))
+
+	-- Two filters, each hiding some: the line follows the filters as they change.
+	local PAIR = FIRST_CATEGORY - 1
+	local pairIds = {}
+	for _, id in ipairs(make(PAIR, kinds[6], 2)) do pairIds[#pairIds + 1] = id end
+	for _, id in ipairs(make(PAIR, kinds[9], 3)) do pairIds[#pairIds + 1] = id end
+	core.ForgetQuestIndexes()
+	for _, step in ipairs({
+		{on("DAILYQUEST", "FACTION"), 0, 5}, {on("DAILYQUEST"), 3}, {on("DAILYQUEST", "FACTION"), 0, 5},
+		{on("FACTION"), 2}, {{}, 5}, {on("DAILYQUEST", "FACTION", "WORLDQUEST", "COMPLETED"), 0, 5},
+	}) do
+		local rowsNow, lineNow = show(PAIR, step[1])
+		local want = step[3]
+		check(rowsNow == step[2] and says(lineNow, want), string.format("two filters on 2 daily and 3 other-faction quests: %d rows, line %s, should be %d rows and %s",
+			rowsNow, tostring(lineNow), step[2], tostring(want and lineFor(want))))
+		if want then check(hiding(pairIds, step[1]) == want, "the pair's hidden count is not " .. want) end
+	end
+
+	for _, id in ipairs(made) do
+		QUESTS[id], env.qcUnavailableQuests[id], env.qcQuestProfession[id], env.qcQuestCovenant[id] = nil, nil, nil, nil
+	end
+	for index, value in pairs(savedProfessions) do PROFESSION_INDEXES[index] = value end
+	env.C_QuestLog.GetLogIndexForQuestID, env.C_QuestLog.IsQuestFlaggedCompletedOnAccount = savedLogIndex, savedOnAccount
+	core.ForgetQuestIndexes()
+	env.qcQuestCompletistUI = nil
+	env.qcCharacterCompletions = {}
+	P.level = nil
+
+	out(string.format("  %d checks, %d wrong", emptyListChecks, emptyListWrong))
+	out()
+	out(string.format("== Categories with an empty list at the default settings (%s %s %s, level %d): %d of %d",
+		P.faction, P.race, P.class, 1000, #defaults, #categoryOrder))
+	for _, entry in ipairs(defaults) do
+		out(string.format("  category %d %q: %d quest%s", entry.category, tostring(env.qcCategoryName(entry.category)), entry.quests, entry.quests == 1 and "" or "s"))
+	end
+	out()
+	note(string.format("empty list's line, made-up quests and every category: %d of %d checks wrong; %d of %d categories open empty by default",
+		emptyListWrong, emptyListChecks, #defaults, #categoryOrder))
+end
+
 local handle = assert(io.open(REPORT_FILE, "wb"))
 handle:write(table.concat(lines, "\n"), "\n")
 handle:close()
@@ -898,5 +1203,10 @@ realPrint()
 realPrint("Full report: " .. REPORT_FILE)
 if levelProblems > 0 then
 	realPrint(string.format("FAILED: the level checks found %d problems", levelProblems))
+end
+if emptyListWrong > 0 then
+	realPrint(string.format("FAILED: the empty list's line checks found %d problems", emptyListWrong))
+end
+if levelProblems + emptyListWrong > 0 then
 	os.exit(1)
 end

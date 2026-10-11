@@ -145,6 +145,7 @@ qcLocalize = setmetatable({
 	RECORDERCLEARED = "기록이 삭제되었습니다.", -- Needs review
 	SHOWCONTINENTICONS = "대륙 지도에 지역 아이콘 표시", -- Needs review
 	SHOWCONTINENTICONSTIP = "대륙 지도에서 아직 할 퀘스트가 남은 각 지역을 표시하고, 마우스를 올리면 개수를 보여 줍니다. 일일, 주간, 반복 퀘스트는 세지 않습니다. 지도 아이콘 표시도 켜져 있어야 합니다.", -- Needs review
+	QUESTSHIDDEN = "필터로 숨겨진 퀘스트: %d", -- Needs review
 	}, {__index = qcLocalize})
 
 end

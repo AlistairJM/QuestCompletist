@@ -115,12 +115,52 @@ one the report author would take.
 | 23 | R26 | Lordaeron has 21 entries and also holds Quel'Thalas, Gilneas and Tol Barad | **yes, 10 October 2026, done**: Lordaeron keeps its 11 entries; Quel'Thalas (Eversong Woods, Ghostlands, Isle of Quel'Danas, Silvermoon City, Sunstrider Isle), Gilneas (Gilneas, Gilneas City, Ruins of Gilneas) and Tol Barad (Tol Barad, Tol Barad Peninsula) follow it, named by the client's maps 2537, 179 and 244. Retail only: Forever's Lordaeron holds just its ten original zones |
 | 24 | R15, R31 | Merge categories: Darkmoon Island (10 quests) into Darkmoon Faire (59), and four one-quest entries (Brewmoon Festival 32, Greenstone Village 86, Unga Ingoo 257, Thunder Totem 1049) into their zones | yes, in one pass: refile, delete the category, point its map's zone row at the target, remove the menu entry and its locale key. Not done now because a merge changes how the sweep tools file new quests |
 | 25 | R17 to R21, R25, F03 | Names that repeat: nine names appear twice (Eversong Woods in two expansions, for example), a group and a category share a name (Covenant Sanctum, Professions, Battlegrounds, Vashj'ir, Miscellaneous), and Forever's heading is "Invasion" | leave. Each rename needs a new string in every language, and Forever's heading is the client's own (QuestSort 368). If it matters, show the menu path in the list header when a name repeats: one line of code, no new text |
-| 26 | R29, R30, R39, F06, F07, F09 | Entries that are empty by default (all their quests repeatable or retired) or hold one or two quests | keep them all, and have an empty list say how many quests the filters hide: one line in the list header code, for both games |
+| 26 | R29, R30, R39, F06, F07, F09 | Entries that are empty by default (all their quests repeatable or retired) or hold one or two quests | **yes, 11 October 2026, done**: every entry stays (none removed, no quest moved), and an empty list now says "Quests hidden by your filters: N", on both games; entry by entry under "Question 26" below |
 | 27 | R06 | Rated PvP: 86 of 87 quests are flagged unavailable, so the entry opens an empty list | keep: removing it would leave 87 quests in no menu, and they show with "Show unavailable quests" on |
 | 28 | R05 | Class Quests has no Evoker | leave: 37 of the 45 Evoker-only quests are the Forbidden Reach start, filed by zone |
 | 29 | R33 | Ordering rule: Retail's hand order, or alphabetical everywhere | keep the hand order (Monk is fixed); Forever sorts alphabetically in its generator already |
 | 30 | F04, F05 | Forever: Seasonal lumps Winter Veil (37), Love is in the Air (21), Hallow's End (7) and Harvest Festival (2); Deeprun Tram and Special stand loose | leave until after the 4 November launch, then look again |
 | 31 | R32 | Remove the 83 unused category definitions | yes, in a pass of its own with `Remove-ConvertedLocaleKeys.ps1`, after question 24 |
+
+## Question 26: what the entries do now
+
+An empty list used to open blank, with only the header's "0/0 Complete (0%)" or the like. When the
+filters hid every quest of the selected category it now has one more line, centred over the list's
+first rows: "Quests hidden by your filters: N" (`qcL.QUESTSHIDDEN`, the only new string; the ten other
+languages have a translation marked `-- Needs review`). A category with no quests, a list with rows
+and a search show no line, and the header's count and the rows are as before. `qcShowHiddenQuests` in
+`qcCore.lua` counts only for an empty list, and the list is empty only when the filters hid all of
+its category, so the number is the category's size; a list with rows does no extra work. The code is
+shared, so it is the same on both games. The line is `qcHiddenQuests`, a text in `QuestCompletist.xml`.
+`Test-QuestReachability.lua` checks it (see [maintenance.md](../maintenance.md), step 9).
+
+The entries of the question, by what the review found (quest counts as of 11 October 2026):
+
+- **R29, retail, 8 entries whose 1 to 3 quests are all daily, weekly or repeatable:** Alterac Mountains
+  (6, 1 quest), Coilfang Reservoir (39, 1), Dalaran Crater (45, 2), Hellfire Citadel (95, 1), The
+  Obsidian Sanctum (225, 1), Trial of the Crusader (251, 1), Assault on Violet Hold (1036, 3) and
+  Deephaul Ravine (1421, 1). Each stays and opens an empty list that says how many quests the filters
+  hide; unticking the daily, repeatable and world filters shows them.
+- **R39, retail, 11 entries whose quests are all recurring:** Jade Temple Grounds (114, 7), Landfall
+  (121, 73), Tol Barad (246, 26), Tol Barad Peninsula (247, 44), Wintergrasp (273, 27), Highmaul (318, 6),
+  the four covenant callings Kyrian, Necrolord, Night Fae and Venthyr (1220 to 1223, 25 each) and Weekly
+  Events (1735, 52). The same.
+- **R30, retail, 10 entries of 1 or 2 quests:** Hrothgar's Landing (103, 1), Peak of Serenity (152, 1),
+  Riding (163, 2), Stormwind Harbor (195, 1), The Exodar (216, 2), Northshire (295, 2), Eye of Azshara
+  (1004, 1), 9.1 Campaign (1240, 2), Keeper's Respite (1242, 1) and Awakening the Machine (1420, 1).
+  None is recurring or retired, so each list shows its quests. Where the character can't take them the
+  filters hide them and the list says so: Peak of Serenity's quest is a Monk's and Stormwind Harbor's
+  an Alliance quest, so both open empty for a Horde Death Knight.
+- **F06, Forever:** Onyxia's Lair (2159), whose one quest is recurring: stays, with the line.
+- **F07, Forever, 5 entries of 1 or 2 quests:** Alchemy (-181, 1), Herbalism (-24, 1), Thoradin's Wall
+  (293, 1), Deeprun Tram (2257, 2) and Riverglades (16591, 1). Each shows its quests; Deeprun Tram's two
+  are Alliance quests, so the list is empty, with the line, for a Horde character.
+- **F09, Forever:** Crafting (16941), 150 quests, all recurring: stays, with the line.
+
+The line also helps every other category that opens empty, such as Rated PvP (question 27: 86 of 87
+quests unavailable) and any class, faction or race category the character can't use. For a Horde Blood
+Elf Death Knight at the default settings 60 of retail's 485 categories and 15 of Forever's 113 open
+empty; the reachability report lists them.
 
 ## Noticed along the way
 
@@ -171,3 +211,4 @@ one the report author would take.
 - 2026-10-09 (later): merged (#251) and released in 112.7, untried in game, on the user's word.
 - 2026-10-10: questions 22 and 23 done on the user's word. `luac -p` is silent on every Lua file, `Test-Localization.lua`, `Test-Settings.lua` (both games), `Test-QuestReachability.lua`, `Test-MapTooltip.lua`, `Audit-DungeonCategories.ps1` (same result as master) and `Remove-EmptyMenuEntries.ps1 -WhatIf` pass. Not tried in game: the three new submenus and Midnight's Other Categories.
 - 2026-10-11: question 21 approved by the user and done: Draenor and The Broken Isles each split into Main Zones and Other Categories, in Pandaria's code shape (`qcMenu.lua` only, no new text). Checked offline: `luac -p` is silent on all 27 Lua files, and `Test-Localization.lua`, `Test-Settings.lua` (both games), `Test-QuestReachability.lua` (both games: 0 quests in categories the list can't browse to; Retail's report equals master's), `Test-MapTooltip.lua` (both games), `Remove-EmptyMenuEntries.ps1 -WhatIf` (0 entries), `Remove-ConvertedLocaleKeys.ps1 -WhatIf` (0 lines) and `Build-ForeverMenu.ps1 -Check` (Forever's three files up to date; its menu has no Draenor or Legion) pass. `Audit-DungeonCategories.ps1` finds the same issues as master; its one difference is Eye of Azshara's menu path, now ending in "Main Zones". A Lua dump of the menu before and after shows nothing else moved and every group keeps its entries' order. Not tried in game: the two new submenu layouts.
+- 2026-10-11: question 26 approved by the user and done, on branch `feat/empty-list-hidden-count` (cut from master 956ef50): an empty quest list says "Quests hidden by your filters: N" (`qcShowHiddenQuests` in `qcCore.lua`, a text `qcHiddenQuests` in `QuestCompletist.xml`, the new key `QUESTSHIDDEN` in all 11 locale files, the ten translations marked `-- Needs review`); every entry stays and no quest moved. Checked offline: `luac -p` is silent on all 27 addon Lua files, `Test-Localization.lua` says "No problems", `Test-QuestReachability.lua` (both games) has 0 Lua errors and a report equal to master's apart from its new section, whose checks (1,036 on retail, 292 on Forever) all pass and fail 82 and 37 of them on master's code, `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-ContinentPins.lua` and `Test-SeasonalCalendar.lua` (both games) say "All checks passed.", `Test-Recorder.lua` says "0 failed", and `Build-AddonData.ps1 -Check` says all four files are up to date. Not tried in game: how the line looks in the list (a centred line over the first rows).

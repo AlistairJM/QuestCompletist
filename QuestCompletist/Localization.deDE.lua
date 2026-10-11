@@ -145,6 +145,7 @@ qcLocalize = setmetatable({
 	RECORDERCLEARED = "Die Notizen wurden gelöscht.", -- Needs review
 	SHOWCONTINENTICONS = "Zonensymbole auf Kontinentkarten anzeigen", -- Needs review
 	SHOWCONTINENTICONSTIP = "Markiert jedes Gebiet auf einer Kontinentkarte, in dem du noch Quests zu erledigen hast, und zeigt die Anzahlen, wenn du mit der Maus darüberfährst. Tägliche, wöchentliche und wiederholbare Quests werden nicht gezählt. Die Option Zeige Kartensymbole muss ebenfalls aktiviert sein.", -- Needs review
+	QUESTSHIDDEN = "Von deinen Filtern versteckte Quests: %d", -- Needs review
 	}, {__index = qcLocalize})
 
 end
