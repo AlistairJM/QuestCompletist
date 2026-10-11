@@ -35,6 +35,7 @@ tools/*
 !tools/Test-SeasonalCalendar.lua
 !tools/Test-Probe.lua
 !tools/Test-MapTooltip.lua
+!tools/Test-QuestTooltip.lua
 !tools/Test-ContinentPins.lua
 !tools/Test-Settings.lua
 !tools/Test-Completions.lua

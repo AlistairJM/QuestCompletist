@@ -189,8 +189,10 @@ qcCovenantsBits = {
 -- Each holiday value in the quest database, with the IDs of the game's Holidays table that its
 -- calendar event can carry. WoW: Forever's Darkmoon Faire is 263 and 264, from Classic. The Scourge
 -- Invasion and the Ahn'Qiraj War Effort aren't on the calendar, so the seasonal filter always hides
--- their quests. filter names the calendar window's filter that holds the holiday's events, "HOLIDAYS"
--- when it isn't given.
+-- their quests. WoW's Anniversary is on the calendar as a new row every year (the 22nd is 1808); the
+-- calendar doesn't serve the rows named plain "WoW's Anniversary", and the sweep's step 2b reports each
+-- new year's row. filter names the calendar window's filter that holds the holiday's events,
+-- "HOLIDAYS" when it isn't given.
 local qcHolidays = {
 	{flag=1, name="Brewfest", eventIDs={372}},
 	{flag=2, name="Children's Week", eventIDs={201}},
@@ -211,6 +213,7 @@ local qcHolidays = {
 	{flag=65536, name="Stranglethorn Fishing Extravaganza", eventIDs={301}, filter="WEEKLY"},
 	{flag=131072, name="Moonkin Festival", eventIDs={694}},
 	{flag=262144, name="Hearthstone's 10th Anniversary", eventIDs={1462, 1578}},
+	{flag=524288, name="WoW's Anniversary", eventIDs={1808}},
 }
 -- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
 -- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
@@ -1875,12 +1878,9 @@ function qcQuestClick(qcButtonIndex)
 		-- Unattainable becomes marked not done (0); anything else becomes unattainable.
 		qcCharacterCompletions[qcQuestID] = (qcCharacterCompletions[qcQuestID] == 2) and 0 or 2
   else
-    if (C_AddOns.IsAddOnLoaded('TomTom')) then
-        local mapId, pin = qcFindPinForQuest(qcQuestID)
-        if (mapId) then
-            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = qcNpcName(pin) or qcQuestName(qcQuestID)})
-            TomTom:SetClosestWaypoint()
-        end
+    local mapId, pin = qcFindPinForQuest(qcQuestID)
+    if (mapId) then
+        QC.qcSetWaypoint(mapId, pin, qcQuestID)
     end
 end
 
