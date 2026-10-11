@@ -702,6 +702,14 @@ neither the API nor the game proves a quest is one-time:
 from Blizzard's own questline tables. It skips internal questlines ("8.0 Professions - … - SCS",
 "[DNT] …"). It stores each storyline's quests in Blizzard's order.
 
+The quest tooltip shows a storyline's name from the game (`C_QuestLine.GetQuestLineInfo`, in the
+player's language) when the game's quest line for the quest is the quest's `storyline`, and the name
+in `qcQuestLines` otherwise. So the rule above, the smallest quest line a quest is in, decides how
+often the game's name is used: 97.9% on the 9 October 2026 retail probe (16,391 of 16,737 storylined
+quests), 11 of 11 on Forever's. The rest are quests in two quest lines, where the game names the
+larger. To measure it again, compare the probe's `questLineID` facts (`Read-ForeverProbe.lua <file> facts`,
+the `fact <quest> questLineID <id>` lines) with each quest's `storyline`.
+
 ### 5. Zone table and category names from the client
 
 `Build-CategoryUiMapIDs.ps1 -Refresh` downloads the game's map table (`UiMap.csv`) for the pinned
@@ -1404,7 +1412,8 @@ and menu headings of steps 5 and 10. The addon's own text is in
   and any key it lacks shows in English.
 - Text the game already has comes from the game, in its words: "Search" (`SEARCH`), "Search Results"
   (`SPELLBOOK_SEARCH_HEADER_RESULTS`), the quest tooltip's "Storyline" (`QUEST_CLASSIFICATION_QUESTLINE`) and "Campaign"
-  (`QUEST_CLASSIFICATION_CAMPAIGN`),
+  (`QUEST_CLASSIFICATION_CAMPAIGN`), its "Type" row (`TYPE`, the game's classification and tag names, and
+  the storyline's name where the game's quest line is ours: step 4),
   "Unknown" for a name the game hasn't sent (`UNKNOWN`), and "Categories" and "Filters" on the
   window's buttons. A label's colon comes from `STAT_FORMAT` ("%s:"), which French spaces and
   Chinese writes full-width.
@@ -1870,7 +1879,7 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 5 or more left (`luac -l` listed 195 on 11 October), `qcTooltips.lua` 158 and
+  has its own 200: in October 2026, `qcCore.lua` had 5 or more left (`luac -l` listed 195 on 11 October), `qcTooltips.lua` 150 (`luac -l` listed 50 on 11 October) and
   `qcMapPins.lua` 149 (after the map's tooltip moved from one to the other). Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
@@ -1917,6 +1926,12 @@ git diff --stat
   (TomTom's waypoint, nothing of the game's) and without it (the game's own waypoint and arrow, against
   stand-ins for a client that allows the map, refuses it, turns the map pin off by rule, errors, or lacks
   the functions), and checks that the pin's tooltip offers a click only where one will set a waypoint.
+- For changes to the quest list's tooltip (the storyline's name and the "Type:" row in `qcTooltips.lua`), run
+  `Test-QuestTooltip.lua` for both games' TOCs. It must say "All checks passed." It draws the real tooltip for a
+  quest in a storyline, a plain one and a daily one, with stand-ins for the game's quest calls that answer what each
+  case says: the game's quest line is ours, another, nothing, an error, a secret value or no function at all.
+  Give it a file as a third argument to write each case's lines out, and run it on the code before and after a
+  change to compare them.
 - For changes to the saved settings or the options panel, run `Test-Settings.lua` for both games' TOCs. It must
   say "All checks passed." It builds the panel against frames that keep their anchors and heights, so it
   also says how much room the page has left (33 px with the continent box in).

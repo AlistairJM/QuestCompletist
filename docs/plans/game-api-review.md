@@ -117,8 +117,9 @@ every quest ID a pin lists, as the table does (3,600 counting only quests we hol
 Fields no offline source gives: whether a quest is account-wide (done once per warband), the
 expansion of a quest (the menus group by expansion by hand), a zone's level range, the item a quest
 starts from (not shipped), and the NPC a quest is handed in to (not shipped). Text still in English
-on other clients: storyline names (`qcQuestLines`), the names of object pins ("Wanted Poster"),
-about 20 retail category names, and our own strings, translated by us.
+on other clients: the names of object pins ("Wanted Poster"), about 20 retail category names, and
+our own strings, translated by us. Storyline names (`qcQuestLines`) were on this list until 11 October
+2026: the quest tooltip now takes the game's name where the game's quest line is ours (recommendation 5).
 
 ## Namespace by namespace
 
@@ -133,7 +134,7 @@ about 20 retail category names, and our own strings, translated by us.
 | IsImportantQuest, IsMetaQuest, IsQuestCalling, IsQuestBounty, IsQuestInvasion, IsThreatQuest, IsQuestTask, IsQuestFromContentPush, QuestIgnoresAccountCompletedFiltering | both | type probe (IsQuestTask) | flags of the quest's record | probe: Important and Meta for an icon, if wanted; the rest no |
 | IsRepeatableQuest | both | both probes | said no to every quest Blizzard's API flags repeatable (quest-types.md) | no |
 | IsQuestTrivial(questID) | both | – | whether the quest is grey for this character, with scaling and Chromie Time taken into account; Blizzard's map hides trivial offers with it | addon: the low-level filter, which today compares our stored level with `UnitQuestTrivialLevelRange`; probe: saved for every loaded quest by the next run (decision 3) |
-| GetQuestDifficultyLevel, GetSuggestedGroupSize, GetQuestType, GetQuestTagInfo | both | Forever probe (all), type probe (tag info) | the quest's level as scaled for the player; the group size; the tag ID; `QuestTagInfo` (tagName in the player's language, tagID, worldQuestType, quality, tradeskillLineID, isElite, displayExpiration) | addon: the scaled level, and a tag line ("Dungeon", "Group") in tooltips; probe: have |
+| GetQuestDifficultyLevel, GetSuggestedGroupSize, GetQuestType, GetQuestTagInfo | both | Forever probe (all), type probe (tag info) | the quest's level as scaled for the player; the group size; the tag ID; `QuestTagInfo` (tagName in the player's language, tagID, worldQuestType, quality, tradeskillLineID, isElite, displayExpiration) | addon: the scaled level (recommendation 4); the tag line ("Dungeon", "Group") is done, in the quest tooltip (recommendation 5, 11 October 2026); probe: have |
 | GetQuestDetailsTheme | both | – | the quest window's art | no |
 | GetQuestsOnMap(uiMapID) | both | – | `QuestPOIMapInfo` for the player's own log quests on a map: questID, x, y, mapID, isQuestStart, inProgress, isDaily, isMeta, questTagType, numObjectives, childDepth, isMapIndicatorQuest. Not offers: those are `C_QuestLine`'s | no |
 | IsOnMap, GetMapForQuestPOIs, SetMapForQuestPOIs, GetQuestAdditionalHighlights, GetNextWaypoint, GetNextWaypointForMap, GetNextWaypointText, GetDistanceSqToQuest | both | – | the map's routing for log quests | no |
@@ -162,7 +163,7 @@ WAYPOINT_UPDATE are not.
 |---|---|---|---|
 | GetAvailableQuestLines(uiMapID) | – | the storyline starts the server offers this character on a map, as `QuestLineInfo`: questLineID, questLineName, questID, questName, x, y, startMapID, floorLocation, isHidden (trivial), isAccountCompleted, inProgress, isCampaign, isImportant, isLegendary, isDaily, isMeta, isLocalStory. With GetForceVisibleQuests and `C_TaskQuest.GetQuestsOnMap`, this is everything Blizzard's map draws as an available quest (`QuestOfferDataProvider.lua`) | probe: on Forever, whether the server sends any; on retail, how the positions compare with our pins. addon: availability now, for the quests it lists |
 | GetForceVisibleQuests(uiMapID) | – | quests Blizzard forces onto a map's offers | with the above |
-| GetQuestLineInfo(questID, uiMapID?, displayableOnly?) | – | the quest's storyline: its ID, its name in the player's language, and where it starts on the given map. Blizzard's quest log calls it with no map for its "Storyline: X" text | addon: the tooltip's storyline name in the player's language (English from `qcQuestLines` today); probe: a second source for which storyline a quest is in |
+| GetQuestLineInfo(questID, uiMapID?, displayableOnly?) | – | the quest's storyline: its ID, its name in the player's language, and where it starts on the given map. Blizzard's quest log calls it with no map for its "Storyline: X" text | addon: **done 11 October 2026** (recommendation 5): the tooltip's storyline name in the player's language, taken only when the game's `questLineID` is our storyline's, else our English name from `qcQuestLines`; probe: a second source for which storyline a quest is in (the facts pass saves `questLineID`) |
 | GetQuestLineQuests(questLineID) | – | a storyline's quests in order | no: the same client table the sweep reads (`QuestLineXQuest`) |
 | IsComplete(questLineID) | – | whether the storyline is done | no: the addon counts the quests itself, with its filters |
 | QuestLineIgnoresAccountCompletedFiltering(uiMapID, questLineID) | – | storylines shown even when the warband did them | with GetAvailableQuestLines |
@@ -172,7 +173,7 @@ WAYPOINT_UPDATE are not.
 
 | Function | Addon | What it gives | Use |
 |---|---|---|---|
-| GetQuestClassification(questID, questInfoID?) | both probes | Important, Legendary, Campaign, Calling, Meta, Recurring, Questline, Normal, BonusObjective, Threat or WorldQuest. Recurring is proven reliable, Normal isn't (quest-types.md) | probe: have; addon: a line or icon per classification through `QuestUtil.GetQuestClassificationInfo`, which gives Blizzard's text and atlas |
+| GetQuestClassification(questID, questInfoID?) | both probes | Important, Legendary, Campaign, Calling, Meta, Recurring, Questline, Normal, BonusObjective, Threat or WorldQuest. Recurring is proven reliable, Normal isn't (quest-types.md) | probe: have; addon: **done 11 October 2026** (recommendation 5): a "Type:" row per classification Blizzard's `QuestUtil.GetQuestClassificationInfo` has text for (Important, Legendary, Calling, Meta; Campaign, Questline and Recurring only when the tooltip doesn't say them already) |
 | GetQuestRewardCurrencies, HasQuestRewardCurrencies, GetQuestRewardSpells, GetQuestRewardSpellInfo, HasQuestRewardSpells, GetQuestLogRewardFavor, GetQuestHasShortExpirationWarning, GetQuestShouldToastCompletion | – | rewards and toasts | no |
 
 ### C_QuestOffer (4 functions, 5 events) and the quest window's globals
@@ -496,9 +497,9 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 3. **`C_QuestInfoSystem.GetQuestClassification` and `C_QuestLog.GetQuestTagInfo`:** both probes
    call them. Recurring is trusted and Normal isn't (quest-types.md); the tag gives dungeon, raid,
    group, PvP and elite, with a name in the player's language and the profession of profession
-   quests. New use: a tag or classification line in tooltips (recommendation 5).
+   quests. New use, built on 11 October 2026: a tag and classification row in the quest tooltip (recommendation 5).
 4. **`C_QuestLine`:** storyline names in the player's language (`GetQuestLineInfo` with no map, as
-   Blizzard's quest log calls it) and the offers above.
+   Blizzard's quest log calls it; built on 11 October 2026, recommendation 5) and the offers above.
 5. **`C_AreaPoiInfo`:** holiday and event camps, hubs and timed events, with names, positions and
    time left; the calendar stays the right source for which holiday runs. Probe first, on Forever.
 6. **`C_QuestLog.GetZoneStoryInfo`:** the zone story achievement; retail only; later.
@@ -546,7 +547,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 2 | **A quest-facts probe pass** in the next retail type-probe run and the next Forever quest pass: for every loaded quest also save `IsAccountQuest`, `GetQuestFactionGroup`, `IsImportantQuest`, `IsMetaQuest`, `GetQuestDifficultyLevel`, `GetSuggestedGroupSize`, `GetQuestLineInfo` (questLineID), `C_CampaignInfo.GetCampaignID`, `C_TaskQuest.GetQuestZoneID` for task quests, and try `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` | probe (#42 and #139), then data and addon | an account-wide field, so the counter and filters can treat a quest another character finished as done for all; a third source for faction; a check of storylines; the campaign; zones for task quests; and whether three undocumented globals answer | small: the probes exist, one 2-hour run on retail | a probe answers only for quests the server still serves (31,425 of 35,023 on 29 September) |
 | 3 | **A map-offers probe:** for every map in `UiMap`, `RequestQuestLinesForMap`, then after QUESTLINE_UPDATE save `GetAvailableQuestLines`, `GetForceVisibleQuests`, `C_TaskQuest.GetQuestsOnMap`, `GetQuestHubsForMap`, `GetAreaPOIForMap` with `GetAreaPOIInfo`, `GetEventsForMap`, and once `C_EventScheduler.GetOngoingEvents` and `GetScheduledEvents`; on Forever with the quest points of interest setting on, which the Classic experience preset turns off | probe (both games) | on Forever: whether the server sends offer positions at all (Zephras Isle has pins only from the recorder), what POIs and events exist, whether an invasion or the fishing contest shows up; on retail: how the offers' x, y compare with our pins, and which hubs and events there are | small | the offer list is per character: it shows what this character qualifies for, not every quest |
 | 4 | **Scaling-aware levels:** the low-level filter asks `IsQuestTrivial`, and list rows, tooltips and grey pins take `GetQuestDifficultyLevel` and `GetContentDifficultyQuestForPlayer`, for quests whose data is loaded (the quest-name queue already loads what's on screen), falling back to the stored level | addon (both games) | the right "low level" answer for scaling quests and Chromie Time; Blizzard's own colours | medium | needs the quest's data, so the map's pins would queue loads like the NPC names do |
-| 5 | **Text from the game:** the storyline name from `GetQuestLineInfo(questID, nil, false)`, the campaign from `C_CampaignInfo`, and a classification or tag line from `QuestUtil.GetQuestClassificationInfo` and `GetQuestTagInfo` (Dungeon, Raid, Group, Elite, Important, Campaign), all in the player's language | addon | the last English storyline names gone; Blizzard's own labels | small | as with names, an English client shows Blizzard's wording where ours differed |
+| 5 | **Text from the game (done 11 October 2026, see Status):** the storyline name from `GetQuestLineInfo(questID, nil, false)`, the campaign from `C_CampaignInfo`, and a classification or tag line from `QuestUtil.GetQuestClassificationInfo` and `GetQuestTagInfo` (Dungeon, Raid, Group, Elite, Important, Campaign), all in the player's language | addon | the last English storyline names gone; Blizzard's own labels | small | as with names, an English client shows Blizzard's wording where ours differed |
 | 6 | **Waypoints without TomTom, done 11 October 2026 (#300):** when TomTom isn't loaded, a pin click and a list click ask `CanSetUserWaypointOnMap` (and the game rule that turns the map pin off), then call `C_Map.SetUserWaypoint` on the pin and `C_SuperTrack.SetSuperTrackedUserWaypoint(true)`; with TomTom loaded nothing changed. `SetSuperTrackedMapPin(QuestOffer, questID)` is not used (decision 5) | addon | an arrow to a pin for everyone | small | the game refuses a waypoint on every dungeon-type map but four and on every orphan map: 259 of retail's 541 pin maps (2,809 of its 24,931 pinned quests go to a refused map) and Forever's Alterac Valley (30 of 3,672); there the click does nothing, as it did without TomTom |
 | 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN and PLAYER_LEVEL_UP redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md); CALENDAR_UPDATE_EVENT_LIST already does, for the seasonal filter | addon | gated pins change the moment the requirement is met | small | none |
 | 8 | **Follow the game's tracking toggles:** read `C_Minimap.IsTrackingAccountCompletedQuests` and `IsTrackingHiddenQuests` as the defaults of the warband and low-level filters, or as a "follow the minimap" option | addon | one setting instead of two | small | a design decision: the addon's filters have their own defaults and a settings grid |
@@ -760,7 +761,8 @@ Forever beta 1.60.1.70291, then 70338 the next day).
    the run's row the character's two trivial ranges, so the first run after 12.1.5 (retail) and the
    next Forever run say how scaling quests read. The decision stays open until one has been read.
 4. **Text from the game** (5). English clients would show Blizzard's storyline names where ours
-   differ, as quest and NPC names do. **Recommendation:** yes.
+   differ, as quest and NPC names do. **Recommendation:** yes. **Taken: yes, 11 October 2026**
+   (the user: "yes, use the game's text"); built the same day (Status).
 5. **Waypoints** (6): a fallback when TomTom is absent, or always an option? **Recommendation:** a
    fallback first; an option if players ask. **Decided 11 October 2026 by the user: the fallback only**, no
    setting; built in #300 (progress log, below).
@@ -810,6 +812,8 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   Forever? (Probe 2.)
 - Does `GetQuestLineInfo` answer for a quest whose data hasn't been loaded? Blizzard calls it for
   log quests only. Does `IsAccountQuest` need the data loaded? (Probe 2 loads everything anyway.)
+  The tooltip doesn't depend on the answer: it keeps our name when the game says nothing, and is
+  drawn again when the quest's data arrives.
 - Does Forever allow user waypoints (`CanSetUserWaypointOnMap`: yes, on 56 of 60 maps), and does its
   client return area POIs, dungeon entrances, zone level ranges or scheduled events?
 - How large does the recorder's saved variable grow over a month of play?
@@ -975,3 +979,53 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   checks in `tools/Test-MapTooltip.lua` on both TOCs, 13 of which fail on the code before); not tried in
   game. Whether `WorldMapTrackingPinDisabled` is on in Forever's presets is not recorded by the probe;
   open-items.md, "To try in game".
+- 2026-10-11: recommendation 5, decision 4 taken by the user ("yes, use the game's text") and built
+  in `qcTooltips.lua`, for both games, each call gated on the function existing and wrapped in
+  `pcall`, so a missing function, an error or a secret value leaves the tooltip as it was. The quest
+  list's tooltip takes the game's words in two places.
+  - **The storyline's name** comes from `C_QuestLine.GetQuestLineInfo(questID)`, asked as the facts pass
+    asked it (no map, `displayableOnly` left at false), and is used only when the game's `questLineID`
+    is our storyline's, so a label never names another line than the list under it. Measured on the
+    9 October retail probe (12.1.0.69933; 33,802 loaded quests, 16,737 of them with a storyline of
+    ours): the game's ID is ours for 16,391 (97.9%), another line's for 312 (1.9%) and nothing for 34
+    (0.2%; "Azj-Kahet - World Quests/Repeatables" and its kind). Of the 312, the game names a line the client's
+    tables make larger for 253, one of the same size for 46 and a smaller one for 13: 9314 "Word from Azure Watch" is in
+    "Ammen Vale" (22 quests) for us and "Azuremyst Isle" (32) for the game, 31733 "Touching Ground" in
+    "The Jade Forest" (19) against "The Jade Forest" (88), 55646 "The Legend of Mechagon" in "Mechagon
+    Intro" against "Expedition to Mechagon", 62915 "Home Improvement" in "Sinfall" against "Catching
+    Up!". The game names a line for 259 quests of ours that have none: the internal lines
+    `Build-QuestLines.ps1` skips ("8.1.5 Inscription - Alliance", "[DNT] PvP Bucket"). Forever (70338):
+    the 11 quests with a storyline are all in "Toxic Soil" (6026) and the game answered 6026 for all 11;
+    none of the other 2,924 loaded quests got a line. Neither run kept an answer for a quest the server
+    refused, so whether the call needs loaded data is still open (open questions); the tooltip is drawn
+    again when a quest's data arrives, so a late answer is used.
+  - **A "Type:" row**, in the game's `TYPE` word with `STAT_FORMAT`, below the quest ID and above the
+    campaign and storyline lines; one row each for the quest's classification and its tag.
+    - The classification is `C_QuestInfoSystem.GetQuestClassification(questID)` turned into text by
+      `QuestUtil.GetQuestClassificationInfo`, which is FrameXML, not in the API tables: both clients
+      have it (`Blizzard_FrameXMLUtil`'s `[Family]\QuestUtils.lua` loads for the Camelot game type
+      too, and the file is the same on `live` 12.1.0.69933 and `forever` 1.60.1.70338 in this part).
+      It returns `{text, atlas, size}` with the `QUEST_CLASSIFICATION_*` global as the text for
+      Campaign, Calling, Important, Legendary, Meta, Recurring and Questline, and nothing for
+      Normal, BonusObjective, Threat and WorldQuest, which are never shown. The icons are left out.
+    - The tag is `C_QuestLog.GetQuestTagInfo(questID).tagName`, the client's own `QuestInfo` name, but
+      only for a tag `QuestUtils_GetQuestTagAtlas` gives an icon, the rule of Blizzard's own quest log
+      legend (`QUEST_TAG_ATLAS` in `Constants.lua`, the same on both branches): Group, PvP, Raid (and
+      the 10 and 25 player ones), Dungeon, Heroic, Scenario, Delve and the dungeon and raid kinds of
+      world quest. Forever's tag 1 is named "Elite" there, not "Group". The tags with no icon (Class,
+      Artifact, Meta Quest, Important Quest and the rest) are left out, so a tag never repeats a
+      classification.
+    - Left out because the tooltip says it already: Campaign when the campaign line is drawn (all 762
+      retail quests the game calls Campaign have one), Questline when the storyline line is (all 35
+      have one), and Recurring when the quest's stored type draws a recurring icon (3,761 of 3,766;
+      the other 5 are typed 32, 64 or 138, and show "Repeatable"). Each is shown when its line isn't.
+    - Counted on the same two probes, joined to our data: 802 classification rows on retail (Legendary
+      456, Meta 191, Calling 100, Important 50, Repeatable 5) and 1,835 tag rows (Dungeon 700, Group 397,
+      Raid 345, PvP 157, Heroic 74, Scenario 25, Delve 19, Raid (10) and (25) 30, and 88 world
+      quests counted by tag 137, 141 and 145, whose QuestInfo type is Dungeon or Raid), 2,616 of 33,802 loaded quests in all (21 with two rows). Forever: 249 of 2,877
+      (Dungeon 134, Elite 99, PvP 14, Raid 2), no classification rows, since the beta answers only
+      Normal and Recurring (153 quests, all typed recurring already).
+  - No new text: the label, the classifications and the tags are the game's strings. Checked offline by
+    `tools/Test-QuestTooltip.lua` (98 checks on each TOC, 44 of them failing on the code of master),
+    with stand-ins that give the answers named above, an error, a secret value or no function. Not tried
+    in game ([open-items.md](open-items.md), "To try in game").
