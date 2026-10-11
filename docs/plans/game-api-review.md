@@ -705,7 +705,8 @@ variables are `tools/retail_probe_69933/QCForeverProbe.lua` and the reader's row
   470 hidden trackers and 542 player-facing quests (136 world quests, 52 world events, 36 bonus
   objectives and others), of which this character's maps showed 22. About 7 hidden trackers slip
   past the tracking flag (QuestInfo 265, or "Tracking Quest" in the title). 12.1.5 adds 125 quest
-  IDs, none of them among the 26: 25 have a giver point, 8 only objective points and 92 none.
+  IDs, none of them among the 26: 25 have a giver point, 8 only objective points and 92 none. (Step 6b
+  of the sweep, `Add-TaskQuests.ps1`, takes the player-facing ones in since 11 October 2026: decision 9.)
 - **Dungeon entrances come with their journal instance,** so step 8's audit of dungeons against
   the Dungeon Journal has a second source for retail (recommendation 14).
 - **To check:** the events schedule lists Midnight's world events (Saltheril's Soiree, Stormarion
@@ -778,7 +779,13 @@ Forever beta 1.60.1.70291, then 70338 the next day).
    one character's maps). **Recommendation:** yes, as an inflow step in the sweep that takes the
    title, level, type and map from the client's table, with no web API, skips the hidden trackers
    (the flag and QuestInfo 265) and gives no pins, as the 1,425 world quests already in the data
-   have none. The database would grow by about 535 quests.
+   have none. The database would grow by about 535 quests. **Taken by the user on 11 October 2026
+   ("yes, add them") and done:** `tools\Add-TaskQuests.ps1` (maintenance.md, step 6b) added 506
+   quests, with no pins. Of the 535, 29 are internal test and placeholder entries ("[DNT] ...",
+   "Test Quest", "(NOT USED)", "[REUSE THIS RECORD]") that a player never meets and the quest list
+   would show, so they stay out with the hidden trackers and are printed on every run; the 7 trackers
+   that slip past the flag are skipped by QuestInfo 265 and by the title "Tracking Quest". Retail
+   alone: Forever's client has no task table ([game-parity.md](game-parity.md)).
 
 ## Decisions (agreed 7 October 2026)
 
@@ -922,3 +929,12 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   so which quests scale can only be guessed from a `level` that differs from our stored one. Cost: about 1.7 MB on
   retail's 17.5 MB file. Checked offline with stand-ins, not run in game. The decision stays open until
   the first run after 12.1.5 and the next Forever run are read (`Get-ProbeLevelFacts`).
+- 2026-10-11: decision 9 taken and done (the user: "yes, add them"): `tools\Add-TaskQuests.ps1` (maintenance.md,
+  step 6b) added the 506 player-facing task quests of `QuestV2CliTask` the data lacked, with no pins: 6,242 rows,
+  5,230 in the data, 477 hidden trackers (470 by the flag, 6 more by QuestInfo 265, 1 more by the title), 29
+  internal entries, 506 added (202 type 1, 7 type 64, 37 type 4, 260 type 128; 41 left in category 0 because
+  the client gives them no map point). The 7 trackers that slip past the flag are caught, as the retail run
+  of 7 October said they would be. Retail's data is 35,529 quests; `qcQuestData.lua` grew from 2,373,371 to
+  2,405,155 bytes (13.34 to 13.48 MB loaded under Lua 5.1, 57 to 64 ms). Retail alone, by nature
+  ([game-parity.md](game-parity.md)). Steps 2c (112 new rows get a prerequisite, no old row) and 4 (59 storylines,
+  no old row) follow in their own pull requests.

@@ -221,3 +221,15 @@ The code itself adds a file of about 590 lines and nothing at login but one pass
 tables to check the shape of each key and value. In the game: the cost of an event is two small
 list calls, one GUID read, one map position and a few string operations on at most two records.
 Today's account file is about 1 KB. The in-game memory is to be measured in the recorder's session.
+
+## The task quests (11 October 2026)
+
+Step 6b of the sweep added 506 task quests to retail's data ([maintenance.md](../maintenance.md), step 6b), 35,023 to 35,529 (+1.4%), 18 of them with a profession and 25 with a holiday. Measured as above (Lua 5.1 on this PC, 32-bit, memory after a full collection, three loads of each file):
+
+| | Before | After | |
+|---|---|---|---|
+| qcQuestData.lua on disk | 2,373,371 bytes | 2,405,155 bytes | +31,784 (+1.3%) |
+| Loaded (all the quest tables) | 13,660 KB | 13,803 KB | +143 KB (+1.0%) |
+| Load (parse and run) | 56 to 61 ms | 64 to 65 ms | about 7 ms more |
+
+In the game, with the 1.8 times above, that is about 0.26 MB of the 35 to 40 MB the addon takes. The structures built later grow in proportion, by an estimate and not a measurement: the category index (0.8 MB) and the upper-cased names a first search builds (3.2 MB) by about 1.4% each, 56 KB together. qcPinDB.lua is untouched, as the new quests have no pins. Of the 506, 297 (world quests, weeklies and dailies) are hidden from a default list, and the other 209 show in 22 categories that already existed, 26 of them in Uncategorized.

@@ -20,7 +20,8 @@ the content), **API** (the game's client lacks a function; the sweep watches the
 reach the same end by different tools).
 
 Numbers are from 8 October 2026 (master 8d96e42 with the pin changes of that day): retail 35,023
-quests and 15,202 pins; Forever 5,081 quests and 1,706 pins.
+quests (35,529 since 11 October, when step 6b added the task quests) and 15,202 pins; Forever 5,081
+quests and 1,706 pins.
 
 ## The games by their nature
 
@@ -86,6 +87,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 1b second source for race and class | `Get-WagoQuestRequirements.ps1` | – | `QuestV2CliTask` is retail's alone | nature |
 | 1c quest names | from the API | from the cache | – | equivalent |
 | 1d professions of task quests | `Sync-QuestProfessions.ps1` | – | `QuestV2CliTask` is retail's alone; Forever's come from CMaNGOS | nature |
+| 6b task quests the client lists and the data lacks | `Add-TaskQuests.ps1` (11 October 2026): the 506 player-facing rows of `QuestV2CliTask`, with no pins | – | `QuestV2CliTask` is retail's alone: Forever's client lists no task table (613 tables on build 70338, none of them a task or bounty table) and its map pass found no task quests; nor has it world quests or bonus objectives to fill one | nature; watched: step 2b's new-table flag names a `QuestV2CliTask` appearing on Forever, and then the tool needs that game's data and category files |
 | 2 reputation | API compare and backfill, then a pass that checks the quest cache's rewards against ours and the API's | the cache, in the importer | – | equivalent |
 | 2b the tables kept by hand (`Audit-QuestTables.ps1`) | yes | the consistency part, `-Game forever` (9 October 2026) | Forever's tables are generated, so the "hand error" checks don't apply, but its consistency checks do: a one-time quest requiring a recurring one, a recurring quest in a breadcrumb or "only one of these" pair, a pair naming a quest not in the data, a quest listed twice | done: step 10 runs it; the API, TrinityCore and client-table parts stay retail's (`-OwnDataOnly` skips them) |
 | 2c prerequisites | API, the client's task quests (`QuestV2CliTask`) and TrinityCore | CMaNGOS, in the importer | – | equivalent |
@@ -228,3 +230,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   watch is step 2b's table list.
 - 2026-10-10: the continent icons are planned for both games in one pull request
   ([continent-pins.md](continent-pins.md)); nothing differs by nature but Zephras Isle and the level range.
+- 2026-10-11: step 6b, `Add-TaskQuests.ps1` (decision 9 of [game-api-review.md](game-api-review.md), decision 1
+  of [open-items.md](open-items.md)), is retail's alone, by nature: Forever's client has no task table, and
+  with no world quests, bonus objectives or world events there is nothing for one to carry. Nothing was
+  built for Forever; the sweep's step 2b names the table if it appears.

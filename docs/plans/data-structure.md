@@ -132,7 +132,7 @@ every one (15 in all).
 - **JSON Lines rather than TSV.** 15 quest names and 2 NPC names start with a quote mark
   (`"Crowleg" Dan`, `"Gabby" Gabi`). PowerShell's `Import-Csv` and Excel treat that quote as
   wrapping and silently drop it. JSON Lines also names the field next to each value, so a change to
-  one field is readable in a diff. PowerShell 5.1 reads all 35,023 quests in about a second.
+  one field is readable in a diff. PowerShell 5.1 reads all 35,529 quests in about a second (35,023 before step 6b added the task quests).
 - **Fields that are usually empty are left out** of a record rather than written as 0: a quest's
   profession, holiday, covenant, storyline and prereq; a pin's npc, name and note. A quest's
   minLevel is left out when it is the quest's level; a 0 is a minimum, and kept.

@@ -172,7 +172,7 @@ again.
 
 | # | Decision | Recommendation | Detail |
 |---|---|---|---|
-| 1 | Add the about 535 player-facing task quests the database lacks (decision 9), with no pins | yes, as an inflow step from `QuestV2CliTask` that skips hidden trackers | [game-api-review.md](game-api-review.md), "Decisions to take" |
+| 1 | Add the about 535 player-facing task quests the database lacks (decision 9), with no pins | **yes, 11 October 2026, done**: `Add-TaskQuests.ps1` (step 6b) added 506 quests, the 535 less 29 internal test and placeholder entries: 260 of type 128 (world quests and weeklies), 37 dailies and 209 others that the list shows by default, 41 of all in Uncategorized; retail alone | [game-api-review.md](game-api-review.md), "Decisions to take"; [maintenance.md](../maintenance.md), step 6b |
 | 2 | Pin any of the 4,082 task quests already in the data that have a start (1,387 are world quests) | no for world quests; the NPC-started ones need a rule first | quest-location-data-pipeline.md, "pins for quests with only a start point" |
 | 3 | 82449 "The Call of the Worldsoul", a task-table quest | a hand entry on the Worldsoul pins | same |
 | 4 | Item-started quests with a start point but no NPC (about 13% of all pins) | keep pinning them, as before | quest-location-data-pipeline.md, "pins from TrinityCore" |
