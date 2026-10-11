@@ -95,6 +95,13 @@ again.
   each other's breadcrumb and the API's breadcrumbs in `qcClosedOnceDone` are checked offline by
   `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the game closes while their quest is in
   the log").
+- **The class quests' links on Forever** (11 October 2026, stacked on the two above; data only, no
+  addon code). One question the game alone answers, on Rothro before he takes Redridge Rendezvous
+  (2281): does Hulfdan Blackbeard in Ironforge offer Kingly Shakedown (2298) without To Hulfdan! (2299)
+  done, and, if Rothro hasn't done Erion Shadewhisper (2259), does Erion offer Erion's Behest (2260)?
+  If so, a `prereq` `REMOVE` row each. The warrior, mage, Silithus and Call of Earth rows rest on
+  Questie's issues and Wowhead's comments and are checked offline by `Test-Completions.lua`
+  ([forever.md](forever.md), "CMaNGOS's other links, reviewed against first-hand reports").
 - **Two retail breadcrumbs that close only once all their quests are done** (found 11 October 2026, data
   from 6 October). Blizzard's API keeps 65890 The Nelthazan Ruins offered while any of 65891, 65893 or
   66719 is still to do, and 66261 A Minor Setback while any of 66262, 66263 or 66264 is; our breadcrumb
@@ -274,11 +281,20 @@ again.
 - **2,766 quests TrinityCore has a start for that the database lacks**: a list to look through for
   the step that adds quests the database lacks (`Fetch-GapQuestData.ps1`).
 - **Forever's other CMaNGOS links**: the rogue lead-ins showed that a CMaNGOS breadcrumb can be a
-  lead-in the server requires, and an `ExclusiveGroup` a choice it doesn't enforce. The other 84 groups
-  and 124 breadcrumbs are to be reviewed against first-hand reports (Questie's issues, QuestieDB's Era
-  corrections, Wowhead's comments) and the game; each correction is a row in
-  `forever-quest-link-decisions.csv`, and the login clean-up covers its ticks
-  ([forever.md](forever.md), "Lead-ins the server requires").
+  lead-in the server requires, and an `ExclusiveGroup` a choice it doesn't enforce. The level 10 warrior
+  and mage groups, Securing the Supply Lines, Call of Earth and 14 prerequisites were reviewed and
+  corrected on 11 October 2026 ([forever.md](forever.md), "CMaNGOS's other links, reviewed against
+  first-hand reports"). Left: the rest of the 85 groups and 139 breadcrumbs, which no report has
+  questioned yet; 24 quests whose prerequisite is their own breadcrumb, from the cache's next quest,
+  that no report settles (11, 276, 297, 466, 729, 844, 870, 1085, 1338, 1420, 1473, 1501, 1688, 1699,
+  1716, 1758, 1824, 1938, 1960, 2038, 2040, 2922, 2924, 2930); Great-father Winter's 6961, which
+  TrinityCore and QuestieDB put in 7021 and 7024's group; and whether the mage targets need their
+  lead-ins (QuestieDB says not). Each correction is a row in `forever-quest-link-decisions.csv`, and
+  the login clean-up covers its ticks.
+- **Zephras Isle's class quests show to every class on Forever**: the game's records give no class, so
+  the importer gives 8191 to a quest CMaNGOS lacks unless its heading is a class's. Call of Earth
+  (92466 to 92468) is a shaman's quest by its text and QuestieDB's Forever corrections; the other class
+  quests of Forever's new zones are probably the same. Found 11 October 2026.
 - **Forever's 1,414 pinless quests** have no pickup data in any source; the recorder is the way
   ([forever.md](forever.md)). About 60 of the new retail pins are for quests started by an object and about 120 by an
   item alone, and have no name; Forever names its pins after the object or item (game-parity.md, recommendation 12).

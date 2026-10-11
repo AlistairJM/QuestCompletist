@@ -18,6 +18,12 @@ the breadcrumbs Blizzard's API says close only once their quest is done (qcClose
 keeps meanwhile. Forever's has the level 16 rogue quests, where SI:7 showed at Keryn Sylvius though she no
 longer offered it.
 
+On WoW: Forever's TOC it also walks the level 10 warrior and mage quests, whose links the decisions file
+corrected on 11 October 2026 from Questie's issues and Wowhead's comments: the lead-ins no longer shut each
+other out, the quests they lead to do, and each of those closes every lead-in. With them, Securing the
+Supply Lines and its breadcrumbs, the two first steps of the shamans' Call of Earth, Iron Coral's
+prerequisite, and the eight quests that no longer need their breadcrumb.
+
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua QuestCompletist QuestCompletist_Camelot.toc
@@ -452,6 +458,115 @@ else
 		if env.qcCharacterCompletions[questId] ~= 1 then unticked[#unticked + 1] = questId end
 	end
 	check("handing it in ticks all five lead-ins, To Hulfdan! included", #unticked == 0, table.concat(unticked, ", "))
+end
+
+if not QUESTS[1679] then
+	print("The level 10 warrior and mage quests: not in this game's data")
+else
+	local TRAINING, BARTLEBY, BEAT, VEJREK, MUREN, TORMUS, IRONBAND, VORLUS, ELANARIA, ELURA = 1638, 1639, 1640, 1678, 1679, 1680, 1681, 1683, 1684, 1686
+	local PATH, THUNGRIM, UZZEK, DILLINGER, ULAG = 1498, 1502, 1505, 1818, 1819
+	local JENNEA, MIRROR, BINK, GIZMONITOR, BALNIR, JUJU = 1860, 1861, 1879, 1880, 1882, 1884
+	local SILITHUS_A, SILITHUS_H, SUPPLY_LINES, EARTH_DUROTAR, EARTH_DUROTAR_2, EARTH_MULGORE = 8275, 8276, 8280, 1516, 1517, 1519
+	local leadIns = {TRAINING, MUREN, ELANARIA}
+	local function needs(questId) return QC.qcPinQuestNeeds(questId, QC.qcQuestStatus.Of(questId, QUESTS[questId])) end
+	local function unticked(list)
+		local missing = {}
+		for _, questId in ipairs(list) do
+			if env.qcCharacterCompletions[questId] ~= 1 then missing[#missing + 1] = questId end
+		end
+		return table.concat(missing, ", ")
+	end
+	local faction = env.UnitFactionGroup
+	local function horde(on) env.UnitFactionGroup = on and function() return "Horde", "Horde" end or faction end
+	env.SERVICES_CONJUNCTION_OR = "or"
+
+	print("The level 10 warrior quests' links")
+	check("the three cities' lead-ins no longer shut each other out",
+		not env.qcMutuallyExclusive[TRAINING] and not env.qcMutuallyExclusive[MUREN] and not env.qcMutuallyExclusive[ELANARIA])
+	check("and are all listed for the clean-up", listed[TRAINING] and listed[MUREN] and listed[ELANARIA])
+
+	print("A new Human warrior")
+	ctx.class, ctx.level = "WARRIOR", 10
+	character("Human", {}, {})
+	login()
+	check("Bartleby the Drunk, Vejrek and Vorlus Vilehoof can be taken without a lead-in",
+		not needs(BARTLEBY) and not needs(VEJREK) and not needs(VORLUS), needs(BARTLEBY) or needs(VEJREK) or needs(VORLUS))
+	local tormus = needs(TORMUS)
+	check("Tormus Deepforge needs any of the three", tormus == "Requires Bartleby the Drunk or Vejrek or Vorlus Vilehoof", tormus)
+	turnIn(TRAINING)
+	check("handing in A Warrior's Training ticks neither Muren Stormpike nor Elanaria",
+		env.qcCharacterCompletions[MUREN] == nil and env.qcCharacterCompletions[ELANARIA] == nil)
+	ctx.inLog[BARTLEBY] = 1
+	check("with Bartleby the Drunk in the log, the map hides the other two lead-ins", not mapKeeps(MUREN) and not mapKeeps(ELANARIA))
+	ctx.inLog[BARTLEBY] = nil
+	turnIn(VEJREK)
+	check("handing in Vejrek ticks Bartleby the Drunk and Vorlus Vilehoof",
+		env.qcCharacterCompletions[BARTLEBY] == 1 and env.qcCharacterCompletions[VORLUS] == 1)
+	check("and the lead-ins still to do", unticked(leadIns) == "", unticked(leadIns))
+	local blocked = {}
+	for _, questId in ipairs({BEAT, TORMUS, IRONBAND, ELURA}) do
+		if needs(questId) then blocked[#blocked + 1] = questId .. ": " .. needs(questId) end
+	end
+	check("then Beat Bartleby, Tormus Deepforge, Ironband's Compound and The Shade of Elura can all be taken", #blocked == 0, table.concat(blocked, "; "))
+	turnIn(IRONBAND)
+	check("handing in Ironband's Compound ticks Tormus Deepforge", env.qcCharacterCompletions[TORMUS] == 1)
+
+	print("A Dwarf warrior with the old lead-in group's ticks")
+	character("Dwarf", {MUREN}, {[TRAINING] = 1, [MUREN] = 1, [ELANARIA] = 1})
+	login()
+	check("before Vejrek, the ticks on the other two lead-ins go",
+		env.qcCharacterCompletions[TRAINING] == nil and env.qcCharacterCompletions[ELANARIA] == nil and env.qcCharacterCompletions[MUREN] == 1)
+	character("Dwarf", {MUREN, VEJREK}, {[TRAINING] = 1, [MUREN] = 1, [ELANARIA] = 1})
+	login()
+	check("after Vejrek, all three stay ticked, as it closes them", unticked(leadIns) == "", unticked(leadIns))
+
+	print("A Tauren warrior who did Speak with Dillinger and Ulag the Cleaver")
+	horde(true)
+	character("Tauren", {DILLINGER, ULAG}, {})
+	login()
+	check("Path of Defense is ticked, as Ulag the Cleaver shuts it out", env.qcCharacterCompletions[PATH] == 1)
+	check("and Veteran Uzzek, which it closes", env.qcCharacterCompletions[UZZEK] == 1)
+	check("Thun'grim Firegaze can be taken", not needs(THUNGRIM), needs(THUNGRIM))
+
+	print("Mages")
+	ctx.class = "MAGE"
+	check("The Balnir Farmstead and Ju-Ju Heaps shut each other out", env.qcMutuallyExclusive[BALNIR] and env.qcMutuallyExclusive[BALNIR][1] == JUJU)
+	horde(false)
+	character("Gnome", {BINK, GIZMONITOR}, {[JENNEA] = 1})
+	login()
+	check("a Gnome who did Speak with Bink loses the old group's tick on Speak with Jennea", env.qcCharacterCompletions[JENNEA] == nil)
+	check("and Mage-tastic Gizmonitor ticks Mirror Lake", env.qcCharacterCompletions[MIRROR] == 1)
+
+	print("Securing the Supply Lines")
+	ctx.class, ctx.level = "WARRIOR", 60
+	character("Human", {SILITHUS_A}, {[SUPPLY_LINES] = 1})
+	login()
+	check("the tick Taking Back Silithus gave Securing the Supply Lines goes", env.qcCharacterCompletions[SUPPLY_LINES] == nil)
+	turnIn(SUPPLY_LINES)
+	check("handing it in ticks both breadcrumbs", env.qcCharacterCompletions[SILITHUS_A] == 1 and env.qcCharacterCompletions[SILITHUS_H] == 1)
+
+	print("An Orc shaman's Call of Earth")
+	ctx.class, ctx.level = "SHAMAN", 4
+	horde(true)
+	character("Orc", {}, {})
+	login()
+	turnIn(EARTH_MULGORE)
+	check("handing in Mulgore's ticks Durotar's", env.qcCharacterCompletions[EARTH_DUROTAR] == 1)
+	check("and Durotar's second step can be taken", not needs(EARTH_DUROTAR_2), needs(EARTH_DUROTAR_2))
+	horde(false)
+
+	print("Prerequisites")
+	ctx.class, ctx.level = "WARRIOR", 30
+	character("Human", {}, {})
+	login()
+	local coral = needs(1708)
+	check("for a Human, Iron Coral needs Furen's Armor, not the Dwarf and Gnome breadcrumb", coral == "Requires Furen's Armor", coral)
+	local kept = {}
+	for _, questId in ipairs({364, 429, 455, 639, 1275, 1302, 1920, 1944}) do
+		if env.qcQuestPrereq[questId] then kept[#kept + 1] = questId end
+	end
+	check("the eight quests that don't need their breadcrumb have no prerequisite", #kept == 0, table.concat(kept, ", "))
+	ctx.class, ctx.level = "ROGUE", 16
 end
 
 print(failures == 0 and "All checks passed." or (failures .. " checks failed."))
