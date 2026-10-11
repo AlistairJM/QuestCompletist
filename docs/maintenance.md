@@ -928,6 +928,13 @@ hand. Before flagging a quest as gone from the client, check two things:
 - **That it's missing from the latest PTR build's `QuestV2` as well as retail's**: a quest missing
   from retail may be upcoming content.
 
+An internal or placeholder name ("[DNT]", "[PH]", "TBD", "Unused") is no evidence either, but the user
+has twice flagged such quests by name although they fail both checks: the internal and test entries
+on 5 October 2026, and on 11 October 2026 the 20 placeholder-named quests that still showed in the
+default quest list (decision 20 of [plans/open-items.md](plans/open-items.md)). One that a default
+filter already hides (a repeatable, daily or world quest) gets a KEEP row instead, and
+`Build-UnavailableQuests.ps1` refuses a client task quest whatever its row says.
+
 Players who accept or turn in a flagged quest get a chat message, and the quest is recorded in their
 `qcFlaggedButSeen` saved variable. Unflag anything reported that way.
 
