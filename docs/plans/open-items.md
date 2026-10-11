@@ -102,6 +102,11 @@ again.
   If so, a `prereq` `REMOVE` row each. The warrior, mage, Silithus and Call of Earth rows rest on
   Questie's issues and Wowhead's comments and are checked offline by `Test-Completions.lua`
   ([forever.md](forever.md), "CMaNGOS's other links, reviewed against first-hand reports").
+- **Call of Earth on Zephras Isle is for shamans** (#307, 11 October 2026, stacked on the three above; data
+  only). One question the game alone answers: does Windshaper Boro in Thendal Grove offer Call of Earth
+  (92466) to a Windshaper of another class at level 3 or 4? If he does, the three rows of
+  `forever-quest-class-decisions.csv` go ([forever.md](forever.md), "Class quests the game files under
+  a zone").
 - **Two retail breadcrumbs that close only once all their quests are done** (found 11 October 2026, data
   from 6 October). Blizzard's API keeps 65890 The Nelthazan Ruins offered while any of 65891, 65893 or
   66719 is still to do, and 66261 A Minor Setback while any of 66262, 66263 or 66264 is; our breadcrumb
@@ -291,10 +296,15 @@ again.
   TrinityCore and QuestieDB put in 7021 and 7024's group; and whether the mage targets need their
   lead-ins (QuestieDB says not). Each correction is a row in `forever-quest-link-decisions.csv`, and
   the login clean-up covers its ticks.
-- **Zephras Isle's class quests show to every class on Forever**: the game's records give no class, so
-  the importer gives 8191 to a quest CMaNGOS lacks unless its heading is a class's. Call of Earth
-  (92466 to 92468) is a shaman's quest by its text and QuestieDB's Forever corrections; the other class
-  quests of Forever's new zones are probably the same. Found 11 October 2026.
+- **Forever quests that may be for some classes only, left for everyone**: the game's records give no
+  class, and nothing from Forever shows one for Stalk With The Earthmother (76156, 76160, 76240; Season
+  of Discovery's warrior and shaman chain), Grant's Shield and Silvia's Sword (79362, 79363; its shaman
+  quests), the 41 library books under Special (78124 to 84402; its mages' books) or Sparring Match (99108,
+  "Though you are not a warrior"). A test in the game or a first-hand report makes each a row in
+  `forever-quest-class-decisions.csv` ([forever.md](forever.md), "Class quests the game files under a
+  zone"). Seen in passing: A Scribbled Letter (92479) is under the game's Warrior heading but sends the
+  player to Tordrin Sternblade, "the new Hunter trainer" (91758), and QuestieDB calls it a hunter's;
+  and the game gives Call of Earth's first step (92466) no race, where its next two are Horde's.
 - **Forever's 1,414 pinless quests** have no pickup data in any source; the recorder is the way
   ([forever.md](forever.md)). About 60 of the new retail pins are for quests started by an object and about 120 by an
   item alone, and have no name; Forever names its pins after the object or item (game-parity.md, recommendation 12).

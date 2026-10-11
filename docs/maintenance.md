@@ -347,6 +347,11 @@ beta opens higher levels; otherwise the last run's results stand.
 as it goes. That takes about 17 minutes with an empty cache. It writes
 `quest_accuracy_audit.csv`, plus a list of quests the API doesn't know (old or removed content,
 expected). `Categorize-AuditDiscrepancies.ps1` groups the disagreements.
+`Get-WagoQuestRequirements.ps1` (step 1b) gives it a second source from the client's tables: the
+task quests' races and classes (`QuestV2CliTask`), the conditions on a quest's start points
+(`QuestPOIBlob` and `PlayerCondition`), and the classes that may use the items that start a quest
+(`ItemSparse`: 36 quests on build 12.1.0.69933, and the 25 we have agree with ours). WoW: Forever's
+importer reads the same item columns (step 10).
 
 Review before applying anything. Two lessons from the last cleanup:
 - A faction's race mask is not a stale placeholder.
@@ -1374,6 +1379,19 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    another quest of their group was handed in, so until 1 April 2027 the login sync drops such a
    tick when the server doesn't confirm it ([releasing.md](releasing.md), "Dated changes"), and the
    links that remain then tick back what they still close.
+   A quest's class is the game's where it gives one, as the game's quest records carry none: a class
+   heading or, for a quest that no NPC or object starts, the items that start it, when the client's
+   `ItemSparse` lets only some classes use them (Foror's Compendium, 7507, for warriors and paladins).
+   CMaNGOS's class comes next. A quest only the game knows that it files under a zone is for every class
+   unless `docs\plans\forever-quest-class-decisions.csv` (quest, name, class, decision `SET`, evidence)
+   says otherwise, over every other source: Zephras Isle's Call of Earth (92466 to 92468), for shamans.
+   The class is one or more of the client's class names, separated by commas, and each row says what it
+   rests on, as the link list's do. A quest whose only prerequisite is for some classes is for them too,
+   down the chain, as the addon counts a prerequisite the character can't take as met. The summary's
+   "Classes:" line counts them: 888 quests for some classes only, 1 from its items, 2 from their
+   prerequisite and 3 by hand, on build 70338 on 11 October 2026. The review list names each change
+   ("class from the items that start it", "class from its prerequisite"), an item's class a giver makes
+   moot, and a row another source already gives or contradicts.
    A giver no source has, like those of most of Forever's new quests, can be looked up by hand on
    Wowhead's Forever pages and added to `docs\plans\forever-quest-givers.csv` (quest, NPC, name,
    note). The NPC stands where CMaNGOS or the recorder puts it, and the recorder wins when it saw
@@ -1960,11 +1978,12 @@ git diff --stat
   stand-ins for a client that allows the map, refuses it, turns the map pin off by rule, errors, or lacks
   the functions), and checks that the pin's tooltip offers a click only where one will set a waypoint.
 - For changes to what the addon ticks (the login sync and hand-ins in `qcCore.lua`, with their
-  breadcrumbs and "only one of these" groups) or to Forever's links, run `Test-Completions.lua` for both
+  breadcrumbs and "only one of these" groups) or to Forever's links or classes, run `Test-Completions.lua` for both
   games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
   server, checks the clean-up of `qcFormerlyExclusive` on one of the game's groups, and on Forever walks
   the quests of `forever-quest-link-decisions.csv` (the level 10 rogue, warrior and mage quests, Bounty
-  on Murlocs, Securing the Supply Lines, Call of Earth, and some of the prerequisites it sets or removes).
+  on Murlocs, Securing the Supply Lines, Call of Earth, and some of the prerequisites it sets or removes)
+  and checks who can take Zephras Isle's Call of Earth and the Foror's Compendium chain.
   It also checks that the map hides a breadcrumb still to do while the quest it leads to is in the log,
   keeps one done or in the log and those in `qcClosedOnceDone`, and that a hand-in ticks breadcrumbs of
   breadcrumbs: on a chain from the game's data, on retail's quests listed as each other's breadcrumb and
@@ -2066,8 +2085,8 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d) |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
-| [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag; players' first-hand comments, with Questie's issues and a test in the game, as evidence for a WoW: Forever link CMaNGOS gets wrong | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv`; the link evidence is in `plans\forever-quest-link-decisions.csv`, read by `Import-ForeverData.ps1` and `Build-ForeverMenu.ps1` |
+| [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag; players' first-hand comments, with Questie's issues and a test in the game, as evidence for a WoW: Forever link CMaNGOS gets wrong or a class no source gives | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv`; the link evidence is in `plans\forever-quest-link-decisions.csv`, read by `Import-ForeverData.ps1` and `Build-ForeverMenu.ps1`; the class evidence is in `plans\forever-quest-class-decisions.csv`, read by `Import-ForeverData.ps1` |

@@ -66,6 +66,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Field or table | Retail | Forever | Why | Share? |
 |---|---|---|---|---|
 | Storylines (`storyline`, `qcQuestLines`) | 16,950 quests, 1,474 storylines | 11 quests, 1 storyline | **data:** Forever's client `QuestLine` has 3 rows, and no other source has storylines | Watch the table: have the importer's summary print `QuestLine` and `QuestLineXQuest` row counts, as it prints start points |
+| Class | from Blizzard's API, checked against the client's tables (step 1b) | 888 quests for some classes only (11 October 2026): from class headings, the items that start a quest (`ItemSparse`), CMaNGOS, a hand list ([forever-quest-class-decisions.csv](forever-quest-class-decisions.csv), 3 quests) and, down a chain, a quest's only prerequisite | **data:** Forever's quest records carry no class (checked against CMaNGOS's over 391 quests), and it has no API; both clients say which classes may use an item that starts a quest (retail's 25 such quests we have agree with ours) | Done for both where the client says it |
 | Covenant | 777 | 0 | nature | No |
 | Profession | 1,742 | 142 | both; retail's task quests from `QuestV2CliTask` | – |
 | Holiday | 1,122 (11 October 2026; it grows as quests are tagged) | 351 (11 October 2026) | both; retail's is hand data in `data\quests.jsonl` (no tool writes it; the record is [quest-holiday-decisions.csv](quest-holiday-decisions.csv)), Forever's comes from CMaNGOS's events and headings, and from a hand list of 18 quests ([forever-quest-holiday-decisions.csv](forever-quest-holiday-decisions.csv)) | – |
@@ -87,7 +88,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Step or tool | Retail | Forever | Why | Share? |
 |---|---|---|---|---|
 | 1 faction, race and class against Blizzard's API | `Audit-QuestAccuracy.ps1` | the importer takes the cache's race masks over CMaNGOS's | the API has no Forever | equivalent |
-| 1b second source for race and class | `Get-WagoQuestRequirements.ps1` | – | `QuestV2CliTask` is retail's alone | nature |
+| 1b second source for race and class | `Get-WagoQuestRequirements.ps1`: `QuestV2CliTask`, start-point conditions, and `ItemSparse`'s items that start a quest | the importer reads the same `ItemSparse` columns (11 October 2026) | `QuestV2CliTask` is retail's alone; the starting items' classes are in both clients | the item part: done for both |
 | 1c quest names | from the API | from the cache | – | equivalent |
 | 1d professions of task quests | `Sync-QuestProfessions.ps1` | – | `QuestV2CliTask` is retail's alone; Forever's come from CMaNGOS | nature |
 | 6b task quests the client lists and the data lacks | `Add-TaskQuests.ps1` (11 October 2026): the 506 player-facing rows of `QuestV2CliTask`, with no pins | – | `QuestV2CliTask` is retail's alone: Forever's client lists no task table (613 tables on build 70338, none of them a task or bounty table) and its map pass found no task quests; nor has it world quests or bonus objectives to fill one | nature; watched: step 2b's new-table flag names a `QuestV2CliTask` appearing on Forever, and then the tool needs that game's data and category files |

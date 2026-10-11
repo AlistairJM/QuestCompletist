@@ -3,8 +3,8 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
 (docs/plans/forever.md, phase 3):
 
   - the client's tables for -Build (left out, the build of the newest tools\forever_probe_<revision>
-    results, which the cache and the probe's answers must share): the quests the game records as completed (QuestV2), and where
-    some start (QuestPOIBlob and QuestPOIPoint);
+    results, which the cache and the probe's answers must share): the quests the game records as completed (QuestV2), where
+    some start (QuestPOIBlob and QuestPOIPoint), the classes (ChrClasses) and the items that start quests (ItemSparse);
   - the quest cache file Read-QuestCache.ps1 writes: what the server says about each quest it
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
@@ -32,6 +32,9 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     it REMOVEs Other, the prerequisite the other sources give, and the quest line order doesn't put
     it back. An exclusive row ADDs Other to the quests the quest shuts out, or REMOVEs it, both ways
     round. A breadcrumb row ADDs Other to the quest's breadcrumbs: it closes once the quest is done.
+  - -ClassFile, docs\plans\forever-quest-class-decisions.csv: the class of quests no other source
+    limits, with the evidence for each (Quest, Name, Class, Decision, Evidence). Class is one or
+    more of the client's class names (ChrClasses), separated by commas, and Decision is SET.
 
 The game wins wherever it speaks. Title, level, minimum level, zone, recurrence and race restrictions
 come from the cache when it has the quest, a recorded place wins over CMaNGOS's spawns for that giver, and NPC
@@ -75,8 +78,12 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
-  class     the game's class mask (1 shifted left by the class ID less one), as CMaNGOS stores
-            it, or from a class heading; 8191 for any.
+  class     the game's class mask (1 shifted left by the class ID less one): -ClassFile's, else
+            that of the items that start the quest, when no NPC or object does and the client's
+            ItemSparse lets only some classes use them, else CMaNGOS's, else a class heading's;
+            8191 for any. The game's quest records carry no class. A quest whose only prerequisite
+            is for some classes is for them too, as the addon counts a prerequisite the character
+            can't take as met.
   type      4 daily, 128 weekly, 2 repeatable, 64 seasonal, 32 profession or 1, the first that
             applies, so a repeatable holiday or profession quest is repeatable, as on retail. holiday
             and profession hold the addon's flags.
@@ -151,6 +158,7 @@ param(
     [string]$ZoneFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-zones.csv'),
     [string]$HolidayFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-holiday-decisions.csv'),
     [string]$LinkFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-link-decisions.csv'),
+    [string]$ClassFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-class-decisions.csv'),
     [string]$LedgerFile = (Join-Path $PSScriptRoot '..\docs\plans\recorded-quest-givers.csv'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string[]]$Builds = @(),
@@ -508,6 +516,31 @@ foreach ($row in Import-Csv $LinkFile) {
     }
 }
 foreach ($quest in $handPrereqRemovals.Keys) { if ($handPrereq.ContainsKey($quest)) { throw "$LinkFile both sets and removes a prerequisite of quest $quest." } }
+$classBitByName = @{}; $playableClasses = 0
+foreach ($row in Get-ClientTable 'ChrClasses') { $bit = 1 -shl ([int]$row.ID - 1); $classBitByName[$row.Name_lang] = $bit; $playableClasses = $playableClasses -bor $bit }
+$handClass = @{}
+foreach ($row in Import-Csv $ClassFile) {
+    if ($row.Decision -ne 'SET') { throw "$ClassFile gives quest $($row.Quest) the decision '$($row.Decision)': it must be SET." }
+    if ($row.Quest -notmatch '^\d+$') { throw "$ClassFile has a row whose quest, '$($row.Quest)', is not a number." }
+    if ($handClass.ContainsKey([int]$row.Quest)) { throw "$ClassFile lists quest $($row.Quest) twice." }
+    $mask = 0
+    foreach ($name in ($row.Class -split ',' | ForEach-Object { $_.Trim() })) {
+        if (-not $classBitByName.ContainsKey($name)) { throw "$ClassFile gives quest $($row.Quest) the class '$name', which the client's ChrClasses lacks." }
+        $mask = $mask -bor $classBitByName[$name]
+    }
+    $handClass[[int]$row.Quest] = $mask
+}
+# The classes that may use the items that start each quest; an AllowableClass of -1 or 0 is any class.
+$itemClass = @{}
+foreach ($row in Get-ClientTable 'ItemSparse') {
+    if ($row.StartQuestID -eq '0') { continue }
+    $quest = [int]$row.StartQuestID
+    $mask = [int]([long]$row.AllowableClass -band $playableClasses)
+    if (-not $mask) { $mask = $playableClasses }
+    if (-not $itemClass.ContainsKey($quest)) { $itemClass[$quest] = [pscustomobject]@{ Mask = 0; Items = @() } }
+    $itemClass[$quest].Mask = $itemClass[$quest].Mask -bor $mask
+    $itemClass[$quest].Items += @([int]$row.ID)
+}
 $creatureEnders = @{}; $enderNpcs = @{}
 foreach ($line in $dump.creature_involvedrelation) {
     $f = $line.Split("`t")
@@ -636,6 +669,7 @@ $ids = @(@($cache.Keys) + @($keep.Keys) + @($cmQuest.Keys | Where-Object { $inCl
 $records = @{}
 $refiled = 0
 $gameGivers = 0
+$classFromItems = 0; $classByHand = 0
 foreach ($id in $ids) {
     $c = $cache[$id]; $m = $cmQuest[$id]
     $title = if ($c) { $c.title } else { $m.Title }
@@ -682,6 +716,20 @@ foreach ($id in $ids) {
     $class = 8191
     if ($m -and $m.Classes) { $class = $m.Classes -band 8191 }
     elseif ($classBySort.ContainsKey($category)) { $class = $classBySort[$category] }
+    $items = $itemClass[$id]
+    if ($items -and $items.Mask -ne $playableClasses -and ($class -band $playableClasses) -ne $items.Mask) {
+        if ($creatureStarters[$id] -or $objectStarters[$id] -or $handStarters[$id] -or $recordedOffers[$id]) {
+            Add-Review 'class of the items that start it not used: a giver starts it too' $id $items.Mask "$title (items $($items.Items -join ', '); the other sources say $class)"
+        } else {
+            Add-Review 'class from the items that start it' $id $items.Mask "$title (items $($items.Items -join ', '); the other sources say $class)"
+            $class = $items.Mask; $classFromItems++
+        }
+    }
+    if ($handClass.ContainsKey($id)) {
+        if (($class -band $playableClasses) -eq $handClass[$id]) { Add-Review 'hand-kept class not needed: another source gives it' $id $handClass[$id] $title }
+        elseif (($class -band $playableClasses) -ne $playableClasses) { Add-Review 'hand-kept class differs from the other sources' $id $handClass[$id] "$title (they say $class)" }
+        $class = $handClass[$id]; $classByHand++
+    }
     $skill = if ($m -and $m.Skill) { $m.Skill } elseif ($skillBySort.ContainsKey($category)) { $skillBySort[$category] } else { 0 }
     $profession = if ($professionBySkill.ContainsKey($skill)) { $professionBySkill[$skill] } else { 0 }
     $holiday = if ($questHoliday.ContainsKey($id)) { $questHoliday[$id] } elseif ($holidayBySort.ContainsKey($category)) { $holidayBySort[$category] }
@@ -771,6 +819,22 @@ foreach ($step in (Get-QuestLineSteps (Group-QuestLines (Get-ClientTable 'QuestL
     if (-not $q.prereq) { $q.prereq = $step.Previous; $fromLine++; Add-Review 'prerequisite from the quest line order' $step.Quest $step.Previous "$($q.name) after $after" }
     elseif ($prereqText -ne "$($step.Previous)") { Add-Review 'quest line order disagrees with the prerequisite' $step.Quest $step.Previous "$($q.name): the prerequisite is $prereqText, the quest line has $after" }
 }
+
+# The addon counts a prerequisite the character can't take as met, so a quest whose only prerequisite is
+# for some classes is for them too, down the chain.
+$classFromPrereq = 0
+do {
+    $narrowed = $false
+    foreach ($q in ($records.Values | Sort-Object id)) {
+        if (-not $q.prereq -or $q.prereq -is [array] -or -not $records.ContainsKey([int]$q.prereq)) { continue }
+        $p = $records[[int]$q.prereq]
+        $class = $q.class -band $p.class
+        if (($class -band $playableClasses) -eq ($q.class -band $playableClasses)) { continue }
+        if (-not ($class -band $playableClasses)) { throw "Quest $($q.id) ($($q.name), class $($q.class)) needs quest $($p.id) ($($p.name)), which only class $($p.class) can take: correct a class in $ClassFile or the prerequisite in $LinkFile." }
+        Add-Review 'class from its prerequisite' $q.id $p.id "$($q.name): $class, was $($q.class)"
+        $q.class = $class; $classFromPrereq++; $narrowed = $true
+    }
+} while ($narrowed)
 
 $linkable = @{}
 foreach ($q in $records.Values) { if (-not ($q.type -band (2 + 4 + 128))) { $linkable[$q.id] = $true } }
@@ -972,6 +1036,7 @@ foreach ($id in ($records.Keys | Sort-Object)) {
 }
 foreach ($quest in $handStarters.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-listed quest not imported' $quest ($handStarters[$quest] -join ', ') '' } }
 foreach ($quest in $handHoliday.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-kept holiday for a quest not imported' $quest $handHoliday[$quest] '' } }
+foreach ($quest in $handClass.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-kept class for a quest not imported' $quest $handClass[$quest] '' } }
 
 # A heading that isn't a place gives way to the hand-kept zone, else the zone of the quest's pins' map,
 # the most pins first, else that of the NPC it's handed in to, else CMaNGOS's zone.
@@ -1059,6 +1124,8 @@ Write-Host ("Storylines: the client's QuestLine has {0} rows and QuestLineXQuest
     @($questList | Where-Object { $_.storyline }).Count, @($questList | Where-Object { $_.storyline } | Select-Object -ExpandProperty storyline -Unique).Count)
 Write-Host ("Prerequisites: {0} quests have one, {1} of them from the quest line order (each step after the one before it, where the places agree) and {2} by hand; {3} removed by hand." -f
     @($questList | Where-Object { $_.prereq }).Count, $fromLine, $prereqsSet, $prereqsRemoved)
+Write-Host ("Classes: {0} quests are for some classes only; {1} took it from the items that start them, {2} from their prerequisite and {3} by hand." -f
+    @($questList | Where-Object { ($_.class -band $playableClasses) -ne $playableClasses }).Count, $classFromItems, $classFromPrereq, $classByHand)
 Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2} quests the game hasn't answered reward reputation in CMaNGOS." -f
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f

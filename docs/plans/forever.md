@@ -1189,6 +1189,62 @@ rests on, and says "taken to" where no one reported it first-hand.
   prerequisite cases. The data before these rows fails 20 of its 25 checks. Reachability is unchanged
   on both games, the table audit finds the same 5, and two imports give the same files.
 
+### Class quests the game files under a zone (11 October 2026)
+
+A quest CMaNGOS lacks got class 8191 (every class) unless the game files it under a class's heading, so
+Zephras Isle's Call of Earth showed to every class. Most of Forever's new class quests are under a class
+heading (the dwarf shamans' Call of Earth, 94373 to 94375, is under Shaman), but not all. Checked against
+the beta's quest cache (build 70338, with the two earlier probe caches), the client's tables on wago.tools
+(1.60.1.70338, the newest), CMaNGOS z2815, QuestieDB (fc0668b, as evidence only), Questie's issues and
+Wowhead's Forever and Classic pages:
+
+- **The game's quest records carry no class.** None of the 122 numbers in a cache record matches
+  CMaNGOS's class over the 391 class quests both have, as TrinityCore's quest record has none. The
+  client's `QuestLine` (3 rows) and `QuestPOIBlob` have no player conditions.
+- **The items that start quests do.** `ItemSparse` gives each item's `StartQuestID` and
+  `AllowableClass`: of 555 starting items, 14 are for some classes only, 13 of them already match
+  our class, and Nostro's Compendium of Dragon Slaying (18401), for warriors and paladins, starts
+  Foror's Compendium (7507), which CMaNGOS gives every class (Questie #1728: "only available to
+  Warriors and Paladins"). Retail's 25 such items for quests we have all match.
+- **A quest that teaches a class's spell** isn't a rule: the reward spell is often a buff cast on the
+  player (Rites of the Earthmother, 755, casts a druid's Mark of the Wild), so it is evidence only.
+- **The addon counts a prerequisite the character can't take as met** (Blizzard's lists name both
+  factions' versions), so a chain's first quest given a class makes its next steps look open to the
+  other classes. All 318 quests whose only prerequisite is for some classes were already within them.
+- **Wowhead's Forever pages carry Season of Discovery's facts for old quests**: Stalk With The
+  Earthmother (76156) says Orc, Tauren and Troll where the game says Tauren, and Grant's Shield (79362)
+  says Shaman and Bath'rah where the game starts it from an item. They aren't Forever evidence.
+
+The user took the recommendations:
+
+- **The importer** gives a quest that no NPC or object starts the class of the items that start it,
+  when `ItemSparse` lets only some classes use them, over CMaNGOS's and the heading's, and a quest whose
+  only prerequisite is for some classes those classes, down the chain. A new hand list,
+  `forever-quest-class-decisions.csv`, sets the class of quests nothing else limits, over all of these,
+  with the evidence for each.
+- **Call of Earth (92466 to 92468) is for shamans**, by hand: Windshaper Boro, whom the shamans' Embracing
+  the Elements (92484) sends them to, gives it; its three steps are those of the dwarf and Horde shamans'
+  Call of Earth; the last one rewards their Earth Totem and Stoneskin Totem; and QuestieDB's Forever
+  corrections say so too. No first-hand report, and not yet tried in game ([open-items.md](open-items.md)).
+- **Foror's Compendium (7507)** is for warriors and paladins, from its item, and so are The Forging of
+  Quel'Serrar (7508, 7509) after it.
+- **Retail** reads the same `ItemSparse` columns as a third client-side source in
+  `Get-WagoQuestRequirements.ps1` (step 1b), for the audit to compare: 36 quests, nothing new.
+- **Left as they are**, with no Forever evidence: Stalk With The Earthmother (76156, 76160, 76240;
+  Season of Discovery's warrior and shaman rune chain, Questie #5250 and #5466; Forever made it level 10
+  and Tauren only), Grant's Shield and Silvia's Sword (79362, 79363; Season of Discovery's shaman quests,
+  now in a set of four with Ira's Dagger and Merrick's Bow), the 41 library books under Special (78124 to
+  78150, 79091 to 79097, 79535 to 79952, 81947 to 82208, 84395 to 84402; mages only in Season of
+  Discovery, and QuestieDB's Forever corrections limit only Magma or Lava?, 84396) and Sparring Match
+  (99108, whose text begins "Though you are not a warrior"). About 20 more quests with a class's
+  words in their text are for everyone: their giver is a paladin, priestess or trainer.
+- **The result:** 888 quests are for some classes only, 6 more than before: 1 from its item, 2 from
+  their prerequisite and 3 by hand. Reachability is unchanged (15 of 113 categories open empty for its
+  Blood Elf Death Knight, as before), the table audit finds the same 5, and two imports give the same
+  files. `Test-Completions.lua` checks on Forever's TOC that an Orc warrior can't take Call of Earth and
+  an Orc shaman can, and that a Human mage can't take Foror's Compendium or the Forging of Quel'Serrar
+  while a warrior can, the Forging needing the Compendium; the data before fails 2 of its 5 checks.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -1332,3 +1388,6 @@ rests on, and says "taken to" where no one reported it first-hand.
   10 warrior and mage groups, Securing the Supply Lines, Call of Earth and 14 other quests' prerequisites, and the
   list can now add links and remove prerequisites. See "CMaNGOS's other links, reviewed against
   first-hand reports".
+- 2026-10-11: Call of Earth on Zephras Isle is for shamans, from a new hand list of classes; Foror's
+  Compendium takes its item's class from the client's `ItemSparse`, and a quest whose only prerequisite
+  is for some classes is for them too (#307). See "Class quests the game files under a zone".
