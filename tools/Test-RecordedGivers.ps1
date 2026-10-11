@@ -1272,6 +1272,81 @@ try {
     [IO.File]::WriteAllText("$root\tools\recordings\players\p10\QuestCompletist.lua", $bigText)
     $run = Invoke-Tool $root
     Check ($run.Report -match 'Not read: p10 .*larger than 8 MB') 'G1: the same file from a player is refused, at 8 MB'
+
+    # ---------- H: what Forever's importer takes from the ledger (Test-ForeverImport.ps1 runs the importer itself) ----------
+    function Put-Row($ledger, [string]$role, [string]$kind, [int]$npc, [string]$src, [string]$name = '', [string]$map = '', [string]$x = '', [string]$y = '', [string]$quest = '') {
+        $row = New-RecordedRow 'forever' $role
+        $row.Kind = $kind; $row.Npc = "$npc"; $row.Name = $name; $row.Map = $map; $row.X = $x; $row.Y = $y; $row.Quest = $quest; $row.Src = $src
+        $row.FirstBuild = '70338'; $row.LastBuild = '70338'
+        $ledger[(Get-RecordedKey $row)] = $row
+    }
+    $led = New-LedgerTable
+    # 100: two places 1.4 apart (one) | 200: two 1.6 apart (two) | 300: a lone player's place and name | 400: no position
+    # 500: two trusted names | 600: the same place under two sources (own and a player) | 700: a second player's place
+    Put-Row $led 'giver' 'Creature' 100 'own-forever_probe_70338=1' 'Hundred'
+    Put-Row $led 'spot' 'Creature' 100 'own-forever_probe_70338=5' '' '1411' '20' '20'
+    Put-Row $led 'spot' 'Creature' 100 'own-forever_probe_70338=1' '' '1411' '21.4' '20'
+    Put-Row $led 'spot' 'Creature' 200 'own-forever_probe_70338=2' '' '1411' '40' '40'
+    Put-Row $led 'spot' 'Creature' 200 'own-forever_probe_70338=6' '' '1411' '41.6' '40'
+    Put-Row $led 'giver' 'Creature' 300 'p01=1' 'Lone'
+    Put-Row $led 'spot' 'Creature' 300 'p01=4' '' '1411' '10' '10'
+    Put-Row $led 'spot' 'Creature' 400 'own-forever_probe_70338=3' '' '1411' '-1' '-1'
+    Put-Row $led 'giver' 'Creature' 500 'own-forever_probe_70338=1' 'First Name'
+    Put-Row $led 'giver' 'Creature' 500 'own-forever_probe_70338=1' 'Second Name'
+    Put-Row $led 'spot' 'Creature' 500 'own-forever_probe_70338=1' '' '1412' '5' '5'
+    Put-Row $led 'spot' 'Creature' 600 'own-forever_probe_70338=2;p01=9' '' '1411' '70' '70'
+    Put-Row $led 'spot' 'Creature' 700 'p01=2;p02=2' '' '1411' '80' '80'
+    Put-Row $led 'spot' 'Creature' 800 'own-forever_probe_70338=3' '' '1411' '90' '90'
+    Put-Row $led 'spot' 'Creature' 800 'own-forever_probe_70338=1' '' '1412' '90' '90'
+    Put-Row $led 'offer' 'Creature' 100 'own-forever_probe_70338=1' '' '' '' '' '5000'
+    Put-Row $led 'offer' 'GameObject' 150 'own-forever_probe_70338=1' '' '' '' '' '5000'
+    Put-Row $led 'offer' 'Creature' 300 'p01=1' '' '' '' '' '5001'
+    Put-Row $led 'offer' 'Creature' 700 'p01=1;p02=1' '' '' '' '' '5002'
+    $inputs = Get-RecordedGiverInputs (Get-RecordedModel $led 'forever')
+    $spotsOf = { param($key) (@($inputs.Spots[$key] | ForEach-Object { "$($_.UiMap):$($_.X),$($_.Y)=$($_.Seen)" }) -join ' ') }
+    Equal (& $spotsOf 'Creature:100') '1411:20,20=6' 'H1: two places 1.4 points apart are one place, at the more visited, with both visit counts'
+    Equal (& $spotsOf 'Creature:200') '1411:41.6,40=6 1411:40,40=2' 'H1: two 1.6 apart are two, the more visited first'
+    Check (-not $inputs.Spots.ContainsKey('Creature:300')) 'H1: a place only one player saw is left out'
+    Check (-not $inputs.Names.ContainsKey('Creature:300')) 'H1: and so is the name'
+    Check (-not $inputs.Spots.ContainsKey('Creature:400')) 'H1: a giver the game gave no position has no place'
+    Check (-not $inputs.Names.ContainsKey('Creature:500') -and $inputs.Spots.ContainsKey('Creature:500')) 'H1: two trusted names leave a giver without one, but not without its place'
+    Equal $inputs.Names['Creature:100'] 'Hundred' 'H1: a trusted name is the giver''s'
+    Equal (& $spotsOf 'Creature:600') '1411:70,70=2' 'H1: a lone player''s visits add nothing to an own place'
+    Equal (& $spotsOf 'Creature:700') '1411:80,80=4' 'H1: two players'' place counts, with their visits'
+    Equal (& $spotsOf 'Creature:800') '1411:90,90=3 1412:90,90=1' 'H1: one spot on two maps is two places'
+    Equal ($inputs.Offers[5000] -join ' ') 'Creature:100 GameObject:150' 'H2: the givers of a quest are the trusted offers, sorted'
+    Check (-not $inputs.Offers.ContainsKey(5001)) 'H2: an offer only one player saw is left out'
+    Equal ($inputs.Offers[5002] -join ' ') 'Creature:700' 'H2: two players'' offer counts'
+
+    function New-Facts([string]$tag, $givers, $spots, $offers, $turnins = @()) {
+        return [pscustomobject]@{ Tag = $tag; Game = 'forever'; Givers = $givers; Spots = $spots; Offers = $offers; Turnins = $turnins; Starts = @() }
+    }
+    $tag = 'own-forever_probe_70338'
+    $facts = New-Facts $tag @([pscustomobject]@{ Kind = 'Creature'; Npc = 9; Name = 'Nine'; Build = 70338 }, [pscustomobject]@{ Kind = 'Creature'; Npc = 8; Name = ''; Build = 70338 }) `
+        @([pscustomobject]@{ Kind = 'Creature'; Npc = 9; Map = 1411; X = '12.5'; Y = '14'; Visits = 5; Build = 70338 }) `
+        @([pscustomobject]@{ Kind = 'Creature'; Npc = 9; Quest = 77 }) @([pscustomobject]@{ Kind = 'Creature'; Npc = 9; Quest = 78 })
+    $none = New-LedgerTable
+    $gaps = @(Find-RecordedLedgerGaps $none $facts)
+    Equal $gaps.Count 3 'H3: an empty ledger lacks the giver, its spot and its offer (a giver with no name has no row, and turn-ins are not asked for)'
+    Equal $gaps[0] 'giver Creature:9 ''Nine''' 'H3: the giver is named'
+    Equal $gaps[1] 'spot of Creature:9 on map 1411 at 12.5,14' 'H3: the spot is described'
+    Equal $gaps[2] 'offer of quest 77 by Creature:9' 'H3: so is the offer'
+    $full = New-LedgerTable
+    [void](Add-RecordedFacts $full $facts)
+    Equal @(Find-RecordedLedgerGaps $full $facts).Count 0 'H4: a ledger that step 6d has read the facts into lacks nothing'
+    Check ((Get-RecordedModel $full 'forever').Givers.ContainsKey('Creature:9')) 'H4: and the model has the giver'
+    $other = New-LedgerTable
+    [void](Add-RecordedFacts $other (New-Facts 'own-forever' $facts.Givers $facts.Spots $facts.Offers))
+    Equal @(Find-RecordedLedgerGaps $other $facts).Count 3 'H5: the same notes under another source do not count: the ledger must hold the file''s own'
+    $more = New-Object System.Collections.Generic.List[object]
+    $more.Add([pscustomobject]@{ Kind = 'Creature'; Npc = 9; Map = 1411; X = '12.5'; Y = '14'; Visits = 7; Build = 70338 })
+    $higher = New-Facts $tag $facts.Givers $more $facts.Offers
+    $gaps = @(Find-RecordedLedgerGaps $full $higher)
+    Equal $gaps.Count 1 'H6: a spot seen more often in the file than in the ledger is a gap'
+    Equal $gaps[0] 'spot of Creature:9 on map 1411 at 12.5,14, seen 7 times in the file and 5 in the ledger' 'H6: and the numbers are said'
+    $lower = New-Object System.Collections.Generic.List[object]
+    $lower.Add([pscustomobject]@{ Kind = 'Creature'; Npc = 9; Map = 1411; X = '12.5'; Y = '14'; Visits = 2; Build = 70338 })
+    Equal @(Find-RecordedLedgerGaps $full (New-Facts $tag $facts.Givers $lower $facts.Offers)).Count 0 'H7: and a ledger with more than the file is not stale'
 }
 finally {
     Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue
