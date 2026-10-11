@@ -1229,4 +1229,4 @@ The user took the recommendations:
   first-hand reports".
 - 2026-10-11: Call of Earth on Zephras Isle is for shamans, from a new hand list of classes; Foror's
   Compendium takes its item's class from the client's `ItemSparse`, and a quest whose only prerequisite
-  is for some classes is for them too. See "Class quests the game files under a zone".
+  is for some classes is for them too (#307). See "Class quests the game files under a zone".

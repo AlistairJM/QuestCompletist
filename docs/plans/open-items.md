@@ -88,7 +88,7 @@ again.
   If so, a `prereq` `REMOVE` row each. The warrior, mage, Silithus and Call of Earth rows rest on
   Questie's issues and Wowhead's comments and are checked offline by `Test-Completions.lua`
   ([forever.md](forever.md), "CMaNGOS's other links, reviewed against first-hand reports").
-- **Call of Earth on Zephras Isle is for shamans** (11 October 2026, stacked on the three above; data
+- **Call of Earth on Zephras Isle is for shamans** (#307, 11 October 2026, stacked on the three above; data
   only). One question the game alone answers: does Windshaper Boro in Thendal Grove offer Call of Earth
   (92466) to a Windshaper of another class at level 3 or 4? If he does, the three rows of
   `forever-quest-class-decisions.csv` go ([forever.md](forever.md), "Class quests the game files under
