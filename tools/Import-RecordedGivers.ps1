@@ -223,6 +223,7 @@ $waivedClass = {
     if ($null -ne $questV2 -and -not $questV2.Contains($quest)) { $classes.Add('not in QuestV2') }
     if ($taskKind.ContainsKey($quest)) { $classes.Add('task quest (not a world or bonus kind)') }
     if ([int]$q.category -eq 121) { $classes.Add('Landfall') }
+    if ($systemCategories -contains [int]$q.category) { $classes.Add('system category') }
     if ($q.holiday -or $holidayCategories -contains [int]$q.category) { $classes.Add('holiday') }
     if ($q.profession) { $classes.Add('profession') }
     if (@(0, 1, 2, 4, 128) -notcontains [int]$q.type) { $classes.Add("quest type $($q.type)") }

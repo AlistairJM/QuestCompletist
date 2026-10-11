@@ -501,6 +501,7 @@ try {
     $notAllowed = @($allowedIds | Where-Object { (Find-Pin $pins $_).Count -ne 1 })
     Equal ($notAllowed -join ',') '' 'E15: a quest a creature offered in World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver''s Headquarters or Weekly Events gets a pin'
     Equal (@($heldCats + $allowedCats | Sort-Object -Unique).Count) 20 'E15: the held and the allowed categories are the 20 system categories'
+    Check ($run.Report -match 'system category 6') 'E15: the report counts the six quests the allowed categories let in, as a class of their own'
     $missing = @($okIds | Where-Object { (Find-Pin $pins $_).Count -ne 1 })
     Equal ($missing -join ',') '' 'E15: a holiday, Landfall, daily, weekly, repeatable and unkinded task quest does'
 
