@@ -26,6 +26,11 @@ holiday ("HOLIDAYS" unless it has filter=), since the addon shows a holiday's qu
 is unticked. A mismatch is a finding too, and a holiday under the battlegrounds filter needs one
 added to qcCalendarFilters.
 
+Retail's ContentTuning table is one the tools read: QuestLevels.ps1 turns its level ranges into the
+quests' minimum levels (Apply-QuestMinLevels.ps1). It is cached as ContentTuning-<build>.csv the first
+time, and a build whose copy lacks a column the formula reads (MinLevelSquish, MaxLevelSquish,
+MinLevelScalingOffset or MaxLevelScalingOffset) is a column change, whether or not an earlier copy exists.
+
 WoW's Anniversary is a new Holidays row every year, named with the year's ordinal ("WoW's 22nd
 Anniversary" is 1808), so its entry is compared with the rows of those names, $yearlyNames below,
 and not with the rows named plain "WoW's Anniversary" (590 and 1587 to 1590), which the calendar
@@ -47,6 +52,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 if (-not $Build -and -not $ForeverBuild) { throw "Give -Build (retail) and/or -ForeverBuild." }
+. "$PSScriptRoot\QuestLevels.ps1"
 $questLike = 'Quest|POI|UiMap|UIMap|Area|Journal|Campaign|Holiday|ContentTuning|Waypoint|Storyline|Expansion'
 $yearlyNames = @{ "WoW's Anniversary" = "^WoW's \d+(?:st|nd|rd|th) Anniversary$" }
 
@@ -88,6 +94,7 @@ function Compare-Build([string]$build, [string]$game) {
         }
     }
     $changed = 0
+    $tuningDiffers = $false
     $dir = Join-Path $DownloadDir $build
     New-Item -ItemType Directory -Force $dir | Out-Null
     foreach ($t in ($cached.Keys | Sort-Object)) {
@@ -99,9 +106,19 @@ function Compare-Build([string]$build, [string]$game) {
         $old = ((Get-Content $cached[$t].File.FullName -TotalCount 1) -replace '^\xEF\xBB\xBF', '').Trim()
         if ($new -eq $old) { continue }
         $changed++
+        if ($t -eq 'ContentTuning') { $tuningDiffers = $true }
         $newCols = $new -split ','; $oldCols = $old -split ','
         $plus = @($newCols | Where-Object { $oldCols -notcontains $_ }); $minus = @($oldCols | Where-Object { $newCols -notcontains $_ })
         Write-Output "  $t`: columns changed against $($cached[$t].File.Name): added $(if ($plus) { $plus -join ', ' } else { 'none' }); gone $(if ($minus) { $minus -join ', ' } else { 'none' })"
+    }
+    if ($game -eq 'retail') {
+        $tuningPath = Get-BuildTable $build 'ContentTuning' $dir
+        $tuningHeader = ((Get-Content $tuningPath -TotalCount 1) -replace '^\xEF\xBB\xBF', '').Trim() -split ','
+        $lacking = @($script:TuningColumns | Where-Object { $tuningHeader -notcontains $_ })
+        if ($lacking.Count -gt 0) {
+            Write-Output "  ContentTuning: no column $($lacking -join ', '), which QuestLevels.ps1 reads for the quests' minimum levels"
+            if (-not $tuningDiffers) { $changed++ }
+        }
     }
     Write-Output "$($cached.Count) tables the tools read checked: $changed changed."
     $script:changedTotal += $changed

@@ -103,22 +103,25 @@ the list prints the bare name with no bracket, the low-level filter (the map's t
 quest as low, and the sort puts it first. `qcQuestMinLevel[questId]` is the level a character needs to
 take the quest, and the tooltip's "Requires Level" line, the grey pins and the requirements-not-met
 filter read `qcQuestMinLevel[questId] or level`, where 0 or below asks for nothing. The table holds only
-the quests whose minimum is not their level, and it keeps a 0 (no minimum). Retail's table is empty
-because its `level` is already read as the minimum: it is meant to be the API's
-`min_character_level`. Today it equals the API's for 28,477 of the 30,066
-quests whose API record gives a minimum (94.7%) and differs for 1,589. Two records give none,
-4,955 of the 35,023 quests have no API record, and 224 have level 0 (246 when counted on 9 October 2026,
-`data\quests.jsonl` against the API cache in `tools\quest_api_cache`). Refreshing retail's levels
-from the API is a separate decision. Forever's `level` is the quest's own level, so its table holds
-4,194 of its 5,097 quests (10 October 2026). The importer fills it from the game's quest cache, and
-from CMaNGOS where the game hasn't answered. The code doesn't ask which game it is on, only whether
-the table has an entry.
+the quests whose minimum is not their level, and it keeps a 0 (no minimum); a minimum of 0 or 1 against
+a level of 0 or 1 is no difference and gets no entry. Retail's table is filled by
+`Apply-QuestMinLevels.ps1` ([step 2g](#2g-minimum-levels)) from Blizzard's data, the API's
+`min_character_level` where the API has a record and else the client's level range for the quest's
+content tuning, and holds 1,623 of the 35,023 quests (11 October 2026). Retail's `level` is not
+refreshed: of the 30,066 quests whose API record gives a minimum it equals the API's for 28,477, is a 0
+against a 1 for 191 (the same thing), and differed for 1,398, which now have the API's number in the
+table; 463 quests no source speaks for, and one whose tuning has a minimum beyond the level cap, keep
+what they had, and the 17 on tuning 0 have no entry, so their own level is their gate. Forever's
+`level` is the quest's own level, so its table holds 4,194 of its 5,097
+quests (10 October 2026). The importer fills it from the game's quest cache, and from CMaNGOS where
+the game hasn't answered. The code doesn't ask which game it is on, only whether the table has an
+entry.
 
 **Every tool that changes quests or pins does it through the data files** and rebuilds the Lua:
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Sync-QuestProfessions.ps1`,
 `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`,
 `Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`, `Build-QuestLines.ps1`,
-`Sync-QuestPrerequisites.ps1`, `Apply-ClientQuestGivers.ps1`, `Apply-PinNpcIds.ps1`,
+`Sync-QuestPrerequisites.ps1`, `Apply-QuestMinLevels.ps1`, `Apply-ClientQuestGivers.ps1`, `Apply-PinNpcIds.ps1`,
 `Fill-PinNpcIds.ps1`, `Import-RecordedGivers.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
@@ -176,7 +179,8 @@ then every tool refuses to save.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest build.
 2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
    table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
-   and the tools read 26 of them (14 for Forever). Run
+   and the tools read 32 of them on retail and 16 on Forever (counted on 11 October 2026; there were 26
+   and 14 at the first review). Run
    ```powershell
    powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-ClientTables.ps1 -Build <retail build> -ForeverBuild <Forever build>
    ```
@@ -184,7 +188,11 @@ then every tool refuses to save.
    lists the tables added and removed since the newest earlier list for that game (quest-related
    names flagged), and compares the column names of every table the tools read with the cached
    copy in `tools\`. A column change exits with 1: check the tool that reads that table, and the
-   plan docs, before the sweep goes on. A new table or column that could serve the addon is a
+   plan docs, before the sweep goes on. Retail's `ContentTuning` is one of them
+   (`Apply-QuestMinLevels.ps1` reads four of its columns): the check caches it as
+   `ContentTuning-<build>.csv` the first time, and a copy that lacks `MinLevelSquish`,
+   `MaxLevelSquish`, `MinLevelScalingOffset` or `MaxLevelScalingOffset` exits with 1 whether or not an
+   earlier copy exists. A new table or column that could serve the addon is a
    finding to plan, not just to note. It also compares `qcHolidays` (see [Holidays](#holidays))
    with both games' calendar tables: an ID the client has under one of our holidays' names that
    `qcHolidays` lacks exits with 1 too, and goes into `qcHolidays` before the sweep goes on, as
@@ -301,6 +309,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
+| 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -563,6 +572,81 @@ data, and what it can't, is in [plans/retail-quest-cache.md](plans/retail-quest-
 to know before reading its
 file: `startItem` is the item the quest hands over when it is accepted, not the item that begins it,
 and the record holds no level, only the ContentTuning ID that Blizzard's level range is a function of.
+
+### 2g. Minimum levels
+
+`Apply-QuestMinLevels.ps1` gives each retail quest the level a character needs to take it, so that
+the tooltip's "Requires Level" line, the grey pins and "Hide quests with unfinished requirements" agree
+with the game (the user's decision of 11 October 2026, option C of open-items.md rows 14 and 8). The
+level goes in the quest's `minLevel` field, which the build writes to `qcQuestMinLevel`; the quest's own
+`level` is not touched, because the list's bracket, its sort and the low-level filter read that
+([the data files](#the-quest-and-pin-data-files)). Forever's table is filled by its importer (step 10);
+this is retail's. It needs the API cache (step 1), the quest cache (step 2e) and the task table (step 1b):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestLevels.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-QuestMinLevels.ps1 -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-QuestMinLevels.ps1
+```
+
+Where a minimum comes from (`QuestLevels.ps1`), the first that has one:
+- **The API's `min_character_level`**, for the 30,066 quests whose record gives one.
+- **The client's level range.** A quest's `ContentTuningID` is in the quest cache for every quest it
+  holds and in the task table for task quests (the cache's wins; they agree), and the `ContentTuning`
+  table gives the range. A tuning's minimum is `MinLevelSquish` plus a base that
+  `MinLevelScalingOffset` picks: 0 adds nothing, 1 adds 1, 2 adds the level cap (90) and 3 the cap before
+  it (80). The bases are what the API's own minimums say, not a documented rule. A minimum beyond the cap
+  (tuning 949's 255, which marks a quest nobody can take) is no level and gives none.
+- **Tuning 0**, no range: nothing says what the minimum is, so the quest gets no `minLevel` (one it holds
+  is taken away) and its own level stays its gate, as before step 2g. That is the user's decision of 11
+  October 2026: no quest the API gives a minimum for is on tuning 0 in the cache or the task table, and on
+  tuning 0 TrinityCore falls back to the quest's own `MinLevel`, which our files don't hold, so nothing
+  can test that tuning 0 means no minimum; TrinityCore's own table even puts 67 quests the API gives a
+  minimum for on tuning 0 (below). An API minimum would still decide for a quest on tuning 0.
+- **Nothing**, for a quest in neither the cache nor the task table, or on a tuning the formula can't
+  vouch for: it keeps what it had.
+
+The table is downloaded for the cache's build when `tools\` lacks it (`ContentTuning-<build>.csv`; `-Refresh`
+fetches it again, `-Build` names another build); the sweep's step 2b caches it too.
+
+Before it writes anything the script tests the formula against every quest that has both an API minimum
+and a tuning, and stops, changing nothing, unless at least 99% of at least 20,000 agree (`-MinAgreement`,
+`-MinTested`). On 11 October 2026 (ContentTuning of build 12.1.0.69933, the quest cache of that build, the
+API cache of 12.1.0_68914) **29,289 of 29,289 agreed** (offset type 0: 29,068; type 1: 210; type 2: 7;
+type 3: 4); the API's other 777 minimums are for quests the cache and the task table have no tuning ID
+for. A tuning whose own API quests disagree, or whose offset type no API quest has confirmed, is not used
+for quests the API has no record of. A cross-check on TrinityCore's `quest_template.ContentTuningID`
+(TDB 12.1.0.26091, once, by hand, not part of the tool) gave a tuning for 721 of those 777: the formula
+agreed on 654 and the other 67 have tuning 0 there, quests old enough to have a minimum in the API and
+none in the table. The API shows the minimum without `AllowedMinOffset` (-1, -2 or -4 on 2,522 of the
+tested quests, nearly all of the newer expansions): none of them agrees with the minimum plus the offset. Whether
+the game lets a character take such a quest that many levels early is not known.
+
+It writes `minLevel` only where the minimum differs from `level`, treating 0 and 1 as the same, and
+writes none for a quest on tuning 0 with no API minimum. A second run changes nothing, byte for
+byte; after step 6 has added quests (or the task quests of open-items.md decision 1 are merged) a rerun
+covers just those and any quest whose source has moved. `-WhatIf` reports the sources, the changes by
+direction (the gate lowered or raised) and examples, and writes no data (a missing ContentTuning table is still downloaded into `tools\` first); `-Check` is the same and exits 1
+when the data isn't what the sources say, for a Test- or Audit- step to call. The run of 11 October
+2026: 1,623 quests changed, all of them a `minLevel` added (no other field of any quest, and no pin):
+1,398 from the API (1,180 lowered, 218 raised) and 225 from the client's ranges (187 lowered, 38
+raised), 1,367 lowered and 256 raised in all. The biggest blocks are Zaralek Cavern (265), Mechagon (226)
+and the Emerald Dream (201), all lowered. The 17 quests on tuning 0 got none: an earlier rule gave the
+five of them whose level is above 0 (9422, 50341, 54255, 54256 and 89346) a gate of 0, and the user chose
+to leave them as they were; the other 12 are level 0.
+
+`Compare-QuestLevels.ps1` is the check, which writes nothing: the formula's test, then every quest
+against its sources, in two classes kept in `docs\plans\quest-levels-baseline.csv` (`-UpdateBaseline`
+rewrites it once the differences are read). Class D is a quest whose `minLevel` is not what its sources say:
+a quest that matched in the baseline and doesn't now (a hotfix to a tuning, a quest added or its level
+changed by another step) fails the run, and `Apply-QuestMinLevels.ps1 -WhatIf` says what to set. Class N is
+a quest no source speaks for (481 on 11 October 2026: 463 that neither the quest cache nor the task table
+has, 38708, and the 17 on tuning 0); a new one is listed, since a source was lost, and doesn't fail. A
+quest on tuning 0 that holds a `minLevel` is class D, so one of them gaining a gate again fails the run.
+Baseline: D 0, N 481.
+Because the formula is tested against the API on every run, a new level cap, or a change in what
+`MinLevelScalingOffset` means, fails here. `Test-QuestLevels.ps1` tests all three scripts on made-up quests
+and, with the real files, on a copy of the data (177 checks).
 
 ### 3. Quest types
 
@@ -1019,8 +1103,9 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   quests that need a level the character has, quests that need one it lacks, and pins greyed or not
   wrongly. It checks the opposite mistake too: the low-level filter, and the bracket and sort of the
   list (its first 16 rows in each category), must still follow the quest's own `level`, where 0 or
-  below is no level (no bracket, never low). Retail's two levels are the same for every quest, so only
-  Forever's run can catch a mix-up there. Made-up quests with those levels check the same, and the
+  below is no level (no bracket, never low). Since step 2g retail's two levels differ for 1,623 quests,
+  so both games' runs can catch a mix-up there (with the requirements filter ignoring `qcQuestMinLevel`,
+  retail's run finds 2,828 problems; with the grey pins and the tooltip line ignoring it, 6,748). Made-up quests with those levels check the same, and the
   minimum level at 0, apart from the data (33 checks). The summary has one line per level and one for
   the made-up quests, and each must read 0. A wrong reading prints `FAILED` and ends the run with
   exit status 1.
@@ -1696,6 +1781,11 @@ git diff --stat
   run `Test-QuestCache.ps1`, `Test-CompareQuestCache.ps1` and `Test-CompareQuestReputation.ps1`.
   They build their own caches, API records and tables in a scratch folder; each must end "N checks
   passed, 0 failed".
+- For changes to `QuestLevels.ps1`, `Apply-QuestMinLevels.ps1` or `Compare-QuestLevels.ps1` (retail's minimum
+  levels, step 2g), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLevels.ps1`. It
+  makes quests, API records, a quest cache and a ContentTuning table in a scratch folder (nothing downloaded),
+  and with the real files in `tools\` (or `-RealToolsDir`) also applies the formula to a copy of the data. It
+  must say "0 failed".
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
@@ -1784,8 +1874,8 @@ git log --diff-filter=D --name-only --oneline -- tools
 
 | Source | Used for | How |
 |---|---|---|
-| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d) |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks; for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d) |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`); the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
