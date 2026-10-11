@@ -2966,9 +2966,9 @@
 {"id":7504,"name":"Holy Bologna: What the Light Won't Tell You","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":16,"minLevel":54}
 {"id":7505,"name":"Frost Shock and You","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":64,"minLevel":54}
 {"id":7506,"name":"The Emerald Dream...","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":1024,"minLevel":54}
-{"id":7507,"name":"Foror's Compendium","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191}
-{"id":7508,"name":"The Forging of Quel'Serrar","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191,"prereq":7507}
-{"id":7509,"name":"The Forging of Quel'Serrar","level":60,"zone":"Onyxia's Lair","category":2159,"type":2,"faction":3,"race":0,"class":8191,"prereq":7508}
+{"id":7507,"name":"Foror's Compendium","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":3}
+{"id":7508,"name":"The Forging of Quel'Serrar","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":3,"prereq":7507}
+{"id":7509,"name":"The Forging of Quel'Serrar","level":60,"zone":"Onyxia's Lair","category":2159,"type":2,"faction":3,"race":0,"class":3,"prereq":7508}
 {"id":7541,"name":"Service to the Horde","level":40,"zone":"Dustwallow Marsh","category":15,"type":1,"faction":2,"race":0,"class":8191,"prereq":1262,"minLevel":30}
 {"id":7562,"name":"Mor'zul Bloodbringer","level":58,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256,"minLevel":60}
 {"id":7563,"name":"Rage of Blood","level":58,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256,"prereq":7562,"minLevel":60}
@@ -4298,9 +4298,9 @@
 {"id":92463,"name":"The Cirrusfly Queen","level":3,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"minLevel":2}
 {"id":92464,"name":"Elemental Unrest","level":3,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"minLevel":2}
 {"id":92465,"name":"Agitators","level":3,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"prereq":92464,"minLevel":2}
-{"id":92466,"name":"Call of Earth","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"minLevel":3}
-{"id":92467,"name":"Call of Earth","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":92466,"minLevel":3}
-{"id":92468,"name":"Call of Earth","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":3}
+{"id":92466,"name":"Call of Earth","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":64,"minLevel":3}
+{"id":92467,"name":"Call of Earth","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":2,"race":67109042,"class":64,"prereq":92466,"minLevel":3}
+{"id":92468,"name":"Call of Earth","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":2,"race":67109042,"class":64,"minLevel":3}
 {"id":92469,"name":"Return to Rorian","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"prereq":92465,"minLevel":3}
 {"id":92470,"name":"Foul Matriarch","level":5,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"minLevel":2}
 {"id":92471,"name":"Aetheen of the Gales","level":4,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191}

@@ -11,6 +11,9 @@ is partial by nature:
   - QuestPOIBlob.PlayerConditionID -> PlayerCondition RaceMasks/ClassMask, quest-giver
     POIs only (ObjectiveIndex -1; turn-in POIs carry per-class-hall conditions that say
     nothing about who can take the quest), and only when every giver POI carries a mask.
+  - ItemSparse.StartQuestID -> AllowableClass: the classes that may use the items that start
+    a quest, class only. An NPC may start the same quest for anyone, so a disagreement is for
+    review, as every row here is. WoW: Forever's importer reads the same columns.
 A zero or all-bits mask means "no filter", which is treated as no information.
 
 Output: quest_wago_requirements.csv (QuestID, WagoFaction, WagoRace, WagoClass, Source),
@@ -24,7 +27,7 @@ param(
 
 $ProgressPreference = "SilentlyContinue"
 
-foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "QuestPOIBlob", "QuestV2", "QuestInfo") {
+foreach ($t in "QuestV2CliTask", "PlayerCondition", "ChrRaces", "QuestPOIBlob", "QuestV2", "QuestInfo", "ItemSparse") {
     $path = "$toolsDir\$t.csv"
     if ($Refresh -or -not (Test-Path $path)) {
         Write-Output "Downloading $t..."
@@ -105,6 +108,18 @@ foreach ($q in $blobConds.Keys) {
     if ($race -or $class) { $result[$q] = @{ Race = $race; Class = $class; Source = "POICondition" } }
 }
 
+# An AllowableClass of -1 or 0 is any class, so one such item leaves the quest open to all.
+$itemClasses = @{}
+Import-Csv "$toolsDir\ItemSparse.csv" | Where-Object { $_.StartQuestID -ne "0" } | ForEach-Object {
+    $class = Convert-ClassMask $_.AllowableClass
+    if (-not $class) { $class = $ALL_CLASSES }
+    $itemClasses[$_.StartQuestID] = [long]$itemClasses[$_.StartQuestID] -bor $class
+}
+foreach ($q in $itemClasses.Keys) {
+    if ($result.ContainsKey($q) -or $itemClasses[$q] -eq $ALL_CLASSES) { continue }
+    $result[$q] = @{ Race = 0; Class = $itemClasses[$q]; Source = "ItemSparse" }
+}
+
 $outFile = "$toolsDir\quest_wago_requirements.csv"
 # A contiguous low-bit mask (e.g. class 4095 = all but Evoker) is Blizzard's own "everything
 # that existed at the time", same as a stale all-classes sentinel - not a real restriction.
@@ -123,5 +138,6 @@ $result.GetEnumerator() | Sort-Object { [int]$_.Key } | ForEach-Object {
         Source = $_.Value.Source
     }
 } | Export-Csv $outFile -NoTypeInformation -Encoding utf8
-$cliCount = @($result.Values | Where-Object { $_.Source -eq "CliTask" }).Count
-Write-Output "Quests with a client-side restriction: $($result.Count) (CliTask $cliCount, POICondition $($result.Count - $cliCount)) -> $outFile"
+$bySource = @{}
+foreach ($source in "CliTask", "POICondition", "ItemSparse") { $bySource[$source] = @($result.Values | Where-Object { $_.Source -eq $source }).Count }
+Write-Output "Quests with a client-side restriction: $($result.Count) (CliTask $($bySource.CliTask), POICondition $($bySource.POICondition), ItemSparse $($bySource.ItemSparse)) -> $outFile"

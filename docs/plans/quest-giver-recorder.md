@@ -54,7 +54,8 @@ than the code is left alone.
   `Item` GUID makes the event record nothing.
 - **Spots** are `map x y visits` joined by `;`: the *player's* place on the map in percent, to a
   tenth, which was within 0.04 to 0.14 map points of the NPC for the eight Forever NPCs measured.
-  `-1 -1` is no position (an instance, or a hidden value). A new place within 1.0 point of one held
+  `-1 -1` is no position on a map the game named (an instance, or a hidden value); when the game names no
+  map at all (the Deeprun Tram on the Forever beta) no spot is stored. A new place within 1.0 point of one held
   adds a visit to it; further away it is a new spot, up to four. A visit counts when the giver
   changes or 30 seconds have passed.
 - **Offers and turn-ins** are quest IDs joined by `,`, up to 60 each. A quest can be in both.
@@ -168,6 +169,41 @@ real order and payloads; `/qc report` and the `d` counters in the saved file sho
 
 Record the answers here.
 
+**First answers, 11 October 2026,** from the user's Forever beta file (builds 70291 and 70338; the
+account's file also holds settings and characters, so only `qcQuestRecorder` is read, through the reader).
+87 records: 42 givers (32 creatures, 10 objects), 40 spots, 45 quests, no starts, no odd record, no failure
+(`err.n` 0), no eviction. The file grew from 83 records at 12:35 to 87 at 13:12 while this was being read. Against the list:
+
+- **Windows seen:** gossip 87 (46 with quests: the other 41 were vendors, flight masters and the like, which
+  the handler drops), greeting 12, quest details 57, accepts 42, progress 27, hand-ins 38. Every window
+  that had a giver read it: 180 reads, all `ok`, all in the open world, and every accepted quest (42) found its
+  log heading. The three quests offered and not accepted have none, as designed. A notice board
+  ("WANTED: Murkdeep!") and object givers (Buzzboxes, beached turtles) were seen. Not seen: a daily, a
+  party-shared quest, a world quest, the splash-screen quest.
+- **Who is speaking:** `npc` answered at `GOSSIP_SHOW` (46 of 46) and `questnpc` at the quest windows
+  (134 of 134, greeting included), so the second token was never tried. Whether `npc` also answers at the
+  quest windows is not known, because the recorder asks `questnpc` first and counts only the token that answered.
+- **Secrecy and context:** no `hid`, `oth`, `none`, combat or instance read, no `skip:`, no `bit:unk`, no
+  `name:loc`. Nothing was hidden on Forever, so this says nothing about retail's 12.x.
+- **Positions:** 170 reads had one and 10 had none (`pos:nomap`: the game gave no map for the player).
+  The ten are the two givers with no spot, Monty and Nipsy in the Deeprun Tram (their quests' log heading),
+  at a place `IsInInstance` did not call an instance. **The plan said no position leaves `-1 -1`; with no
+  map the recorder stores no spot at all** (`readWhere` returns nothing and the giver's spots field stays
+  empty), so 40 spots for 42 givers. The importer lists their two quests (6661, 6662) as "the giver has no
+  trusted place with a position" and cannot pin them from this. The other 40 givers have one spot each,
+  never two, though three were met four or five times and 17 reads were beyond `CheckInteractDistance`
+  (`near:false`): none made a second spot. The spots lie 0.00 to 0.10 map points from the Forever pin of the
+  same NPC for the 28 creatures that have both (a pin is CMaNGOS's spawn, or a spot the probe's recorder took
+  earlier) and up to 0.36 for the beached objects, whose names are shared by four or five pins, so the
+  player's place is as close to the NPC as the 0.04 to 0.14 measured on eight NPCs.
+- **Starts:** none happened, so item and area-trigger starts are untried. `hook:none` and `api:greeting`
+  never counted: the popup hook installed and the greeting functions exist on Forever.
+- **Names and masks:** every name was English and clean (`name:ok` 180); the faction, race and class masks
+  are one value each (one character) and contradict nothing in the data.
+- **Still open:** retail (its file held 0 records on 11 October), a dungeon, delve, combat, mounted and taxi
+  read on either game, an item or area-trigger start, `/reload`, the toggle, the clear, `/qc report`, the
+  options panel's layout, memory in the game, a German client.
+
 ## The merge tool
 
 `Import-RecordedGivers.ps1` is step 6d of the sweep ([maintenance.md](../maintenance.md)); the rules
@@ -250,12 +286,52 @@ getting a pin (a `KEEP` row with only a quest, or with the place) gets none, and
 What may get a pin follows the user's rule (a normal quest, never a world quest) and what the scouts of
 9 October measured: held back are a quest not in the data, one flagged unavailable, an internal name, a
 task whose `QuestInfo` kind is world, bonus, hidden, delve or the like (3,380 quests, none with a creature
-starter in TrinityCore) and a system category (Garrison Support, Torghast, Prey and so on; the list
-`Import-RecordedGivers.ps1` holds is empty of allowed ones until a person decides one). **Waived because a
+starter in TrinityCore) and a system category (Garrison Support, Torghast, Prey and so on) that
+`$allowedSystemCategories` in `Import-RecordedGivers.ps1` does not name (see below). **Waived because a
 creature offering the quest answers them:** not in `QuestV2` (it omits repeatables), the inferences from
-TrinityCore's templates, a task of another kind, Landfall, holiday and profession quests, and a quest type
-other than 0, 1, 2, 4 and 128. The report counts the quests by class, and
+TrinityCore's templates, Landfall, holiday and profession quests, a quest type other than 0, 1, 2, 4 and
+128, and a task of a kind the pipeline keeps out that the tool doesn't hold itself (`$noPinKinds` in
+`Build-QuestLocationData.ps1`: callings and threat wrappers; until 11 October 2026 every task of
+another kind than world, bonus or hidden was held, and counted as a class). The report counts the
+quests by class, and
 [open-items.md](open-items.md) lists the waiver as a call the user may reverse.
+
+**System categories.** `Import-RecordedGivers.ps1` holds back a quest in any of 20 system categories
+(Scenario, Garrison Support, Torghast, Prey and so on); `Build-QuestLocationData.ps1` keeps the same 20 out of
+its pass that pins quests from TrinityCore's start points (`Get-TdbSkipReason`, reason `system category`), and
+`Test-RecordedGivers.ps1` repeats the list. The decision of 11 October 2026 (open-items.md, 5b) covers a
+creature's offer only: it lets an offer pin a quest in six of them, the ones where at least half the quests
+already stand on a pin with an NPC, so an offer there is the ordinary case. Prey and Garrison Support stay held
+until there is more detail, whatever the numbers. The other holds (a world, bonus or hidden kind, unavailable,
+an internal name, no offer) still apply inside an allowed category. Only `$allowedSystemCategories` changes;
+the TrinityCore pass's skip is not touched, because there is no offer there. Measured on `data\quests.jsonl`
+and `data\pins.jsonl` at 448bd64:
+
+| Category | Quests | On a pin with an NPC | Share | Decision |
+|---|---|---|---|---|
+| 1346 Little Scales Daycare | 62 | 60 | 97% | allowed |
+| 1428 Upgrade System | 7 | 7 | 100% | allowed |
+| 1429 Warbands | 5 | 5 | 100% | allowed |
+| 1095 World PvP | 33 | 23 | 70% | allowed |
+| 1430 Delver's Headquarters | 21 | 13 | 62% | allowed |
+| 1735 Weekly Events | 52 | 30 | 58% | allowed |
+| 1133 Visions of N'Zoth | 44 | 19 | 43% | held |
+| 1347 Time Rift | 20 | 8 | 40% | held |
+| 170 Scenario | 3 | 1 | 33% | held |
+| 191 Special | 16 | 5 | 31% | held |
+| 1431 Delves | 10 | 3 | 30% | held |
+| 1241 Covenant Assaults | 43 | 13 | 30% | held |
+| 173 Seasonal | 27 | 6 | 22% | held |
+| 1134 Death Rising | 54 | 8 | 15% | held (28 of 54 stand on any pin, 20 on one with no NPC) |
+| 290 Garrison Support | 386 | 40 | 10% | held by decision |
+| 1514 Prey | 116 | 10 | 9% | held by decision |
+| 1092 Warfront Contribution | 154 | 4 | 3% | held |
+| 1246 Torghast, Tower of the Damned | 52 | 1 | 2% | held |
+| 1232 Path of Ascension | 88 | 1 | 1% | held |
+| 1130 Island Expeditions | 0 | 0 | | held (no quest is filed under it) |
+
+The rule is a measured one: re-measure it when the pins change a lot, and move a category across the line
+only by editing `$allowedSystemCategories` and the E15 check of `Test-RecordedGivers.ps1` together.
 
 **Review.** `pin names another NPC than the recorded giver`, `same name under another ID`, `pin name
 differs from the name recorded for its ID`, `quest offered away from its pins` (a giver none of whose places
@@ -266,6 +342,33 @@ report, each with a `Game` column (Forever's too), the sources and whether they 
 type, or that disagrees), `recorded_headings.csv`, `recorded_start_items.csv` and
 `recorded_mask_contradictions.csv`. They are lists to look through: nothing reads them yet (the gap-quest
 fetch takes its IDs from `gap_quest_ids.txt`, which nothing writes).
+
+**Forever's importer** (`Import-ForeverData.ps1`, step 10) reads the ledger since 11 October 2026. It takes the
+recorded givers, the places they stood at, their names and the quests they offered from the ledger's trusted
+Forever rows, through the merge tool's own functions (`Get-RecordedModel`, `Get-RecordedPlaces`, and
+`Get-RecordedGiverInputs` to hand the result over), so the trust rule and the grouping of places are one
+definition in both tools: what a lone player saw is ignored, and a giver's places on one map within 1.5 map
+points of each other are one place (the importer's own test was a 3-point box). A giver with a trusted place
+stands there instead of at CMaNGOS's spawns, as it did when the place came from the probe's file. The probe's
+file is still read for the game's per-quest answers and NPC names. **The stale-ledger stop:** the importer reads the
+probe's file the way step 6d does (its builds, the game's maps, the quests the data has) and stops, before it
+writes anything, unless the ledger holds every giver (with a name), spot and offer in it under the file's own
+source tag (`own-` and the folder's name) with at least the file's number (visits for a spot, 1 for the rest);
+`Find-RecordedLedgerGaps` says what is lacking, and the message says to run step 6d. The ledger only grows, so it
+may hold more, and turn-ins and starts are not asked, as the importer does not read them. Notes step 6d leaves
+out (a map the game lacks, a quest the data lacks) are left out of the check too, so a quest a new import adds has
+its recorded offers in the ledger only from the next run of 6d: the review says "recorded offer not in the ledger
+yet", and 6d and the import are run again. A probe file with no notes at all needs no ledger. Only the probe's
+file is checked: the addon's own file and players' files are not, so for them the import relies on the runbook's
+order (maintenance.md, step 10, item 1: step 6d first). On a new Forever build 6d needs the build's `UiMap` table,
+which the importer fetches, so the order is the import (it fetches the tables, then stops at the check), 6d, the
+import again; a version the TOCs don't name is passed to both with `-Builds`, which the importer's message says when it stops. A probe
+file that mixes a named and an unnamed version is read in part by both and does not stop, so its newest notes wait until
+`-Builds` names their version.
+Retail is untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
+small scratch world (80 checks, among them the files master's importer wrote there when the ledger holds the probe's
+file alone, kept as written once by it), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
+import would move is measured in [forever.md](forever.md), "The importer reads the ledger".
 
 **Checked.** `Test-RecordedGivers.ps1` makes small data in a scratch folder (quests, pins, the Lua built
 from them, recordings of every kind) and checks the rules and the tool end to end, including that a second
@@ -283,17 +386,73 @@ be the map the pin is on: the scouts found a quarter of zone pins on a larger si
 Durotar), where an exact match misses, so the yield of fills may be three quarters of what a perfect match
 gives. Those cases show up as `quest offered away from its pins`. Converting through the client's map
 frames (`UiMapAssignment`) would recover them; it is not built. (3) The 1.5 point radius is a ceiling, tight
-on small maps. (4) Two accounts of one person count as two players (see Trust).
+on small maps. (4) Two accounts of one person count as two players (see Trust). (5) A place's visits add up
+the numbers of every source of the maintainer's own, and the probe's file is cumulative (a spot seen three
+times is three in every later probe file), so the same visits count once per file read: 3, 3, 3 and 3 are
+12 once four probe files are in the ledger. Which of two rows 0.1 point apart seeds a place can then differ from
+what the newest file alone says, and Forever's importer, which pins at the seed, moves the pin
+([forever.md](forever.md), "The importer reads the ledger"). The weight is the merge tool's rule and is left as it is
+until the user decides ([open-items.md](open-items.md), decision 36).
+
+## The first real run (11 October 2026)
+
+The user: "we could use the small amount of Forever data I have recorded to test the pipeline for the
+first time". The file was a copy of the beta account's `QuestCompletist.lua` in a scratch
+`recordings\own\forever\`; the probes' files and the client tables were copies of the main checkout's `tools\`,
+so nothing was written there.
+
+- **Read:** `own-forever`, recorder, schema 1, Forever: 87 records, 0 odd: 42 givers, 40 spots, 45 offers,
+  41 turn-ins, 45 quest records, 0 starts. Nothing was left out (no build, map or quest dropped, no offer for a
+  quest the data lacks). The four Forever probes' files and the retail probe's read as before and added nothing.
+- **Ledger:** Forever 121 rows to 231 (53 givers, 59 spots, 68 offers, 51 turn-ins), all trusted, all from the
+  maintainer's own files. 110 rows are new (20 givers, 25 spots, 32 offers, 33 turn-ins), 58 old rows gained the
+  addon's file as a source (13 of them a later last build), 63 are as they were. Retail: 0 rows.
+- **Pins:** none changed. The tool writes only retail's pins and the retail ledger is empty: 0 filled, 0
+  joined, 0 new, 0 for review. **It does not read Forever's pins, so its "0 cases for review" says nothing about
+  them**, and `Import-ForeverData.ps1` then read only the probe's own file, so the addon's notes reached nothing but
+  the ledger (the importer reads the ledger since: What is left, 4).
+- **Lists beside the report:** `recorded_quest_types.csv` has one row (quest 2178, from the probes: recorded
+  one-time, data type 32, a profession quest, which is one-time by nature); the other four were empty and not
+  written.
+- **Rehearsal on Forever's pins, in memory, nothing saved** (`Get-RecordedPlan` and `Get-RecordedReview`
+  pointed at `data\forever\pins.jsonl`): 0 fills, 0 for review, 1 add, 2 quests skipped for having no
+  position (6661, 6662). The add is quest 990 "Trek to Ashenvale", Sentinel Selarin (3694), Darkshore
+  39.3, 43.5: no Forever pin carries the quest. CMaNGOS lists her as the quest's starter but has no spawn for her (she is script-spawned), and Wowhead gives
+  her as its start (she runs in beside Terenthis after "Escape Through Stealth" or "Force" is handed in, and
+  leaves after some minutes). With the 46 Forever pins that carry a recorded offer blanked in memory, the plan
+  gives back all 46 with their own NPC ID and name. 37 of the 42 creature givers have a Forever pin carrying
+  their ID, and each of the 37 bears the same name, exactly; so do the 11 object givers.
+- **Against the probe's own recorder:** the probe's saved file in the game (11 October, 13:12) holds 53 givers,
+  68 offers and 50 turn-ins; the copy in `tools\forever_probe_70338` is from 10 October and holds 33, 36 and 18,
+  which is most of why 110 ledger rows were new. The addon's file has no giver or offer the probe's newest lacks, all 40 of its spots
+  are the probe's to the tenth of a point, and it has one turn-in more (Bubulo Acerbus takes in 7807, which he
+  also offers). The probe's has 11 givers and 23 offers more, from sessions the addon's recorder did not see.
+  So the two agree where they overlap, and step 10's copy of the probe's file, not taken here, should bring
+  quest 990 into Forever's pins by the probe's route (the importer was not run).
+- **Twice:** a second run left the ledger, `data\` and the addon's files byte for byte.
+- **Checks, with the same results before and after, as no code changed:** `Test-RecordedGivers.lua` 366 and
+  `Test-RecordedGivers.ps1` 271 checks, 0 failed; `Test-QuestReachability.lua` on Forever's TOC all zeros (81
+  pins of events the calendar doesn't show, as before); `Build-AddonData.ps1 -Check` up to date (35,023 quests
+  and 15,181 pins; 5,097 and 1,698); `Audit-QuestTables.ps1 -Game forever -OwnDataOnly` 5 findings, 0 new;
+  `Test-ForeverChecks.ps1` 39 checks; `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` takes nothing off
+  (one pair of Venom Bottle pins left alone, as before); `luac -p` silent.
+- **Found:** no bug in the reader or the tool. What the real file shows is under "To try in game": no map
+  leaves no spot, no starts happened, and the recorder counts only the token that answered. And two things
+  about the tool: its report says nothing of Forever's pins, and `recorded_quest_types.csv` lists a one-time
+  quest whose data type is 32 (or 8, 16, 64) as disagreeing with a recorded "one-time".
 
 ## What is left
 
 1. **The in-game session** above. The recorder was released first, in 112.7, on the user's word.
-2. **The first real ingest** of the maintainer's own retail and Forever files: run step 6d `-WhatIf`,
-   read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin
-   pipeline. Open the call for players' files after one sweep has run clean.
+2. **The first real ingest** of the maintainer's own files: Forever's was done on 11 October 2026 (above;
+   the ledger only, no pin changed). Retail's file held 0 records that day, so retail's is open: run step 6d
+   `-WhatIf`, read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and
+   the pin pipeline. Open the call for players' files after one sweep has run clean.
 3. **One probe for both games** (recommendation 2).
-4. **Forever's importer** reads the ledger, and its recorded-spot merge radius moves from 3 to 1.5
-   map points; the probe's own recorder (PR #139) is retired after one sweep.
+4. **Both recorders are kept** (the user, 11 October 2026: "yes, keep both, go ahead"): the probe's own
+   recorder (PR #139) is not retired. Both feed the ledger through step 6d, and Forever's importer reads the
+   ledger since 11 October 2026 (the merge tool, above), with the recorded-place radius at 1.5 map points, so
+   what the two saw is combined in Forever's pins.
 5. **Later, if wanted:** a copy-text window for the report; a novelty test so the file skips what the
    shipped pins hold; the map-frame conversion above; the instance rule; recorded recurrence and
    headings applied by steps 3 and the category steps rather than listed.
@@ -325,3 +484,16 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
   that nothing is sent. The in-game session now checks what players already have. The in-game
   `/qc report` text still invites players to attach their file to a comment; the README and the
   changelog do not, because the call for players' files waits for one clean sweep (see "What is left").
+- 2026-10-11: the first real run of the merge tool, on the user's Forever beta file (87 records, builds
+  70291 and 70338): read clean, the Forever ledger 121 to 231 rows, no pin changed (the tool writes none for
+  Forever), no bug found. The file's first answers to the in-game list (the order of the tokens, no map
+  leaves no spot, no starts) are under "To try in game", the run's numbers under "The first real run".
+  Retail's recorder file held 0 records.
+- 2026-10-11: Forever's importer reads the ledger (the user: "yes, build it as a PR", on this plan item): the
+  recorded givers, places, names and offers come from the ledger's trusted Forever rows, places merge within 1.5
+  map points instead of a 3-point box, and a ledger that lacks anything the probe's file holds stops the import
+  and says to run step 6d. `Test-ForeverImport.ps1` (80 checks) and section H of `Test-RecordedGivers.ps1`
+  (23 more, 294 in all) check it. Nothing displays differently until step 10 is next run; what that run would
+  move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired: the user
+  decided the same day to keep both recorders ("yes, keep both, go ahead"), so the probe's notes and the addon's
+  are combined through the ledger ("What is left", 4).
