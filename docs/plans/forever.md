@@ -877,9 +877,9 @@ Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
   (172 and 1468 hold the only two) are hidden until the game dates it. The Scourge Invasion and
   the War Effort have no Holidays row at all, so their pins are hidden always, as the 81 that are
   there already.
-- **Still open:** a nameless row, 1879, is dated from 15 November for 61 days, like a Winter Veil
-  that starts a month early. Run `/qc holidays` on the beta before 15 November, and add 1879 to
-  Winter Veil's IDs in `qcHolidays` if it lists it ([open-items.md](open-items.md), decision 12).
+- **Checked 11 October 2026:** a nameless row, 1879, is dated from 15 November for 61 days, like a Winter Veil
+  that starts a month early. `/qc holidays` on the beta that day listed Winter Veil as 141 (15 December 2026 to
+  2 January 2027) and did not list 1879, so nothing was added ([open-items.md](open-items.md), decision 12).
 
 ## Decisions
 
@@ -998,5 +998,5 @@ Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
   ledger and the data: 1,698 pins and no quest changes; see "The recorder's notes from the beta session".
 - 2026-10-11: the 29 seasonal quests that had no holiday are tagged: 12 Children's Week and 6 Winter Veil
   from a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by heading. 351 quests carry a holiday,
-  none of the 29 has a pin, and the nameless Holidays row 1879 waits for `/qc holidays` on the beta (#288);
+  none of the 29 has a pin, and the nameless Holidays row 1879, which `/qc holidays` on the beta did not list on 11 October, needs nothing (#288);
   see "Seasonal quests with no holiday".

@@ -1262,9 +1262,9 @@ good, and its retail quests stay `PENDING` for that reason.
 Forever's calendar, in build 70338's Holidays table (dates decoded by hand): Children's Week (201)
 has dates only in 2023, 2024 and 2025, so the calendar has none to show and its pins stay hidden
 until the game dates it again (the two matron quests, 172 and 1468, hold the only two). Winter
-Veil (141) is dated from 15 December for 18 days. A row with no name, 1879, is dated from 15
-November for 61 days: if `/qc holidays` on the beta lists it under "Other calendar holidays" and it
-turns out to be Winter Veil's, add it to Winter Veil's IDs in `qcHolidays`
+Veil (141) is dated from 15 December for 18 days, and `/qc holidays` on the beta showed it so on 11 October 2026 (15 December to 2 January). A row with no name, 1879, is dated from 15
+November for 61 days in the table, but that check did not list it under "Other calendar holidays", so
+the game does not serve it and nothing was added to Winter Veil's IDs in `qcHolidays`
 ([open-items.md](plans/open-items.md), decision 12). On 11 October 2026 the 29 seasonal quests
 that had no holiday were tagged (351 Forever quests have one now); none of the 29 has a pin, so the
 filter changes nothing on the map for them, and the quest list never applies it.
