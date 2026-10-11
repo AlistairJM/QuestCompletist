@@ -18,6 +18,8 @@ prerequisites in data\quests.jsonl, against every source that can speak to them:
 The tables it checks:
   qcBreadcrumbQuests     [quest] = {breadcrumbs}: quests that lead to it and close once it's done.
   qcMutuallyExclusive    [quest] = {quests}: quests that close once it's done.
+  qcClosedOnceDone       [quest] = true: breadcrumbs the API closes only once their quest is done, so
+                         the map keeps them while it's in the log.
   qcRenownLevelRequirements, qcOverrideDailyExclusiveQuest, qcOverrideWeeklyExclusiveQuest, and
   qcFactions' English names. Each table is also checked for a quest listed twice, as Lua keeps only
   the last.
@@ -106,6 +108,8 @@ $exclusive = Read-ListTable 'qcMutuallyExclusive' 'exclusive'
 $closes = @{}
 foreach ($id in $breadcrumbs.Keys) { foreach ($b in $breadcrumbs[$id]) { $closes["$id>$b"] = $true } }
 foreach ($id in $exclusive.Keys) { foreach ($o in $exclusive[$id]) { $closes["$id>$o"] = $true } }
+$closedOnceDone = @{}
+foreach ($m in [regex]::Matches(((Get-TableLines 'qcClosedOnceDone') -join "`n"), '\[(\d+)\]\s*=\s*true')) { $closedOnceDone[[int]$m.Groups[1].Value] = $true }
 
 # Blizzard's API: each quest's required quests, as leaves of an AND/OR tree. A leaf under an OR is
 # one of several that will do; one reached through ANDs only is a must. A leaf that must be
@@ -172,6 +176,18 @@ foreach ($target in ($breadcrumbs.Keys | Sort-Object)) {
         if ($row -and $tc.ContainsKey($target) -and -not (Test-TcCloses $target $crumb) -and -not (Test-ApiCloses $target $crumb)) {
             Add-Finding 'breadcrumb: TrinityCore disagrees' $target $crumb ("TrinityCore: {0} is {1}" -f $crumb, $(if ($row.BreadcrumbFor) { "a breadcrumb for $($row.BreadcrumbFor)" } else { 'no breadcrumb' }))
         }
+        if ((Test-ApiCloses $target $crumb) -and -not $closedOnceDone.ContainsKey($crumb)) {
+            Add-Finding 'breadcrumb: the API closes it once done, not in qcClosedOnceDone' $target $crumb "$(Get-QuestName $crumb) stays offered while $(Get-QuestName $target) is in the log"
+        }
+    }
+}
+
+# Breadcrumbs the map keeps while their quest is in the log: [quest] = true.
+foreach ($id in ($closedOnceDone.Keys | Sort-Object)) {
+    $targets = @($breadcrumbs.Keys | Where-Object { $breadcrumbs[$_] -contains $id })
+    if ($targets.Count -eq 0) { Add-Finding 'closed once done: not a breadcrumb' $id '' "$(Get-QuestName $id) isn't in qcBreadcrumbQuests" }
+    elseif (-not $OwnDataOnly -and -not @($targets | Where-Object { Test-ApiCloses $_ $id }).Count) {
+        Add-Finding 'closed once done: the API doesn''t say so' $id '' "$(Get-QuestName $id) has no requirement that $($targets -join ', ') isn't done"
     }
 }
 

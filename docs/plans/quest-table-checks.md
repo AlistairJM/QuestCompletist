@@ -96,7 +96,10 @@ range. So the check takes what each source offers:
 The user, 2026-10-06, taking each recommendation:
 1. **Fix the mistakes**, all of them.
 2. **Add Blizzard's 30 pairs**, as breadcrumbs of the quest that closes the others: the quest window
-   then warns before closing them, and ticks them once it's done.
+   then warns before closing them, and ticks them once it's done. Since 11 October 2026 the map hides a
+   breadcrumb while its quest is in the log; these 15 quests are listed in `qcClosedOnceDone` as well,
+   as the API closes them only once the quest is done, so the map keeps them meanwhile. Two of them,
+   65890 and 66261, close only once all their quests are done ([open-items.md](open-items.md)).
 3. **TrinityCore's prerequisites:** take only the 2,036 that are the step just before the quest in
    Blizzard's own storyline, where both sources agree.
 4. **Let a quest hold several prerequisites**, show them all in the tooltip and check them all on the

@@ -292,7 +292,7 @@ foreach ($m in ($links | Where-Object { $_[3] })) { [void]$quest.Append("[$($m[1
 $unlinked = @(Import-Csv $LinkFile | Where-Object { $_.Link -eq 'exclusive' -and $_.Decision -eq 'REMOVE' } |
     ForEach-Object { [int]$_.Quest; [int]$_.Other } | Where-Object { $inData[$_] } | Sort-Object -Unique)
 [void]$quest.Append("}`r`nqcFormerlyExclusive={$($unlinked -join ',')}`r`n")
-foreach ($table in 'qcOverrideDailyExclusiveQuest', 'qcOverrideWeeklyExclusiveQuest') { [void]$quest.Append("$table={}`r`n") }
+foreach ($table in 'qcClosedOnceDone', 'qcOverrideDailyExclusiveQuest', 'qcOverrideWeeklyExclusiveQuest') { [void]$quest.Append("$table={}`r`n") }
 $unavailable = "$header`r`nqcUnavailableQuests = {`r`n}`r`n"
 
 $utf8 = New-Object System.Text.UTF8Encoding $false

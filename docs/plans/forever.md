@@ -925,6 +925,53 @@ Subterfugin' (2238) in Ironforge, and The Apple Falls (2241) to Destiny Calls (2
   against first-hand reports (Questie's issues, QuestieDB's Era corrections) adds rows to the list,
   and the clean-up then covers their ticks with no code change.
 
+### Lead-ins the game closes while their quest is in the log (11 October 2026)
+
+After Seek out SI: 7, the user saw SI:7 (2300) on Keryn Sylvius's pin, but she didn't offer it. SI:7 is
+one of three level 16 lead-ins to Redridge Rendezvous (2281), with Erion's Behest (2260) and Kingly
+Shakedown (2298), and the recorder shows Rothro took Redridge Rendezvous from Renzik "The Shiv" when he
+handed in Erion's Behest.
+
+- **What the game does:** it stops offering a breadcrumb once the quest it leads to is in the log or
+  done, and so the breadcrumbs leading to that breadcrumb too: To Hulfdan! (2299) leads to Kingly
+  Shakedown. CMaNGOS's server code does the same (`SatisfyQuestBreadcrumbQuest` asks whether the target
+  can still be taken), and Questie's issues #1825 and #2476 (Classic, 2020) say all five level 16 lead-ins
+  can be done until Redridge Rendezvous is taken.
+- **What the addon did:** it ticked a quest's own breadcrumbs when the quest was handed in, and nothing
+  while it was in the log. So SI:7, Kingly Shakedown and To Hulfdan! stayed on the map, and after the
+  hand-in To Hulfdan! would have stayed for good.
+- **The fix, in the shared code for both games:**
+  - The map and list filters (`qcBuildViewFilter`) count the breadcrumbs of a quest in the log that are
+    still to do as taken, as they do the daily and weekly limits. So hiding done or in-progress quests
+    hides them, with no tick, and they come back if the quest is abandoned. A breadcrumb already done or
+    in the log is left alone.
+  - A hand-in, or the login sync, ticks breadcrumbs of breadcrumbs as well, and the quest window's
+    "breadcrumb available" warning counts and lists them.
+  - Both walk the chain once per quest, as retail lists some quests as each other's breadcrumb (11109
+    and 11110, two of the Netherwing drake choices). Retail's data has 51 links from a breadcrumb to
+    another breadcrumb, Forever's 2 (2259 and 2299).
+  - The zone icons on a continent count such a breadcrumb as "closed": in the zone's total, but not
+    among the quests that can be taken, as its own map hides it.
+  - A list that hides done or in-progress quests is rebuilt when a quest is taken or abandoned, so it
+    gains or loses that quest and its breadcrumbs at once, as the map does.
+- **Retail's breadcrumbs from Blizzard's API** (the 30 pairs of 6 October, [quest-table-checks.md](quest-table-checks.md),
+  decision 2) are different: the API closes those 15 quests only once the other quest is done, so the
+  game still offers them while it's in the log. They stay breadcrumbs, so the quest window still warns,
+  and a new table, `qcClosedOnceDone` (retail's 15; empty on Forever, written by `Build-ForeverMenu.ps1`),
+  keeps the map from hiding them. `Audit-QuestTables.ps1` checks the two agree with the API both ways.
+- **Left as it was:** two of the API's quests, 65890 The Nelthazan Ruins and 66261 A Minor Setback, close
+  only once all their quests are done, but the table ticks them once any is
+  ([open-items.md](open-items.md)). And about 40 retail breadcrumbs are listed under several quests that
+  all lead on to a third, so one of those in the log hides the breadcrumb a little early.
+- **Checked** with `Test-Completions.lua` on both TOCs: a breadcrumb chain from each game's data (one only
+  reachable through the middle quest), a done breadcrumb and one in the log staying on the map, retail's
+  API breadcrumbs kept while their quest is in the log, and Rothro's level 16 quests on Forever.
+  Master's code fails 4 of its checks on Forever (SI:7, Kingly Shakedown and To Hulfdan! kept on the map;
+  To Hulfdan! not ticked), and without the "still to do" guard Erion Shadewhisper and Erion's Behest
+  vanish from Rothro's map. `Test-ContinentPins.lua` counts a breadcrumb as closed with its quest in the
+  log, `Test-ForeverChecks.ps1` checks the audit's new finding, and the retail audit finds the same 118
+  as before. The map tooltip, reachability, settings and calendar checks pass on both games.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -1047,3 +1094,7 @@ Subterfugin' (2238) in Ironforge, and The Apple Falls (2241) to Destiny Calls (2
 - 2026-10-11: Snatch and Grab and Destiny Calls need their own city's rogue lead-in, and the three
   lead-ins no longer shut each other out, from a new hand list of link corrections; the login sync
   drops the ticks the old group gave until April 2027 (#297). See "Lead-ins the server requires".
+- 2026-10-11: on both games, the map and list hide a breadcrumb still to do while the quest it leads to is
+  in the log, and a hand-in ticks breadcrumbs of breadcrumbs too, after SI:7 showed at Keryn Sylvius with
+  Redridge Rendezvous taken; retail's breadcrumbs from Blizzard's API stay on the map meanwhile
+  (`qcClosedOnceDone`). See "Lead-ins the game closes while their quest is in the log".

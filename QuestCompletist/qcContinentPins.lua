@@ -196,12 +196,15 @@ local function qcQuestKind(questId, countWarband)
 	return "available"
 end
 
--- What is left to do in a zone: total, done, ready, progress, locked and available, from the quests that
--- count (qcZoneQuests) and a filter built once for the whole map.
+-- What is left to do in a zone: total, done, ready, progress, locked, available and closed, from the quests
+-- that count (qcZoneQuests) and a filter built once for the whole map.
 local function qcZoneNumbers(zone, keepQuest, countWarband)
-	local numbers = {total = 0, done = 0, ready = 0, progress = 0, locked = 0, available = 0}
+	local numbers = {total = 0, done = 0, ready = 0, progress = 0, locked = 0, available = 0, closed = 0}
 	for _, questId in ipairs(qcZoneQuests(zone.categories, keepQuest)) do
 		local kind = qcQuestKind(questId, countWarband)
+		-- A quest to do that the zone's own map hides, as the game won't offer it now (a breadcrumb to a
+		-- quest in the log, or one past a daily limit), is "closed": in the total, and nowhere else.
+		if kind == "available" and not keepQuest(questId) then kind = "closed" end
 		numbers.total = numbers.total + 1
 		numbers[kind] = numbers[kind] + 1
 	end

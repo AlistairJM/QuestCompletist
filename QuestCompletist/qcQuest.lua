@@ -14357,6 +14357,13 @@ qcMutuallyExclusive = {
 
 qcFormerlyExclusive = {}  -- QuestIds a removed qcMutuallyExclusive link ticked; only WoW: Forever's have them yet
 
+-- Breadcrumbs from Blizzard's API (qcBreadcrumbQuests, 2026-10-06): it closes them once their quest is
+-- done, so the game still offers them while that quest is in the log (2026-10-11).
+qcClosedOnceDone = {
+	[10983]=true,[10984]=true,[10989]=true,[11057]=true,[31076]=true,[31695]=true,[39422]=true,[39423]=true,
+	[50834]=true,[51354]=true,[54107]=true,[54635]=true,[65890]=true,[66261]=true,[85249]=true,
+}
+
 qcOverrideDailyExclusiveQuest = { -- This will hide pins if an questgiver only have X number of avaible daily quests, once the number is accepted/done  
 { max = 1, quests = {26442,26536,26488,26420,26414,29342,29344,29347,29343,29350} }, --If/Sw Daily Fishing
 { max = 1, quests = {26190,26177,26192,26153,26183,29356,29355,29353,29352,29351} },--If/Sw Daily Cocking

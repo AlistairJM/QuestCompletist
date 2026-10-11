@@ -2676,5 +2676,6 @@ qcMutuallyExclusive={
 [9271]={9257,9269,9270},
 }
 qcFormerlyExclusive={2205,2218,2241}
+qcClosedOnceDone={}
 qcOverrideDailyExclusiveQuest={}
 qcOverrideWeeklyExclusiveQuest={}

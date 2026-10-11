@@ -10,6 +10,13 @@ listed in place of the real list, as retail's list is empty. On WoW: Forever's T
 level 10 rogue quests whose links were found wrong on 11 October 2026
 (docs/plans/forever-quest-link-decisions.csv); retail has only Snatch and Grab, with no lead-in.
 
+It also checks breadcrumbs: the map hides one still to do while the quest it leads to is in the log, as
+the game stops offering it, and a hand-in ticks the breadcrumbs leading to breadcrumbs as well. Both
+games' data give a case of the second; retail's also has quests listed as each other's breadcrumb, and
+the breadcrumbs Blizzard's API says close only once their quest is done (qcClosedOnceDone), which the map
+keeps meanwhile. Forever's has the level 16 rogue quests, where SI:7 showed at Keryn Sylvius though she no
+longer offered it.
+
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua QuestCompletist QuestCompletist_Camelot.toc
@@ -295,6 +302,127 @@ else
 	check("and neither Road to Salvation nor The Apple Falls", env.qcCharacterCompletions[ROAD] == nil and env.qcCharacterCompletions[APPLE] == nil)
 	local after = shaw and snatchLine()
 	check("then Snatch and Grab can be taken", after ~= nil and not after:find("Requires", 1, true), after)
+end
+
+-- Whether the map keeps a quest, hiding quests in the log, or with hideDone, hiding done ones instead.
+local function mapKeeps(questId, hideDone)
+	local key = hideDone and "QC_M_HIDE_COMPLETED" or "QC_M_HIDE_INPROGRESS"
+	env.qcSettings[key] = 1
+	local keeps = QC.qcBuildViewFilter("M")(questId)
+	env.qcSettings[key] = 0
+	return keeps
+end
+
+local function listedUnder(target, questId)
+	for _, listed in pairs(env.qcBreadcrumbQuests[target] or {}) do
+		if listed == questId then return true end
+	end
+	return false
+end
+
+-- A one-time quest T with a breadcrumb B that has a breadcrumb A of its own, A only reaching T through B,
+-- and none of them leading back to another.
+local A, B, T
+for _, target in ipairs(sortedKeys(env.qcBreadcrumbQuests)) do
+	for _, breadcrumb in pairs(env.qcBreadcrumbQuests[target]) do
+		for _, first in pairs(env.qcBreadcrumbQuests[breadcrumb] or {}) do
+			if not T and first ~= target and oneTime(target) and oneTime(breadcrumb) and oneTime(first)
+					and not env.qcBreadcrumbQuests[first] and not listedUnder(target, first) then
+				A, B, T = first, breadcrumb, target
+			end
+		end
+	end
+end
+if not T then
+	print("Breadcrumbs leading to breadcrumbs: none in this game's data")
+else
+	print(string.format("Breadcrumbs leading to breadcrumbs: %d leads to %d, which leads to %d", A, B, T))
+	character("Human", {}, {})
+	login()
+	check("before the quest is taken, the map keeps both breadcrumbs", mapKeeps(A) and mapKeeps(B))
+	ctx.inLog[T] = 1
+	check("while it's in the log, the map hides both", not mapKeeps(A) and not mapKeeps(B))
+	check("without ticking them", env.qcCharacterCompletions[A] == nil and env.qcCharacterCompletions[B] == nil)
+	ctx.inLog[T] = nil
+	check("once it leaves the log again, the map keeps both", mapKeeps(A) and mapKeeps(B))
+	character("Human", {A}, {[A] = 1})
+	ctx.inLog[T], ctx.inLog[B] = 1, 1
+	check("a done breadcrumb stays on a map hiding only quests in the log", mapKeeps(A))
+	check("one in the log stays on a map hiding only done quests", mapKeeps(B, true))
+	ctx.inLog[B] = nil
+	turnIn(T)
+	check("handing it in ticks both", env.qcCharacterCompletions[A] == 1 and env.qcCharacterCompletions[B] == 1)
+end
+
+-- Retail's breadcrumbs that Blizzard's API says close once their quest is done (qcClosedOnceDone): the
+-- game still offers them, and the map keeps them, while that quest is in the log.
+local GRULLOC, MOGDORG = 10995, 10983
+local notBreadcrumbs = {}
+for _, questId in ipairs(sortedKeys(env.qcClosedOnceDone)) do
+	local found = false
+	for target in pairs(env.qcBreadcrumbQuests) do
+		if listedUnder(target, questId) then found = true end
+	end
+	if not found then notBreadcrumbs[#notBreadcrumbs + 1] = questId end
+end
+check("every quest qcClosedOnceDone names is a breadcrumb", #notBreadcrumbs == 0, table.concat(notBreadcrumbs, ", "))
+if not (QUESTS[GRULLOC] and QUESTS[MOGDORG]) then
+	print("Breadcrumbs the API closes once their quest is done: none in this game's data")
+else
+	print("Breadcrumbs the API closes once their quest is done: Grulloc Has Two Skulls and Mog'dorg the Wizened")
+	check("Mog'dorg the Wizened is still Grulloc's breadcrumb, so the quest window warns", listedUnder(GRULLOC, MOGDORG))
+	character("Human", {}, {})
+	login()
+	ctx.inLog[GRULLOC] = 1
+	check("with Grulloc Has Two Skulls in the log, the map keeps Mog'dorg the Wizened", mapKeeps(MOGDORG))
+	turnIn(GRULLOC)
+	check("handing it in ticks Mog'dorg the Wizened", env.qcCharacterCompletions[MOGDORG] == 1)
+end
+
+-- Two quests each listed as a breadcrumb of the other.
+local P, Q
+for _, questId in ipairs(sortedKeys(env.qcBreadcrumbQuests)) do
+	for _, other in pairs(env.qcBreadcrumbQuests[questId]) do
+		for _, back in pairs(env.qcBreadcrumbQuests[other] or {}) do
+			if not P and back == questId and oneTime(questId) and oneTime(other) then P, Q = questId, other end
+		end
+	end
+end
+if not P then
+	print("Breadcrumbs of each other: none in this game's data")
+else
+	print(string.format("Breadcrumbs of each other: %d and %d", P, Q))
+	character("Human", {}, {})
+	login()
+	ctx.inLog[P] = 1
+	check("with one in the log, the map hides the other, and the walk ends", not mapKeeps(Q))
+	turnIn(P)
+	check("handing one in ticks the other", env.qcCharacterCompletions[Q] == 1)
+end
+
+if not QUESTS[2281] then
+	print("The level 16 rogue quests: not in this game's data")
+else
+	local SHADEWHISPER, BEHEST, REDRIDGE, SHAKEDOWN, HULFDAN, SI7 = 2259, 2260, 2281, 2298, 2299, 2300
+	local leadIns = {SHADEWHISPER, BEHEST, SHAKEDOWN, HULFDAN, SI7}
+
+	print("Rothro, a Night Elf rogue who did Erion Shadewhisper and Erion's Behest, then took Redridge Rendezvous")
+	character("NightElf", {SHADEWHISPER, BEHEST}, {})
+	login()
+	check("before he takes it, the map keeps SI:7 at Keryn Sylvius", mapKeeps(SI7))
+	ctx.inLog[REDRIDGE] = 1
+	local shown = {}
+	for _, questId in ipairs({SI7, SHAKEDOWN, HULFDAN}) do
+		if mapKeeps(questId) then shown[#shown + 1] = questId end
+	end
+	check("with it in the log, the map hides SI:7, Kingly Shakedown and To Hulfdan!", #shown == 0, table.concat(shown, ", "))
+	check("and keeps the two he did, Erion Shadewhisper and Erion's Behest", mapKeeps(SHADEWHISPER) and mapKeeps(BEHEST))
+	turnIn(REDRIDGE)
+	local unticked = {}
+	for _, questId in ipairs(leadIns) do
+		if env.qcCharacterCompletions[questId] ~= 1 then unticked[#unticked + 1] = questId end
+	end
+	check("handing it in ticks all five lead-ins, To Hulfdan! included", #unticked == 0, table.concat(unticked, ", "))
 end
 
 print(failures == 0 and "All checks passed." or (failures .. " checks failed."))

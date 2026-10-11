@@ -71,6 +71,20 @@ again.
   Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Destiny Calls
   needing The Apple Falls, and a hand-in ticking no other lead-in, are checked offline by
   `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the server requires").
+- **Breadcrumbs closed while their quest is in the log** (11 October 2026, stacked on #297, not yet tried
+  in game, so not for a release until tried or the user says so). One look on the beta: with Redridge
+  Rendezvous (2281) in Rothro's log, Keryn Sylvius's pin no longer lists SI:7 (2300) but still shows Seek
+  out SI: 7 as done (Rothro's map hides quests in the log, not done ones), and Erion Shadewhisper's pin
+  still shows Erion's Behest. The same code runs on retail; its breadcrumb chains, the quests listed as
+  each other's breadcrumb and the API's breadcrumbs in `qcClosedOnceDone` are checked offline by
+  `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the game closes while their quest is in
+  the log").
+- **Two retail breadcrumbs that close only once all their quests are done** (found 11 October 2026, data
+  from 6 October). Blizzard's API keeps 65890 The Nelthazan Ruins offered while any of 65891, 65893 or
+  66719 is still to do, and 66261 A Minor Setback while any of 66262, 66263 or 66264 is; our breadcrumb
+  table ticks each once any one is handed in. `qcBreadcrumbQuests` can't say "all of", and
+  `Audit-QuestTables.ps1` takes each "must be incomplete" leaf whatever the AND/OR above it. To decide: a
+  table for "all of", or dropping the six pairs and clearing their ticks through `qcFormerlyExclusive`.
 - **Stacked pins and two new holidays** (#276 and #280, released in 112.9 untried; two optional lines on
   retail). Click a stacked pin whose first quest has no giver name and see the named giver's icon, name and
   TomTom title (Durotar around 45.7, 15.9 has one). `/qc holidays` should list the Moonkin Festival (694)

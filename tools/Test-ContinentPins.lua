@@ -579,7 +579,7 @@ local afterLog = code.Numbers(zoneNumbers, keep, false)
 check("a quest in the log is in progress", afterLog.progress == 1)
 check("one ready to hand in is ready", afterLog.ready == 1)
 check("both leave the available ones", afterLog.available == base.available - 5)
-check("the numbers add up", afterLog.done + afterLog.ready + afterLog.progress + afterLog.locked + afterLog.available == afterLog.total)
+check("the numbers add up", afterLog.done + afterLog.ready + afterLog.progress + afterLog.locked + afterLog.available + afterLog.closed == afterLog.total)
 S.accountDone[sample[6]] = true
 check("another character's completion is not this one's, unless the warband filter counts it", code.Numbers(zoneNumbers, keep, false).done == 3)
 check("with it, it is", code.Numbers(zoneNumbers, keep, true).done == 4)
@@ -590,6 +590,39 @@ check("at level 1 more quests are locked", lowLevel.locked > afterLog.locked and
 check("in the same total", lowLevel.total == afterLog.total)
 check("what is done stays done, and the log stays the log", lowLevel.done == 3 and lowLevel.ready == 1 and lowLevel.progress == 1)
 S.level = 1000
+
+print("A breadcrumb while the quest it leads to is in the log")
+env.qcCharacterCompletions = {}
+S.inLog, S.logComplete = {}, {}
+local crumb, crumbTarget, crumbCategory
+local zoneCategoryOf = {}
+for categoryId, members in pairs(categories) do
+	for _, questId in ipairs(members) do zoneCategoryOf[questId] = categoryId end
+end
+local targetIds = {}
+for target in pairs(env.qcBreadcrumbQuests) do targetIds[#targetIds + 1] = target end
+table.sort(targetIds)
+for _, target in ipairs(targetIds) do
+	for _, questId in pairs(env.qcBreadcrumbQuests[target]) do
+		if not crumb and QUESTS[target] and QUESTS[questId] and not isRecurring(target) and not isRecurring(questId)
+				and zoneCategoryOf[questId] and code.Kind(questId, false) == "available" then
+			crumb, crumbTarget, crumbCategory = questId, target, zoneCategoryOf[questId]
+		end
+	end
+end
+if not crumb then
+	print("  no breadcrumb in a zone's categories in this game's data")
+else
+	local crumbZone = {categories = {crumbCategory}}
+	local before = code.Numbers(crumbZone, QC.qcBuildViewFilter("M"), false)
+	S.inLog[crumbTarget] = 1
+	local after = code.Numbers(crumbZone, QC.qcBuildViewFilter("M"), false)
+	check(string.format("with %d in the log, its breadcrumb %d no longer counts as available", crumbTarget, crumb),
+		after.closed == before.closed + 1 and code.Kind(crumb, false) == "available")
+	check("but stays in the total, and the numbers add up", after.total == before.total
+		and after.done + after.ready + after.progress + after.locked + after.available + after.closed == after.total)
+	S.inLog[crumbTarget] = nil
+end
 
 print("Which icon a zone gets, and the count on it")
 env.qcCharacterCompletions = {}
