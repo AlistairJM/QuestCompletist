@@ -493,7 +493,8 @@ as `C_Reputation.GetFactionDataByID` and "Reputation Changes".
     battleground turn-ins of each level bracket and the replacement Water Sapta. A repeatable quest's
     completion isn't kept, so those only shut each other out while one is in the quest log. The
     addon ticks a group's other quests when one is handed in, so 85 groups with 257 quests remain
-    (84 with 254 since the rogue lead-ins' group went on 11 October 2026).
+    (84 with 254 since the rogue lead-ins' group went on 11 October 2026, and 85 with 255 after the
+    review of CMaNGOS's other links the same day).
 - **Reputation comes from the game's records only.** The cache reader now writes each reward's
   amount. A record gives a step in the client's `QuestFactionReward` table, or its own amount in
   hundredths, which wins when it's set (as TrinityCore reads it).
@@ -932,7 +933,8 @@ Subterfugin' (2238) in Ironforge, and The Apple Falls (2241) to Destiny Calls (2
   without the row fails two of those checks. Nobody has tried it in game after handing in 39 yet.
 - **Next:** CMaNGOS's other groups and breadcrumbs can be wrong in the same way. A review of them
   against first-hand reports (Questie's issues, QuestieDB's Era corrections) adds rows to the list,
-  and the clean-up then covers their ticks with no code change.
+  and the clean-up then covers their ticks with no code change. Done the same day: see "CMaNGOS's
+  other links, reviewed against first-hand reports".
 
 ### Lead-ins the game closes while their quest is in the log (11 October 2026)
 
@@ -980,6 +982,63 @@ handed in Erion's Behest.
   vanish from Rothro's map. `Test-ContinentPins.lua` counts a breadcrumb as closed with its quest in the
   log, `Test-ForeverChecks.ps1` checks the audit's new finding, and the retail audit finds the same 118
   as before. The map tooltip, reachability, settings and calendar checks pass on both games.
+
+### CMaNGOS's other links, reviewed against first-hand reports (11 October 2026)
+
+After the rogue lead-ins, the class quests that work the same way, and the prerequisites that are a
+quest's own breadcrumb, were checked against CMaNGOS z2815, TrinityCore (TDB 1210.26091), QuestieDB's
+Era and Forever corrections (as evidence only), Questie's issues and Wowhead Classic's comments. The
+user took the recommended rows. QuestieDB gets the proven rogue case right (2206 needs 2205), so
+where it deliberately clears a prerequisite that carries some weight; each row still names what it
+rests on, and says "taken to" where no one reported it first-hand.
+
+- **Level 10 warriors.** The three Alliance lead-ins, A Warrior's Training (1638), Muren Stormpike
+  (1679) and Elanaria (1684), can all be done (Questie #1852 and #1215), and it's the quests they lead
+  to, Bartleby the Drunk (1639), Vejrek (1678) and Vorlus Vilehoof (1683), that shut each other out
+  (#1852). Beat Bartleby (1640), Tormus Deepforge (1680), Ironband's Compound (1681) and The Shade of
+  Elura (1686) then take any of the three (#1852, and a Wowhead comment of May 2025). #1724 showed
+  Vejrek and Ironband's Compound done with Muren Stormpike and Tormus Deepforge not, so neither lead-in
+  is needed; they become breadcrumbs. Each lead-in is taken to close once any of the three is done
+  (QuestieDB, the Wowhead comment's advice to do all three first). The Horde pair, Veteran Uzzek (1505)
+  and Speak with Dillinger (1818) to Path of Defense (1498) and Ulag the Cleaver (1819), is done the
+  same way, on a Thottbot comment of 2006 (after Dillinger's line, Uzzek gave Thun'grim Firegaze, 1502,
+  and the trainer no longer gave Uzzek) and by analogy for the rest.
+- **Level 10 mages.** Speak with Jennea (1860) and Speak with Bink (1879) no longer shut each other
+  out; Mirror Lake (1861) and Mage-tastic Gizmonitor (1880) do (#1192, #1286, #1380). The Horde pair,
+  1881 and 1883 to The Balnir Farmstead (1882) and Ju-Ju Heaps (1884), by analogy, as TrinityCore and
+  QuestieDB group 1882 and 1884. Their prerequisites stay.
+- **Securing the Supply Lines (8280)** leaves the group CMaNGOS gives it with its own breadcrumbs,
+  Taking Back Silithus (8275, 8276), so handing one in no longer ticks it (#1873).
+- **Call of Earth:** 1516 and 1519 shut each other out, and the second steps 1517 and 1520 take either
+  (#6723, tested both ways on Era in 2025).
+- **Prerequisites:** 8 quests no longer need the breadcrumb the cache's next quest made their
+  prerequisite: 364, 429, 455, 639, 1275, 1302 and 1920 on first-hand reports, 1944 on a bare
+  statement (#2253). Burning Blood, Iron Coral and Sunscorched Shells (1705, 1708, 1710) need Furen's
+  Armor (1782) instead of a race's breadcrumb (#1857, TrinityCore, QuestieDB), so a Human no longer
+  sees Iron Coral open with nothing done; the Horde mirror (1842, 1844, 1846) needs Brutal Hauberk
+  (1848) on TrinityCore and QuestieDB alone.
+- **Not changed:** Great-father Winter's 6961 joining 7021 and 7024 (TrinityCore and QuestieDB only,
+  and a group writes ticks); the mage targets' prerequisites; TrinityCore's groups that reports
+  contradict or don't support (2260/2298/2300, 867/875, the Tome of Divinity's item quests); Zephras
+  Isle's Call of Earth (92466), which QuestieDB alone groups with 1516 and 1519; and 24 more quests
+  whose prerequisite is their own breadcrumb, which no report settles. Redridge Rendezvous (2281)
+  already closes Erion Shadewhisper (2259) and To Hulfdan! (2299) through the breadcrumb chain of the
+  section above. Erion's Behest (2260) and Kingly Shakedown (2298) keep their breadcrumb as
+  prerequisite until a look in the game ([open-items.md](open-items.md)).
+- **The list's new rows:** `prereq` rows can `REMOVE` a prerequisite, and several `SET` rows for one
+  quest make a choice, written `[[1639,1678,1683]]`; `exclusive` rows can `ADD` a pair; and
+  `breadcrumb` rows `ADD` a quest that closes once another is done. 71 rows, 77 in all. The importer
+  counts groups as linked sets now, so a pair added by hand makes one.
+- **The result:** 2,297 prerequisites (13 removed, 18 by hand), 139 breadcrumbs to 100 quests (15 by
+  hand), and 85 groups with 255 quests. `qcFormerlyExclusive` gains the warrior and mage lead-ins and
+  8275, 8276 and 8280, so the login sync drops the ticks their old groups gave, and the new links
+  tick back what they close. No addon code changed.
+- **Checked** with `Test-Completions.lua` on both TOCs: a new Human warrior can take all three quests
+  without a lead-in, sees Tormus Deepforge "Requires Bartleby the Drunk or Vejrek or Vorlus
+  Vilehoof", and handing in Vejrek ticks the other two and every lead-in and opens the four steps
+  after; old ticks go and come back as they should; the Horde, mage, Silithus, Call of Earth and
+  prerequisite cases. The data before these rows fails 20 of its 25 checks. Reachability is unchanged
+  on both games, the table audit finds the same 5, and two imports give the same files.
 
 ## Decisions
 
@@ -1108,3 +1167,7 @@ handed in Erion's Behest.
   in the log, and a hand-in ticks breadcrumbs of breadcrumbs too, after SI:7 showed at Keryn Sylvius with
   Redridge Rendezvous taken; retail's breadcrumbs from Blizzard's API stay on the map meanwhile
   (`qcClosedOnceDone`). See "Lead-ins the game closes while their quest is in the log".
+- 2026-10-11: CMaNGOS's other links reviewed against first-hand reports: 71 more rows correct the level
+  10 warrior and mage groups, Securing the Supply Lines, Call of Earth and 14 other quests' prerequisites, and the
+  list can now add links and remove prerequisites. See "CMaNGOS's other links, reviewed against
+  first-hand reports".
