@@ -339,7 +339,7 @@
 {"id":46343,"name":"The Trail of Ban-Lu","level":45,"zone":"","category":120,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":316}
 {"id":46350,"name":"The Trial of Ban-Lu","level":45,"zone":"","category":1015,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":316}
 {"id":47222,"name":"Two If By Sea","level":45,"zone":"","category":17,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":346}
-{"id":48435,"name":"The Spiritwalkers","level":40,"zone":"","category":1049,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":377}
+{"id":48435,"name":"The Spiritwalkers","level":40,"zone":"Highmountain","category":1005,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":377}
 {"id":49381,"name":"Vengeance Be Kind","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":5420}
 {"id":49787,"name":"The Ghostlands","level":40,"zone":"","category":82,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":532}
 {"id":49698,"name":"The Lightforged","level":40,"zone":"","category":1041,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":533}
@@ -10574,7 +10574,7 @@
 {"id":31048,"name":"Grave Consequences","level":25,"zone":"Townlong Steppes","category":249,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31049,"name":"In Sprite Of Everything","level":25,"zone":"Townlong Steppes","category":249,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31055,"name":"Between a Saurok and a Hard Place","level":30,"zone":"Vale of Eternal Blossoms","category":261,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":31058,"name":"The Funky Monkey Brew","level":35,"zone":"Unga Ingoo","category":257,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":31058,"name":"The Funky Monkey Brew","level":35,"zone":"Krasarang Wilds","category":119,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31061,"name":"Riding the Storm","level":25,"zone":"Townlong Steppes","category":249,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31062,"name":"When The Dead Speak","level":25,"zone":"Townlong Steppes","category":249,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":31063,"name":"Lao-Chin and Serevex","level":25,"zone":"Townlong Steppes","category":249,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5492}
@@ -10913,9 +10913,9 @@
 {"id":31605,"name":"The Zan'thik Dig","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31606,"name":"The Dissector Wakens","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31609,"name":"The Wrath of Shek'zeer","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":31611,"name":"The Kun-Lai Kicker","level":35,"zone":"Brewmoon Festival","category":32,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":31611,"name":"The Kun-Lai Kicker","level":35,"zone":"Kun-Lai Summit","category":120,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31612,"name":"Shadow of the Empire","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":31613,"name":"Volatile Greenstone Brew","level":30,"zone":"Greenstone Village","category":86,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":31613,"name":"Volatile Greenstone Brew","level":30,"zone":"The Jade Forest","category":221,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31656,"name":"The Threat in the South","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":31660,"name":"Not Fit to Swarm","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":562}
 {"id":31661,"name":"A Source of Terrifying Power","level":30,"zone":"Dread Wastes","category":61,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5493}
@@ -29574,11 +29574,11 @@
 {"id":75518,"name":"The Body on the Banks","level":70,"zone":"Azerothian Archives","category":1343,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5468,"prereq":75493}
 {"id":75519,"name":"The Long Hunt","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":75528,"name":"A Tester's Guide to Entering Zaralek","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":75538,"name":"Beginning Impositions","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":1,"race":67108863,"class":256,"storyline":5383}
-{"id":75539,"name":"Some Wicked Things This Way Come","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75538}
-{"id":75540,"name":"Hermetic Insurance","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75539}
-{"id":75541,"name":"Those Who Hesitate","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75540}
-{"id":75542,"name":"Curses & Cultists","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75541}
+{"id":75538,"name":"Beginning Impositions","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":1,"race":67108863,"class":256,"storyline":5383}
+{"id":75539,"name":"Some Wicked Things This Way Come","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75538}
+{"id":75540,"name":"Hermetic Insurance","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75539}
+{"id":75541,"name":"Those Who Hesitate","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75540}
+{"id":75542,"name":"Curses & Cultists","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75541}
 {"id":75543,"name":"Last Rites By Accident","level":30,"zone":"Burning Steppes","category":33,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75639}
 {"id":75544,"name":"When Revenge Burns Green","level":30,"zone":"Blasted Lands","category":27,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75543}
 {"id":75569,"name":"Blacksmith, Black Dragon","level":70,"zone":"Zaralek Cavern","category":1307,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
@@ -29608,7 +29608,7 @@
 {"id":75636,"name":"Tyrangulation","level":10,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5455,"prereq":76176}
 {"id":75637,"name":"The Final Beacon","level":10,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5455,"prereq":75636}
 {"id":75638,"name":"Dislocated Disc Located","level":10,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5455,"prereq":75637}
-{"id":75639,"name":"Fel Suspicions","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75542}
+{"id":75639,"name":"Fel Suspicions","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":75542}
 {"id":75640,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":75641,"name":"Power Unified","level":40,"zone":"Engine Of Innovation","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5397}
 {"id":75643,"name":"Orientation: Loamm Niffen","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1392,"prereq":72974}
@@ -29883,7 +29883,7 @@
 {"id":76145,"name":"Who's That Chromie?","level":70,"zone":"Dawn Of The Infinite","category":1723,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5408,"prereq":76144}
 {"id":76146,"name":"Dawn of the Infinite: Chrono-Lord Deios","level":70,"zone":"Dungeon","category":1723,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5408,"prereq":76145}
 {"id":76147,"name":"Rewind and Reconcile","level":70,"zone":"Dawn Of The Infinite","category":1723,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5408,"prereq":76146}
-{"id":76155,"name":"A Wolf Among Sheep","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":76410}
+{"id":76155,"name":"A Wolf Among Sheep","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5383,"prereq":76410}
 {"id":76158,"name":"Temporal Gossamer","level":70,"zone":"Legendary","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76159,"name":"Report to the Trading Post","level":1,"zone":"Trading Post","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76161,"name":"Conversation Testing [DNT]","level":1,"zone":"Jrztest","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -30010,7 +30010,7 @@
 {"id":76404,"name":"Cogs in a Machine","level":70,"zone":"Time Rifts","category":1347,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76406,"name":"The Sins of the Ashbringer","level":70,"zone":"Time Rifts","category":1347,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":76407,"name":"Not Today, Fate","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5508,"prereq":77417}
-{"id":76410,"name":"A Dark Summons","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5383,"prereq":76163}
+{"id":76410,"name":"A Dark Summons","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5383,"prereq":76163}
 {"id":76416,"name":"Forward Unto Fire","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5465,"prereq":76384}
 {"id":76419,"name":"Violence Will Solve It","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5508,"prereq":76407}
 {"id":76420,"name":"Butterfly Effects","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5508,"prereq":76419}
@@ -30019,9 +30019,9 @@
 {"id":76423,"name":"No Limits","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5508}
 {"id":76425,"name":"Renowned with the Dream Wardens","level":70,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":76426,"name":"The Kalimdor Cup Circuit","level":30,"zone":"Kalimdor Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":76427,"name":"A Dark Summons","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":5383,"prereq":75544}
+{"id":76427,"name":"A Dark Summons","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":5383,"prereq":75544}
 {"id":76429,"name":"The Kalimdor Cup Begins","level":30,"zone":"Kalimdor Cup","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":76430,"name":"Beginning Impositions","level":30,"zone":"Darkmoon Island","category":316,"type":1,"faction":2,"race":67108863,"class":256,"storyline":5383,"prereq":76427}
+{"id":76430,"name":"Beginning Impositions","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":2,"race":67108863,"class":256,"storyline":5383,"prereq":76427}
 {"id":76433,"name":"Ashen Soil","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5471,"prereq":77436}
 {"id":76434,"name":"Not Yet Lost","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5471,"prereq":76433}
 {"id":76435,"name":"The Smoldering Copse","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5471,"prereq":76434}

@@ -117,7 +117,7 @@ one the report author would take.
 | 21 | R28 | One shape for every expansion's submenu | **yes, 11 October 2026, done**: Draenor and The Broken Isles each have Main Zones and Other Categories, in the shape of Pandaria's (the same two `qcL` keys, no new text); Outland, Northrend and The Maelstrom stay flat. Draenor, Main Zones (7): Frostfire Ridge, Gorgrond, Tanaan Jungle, Spires of Arak, Talador, Shadowmoon Valley - Draenor, Nagrand - Draenor; Other Categories (6): Garrison Campaign, Garrison Support, Ashran, Assault on the Dark Portal, Stormshield, Warspear. The Broken Isles, Main Zones (13): Eye of Azshara, Azsuna, Broken Shore, Dalaran, Thunder Totem, Highmountain, Helheim, Stormheim, Suramar, Val'sharah, Krokuun, Antoran Wastes, Mac'Aree; Other Categories (11): the eight class halls the call named (The Dreamgrove, Hall of the Guardian, Mardum, Netherlight Temple, Skyhold, The Heart of Azeroth, The Wandering Isle, Trueshot Lodge), and the three entries it did not name: the two class halls Dreadscar Rift (Warlock, 1017) and Acherus: The Ebon Hold (Death Knight, 1021), and Legion Uncategorized (1050), put there too: the first two are class halls like the eight, and the third is a catch-all, not a zone. Every entry keeps its place relative to the others in its group |
 | 22 | R27 | Midnight: Founder's Point (57 quests) and Razorwind Shores (58) sit in Main Zones with the story zones | **yes, 10 October 2026, done**: Founder's Point and Razorwind Shores sit in Other Categories with Prey, in alphabetical order |
 | 23 | R26 | Lordaeron has 21 entries and also holds Quel'Thalas, Gilneas and Tol Barad | **yes, 10 October 2026, done**: Lordaeron keeps its 11 entries; Quel'Thalas (Eversong Woods, Ghostlands, Isle of Quel'Danas, Silvermoon City, Sunstrider Isle), Gilneas (Gilneas, Gilneas City, Ruins of Gilneas) and Tol Barad (Tol Barad, Tol Barad Peninsula) follow it, named by the client's maps 2537, 179 and 244. Retail only: Forever's Lordaeron holds just its ten original zones |
-| 24 | R15, R31 | Merge categories: Darkmoon Island (10 quests) into Darkmoon Faire (59), and four one-quest entries (Brewmoon Festival 32, Greenstone Village 86, Unga Ingoo 257, Thunder Totem 1049) into their zones | yes, in one pass: refile, delete the category, point its map's zone row at the target, remove the menu entry and its locale key. Not done now because a merge changes how the sweep tools file new quests |
+| 24 | R15, R31 | Merge categories: Darkmoon Island (10 quests) into Darkmoon Faire (59), and four one-quest entries (Brewmoon Festival 32, Greenstone Village 86, Unga Ingoo 257, Thunder Totem 1049) into their zones | **yes, 11 October 2026, done**: in one pass, as recommended. Refiled and deleted: Brewmoon Festival 32 (31611) to Kun-Lai Summit 120, Greenstone Village 86 (31613) to The Jade Forest 221, Unga Ingoo 257 (31058) to Krasarang Wilds 119, Thunder Totem 1049 (48435) to Highmountain 1005, and Darkmoon Island 316 (ten Warlock quests, 75538 to 76430) to Darkmoon Faire 46, which now has 69 quests. The zone rows of maps 448, 450, 452 and 750 name the targets, the five menu entries are gone, and no locale key was left to remove. Quest by quest under "Question 24" below |
 | 25 | R17 to R21, R25, F03 | Names that repeat: nine names appear twice (Eversong Woods in two expansions, for example), a group and a category share a name (Covenant Sanctum, Professions, Battlegrounds, Vashj'ir, Miscellaneous), and Forever's heading is "Invasion" | leave. Each rename needs a new string in every language, and Forever's heading is the client's own (QuestSort 368). If it matters, show the menu path in the list header when a name repeats: one line of code, no new text |
 | 26 | R29, R30, R39, F06, F07, F09 | Entries that are empty by default (all their quests repeatable or retired) or hold one or two quests | **yes, 11 October 2026, done**: every entry stays (none removed, no quest moved), and an empty list now says "Quests hidden by your filters: N", on both games; entry by entry under "Question 26" below |
 | 27 | R06 | Rated PvP: 86 of 87 quests are flagged unavailable, so the entry opens an empty list | keep: removing it would leave 87 quests in no menu, and they show with "Show unavailable quests" on |
@@ -125,6 +125,71 @@ one the report author would take.
 | 29 | R33 | Ordering rule: Retail's hand order, or alphabetical everywhere | keep the hand order (Monk is fixed); Forever sorts alphabetically in its generator already |
 | 30 | F04, F05 | Forever: Seasonal lumps Winter Veil (37), Love is in the Air (21), Hallow's End (7) and Harvest Festival (2); Deeprun Tram and Special stand loose | leave until after the 4 November launch, then look again |
 | 31 | R32 | Remove the 83 unused category definitions | yes, in a pass of its own with `Remove-ConvertedLocaleKeys.ps1`, after question 24 |
+
+## Question 24: what the merge changed
+
+R15 (Darkmoon Island, 10 quests) and R31 (four categories of one quest each) are done, in one pass, on
+the user's word of 11 October 2026. Each quest went where its pins sit: the three brewing quests'
+givers stand on the maps of the zones they went to (379, 371 and 418), the Thunder Totem quest's one
+pin is on map 750, which the zone table now gives to Highmountain, and six of the ten Darkmoon Island
+quests have a pin on the island's own map (407), which already named Darkmoon Faire (the other four
+start in Stormwind City and Orgrimmar). A per-quest comparison of `data\quests.jsonl` with master
+(35,023 records) finds exactly these 14 changed, and only in `category` and `zone`; the zone text is
+the one the target's other quests carry. Every other field is as it was. The ten Darkmoon Island
+quests have no holiday tag and keep none: they are `KEEP` rows of
+[quest-holiday-decisions.csv](quest-holiday-decisions.csv), untagged on purpose.
+
+| Quest | Name | Category before | Category after | Zone text before | Zone text after |
+|---|---|---|---|---|---|
+| 31611 | The Kun-Lai Kicker | 32 Brewmoon Festival | 120 Kun-Lai Summit | Brewmoon Festival | Kun-Lai Summit |
+| 31613 | Volatile Greenstone Brew | 86 Greenstone Village | 221 The Jade Forest | Greenstone Village | The Jade Forest |
+| 31058 | The Funky Monkey Brew | 257 Unga Ingoo | 119 Krasarang Wilds | Unga Ingoo | Krasarang Wilds |
+| 48435 | The Spiritwalkers | 1049 Thunder Totem | 1005 Highmountain | (none) | Highmountain |
+| 75538 | Beginning Impositions | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 75539 | Some Wicked Things This Way Come | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 75540 | Hermetic Insurance | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 75541 | Those Who Hesitate | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 75542 | Curses & Cultists | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 75639 | Fel Suspicions | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 76155 | A Wolf Among Sheep | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 76410 | A Dark Summons | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 76427 | A Dark Summons | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+| 76430 | Beginning Impositions | 316 Darkmoon Island | 46 Darkmoon Faire | Darkmoon Island | Darkmoon Faire |
+
+What else changed, all in `QuestCompletist\qcQuest.lua`, `qcMenu.lua` and the regenerated
+`qcQuestData.lua` (retail only):
+
+- `qcQuestCategories` has 563 rows instead of 568: 32, 86, 257, 316 and 1049 are gone. 480 categories
+  hold quests (485), and 83 hold none, as before.
+- `qcAreaIDToCategoryID`: four rows re-pointed, so walking into those maps switches the list to the
+  zone: map 448 (Greenstone Village) from 86 to 221, 450 (Unga Ingoo) from 257 to 119, 452 (Brewmoon
+  Festival) from 32 to 120 and 750 (Thunder Totem) from 1049 to 1005. No row named 316: Darkmoon
+  Island's maps (407 and 408) already named 46. No row names an undefined category, as before.
+- `qcCategoryUiMapID` (376 rows to 373: 32, 257, 1049) and `qcCategoryClientName` (113 to 111: 86, 316)
+  came out through `Build-CategoryUiMapIDs.ps1` and `Build-CategoryClientNames.ps1`, which give
+  master's two tables byte for byte from master's own inputs, so the only change is the deleted rows.
+- `qcMenu.lua`: the five entries are gone (`Remove-EmptyMenuEntries.ps1`): Brewmoon Festival, Greenstone
+  Village and Unga Ingoo from Pandaria's Other Categories (Unga Ingoo closed the submenu, so Pandaren
+  Campaign took over its closing brackets), Thunder Totem from The Broken Isles' Main Zones and
+  Darkmoon Island from World Events. A Lua dump of the menu before and after shows nothing else moved
+  (562 items to 557).
+- No locale key to delete: the client names all five categories, so none had a key in
+  `Localization.*.lua`, and their entries had no label. `Remove-ConvertedLocaleKeys.ps1 -WhatIf` says
+  0 lines.
+- Forever: none of the five IDs is a category, a zone row or a quest's category there (Forever numbers
+  its categories by zone), so its files are untouched and `Build-ForeverMenu.ps1 -Check` still finds
+  them up to date.
+
+What files a new quest of those zones. The tools read the categories, the zone rows and the menu from
+the Lua files, and nothing in `tools\` or the addon names the five IDs. What they matched on was the
+categories' English names and the zone rows: `Place-UncategorisedQuests.ps1` matched a quest's API area
+to a category of the same name, then went through the zone table. With the categories gone, the area
+rule falls to "the zone containing the API area", which reaches the re-pointed rows. To prove it, the 14
+quests were put back in category 0 with their old zone text in a scratch copy of the data, and
+`Place-UncategorisedQuests.ps1 -WhatIf -Explain` was run on master's tables and on the branch's. Master
+files them in 32, 86, 257, 1049 and (ten of them) 316. The branch files all 14 in the five targets of
+the table (12 by the zone containing the API area, 2 by the pin's map); the other 30 quests it would
+place, and the 745 it leaves, are the same on both.
 
 ## Question 26: what the entries do now
 
@@ -163,7 +228,7 @@ The entries of the question, by what the review found (quest counts as of 11 Oct
 
 The line also helps every other category that opens empty, such as Rated PvP (question 27: 86 of 87
 quests unavailable) and any class, faction or race category the character can't use. For a Horde Blood
-Elf Death Knight at the default settings 60 of retail's 485 categories and 15 of Forever's 113 open
+Elf Death Knight at the default settings 61 of retail's 480 categories and 15 of Forever's 113 open
 empty; the reachability report lists them.
 
 ## Noticed along the way
@@ -196,6 +261,16 @@ empty; the reachability report lists them.
   `forever.md` (Camping under Professions, no rows for undefined zones). Nothing else writes down
   Timerunning's place (`maintenance.md` only names it as an example), and no Dungeon Journal audit
   baseline names Scarlet Halls.
+- Quest 31611 has a second pin, on map 433 (The Veiled Stair, category 236), next to its pin on
+  Kun-Lai Summit's map; both are Brewmaster Boof's. The quest is filed under Kun-Lai Summit as the
+  call named it, and the pin stays where it was.
+- `Audit-QuestHolidays.ps1` reads the heading a quest is filed under as a signal. The ten Darkmoon
+  Island quests, now under "Darkmoon Faire", are untagged on purpose, so the audit lists ten more
+  findings (67, against master's 57) and every one is covered by its `KEEP` row (0 new). The rows'
+  evidence text still says "category 316"; it is a dated record and was left as it is.
+- Quest 38934 ("Silas' Secret Stash", Darkmoon Faire since before this change) still has "Darkmoon
+  Island" as its zone text, where the other 68 quests of category 46 say "Darkmoon Faire". Left alone:
+  the call named 14 quests.
 
 ## Status
 
@@ -217,3 +292,4 @@ empty; the reachability report lists them.
 - 2026-10-11: question 21 approved by the user and done: Draenor and The Broken Isles each split into Main Zones and Other Categories, in Pandaria's code shape (`qcMenu.lua` only, no new text). Checked offline: `luac -p` is silent on all 27 Lua files, and `Test-Localization.lua`, `Test-Settings.lua` (both games), `Test-QuestReachability.lua` (both games: 0 quests in categories the list can't browse to; Retail's report equals master's), `Test-MapTooltip.lua` (both games), `Remove-EmptyMenuEntries.ps1 -WhatIf` (0 entries), `Remove-ConvertedLocaleKeys.ps1 -WhatIf` (0 lines) and `Build-ForeverMenu.ps1 -Check` (Forever's three files up to date; its menu has no Draenor or Legion) pass. `Audit-DungeonCategories.ps1` finds the same issues as master; its one difference is Eye of Azshara's menu path, now ending in "Main Zones". A Lua dump of the menu before and after shows nothing else moved and every group keeps its entries' order. Not tried in game: the two new submenu layouts.
 - 2026-10-11: question 20 approved by the user and done on `data/flag-placeholder-quests`: the 22 placeholder-named quests that still showed are flagged (20 with reason 1, the 2 task quests with the builder's new reason 3, added in a second commit). Checked offline: `luac -p` is silent on all 44 Lua files; `Build-AddonData.ps1 -Check` passes; `qcUnavailableQuests.lua` gains exactly the 20 IDs; `Test-QuestReachability.lua` (both games) gives a report identical to master's, because it sweeps with every hide filter off, "Hide quests that are no longer available" included; with the default list settings the 20 are hidden for a character that has not done them and shown for one that has, or has them in its log, and the count of quests passing the default list falls from 18,052 to 18,033 for a Horde Blood Elf Death Knight (one of the 20 is Alliance-only); `Test-Localization.lua`, `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-SeasonalCalendar.lua` and `Test-ContinentPins.lua` (all both games) pass, and the continent icons count 9 fewer quests on Retail (13,447 to 13,438). Not tried in game: that the 20 are gone from the list, the map and the zone counters, and that the 9.1 Campaign entry opens empty. The numbers above were measured for the first 20; the second commit only adds 86645 and 94815 to the Lua file and changes its header line.
 - 2026-10-11: question 26 approved by the user and done, on branch `feat/empty-list-hidden-count` (cut from master 956ef50): an empty quest list says "Quests hidden by your filters: N" (`qcShowHiddenQuests` in `qcCore.lua`, a text `qcHiddenQuests` in `QuestCompletist.xml`, the new key `QUESTSHIDDEN` in all 11 locale files, the ten translations marked `-- Needs review`); every entry stays and no quest moved. Checked offline: `luac -p` is silent on all 27 addon Lua files, `Test-Localization.lua` says "No problems", `Test-QuestReachability.lua` (both games) has 0 Lua errors and a report equal to master's apart from its new section, whose checks (1,036 on retail, 292 on Forever) all pass and fail 82 and 37 of them on master's code, `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-ContinentPins.lua` and `Test-SeasonalCalendar.lua` (both games) say "All checks passed.", `Test-Recorder.lua` says "0 failed", and `Build-AddonData.ps1 -Check` says all four files are up to date. Not tried in game: how the line looks in the list (a centred line over the first rows).
+- 2026-10-11: question 24 approved by the user and done, on branch `feat/merge-small-categories` (cut from master 847ffda): Darkmoon Island and the four one-quest categories merged into their zones, 14 quests refiled, five categories deleted with their menu entries and client-name rows, four zone rows re-pointed (the detail is under "Question 24" above). Checked offline: a per-quest comparison of `data\quests.jsonl` with master (35,023 records, exactly the 14 differ, only in `category` and `zone`); a Lua dump of retail's menu before and after (only the five entries gone, 562 items to 557, nothing else moved); `qcQuestCategories` 568 rows to 563, `qcCategoryUiMapID` 376 to 373, `qcCategoryClientName` 113 to 111; `luac -p` is silent on all 48 Lua files; `Build-AddonData.ps1 -Check` passes; `Test-Localization.lua` says "No problems"; `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-ContinentPins.lua` and `Test-SeasonalCalendar.lua` (both games) say "All checks passed." (the continent icons count 4 more quests on retail, 13,436 to 13,440, because the four one-quest categories' quests now count in their zone's icon); `Test-QuestReachability.lua` (both games: 0 Lua errors, 0 quests in categories the list can't browse to) gives Forever's report as master's, and retail's as master's apart from the category count (485 to 480) and the empty-list checks (1,036 to 1,026, with the same 61 categories empty by default); `Remove-EmptyMenuEntries.ps1 -WhatIf` and `Remove-ConvertedLocaleKeys.ps1 -WhatIf` report 0; `Build-ForeverMenu.ps1 -Check` says Forever's three files are up to date; `Audit-DungeonCategories.ps1` gives master's result to the byte; `Audit-QuestHolidays.ps1` lists 67 findings against master's 57, none new (the ten more are the Darkmoon Island quests, covered by their `KEEP` rows, see "Noticed along the way"); the two generators reproduce master's tables byte for byte from master's inputs; and the 14 quests put back in category 0 file under the five targets on the branch and under the old IDs on master. Not tried in game: that the five entries are gone from the menu, that the 14 quests list under their zones, and that entering the maps of Greenstone Village, Unga Ingoo, Brewmoon Festival and Thunder Totem switches the list to their zones.

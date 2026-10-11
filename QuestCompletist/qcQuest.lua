@@ -30,7 +30,7 @@ qcAreaIDToCategoryID={
 [394]=261,[395]=261,[396]=261,[398]=269,[399]=101,[400]=101,[401]=71,[402]=71,[403]=71,[404]=71,[405]=71,[406]=71,[407]=46,[408]=46,
 [418]=119,[419]=119,[420]=119,[421]=119,[422]=61,[425]=70,[427]=63,[428]=63,[429]=206,[430]=206,[431]=168,[432]=168,
 [433]=236,[434]=236,[435]=169,[436]=169,[437]=81,[438]=81,[439]=193,[440]=193,[441]=193,[442]=193,[443]=175,[444]=175,[445]=175,
-[446]=175,[450]=257,[452]=32,[453]=134,[454]=134,[455]=134,[457]=184,[458]=184,[459]=184,[460]=204,[461]=64,[462]=140,[463]=68,
+[446]=175,[450]=119,[452]=120,[453]=134,[454]=134,[455]=134,[457]=184,[458]=184,[459]=184,[460]=204,[461]=64,[462]=140,[463]=68,
 [464]=68,[465]=53,[466]=53,[467]=199,[468]=17,[469]=63,[470]=63,[476]=171,[477]=171,[478]=171,[479]=171,[480]=156,[499]=55,[500]=55,
 [508]=242,[509]=242,[510]=242,[511]=242,[512]=242,[513]=242,[514]=242,[515]=242,[516]=113,[517]=113,[525]=288,[526]=288,[527]=288,
 [528]=288,[529]=288,[530]=288,[531]=288,[532]=288,[533]=288,[534]=306,[535]=305,[536]=305,[537]=305,[538]=305,[539]=315,[540]=315,
@@ -47,7 +47,7 @@ qcAreaIDToCategoryID={
 [667]=407,[668]=407,[669]=407,[670]=407,[672]=1010,[673]=1010,[674]=1010,[675]=1010,[680]=1007,[681]=1007,[682]=1007,[683]=1007,
 [684]=1007,[685]=1007,[686]=1007,[687]=1007,[688]=1007,[689]=1007,[690]=1007,[691]=1007,[692]=1007,[693]=1007,[695]=1012,[702]=1011,
 [703]=1030,[704]=1030,[705]=1030,[706]=1031,[707]=1031,[708]=1031,[709]=1015,[710]=1035,[711]=1035,[712]=1035,[713]=1029,
-[718]=1017,[726]=1014,[731]=1032,[732]=1036,[733]=1028,[734]=1009,[735]=1009,[739]=1016,[747]=1013,[749]=1034,[750]=1049,[751]=1025,
+[718]=1017,[726]=1014,[731]=1032,[732]=1036,[733]=1028,[734]=1009,[735]=1009,[739]=1016,[747]=1013,[749]=1034,[750]=1005,[751]=1025,
 [752]=1025,[753]=1025,[754]=1025,[755]=1025,[756]=1025,[761]=1027,[762]=1027,[763]=1027,[764]=1039,[765]=1039,[766]=1039,[767]=1039,
 [768]=1039,[769]=1039,[770]=1039,[771]=1039,[772]=1039,[777]=1037,[778]=1037,[779]=1037,[780]=1037,[781]=1037,[782]=1037,[783]=1037,
 [784]=1037,[785]=1037,[786]=1037,[787]=1037,[788]=1037,[789]=1037,[790]=1004,[806]=1038,[807]=1038,[808]=1038,[809]=1033,[810]=1033,
@@ -76,7 +76,7 @@ qcAreaIDToCategoryID={
 --Mid
 [2413]=1502,[2432]=1503,[2437]=1510,[2395]=1511,[2393]=1512,[2405]=1508,
 --Added Missing
-[577]=306,[578]=306,[448]=86,[319]=1737,[320]=1737,[321]=1737,[327]=3,[129]=224,[678]=1035,[1360]=107,[127]=417,
+[577]=306,[578]=306,[448]=221,[319]=1737,[320]=1737,[321]=1737,[327]=3,[129]=224,[678]=1035,[1360]=107,[127]=417,
 [179]=83,[181]=84,[182]=84,[1682]=107,[1699]=419,[1700]=419,[332]=39,[504]=113,
 [157]=15,[153]=89,
 [2509]=1513,[2512]=1513,
@@ -211,9 +211,9 @@ qcQuestCategories={
 {17,"Azuremyst Isle"},{18,"Badlands"},{19,"Battle Pets"},{20,"Battlegrounds"},{282,"Beastwatch"},{21,"Blackfathom Deeps"},
 {22,"Blackrock Caverns"},{23,"Blackrock Depths"},{283,"Blackrock Foundry"},{24,"Lower Blackrock Spire"},{25,"Blacksmithing"},{26,"Blade's Edge Mountains"},
 {27,"Blasted Lands"},{284,"Bloodmane Pridelands"},{285,"Bloodmaul Slag Mines"},{28,"Bloodmyst Isle"},{29,"Borean Tundra"},{30,"Brawler's Guild"},
-{31,"Brewfest"},{32,"Brewmoon Festival"},{33,"Burning Steppes"},{34,"Camp Narache"},{35,"Cataclysm"},{36,"Caverns of Time"},
+{31,"Brewfest"},{33,"Burning Steppes"},{34,"Camp Narache"},{35,"Cataclysm"},{36,"Caverns of Time"},
 {37,"Children's Week"},{38,"Chill Breeze Valley"},{39,"Coilfang Reservoir"},{40,"Coldarra"},{41,"Coldridge Valley"},{42,"Cooking"},
-{286,"Cragplume Cauldron"},{43,"Dalaran"},{44,"Dalaran City"},{45,"Dalaran Crater"},{46,"Darkmoon Faire"},{316,"Darkmoon Island"},
+{286,"Cragplume Cauldron"},{43,"Dalaran"},{44,"Dalaran City"},{45,"Dalaran Crater"},{46,"Darkmoon Faire"},
 {47,"Darkshore"},{48,"Darkspear Strand"},{49,"Darnassus"},{50,"Day of the Dead"},{51,"Deadwind Pass"},{52,"Death Knight"},
 {53,"Deathknell"},{54,"Deepholm"},{55,"Deeprun Tram"},{56,"Designer Island"},{57,"Desolace"},
 {58,"Dire Maul - Capital Gardens"},{59,"Dragonblight"},{60,"Drak'Tharon Keep"},{61,"Dread Wastes"},{62,"Druid"},{63,"Dun Morogh"},
@@ -221,7 +221,7 @@ qcQuestCategories={
 {70,"Elwynn Forest"},{71,"End Time"},{72,"Engineering"},{73,"Epic"},{74,"Eversong Woods"},{75,"Eye of the Storm"},
 {76,"Felwood"},{77,"Feralas"},{78,"Firelands Invasion"},{79,"First Aid"},{80,"Fishing"},{288,"Frostfire Ridge"},
 {317,"Garrison"},{289,"Garrison Campaign"},{290,"Garrison Support"},{81,"Gate of the Setting Sun"},{82,"Ghostlands"},{83,"Gilneas"},
-{84,"Gilneas City"},{85,"Gnomeregan"},{291,"Gorgrond"},{86,"Greenstone Village"},{87,"Grim Batol"},{292,"Grimrail Depot"},
+{84,"Gilneas City"},{85,"Gnomeregan"},{291,"Gorgrond"},{87,"Grim Batol"},{292,"Grimrail Depot"},
 {88,"Grizzly Hills"},{89,"Gundrak"},{90,"Hallow's End"},{91,"Halls of Lightning"},{92,"Halls of Origination"},{93,"Halls of Reflection"},
 {94,"Halls of Stone"},{95,"Hellfire Citadel"},{96,"Hellfire Peninsula"},{97,"Hellfire Ramparts"},{98,"Herbalism"},{318,"Highmaul"},
 {99,"Hillsbrad"},{100,"Hillsbrad Foothills"},{101,"Hour of Twilight"},{102,"Howling Fjord"},{103,"Hrothgar's Landing"},{104,"Hunter"},
@@ -253,7 +253,7 @@ qcQuestCategories={
 {235,"The Underbog"},{236,"The Veiled Stair"},{237,"The Vortex Pinnacle"},{238,"The Wandering Isle"},{239,"The Zandalari"},{240,"Thousand Needles"},
 {241,"Throne of the Tides"},{242,"Throne of Thunder"},{243,"Thunder Bluff"},{244,"Timeless Isle"},{245,"Tirisfal Glades"},{246,"Tol Barad"},
 {247,"Tol Barad Peninsula"},{248,"Tournament"},{249,"Townlong Steppes"},{250,"Trial of the Champion"},{251,"Trial of the Crusader"},{252,"Twilight Highlands"},
-{253,"Uldaman"},{254,"Ulduar"},{255,"Uldum"},{0,"Uncategorized"},{256,"Undercity"},{257,"Unga Ingoo"},{258,"Un'Goro Crater"},
+{253,"Uldaman"},{254,"Ulduar"},{255,"Uldum"},{0,"Uncategorized"},{256,"Undercity"},{258,"Un'Goro Crater"},
 {311,"Upper Blackrock Spire"},{259,"Utgarde Keep"},{260,"Utgarde Pinnacle"},{261,"Vale of Eternal Blossoms"},{262,"Valley of the Four Winds"},{263,"Valley of Trials"},
 {264,"Vashj'ir"},{265,"Wailing Caverns"},{266,"Warlock"},{267,"Warrior"},{268,"Warsong Gulch"},{312,"Warspear"},
 {313,"Warspear Outpost"},{269,"Well of Eternity"},{270,"Western Plaguelands"},{271,"Westfall"},{272,"Wetlands"},{273,"Wintergrasp"},
@@ -272,7 +272,7 @@ qcQuestCategories={
 {1021,"Acherus: The Ebon Hold (Death Knight)"},{1025,"Black Rook Hold"},{1026,"Cathedral of Eternal Night"},{1027,"Court of Stars"},{1028,"Darkheart Thicket"},
 {1029,"Eye of Azshara"},{1030,"Halls of Valor"},{1031,"Maw of Souls"},{1032,"Neltharion's Lair"},{1033,"Return to Karazhan"},{1034,"The Arcway"},
 {1035,"Vault of the Wardens"},{1036,"Assault on Violet Hold"},{1037,"The Emerald Nightmare"},{1038,"Trial of Valor"},{1039,"The Nighthold"},{1040,"Tomb of Sargeras"},
-{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"Seat of the Triumvirate"},{1048,"Emerald Dreamway"},{1049,"Thunder Totem"},{1050,"Legion Uncategorized"},
+{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"Seat of the Triumvirate"},{1048,"Emerald Dreamway"},{1050,"Legion Uncategorized"},
 --Bfa
 {1060,"Drustvar"},{1061,"Stormsong Valley"},{1062,"Tiragarde Sound"},{1063,"Mechagon Island"},{1064,"Chamber of Heart"},{1065,"Nazjatar"},{1066,"Mechagon City"},{1080,"Nazmir"},{1081,"Vol'dun"},{1082,"Zuldazar"},{1090,"Alliance War Campaign"},{1091,"Horde War Campaign"},{1092,"Warfront Contribution"},{1093,"Heritage"},{1094,"Rated PvP"},{1095,"World PvP"},
 {1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Freehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"},{1105,"Siege of Boralus"},{1106,"Siege of Zuldazar"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1110,"Uldir"},{1111,"Waycrest Manor"},{1112,"The MOTHERLODE!!"},{1113,"Battle of Dazar'alor"},{1114,"The Eternal Palace"},{1115,"Ny'alotha, the Waking City"},
@@ -353,7 +353,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[27]=17,	-- Blasted Lands
 	[28]=106,	-- Bloodmyst Isle
 	[29]=114,	-- Borean Tundra
-	[32]=452,	-- Brewmoon Festival
 	[33]=36,	-- Burning Steppes
 	[34]=462,	-- Camp Narache
 	[36]=1552,	-- Caverns of Time
@@ -509,7 +508,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[254]=147,	-- Ulduar
 	[255]=249,	-- Uldum
 	[256]=90,	-- Undercity
-	[257]=450,	-- Unga Ingoo
 	[258]=78,	-- Un'Goro Crater
 	[259]=133,	-- Utgarde Keep
 	[260]=136,	-- Utgarde Pinnacle
@@ -596,7 +594,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1045]=909,	-- Antorus, the Burning Throne
 	[1046]=649,	-- Helheim
 	[1048]=715,	-- Emerald Dreamway
-	[1049]=750,	-- Thunder Totem
 	[1060]=896,	-- Drustvar
 	[1061]=942,	-- Stormsong Valley
 	[1062]=895,	-- Tiragarde Sound
@@ -735,7 +732,6 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[72]={"skill",202},	-- Engineering
 	[79]={"string","PROFESSIONS_FIRST_AID"},	-- First Aid
 	[80]={"skill",356},	-- Fishing
-	[86]={"string","DUNGEON_FLOOR_THEJADEFORESTSCENARIO0"},	-- Greenstone Village
 	[90]={"achievementcategory",158},	-- Hallow's End
 	[95]={"map",661},	-- Hellfire Citadel
 	[98]={"skill",182},	-- Herbalism
@@ -772,7 +768,6 @@ qcCategoryClientName = {  -- CategoryId -> where the client names it other than 
 	[295]={"map",425},	-- Northshire
 	[314]={"format","%s - %s",{"map",550},{"map",572}},	-- Nagrand - Draenor
 	[315]={"format","%s - %s",{"map",539},{"map",572}},	-- Shadowmoon Valley - Draenor
-	[316]={"map",407},	-- Darkmoon Island
 	[400]={"skill",186},	-- Mining
 	[401]={"skill",393},	-- Skinning
 	[402]={"skill",333},	-- Enchanting

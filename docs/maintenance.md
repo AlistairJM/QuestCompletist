@@ -909,6 +909,19 @@ file new ones by their quest-giver's zone. It only finds new cases, so it's safe
 After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf`, then without
 `-WhatIf`. It removes menu entries whose category no longer holds any quests, except Uncategorized.
 
+Merging a category into another is a refile with more to clean up (Darkmoon Island and four one-quest
+categories went into their zones on 11 October 2026). Refile its quests first, with `Set-RecordField`
+and `Save-QuestData` from `AddonData.ps1`: the target's category and the zone text the target's other
+quests carry. Delete its row in `qcQuestCategories`, and point every row of `qcAreaIDToCategoryID`
+that names it at the target: the placement rules above find a category through its name and through
+those rows, so a row left behind would file new quests under an ID that no longer exists. Then run
+`Build-CategoryUiMapIDs.ps1` and `Build-CategoryClientNames.ps1` (step 5), which drop its client-name
+row, `Remove-EmptyMenuEntries.ps1`, which drops its menu entry, and `Remove-ConvertedLocaleKeys.ps1`
+with `-WhatIf`, which says whether a locale key is left. To prove that new quests of the zone go to
+the target, put the moved quests back in category 0 in a scratch copy of `data\` and run
+`Place-UncategorisedQuests.ps1 -WhatIf -Explain` with that `-DataDir` and a scratch `-ToolsDir`
+(`-Explain` writes its CSV there).
+
 ### 7. Quests that may no longer be obtainable
 
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables,
@@ -997,9 +1010,9 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   categories, each kind hidden by one of the list's 13 filters (and one by two), check the line against
   the number the real filter hides, with that filter on and with all of them, then with a search, a
   redraw and a change of filters in between; every category of the data is then listed at the default
-  settings and its line, its hidden count and its header are checked (1,036 checks on retail, 292 on
+  settings and its line, its hidden count and its header are checked (1,026 checks on retail, 292 on
   Forever, on 11 October 2026). The report ends with the categories whose list is empty by default for
-  the made-up character, a Horde Blood Elf Death Knight (60 of retail's 485, 15 of Forever's 113). A
+  the made-up character, a Horde Blood Elf Death Knight (61 of retail's 480, 15 of Forever's 113). A
   wrong reading ends the run with exit status 1, as the level checks do.
 
 It assumes best-case progress: max level (but for the minimum-level check), prerequisites done, max
