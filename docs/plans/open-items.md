@@ -94,7 +94,7 @@ again.
   Taming the Beast, the notice counts only the lead-ins this character can take. The 119 prerequisites
   and 141 lead-ins closed by their next quest come from CMaNGOS and are checked offline by
   `Test-Completions.lua` ([forever.md](forever.md), "The rest of CMaNGOS's requirements").
-- **Quests offered only while another is in the log, on Forever** (11 October 2026, stacked on the one
+- **Quests offered only while another is in the log, on Forever** (#309, 11 October 2026, stacked on the one
   above; shared code, untried in game, so not for a release until tried or the user says so). One look
   on the beta: a quest of `qcQuestNeedsInLog`, such as Digging Through the Dirt (254) in Duskwood, is
   grey ("Requires Bride of the Embalmer in your quest log") until Bride of the Embalmer is taken, then

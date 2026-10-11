@@ -1266,5 +1266,5 @@ code.
   the quest their `NextQuestInChain` names is taken, and the breadcrumb notice counts only the ones a
   character can take (#308). See "The rest of CMaNGOS's requirements".
 - 2026-10-11: the 35 quests offered only while another is in the log are grey until it is, and a
-  one-time one closes once that quest is handed in (`qcQuestNeedsInLog`). See "Quests offered only
+  one-time one closes once that quest is handed in (`qcQuestNeedsInLog`, #309). See "Quests offered only
   while another is in the log".
