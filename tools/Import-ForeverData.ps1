@@ -16,7 +16,7 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     maintainer's own files saw, or two different players did, counts (RecordedGivers.ps1 decides). The
     probe's own recorder notes are not read from its file: if the file holds a giver, spot or offer
     the ledger lacks (step 6d was not run on it), the run stops, so a ledger behind the probe's file
-    can't silently drop its newest givers. Only the probe's file is checked: the addon's own file and
+    can't silently drop its newest givers (of the versions -Builds counts). Only the probe's file is checked: the addon's own file and
     players' files are not, and for them the import relies on step 10's item 1 in maintenance.md
     (step 6d first). The file is read the way step 6d reads it, so -Builds (default: the versions
     the TOCs in -AddonDir name) says which of its builds count;
@@ -415,7 +415,7 @@ if ($ledgerGaps.Count) {
     $shown = ($ledgerGaps | Select-Object -First 5) -join '; '
     throw ("The ledger $LedgerFile lacks $($ledgerGaps.Count) of the recorder notes in the probe's file $ProbeFile (source $probeTag): $shown" +
         $(if ($ledgerGaps.Count -gt 5) { "; and $($ledgerGaps.Count - 5) more" }) +
-        ". Run step 6d (Import-RecordedGivers.ps1) on the probe's file first, so the ledger keeps them (on a new build it needs UiMap-$Build.csv, which this run has fetched), then run this again. Nothing was written.")
+        ". Run step 6d (Import-RecordedGivers.ps1) on the probe's file first, so the ledger keeps them (on a new build it needs UiMap-$Build.csv, which this run has made sure is in -ToolsDir), then run this again. Nothing was written.")
 }
 $recordedModel = Get-RecordedModel $ledger 'forever'
 $fromLedger = Get-RecordedGiverInputs $recordedModel

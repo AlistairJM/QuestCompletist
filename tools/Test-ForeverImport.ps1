@@ -407,8 +407,8 @@ try {
     # A lone player's name and place for a giver the maintainer met change neither its name nor its place.
     Add-LedgerRow $w2 'giver' 'Creature' 910001 'p01=1' 'Impostor'
     Add-LedgerRow $w2 'spot' 'Creature' 910001 'p01=9' '' '1411' '11' '11'
-    # The name is checked on an object: a creature's pin takes the probe's NPC list first, so a recorded
-    # creature name could not show either way. The ledger's trusted name beats CMaNGOS's for an object.
+    # The name is checked on an object: 910001 is in the probe's NPC list, whose name its pin takes first,
+    # so a recorded name for it could not show either way. The ledger's trusted name beats CMaNGOS's for an object.
     Add-LedgerRow $w2 'giver' 'GameObject' 910012 'own-forever=1' 'Kappa Chest'
     Add-LedgerRow $w2 'spot' 'GameObject' 910012 'own-forever=2' '' '1411' '75' '75'
     Add-LedgerRow $w2 'offer' 'GameObject' 910012 'own-forever=1' '' '' '' '' '9011'

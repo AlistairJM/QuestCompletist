@@ -286,7 +286,9 @@ yet", and 6d and the import are run again. A probe file with no notes at all nee
 file is checked: the addon's own file and players' files are not, so for them the import relies on the runbook's
 order (maintenance.md, step 10, item 1: step 6d first). On a new Forever build 6d needs the build's `UiMap` table,
 which the importer fetches, so the order is the import (it fetches the tables, then stops at the check), 6d, the
-import again; a version the TOCs don't name is passed to both with `-Builds`, which the importer's message says.
+import again; a version the TOCs don't name is passed to both with `-Builds`, which the importer's message says when it stops. A probe
+file that mixes a named and an unnamed version is read in part by both and does not stop, so its newest notes wait until
+`-Builds` names their version.
 Retail is untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
 small scratch world (80 checks, among them the files master's importer wrote there when the ledger holds the probe's
 file alone, kept as written once by it), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
