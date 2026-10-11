@@ -7,8 +7,9 @@ Loads the addon's own files with stand-ins for the WoW API and for a server whos
 each check sets, then fires PLAYER_ENTERING_WORLD and QUEST_TURNED_IN through the addon's own event
 handler. The clean-up is checked on one of the game's groups of quests of which only one can be done,
 listed in place of the real list, as retail's list is empty. On WoW: Forever's TOC it also walks the
-level 10 rogue quests whose links were found wrong on 11 October 2026
-(docs/plans/forever-quest-link-decisions.csv); retail has only Snatch and Grab, with no lead-in.
+quests whose links were found wrong on 11 October 2026 (docs/plans/forever-quest-link-decisions.csv):
+the level 10 rogue quests, and Guard Thomas's Bounty on Murlocs. Retail has only Snatch and Grab
+and Bounty on Murlocs of them, neither with the quest it needs on Forever.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua
@@ -246,7 +247,7 @@ check("handing in a quest still ticks the rest of its group", env.qcCharacterCom
 env.qcFormerlyExclusive = realList
 
 if not QUESTS[2205] then
-	print("The level 10 rogue quests: not in this game's data")
+	print("Forever's corrected links: not in this game's data")
 else
 	local SEEK, SNATCH, ROAD, APPLE, DESTINY = 2205, 2206, 2218, 2241, 2242
 
@@ -295,6 +296,34 @@ else
 	check("and neither Road to Salvation nor The Apple Falls", env.qcCharacterCompletions[ROAD] == nil and env.qcCharacterCompletions[APPLE] == nil)
 	local after = shaw and snatchLine()
 	check("then Snatch and Grab can be taken", after ~= nil and not after:find("Requires", 1, true), after)
+
+	local REPORT, MURLOCS = 39, 46
+	local thomas
+	for _, mapId in ipairs(sortedKeys(env.qcPinDB)) do
+		for _, pin in ipairs(env.qcPinDB[mapId]) do
+			for _, questId in ipairs(pin[6]) do
+				if pin[2] == 261 and questId == MURLOCS then thomas = pin end
+			end
+		end
+	end
+	local function pinLine(pin, name)
+		lines = {}
+		setmetatable({PinData = pin, GetCenter = function() return 100, 100 end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		for _, text in ipairs(lines) do
+			if text:find(name, 1, true) then return text end
+		end
+	end
+
+	print("A level 16 Human at Guard Thomas's pin")
+	check("Bounty on Murlocs needs Deliver Thomas' Report", env.qcQuestPrereq[MURLOCS] == REPORT)
+	check("Guard Thomas has a pin with Bounty on Murlocs", thomas ~= nil)
+	character("Human", {}, {})
+	login()
+	local murlocs = thomas and pinLine(thomas, "Bounty on Murlocs")
+	check("Bounty on Murlocs is grey, needing Deliver Thomas' Report", murlocs ~= nil and murlocs:find("|cff9d9d9dBounty on Murlocs|r |cff808080(Requires Deliver Thomas' Report)|r", 1, true) ~= nil, murlocs)
+	turnIn(REPORT)
+	murlocs = thomas and pinLine(thomas, "Bounty on Murlocs")
+	check("then Bounty on Murlocs can be taken", murlocs ~= nil and not murlocs:find("Requires", 1, true), murlocs)
 end
 
 print(failures == 0 and "All checks passed." or (failures .. " checks failed."))

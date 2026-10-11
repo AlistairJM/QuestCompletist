@@ -36,7 +36,7 @@
 {"id":39,"name":"Deliver Thomas' Report","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":71,"minLevel":7}
 {"id":40,"name":"A Fishy Peril","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"minLevel":7}
 {"id":45,"name":"Discover Rolf's Fate","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":37,"minLevel":7}
-{"id":46,"name":"Bounty on Murlocs","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"minLevel":7}
+{"id":46,"name":"Bounty on Murlocs","level":10,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"prereq":39,"minLevel":7}
 {"id":47,"name":"Gold Dust Exchange","level":7,"zone":"Elwynn Forest","category":12,"type":1,"faction":1,"race":0,"class":8191,"minLevel":4}
 {"id":48,"name":"Sweet Amber","level":44,"zone":"Westfall","category":40,"type":1,"faction":1,"race":0,"class":8191,"minLevel":40}
 {"id":49,"name":"Sweet Amber","level":44,"zone":"Westfall","category":40,"type":1,"faction":1,"race":0,"class":8191,"prereq":48,"minLevel":40}

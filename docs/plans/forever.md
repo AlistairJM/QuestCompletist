@@ -921,6 +921,15 @@ Subterfugin' (2238) in Ironforge, and The Apple Falls (2241) to Destiny Calls (2
   "Requires Seek out SI: 7", until that quest is handed in, and the hand-in ticks neither other
   lead-in. Master's code fails 4 of its checks and master's data 10. The reachability check is
   unchanged on both games, and the table audit finds the same 5 kept findings.
+- **Bounty on Murlocs (46), seen the same day:** the map showed three quests at Guard Thomas (261),
+  but he offered Rothro only Report to Gryan Stoutmantle (109) and Protect the Frontier (52). Rothro
+  hadn't done Deliver Thomas' Report (39). CMaNGOS gives 46 no previous quest, group or condition. A
+  Wowhead Classic comment of June 2020 says Thomas doesn't offer it until his report has been
+  delivered to Marshal Dughan, and QuestieDB's Era and Forever corrections both give 46 the previous
+  quest 39. A `prereq` row now does the same, and changes only 46's line in `quests.jsonl` and
+  `[46]=39` in `qcQuestPrereq` (2,310 prerequisites, 3 of them by hand). `Test-Completions.lua` checks
+  that Thomas's pin greys it, "Requires Deliver Thomas' Report", until 39 is handed in; the data
+  without the row fails two of those checks. Nobody has tried it in game after handing in 39 yet.
 - **Next:** CMaNGOS's other groups and breadcrumbs can be wrong in the same way. A review of them
   against first-hand reports (Questie's issues, QuestieDB's Era corrections) adds rows to the list,
   and the clean-up then covers their ticks with no code change.
@@ -1044,6 +1053,7 @@ Subterfugin' (2238) in Ironforge, and The Apple Falls (2241) to Destiny Calls (2
   from a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by heading. 351 quests carry a holiday,
   none of the 29 has a pin, and the nameless Holidays row 1879, which `/qc holidays` on the beta did not list on 11 October, needs nothing (#288);
   see "Seasonal quests with no holiday".
-- 2026-10-11: Snatch and Grab and Destiny Calls need their own city's rogue lead-in, and the three
-  lead-ins no longer shut each other out, from a new hand list of link corrections; the login sync
-  drops the ticks the old group gave until April 2027 (#297). See "Lead-ins the server requires".
+- 2026-10-11: Snatch and Grab and Destiny Calls need their own city's rogue lead-in, the three
+  lead-ins no longer shut each other out, and Bounty on Murlocs needs Deliver Thomas' Report, from a
+  new hand list of link corrections; the login sync drops the ticks the old group gave until April
+  2027 (#297). See "Lead-ins the server requires".

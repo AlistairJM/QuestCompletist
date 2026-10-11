@@ -66,7 +66,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | Covenant | 777 | 0 | nature | No |
 | Profession | 1,742 | 142 | both; retail's task quests from `QuestV2CliTask` | – |
 | Holiday | 1,103 (10 October 2026; it grows as quests are tagged) | 351 (11 October 2026) | both; retail's is hand data in `data\quests.jsonl` (no tool writes it; the record is [quest-holiday-decisions.csv](quest-holiday-decisions.csv)), Forever's comes from CMaNGOS's events and headings, and from a hand list of 18 quests ([forever-quest-holiday-decisions.csv](forever-quest-holiday-decisions.csv)) | – |
-| Prerequisites | 8,306 | 2,309 (2,297 before the quest line rule) | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS, the cache's follow-ups, for 10 quests the quest line order and for 2 a hand list ([forever-quest-link-decisions.csv](forever-quest-link-decisions.csv)) | No: retail keeps the API's (recommendation 13) |
+| Prerequisites | 8,306 | 2,310 (2,297 before the quest line rule) | both; retail's from Blizzard's API, the client's task-quest tables and TrinityCore, Forever's from CMaNGOS, the cache's follow-ups, for 10 quests the quest line order and for 3 a hand list ([forever-quest-link-decisions.csv](forever-quest-link-decisions.csv)) | No: retail keeps the API's (recommendation 13) |
 | Breadcrumbs, "only one of these" | 279 and 249 lines | 93 and 254 | both; Forever's from CMaNGOS, less the pairs a hand list removes | – |
 | Reputation rewards | 11,035 | 1,837 quests | both; API against the quest cache | – |
 | Renown requirements | 96 | none | nature | No |

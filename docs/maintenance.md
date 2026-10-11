@@ -1079,7 +1079,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    its quest line (the client's `QuestLineXQuest` order) when that one is handed in on the map this one
    starts on (the client's `QuestPOIBlob` points -1 and 32), which is the case for the ten steps after
    the first of "Toxic Soil", quest line 6026 (92742 to 92819, Westfall, Stormwind and Elwynn). The
-   summary's "Prerequisites:" line counts them (2,309 quests, 10 from the quest line order and 2 from
+   summary's "Prerequisites:" line counts them (2,310 quests, 10 from the quest line order and 3 from
    the hand list below, on build 70338 on 11 October 2026), and the review lists each as "prerequisite from the quest line order", a line whose places
    don't match as "quest line order not used", and one that disagrees with another source as
    "quest line order disagrees with the prerequisite". Look at all three after an import: a rise in
@@ -1145,11 +1145,12 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    Links CMaNGOS gets wrong are corrected by hand in `docs\plans\forever-quest-link-decisions.csv`
    (quest, name, link, other quest, decision, evidence). A `prereq` row `SET`s the other quest as
    the quest's prerequisite, over any other source's: a lead-in CMaNGOS has only as a breadcrumb,
-   though the server won't offer the quest without it. An `exclusive` row `REMOVE`s a pair from an
-   "only one of these" group, both ways round, where a character can do both. The first rows are the
-   level 10 rogue quests, tried on the beta on 11 October 2026: Snatch and Grab (2206) needs Seek out
-   SI: 7 (2205), Destiny Calls (2242) needs The Apple Falls (2241), and the three cities' lead-ins
-   (2205, 2218 and 2241) don't shut each other out. Each row says what it rests on: a test in the
+   or a quest it doesn't link at all, though the server won't offer the quest without it. An
+   `exclusive` row `REMOVE`s a pair from an "only one of these" group, both ways round, where a
+   character can do both. The first rows come from the beta on 11 October 2026: Snatch and Grab
+   (2206) needs Seek out SI: 7 (2205), Destiny Calls (2242) needs The Apple Falls (2241), the three
+   cities' rogue lead-ins (2205, 2218 and 2241) don't shut each other out, and Bounty on Murlocs (46)
+   needs Deliver Thomas' Report (39). Each row says what it rests on: a test in the
    game first, then first-hand reports such as Questie's issues and Wowhead's comments, as our own
    data can't show what the server does. The review list names a row whose quests aren't imported,
    a prerequisite another source already gives ("hand-kept prerequisite not needed") or gives
@@ -1193,7 +1194,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
-   run of 11 October 2026 found 5 on 2,309 prerequisites and 347 table entries, all kept in
+   run of 11 October 2026 found 5 on 2,310 prerequisites and 347 table entries, all kept in
    `docs\plans\forever-quest-table-decisions.csv` (three prerequisites that name the other faction's
    quest, two that name a repeatable one). The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
@@ -1672,7 +1673,7 @@ git diff --stat
   breadcrumbs and "only one of these" groups) or to Forever's links, run `Test-Completions.lua` for both
   games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
   server, checks the clean-up of `qcFormerlyExclusive` on one of the game's groups, and on Forever walks
-  the level 10 rogue quests of `forever-quest-link-decisions.csv`.
+  the quests of `forever-quest-link-decisions.csv` (the level 10 rogue quests, and Bounty on Murlocs).
 - For changes to the saved settings or the options panel, run `Test-Settings.lua` for both games' TOCs. It must
   say "All checks passed." It builds the panel against frames that keep their anchors and heights, so it
   also says how much room the page has left (33 px with the continent box in).

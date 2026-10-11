@@ -68,9 +68,11 @@ again.
 - **The level 10 rogue lead-ins on Forever** (#297, 11 October 2026, not yet tried in game, so not for a
   release until tried or the user says so). Two looks on the beta: on Rothro after `/reload`, Road to
   Salvation (2218) shows as not done; on a new Human rogue, Snatch and Grab (2206) on Master Mathias
-  Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Destiny Calls
-  needing The Apple Falls, and a hand-in ticking no other lead-in, are checked offline by
-  `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the server requires").
+  Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Optionally, a
+  third: after handing in Deliver Thomas' Report (39), Guard Thomas offers Bounty on Murlocs (46),
+  which his pin greys until then. Destiny Calls needing The Apple Falls, and a hand-in ticking no other
+  lead-in, are checked offline by `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the
+  server requires").
 - **Stacked pins and two new holidays** (#276 and #280, released in 112.9 untried; two optional lines on
   retail). Click a stacked pin whose first quest has no giver name and see the named giver's icon, name and
   TomTom title (Durotar around 45.7, 15.9 has one). `/qc holidays` should list the Moonkin Festival (694)
