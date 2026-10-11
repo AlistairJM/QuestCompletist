@@ -284,3 +284,13 @@ requirements filter read.)
   which offline sit in Blizzard's utility campaigns ("Torghast Story Progression Skip" and
   "Catching Up!"), answer 0 and show no line. So the game does not hand out the utility
   campaigns for these, and no list of campaigns to skip is needed on that evidence.
+- 2026-10-11: the storyline's name and a "Type:" row in the quest list's tooltip (recommendation 5 of
+  [game-api-review.md](game-api-review.md), decision 4: "yes, use the game's text"). The storyline's
+  name comes from `C_QuestLine.GetQuestLineInfo` in the player's language when the game's quest line
+  is the one the list shows, which is ours, the smallest that holds the quest (above): 97.9% of the
+  16,737 storylined retail quests the 9 October probe loaded, and all 11 of Forever's; the others
+  keep our English name. The campaign line above is unchanged. The new row, below the quest ID, gives
+  the game's classification (Important, Legendary, Calling, Meta) and tag (Dungeon, Raid, Group, PvP,
+  Heroic, Scenario, Delve; Forever's tag 1 reads "Elite"), leaving out what the tooltip says already
+  (Campaign, Storyline, Repeatable). Both games, no new text; the numbers, the checks and what isn't
+  tried in game are in game-api-review.md, Status.
