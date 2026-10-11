@@ -2,7 +2,9 @@
 Checks what Import-ForeverData.ps1 (sweep step 10) takes from the recorder's ledger, on a small Forever
 world made in a scratch folder: nothing in the checkout is written and nothing is downloaded. The world
 has its own client tables, CMaNGOS dump, quest cache, probe file and ledger. The ledger is made from the
-probe file by Import-RecordedGivers.ps1 (step 6d), as in a sweep.
+probe file by Import-RecordedGivers.ps1 (step 6d), as in a sweep. Section H compares the importer's files
+with $MasterOutput, what master's importer wrote on its world; a change meant to alter those files writes
+them again, from a run checked by hand.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1
 
@@ -28,6 +30,65 @@ function Equal($actual, $expected, [string]$message) {
     Check ($actual -ceq $expected) "$message (expected '$expected', got '$actual')"
 }
 
+# What master's importer (448bd64), which read the recorder's notes straight from the probe's file, wrote on
+# section H's world, run once with -Importer and the parameters it lacks accepted and ignored. It is not made
+# from the code it checks: section H checks that the ledger, filled from that file alone, gives the same files.
+$MasterOutput = [ordered]@{
+    'data\forever\pins.jsonl' = (@(
+        '{"map":1411,"icon":1,"npc":910001,"name":"Alpha Giver","x":52,"y":51,"quests":[9001]}'
+        '{"map":1411,"icon":1,"npc":910003,"name":"Gamma Giver","x":20,"y":20,"quests":[9003]}'
+        '{"map":1411,"icon":1,"npc":910005,"name":"Epsilon Giver","x":60,"y":60,"quests":[9005]}'
+        '{"map":1411,"icon":1,"npc":910005,"name":"Epsilon Giver","x":63,"y":60,"quests":[9005]}'
+        '{"map":1411,"icon":1,"npc":910006,"name":"Zeta Giver","x":10,"y":10,"quests":[9006]}'
+        '{"map":1411,"icon":1,"npc":910007,"name":"Eta Giver","x":70,"y":30,"quests":[9007]}'
+        '{"map":1411,"icon":1,"name":"Kappa Chest Old","x":70,"y":70,"quests":[9011]}'
+    ) -join "`n") + "`n"
+    'data\forever\quests.jsonl' = (@(
+        '{"id":9001,"name":"Alpha Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9002,"name":"Beta Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9003,"name":"Gamma Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9004,"name":"Delta Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9005,"name":"Epsilon Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9006,"name":"Zeta Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9007,"name":"Eta Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9008,"name":"Theta Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9010,"name":"Iota Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9011,"name":"Kappa Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9012,"name":"Lambda Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+        '{"id":9013,"name":"Mu Quest","level":10,"zone":"Alpha Zone","category":10,"type":1,"faction":3,"race":0,"class":8191,"minLevel":5}'
+    ) -join "`n") + "`n"
+    'data\forever\links.jsonl' = ''
+    'data\forever\reputation.jsonl' = ''
+    'data\forever\skills.jsonl' = ''
+    'data\forever\answers.jsonl' = (@(
+        '{"runs":["1.60.1.70900"]}'
+        '{"id":9001,"seen":"1.60.1.70900","missed":0,"record":{"id":9001,"title":"Alpha Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9002,"seen":"1.60.1.70900","missed":0,"record":{"id":9002,"title":"Beta Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9003,"seen":"1.60.1.70900","missed":0,"record":{"id":9003,"title":"Gamma Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9004,"seen":"1.60.1.70900","missed":0,"record":{"id":9004,"title":"Delta Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9005,"seen":"1.60.1.70900","missed":0,"record":{"id":9005,"title":"Epsilon Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9006,"seen":"1.60.1.70900","missed":0,"record":{"id":9006,"title":"Zeta Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9007,"seen":"1.60.1.70900","missed":0,"record":{"id":9007,"title":"Eta Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9008,"seen":"1.60.1.70900","missed":0,"record":{"id":9008,"title":"Theta Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9010,"seen":"1.60.1.70900","missed":0,"record":{"id":9010,"title":"Iota Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9011,"seen":"1.60.1.70900","missed":0,"record":{"id":9011,"title":"Kappa Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9012,"seen":"1.60.1.70900","missed":0,"record":{"id":9012,"title":"Lambda Quest","level":10,"minLevel":5,"sort":10}}'
+        '{"id":9013,"seen":"1.60.1.70900","missed":0,"record":{"id":9013,"title":"Mu Quest","level":10,"minLevel":5,"sort":10}}'
+    ) -join "`n") + "`n"
+    'review.csv' = (@(
+        '"Kind","Quest","Other","Detail"'
+        '"no giver","9002","","Beta Quest (only the game knows it)"'
+        '"no giver","9004","","Delta Quest (only the game knows it)"'
+        '"no giver","9008","","Theta Quest (only the game knows it)"'
+        '"no giver","9010","","Iota Quest (only the game knows it)"'
+        '"no giver","9012","","Lambda Quest (only the game knows it)"'
+        '"no giver","9013","","Mu Quest (only the game knows it)"'
+        '"old pin names another giver","9001","16013","old pin: 16013; CMaNGOS: 910001"'
+        '"old pin names another giver","9007","16012","old pin: 16012; CMaNGOS: 910007"'
+        '"recorded spot far from CMaNGOS","","Creature:910001","Alpha Giver at 52.0 51.0: 2.2 map points from CMaNGOS''s spawn"'
+    ) -join "`r`n") + "`r`n"
+}
+
 $Scratch = Join-Path ([IO.Path]::GetTempPath()) ("forever-import-test-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
 New-Item -ItemType Directory -Path $Scratch | Out-Null
 $Build = '1.60.1.70900'
@@ -47,12 +108,15 @@ function Quest-Row([int]$id, [string]$title) {
     return '(' + ($fields -join ',') + ')'
 }
 
-function Write-Dump([string]$path, $quests, $starters, $spawns, $names) {
+function Write-Dump([string]$path, $quests, $starters, $spawns, $names, $objectStarters = @(), $objectSpawns = @(), $objectNames = @()) {
     $sql = New-Object System.Collections.Generic.List[string]
     if ($quests.Count) { $sql.Add('INSERT INTO `quest_template` VALUES ' + (($quests | ForEach-Object { Quest-Row $_[0] $_[1] }) -join ',') + ';') }
     if ($starters.Count) { $sql.Add('INSERT INTO `creature_questrelation` VALUES ' + (($starters | ForEach-Object { "($($_[0]),$($_[1]))" }) -join ',') + ';') }
     if ($spawns.Count) { $sql.Add('INSERT INTO `creature` VALUES ' + (($spawns | ForEach-Object { "($($_[0]),$($_[1]),1,0,$($_[2]),$($_[3]),5.0)" }) -join ',') + ';') }
     if ($names.Count) { $sql.Add('INSERT INTO `creature_template` VALUES ' + (($names | ForEach-Object { "($($_[0]),'$($_[1])')" }) -join ',') + ';') }
+    if ($objectStarters.Count) { $sql.Add('INSERT INTO `gameobject_questrelation` VALUES ' + (($objectStarters | ForEach-Object { "($($_[0]),$($_[1]))" }) -join ',') + ';') }
+    if ($objectSpawns.Count) { $sql.Add('INSERT INTO `gameobject` VALUES ' + (($objectSpawns | ForEach-Object { "($($_[0]),$($_[1]),1,0,$($_[2]),$($_[3]),5.0)" }) -join ',') + ';') }
+    if ($objectNames.Count) { $sql.Add('INSERT INTO `gameobject_template` VALUES ' + (($objectNames | ForEach-Object { "($($_[0]),2,0,'$($_[1])')" }) -join ',') + ';') }
     $bytes = [Text.Encoding]::UTF8.GetBytes(($sql -join "`n") + "`n")
     $stream = [IO.File]::Create($path)
     $gzip = New-Object System.IO.Compression.GZipStream($stream, [IO.Compression.CompressionMode]::Compress)
@@ -106,12 +170,13 @@ function Get-ProbeGivers() {
 }
 
 # The world: tools, data and addon folders, the probe file, the dump and the cache.
-function New-World([string]$name, [switch]$ZetaKnown) {
+function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers)) {
     $root = Join-Path $Scratch $name
     foreach ($dir in 'tools', 'tools\forever_probe_70900', 'data\forever', 'addon') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
     $t = "$root\tools"
     $quests = @{ 9001 = 'Alpha Quest'; 9002 = 'Beta Quest'; 9003 = 'Gamma Quest'; 9004 = 'Delta Quest'; 9005 = 'Epsilon Quest'
-        9006 = 'Zeta Quest'; 9007 = 'Eta Quest'; 9008 = 'Theta Quest'; 9010 = 'Iota Quest' }
+        9006 = 'Zeta Quest'; 9007 = 'Eta Quest'; 9008 = 'Theta Quest'; 9010 = 'Iota Quest'; 9011 = 'Kappa Quest'; 9012 = 'Lambda Quest'
+        9013 = 'Mu Quest' }
     Write-Lines "$t\QuestV2-$Build.csv" (@('ID') + @($quests.Keys | Sort-Object))
     Write-Lines "$t\AreaTable-$Build.csv" @('ID,ZoneName,AreaName_lang,ContinentID,ParentAreaID', '10,Alpha,Alpha Zone,1,0')
     Write-Lines "$t\ChrRaces-$Build.csv" @('ID,Name_lang', '1,Human')
@@ -126,10 +191,11 @@ function New-World([string]$name, [switch]$ZetaKnown) {
     Write-Lines "$t\QuestPOIBlob-$Build.csv" @('ID,MapID,UiMapID,Flags,NumPoints,QuestID,ObjectiveIndex,ObjectiveID')
     Write-Lines "$t\QuestPOIPoint-$Build.csv" @('ID,X,Y,Z,QuestPOIBlobID')
     Write-Lines "$t\forever_quest_cache_$Build.jsonl" @($quests.Keys | Sort-Object | ForEach-Object { Cache-Line $_ $quests[$_] })
-    # CMaNGOS: 910001 and 910007 start quests and stand somewhere; the others are the recorder's alone.
-    Write-Dump "$t\ClassicDB_test.sql.gz" @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest')) @(@(910001, 9001), @(910007, 9007)) `
-        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver'))
-    Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" (Get-ProbeGivers)
+    # CMaNGOS: 910001, 910007 and the object 910012 start quests and stand somewhere; the others are the recorder's alone.
+    Write-Dump "$t\ClassicDB_test.sql.gz" @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest'), @(9011, 'Kappa Quest')) @(@(910001, 9001), @(910007, 9007)) `
+        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver')) `
+        @(, @(910012, 9011)) @(, @(3, 910012, -400, -400)) @(, @(910012, 'Kappa Chest Old'))
+    Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" $Givers
     Write-Lines "$root\decisions.csv" @('Game,Quest,Decision,Reason')
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
     Write-Lines "$root\zones.csv" @('Quest,Zone,Name,Note')
@@ -189,9 +255,9 @@ function Hash-Of([string]$path) { return (Get-FileHash -Algorithm SHA256 -Litera
 function Hash-Data([string]$root) { return ((Get-ChildItem "$root\data\forever" -File | Sort-Object Name | ForEach-Object { "$($_.Name)=$(Hash-Of $_.FullName)" }) -join ';') }
 
 # A row in the ledger as a person or a player's file would have left it.
-function Add-LedgerRow([string]$root, [string]$role, [string]$kind, [int]$npc, [string]$src, [string]$name = '', [string]$map = '', [string]$x = '', [string]$y = '', [string]$quest = '') {
+function Add-LedgerRow([string]$root, [string]$role, [string]$kind, [int]$npc, [string]$src, [string]$name = '', [string]$map = '', [string]$x = '', [string]$y = '', [string]$quest = '', [string]$game = 'forever') {
     $ledger = Read-RecordedLedger "$root\ledger.csv"
-    $row = New-RecordedRow 'forever' $role
+    $row = New-RecordedRow $game $role
     $row.Kind = $kind; $row.Npc = "$npc"; $row.Name = $name; $row.Map = $map; $row.X = $x; $row.Y = $y; $row.Quest = $quest
     $row.FirstBuild = '70900'; $row.LastBuild = '70900'; $row.Src = $src
     $ledger[(Get-RecordedKey $row)] = $row
@@ -341,14 +407,21 @@ try {
     # A lone player's name and place for a giver the maintainer met change neither its name nor its place.
     Add-LedgerRow $w2 'giver' 'Creature' 910001 'p01=1' 'Impostor'
     Add-LedgerRow $w2 'spot' 'Creature' 910001 'p01=9' '' '1411' '11' '11'
+    # The name is checked on an object: a creature's pin takes the probe's NPC list first, so a recorded
+    # creature name could not show either way. The ledger's trusted name beats CMaNGOS's for an object.
+    Add-LedgerRow $w2 'giver' 'GameObject' 910012 'own-forever=1' 'Kappa Chest'
+    Add-LedgerRow $w2 'spot' 'GameObject' 910012 'own-forever=2' '' '1411' '75' '75'
+    Add-LedgerRow $w2 'offer' 'GameObject' 910012 'own-forever=1' '' '' '' '' '9011'
+    Add-LedgerRow $w2 'giver' 'GameObject' 910012 'p01=1' 'Impostor Chest'
     $r = Invoke-Importer $w2
     Equal $r.Exit 0 "E1: the importer runs with a lone player's rows in the ledger ($($r.Text))"
     $pins = Get-WorldPins $w2
     Equal (Places-Of $pins 9001) '52,51' 'E1: a lone player''s place for a known giver adds no pin and moves none'
-    $e1 = (Pins-Of $pins 9001)[0]
-    Equal $e1.name 'Alpha Giver' 'E1: and gives it no name'
+    $kappa = Pins-Of $pins 9011
+    Equal (Places-Of $pins 9011) '75,75' 'E1: an object''s recorded place wins over its CMaNGOS spawn (70,70)'
+    Equal $kappa[0].name 'Kappa Chest' 'E1: and a lone player''s name for it changes nothing: the trusted name stands, not CMaNGOS''s'
     Equal (Places-Of $pins 9002) '' 'E1: a giver only a lone player met has no pin'
-    Check ($r.Text -match '5 rows wait for a second source and are not used') "E1: and the summary counts the rows left unused ($($r.Text))"
+    Check ($r.Text -match '6 rows wait for a second source and are not used') "E1: and the summary counts the rows left unused ($($r.Text))"
     # The same giver under a second player becomes known.
     Add-LedgerRow $w2 'giver' 'Creature' 910002 'p01=1;p02=1' 'Beta Giver'
     Add-LedgerRow $w2 'spot' 'Creature' 910002 'p01=3;p02=1' '' '1411' '30' '30'
@@ -363,8 +436,56 @@ try {
     $r = Invoke-Importer $w2
     $theta = Pins-Of (Get-WorldPins $w2) 9008
     Equal $theta.Count 1 'E3: a giver whose trusted names disagree still gets its pin'
-    Check ($null -eq $theta[0].name -or $theta[0].name -ne 'Theta Giver') 'E3: but under neither name'
+    Check ($theta[0].name -cne 'Theta Giver' -and $theta[0].name -cne 'Theta Giver, Elder') "E3: but under neither name (got '$($theta[0].name)')"
     Check (@(Review-Kinds $w2 | Where-Object { $_.Kind -like 'recorded giver: trusted sources disagree*' -and $_.Other -eq 'Creature:910008' }).Count -eq 1) 'E3: and the review lists the disagreement'
+
+    # ---------- F: the edge of a place, Test-NearPlace's 1.5 map points ----------
+    Add-LedgerRow $w2 'giver' 'Creature' 910013 'own-forever=1' 'Lambda Giver'
+    Add-LedgerRow $w2 'spot' 'Creature' 910013 'own-forever=3' '' '1411' '30' '50'
+    Add-LedgerRow $w2 'spot' 'Creature' 910013 'own-forever=1' '' '1411' '31.5' '50'
+    Add-LedgerRow $w2 'offer' 'Creature' 910013 'own-forever=1' '' '' '' '' '9012'
+    Add-LedgerRow $w2 'giver' 'Creature' 910014 'own-forever=1' 'Mu Giver'
+    Add-LedgerRow $w2 'spot' 'Creature' 910014 'own-forever=3' '' '1411' '30' '60'
+    Add-LedgerRow $w2 'spot' 'Creature' 910014 'own-forever=1' '' '1411' '31.51' '60'
+    Add-LedgerRow $w2 'offer' 'Creature' 910014 'own-forever=1' '' '' '' '' '9013'
+    $r = Invoke-Importer $w2
+    Equal $r.Exit 0 "F1: the importer runs ($($r.Text))"
+    $pins = Get-WorldPins $w2
+    Equal (Places-Of $pins 9012) '30,50' 'F1: two places exactly 1.5 points apart are one place, at the more visited'
+    Equal (Places-Of $pins 9013) '30,60 31.51,60' 'F2: 1.51 points apart they are two'
+
+    # ---------- G: the ledger's retail rows are not Forever's ----------
+    $before = Hash-Data $w2
+    $beforeReview = Hash-Of "$w2\review.csv"
+    $beforeSummary = @($r.Text -split "`n" | Where-Object { $_ -like 'Recorded givers*' })
+    Add-LedgerRow $w2 'giver' 'Creature' 910007 'own-retail=1' 'Eta Retail' -game 'retail'
+    Add-LedgerRow $w2 'spot' 'Creature' 910007 'own-retail=5' '' '1411' '11' '11' -game 'retail'
+    Add-LedgerRow $w2 'offer' 'Creature' 910007 'own-retail=1' '' '' '' '' '9007' -game 'retail'
+    Add-LedgerRow $w2 'giver' 'Creature' 910015 'own-retail=1' 'Nu Retail' -game 'retail'
+    Add-LedgerRow $w2 'spot' 'Creature' 910015 'own-retail=2' '' '1411' '12' '12' -game 'retail'
+    Add-LedgerRow $w2 'offer' 'Creature' 910015 'own-retail=1' '' '' '' '' '9007' -game 'retail'
+    $r = Invoke-Importer $w2
+    Equal $r.Exit 0 "G1: the importer runs with retail rows in the ledger ($($r.Text))"
+    $pins = Get-WorldPins $w2
+    Equal (Places-Of $pins 9007) '70,30' 'G1: retail rows for the same NPC ID neither move its Forever pin nor add one'
+    $eta = Pins-Of $pins 9007
+    Equal $eta[0].name 'Eta Giver' 'G1: nor name it'
+    Equal (Hash-Data $w2) $before 'G2: every data file is as it was without the retail rows'
+    Equal (Hash-Of "$w2\review.csv") $beforeReview 'G2: and the review list'
+    Equal (@($r.Text -split "`n" | Where-Object { $_ -like 'Recorded givers*' }) -join '') ($beforeSummary -join '') 'G2: and the summary''s count of recorded givers'
+
+    # ---------- H: master's output when the ledger holds the probe's file alone ----------
+    # With only the probe's notes in the ledger, the importer must write $MasterOutput, master's files on this
+    # world. Delta is left out: its places are 1.6 points apart, which master's 3-point box made one pin and
+    # the 1.5-point radius makes two (A6).
+    $w3 = New-World 'same' -ZetaKnown -Givers @(Get-ProbeGivers | Where-Object { $_.Id -ne 910004 })
+    $r = Invoke-MergeTool $w3
+    Equal $r.Exit 0 "H1: step 6d reads the probe's file alone ($($r.Text))"
+    $r = Invoke-Importer $w3
+    Equal $r.Exit 0 "H1: the importer runs ($($r.Text))"
+    foreach ($file in $MasterOutput.Keys) {
+        Equal ([IO.File]::ReadAllText("$w3\$file")) $MasterOutput[$file] "H1: $file is master's, byte for byte"
+    }
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }

@@ -922,7 +922,7 @@ foreach ($key in $recordedSpots.Keys) {
         $same = @($spawns | ForEach-Object { Convert-ToMapSpot $_.Map $_.X $_.Y -OnUiMap $spot.UiMap } | Where-Object { $_ })
         if (-not $same) { continue }
         $closest = ($same | ForEach-Object { [Math]::Sqrt([double](($_.X - $spot.X) * ($_.X - $spot.X) + ($_.Y - $spot.Y) * ($_.Y - $spot.Y))) } | Measure-Object -Minimum).Minimum
-        if ($closest -gt 1) { Add-Review 'recorded spot far from CMaNGOS' '' $key ("{0} at {1} {2}: {3:0.0} map points from CMaNGOS's spawn" -f $recordedName[$key], $spot.X, $spot.Y, $closest) }
+        if ($closest -gt 1) { Add-Review 'recorded spot far from CMaNGOS' '' $key ("{0} at {1:0.0} {2:0.0}: {3:0.0} map points from CMaNGOS's spawn" -f $recordedName[$key], $spot.X, $spot.Y, $closest) }
     }
 }
 

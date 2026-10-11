@@ -859,7 +859,8 @@ regenerated: no `data/` file changes, and nothing displays differently until ste
 - **The radius** was a 3-point box on the probe's spots and is now the merge tool's 1.5-point distance. No
   giver in the ledger has two places 1.5 to 3 points apart (the widest two rows of one giver are 0.14 apart),
   so the change alone moves nothing in today's data. In the test world a giver with places 1.4 apart is one pin
-  and one with places 1.6 apart is two; master gives one pin for both.
+  and one with places 1.6 apart is two; master gives one pin for both. At the edge, places exactly 1.5 apart are
+  one (the merge tool's `Test-NearPlace`: a distance of at most 1.5) and 1.51 apart two.
 - **The stop:** the probe's file is read as step 6d reads it, and the import stops, writing nothing (`-WhatIf`
   too), unless the ledger holds every giver, spot and offer in it under the file's own source tag with at least
   the file's number. With the live file of setup 3 below and the ledger of setup 2 it stops after about 2
@@ -936,7 +937,11 @@ further than 3 points, so no pin is counted as removed and added.
 - **Equivalence:** a ledger built by step 6d from the one probe file alone (121 rows), run through the new
   importer, gives the old importer's files byte for byte: `quests.jsonl`, `pins.jsonl` (as written, and after
   step 9), `links.jsonl`, `reputation.jsonl`, `skills.jsonl`, `answers.jsonl` and the review list. The old
-  code with the 1.5-point distance is the same; the new code with the old box too.
+  code with the 1.5-point distance is the same; the new code with the old box too. `Test-ForeverImport.ps1`
+  section H keeps this true on its own world, against the files master's importer wrote there once. It found
+  one difference the real data did not show: the review's "recorded spot far from CMaNGOS" printed a whole
+  coordinate as the ledger spells it ("52 51", where master printed the probe's "52.0 51.0"); the importer
+  now prints one decimal, as master did, and the recorders write one.
 - **A rerun** of the new importer from the same inputs, and on its own output, writes every file and the review
   list byte for byte as before.
 - **Beached Sea Creature and Beached Sea Turtle** are ten object entries of two names (CMaNGOS has an entry for

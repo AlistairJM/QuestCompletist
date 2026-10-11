@@ -1711,8 +1711,12 @@ git diff --stat
 - For changes to `Import-ForeverData.ps1`, or to what it takes from the ledger (`RecordedGivers.ps1`), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1`. It builds a small Forever
   world in a scratch folder (client tables, CMaNGOS dump, quest cache, probe file, ledger made by step 6d) and
-  runs the importer on it: what the ledger gives, the trust rule, the 1.5-point radius, the stale-ledger stop,
-  and a rerun that must write every file byte for byte. It must say "0 failed".
+  runs the importer on it: what the ledger gives, the trust rule, the 1.5-point radius (one place at exactly
+  1.5 points, two at 1.51), the stale-ledger stop, that the ledger's retail rows change nothing, a rerun that
+  must write every file byte for byte, and, with the ledger filled from the probe's file alone, the files
+  master's importer wrote on that world (kept in the test as written once by it, 448bd64). It must say
+  "0 failed". A change that is meant to alter those files means writing the expected text again, from a run
+  that has been checked by hand.
 - For changes to `Read-ApiDocs.lua` or `Compare-ApiDocs.ps1`, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also

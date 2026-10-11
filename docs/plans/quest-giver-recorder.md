@@ -288,7 +288,8 @@ order (maintenance.md, step 10, item 1: step 6d first). On a new Forever build 6
 which the importer fetches, so the order is the import (it fetches the tables, then stops at the check), 6d, the
 import again; a version the TOCs don't name is passed to both with `-Builds`, which the importer's message says.
 Retail is untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
-small scratch world (58 checks), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
+small scratch world (80 checks, among them the files master's importer wrote there when the ledger holds the probe's
+file alone, kept as written once by it), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
 import would move is measured in [forever.md](forever.md), "The importer reads the ledger".
 
 **Checked.** `Test-RecordedGivers.ps1` makes small data in a scratch folder (quests, pins, the Lua built
@@ -360,7 +361,7 @@ until the user decides ([open-items.md](open-items.md), decision 36).
 - 2026-10-11: Forever's importer reads the ledger (the user: "yes, build it as a PR", on this plan item): the
   recorded givers, places, names and offers come from the ledger's trusted Forever rows, places merge within 1.5
   map points instead of a 3-point box, and a ledger that lacks anything the probe's file holds stops the import
-  and says to run step 6d. `Test-ForeverImport.ps1` (58 checks) and section H of `Test-RecordedGivers.ps1`
+  and says to run step 6d. `Test-ForeverImport.ps1` (80 checks) and section H of `Test-RecordedGivers.ps1`
   (23 more, 294 in all) check it. Nothing displays differently until step 10 is next run; what that run would
   move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired: the user
   decided the same day to keep both recorders ("yes, keep both, go ahead"), so the probe's notes and the addon's
