@@ -65,8 +65,9 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 
 ## Handy clicks
 
-- **Left-click** a quest to set a waypoint to its quest giver (needs TomTom).
-- **Left-click** a quest giver's pin on the map to set a waypoint to it (needs TomTom).
+- **Left-click** a quest to set a waypoint to its quest giver.
+- **Left-click** a quest giver's pin on the map to set a waypoint to it.
+- A waypoint is TomTom's if you have TomTom, otherwise the game's own map waypoint, which replaces yours. The game allows none on some maps.
 - **Left-click** a zone's icon on a continent map to open that zone.
 - **Shift-click** a quest to mark it as done, or not done.
 - **Alt-click** a quest to mark it as unattainable (for quests you can no longer get).

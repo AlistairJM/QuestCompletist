@@ -55,6 +55,10 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
+- **Waypoints without TomTom** (#0000, built 11 October 2026, untried in game). With TomTom disabled, click a pin
+  on a zone's map on each game and look for Blizzard's waypoint arrow. If nothing appears,
+  `/run print(C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingPinDisabled), C_Map.CanSetUserWaypointOnMap(C_Map.GetBestMapForUnit("player")))`
+  says which of the two refused.
 - **The continent icons** (released in 112.8; the first look is done, the final build is untried; the probe's geometry pass is run): both games'
   dumps were read on 10 October and are the baseline (`continent-geometry-baseline.csv`, sweep step
   2f); retail's next dump comes with its map pass once 12.1.5 is live, plus `/qcprobe geometry`
@@ -179,7 +183,7 @@ again.
 | 5a | What a creature's offer lets a quest have a pin for ([quest-giver-recorder.md](quest-giver-recorder.md), "The merge tool", Adds): the holds on a quest that no creature offers (not in `QuestV2`, a task of another kind than world, bonus or hidden, Landfall, holiday, profession, a quest type other than 0, 1, 2, 4 and 128) are waived when a creature offers it; system categories, unavailable and internal-name quests stay held | keep: an NPC offering a quest is the best proof it is a real pickup; the report counts the quests by class. This settles decisions 2 and 5 case by case for NPC-offered quests. To undo a class, edit `$isPinnable` in `Import-RecordedGivers.ps1`, or add a `KEEP` row for the quest | the plan, "Adds" |
 | 5b | Which system category (Garrison Support, Torghast, Prey, Delves ...) may get pins from an offer | none until you say; the report lists them by category, and `$allowedSystemCategories` in `Import-RecordedGivers.ps1` is the switch | the plan, "Adds" |
 | 5 | The Landfall dailies (31 without a pin, 29 with one already) and the Silithus sigil quests (10), which look retired | flag them in `unavailable-quest-decisions.csv` after a look at the evidence | unavailable-quests.md |
-| 6 | The remaining decisions 1 to 7 of the API review (recorder on retail and the probe additions are agreed and built; scaling-aware levels, text from the game, waypoints, tracking toggles) | see that document | game-api-review.md |
+| 6 | The remaining decisions 1 to 7 of the API review (recorder on retail and the probe additions are agreed and built, and waypoints are decided, the fallback only, built in #0000; open: scaling-aware levels, text from the game, tracking toggles) | see that document | game-api-review.md |
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
 | 8 | Refresh retail's levels from the API: 1,589 quests differ from it (large blocks in Zaralek Cavern, Mechagon Island and the Emerald Dream, where the API gives a much lower minimum than we store), 4,955 have no API record, 224 are 0 | yes, from the API, after a look at those zones; a campaign or Chromie Time may gate some | client-tables-review.md (the note on `level`); maintenance.md, the data files |
 | 9 | Scaling quests: the list bracket and the low-level filter read a scaling range's floor, so they judge a quest low level too early | probe first, agreed 10 October 2026: #282 adds `IsQuestTrivial` and the content difficulty to the probe's facts pass (copy the probe into both AddOns folders again first); read the post-12.1.5 retail run and Forever's next run, then decide | game-api-review.md, recommendation 4 |

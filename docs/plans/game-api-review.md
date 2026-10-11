@@ -59,12 +59,13 @@ matters.
 
 ## What the addon and the probes call today
 
-**The addon** (`QuestCompletist/*.lua`, 36 functions in 16 namespaces):
+**The addon** (`QuestCompletist/*.lua`, 36 functions in 16 namespaces when this was written; later work added more, among them the four of the waypoint fallback below):
 
 | Namespace | Functions |
 |---|---|
 | `C_QuestLog` | GetAllCompletedQuestIDs, GetLogIndexForQuestID, GetTitleForQuestID, IsComplete, IsQuestFlaggedCompleted, IsQuestFlaggedCompletedOnAccount, IsWorldQuest, RequestLoadQuestByID |
-| `C_Map` | GetAreaInfo, GetBestMapForUnit, GetMapInfo, GetPlayerMapPosition |
+| `C_Map` | GetAreaInfo, GetBestMapForUnit, GetMapInfo, GetPlayerMapPosition; CanSetUserWaypointOnMap, SetUserWaypoint (the waypoint fallback) |
+| `C_SuperTrack`, `C_GameRules` | SetSuperTrackedUserWaypoint; IsGameRuleActive (the waypoint fallback) |
 | `C_Calendar` | GetDayEvent, GetMonthInfo, GetNumDayEvents, SetAbsMonth |
 | `C_TooltipInfo` | GetHyperlink (NPC names) |
 | `C_TaskQuest` | GetQuestInfoByQuestID (task quest names) |
@@ -232,7 +233,7 @@ GOSSIP_CONFIRM_CANCEL, GOSSIP_ENTER_CODE and DYNAMIC_GOSSIP_POI_UPDATED no.
 | GetMapRectOnMap(uiMapID, topUiMapID), GetMapChildrenInfo(uiMapID, mapType?, allDescendants?) | – | where a zone sits on its parent map, and a map's child maps | addon, planned: one icon per zone on continent maps ([continent-pins.md](continent-pins.md)); both may return nothing or zeros |
 | GetMapGroupID, GetMapGroupMembersInfo, GetMapLinksForMap, GetMapBannersForMap, IsCityMap, IsMapValidForNavBarDropdown, MapHasArt, GetFallbackWorldMapID, GetMapWorldSize, GetMapDisplayInfo | – | the map tree, floors and links | no: `UiMap.csv` has it offline |
 | GetMapArtID, GetMapArtLayers, GetMapArtLayerTextures, GetMapArtBackgroundAtlas, GetMapArtHelpTextPosition, GetMapArtZoneTextPosition, GetMapHighlightInfoAtPosition, GetMapHighlightPulseInfo, RequestPreloadMap | – | drawing | no |
-| SetUserWaypoint(point), ClearUserWaypoint, HasUserWaypoint, GetUserWaypoint, GetUserWaypointPositionForMap, GetUserWaypointFromHyperlink, GetUserWaypointHyperlink, CanSetUserWaypointOnMap | – | the game's own map pin, the one players place with a click | addon: a waypoint to one of our pins without TomTom (with `C_SuperTrack.SetSuperTrackedUserWaypoint`). Check Forever allows it |
+| SetUserWaypoint(point), ClearUserWaypoint, HasUserWaypoint, GetUserWaypoint, GetUserWaypointPositionForMap, GetUserWaypointFromHyperlink, GetUserWaypointHyperlink, CanSetUserWaypointOnMap | addon | the game's own map pin, the one players place with a click | addon, done (recommendation 6): `CanSetUserWaypointOnMap` and `SetUserWaypoint`, with `C_SuperTrack.SetSuperTrackedUserWaypoint`, give a pin click or a list click a waypoint when TomTom isn't loaded. Forever allows it on its zones |
 | GetBountySetMaps, OpenWorldMap, CloseWorldMapInteraction | – | – | no |
 
 Events: ZONE_CHANGED and ZONE_CHANGED_NEW_AREA are used. PLAYER_MAP_CHANGED(oldMapID, newMapID) says
@@ -260,8 +261,9 @@ Event: AREA_POIS_UPDATED.
 `SetSuperTrackedMapPin(Enum.SuperTrackingMapPinType.QuestOffer, questID)` does the same for a quest
 offer Blizzard's map shows, and the AreaPOI, TaxiNode, DigSite and HousingPlot types for those.
 `SetSuperTrackedQuestID`, `SetSuperTrackedVignette`, `SetSuperTrackedContent`, the `Clear*`, `Get*`
-and `Is*` functions manage the rest. Use: addon, with the user waypoint above, so players without
-TomTom get an arrow to a pin. Events SUPER_TRACKING_CHANGED and SUPER_TRACKING_PATH_UPDATED no. The
+and `Is*` functions manage the rest. Use: the addon calls `SetSuperTrackedUserWaypoint(true)` after
+setting the user waypoint above, so players without TomTom get an arrow to a pin (recommendation 6);
+`SetSuperTrackedMapPin` is not used (decision 5). Events SUPER_TRACKING_CHANGED and SUPER_TRACKING_PATH_UPDATED no. The
 arrow itself is `C_Navigation` (7 functions on both games: `GetNextWaypointForMap`, `GetDistance`,
 `GetTargetState` and the rest), which reads whatever is super-tracked; nothing to call there.
 
@@ -533,7 +535,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | Expansion | hand menus | `GetQuestExpansion` if it works | check |
 | Zone level ranges | nothing | `C_Map.GetMapLevels` | addon |
 | Starting item | not shipped (CMaNGOS's `item_template.startquest` has it for old content; the `StartItem` of TrinityCore, the quest cache and `QuestV2CliTask` is the item handed over on accept, not the item that begins the quest: [retail-quest-cache.md](retail-quest-cache.md)) | `C_Item.GetItemNameByID` names it in the player's language; QUEST_DETAIL's payload records it | later |
-| Waypoints | TomTom | `C_Map.SetUserWaypoint` and `C_SuperTrack` | addon |
+| Waypoints | TomTom | `C_Map.SetUserWaypoint` and `C_SuperTrack` | addon, done as the fallback when TomTom isn't loaded |
 | Treasures and rares | not planned | `C_VignetteInfo` rewardQuestID | later |
 
 ## Recommendations, most valuable first
@@ -545,7 +547,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 3 | **A map-offers probe:** for every map in `UiMap`, `RequestQuestLinesForMap`, then after QUESTLINE_UPDATE save `GetAvailableQuestLines`, `GetForceVisibleQuests`, `C_TaskQuest.GetQuestsOnMap`, `GetQuestHubsForMap`, `GetAreaPOIForMap` with `GetAreaPOIInfo`, `GetEventsForMap`, and once `C_EventScheduler.GetOngoingEvents` and `GetScheduledEvents`; on Forever with the quest points of interest setting on, which the Classic experience preset turns off | probe (both games) | on Forever: whether the server sends offer positions at all (Zephras Isle has pins only from the recorder), what POIs and events exist, whether an invasion or the fishing contest shows up; on retail: how the offers' x, y compare with our pins, and which hubs and events there are | small | the offer list is per character: it shows what this character qualifies for, not every quest |
 | 4 | **Scaling-aware levels:** the low-level filter asks `IsQuestTrivial`, and list rows, tooltips and grey pins take `GetQuestDifficultyLevel` and `GetContentDifficultyQuestForPlayer`, for quests whose data is loaded (the quest-name queue already loads what's on screen), falling back to the stored level | addon (both games) | the right "low level" answer for scaling quests and Chromie Time; Blizzard's own colours | medium | needs the quest's data, so the map's pins would queue loads like the NPC names do |
 | 5 | **Text from the game:** the storyline name from `GetQuestLineInfo(questID, nil, false)`, the campaign from `C_CampaignInfo`, and a classification or tag line from `QuestUtil.GetQuestClassificationInfo` and `GetQuestTagInfo` (Dungeon, Raid, Group, Elite, Important, Campaign), all in the player's language | addon | the last English storyline names gone; Blizzard's own labels | small | as with names, an English client shows Blizzard's wording where ours differed |
-| 6 | **Waypoints without TomTom:** on a pin click, `C_Map.SetUserWaypoint` on the pin and `C_SuperTrack.SetSuperTrackedUserWaypoint(true)`, when TomTom isn't loaded or as an option; `SetSuperTrackedMapPin(QuestOffer, questID)` where the game lists the offer | addon | an arrow to a pin for everyone | small | `CanSetUserWaypointOnMap` must be checked per map, and on Forever at all |
+| 6 | **Waypoints without TomTom, done 11 October 2026 (#0000):** when TomTom isn't loaded, a pin click and a list click ask `CanSetUserWaypointOnMap` (and the game rule that turns the map pin off), then call `C_Map.SetUserWaypoint` on the pin and `C_SuperTrack.SetSuperTrackedUserWaypoint(true)`; with TomTom loaded nothing changed. `SetSuperTrackedMapPin(QuestOffer, questID)` is not used (decision 5) | addon | an arrow to a pin for everyone | small | the game refuses a waypoint on every dungeon-type map but four and on every orphan map: 259 of retail's 541 pin maps (2,809 of its 24,931 pinned quests go to a refused map) and Forever's Alterac Valley (30 of 3,672); there the click does nothing, as it did without TomTom |
 | 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN and PLAYER_LEVEL_UP redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md); CALENDAR_UPDATE_EVENT_LIST already does, for the seasonal filter | addon | gated pins change the moment the requirement is met | small | none |
 | 8 | **Follow the game's tracking toggles:** read `C_Minimap.IsTrackingAccountCompletedQuests` and `IsTrackingHiddenQuests` as the defaults of the warband and low-level filters, or as a "follow the minimap" option | addon | one setting instead of two | small | a design decision: the addon's filters have their own defaults and a settings grid |
 | 9 | **Availability from the offers:** with the map open, mark the quests `GetAvailableQuestLines` lists as offered to this character now, in progress, or done by the warband, on our pins and in tooltips | addon | the server's own word on availability, for storyline starts, forced quests and tasks | medium | covers only what the game lists; depends on what probe 3 finds |
@@ -759,7 +761,8 @@ Forever beta 1.60.1.70291, then 70338 the next day).
 4. **Text from the game** (5). English clients would show Blizzard's storyline names where ours
    differ, as quest and NPC names do. **Recommendation:** yes.
 5. **Waypoints** (6): a fallback when TomTom is absent, or always an option? **Recommendation:** a
-   fallback first; an option if players ask.
+   fallback first; an option if players ask. **Decided 11 October 2026 by the user: the fallback only**, no
+   setting; built in #0000 (progress log, below).
 6. **The tracking toggles** (8). **Recommendation:** leave the filters as they are and note the
    toggles in the settings grid plan; the addon's defaults were chosen deliberately (settings-grid.md).
 7. **Items 9 to 15:** after the probes report, one PR each, in the order above, as time allows.
@@ -800,8 +803,8 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   Forever? (Probe 2.)
 - Does `GetQuestLineInfo` answer for a quest whose data hasn't been loaded? Blizzard calls it for
   log quests only. Does `IsAccountQuest` need the data loaded? (Probe 2 loads everything anyway.)
-- Does Forever allow user waypoints (`CanSetUserWaypointOnMap`), and does its client return area
-  POIs, dungeon entrances, zone level ranges or scheduled events?
+- Does Forever allow user waypoints (`CanSetUserWaypointOnMap`: yes, on 56 of 60 maps), and does its
+  client return area POIs, dungeon entrances, zone level ranges or scheduled events?
 - How large does the recorder's saved variable grow over a month of play?
 - How do scaling quests read? Does `IsQuestTrivial` call a quest grey that our stored level and
   `UnitQuestTrivialLevelRange` keep, or the other way round; is `UnitQuestTrivialLevelRangeScaling` a
@@ -922,3 +925,26 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   so which quests scale can only be guessed from a `level` that differs from our stored one. Cost: about 1.7 MB on
   retail's 17.5 MB file. Checked offline with stand-ins, not run in game. The decision stays open until
   the first run after 12.1.5 and the next Forever run are read (`Get-ProbeLevelFacts`).
+- 2026-10-11: recommendation 6 and decision 5, built as the user approved ("a fallback only"; #0000):
+  when TomTom isn't loaded, a left click on a pin on the map and a left click on a quest in the list set
+  the game's own waypoint instead of doing nothing. `QC.qcSetWaypoint` (qcMapPins.lua) serves both: TomTom
+  loaded, it makes TomTom's waypoint as before; else, on a client with `C_Map.SetUserWaypoint`,
+  `CanSetUserWaypointOnMap`, `C_SuperTrack.SetSuperTrackedUserWaypoint` and `UiMapPoint`, it asks
+  `CanSetUserWaypointOnMap` for the pin's map (and `C_GameRules.IsGameRuleActive` for
+  `WorldMapTrackingPinDisabled`, which Blizzard's own map checks before it places a pin), builds the point with
+  `UiMapPoint.CreateFromCoordinates` (the pin's percent over 100), calls `SetUserWaypoint` and, when it says it
+  was set, `SetSuperTrackedUserWaypoint(true)`; every game call is in a `pcall`. Never both. The game keeps one
+  user waypoint, so a click replaces the last one, and the player's own, as Blizzard's does; a map the game
+  refuses, a rule that is on or a client without the functions leaves it alone and says nothing, as a click
+  did without TomTom. The pin tooltip's "Click to set a waypoint" shows only where a click will set one. One
+  string for both ways (the TomTom text is gone from all 11 languages and the README). Where the game
+  refuses, from the probe runs of 9 and 10 October: waypoints are allowed on the cosmic, world, continent,
+  zone and micro maps and refused on all orphan maps and all but four of the dungeon-type ones (retail:
+  657 of 1,961 maps allow one; Forever: 56 of 60, refusing the three battlegrounds and Darkspear Islands, of
+  which Alterac Valley holds 24 pins). The 259 refused maps among retail's 541 pin maps hold 2,117 of its
+  15,181 pins: Legion class halls and Dalaran, garrisons, Exile's Reach, the Wandering Isle, Gilneas and the
+  rest. For 2,809 of 24,931 pinned quests the list click's pin is on such a map, and only 42 of those have
+  another pin on a map that allows one, so the click picks no other. Checked offline with stand-ins (106
+  checks in `tools/Test-MapTooltip.lua` on both TOCs, 13 of which fail on the code before); not tried in
+  game. Whether `WorldMapTrackingPinDisabled` is on in Forever's presets is not recorded by the probe;
+  open-items.md, "To try in game".
