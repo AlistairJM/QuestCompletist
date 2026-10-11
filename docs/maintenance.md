@@ -334,8 +334,8 @@ After each step that edits the addon, bring the data files up to date as describ
 
 Step 3 reads the saved results of the in-game probe, so it needs nothing from the game on an
 ordinary sweep. When step 6 or 6b adds quests, those have never been probed. Run
-[the probe](#in-the-game) after them, then step 3 again. Step 10 always takes in the Forever
-probe's recorder notes, but only needs a new probe run when Forever has a new build, or when the
+[the probe](#in-the-game) after them, then step 3 again. Step 10 always takes in the recorder's
+notes (its item 1), but only needs a new probe run when Forever has a new build, or when the
 beta opens higher levels; otherwise the last run's results stand.
 
 ### 1. Faction, race and class
@@ -948,8 +948,9 @@ KEEP, `Reason`, as in `pin-giver-decisions.csv`, whose KEEP rows it also honours
 pin keeps the pin; a row with a quest and no map or place keeps the quest from getting a pin from here; a
 pin whose ID `pin-npc-id-decisions.csv` took off by hand is left alone). A second run changes nothing. After it, run
 `Remove-DuplicatePinQuests.ps1 -WhatIf` and rerun the pin pipeline, as after 6c. Forever's pins are
-rebuilt by `Import-ForeverData.ps1` every time, so for Forever this step only keeps the ledger; run it
-before step 10. The report does not compare the ledger with Forever's pins either, so its "0 cases for
+rebuilt by `Import-ForeverData.ps1` every time, and it reads the ledger (step 10, item 1), so for
+Forever this step only keeps the ledger and the lists; run it before step 10. The report does not compare
+the ledger with Forever's pins, so its "0 cases for
 review" says nothing about them. The first real run (11 October 2026, the Forever beta file: 87 records, 0
 odd, 42 givers, 40 spots, 45 offers, 41 turn-ins, no starts; the ledger 121 to 231 rows, no pin changed, a
 second run byte for byte) is the baseline to compare a sweep with; retail's file held 0 records that day. The
@@ -1223,10 +1224,25 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
 
 1. **The recorder's notes, every time.** Copy the probe's saved variables, `QCForeverProbe.lua`,
    from the Forever client into the newest `tools\forever_probe_<build number>\` (see
-   [In the game](#in-the-game), step 5). The recorder adds to that file whenever you play, so this
-   brings in the quest givers you've met since the last sweep. Log out or `/reload` first, so the
-   game has written it. Run step 6d first (it keeps the facts of the probe's files and of the addon's own
-   notes in the ledger), and copy the addon's file for Forever as well (see "In the game").
+   [In the game](#in-the-game), step 5), and the addon's file for Forever into
+   `tools\recordings\own\forever\` (see "In the game"). Both recorders add to their file whenever you
+   play, so this brings in the quest givers you've met since the last sweep. Log out or `/reload`
+   first, so the game has written them. Then run step 6d: it keeps the notes of every probe file in
+   `tools\` and of the addon's own file in the ledger, and **the importer (item 4) takes its recorded
+   givers, where they stood, their names and the quests they offered from the ledger alone**; the
+   probe's file is read for the game's answers and NPC names only. If the probe's file holds a giver,
+   place or offer the ledger lacks, the importer stops before it writes anything and says to run 6d.
+   Only the probe's file is checked: the addon's file and players' files are not, so it is running 6d
+   first, as here, that brings their notes in. A quest this import adds can't have its recorded offers
+   in the ledger until 6d has read the new data; the review lists them as "recorded offer not in the
+   ledger yet": run 6d and the import again. **On a new Forever build** 6d needs
+   `tools\UiMap-<build>.csv`, which only the importer (or a download by hand from wago.tools) makes, so
+   the order is: the import (item 4), which fetches the client tables and then stops at the ledger
+   check; step 6d; the import again. If none of the file's notes is of a version the TOCs name, 6d leaves
+   the probe's file unread ("Not read" in its report) and the importer stops, until the version is
+   passed to both with `-Builds`. A file that mixes a named and an unnamed version is read in part by
+   both and does not stop: the unnamed version's notes are left out, so pass `-Builds` whenever the
+   beta's version changes.
 2. **The probe**, when Forever has a new build, the beta opens higher levels, or the probe's quest
    list has grown: see [In the game](#in-the-game). Otherwise the last run's results stand. Every
    probe run includes the map pass (step 3b there), and the reader's totals are compared with the
@@ -1293,13 +1309,15 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    Pins follow the same rule as retail's ([plans/game-parity.md](plans/game-parity.md)): a normal quest
    gets a pin at every place a source puts its pickup, named after the giver when one stands there and
    nameless otherwise. Forever's sources are CMaNGOS's creature and object givers with their spawns,
-   the recorder's spots, the hand list and the client's start points (point 32 first). It has no
+   the recorder's places, the hand list and the client's start points (point 32 first). A giver the
+   ledger has a trusted place for stands there instead of at CMaNGOS's spawns, and its places within
+   1.5 map points of each other (the merge tool's test) are one pin, two places further apart are two. It has no
    equivalent of retail's TrinityCore start table, as CMaNGOS's `quest_poi` holds no point 32 and its
    point -1 is the hand-in, and it has no world quests to leave out. Its pinless quests, by cause in
    the review list of 6 October 2026: 956 that only the game knows (no giver, no start point), 197
    started by an item, 72 that CMaNGOS gives no giver, 142 whose giver stands only inside
    instances, 46 whose giver has no CMaNGOS spawn, and 1 off every Forever map. Compare each
-   import's pinless count and causes with these: a start point, recorded spot or spawn that turns up
+   import's pinless count and causes with these: a start point, recorded place or spawn that turns up
    for one of them is a pin the importer already makes.
    A quest whose givers, NPCs and objects, all stand only during one of CMaNGOS's game events gets
    that event's holiday, so its pins follow the calendar. Events with no holiday of their own go by
@@ -1361,11 +1379,20 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
 
 With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
-`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables or
-CMaNGOS, and is for review before its pull request. The committed `pins.jsonl` is a rerun's since the
+`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables,
+CMaNGOS or the ledger, and is for review before its pull request. Until decision 36 of
+[plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
+place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
+file and can make the other of two rows 0.1 apart the place. On today's ledger that moves Thundris Windweaver
+(map 1439) from 37.4,40.1 to 37.4,40.2, 0.1 of a map point. The committed `pins.jsonl` is a rerun's since the
 import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
 start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
-replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)).
+replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)). A giver the recorders have met since
+moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for Darcy in Lakeshire, who walks a path
+whose one end is her CMaNGOS spawn), because the recorder keeps where the player stood: the first import
+after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS" names a
+giver more than a point off ("The importer reads the ledger" in the plan; whether such a place should
+still win is decision 38 of [plans/open-items.md](plans/open-items.md)).
 
 ## Text in other languages
 
@@ -1815,8 +1842,8 @@ the rows as a TSV. Give `QuestCompletist` instead of `QuestCompletist\Forever` f
 ```
 
 Leave the probe installed while you play Forever. Its recorder notes which quests each NPC or object
-offers and where it stands. For most of Forever's new quests that's the only source of where they
-start, so step 10 copies its file on every sweep.
+offers and where it stands. For most of Forever's new quests the recorders (this one and the addon's,
+below) are the only source of where they start, so step 10 copies its file on every sweep.
 
 From the version that ships it, the addon itself notes the same on both games (on by default,
 `/qc report` shows what it holds; [quest-giver-recorder.md](plans/quest-giver-recorder.md)). Leave it
@@ -1826,11 +1853,10 @@ folder (`_retail_`; `_classic_beta_` until Forever launches, then its live folde
 `tools\recordings\own\retail\` and `tools\recordings\own\forever\`, replacing the old copy: the
 file is cumulative. A player's file goes in `tools\recordings\players\<tag>\QuestCompletist.lua`;
 nothing opens those files but `Read-RecordedGivers.lua`. Do this every sweep, so nothing is lost to
-the addon's cap. Forever's importer (step 10) still reads only the probe's file, and the addon's notes
-for Forever reach nothing but the ledger until the importer is made to read it (plans/quest-giver-recorder.md,
-"What is left"): keep the probe installed while you play the Forever beta, and copy its file as step 10 says,
-before or after step 6d. The probe's recorder is retired after one sweep that has run clean on the addon's,
-and not before the importer reads the ledger. On 11 October 2026 the probe's own saved file in the game was
+the addon's cap. Forever's importer reads the ledger, so both recorders' notes reach Forever's pins
+through step 6d (step 10, item 1), and what they saw is combined there. Keep the probe installed while
+you play the Forever beta: both recorders are kept, the probe's as well as the addon's (the user, 11
+October 2026; plans/quest-giver-recorder.md, "What is left"). On 11 October 2026 the probe's own saved file in the game was
 newer than the copy in `tools\` (53 givers, 68 offers and 50 turn-ins against 33, 36 and 18) and held everything
 the addon's file did, bar one turn-in, with the same 40 spots to the tenth of a point, and more; copy it before step 10.
 
@@ -1924,6 +1950,15 @@ git diff --stat
   `Test-RecordedGivers.lua` (the reader: what it reads, and the hostile files it refuses) and
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-RecordedGivers.ps1` (the rules and the
   tool, on small data made in a scratch folder). Both must say "0 failed".
+- For changes to `Import-ForeverData.ps1`, or to what it takes from the ledger (`RecordedGivers.ps1`), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1`. It builds a small Forever
+  world in a scratch folder (client tables, CMaNGOS dump, quest cache, probe file, ledger made by step 6d) and
+  runs the importer on it: what the ledger gives, the trust rule, the 1.5-point radius (one place at exactly
+  1.5 points, two at 1.51), the stale-ledger stop, that the ledger's retail rows change nothing, a rerun that
+  must write every file byte for byte, and, with the ledger filled from the probe's file alone, the files
+  master's importer wrote on that world (kept in the test as written once by it, 448bd64). It must say
+  "0 failed". A change that is meant to alter those files means writing the expected text again, from a run
+  that has been checked by hand.
 - For changes to `Read-ApiDocs.lua` or `Compare-ApiDocs.ps1`, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also
@@ -1970,7 +2005,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), and the quest category that names a holiday (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d) |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races and factions, its reputation amounts, and the few quest start points it has | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`); the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv` |
