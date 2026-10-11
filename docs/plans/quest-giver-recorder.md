@@ -250,12 +250,49 @@ getting a pin (a `KEEP` row with only a quest, or with the place) gets none, and
 What may get a pin follows the user's rule (a normal quest, never a world quest) and what the scouts of
 9 October measured: held back are a quest not in the data, one flagged unavailable, an internal name, a
 task whose `QuestInfo` kind is world, bonus, hidden, delve or the like (3,380 quests, none with a creature
-starter in TrinityCore) and a system category (Garrison Support, Torghast, Prey and so on; the list
-`Import-RecordedGivers.ps1` holds is empty of allowed ones until a person decides one). **Waived because a
+starter in TrinityCore) and a system category (Garrison Support, Torghast, Prey and so on) that
+`$allowedSystemCategories` in `Import-RecordedGivers.ps1` does not name (see below). **Waived because a
 creature offering the quest answers them:** not in `QuestV2` (it omits repeatables), the inferences from
 TrinityCore's templates, a task of another kind, Landfall, holiday and profession quests, and a quest type
 other than 0, 1, 2, 4 and 128. The report counts the quests by class, and
 [open-items.md](open-items.md) lists the waiver as a call the user may reverse.
+
+**System categories.** `Import-RecordedGivers.ps1` holds back a quest in any of 20 system categories
+(Scenario, Garrison Support, Torghast, Prey and so on); `Build-QuestLocationData.ps1` keeps the same 20 out of
+its pass that pins quests from TrinityCore's start points (`Get-TdbSkipReason`, reason `system category`), and
+`Test-RecordedGivers.ps1` repeats the list. The decision of 11 October 2026 (open-items.md, 5b) covers a
+creature's offer only: it lets an offer pin a quest in six of them, the ones where at least half the quests
+already stand on a pin with an NPC, so an offer there is the ordinary case. Prey and Garrison Support stay held
+until there is more detail, whatever the numbers. The other holds (a world, bonus or hidden kind, unavailable,
+an internal name, no offer) still apply inside an allowed category. Only `$allowedSystemCategories` changes;
+the TrinityCore pass's skip is not touched, because there is no offer there. Measured on `data\quests.jsonl`
+and `data\pins.jsonl` at 448bd64:
+
+| Category | Quests | On a pin with an NPC | Share | Decision |
+|---|---|---|---|---|
+| 1346 Little Scales Daycare | 62 | 60 | 97% | allowed |
+| 1428 Upgrade System | 7 | 7 | 100% | allowed |
+| 1429 Warbands | 5 | 5 | 100% | allowed |
+| 1095 World PvP | 33 | 23 | 70% | allowed |
+| 1430 Delver's Headquarters | 21 | 13 | 62% | allowed |
+| 1735 Weekly Events | 52 | 30 | 58% | allowed |
+| 1133 Visions of N'Zoth | 44 | 19 | 43% | held |
+| 1347 Time Rift | 20 | 8 | 40% | held |
+| 170 Scenario | 3 | 1 | 33% | held |
+| 191 Special | 16 | 5 | 31% | held |
+| 1431 Delves | 10 | 3 | 30% | held |
+| 1241 Covenant Assaults | 43 | 13 | 30% | held |
+| 173 Seasonal | 27 | 6 | 22% | held |
+| 1134 Death Rising | 54 | 8 | 15% | held (28 of 54 stand on any pin, 20 on one with no NPC) |
+| 290 Garrison Support | 386 | 40 | 10% | held by decision |
+| 1514 Prey | 116 | 10 | 9% | held by decision |
+| 1092 Warfront Contribution | 154 | 4 | 3% | held |
+| 1246 Torghast, Tower of the Damned | 52 | 1 | 2% | held |
+| 1232 Path of Ascension | 88 | 1 | 1% | held |
+| 1130 Island Expeditions | 0 | 0 | | held (no quest is filed under it) |
+
+The rule is a measured one: re-measure it when the pins change a lot, and move a category across the line
+only by editing `$allowedSystemCategories` and the E15 check of `Test-RecordedGivers.ps1` together.
 
 **Review.** `pin names another NPC than the recorded giver`, `same name under another ID`, `pin name
 differs from the name recorded for its ID`, `quest offered away from its pins` (a giver none of whose places
