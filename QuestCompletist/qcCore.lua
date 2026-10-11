@@ -1887,15 +1887,15 @@ local function qcNewDataChecks(questId) -- *
 		local _, playerRace = UnitRace("player")
 		local _, playerClass = UnitClass("player")
 		factionFlag = qcFactionBits[string.upper(playerFaction)]
-		if (bit.band(factionFlag,qcQuestDatabase[questId][5]) == 0) then
+		if not qcMaskAllows(qcQuestDatabase[questId][5], factionFlag) then
 			qcNewDataAlert.Faction = true
 		end
 		raceFlag = qcRaceBits[string.upper(playerRace)]
-		if (bit.band(raceFlag,qcQuestDatabase[questId][6]) == 0) then
+		if not qcMaskAllows(qcQuestDatabase[questId][6], raceFlag) then
 			qcNewDataAlert.Race = true
 		end
 		classFlag = qcClassBits[string.upper(playerClass)]
-		if (bit.band(classFlag,qcQuestDatabase[questId][7]) == 0) then
+		if not qcMaskAllows(qcQuestDatabase[questId][7], classFlag) then
 			qcNewDataAlert.Class = true
 		end
 		if ((qcNewDataAlert.Faction) or (qcNewDataAlert.Race) or (qcNewDataAlert.Class)) then
