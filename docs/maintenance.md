@@ -1600,8 +1600,8 @@ the rows as a TSV. Give `QuestCompletist` instead of `QuestCompletist\Forever` f
 ```
 
 Leave the probe installed while you play Forever. Its recorder notes which quests each NPC or object
-offers and where it stands. For most of Forever's new quests that's the only source of where they
-start, so step 10 copies its file on every sweep.
+offers and where it stands. For most of Forever's new quests the recorders (this one and the addon's,
+below) are the only source of where they start, so step 10 copies its file on every sweep.
 
 From the version that ships it, the addon itself notes the same on both games (on by default,
 `/qc report` shows what it holds; [quest-giver-recorder.md](plans/quest-giver-recorder.md)). Leave it
@@ -1612,9 +1612,9 @@ folder (`_retail_`; `_classic_beta_` until Forever launches, then its live folde
 file is cumulative. A player's file goes in `tools\recordings\players\<tag>\QuestCompletist.lua`;
 nothing opens those files but `Read-RecordedGivers.lua`. Do this every sweep, so nothing is lost to
 the addon's cap. Forever's importer reads the ledger, so both recorders' notes reach Forever's pins
-through step 6d (step 10, item 1). Keep the probe installed while you play the Forever beta: its
-recorder is retired after one sweep that has run clean on the addon's (plans/quest-giver-recorder.md,
-"What is left").
+through step 6d (step 10, item 1), and what they saw is combined there. Keep the probe installed while
+you play the Forever beta: both recorders are kept, the probe's as well as the addon's (the user, 11
+October 2026; plans/quest-giver-recorder.md, "What is left").
 
 ## Checking a change before its pull request
 

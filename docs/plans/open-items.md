@@ -37,6 +37,10 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   continents inside a continent (Quel'Thalas, Argus) get an icon on the outer map that opens them. Built
   in eight pull requests, the first of them the probe's geometry pass
   ([continent-pins.md](continent-pins.md)).
+- **Both quest-giver recorders are kept** (11 October 2026, "yes, keep both, go ahead"): the probe's own
+  recorder is not retired once the addon's has run a sweep. Both feed the ledger through step 6d, and
+  Forever's importer reads the ledger, so what they saw is combined
+  ([quest-giver-recorder.md](quest-giver-recorder.md), "What is left", 4).
 - **A check stays in the sweep even while it finds nothing**, and every feature or check built for
   one game goes to both unless a game can't support it
   ([game-parity.md](game-parity.md)).

@@ -845,11 +845,12 @@ copy taken at 09:57 that morning. Importing them, on the master that has the que
 ### The importer reads the ledger (11 October 2026)
 
 Until now `Import-ForeverData.ps1` took the recorder's givers, spots and offers straight out of the probe's
-own saved file. The addon's notes, which step 6d keeps in the ledger, reached nothing, and retiring the probe's
-recorder would have ended the only way new givers got into Forever's pins. The importer now takes them from the
-ledger's Forever rows ([quest-giver-recorder.md](quest-giver-recorder.md), "Forever's importer") and reads the
-probe's file for the game's answers and NPC names only. The user, 11 October: "yes, build it as a PR". Nothing
-was regenerated: no `data/` file changes, and nothing displays differently until step 10 is next run.
+own saved file, and the addon's notes, which step 6d keeps in the ledger, reached nothing. The importer now takes
+them from the ledger's Forever rows ([quest-giver-recorder.md](quest-giver-recorder.md), "Forever's importer") and
+reads the probe's file for the game's answers and NPC names only. The user, 11 October: "yes, build it as a PR".
+Both recorders are kept: the probe's is not retired (the user, the same day: "yes, keep both, go ahead"). Both
+feed the ledger through step 6d and the importer reads the ledger, so what they saw is combined. Nothing was
+regenerated: no `data/` file changes, and nothing displays differently until step 10 is next run.
 
 - **What it takes:** a giver's name (the one its trusted rows agree on), its places (the merge tool's own
   grouping: rows on one map within 1.5 map points are one place, the most visited first, only trusted ones with

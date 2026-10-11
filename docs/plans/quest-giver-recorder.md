@@ -317,9 +317,10 @@ what the newest file alone says, and Forever's importer, which pins at the seed,
    read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin
    pipeline. Open the call for players' files after one sweep has run clean.
 3. **One probe for both games** (recommendation 2).
-4. **The probe's own recorder** (PR #139) is retired after one sweep that has run clean on the addon's.
-   Forever's importer reads the ledger since 11 October 2026 (the merge tool, above), with the recorded-place
-   radius at 1.5 map points, so retiring it no longer ends the only way new givers reach Forever's pins.
+4. **Both recorders are kept** (the user, 11 October 2026: "yes, keep both, go ahead"): the probe's own
+   recorder (PR #139) is not retired. Both feed the ledger through step 6d, and Forever's importer reads the
+   ledger since 11 October 2026 (the merge tool, above), with the recorded-place radius at 1.5 map points, so
+   what the two saw is combined in Forever's pins.
 5. **Later, if wanted:** a copy-text window for the report; a novelty test so the file skips what the
    shipped pins hold; the map-frame conversion above; the instance rule; recorded recurrence and
    headings applied by steps 3 and the category steps rather than listed.
@@ -356,4 +357,6 @@ what the newest file alone says, and Forever's importer, which pins at the seed,
   map points instead of a 3-point box, and a ledger that lacks anything the probe's file holds stops the import
   and says to run step 6d. `Test-ForeverImport.ps1` (58 checks) and section H of `Test-RecordedGivers.ps1`
   (23 more, 294 in all) check it. Nothing displays differently until step 10 is next run; what that run would
-  move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired.
+  move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired: the user
+  decided the same day to keep both recorders ("yes, keep both, go ahead"), so the probe's notes and the addon's
+  are combined through the ledger ("What is left", 4).
