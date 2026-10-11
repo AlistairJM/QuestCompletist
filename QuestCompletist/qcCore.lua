@@ -1997,8 +1997,9 @@ local function qcBreadcrumbChecks(qcQuestID)
 	else
 		qcToast.QuestID = qcQuestID
 		local qcCount = 0
+		-- Another class's, race's or faction's version of a lead-in isn't one this character can take.
 		qcForEachBreadcrumb(qcQuestID, function(qcBreadcrumbEntry)
-			if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
+			if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) and qcPrereq.CanTake(qcBreadcrumbEntry) then
 				qcCount = (qcCount + 1)
 			end
 		end)
@@ -2063,7 +2064,8 @@ function qcToast_OnEnter(self)
 		qcToastTooltip:ClearLines()
 		qcToastTooltip:AddLine(qcL.BREADCRUMBQUESTS)
 		qcForEachBreadcrumb(self.QuestID, function(qcBreadcrumbEntry)
-			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
+			if not qcPrereq.CanTake(qcBreadcrumbEntry) then
+			elseif (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
 				if (qcQuestName and qcBreadcrumbEntry) then qcToastTooltip:AddLine(tostring(COLOUR_DRUID .. qcQuestName .. COLOUR_MAGE .. " [" .. qcBreadcrumbEntry .. "]")) end
 			elseif not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
