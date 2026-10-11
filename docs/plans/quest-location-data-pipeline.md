@@ -361,6 +361,10 @@ objectives, which the addon doesn't pin, but also some dailies, holiday and ordi
 that already had a pin was placed before. The tool stops if `QuestV2CliTask.csv` (step 1b) is
 missing, as without it every task quest would get a pin.
 
+*Note, 11 October 2026: this exclusion of the whole task table was superseded by the last section,
+"pins for the task quests that are not world quests": the tool now skips only the kinds listed in
+`$noPinKinds`, and the task-table quests of every other kind, racing included, are placed.*
+
 - **193 quests got their first pin,** in 201 places: the 192 counted before, and 81969 "An End to the
   End", whose point -1 is off its map. 124 places joined pins that already held other quests, by the
   pipeline's rule that a start within 1.5 points of a known NPC's pin takes that NPC; 77 are on
@@ -398,6 +402,9 @@ missing, as without it every task quest would get a pin.
   Call of the Worldsoul", a task-table quest that needs a hand entry; the seven forced world
   quests and 84423 have no start for the addon to show. Against the game's 439 offers the pins are
   within 1.5 points of 253 (242 before), and 6 rows (2 quests) have no pin at all (34 before).
+  *Note, 11 October 2026: 82449 needs no hand entry any more. It is a Meta Quest (kind 284), one of the
+  task-table quests the last section ("pins for the task quests that are not world quests") pins, and
+  has a nameless pin at its client start in Dornogal.*
 - **Checks.** The pipeline, step 6c, `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1` and
   `Remove-DuplicatePinQuests.ps1` were rerun until a second run changed nothing, which took two
   rounds. The reachability report differs from master's in the pin count alone, and
@@ -406,7 +413,7 @@ missing, as without it every task quest would get a pin.
   start, none beyond 1.5), the names, and the script and these docs. Not tried in game.
 - **Open:** 4,082 task quests already in the data have a start and no pin, 1,387 of them world
   quests; whether to pin any of them is not decided. Decision 9 in game-api-review.md is about
-  adding task quests to the database, with no pins.
+  adding task quests to the database, with no pins. (Decided on 11 October 2026: the last section.)
 
 ## October 2026, pins from TrinityCore
 
@@ -419,8 +426,8 @@ which is not used). Where both list a quest, 19,801 of 19,806 single-place quest
 map points. `Build-QuestLocationData.ps1` now places the quests the client doesn't list, as rows with
 `Source=trinitycore`, and `Assemble-PinDB.ps1` pins them.
 
-- **Which quests.** One of ours with no pin that is none of these: a task quest
-  (`QuestV2CliTask`); flagged unavailable; a type other than 0, 1, 2, 4 or 128; tagged a holiday or
+- **Which quests.** One of ours with no pin that is none of these: a task quest of a kind in
+  `$noPinKinds` (all of `QuestV2CliTask` until 11 October 2026); flagged unavailable; a type other than 0, 1, 2, 4 or 128; tagged a holiday or
   profession quest; in a system category (Scenario, Delves, Prey, Warbands, Warfront Contribution,
   Path of Ascension, Covenant Assaults, Torghast, Time Rift, Weekly Events, World PvP and the
   others in the script), a holiday's category, or Landfall, whose dailies looked retired (they do not: open-items.md row 34); named like
@@ -539,9 +546,13 @@ covered by its quest and NPC pair and sits where the pipeline sorts it).
 - **A quest that has any pin, anywhere, gets no second one** from this tool; a giver that offers it somewhere
   else is listed (`quest offered away from its pins`).
 - **The holds the TrinityCore pass puts on a quest are waived when a creature offers it** (not in
-  `QuestV2`, the template inferences, a task of another kind than world, bonus or hidden, Landfall,
-  holiday, profession, a quest type other than 0, 1, 2, 4 and 128); the ones that are definitions stay (unavailable, internal name, world, bonus or
-  hidden task, system category), and the new pins are counted by class so the user sees what the waiver let in.
+  `QuestV2`, the template inferences, Landfall, holiday, profession, a quest type other than 0, 1, 2, 4
+  and 128); the ones that are definitions stay (unavailable, internal name, world, bonus or hidden task,
+  system category), and the new pins are counted by class so the user sees what the waiver let in. (A task of
+  another kind than world, bonus or hidden was one of the waived holds until 11 October 2026, when the
+  TrinityCore pass stopped holding it; the report no longer counts that class. The kinds still in
+  `$noPinKinds` that the tool does not hold itself, the callings and the threat wrappers, are waived
+  too when a creature offers the quest.)
 
 ## October 2026, a start on the edge of a map
 
@@ -615,3 +626,136 @@ map for the hand-in.
   game itself draws the start. Whether to move any of them is decision 32 in
   [open-items.md](open-items.md). The 7 Mulgore quests share Denni'ka's camp and are the nearest
   case to 26064.
+
+## October 2026, pins for the task quests that are not world quests
+
+Decision 2 of [open-items.md](open-items.md), approved by the user on 11 October 2026 ("yes, pin the
+758"): the quests of the client's task table that are not world quests get pins. Until then
+`Build-QuestLocationData.ps1` skipped every quest of `QuestV2CliTask`, which holds the world quests and
+bonus objectives the addon never pins but also dailies, seasonal and ordinary quests. It now skips the
+kinds of one table at the top of the script, `$noPinKinds`, keyed by `QuestInfoID`. The same day the user
+added Dragonrider Racing to the pins and held the callings ("yes, include racing, hold callings"): racing
+is pinned like the 758, callings stay out until it is known whether the game still offers them.
+
+- **The numbers, derived again** from `QuestPOIBlob` and `QuestV2CliTask` on build 12.1.0.69933 and
+  master 448bd64. 4,082 of our quests are in the task table, have a point 32 on a map (`UiMapID`
+  above 0) and have no pin, as counted before. By `QuestInfoID`: 3,148 are of the 38 kinds named
+  "World Quest", 83 are Calling Quests (271), 77 Dragonrider Racing (281) and 758 are none of those:
+  kind 0 (668), Combat Ally 266 (28), Group 1 (19), Heroic 85 (12), World Boss 289 (10), Important
+  Quest 282 (8), Dungeon 81 (6), Raid 62 (5) and Meta Quest 284 (2). By the quest's data type, the
+  758 are 233 daily (4), 399 normal (1), 79 seasonal (64) and 47 weekly or other (128). Two things
+  differ from the request: the lists leave 16 quests out, 11 Threat Wrappers (268, the "Assault:"
+  quests) and 5 Bonus Objectives with Completion Toast (283), which are not named "World Quest"; and
+  21 of the 758 have a start point outside every region of their map, so only 737 can be placed.
+- **The table.** 42 kinds: the 38 `QuestInfo` rows named "World Quest" (109 to 152, 259, 260, 278,
+  286, 295, 296), Hidden Quest 265, Threat Wrapper 268, Calling Quest 271 and Bonus Objective with
+  Completion Toast 283. Dragonrider Racing 281 was the 43rd until the user's call of 11 October 2026;
+  its line is gone, so racing is placed. It is listed, not read from `QuestInfo.csv`, so
+  a name change or a kind a new build adds cannot change what is pinned unseen; the run stops
+  with a message at a `QuestInfo` named World Quest that the table lacks, and a task kind that
+  `QuestInfo.csv` has no row for is placed. 268 and 283 are in it to match the 758 the user
+  approved, which has neither (they are bonus and assault wrappers, kept out as world quests
+  are). 271 stays in it until it is known whether the game still offers callings: deleting its line
+  pins that kind (`Test-QuestLocationKinds.ps1` proves it, and that racing is placed and the other
+  held kinds still have their lines). A quest that has a pin already is still
+  moved to its start whatever its kind.
+  The TrinityCore pass holds the same kinds ("task quest of a kind the addon does not pin" in its
+  count), and the recorder's report no longer lists "task quest" among the holds the pipeline puts on
+  a quest, as it holds only these kinds now.
+- **Result for the 758 (before racing was added).** 737 quests got their first pin, from 830 start places (up to 10 a quest, as the client
+  lists them: 11886 "Unusual Activity" has 10, 11966 and 82087 have 7; the six-place cap is the
+  TrinityCore pass's, and 34 quests already pinned from client data have 7 to 24). The places made
+  791 pairs of a quest and a pin: 790 new pins and one old pin that 11373 joined (Wind Trader Zhareem's, in Shattrath).
+  Pins went from 15,181 to 15,971 and quests with a pin from 24,931 to 25,668. Every one of the
+  15,181 old pins is still there, 15,180 identical and one with a quest added: nothing moved,
+  nothing went, no icon, name or ID changed. 235 of the 737 carry a holiday tag (212 Midsummer,
+  22 Brewfest, 1 Trial of Style); with the seasonal filter on, the map draws all 272 of their pins
+  only while their own holiday runs, and the other 519 pins with no holiday running. One new pin has
+  icon 3, the profession pin of "A Gulper Ate the Rolly" (56373); the rest have icon 1. 23 of the 737
+  are in categories the TrinityCore pass holds as system ones: 5 Weekly Events quests ("The Arena
+  Calls", "A Call to Battle" and the like, whose holiday flag is decision 10 of open-items.md, so their
+  pins show all year), 17 of Death Rising (1134) and "Traversing Torghast". 14 are in Uncategorized, and 7
+  pins stand on continent maps and 7 on orphan maps, as 14 and 994 old pins do.
+- **Names.** A quest new to the pins takes a neighbour's identity only when that NPC starts it, which
+  `Assemble-PinDB.ps1` required of TrinityCore's starts alone. The client's starts of a quest with no
+  pin now carry its TrinityCore starters, and the starter whose spawn stands within 1.5 map points
+  of the start is its giver, as for TrinityCore's own starts. Left as it was, the rule would have given
+  318 of the 830 places the name of whichever known NPC stood within 1.5 points, checked against nothing.
+  Now 24 rows (23 new pins and the old one) carry an NPC and its name, all from a TrinityCore starter's
+  spawn at the start ("Honor the Flame" under each zone's Flame Keeper or Warden, the Heroic "WANTED:
+  Shaffar's Wondrous Pendant" under Wind Trader Zhareem), and 767 pins have neither (844 with the 77
+  racing pins, which no source names): TrinityCore has a
+  creature starter for 63 of the 737 quests, and the client's giver table, which step 6c reads, for none
+  (6c filled, moved and added nothing). Each of the 24 NPC IDs is a starter of its quest in TrinityCore,
+  and three were read against the spawns: 11373 under Wind Trader Zhareem (starter 24369; his Shattrath
+  spawn converts to 75.24, 36.56, 0.14 points from the pin), 11835 under the Netherstorm Flame Keeper
+  (25918; 31.95, 68.03 against 32.11, 68.32) and 13498 under the Storm Peaks Flame Keeper (32814; 90.21,
+  19.37 against 90.59, 19.35). No hand row was added.
+- **Not placed: 21 quests with no usable start,** their point 32 outside every region of the map
+  it names, so a pin would stand off the map's edge (the pipeline's "point outside every region").
+  Ten are Waking Shores quests filed under The Azure Span, kind 0 (69951, 69953, 69954, 69956, 69960,
+  69961, 69969, 69970, 69972 and 69973: Bouldron, Karantun, Infernum, Grizzlerock, Gravlion, Frozion,
+  Voraazka, Kain Firebrand, Zurgaz Corebreaker and Rouen Icewind), at world points outside the map's
+  box. Eleven are Heroic dungeon dailies (11354, 11362, 11363, 11368, 11370, 11372, 11374, 11375,
+  11384, 11388 and 11499, "WANTED: ..."), whose points lie outside the boxes of Shattrath City and
+  of the dungeon maps they name; TrinityCore names Wind Trader Zhareem as the starter of all eleven, and his
+  Shattrath pin already holds 11373 and 11369, so a line each on that pin would place them (not
+  done: the pipeline has no rule for a start from a starter's spawn).
+- **Dragonrider Racing (281) pinned, Calling Quests (271) held** (the user, 11 October 2026: "yes,
+  include racing, hold callings"). The first version of this change held both and reported what a rerun
+  with each line deleted would add; the 281 line is now deleted. Racing is 77 quests (all type 128, none
+  a holiday quest, 8 in a storyline) with 77 start places on 12 zone maps (8 in Undermine and in the
+  Waking Shores, 7 in Ohn'ahran Plains, 6 on each of the other nine): 77 new pins, one quest each, all
+  nameless, as no source has a giver for a racing gate (the client's giver table and TrinityCore list
+  none). Pins went from 15,971 to 16,048 and quests with a pin from 25,668 to 25,745; no pin of the 15,971
+  changed (every line identical and in its place) and `data\quests.jsonl` is unchanged. The rounds are in
+  the checks below. Callings stay out: 83 daily quests (one covenant each: 18, 20, 21 and 24) with 98 start
+  places on 7 maps, the covenant sanctums (Seat of the Primus, Elysian Hold, Heart of the Forest twice,
+  Sinfall twice, Ardenweald), would add 86 nameless pins and no old pin would change; nothing in the data
+  says whether the game still offers callings, and the user wants them held until that is known.
+- **Do the racing pins show on the map?** Yes, at the default settings. `QC_FILTERS` in `qcCore.lua`
+  sets the map's "Hide World and Weekly Quests" filter (`WORLDQUEST`, which hides type 128) to 0 and
+  the quest list's to 1: the 77 are on the map by default and hidden from the list by default, as every
+  other type 128 pin and quest is. The map's other defaults on (completed, in progress, other
+  profession, faction, race and class, covenant, unavailable, seasonal, no data) hide none of them: all
+  77 quests are in the data, untagged for a holiday, and open to both factions, every race and class.
+  Checked with the addon's real map pass at the default settings (a scratch copy of the reachability
+  test, not committed): 77 of 77 drawn on their 12 maps for an Alliance and for a Horde character with
+  nothing completed, 0 of 77 with the world and weekly filter ticked. A Pandaren who has not chosen a
+  side sees none of them, as with all 21,465 quests open to both factions (a Neutral player is neither).
+  Which icon they get, the world quest one or the weekly one, depends on what `C_QuestLog.IsWorldQuest`
+  says in the game: not known offline.
+- **What stays skipped:** the 3,148 quests of the World Quest kinds, the 83 callings and the 16 threat
+  wrappers and bonus objectives that have a start and no pin, and every task quest with no start on a map.
+- **Things to know about the 737** (a reviewer's remarks, 11 October 2026). Start places are not
+  capped at six on the client's path: 11886 "Unusual Activity" (10 places) ends with 9 pins and 11966 (7
+  places) with 7; 82087's 7 places end as 6, as places within 1.5 points on one map share a pin (two of
+  11886's places on Stormwind City share one, and two of 82087's three there). So quests with more than
+  six pins went from 21 on master to 23. 23 of the pinned quests are in categories the TrinityCore pass
+  holds as system ones, 5 of them Weekly Events with no holiday tag, whose pins show all year until
+  decision 10 of [open-items.md](open-items.md) tags them. And the task table holds kinds that `$noPinKinds`
+  does not list and the 758 does not name: World Event 82 (52 rows, none of ours), Emissary Quest 128 (2,
+  none), Maw Soul Spawn Tracker 273 (1, none), Delve 288 (2, both of ours already pinned), PvP 41 (1, ours), Island Weekly Quest 261 (2, both ours) and VenthyrPartyQuest 272 (47, 44 of ours; none of our 47 in these three has a start). No quest of
+  ours of those kinds is waiting for a pin, but a task quest of such a kind that the task-quest change
+  (#295, decision 1 of open-items.md) adds to the data will be pinned by the next pipeline run when it has
+  a start place; add its line to `$noPinKinds` first to hold a kind.
+- **Checks.** The pipeline (location data, parse, join and `Assemble-PinDB.ps1 -Apply`),
+  `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1`, `Apply-ClientQuestGivers.ps1` and
+  `Remove-DuplicatePinQuests.ps1` were run until a round changed nothing. For the 758 that took two
+  rounds, then one more in the checkout itself. For racing, a round on the 758's result first changed
+  nothing (so the scratch copies of the sources reproduce the pins), then with the 281 line gone a round
+  changed `Assemble-PinDB.ps1`'s result alone (77 lines added, no other step moved a byte) and the next
+  round changed nothing, byte for byte in `data\pins.jsonl` and `qcPinDB.lua`. Step 6d (`-WhatIf`) fills and
+  adds nothing, with or without the change (retail's ledger is empty and this machine has no recorder
+  files, so it reads only the probe files). `Build-AddonData.ps1 -Check` passes for both games (retail
+  35,023 quests and 16,048 pins; Forever 5,097 and 1,698, unchanged). The reachability report
+  differs from master's in the pin count alone (15,181 to 16,048, 13,675 to 14,401 once identical pins
+  at one spot count as one; 15,971 and 14,324 for the 758 alone): the same 99 pins are hidden from every
+  character by "no data", none is never drawn, no holiday value lacks a calendar holiday, and
+  Forever's report is identical. `Test-MapTooltip.lua` passes with the counts of the 758's run (3,208
+  stacks, 293 with a nameless first pin: the 77 pins are nameless and alone), the continent icons
+  (counted from the quest list) are unchanged, `Audit-QuestTables.ps1 -OwnDataOnly` and
+  `Audit-QuestHolidays.ps1` give the 758's findings byte for byte (no holiday finding is about one of
+  the quests), and `Place-UncategorisedQuests.ps1 -WhatIf` would now also file 82449 "The Call of the
+  Worldsoul" and 87327 under Dornogal by their new pins (not run). Not tried in game: that the pins show
+  on the map and that the right quests are on them.
