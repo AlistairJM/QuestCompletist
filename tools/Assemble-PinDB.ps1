@@ -97,8 +97,8 @@ Write-Output "Distinct known-NPC pins available for proximity matching: $totalDi
 Write-Output "Proximity-matching quests with no identity yet (within 1.5 map points, same UiMapID)..."
 $proximityThreshold = 1.5
 $proximityMatched = 0
-# A quest placed from TrinityCore's points has no pin of its own to borrow from, and the NPC next to its
-# start is often not its giver: it takes a neighbour's identity only when that NPC starts it.
+# A quest with no pin of its own to borrow from (placed from the client's points or TrinityCore's) takes a
+# neighbour's identity only when that NPC starts it: the NPC next to a start is often not its giver.
 function Test-StartsQuest($row, $pin) {
     if (@($row.StarterNpcIds -split '[|]' | Where-Object { $_ }) -contains [string]$pin.NpcId) { return $true }
     return [bool]$pin.NpcName -and (@($row.StarterNames -split '[|]' | Where-Object { $_ }) -contains $pin.NpcName)
@@ -112,7 +112,7 @@ foreach ($row in $enriched) {
     $rowX = [double]$row.MapX
     $rowY = [double]$row.MapY
     foreach ($candidate in $distinctPinsByMap[$row.UiMapID]) {
-        if ($row.Source -eq 'trinitycore' -and -not (Test-StartsQuest $row $candidate)) { continue }
+        if (-not (Test-StartsQuest $row $candidate)) { continue }
         $dx = $rowX - [double]$candidate.OldMapX
         $dy = $rowY - [double]$candidate.OldMapY
         $dist = [math]::Sqrt($dx * $dx + $dy * $dy)

@@ -29,12 +29,13 @@ On retail's pins (data\pins.jsonl) it does two things, and nothing else:
     no name, which a later run fills). Up to six givers. A quest that is a world, bonus or hidden quest
     (a task of those kinds), flagged unavailable, in a system category that $allowedSystemCategories does not
     name, or named like a test does not.
-    The other holds the TrinityCore pass puts on a quest (not in QuestV2, a task of another kind, Landfall,
-    a holiday, a profession, a quest type other than 0, 1, 2, 4 and 128) are waived, because a creature
-    offering the quest answers them; the report counts the quests by class. Of the system categories only
-    those in $allowedSystemCategories (World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver's
-    Headquarters, Weekly Events: at least half their quests already stand on a pin with an NPC) let an offer pin
-    a quest; Prey, Garrison Support and the rest stay held.
+    The other holds the TrinityCore pass puts on a quest (not in QuestV2, Landfall, a holiday, a profession,
+    a quest type other than 0, 1, 2, 4 and 128) are waived, because a creature offering the quest answers
+    them; the report counts the quests by class. So is its hold on a calling or assault-wrapper task (the
+    kinds of $noPinKinds in Build-QuestLocationData.ps1 that the test above doesn't name). Of the system
+    categories only those in $allowedSystemCategories (World PvP, Little Scales Daycare, Upgrade System,
+    Warbands, Delver's Headquarters, Weekly Events: at least half their quests already stand on a pin with
+    an NPC) let an offer pin a quest; Prey, Garrison Support and the rest stay held.
 It never moves a pin, never changes an ID or a name that is there, never takes a quest off a pin, and
 saves no pin if any of that would happen. A fill that would put two pins of one NPC (or of one object name)
 1.5 points or less apart, but not on one spot, is not made: the pipeline would merge them and move one pin's
@@ -221,7 +222,6 @@ $waivedClass = {
     $q = $questById[$quest]
     $classes = New-Object System.Collections.Generic.List[string]
     if ($null -ne $questV2 -and -not $questV2.Contains($quest)) { $classes.Add('not in QuestV2') }
-    if ($taskKind.ContainsKey($quest)) { $classes.Add('task quest (not a world or bonus kind)') }
     if ([int]$q.category -eq 121) { $classes.Add('Landfall') }
     if ($systemCategories -contains [int]$q.category) { $classes.Add('system category') }
     if ($q.holiday -or $holidayCategories -contains [int]$q.category) { $classes.Add('holiday') }
