@@ -282,8 +282,12 @@ source tag (`own-` and the folder's name) with at least the file's number (visit
 may hold more, and turn-ins and starts are not asked, as the importer does not read them. Notes step 6d leaves
 out (a map the game lacks, a quest the data lacks) are left out of the check too, so a quest a new import adds has
 its recorded offers in the ledger only from the next run of 6d: the review says "recorded offer not in the ledger
-yet", and 6d and the import are run again. A probe file with no notes at all needs no ledger. Retail is
-untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
+yet", and 6d and the import are run again. A probe file with no notes at all needs no ledger. Only the probe's
+file is checked: the addon's own file and players' files are not, so for them the import relies on the runbook's
+order (maintenance.md, step 10, item 1: step 6d first). On a new Forever build 6d needs the build's `UiMap` table,
+which the importer fetches, so the order is the import (it fetches the tables, then stops at the check), 6d, the
+import again; a version the TOCs don't name is passed to both with `-Builds`, which the importer's message says.
+Retail is untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
 small scratch world (58 checks), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
 import would move is measured in [forever.md](forever.md), "The importer reads the ledger".
 

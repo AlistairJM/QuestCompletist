@@ -15,8 +15,10 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     met in the game, where they stood, their English names and the quests they offered. Only what the
     maintainer's own files saw, or two different players did, counts (RecordedGivers.ps1 decides). The
     probe's own recorder notes are not read from its file: if the file holds a giver, spot or offer
-    the ledger lacks (step 6d was not run on it), the run stops, so a stale ledger can't silently drop
-    the newest givers. The file is read the way step 6d reads it, so -Builds (default: the versions
+    the ledger lacks (step 6d was not run on it), the run stops, so a ledger behind the probe's file
+    can't silently drop its newest givers. Only the probe's file is checked: the addon's own file and
+    players' files are not, and for them the import relies on step 10's item 1 in maintenance.md
+    (step 6d first). The file is read the way step 6d reads it, so -Builds (default: the versions
     the TOCs in -AddonDir name) says which of its builds count;
   - -GiverFile and -ZoneFile, docs\plans\forever-quest-givers.csv and forever-quest-zones.csv:
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
@@ -377,9 +379,10 @@ foreach ($blob in $questBlobs) {
 
 # The recorded givers come from the ledger, which Import-RecordedGivers.ps1 (step 6d) fills from the probe's
 # files and the addon's own notes. If the probe's file holds a giver, spot or offer the ledger lacks, the
-# ledger is stale and the newest givers would be dropped without a word, so nothing is written. The file is
+# ledger is behind it and the newest givers would be dropped without a word, so nothing is written. The file is
 # read, and filtered, the way step 6d reads it (its builds, the game's maps, the quests the data has), and
-# the ledger must hold each note under the file's own source tag with at least the file's number.
+# the ledger must hold each note under the file's own source tag with at least the file's number. Only the
+# probe's file is checked: the addon's file and players' are left to the runbook's order (step 6d first).
 if ($Builds.Count -eq 0) { $Builds = @(Get-TocVersions $AddonDir) }
 if ($Builds.Count -eq 0) { throw "No versions to read the probe's file for: pass -Builds, or give -AddonDir the TOCs." }
 $probeTag = 'own-' + (ConvertTo-RecordedTag (Split-Path -Leaf (Split-Path -Parent (Resolve-Path $ProbeFile).Path)))
@@ -399,7 +402,12 @@ $ledgerGaps = @()
 $ledger = Read-RecordedLedger $LedgerFile
 if ($probeRead.Givers.Count + $probeRead.Spots.Count + $probeRead.Offers.Count -gt 0) {
     $probeNotes = Get-RecordedFacts $probeRead $Builds $ledgerMaps $ledgerQuests
-    if ($probeNotes.Refused) { throw "The probe's file $ProbeFile can't be read as recorder notes ($($probeNotes.Refused)), which is how step 6d reads it too. Nothing was written." }
+    if ($probeNotes.Refused) {
+        $hint = if ($probeNotes.Refused -like 'none of its builds are read*') {
+            " The versions read are $($Builds -join ', '): if the TOCs don't name the file's version yet, pass it with -Builds, here and to step 6d."
+        } else { '' }
+        throw "The probe's file $ProbeFile can't be read as recorder notes ($($probeNotes.Refused)), which is how step 6d reads it too.$hint Nothing was written."
+    }
     if ($probeNotes.Game -ne 'forever') { throw "The probe's file $ProbeFile is not Forever's: its builds say '$($probeNotes.Game)'. Nothing was written." }
     $ledgerGaps = @(Find-RecordedLedgerGaps $ledger $probeNotes)
 }
@@ -407,7 +415,7 @@ if ($ledgerGaps.Count) {
     $shown = ($ledgerGaps | Select-Object -First 5) -join '; '
     throw ("The ledger $LedgerFile lacks $($ledgerGaps.Count) of the recorder notes in the probe's file $ProbeFile (source $probeTag): $shown" +
         $(if ($ledgerGaps.Count -gt 5) { "; and $($ledgerGaps.Count - 5) more" }) +
-        ". Run step 6d (Import-RecordedGivers.ps1) on the probe's file first, so the ledger keeps them, then run this again. Nothing was written.")
+        ". Run step 6d (Import-RecordedGivers.ps1) on the probe's file first, so the ledger keeps them (on a new build it needs UiMap-$Build.csv, which this run has fetched), then run this again. Nothing was written.")
 }
 $recordedModel = Get-RecordedModel $ledger 'forever'
 $fromLedger = Get-RecordedGiverInputs $recordedModel

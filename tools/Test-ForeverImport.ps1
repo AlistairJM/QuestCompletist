@@ -154,10 +154,10 @@ function Run-Script([string]$script, [string[]]$arguments) {
 }
 
 # Step 6d on the world, as a sweep runs it before step 10.
-function Invoke-MergeTool([string]$root) {
-    return Run-Script $MergeTool @('-ToolsDir', "$root\tools", '-DataDir', "$root\data", '-AddonDir', "$root\addon", '-LedgerFile', "$root\ledger.csv",
+function Invoke-MergeTool([string]$root, [string[]]$more = @()) {
+    return Run-Script $MergeTool (@('-ToolsDir', "$root\tools", '-DataDir', "$root\data", '-AddonDir', "$root\addon", '-LedgerFile', "$root\ledger.csv",
         '-DecisionsFile', "$root\none.csv", '-GiverDecisionsFile', "$root\none.csv", '-NpcIdDecisionsFile', "$root\none.csv",
-        '-ReportFile', "$root\report.txt", '-ForeverBuild', $Build, '-LuaExe', $LuaExe)
+        '-ReportFile', "$root\report.txt", '-ForeverBuild', $Build, '-LuaExe', $LuaExe) + $more)
 }
 
 # Step 10's importer on the world.
@@ -321,6 +321,15 @@ try {
     Write-Probe $probe (Get-ProbeGivers) '12.1.0.69933'
     $r = Invoke-Importer $w
     Check ($r.Exit -ne 0 -and $r.Text -match 'not Forever''s') "D9: a probe file of another game stops the import ($($r.Text))"
+
+    # A file of a version the TOCs don't name yet, as on a new Forever version.
+    Write-Probe $probe (Get-ProbeGivers) '1.61.0.71000'
+    $r = Invoke-Importer $w
+    Check ($r.Exit -ne 0 -and $r.Text -match 'none of its builds are read' -and $r.Text -match 'versions read are [^:]*1\.60\.:' -and $r.Text -match 'with -Builds, here and to step 6d') "D10: a probe file of a version the TOCs don't name stops the import and says to pass it with -Builds ($($r.Text))"
+    $r = Invoke-MergeTool $w @('-Builds', '1.61.')
+    Equal $r.Exit 0 "D10: step 6d reads it with -Builds ($($r.Text))"
+    $r = Invoke-Importer $w @('-Builds', '1.61.')
+    Equal $r.Exit 0 "D10: and so does the importer ($($r.Text))"
     [IO.File]::WriteAllText($probe, $good)
 
     # ---------- E: the trust rule, on rows one player and two players left ----------

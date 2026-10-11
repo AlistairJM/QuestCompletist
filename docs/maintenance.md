@@ -1054,8 +1054,15 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    givers, where they stood, their names and the quests they offered from the ledger alone**; the
    probe's file is read for the game's answers and NPC names only. If the probe's file holds a giver,
    place or offer the ledger lacks, the importer stops before it writes anything and says to run 6d.
-   A quest this import adds can't have its recorded offers in the ledger until 6d has read the new
-   data; the review lists them as "recorded offer not in the ledger yet": run 6d and the import again.
+   Only the probe's file is checked: the addon's file and players' files are not, so it is running 6d
+   first, as here, that brings their notes in. A quest this import adds can't have its recorded offers
+   in the ledger until 6d has read the new data; the review lists them as "recorded offer not in the
+   ledger yet": run 6d and the import again. **On a new Forever build** 6d needs
+   `tools\UiMap-<build>.csv`, which only the importer (or a download by hand from wago.tools) makes, so
+   the order is: the import (item 4), which fetches the client tables and then stops at the ledger
+   check; step 6d; the import again. If the build's version is one the TOCs don't name yet, 6d leaves
+   the probe's file unread ("Not read" in its report) and the importer stops, until the version is
+   passed to both with `-Builds`.
 2. **The probe**, when Forever has a new build, the beta opens higher levels, or the probe's quest
    list has grown: see [In the game](#in-the-game). Otherwise the last run's results stand. Every
    probe run includes the map pass (step 3b there), and the reader's totals are compared with the

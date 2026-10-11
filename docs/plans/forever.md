@@ -862,7 +862,11 @@ regenerated: no `data/` file changes, and nothing displays differently until ste
   and one with places 1.6 apart is two; master gives one pin for both.
 - **The stop:** the probe's file is read as step 6d reads it, and the import stops, writing nothing (`-WhatIf`
   too), unless the ledger holds every giver, spot and offer in it under the file's own source tag with at least
-  the file's number. With the live file of setup 3 below and the ledger of setup 2 it stops after 1.4 seconds.
+  the file's number. With the live file of setup 3 below and the ledger of setup 2 it stops after about 2
+  seconds of wall time, PowerShell's start-up included (1.5 seconds with the smaller file in
+  `tools\forever_probe_70338` and today's ledger short of one of its rows). Only the probe's file is checked:
+  the addon's file and players' files are not, and for them the import relies on running step 6d first
+  (maintenance.md, step 10, item 1, which also gives the order on a new build).
 - **New in the review:** trusted names that disagree, and offers of quests the data lacked when step 6d ran
   ("recorded offer not in the ledger yet"). The summary gains a line for what the ledger gave.
 
