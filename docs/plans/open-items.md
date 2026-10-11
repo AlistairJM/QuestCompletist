@@ -68,9 +68,11 @@ again.
 - **The level 10 rogue lead-ins on Forever** (#297, 11 October 2026, not yet tried in game, so not for a
   release until tried or the user says so). Two looks on the beta: on Rothro after `/reload`, Road to
   Salvation (2218) shows as not done; on a new Human rogue, Snatch and Grab (2206) on Master Mathias
-  Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Destiny Calls
-  needing The Apple Falls, and a hand-in ticking no other lead-in, are checked offline by
-  `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the server requires").
+  Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Optionally, a
+  third: after handing in Deliver Thomas' Report (39), Guard Thomas offers Bounty on Murlocs (46),
+  which his pin greys until then. Destiny Calls needing The Apple Falls, and a hand-in ticking no other
+  lead-in, are checked offline by `Test-Completions.lua` ([forever.md](forever.md), "Lead-ins the
+  server requires").
 - **Breadcrumbs closed while their quest is in the log** (11 October 2026, stacked on #297, not yet tried
   in game, so not for a release until tried or the user says so). One look on the beta: with Redridge
   Rendezvous (2281) in Rothro's log, Keryn Sylvius's pin no longer lists SI:7 (2300) but still shows Seek
