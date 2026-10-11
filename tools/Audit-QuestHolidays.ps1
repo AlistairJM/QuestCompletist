@@ -58,7 +58,9 @@ if ($holidays.Count -eq 0 -or $holidays.Count -ne ([regex]::Matches($block, 'fla
 function Get-Key([string]$name) { return ($name -replace '[\u2019'']', '').Trim().ToLowerInvariant() -replace '\s+', ' ' }
 # Names Blizzard's API and our headings give a holiday that qcHolidays spells otherwise.
 $aliases = [ordered]@{ 'Midsummer' = 'Midsummer Fire Festival'; 'Winter Veil' = 'Feast of Winter Veil'
-    "Ahn'Qiraj War" = "Ahn'Qiraj War Effort"; 'Invasion' = 'Scourge Invasion'; 'Hearthstone Anniversary' = "Hearthstone's 10th Anniversary" }
+    "Ahn'Qiraj War" = "Ahn'Qiraj War Effort"; 'Invasion' = 'Scourge Invasion'; 'Hearthstone Anniversary' = "Hearthstone's 10th Anniversary"
+    'Kalimdor Cup' = 'Dragonriding Cups'; 'Eastern Kingdoms Cup' = 'Dragonriding Cups'; 'Outland Cup' = 'Dragonriding Cups'
+    'Northrend Cup' = 'Dragonriding Cups'; 'Pandaria Cup' = 'Dragonriding Cups'; 'Broken Isles Cup' = 'Dragonriding Cups' }
 $byName = @{}; $byEventId = @{}; $holidayOfFlag = @{}
 foreach ($h in $holidays) {
     $byName[(Get-Key $h.Name)] = $h; $holidayOfFlag[$h.Flag] = $h
