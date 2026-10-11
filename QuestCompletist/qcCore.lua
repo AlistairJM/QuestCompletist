@@ -1080,7 +1080,7 @@ end
 -- An empty list says how many quests the filters hide. It's empty only when they hid the whole
 -- category, so that is every quest the category holds; a search, a category with no quests and a
 -- list with rows say nothing.
-local function qcShowHiddenQuests(categoryId)
+function qcShowHiddenQuests(categoryId)
 	local hidden = 0
 	if categoryId and qcCurrentCategoryQuestCount == 0 then
 		hidden = #(qcCategoryIndex[categoryId] or {})

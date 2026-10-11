@@ -83,7 +83,7 @@ again.
   quests has a menu entry and a zone row, none is empty, and the reachability run leaves no quest out.
   What only the game can show is the four starter areas, whose quests are filed under their parent
   zone: walk into Camp Narache, Shadowglen, Valley of Trials and New Tinkertown and see the list follow
-  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)). The new Quel'Thalas, Gilneas and Tol Barad submenus under Eastern Kingdoms, and Founder's Point and Razorwind Shores under Midnight's Other Categories, are offline-checked too (the three names come from the client's maps, with English as the fallback). The Main Zones and Other Categories submenus of Draenor and The Broken Isles (question 21) are offline-checked too.
+  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)). The new Quel'Thalas, Gilneas and Tol Barad submenus under Eastern Kingdoms, and Founder's Point and Razorwind Shores under Midnight's Other Categories, are offline-checked too (the three names come from the client's maps, with English as the fallback). The Main Zones and Other Categories submenus of Draenor and The Broken Isles (question 21) are offline-checked too. The one new thing to look at is the line an empty list shows (question 26, "Quests hidden by your filters: N"): open any entry that lists nothing at the default filters, such as Rated PvP on retail.
 - **The calendar window's filters, on both games (#243, released in 112.6 on 9 October 2026).** The
   seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
   source that the game then leaves its events out of the calendar. Nobody has seen that in game.
