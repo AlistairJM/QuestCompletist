@@ -16,7 +16,8 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     maintainer's own files saw, or two different players did, counts (RecordedGivers.ps1 decides). The
     probe's own recorder notes are not read from its file: if the file holds a giver, spot or offer
     the ledger lacks (step 6d was not run on it), the run stops, so a stale ledger can't silently drop
-    the newest givers;
+    the newest givers. The file is read the way step 6d reads it, so -Builds (default: the versions
+    the TOCs in -AddonDir name) says which of its builds count;
   - -GiverFile and -ZoneFile, docs\plans\forever-quest-givers.csv and forever-quest-zones.csv:
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
     can't place. A listed NPC stands where CMaNGOS or the recorder puts it.

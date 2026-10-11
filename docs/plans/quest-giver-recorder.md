@@ -267,6 +267,26 @@ type, or that disagrees), `recorded_headings.csv`, `recorded_start_items.csv` an
 `recorded_mask_contradictions.csv`. They are lists to look through: nothing reads them yet (the gap-quest
 fetch takes its IDs from `gap_quest_ids.txt`, which nothing writes).
 
+**Forever's importer** (`Import-ForeverData.ps1`, step 10) reads the ledger since 11 October 2026. It takes the
+recorded givers, the places they stood at, their names and the quests they offered from the ledger's trusted
+Forever rows, through the merge tool's own functions (`Get-RecordedModel`, `Get-RecordedPlaces`, and
+`Get-RecordedGiverInputs` to hand the result over), so the trust rule and the grouping of places are one
+definition in both tools: what a lone player saw is ignored, and a giver's places on one map within 1.5 map
+points of each other are one place (the importer's own test was a 3-point box). A giver with a trusted place
+stands there instead of at CMaNGOS's spawns, as it did when the place came from the probe's file. The probe's
+file is still read for the game's per-quest answers and NPC names. **The stale-ledger stop:** the importer reads the
+probe's file the way step 6d does (its builds, the game's maps, the quests the data has) and stops, before it
+writes anything, unless the ledger holds every giver (with a name), spot and offer in it under the file's own
+source tag (`own-` and the folder's name) with at least the file's number (visits for a spot, 1 for the rest);
+`Find-RecordedLedgerGaps` says what is lacking, and the message says to run step 6d. The ledger only grows, so it
+may hold more, and turn-ins and starts are not asked, as the importer does not read them. Notes step 6d leaves
+out (a map the game lacks, a quest the data lacks) are left out of the check too, so a quest a new import adds has
+its recorded offers in the ledger only from the next run of 6d: the review says "recorded offer not in the ledger
+yet", and 6d and the import are run again. A probe file with no notes at all needs no ledger. Retail is
+untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
+small scratch world (58 checks), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
+import would move is measured in [forever.md](forever.md), "The importer reads the ledger".
+
 **Checked.** `Test-RecordedGivers.ps1` makes small data in a scratch folder (quests, pins, the Lua built
 from them, recordings of every kind) and checks the rules and the tool end to end, including that a second
 run leaves `pins.jsonl`, the Lua and the ledger byte for byte, that nothing moves, and (with a deliberately
@@ -283,7 +303,12 @@ be the map the pin is on: the scouts found a quarter of zone pins on a larger si
 Durotar), where an exact match misses, so the yield of fills may be three quarters of what a perfect match
 gives. Those cases show up as `quest offered away from its pins`. Converting through the client's map
 frames (`UiMapAssignment`) would recover them; it is not built. (3) The 1.5 point radius is a ceiling, tight
-on small maps. (4) Two accounts of one person count as two players (see Trust).
+on small maps. (4) Two accounts of one person count as two players (see Trust). (5) A place's visits add up
+the numbers of every source of the maintainer's own, and the probe's file is cumulative (a spot seen three
+times is three in every later probe file), so the same visits count once per file read: 3, 3, 3 and 3 are
+12 once four probe files are in the ledger. Which of two rows 0.1 point apart seeds a place can then differ from
+what the newest file alone says, and Forever's importer, which pins at the seed, moves the pin
+([forever.md](forever.md), "The importer reads the ledger"). The weight is the merge tool's rule and is left as it is.
 
 ## What is left
 
@@ -292,8 +317,9 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
    read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin
    pipeline. Open the call for players' files after one sweep has run clean.
 3. **One probe for both games** (recommendation 2).
-4. **Forever's importer** reads the ledger, and its recorded-spot merge radius moves from 3 to 1.5
-   map points; the probe's own recorder (PR #139) is retired after one sweep.
+4. **The probe's own recorder** (PR #139) is retired after one sweep that has run clean on the addon's.
+   Forever's importer reads the ledger since 11 October 2026 (the merge tool, above), with the recorded-place
+   radius at 1.5 map points, so retiring it no longer ends the only way new givers reach Forever's pins.
 5. **Later, if wanted:** a copy-text window for the report; a novelty test so the file skips what the
    shipped pins hold; the map-frame conversion above; the instance rule; recorded recurrence and
    headings applied by steps 3 and the category steps rather than listed.
@@ -325,3 +351,9 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
   that nothing is sent. The in-game session now checks what players already have. The in-game
   `/qc report` text still invites players to attach their file to a comment; the README and the
   changelog do not, because the call for players' files waits for one clean sweep (see "What is left").
+- 2026-10-11: Forever's importer reads the ledger (the user: "yes, build it as a PR", on this plan item): the
+  recorded givers, places, names and offers come from the ledger's trusted Forever rows, places merge within 1.5
+  map points instead of a 3-point box, and a ledger that lacks anything the probe's file holds stops the import
+  and says to run step 6d. `Test-ForeverImport.ps1` (58 checks) and section H of `Test-RecordedGivers.ps1`
+  (23 more, 294 in all) check it. Nothing displays differently until step 10 is next run; what that run would
+  move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired.

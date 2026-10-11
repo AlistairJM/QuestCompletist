@@ -39,7 +39,9 @@ it, a quest offered away from its pins, a pin at a hand-in, names the trusted so
 notes contradict, and more. A case looked at that stays as it is goes in plans\recorded-giver-decisions.csv
 (Quest, Map, X, Y, Decision KEEP, Reason; a row with only a quest keeps the quest from getting a pin from
 here), as in pin-giver-decisions.csv, whose KEEP rows are honoured too. Forever's pins are rebuilt by
-Import-ForeverData.ps1 every time, so for Forever it only keeps the ledger and the lists.
+Import-ForeverData.ps1 every time, which takes its recorded givers from the ledger and stops if the
+probe's file holds notes the ledger lacks, so for Forever this tool only keeps the ledger and the lists:
+run it before step 10.
 
 Run it after step 6c, then rerun the pin pipeline: a pin that now shares an NPC with another within 1.5
 points joins it at the next rebuild. A second run changes nothing. With -WhatIf it only reports (and

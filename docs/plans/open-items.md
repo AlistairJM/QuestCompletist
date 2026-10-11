@@ -207,6 +207,7 @@ again.
 | 31 | Remove the 83 unused category definitions (R32) | **yes, 11 October 2026, done**: 82 removed with their table rows and 12 locale keys; Island Expeditions (1130) stays, because two tools still name it | [menu-review.md](menu-review.md), question 31 |
 | 32 | A start within a map point of an edge goes on the map the client's row for it names. 26064 was moved by hand to Stonetalon Mountains (10 October 2026); 15 other quests have the same shape and their client start on the edge map: Mulgore's Jin'Zil (5) and Devo (2), Stonetalon's Grimfang (2), Dread Wastes' Taran Zhu (4) and Garrosh (1), Crystalsong Forest's Xink (1). All were on the other map before "pins at the start" | leave them where the client puts them; if the user wants the rule ("prefer the map the other points are on", tried at 1 point, 16 quests including 26064), it is a small change to `Build-QuestLocationData.ps1` and a rerun of step 6, and the Mulgore camp's 7 quests are the nearest case to 26064 | [quest-location-data-pipeline.md](quest-location-data-pipeline.md), "a start on the edge of a map" |
 | 33 | Retail's real minimums where we store 0, from the sources checked on 10 October 2026 ([retail-quest-cache.md](retail-quest-cache.md), "Level"). 22 quests have their own API record with a real minimum: 16 Garrison "Your Second ... Work Order" quests at 10 (3 of them sit on TrinityCore's tuning 0, which disagrees), 3 at 80 (64159, 64162, 64163) and 3 at 90 (62355, 89403, 91632); 90751 reads 80 from a neighbour's range only. 191 have an API minimum of 1 and stay 0, since a 1 would hide them as low level for a high-level character, as every retail quest with a minimum of 1 is today; the rest are tuning 0, test or tracking quests, or have no source | **yes, 10 October 2026, done**: the 22 set to the API's minimum, the rest left at 0 | the 22 `level` values in `data/quests.jsonl`, then a rebuild |
+| 34 | How a place's visits are counted when several of the maintainer's files hold the same visits: the probe's file is cumulative, so a spot seen 3 times is 3 in each of four files and 12 in the sum, and the sum decides which of two rows 0.1 apart seeds a place | change it to the largest number any one own source gives (the sources describe the same visits, as the plan says); it moved 1 Forever pin by 0.1 on today's ledger, and it is a change to `Get-RecordedPlaces`, which retail's step 6d shares, so it is left as it is until you say | [quest-giver-recorder.md](quest-giver-recorder.md), "Known limits" (5); [forever.md](forever.md), "The importer reads the ledger" |
 
 ## Data to finish
 
@@ -244,8 +245,8 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 2. Retail map pass: **done** (#219 carries its record).
 3. **Built, waiting for the game:** the recorder on retail, with one probe for both games
    (recommendations 1 and 2). The addon half (#228) is released (112.7, untried) and waits for its in-game session;
-   the merge tool (step 6d) waits for a real recording
-   ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
+   the merge tool (step 6d) waits for a real recording, and Forever's importer reads its ledger
+   (11 October 2026) ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
    probe is on master as a dev-only addon (#232 to #237), and both games' first runs are in (9 and 10
    October; see "To try in game").
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
