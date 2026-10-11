@@ -118,6 +118,7 @@ qcLocalize = {
 	LATERQUESTS = "... %d more",
 	THISQUEST = "this quest",
 	REQUIREDQUEST = "Required Quest:",
+	INQUESTLOG = "%s in your quest log",
 	REQUIREDFACTION = "Required Faction:",
 	REQUIREDRENOWN = "Required Renown Level:",
 	REQUIREDRANK = "Required Rank:",

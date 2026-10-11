@@ -1103,6 +1103,33 @@ nothing else. The gaps, and what the importer does with each now:
   the notice; the old notice code fails its two checks), `Test-ForeverChecks.ps1` (the audit on choices
   and lists), reachability (unchanged on Forever) and two imports giving the same files.
 
+### Quests offered only while another is in the log (11 October 2026)
+
+The user's choice for the 35 quests above that CMaNGOS offers only while another quest is in the log:
+a keyed table, `qcQuestNeedsInLog` [quest] = {quests, one of which must be in the log}, read by shared
+code.
+
+- **Data:** the importer writes the quests as `needsInLog` in `links.jsonl`, from CMaNGOS's negative
+  `PrevQuestId` (34) and a negative `NextQuestId` (Enticing Negolash, 619, either faction's Facing
+  Negolash). Its own `PrevQuestId` lets Testing for Impurities and Testing for Corruption (4561, 4661)
+  need only one quest of their negative group in the log, as the server's check does.
+  `Build-ForeverMenu.ps1` writes the table; retail's `qcQuest.lua` has it empty (TrinityCore has 26
+  such links, which retail's tools don't read).
+- **The addon:** such a quest counts as not offered (grey on the map, "Requires Bride of the Embalmer
+  in your quest log", hidden by the requirements filter, a line under Required Quest in its tooltip)
+  until one of its quests this character can take is in the log. Once that quest is handed in, a
+  one-time one is ticked, as a skipped breadcrumb is, at the hand-in and by the login sync; a
+  repeatable one, such as the shamans' Earth Sapta, isn't. One new text, `INQUESTLOG`, in every
+  language (the translations need review).
+- **The ten one-time quests:** Digging Through the Dirt (254), Chapter I to IV (339 to 342), Chief
+  Engineer Scooty (2842), the two Orb of Orahil shards (4962, 4963), Manna-Enriched Horse Feed (7645) and
+  Love Song for Narain (8599). The review keeps only the 82 conditions no table can hold.
+- **Checked** with `Test-Completions.lua` (Digging Through the Dirt grey, then open with Bride of the
+  Embalmer in the log, ticked at its hand-in and by the login sync; Earth Sapta not ticked),
+  `Test-ForeverChecks.ps1` (the audit's two new checks: a quest that needs itself in the log, one that
+  needs a quest not in the data), the table audit (no new finding), and reachability on both games,
+  whose best case now has the quest another needs in the log, as it has every prerequisite done.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -1238,3 +1265,6 @@ nothing else. The gaps, and what the importer does with each now:
   prerequisite from `NextQuestId`, negative groups and `RequiredCondition`, 141 lead-ins close once
   the quest their `NextQuestInChain` names is taken, and the breadcrumb notice counts only the ones a
   character can take (#308). See "The rest of CMaNGOS's requirements".
+- 2026-10-11: the 35 quests offered only while another is in the log are grey until it is, and a
+  one-time one closes once that quest is handed in (`qcQuestNeedsInLog`). See "Quests offered only
+  while another is in the log".

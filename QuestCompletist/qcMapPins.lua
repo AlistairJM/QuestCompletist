@@ -151,6 +151,10 @@ local function qcPinQuestNeeds(questId, state, anything)
             end
         end
     end
+    if not qcPrereq.InLogMet(questId) then
+        if anything then return true end
+        needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcPrereq.InLogText(questId, qcPrereqName))
+    end
     local renown = qcRenownLevelRequirements[questId]
     local level, isRank
     if type(renown) == "table" then level, isRank = qcFactionLevel(renown[1]) end

@@ -89,6 +89,7 @@ qcLocalize = setmetatable({
 	LATERQUESTS = "... 还有%d个", -- Needs review
 	THISQUEST = "此任务", -- Needs review
 	REQUIREDQUEST = "前置任务：", -- Needs review
+	INQUESTLOG = "%s（需在任务日志中）", -- Needs review
 	REQUIREDFACTION = "所需阵营：", -- Needs review
 	REQUIREDRENOWN = "所需名望等级：", -- Needs review
 	REQUIREDRANK = "所需声望等级：", -- Needs review
