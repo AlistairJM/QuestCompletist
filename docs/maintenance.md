@@ -203,13 +203,13 @@ then every tool refuses to save.
    does a holiday whose calendar-window filter differs from the one the client's
    `CalendarFilterType` puts it under. Two entries are matched by a name pattern instead of their
    own name (`$rowPatterns`, see [Holidays](#holidays)): WoW's Anniversary by its yearly rows'
-   names ("WoW's 22nd Anniversary" and the like) and the Dragonriding Cups by the cups' names
+   names ("WoW's 22nd Anniversary" and the like) and the Skyriding Cups by the cups' names
    ("Kalimdor Cup" and any other "<Region> Cup"). A row of those names that runs today or later and
    is missing from its entry exits with 1, and its ID goes into the entry; past rows are left out.
    On 11 October 2026 a run on retail 12.1.0.69933 and Forever 1.60.1.70338 gave no finding: no
    column changes, and of 20 holidays 18 matched and the Scourge Invasion and the Ahn'Qiraj War
    Effort have no row; the 12.1.5 PTR's (70077) calendar tables gave the same holiday result, with
-   no 23rd anniversary row yet. On 12 October 2026, with the Dragonriding Cups added, the same
+   no 23rd anniversary row yet. On 12 October 2026, with the Skyriding Cups added, the same
    builds and the PTR gave no finding either (of 21 holidays 19 matched), and the cups' pattern
    matched only the six cups' names in their HolidayNames (none in Forever's). Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
@@ -535,9 +535,9 @@ add the `PENDING` or `KEEP` row that says why it stays as it is. It only sees ho
 
 Baseline on 12 October 2026: 856 quests in an API category read as a holiday, 583 in a TrinityCore
 event read as one and 1,037 filed under a holiday heading. That is 67 findings, all covered (56
-`PENDING`, 11 `KEEP`), so none is new, the same rows before and after the 16 Dragonriding cup quests
+`PENDING`, 11 `KEEP`), so none is new, the same rows before and after the 16 Skyriding cup quests
 were tagged on 11 October. Those quests count among the 856 and the 1,037: the API's four cup
-categories and our heading "Northrend Cup" are read as the Dragonriding Cups through aliases in
+categories and our heading "Northrend Cup" are read as the Skyriding Cups through aliases in
 `Audit-QuestHolidays.ps1`. No signal names WoW's Anniversary (the API files its quests under the
 general "Seasonal", and neither TrinityCore's anniversary events nor our headings hold them), so
 step 2d checks its 19 quests only through their `SET` rows. The first run also found quest 43472, filed under Midsummer while its
@@ -1508,7 +1508,7 @@ the game's own names for those headings in every language, through `Sync-QuestSo
 
 Seasonal quests need no yearly upkeep, except WoW's Anniversary, whose calendar event is a new row
 every year: step 2b of the sweep reports the new row, and its ID goes into the entry (below). The
-Dragonriding Cups are matched the same way, so a cup Blizzard adds as a new row (the Pandaria and
+Skyriding Cups are matched the same way, so a cup Blizzard adds as a new row (the Pandaria and
 Broken Isles Cups have names in the client's tables but no rows yet) is reported too. The
 map's seasonal filter asks the game's calendar which holidays are running, and `qcHolidays` in
 `qcCore.lua` ties each holiday value in the quest database to the IDs of the game's Holidays table
@@ -1525,16 +1525,16 @@ stack stays, under Bobadormu's name, without them.
 running, each one's next dates, and any calendar holiday that isn't tied to a quest. Retail's list
 now includes Pirates' Day, because 42758 is the first retail quest tagged with it, and the Moonkin
 Festival and Hearthstone's 10th Anniversary, whose quests were tagged on 10 October 2026 (47430,
-and six Hearthstone quests, two of them pinned), and WoW's Anniversary and the Dragonriding Cups,
+and six Hearthstone quests, two of them pinned), and WoW's Anniversary and the Skyriding Cups,
 whose 19 and 16 quests were tagged on 11 October 2026 (seven and twelve of them pinned). It prints
 one line per entry: the soonest event of any of the entry's IDs, under that event's own name and
 ID, so an entry with several IDs (Hallow's End, Love is in the Air, the Darkmoon Faire, the
-Dragonriding Cups) shows only its next one. A holiday there that should match one of ours, under a new ID, means an entry in
+Skyriding Cups) shows only its next one. A holiday there that should match one of ours, under a new ID, means an entry in
 `qcHolidays` needs that ID adding.
 Step 2b of a sweep finds the same offline, from the client's Holidays and HolidayNames tables: for
 each entry in `qcHolidays`, every ID the client has under that name in either game, against the
 IDs the entry lists; for WoW's Anniversary, every row named "WoW's <ordinal> Anniversary" that runs
-today or later, and for the Dragonriding Cups every such row named "<Region> Cup". A new holiday
+today or later, and for the Skyriding Cups every such row named "<Region> Cup". A new holiday
 with quests needs a new flag, an entry, and its quests' `holiday` set in `data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table
 from Holidays IDs to flags, so add the ID there too and rerun step 10. The importer also tags by
 heading (Ahn'Qiraj War, and the quests CMaNGOS files under Invasion) and by a small hand list,
@@ -1627,7 +1627,8 @@ TrinityCore event or heading of ours names it. Forever's Holidays tables (70245,
 have no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not on
 Forever's calendar, which is no finding.
 
-The Dragonriding Cups are one entry with one flag (the user's decision of 11 October 2026) for four
+The Skyriding Cups are one entry with one flag (the user's decision of 11 October 2026; named after
+the client's "Skyriding Races" on 12 October, as no table names the four cups together) for four
 events, each a Holidays row of its own, for all regions and 336 hours at a time: the Kalimdor Cup
 1395 (dated 15 August 2023, 25 February 2025, 23 February 2027 and 27 February 2029), the Eastern
 Kingdoms Cup 1400 (4 October 2023, 26 August 2025, 24 August 2027 and 28 August 2029), the Outland
@@ -1671,7 +1672,7 @@ Festival (1052), Free T-Shirt Day (1053), Luminous Luminaries (1054), Classic As
 of Hotmogu (1169), Deepwind Dunk (1241), Shado-Pan Showdown (1244), Kalimdor Cup (1395), Eastern
 Kingdoms Cup (1400), Delves Bonus Event (1560), Darkspear Dash (1793), Midnight Dungeon Event (1803)
 and WoW's 22nd Anniversary (1808), which went into `qcHolidays` that day, as did the two cups, in
-the Dragonriding Cups. So the calendar serves Call of the Scarab (638) and The Great Gnomeregan Run
+the Skyriding Cups. So the calendar serves Call of the Scarab (638) and The Great Gnomeregan Run
 (696), which `PENDING` rows of `quest-holiday-decisions.csv` name, and the Kalimdor and Eastern
 Kingdoms Cups, under those IDs.
 

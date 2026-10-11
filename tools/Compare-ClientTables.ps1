@@ -35,7 +35,7 @@ Two entries are compared with the rows whose names match a pattern ($rowPatterns
 the rows of their own name. WoW's Anniversary is a new Holidays row every year, named with the
 year's ordinal ("WoW's 22nd Anniversary" is 1808); the rows named plain "WoW's Anniversary" (590 and
 1587 to 1590) are left out, since the calendar didn't serve them when /qc holidays was run in game
-on 11 October 2026. The Dragonriding Cups are a row per cup, each named "<Region> Cup" (Kalimdor
+on 11 October 2026. The Skyriding Cups are a row per cup, each named "<Region> Cup" (Kalimdor
 1395, Eastern Kingdoms 1400, Outland 1407, Northrend 1429; HolidayNames also has the Pandaria and
 Broken Isles Cups, with no row yet). A row matching the pattern that runs on -Today or later and
 isn't in the entry is a finding: add its ID to the entry. Rows with no date to come, such as past
@@ -58,7 +58,7 @@ if (-not $Build -and -not $ForeverBuild) { throw "Give -Build (retail) and/or -F
 $questLike = 'Quest|POI|UiMap|UIMap|Area|Journal|Campaign|Holiday|ContentTuning|Waypoint|Storyline|Expansion'
 $rowPatterns = @{
     "WoW's Anniversary" = @{ Pattern = "^WoW's \d+(?:st|nd|rd|th) Anniversary$"; Row = "a new year's row" }
-    'Dragonriding Cups' = @{ Pattern = "^(?:[\w'-]+ )+Cup$"; Row = "a cup's row" }
+    'Skyriding Cups' = @{ Pattern = "^(?:[\w'-]+ )+Cup$"; Row = "a cup's row" }
 }
 
 function Get-TableList([string]$build) {

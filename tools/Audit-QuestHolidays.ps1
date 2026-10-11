@@ -59,8 +59,8 @@ function Get-Key([string]$name) { return ($name -replace '[\u2019'']', '').Trim(
 # Names Blizzard's API and our headings give a holiday that qcHolidays spells otherwise.
 $aliases = [ordered]@{ 'Midsummer' = 'Midsummer Fire Festival'; 'Winter Veil' = 'Feast of Winter Veil'
     "Ahn'Qiraj War" = "Ahn'Qiraj War Effort"; 'Invasion' = 'Scourge Invasion'; 'Hearthstone Anniversary' = "Hearthstone's 10th Anniversary"
-    'Kalimdor Cup' = 'Dragonriding Cups'; 'Eastern Kingdoms Cup' = 'Dragonriding Cups'; 'Outland Cup' = 'Dragonriding Cups'
-    'Northrend Cup' = 'Dragonriding Cups'; 'Pandaria Cup' = 'Dragonriding Cups'; 'Broken Isles Cup' = 'Dragonriding Cups' }
+    'Kalimdor Cup' = 'Skyriding Cups'; 'Eastern Kingdoms Cup' = 'Skyriding Cups'; 'Outland Cup' = 'Skyriding Cups'
+    'Northrend Cup' = 'Skyriding Cups'; 'Pandaria Cup' = 'Skyriding Cups'; 'Broken Isles Cup' = 'Skyriding Cups' }
 $byName = @{}; $byEventId = @{}; $holidayOfFlag = @{}
 foreach ($h in $holidays) {
     $byName[(Get-Key $h.Name)] = $h; $holidayOfFlag[$h.Flag] = $h

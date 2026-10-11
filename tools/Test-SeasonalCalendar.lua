@@ -15,7 +15,7 @@ CVar and redraw from the day lists); whether the game really does hasn't been se
 The pins checked are the first ones in the data whose quests all belong to the Lunar Festival, and to
 the Darkmoon Faire, and on retail to WoW's Anniversary, which must follow its yearly row (1808, "WoW's
 22nd Anniversary") and not a per-region row named plain "WoW's Anniversary" (1587, region 4's), which
-the calendar didn't serve when it was checked in game on 11 October 2026, and to the Dragonriding Cups,
+the calendar didn't serve when it was checked in game on 11 October 2026, and to the Skyriding Cups,
 whose one flag must follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429).
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
@@ -79,7 +79,7 @@ local function quietOctober()
 end
 local LUNAR_FESTIVAL = holiday(327, "Lunar Festival", at(10, 2, 6), at(10, 16, 6))
 local ANNIVERSARY = "WoW's Anniversary"
-local CUPS = "Dragonriding Cups"
+local CUPS = "Skyriding Cups"
 local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
 	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
 local function withLockout(events)
@@ -547,9 +547,9 @@ else
 	end
 end
 
-print("The Dragonriding Cups: one flag, so a cup's pin shows while any cup runs")
+print("The Skyriding Cups: one flag, so a cup's pin shows while any cup runs")
 if not first.pins[CUPS] then
-	print("  no pin of the Dragonriding Cups' quests in this game's data: skipped")
+	print("  no pin of the Skyriding Cups' quests in this game's data: skipped")
 else
 	for _, case in ipairs({{nil, false, "out of season"},
 		{holiday(1395, "Kalimdor Cup", at(10, 6, 0), at(10, 20, 0)), true, "with the Kalimdor Cup (1395) running"},
