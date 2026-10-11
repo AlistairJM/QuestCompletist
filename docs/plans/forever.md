@@ -842,6 +842,28 @@ copy taken at 09:57 that morning. Importing them, on the master that has the que
   other direction.
 - The reachability check, the table audit and the pin names find nothing new.
 
+### The addon's own recorder file, first ingest (11 October 2026)
+
+The user's beta file of the addon's recorder (`qcQuestRecorder`, builds 70291 and 70338, 87 records) went
+through `Import-RecordedGivers.ps1` for the first time; the numbers are in
+[quest-giver-recorder.md](quest-giver-recorder.md), "The first real run".
+
+- **The ledger** goes from 121 to 231 Forever rows: 53 givers, 59 spots, 68 offers and 51 turn-ins.
+- **The data is as it was:** 5,097 quests and 1,698 pins; 3,672 quests have a pin and 1,425 have none. The tool
+  writes only retail's pins, and `Import-ForeverData.ps1` then read the probe's file, not the ledger or the
+  addon's, so the addon's notes reached no Forever pin (it reads the ledger since: below).
+- **What they would change:** the tool's rules pointed at Forever's pins by hand, in memory, fill no pin, find
+  nothing for review and add one pin: quest 990 "Trek to Ashenvale", offered by Sentinel Selarin (3694) at
+  Darkshore 39.3, 43.5. She runs in after a quest at Terenthis is handed in; CMaNGOS names her as the quest's
+  starter but has no spawn for her (she is script-spawned), so only a recorded spot can place her. Of the 68 quests the notes show offered, 65 already have a pin, none further than 3
+  points from where its giver stood, and the name of every recorded giver is its pin's. The other two, 6661 and
+  6662 (Monty and Nipsy in the Deeprun Tram), cannot get a pin from the notes: the game named no map there.
+- **The probe's own file says the same and more:** its saved file in the game (11 October) is newer than the
+  copy in `tools\forever_probe_70338` and holds 53 givers against 33, including everything the addon's file
+  holds, so step 10's copy of it should bring quest 990 in by the probe's route (not run); it would also move 25 existing pins by 0.02 to 0.36 map points, because the importer lets a recorded spot win over CMaNGOS's spawn (a reviewer's scratch run, not in this PR).
+- **So that the beta's new givers keep reaching the pins,** the importer now reads the ledger, and both
+  recorders are kept (below).
+
 ### The importer reads the ledger (11 October 2026)
 
 Until now `Import-ForeverData.ps1` took the recorder's givers, spots and offers straight out of the probe's
@@ -1127,6 +1149,9 @@ Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
   from a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by heading. 351 quests carry a holiday,
   none of the 29 has a pin, and the nameless Holidays row 1879, which `/qc holidays` on the beta did not list on 11 October, needs nothing (#288);
   see "Seasonal quests with no holiday".
+- 2026-10-11: the addon's own recorder file from the beta went through the merge tool for the first time: the
+  Forever ledger has 231 rows and the data is as it was (5,097 quests, 1,698 pins); the importer does not read
+  the ledger yet; see "The addon's own recorder file, first ingest".
 - 2026-10-11: the importer reads the recorder ledger for its givers, places and offers, with the recorded-place
   radius at 1.5 map points, and stops when the probe's file holds notes the ledger lacks (step 6d first). No data
   regenerated. A step 10 run on today's ledger moves 1 existing pin by 0.1 of a map point; with the addon's

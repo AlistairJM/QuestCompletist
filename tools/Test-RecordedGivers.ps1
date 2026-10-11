@@ -453,7 +453,8 @@ try {
     $root = New-World 'e15' @('{"map":37,"icon":1,"npc":3701,"name":"Guard Roberts","x":45.3,"y":67.8,"quests":[100]}')
     $names = @('[DNT] Hidden', 'DNT thing', 'TBD something', 'Foo DEPRECATED', 'Test', 'Flight Test', 'Jrz quest', 'Placeholder thing', 'Blank',
         'Paragon of the Light', 'Prey Contract: Foo', 'Conditional Objectives', 'Bonus Objective: Foo', '[WIP] x', 'LFGDungeons 1', 'This Is Not a Quest')
-    $cats = @(170, 173, 191, 290, 1092, 1095, 1130, 1133, 1134, 1232, 1241, 1246, 1346, 1347, 1428, 1429, 1430, 1431, 1514, 1735)
+    $allowedCats = @(1095, 1346, 1428, 1429, 1430, 1735)
+    $heldCats = @(170, 173, 191, 290, 1092, 1130, 1133, 1134, 1232, 1241, 1246, 1347, 1431, 1514)
     $kinds = @('Emissary Quest', 'Hidden Quest', 'Delve Quest', 'Warfront Contribution', 'Envoy', 'Meta Quest', 'Professions', 'Pickpocketing', 'War Mode', 'Tracking', 'Bonus Objective')
     $quests = New-Object System.Collections.Generic.List[string]
     $givers = New-Object System.Collections.Generic.List[string]
@@ -466,9 +467,15 @@ try {
     $blocked = New-Object System.Collections.Generic.List[int]
     $id = 800
     foreach ($nm in $names) { $quests.Add((Q $id $nm)); $blocked.Add($id); Offer-At $id; $id++ }
-    foreach ($c in $cats) { $quests.Add((Q $id "Cat $c" 1 $c)); $blocked.Add($id); Offer-At $id; $id++ }
+    foreach ($c in $heldCats) { $quests.Add((Q $id "Cat $c" 1 $c)); $blocked.Add($id); Offer-At $id; $id++ }
+    $allowedIds = New-Object System.Collections.Generic.List[int]
+    foreach ($c in $allowedCats) { $quests.Add((Q $id "Cat $c" 1 $c)); $allowedIds.Add($id); Offer-At $id; $id++ }
+    $quests.Add((Q $id 'Nobody offers' 1 1346)); $blocked.Add($id); $id++
+    $quests.Add((Q $id 'Test' 1 1095)); $blocked.Add($id); Offer-At $id; $id++
+    $quests.Add((Q $id 'World quest in an allowed category' 1 1735)); $blocked.Add($id); Offer-At $id; $worldKindId = $id; $id++
     $infoRows = New-Object System.Collections.Generic.List[string]
     $taskRows = New-Object System.Collections.Generic.List[string]
+    $taskRows.Add("$worldKindId,99")
     $infoId = 300
     foreach ($k in $kinds) {
         $quests.Add((Q $id "Kind $infoId")); $blocked.Add($id); Offer-At $id
@@ -490,7 +497,11 @@ try {
     Equal $run.Exit 0 'E15: the run succeeds'
     $pins = Get-Pins $root
     $gotBlocked = @($blocked | Where-Object { (Find-Pin $pins $_).Count -gt 0 })
-    Equal ($gotBlocked -join ',') '' 'E15: no internal name, system category or world/bonus/hidden kind gets a pin'
+    Equal ($gotBlocked -join ',') '' 'E15: no internal name, held system category (Prey and Garrison Support among them), world/bonus/hidden kind or quest nobody offers gets a pin, whatever its category'
+    $notAllowed = @($allowedIds | Where-Object { (Find-Pin $pins $_).Count -ne 1 })
+    Equal ($notAllowed -join ',') '' 'E15: a quest a creature offered in World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver''s Headquarters or Weekly Events gets a pin'
+    Equal (@($heldCats + $allowedCats | Sort-Object -Unique).Count) 20 'E15: the held and the allowed categories are the 20 system categories'
+    Check ($run.Report -match 'system category 6') 'E15: the report counts the six quests the allowed categories let in, as a class of their own'
     $missing = @($okIds | Where-Object { (Find-Pin $pins $_).Count -ne 1 })
     Equal ($missing -join ',') '' 'E15: a holiday, Landfall, daily, weekly, repeatable and unkinded task quest does'
 
