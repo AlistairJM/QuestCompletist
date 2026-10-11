@@ -18,11 +18,11 @@ A map not in the table is added when, in order:
      new dungeon has the dungeon's name. This follows the table's convention: Karazhan lists all 17
      of its floors.
 Never added: continent-level and larger maps (UiMap types 0-2); a map pointing at a category that
-isn't defined, or that holds no quests (switching the list to it would show nothing: category 500,
-"Stranglethorn Vale", is empty, and its quests are under the vale's two halves); and a map that
+isn't defined, or that holds no quests (switching the list to it would show nothing: Stranglethorn Vale
+has no category of its own, and its quests are under the vale's two halves); and a map that
 another category's name comes from (qcCategoryUiMapID or a {"map",N} in qcCategoryClientName), or
-whose twin with the same name and parent is one - Acherus 647 and 648 are the Legion class hall,
-not category 429.
+whose twin with the same name and parent is one - Acherus 647 and 648 are the Legion class hall, not a
+category of the plain name (429, removed on 11 October 2026).
 
 Reads tools\UiMap.csv (step 5 downloads it) and tools\UiMapGroupMember.csv, downloaded for -Build
 when it's missing or -Refresh is given.

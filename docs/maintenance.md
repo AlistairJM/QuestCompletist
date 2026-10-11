@@ -642,6 +642,8 @@ changes leaves every file byte-identical. Then run `Test-Localization.lua` (belo
 games. Run it with `-WhatIf` first.
 - The key of a category the client names goes from every locale file, unless code or a heading
   uses it. Should the game ever return no name, the category's English name shows.
+- So does the key of a category taken out of `qcQuestCategories`, unless a category of either game,
+  code or a heading still uses it: an English key nothing uses.
 - A heading the client names keeps its English, as the fallback, but not its translations.
 - A category's entry in `qcMenu.lua` loses its label: the menu names categories through
   `qcCategoryName`, so the label never shows. An indented entry keeps its indent, as
@@ -917,10 +919,22 @@ that names it at the target: the placement rules above find a category through i
 those rows, so a row left behind would file new quests under an ID that no longer exists. Then run
 `Build-CategoryUiMapIDs.ps1` and `Build-CategoryClientNames.ps1` (step 5), which drop its client-name
 row, `Remove-EmptyMenuEntries.ps1`, which drops its menu entry, and `Remove-ConvertedLocaleKeys.ps1`
-with `-WhatIf`, which says whether a locale key is left. To prove that new quests of the zone go to
-the target, put the moved quests back in category 0 in a scratch copy of `data\` and run
-`Place-UncategorisedQuests.ps1 -WhatIf -Explain` with that `-DataDir` and a scratch `-ToolsDir`
-(`-Explain` writes its CSV there).
+(`-WhatIf` first), which removes its locale key if it had one and nothing else uses it. To prove that
+new quests of the zone go to the target, put the moved quests back in category 0 in a scratch copy of
+`data\` and run `Place-UncategorisedQuests.ps1 -WhatIf -Explain` with that `-DataDir` and a scratch
+`-ToolsDir` (`-Explain` writes its CSV there).
+
+`Remove-EmptyMenuEntries.ps1` leaves the row of a category it empties, so an entry can come back with
+one line, and such rows pile up as unused definitions: no quest carries the ID, no menu entry names it, no
+row of `qcAreaIDToCategoryID` has it as a value, and nothing else names it (`qcCategoryClientName`,
+`QC_ZONE_EXTRA_CATEGORIES` in `qcContinentPins.lua`, the `systemCategories` list of
+`Build-QuestLocationData.ps1` and `Import-RecordedGivers.ps1`, any other category number in `tools\`).
+On 11 October 2026 the 82 that had piled up were removed in one pass
+([plans/menu-review.md](plans/menu-review.md), question 31): delete the rows, run the generators and
+`Remove-ConvertedLocaleKeys.ps1` as above, and prove it with a Lua dump of the menu and of
+`qcQuestCategories` before and after, where only the removed rows may differ. `Audit-DungeonCategories.ps1`
+then says "no category" instead of "not in the menu" for a dungeon whose unused category went, and
+`Place-UncategorisedQuests.ps1` files a quest of an undefined category in category 0.
 
 ### 7. Quests that may no longer be obtainable
 
@@ -1206,7 +1220,7 @@ no text, placeholders that differ from the English, and translations that don't 
 reports text to remove. `Remove-ConvertedLocaleKeys.ps1` (step 5) removes all but the last:
 - an English key nothing uses, in either game: no code names it, no menu heading shows it, and no
   category falls back to it. A category the client can't name falls back to the key made of its
-  English name's letters and digits, upper-cased, such as `STRANGLETHORNVALE`; one it names needs
+  English name's letters and digits, upper-cased, such as `AHNQIRAJWAR`; one it names needs
   no key;
 - a translation of a key that only headings the client names show;
 - a label on a category's entry in a menu, which never shows;
