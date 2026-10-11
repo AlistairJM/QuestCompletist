@@ -14,6 +14,9 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
   - -GiverFile and -ZoneFile, docs\plans\forever-quest-givers.csv and forever-quest-zones.csv:
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
     can't place. A listed NPC stands where CMaNGOS or the recorder puts it.
+  - -HolidayFile, docs\plans\forever-quest-holiday-decisions.csv: the holiday of quests no other
+    source ties to one, with the evidence for each (Quest, Name, Holiday, Decision, Evidence). Holiday
+    is a name in qcHolidays in qcCore.lua and Decision is SET.
 
 The game wins wherever it speaks. Title, level, minimum level, zone, recurrence and race restrictions
 come from the cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC
@@ -66,7 +69,10 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             all its givers, NPCs and objects, stand only during. Events with no holiday of their
             own go by their description: the Darkmoon Faire's building days, the fishing contest's
             announcers and judges, and the Scourge Invasion and Ahn'Qiraj War Effort, which the
-            calendar doesn't show, so the addon keeps their quests off the map.
+            calendar doesn't show, so the addon keeps their quests off the map. A quest under the
+            war effort's own heading (Ahn'Qiraj War) is its, and so is one CMaNGOS files under
+            Invasion; Forever's own Invasion quest, which CMaNGOS lacks, is not. -HolidayFile's
+            holiday wins over all of these, and the review says when another source disagrees.
   prereq    CMaNGOS's previous quest, or the quest whose follow-up this is in the cache, or else the quest
                     before it in its quest line (QuestLineXQuest's order), when the previous step is handed in on the
                     map this one starts on (the client's QuestPOIBlob points -1 and 32). A line that doesn't
@@ -125,6 +131,7 @@ param(
     [string]$CmangosDump = "",
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
     [string]$ZoneFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-zones.csv'),
+    [string]$HolidayFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-holiday-decisions.csv'),
     [string]$ReviewFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [switch]$WhatIf
@@ -179,7 +186,9 @@ $holidayByHolidayId = @{ 372 = 1; 201 = 2; 409 = 4; 141 = 8; 324 = 16; 1405 = 16
 # fishing contest's announcers and judges, and two world events the calendar doesn't show.
 $holidayByEventName = [ordered]@{ '^Darkmoon Faire' = 8192; '^Fishing Extravaganza' = 65536; '^Scourge Invasion' = 16384
     '^AQ War Effort' = 32768 }
-$holidayBySort = @{ (-364) = 8192; (-366) = 128; (-369) = 256 }
+$holidayBySort = @{ (-364) = 8192; (-365) = 32768; (-366) = 128; (-369) = 256 }
+# Not by the game's heading: Forever's own Invasion quest (98471) isn't the Scourge Invasion's.
+$holidayByCmangosSort = @{ (-368) = 16384 }
 $seasonalSort = -22
 $reputationSort = -367; $aqWarSort = -365; $aqWarEffort = 32768
 $allianceRaces = 77
@@ -391,6 +400,18 @@ $starterNpcs = @{}; foreach ($list in $creatureStarters.Values) { foreach ($npc 
 $handStarters = @{}
 foreach ($row in Import-Csv $GiverFile) { $handStarters[[int]$row.Quest] += @([int]$row.Npc); $starterNpcs[[int]$row.Npc] = $true }
 $handZone = @{}; foreach ($row in Import-Csv $ZoneFile) { $handZone[[int]$row.Quest] = [int]$row.Zone }
+$holidayFlagByName = @{}
+$qcCore = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\QuestCompletist\qcCore.lua'))
+foreach ($entry in [regex]::Matches($qcCore, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=')) { $holidayFlagByName[$entry.Groups[2].Value] = [int]$entry.Groups[1].Value }
+if (-not $holidayFlagByName.Count) { throw "qcHolidays wasn't found in qcCore.lua." }
+$handHoliday = @{}
+foreach ($row in Import-Csv $HolidayFile) {
+    if ($row.Decision -ne 'SET') { throw "$HolidayFile gives quest $($row.Quest) the decision '$($row.Decision)': it must be SET." }
+    if ($row.Quest -notmatch '^\d+$') { throw "$HolidayFile has a row whose quest, '$($row.Quest)', is not a number." }
+    if (-not $holidayFlagByName.ContainsKey($row.Holiday)) { throw "$HolidayFile gives quest $($row.Quest) the holiday '$($row.Holiday)', which qcHolidays in qcCore.lua lacks." }
+    if ($handHoliday.ContainsKey([int]$row.Quest)) { throw "$HolidayFile lists quest $($row.Quest) twice." }
+    $handHoliday[[int]$row.Quest] = $holidayFlagByName[$row.Holiday]
+}
 $creatureEnders = @{}; $enderNpcs = @{}
 foreach ($line in $dump.creature_involvedrelation) {
     $f = $line.Split("`t")
@@ -576,11 +597,17 @@ foreach ($id in $ids) {
     elseif ($classBySort.ContainsKey($category)) { $class = $classBySort[$category] }
     $skill = if ($m -and $m.Skill) { $m.Skill } elseif ($skillBySort.ContainsKey($category)) { $skillBySort[$category] } else { 0 }
     $profession = if ($professionBySkill.ContainsKey($skill)) { $professionBySkill[$skill] } else { 0 }
-    $holiday = if ($questHoliday.ContainsKey($id)) { $questHoliday[$id] } elseif ($holidayBySort.ContainsKey($category)) { $holidayBySort[$category] } else { 0 }
+    $holiday = if ($questHoliday.ContainsKey($id)) { $questHoliday[$id] } elseif ($holidayBySort.ContainsKey($category)) { $holidayBySort[$category] }
+        elseif ($m -and $holidayByCmangosSort.ContainsKey($m.Zone)) { $holidayByCmangosSort[$m.Zone] } else { 0 }
     if (-not $holiday) {
         $flags = @(@(foreach ($npc in $creatureStarters[$id]) { if ($npcHoliday.ContainsKey($npc)) { [int]$npcHoliday[$npc] } }) +
             @(foreach ($object in $objectStarters[$id]) { if ($objectHoliday.ContainsKey($object)) { [int]$objectHoliday[$object] } }) | Sort-Object -Unique)
         if ($flags.Count -eq 1 -and $flags[0]) { $holiday = $flags[0] }
+    }
+    if ($handHoliday.ContainsKey($id)) {
+        if ($holiday -and $holiday -ne $handHoliday[$id]) { Add-Review 'hand-kept holiday differs from the other sources' $id $handHoliday[$id] "$title (they say flag $holiday)" }
+        elseif ($holiday) { Add-Review 'hand-kept holiday not needed: another source gives it' $id $holiday $title }
+        $holiday = $handHoliday[$id]
     }
     if ($category -eq $reputationSort -and $holiday -eq $aqWarEffort) {
         $category = $aqWarSort
@@ -796,6 +823,7 @@ foreach ($id in ($records.Keys | Sort-Object)) {
     }
 }
 foreach ($quest in $handStarters.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-listed quest not imported' $quest ($handStarters[$quest] -join ', ') '' } }
+foreach ($quest in $handHoliday.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-kept holiday for a quest not imported' $quest $handHoliday[$quest] '' } }
 
 # A heading that isn't a place gives way to the hand-kept zone, else the zone of the quest's pins' map,
 # the most pins first, else that of the NPC it's handed in to, else CMaNGOS's zone.
