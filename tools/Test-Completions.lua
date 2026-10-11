@@ -296,7 +296,7 @@ else
 	end
 	local function snatchLine()
 		lines = {}
-		setmetatable({PinData = shaw, GetCenter = function() return 100, 100 end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		setmetatable({PinData = shaw, GetCenter = function() return 100, 100 end, GetMap = function() end}, {__index = env.qcPinMixin}):OnMouseEnter()
 		for _, text in ipairs(lines) do
 			if text:find("Snatch and Grab", 1, true) then return text end
 		end
@@ -326,7 +326,7 @@ else
 	end
 	local function pinLine(pin, name)
 		lines = {}
-		setmetatable({PinData = pin, GetCenter = function() return 100, 100 end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		setmetatable({PinData = pin, GetCenter = function() return 100, 100 end, GetMap = function() end}, {__index = env.qcPinMixin}):OnMouseEnter()
 		for _, text in ipairs(lines) do
 			if text:find(name, 1, true) then return text end
 		end

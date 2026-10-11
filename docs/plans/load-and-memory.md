@@ -202,6 +202,21 @@ Around 38 places read or write it today.
     and it is the design the user approved.
   - Retail's file gains an empty table (22 bytes), and its loaded size is unchanged: 15,174.0 KB
     for the whole addon before and 15,173.5 KB after.
+- 2026-10-11, retail's `qcQuestMinLevel` is filled: 1,623 entries (`Apply-QuestMinLevels.ps1`; the quests'
+  minimum levels from the API and the client's level ranges, [data-structure.md](data-structure.md)).
+  Measured on `qcQuestData.lua` alone (Lua 5.1 on this PC, 32-bit; `dofile` in a fresh state, memory
+  after two full collections; load time the median of 8 runs of 20 loads, in three before-and-after pairs).
+  The first measurement had 1,628 entries, five of them the 0s of quests on tuning 0 that the user chose to
+  leave as they were; the bytes are recounted for 1,623 and the memory measured again:
+  - The file goes from 2,373,371 to 2,394,329 bytes (+20,958, +0.9%): a line of about 13 bytes for each
+    entry.
+  - Loaded, from 9,175.8 to 9,239.8 KB (+64.0 KB, +0.7%): a hash part of 2,048 slots of 32 bytes, the same
+    for 1,623 keys as for 1,628 (both files load to the same size). Forever's 4,180 keys cost 256 KB, a
+    hash part of 8,192, the same 32 bytes a slot.
+  - Loading takes 65.1 to 66.2 ms before and 67.3 to 67.8 ms after (+1.5 to 2.2 ms), timed with the 1,628
+    entries and not again: five lines fewer are within the run-to-run noise.
+  - The whole addon on retail's TOC and WoW's 64-bit Lua were not measured; the table is a keyed table of
+    numbers, and +64 KB is under 0.5% of the 15,174 KB the whole addon took.
 
 ## The quest giver recorder (8 October 2026)
 
@@ -221,3 +236,15 @@ The code itself adds a file of about 590 lines and nothing at login but one pass
 tables to check the shape of each key and value. In the game: the cost of an event is two small
 list calls, one GUID read, one map position and a few string operations on at most two records.
 Today's account file is about 1 KB. The in-game memory is to be measured in the recorder's session.
+
+## The task quests (11 October 2026)
+
+Step 6b of the sweep added 506 task quests to retail's data ([maintenance.md](../maintenance.md), step 6b), 35,023 to 35,529 (+1.4%), 18 of them with a profession and 25 with a holiday. Measured as above (Lua 5.1 on this PC, 32-bit, memory after a full collection, three loads of each file):
+
+| | Before | After | |
+|---|---|---|---|
+| qcQuestData.lua on disk | 2,373,371 bytes | 2,405,155 bytes | +31,784 (+1.3%) |
+| Loaded (all the quest tables) | 13,660 KB | 13,803 KB | +143 KB (+1.0%) |
+| Load (parse and run) | 56 to 61 ms | 64 to 65 ms | about 7 ms more |
+
+In the game, with the 1.8 times above, that is about 0.26 MB of the 35 to 40 MB the addon takes. The structures built later grow in proportion, by an estimate and not a measurement: the category index (0.8 MB) and the upper-cased names a first search builds (3.2 MB) by about 1.4% each, 56 KB together. qcPinDB.lua is untouched, as the new quests have no pins. Of the 506, 297 (world quests, weeklies and dailies) are hidden from a default list, and the other 209 show in 22 categories that already existed, 26 of them in Uncategorized.
