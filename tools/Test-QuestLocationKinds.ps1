@@ -2,8 +2,8 @@
 Checks which task quests Build-QuestLocationData.ps1 places at their start, on made-up client tables in a
 scratch folder: nothing in the checkout is written and nothing is downloaded. A task quest (a row of
 QuestV2CliTask) is placed unless its QuestInfoID is a kind of $noPinKinds, a quest that has a pin already
-is placed whatever its kind, the run stops at a QuestInfo named World Quest that the table lacks, and
-deleting a line of the table (271, 281) is all it takes to pin that kind.
+is placed whatever its kind, the run stops at a QuestInfo named World Quest that the table lacks, Dragonrider
+Racing (281) is placed and Calling Quest (271) is held, and deleting the 271 line is all it takes to pin the callings.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLocationKinds.ps1
 
@@ -81,8 +81,9 @@ try {
     $root = New-World 'base'
     $r = Invoke-Builder $root
     Equal $r.Exit 0 "K1: the run succeeds ($($r.Text.Substring(0, [math]::Min(600, $r.Text.Length)))"
-    Equal $r.Placed '1000,1001,1005,1009,1011,1012,1013' 'K1: a quest that is no task, and task quests of kind 0, Combat Ally (266), Heroic (85), World Boss (289) and one QuestInfo has no row for, are placed; the pinned world quest too'
-    Check ($r.Text -match 'left out as a kind in \$noPinKinds: 7') 'K1: seven task quests are left out: a world quest, an epic one, a calling, racing, a threat wrapper, a bonus objective and a hidden quest'
+    Equal $r.Placed '1000,1001,1004,1005,1009,1011,1012,1013' 'K1: a quest that is no task, and task quests of kind 0, Dragonrider Racing (281), Combat Ally (266), Heroic (85), World Boss (289) and one QuestInfo has no row for, are placed; the pinned world quest too'
+    Check ($r.Text -match 'left out as a kind in \$noPinKinds: 6') 'K1: six task quests are left out: a world quest, an epic one, a calling, a threat wrapper, a bonus objective and a hidden quest'
+    Check ($r.Text -match 'placed at their start with no pin yet: 6\r?\n(.*\r?\n)*?\s+kind 281 \(Dragonrider Racing\): 1\r?\n') 'K1: six task quests are newly placed, the racing one among them'
 
     $root = New-World 'unknown-world-quest' "999,Fancy World Quest,2,256,0`r`n"
     $r = Invoke-Builder $root
@@ -97,16 +98,13 @@ try {
     [IO.File]::WriteAllText($script, $text.Replace($line + "`r`n", '').Replace($line + "`n", ''))
     $r = Invoke-Builder $root
     Equal $r.Exit 0 'K3: the run succeeds without the line'
-    Equal $r.Placed '1000,1001,1003,1005,1009,1011,1012,1013' 'K3: deleting the line pins the callings and nothing else'
+    Equal $r.Placed '1000,1001,1003,1004,1005,1009,1011,1012,1013' 'K3: deleting the line pins the callings and nothing else'
 
-    $root = New-World 'no-racing'
-    $script = "$root\scripts\Build-QuestLocationData.ps1"
-    $text = [IO.File]::ReadAllText($script)
-    $line = "    281 = 'Dragonrider Racing'"
-    Equal ([regex]::Matches($text, [regex]::Escape($line)).Count) 1 'K4: the table has one line for racing'
-    [IO.File]::WriteAllText($script, $text.Replace($line + "`r`n", '').Replace($line + "`n", ''))
-    $r = Invoke-Builder $root
-    Equal $r.Placed '1000,1001,1004,1005,1009,1011,1012,1013' 'K4: deleting the line pins racing and nothing else'
+    $text = [IO.File]::ReadAllText($Builder)
+    Equal ([regex]::Matches($text, '(?m)^\s+281 = ').Count) 0 'K4: the table has no line for Dragonrider Racing'
+    foreach ($held in "265 = 'Hidden Quest'", "268 = 'Threat Wrapper'", "271 = 'Calling Quest'", "283 = 'Bonus Objective with Completion Toast'") {
+        Equal ([regex]::Matches($text, '(?m)^\s+' + [regex]::Escape($held) + '\s*$').Count) 1 "K4: the table holds $held"
+    }
 
     $root = New-World 'no-task-table'
     Remove-Item "$root\tools\QuestV2CliTask.csv"

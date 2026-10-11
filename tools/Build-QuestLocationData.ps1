@@ -38,8 +38,8 @@ $toolsDir = $ToolsDir
 # The task quests (QuestV2CliTask, by its QuestInfoID) that get no pin; every other task quest is placed like any
 # quest of ours. Every QuestInfo kind named "World Quest" is here, and the run stops at one that isn't, so a kind
 # a new build adds can't start getting pins unseen. 265 is a hidden tracker, 268 an assault wrapper and 283 a
-# bonus objective, none of them named "World Quest". 271 and 281 are kept out until the user decides: deleting
-# their line pins that kind (docs/plans/open-items.md, decision 2).
+# bonus objective, none of them named "World Quest". 271 is kept out until it is known whether the game still
+# offers callings: deleting its line pins that kind (docs/plans/open-items.md, decision 2).
 $noPinKinds = [ordered]@{
     109 = 'World Quest'
     110 = 'Epic World Quest'
@@ -79,7 +79,6 @@ $noPinKinds = [ordered]@{
     268 = 'Threat Wrapper'
     271 = 'Calling Quest'
     278 = 'PvP Elite World Quest'
-    281 = 'Dragonrider Racing'
     283 = 'Bonus Objective with Completion Toast'
     286 = 'Capstone World Quest'
     295 = 'Prey World Quest'

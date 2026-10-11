@@ -30,8 +30,8 @@ On retail's pins (data\pins.jsonl) it does two things, and nothing else:
     (a task of those kinds), flagged unavailable, in a system category, or named like a test does not.
     The other holds the TrinityCore pass puts on a quest (not in QuestV2, Landfall, a holiday, a profession,
     a quest type other than 0, 1, 2, 4 and 128) are waived, because a creature offering the quest answers
-    them; the report counts the quests by class. So is its hold on a calling, racing or assault-wrapper task
-    (the kinds of $noPinKinds in Build-QuestLocationData.ps1 that the test above doesn't name).
+    them; the report counts the quests by class. So is its hold on a calling or assault-wrapper task (the
+    kinds of $noPinKinds in Build-QuestLocationData.ps1 that the test above doesn't name).
 It never moves a pin, never changes an ID or a name that is there, never takes a quest off a pin, and
 saves no pin if any of that would happen. A fill that would put two pins of one NPC (or of one object name)
 1.5 points or less apart, but not on one spot, is not made: the pipeline would merge them and move one pin's
