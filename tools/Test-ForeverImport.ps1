@@ -180,6 +180,8 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     Write-Lines "$t\QuestV2-$Build.csv" (@('ID') + @($quests.Keys | Sort-Object))
     Write-Lines "$t\AreaTable-$Build.csv" @('ID,ZoneName,AreaName_lang,ContinentID,ParentAreaID', '10,Alpha,Alpha Zone,1,0')
     Write-Lines "$t\ChrRaces-$Build.csv" @('ID,Name_lang', '1,Human')
+    Write-Lines "$t\ChrClasses-$Build.csv" @('ID,Name_lang', '1,Warrior', '2,Paladin', '3,Hunter', '4,Rogue', '5,Priest', '7,Shaman', '8,Mage', '9,Warlock', '11,Druid')
+    Write-Lines "$t\ItemSparse-$Build.csv" @('ID,StartQuestID,AllowableClass')
     Write-Lines "$t\QuestSort-$Build.csv" @('ID,SortName_lang,UiOrderIndex,Flags', '1,Epic,0,0')
     Write-Lines "$t\Map-$Build.csv" @('ID,MapName_lang,InstanceType,AreaTableID', '1,Kalimdor,0,0')
     Write-Lines "$t\UiMapAssignment-$Build.csv" @('UiMin_0,UiMin_1,UiMax_0,UiMax_1,Region_0,Region_1,Region_2,Region_3,Region_4,Region_5,ID,UiMapID,OrderIndex,MapID,AreaID',
@@ -200,6 +202,8 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
     Write-Lines "$root\zones.csv" @('Quest,Zone,Name,Note')
     Write-Lines "$root\holidays.csv" @('Quest,Name,Holiday,Decision,Evidence')
+    Write-Lines "$root\links.csv" @('Quest,Name,Link,Other,Decision,Evidence')
+    Write-Lines "$root\classes.csv" @('Quest,Name,Class,Decision,Evidence')
     # Retail's data (step 6d reads it) and Forever's data from an earlier import, which has every quest but 9006.
     [IO.File]::WriteAllText("$root\data\quests.jsonl", '{"id":100,"name":"Retail","level":10,"zone":"","category":10,"type":1,"faction":2,"race":67108863,"class":8191}' + "`n")
     [IO.File]::WriteAllText("$root\data\pins.jsonl", '{"map":84,"icon":1,"name":"Retail Giver","x":50,"y":50,"quests":[100]}' + "`n")
@@ -230,7 +234,7 @@ function Invoke-MergeTool([string]$root, [string[]]$more = @()) {
 function Invoke-Importer([string]$root, [string[]]$more = @(), [string]$ledger = "$root\ledger.csv") {
     return Run-Script $Importer (@('-ToolsDir', "$root\tools", '-DataDir', "$root\data\forever", '-Build', $Build, '-ProbeFile', "$root\tools\forever_probe_70900\QCForeverProbe.lua",
         '-CmangosDump', "$root\tools\ClassicDB_test.sql.gz", '-CacheFile', "$root\tools\forever_quest_cache_$Build.jsonl",
-        '-DecisionsFile', "$root\decisions.csv", '-GiverFile', "$root\givers.csv", '-ZoneFile', "$root\zones.csv", '-HolidayFile', "$root\holidays.csv",
+        '-DecisionsFile', "$root\decisions.csv", '-GiverFile', "$root\givers.csv", '-ZoneFile', "$root\zones.csv", '-HolidayFile', "$root\holidays.csv", '-LinkFile', "$root\links.csv", '-ClassFile', "$root\classes.csv",
         '-LedgerFile', $ledger, '-AddonDir', "$root\addon", '-ReviewFile', "$root\review.csv", '-RemovalsFile', "$root\removals.csv", '-LuaExe', $LuaExe) + $more)
 }
 
