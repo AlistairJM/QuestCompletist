@@ -153,7 +153,8 @@ table's for 4,125 of 4,125.
     50341, 54255, 54256, 89346: level 5, 35, 50, 50 and 11); the other 12 are level 0 and got nothing
     either way. Nothing in the data can test that rule: no quest the API gives a minimum for is on
     tuning 0 in the cache or the task table, and on tuning 0 TrinityCore falls back to the quest's own
-    `MinLevel`, which our files do not hold. An API minimum would still decide for a quest on tuning 0.
+    `MinLevel`, which our files do not hold; TrinityCore's own table even puts 67 quests the API gives a
+    minimum for on tuning 0 (below). An API minimum would still decide for a quest on tuning 0.
     `Compare-QuestLevels.ps1` counts the 17 among the quests no source speaks for (class N) and fails if
     one of them holds a `minLevel` again.
   - **Cost:** `qcQuestData.lua` goes from 2,373,371 to 2,394,329 bytes (+20,958, +0.9%); loaded, +64.0 KB

@@ -111,7 +111,8 @@ content tuning, and holds 1,623 of the 35,023 quests (11 October 2026). Retail's
 refreshed: of the 30,066 quests whose API record gives a minimum it equals the API's for 28,477, is a 0
 against a 1 for 191 (the same thing), and differed for 1,398, which now have the API's number in the
 table; 463 quests no source speaks for, and one whose tuning has a minimum beyond the level cap, keep
-what they had, and the 17 on tuning 0 have no entry, so their own level is their gate. Forever's `level` is the quest's own level, so its table holds 4,194 of its 5,097
+what they had, and the 17 on tuning 0 have no entry, so their own level is their gate. Forever's
+`level` is the quest's own level, so its table holds 4,194 of its 5,097
 quests (10 October 2026). The importer fills it from the game's quest cache, and from CMaNGOS where
 the game hasn't answered. The code doesn't ask which game it is on, only whether the table has an
 entry.
@@ -591,7 +592,8 @@ Where a minimum comes from (`QuestLevels.ps1`), the first that has one:
   is taken away) and its own level stays its gate, as before step 2g. That is the user's decision of 11
   October 2026: no quest the API gives a minimum for is on tuning 0 in the cache or the task table, and on
   tuning 0 TrinityCore falls back to the quest's own `MinLevel`, which our files don't hold, so nothing
-  can test that tuning 0 means no minimum. An API minimum would still decide for a quest on tuning 0.
+  can test that tuning 0 means no minimum; TrinityCore's own table even puts 67 quests the API gives a
+  minimum for on tuning 0 (below). An API minimum would still decide for a quest on tuning 0.
 - **Nothing**, for a quest in neither the cache nor the task table, or on a tuning the formula can't
   vouch for: it keeps what it had.
 

@@ -5,7 +5,8 @@ checkout is read or written (but the scripts themselves) and nothing is download
 quest for each way a minimum can come out: the API's and the formula's, an API record with no minimum,
 tuning 0 (no minLevel, a 0 held there taken away, an API minimum still used), no source, a 0 against a
 1, a minLevel that stays, goes or changes, a tuning the table has no row for, an offset type nobody
-knows, a tuning the API contradicts, and the cache's tuning against the task table's. The rest changes one thing at a time: the formula's agreement against the thresholds,
+knows, a tuning the API contradicts, and the cache's tuning against the task table's. The rest changes
+one thing at a time: the formula's agreement against the thresholds,
 -WhatIf and -Check, a second run, quests added later, the baseline of Compare-QuestLevels.ps1, and the
 download of the table.
 
@@ -326,7 +327,7 @@ $r = Invoke-Tool $Compare $regress
 Equal $r.Exit 1 'C4: a quest that matched in the baseline and does not now fails the run'
 Has $r.Text 'D: 1 now, 0 in the baseline; 1 new, 0 gone' 'C4: it is the one new quest in class D'
 Has $r.Text 'new: 1 Quest 1: gate 20, api says 10 (level 20)' 'C4: and is named, with the gate, the source and the level'
-Has $r.Text 'FAILED: 1 quests that matched their sources in the baseline do not now' 'C4: and the failure says why'
+Has $r.Text 'FAILED: 1 quests are new in class D' 'C4: and the failure says why'
 $r = Invoke-Tool $Compare $regress @{ UpdateBaseline = $true }
 Equal $r.Exit 1 'C5: -UpdateBaseline still reports the run it records'
 $r = Invoke-Tool $Compare $regress

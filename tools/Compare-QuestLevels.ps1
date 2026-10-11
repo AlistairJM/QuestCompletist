@@ -103,7 +103,7 @@ if ($failed) {
     $reasons = @()
     if (-not $formula.Ok) { $reasons += "the formula no longer reproduces the API's minimums" }
     $newD = @($now.D | Where-Object { -not $baseline.D.Contains($_) })
-    if ($newD.Count -gt 0) { $reasons += "$($newD.Count) quests that matched their sources in the baseline do not now (Apply-QuestMinLevels.ps1 -WhatIf says what it would set)" }
+    if ($newD.Count -gt 0) { $reasons += "$($newD.Count) quests are new in class D, their minLevel not what their sources say (Apply-QuestMinLevels.ps1 -WhatIf says what it would set)" }
     Write-Output ("FAILED: " + ($reasons -join '; '))
     exit 1
 }
