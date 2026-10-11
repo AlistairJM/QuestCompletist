@@ -88,6 +88,12 @@ again.
   If so, a `prereq` `REMOVE` row each. The warrior, mage, Silithus and Call of Earth rows rest on
   Questie's issues and Wowhead's comments and are checked offline by `Test-Completions.lua`
   ([forever.md](forever.md), "CMaNGOS's other links, reviewed against first-hand reports").
+- **CMaNGOS's other requirements on Forever** (11 October 2026, stacked on the three above; data, and a
+  small change to the quest window's breadcrumb notice on both games, untried in game, so not for a
+  release until tried or the user says so). One look on the beta: at In Search of Anthion (8929) or
+  Taming the Beast, the notice counts only the lead-ins this character can take. The 119 prerequisites
+  and 141 lead-ins closed by their next quest come from CMaNGOS and are checked offline by
+  `Test-Completions.lua` ([forever.md](forever.md), "The rest of CMaNGOS's requirements").
 - **Two retail breadcrumbs that close only once all their quests are done** (found 11 October 2026, data
   from 6 October). Blizzard's API keeps 65890 The Nelthazan Ruins offered while any of 65891, 65893 or
   66719 is still to do, and 66261 A Minor Setback while any of 66262, 66263 or 66264 is; our breadcrumb
@@ -252,7 +258,8 @@ again.
   lead-in the server requires, and an `ExclusiveGroup` a choice it doesn't enforce. The level 10 warrior
   and mage groups, Securing the Supply Lines, Call of Earth and 14 prerequisites were reviewed and
   corrected on 11 October 2026 ([forever.md](forever.md), "CMaNGOS's other links, reviewed against
-  first-hand reports"). Left: the rest of the 85 groups and 139 breadcrumbs, which no report has
+  first-hand reports"). Left: the rest of the 85 groups and 280 breadcrumbs (141 of them, since the
+  same day, the quests CMaNGOS's next quest in the chain closes), which no report has
   questioned yet; 24 quests whose prerequisite is their own breadcrumb, from the cache's next quest,
   that no report settles (11, 276, 297, 466, 729, 844, 870, 1085, 1338, 1420, 1473, 1501, 1688, 1699,
   1716, 1758, 1824, 1938, 1960, 2038, 2040, 2922, 2924, 2930); Great-father Winter's 6961, which
@@ -277,6 +284,13 @@ again.
 
 ## Code to finish
 
+- **Quests that need another in the log, on Forever** (the user's decision, 11 October 2026: the next
+  pull request). 35 quests can be taken only while another quest is in the log (CMaNGOS's negative
+  `PrevQuestId`), 10 of them one-time, and show white meanwhile. The shape: a keyed table,
+  `qcQuestNeedsInLog` [quest] = the quest that must be in the log, read by shared code: grey unless that
+  quest is in the log, and a one-time one ticked once that quest is handed in. Forever's is filled from
+  CMaNGOS, retail's empty for now (TrinityCore has 26 such links) ([forever.md](forever.md), "The rest
+  of CMaNGOS's requirements").
 - **README** says retail has "over 15,000" quest-giver pins and Forever "around 1,700"; check both at
   each release.
 
