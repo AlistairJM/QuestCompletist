@@ -13,7 +13,9 @@ a filter whose CVar is false, the way Blizzard's window needs the game to (its c
 CVar and redraw from the day lists); whether the game really does hasn't been seen in game.
 
 The pins checked are the first ones in the data whose quests all belong to the Lunar Festival, and to
-the Darkmoon Faire.
+the Darkmoon Faire, and on retail to WoW's Anniversary, which must follow its yearly row (1808, "WoW's
+22nd Anniversary") and not a per-region row named plain "WoW's Anniversary" (1587, region 4's), which
+the calendar didn't serve when it was checked in game on 11 October 2026.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua
@@ -75,6 +77,7 @@ local function quietOctober()
 	}
 end
 local LUNAR_FESTIVAL = holiday(327, "Lunar Festival", at(10, 2, 6), at(10, 16, 6))
+local ANNIVERSARY = "WoW's Anniversary"
 local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
 	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
 local function withLockout(events)
@@ -278,7 +281,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	for mapId in pairs(env.qcPinDB) do mapIds[#mapIds + 1] = mapId end
 	table.sort(mapIds)
 	ctx.pins = {}
-	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire"}) do
+	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY}) do
 		for _, mapId in ipairs(mapIds) do
 			for _, pin in ipairs(env.qcPinDB[mapId]) do
 				local allOfIt = #pin[6] > 0
@@ -290,7 +293,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 				end
 			end
 		end
-		assert(ctx.pins[holidayName], "no pin of the " .. holidayName .. "'s quests in the data")
+		assert(ctx.pins[holidayName] or holidayName == ANNIVERSARY, "no pin of the " .. holidayName .. "'s quests in the data")
 	end
 	ctx.pin = ctx.pins["Lunar Festival"]
 	return ctx
@@ -517,6 +520,29 @@ do
 	ctx.pin = ctx.pins["Darkmoon Faire"]
 	ctx.openMap()
 	check("ticked again, the Darkmoon Faire isn't running, so its pin is hidden", not ctx.pinShown(), "answer: " .. ctx.active())
+end
+
+print("WoW's Anniversary: its yearly row shows its pins, a per-region row doesn't")
+if not first.pins[ANNIVERSARY] then
+	print("  no pin of WoW's Anniversary's quests in this game's data: skipped")
+else
+	local anniversary = {
+		yearly = holiday(1808, "WoW's 22nd Anniversary", at(10, 5, 10), at(10, 26, 10)),
+		perRegion = holiday(1587, "WoW's Anniversary", at(10, 5, 10), at(10, 26, 10)),
+	}
+	for _, case in ipairs({{nil, false, "out of season"}, {"perRegion", false, "with only the per-region row 1587 running"},
+		{"yearly", true, "with the yearly row 1808 running"}}) do
+		local events = quietOctober()
+		if case[1] then events[#events + 1] = anniversary[case[1]] end
+		local ctx = load(withLockout(events))
+		ctx.login()
+		ctx.calendar.reply()
+		ctx.flush()
+		ctx.pin = ctx.pins[ANNIVERSARY]
+		ctx.openMap()
+		check(string.format("%s, the anniversary's pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
+			ctx.pinShown() == case[2], "answer: " .. ctx.active())
+	end
 end
 
 print("The game has none of the filters' CVars")

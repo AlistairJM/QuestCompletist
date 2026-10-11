@@ -324,6 +324,62 @@ local function qcCampaignOf(questId, storylineId)
     return info.name, chapter, #chapters
 end
 
+local function qcIsText(value)
+    return type(value) == "string" and not (issecretvalue and issecretvalue(value)) and value ~= ""
+end
+
+local function qcReadStorylineName(questId, storylineId)
+    local info = C_QuestLine.GetQuestLineInfo(questId)
+    if info and info.questLineID == storylineId then return info.questLineName end
+end
+
+-- The storyline's name in the player's language. The game names the one quest line it holds the quest
+-- in, which may be a larger one than ours (the smallest), so its name is taken only when that line is
+-- ours; otherwise, or when it says nothing, ours.
+local function qcStorylineName(questId, storylineId, storedName)
+    if C_QuestLine and C_QuestLine.GetQuestLineInfo then
+        local ok, name = pcall(qcReadStorylineName, questId, storylineId)
+        if ok and qcIsText(name) then return name end
+    end
+    return storedName
+end
+
+local function qcReadClassificationText(questId, questType, hasCampaign, hasStoryline)
+    local classification = C_QuestInfoSystem.GetQuestClassification(questId)
+    local info = QuestUtil.GetQuestClassificationInfo(classification)
+    if not info then return nil end
+    local classes = Enum.QuestClassification
+    if (classification == classes.Campaign and hasCampaign) or (classification == classes.Questline and hasStoryline)
+            or (classification == classes.Recurring and qcRecurringQuestIcon(questId, questType)) then
+        return nil
+    end
+    return info.text
+end
+
+local function qcReadTagText(questId)
+    local info = C_QuestLog.GetQuestTagInfo(questId)
+    if info and QuestUtils_GetQuestTagAtlas(info.tagID, info.worldQuestType) then return info.tagName end
+end
+
+-- What the game's own quest log legend says of a quest, in the player's language: its classification
+-- (Important, Legendary, Calling, Meta) and its tag (Dungeon, Raid, Group, Elite, PvP, Heroic, Scenario,
+-- Delve: the tags the game gives an icon). Left out, as this tooltip says them already: Campaign and
+-- Storyline when their lines are drawn, and Repeatable when the quest's type icon shows. Each call is
+-- guarded, so a missing or failing one only drops its own line.
+local function qcQuestTypeTexts(questId, questType, hasCampaign, hasStoryline)
+    local texts = {}
+    if C_QuestInfoSystem and C_QuestInfoSystem.GetQuestClassification and QuestUtil and QuestUtil.GetQuestClassificationInfo
+            and Enum and Enum.QuestClassification then
+        local ok, text = pcall(qcReadClassificationText, questId, questType, hasCampaign, hasStoryline)
+        if ok and qcIsText(text) then texts[1] = text end
+    end
+    if C_QuestLog and C_QuestLog.GetQuestTagInfo and QuestUtils_GetQuestTagAtlas then
+        local ok, text = pcall(qcReadTagText, questId)
+        if ok and qcIsText(text) and text ~= texts[1] then texts[#texts + 1] = text end
+    end
+    return texts
+end
+
 -- Function to update the quest tooltip
 function qcUpdateTooltip(index)
     local stringFormat = string.format
@@ -370,6 +426,11 @@ function qcUpdateTooltip(index)
 
         local storylineId = qcQuestDatabase[questId][8]
         local campaignName, chapter, chapterCount = qcCampaignOf(questId, storylineId)
+        local storyline = storylineId and qcQuestLines[storylineId]
+        local typeTexts = qcQuestTypeTexts(questId, qcQuestDatabase[questId][4], campaignName ~= nil, storyline ~= nil)
+        for i, text in ipairs(typeTexts) do
+            qcQuestInformationTooltip:AddDoubleLine(i == 1 and stringFormat(STAT_FORMAT, TYPE) or " ", stringFormat("%s%s|r", COLOUR_HUNTER, text))
+        end
         if campaignName then
             local place = chapter and stringFormat(" |cFF808080%s|r", stringFormat(qcL.CAMPAIGNCHAPTER, chapter, chapterCount)) or ""
             qcQuestInformationTooltip:AddDoubleLine(stringFormat(STAT_FORMAT, QUEST_CLASSIFICATION_CAMPAIGN), stringFormat("%s%s|r%s", COLOUR_HUNTER, campaignName, place))
@@ -377,7 +438,6 @@ function qcUpdateTooltip(index)
 
         -- Storyline information. qcQuestLines holds each storyline's quests in Blizzard's order;
         -- a whole-zone storyline runs to 200+ quests, so only a window around this one is shown.
-        local storyline = storylineId and qcQuestLines[storylineId]
         if storyline then
             -- Older zones share one storyline between both factions, and a class's quests sit
             -- beside every other class's: follow the list's faction and race/class filters. The
@@ -409,7 +469,7 @@ function qcUpdateTooltip(index)
                     end
                 end
             end
-            qcQuestInformationTooltip:AddDoubleLine(stringFormat(STAT_FORMAT, QUEST_CLASSIFICATION_QUESTLINE), stringFormat("%s%s|r |cFF808080%s|r", COLOUR_HUNTER, storyline.name, stringFormat(qcL.STORYLINEPOSITION, position, #lineQuests)))
+            qcQuestInformationTooltip:AddDoubleLine(stringFormat(STAT_FORMAT, QUEST_CLASSIFICATION_QUESTLINE), stringFormat("%s%s|r |cFF808080%s|r", COLOUR_HUNTER, qcStorylineName(questId, storylineId, storyline.name), stringFormat(qcL.STORYLINEPOSITION, position, #lineQuests)))
             if total >= 2 then
                 qcQuestInformationTooltip:AddDoubleLine(" ", stringFormat("|cffc8c8c8%d/%d|r", done, total))
                 local line = qcQuestInformationTooltip:NumLines()
@@ -442,7 +502,7 @@ function qcUpdateTooltip(index)
             end
 
             qcAddQuestTooltipDivider()
-        elseif campaignName then
+        elseif campaignName or #typeTexts > 0 then
             qcAddQuestTooltipDivider()
         end
 
