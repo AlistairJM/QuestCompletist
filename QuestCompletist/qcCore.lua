@@ -530,14 +530,25 @@ local function qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 	end
 end
 
-local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
-	if (qcBreadcrumbQuests[qcQuestID]) then
-		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[qcQuestID]) do
-			if (qcQuestDatabase[qcBreadcrumbEntry]) and not qcIsRecurringQuest(qcBreadcrumbEntry) then
-				qcCharacterCompletions[qcBreadcrumbEntry] = 1
-			end
+-- Calls action with each breadcrumb that leads to a quest, then each that leads to one of those, and so
+-- on: once the game stops offering a breadcrumb, it stops offering the ones leading to it too.
+local function qcForEachBreadcrumb(questId, action, seen)
+	seen = seen or {[questId] = true}
+	for _, breadcrumb in pairs(qcBreadcrumbQuests[questId] or {}) do
+		if not seen[breadcrumb] then
+			seen[breadcrumb] = true
+			action(breadcrumb)
+			qcForEachBreadcrumb(breadcrumb, action, seen)
 		end
 	end
+end
+
+local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
+	qcForEachBreadcrumb(qcQuestID, function(qcBreadcrumbEntry)
+		if (qcQuestDatabase[qcBreadcrumbEntry]) and not qcIsRecurringQuest(qcBreadcrumbEntry) then
+			qcCharacterCompletions[qcBreadcrumbEntry] = 1
+		end
+	end)
 end
 
 local qcCategoryIndex = nil
@@ -894,11 +905,22 @@ local function qcBuildViewFilter(view)
 	local activeHolidays = qcHides(view, "SEASONAL") and qcUpdateActiveHolidays()
 	local playerLevel = qcHides(view, "REQUIREMENTSNOTMET") and UnitLevel("player")
 
+	-- Quests still to do that the game won't offer because of others done or taken: past a daily or
+	-- weekly limit, or breadcrumbs to a quest in the log.
 	local overrideCompleted = {}
 	if hideCompleted or hideInProgress then
 		overrideCompleted = simulateExclusiveCompletions(qcOverrideDailyExclusiveQuest)
 		for questId in pairs(simulateExclusiveCompletions(qcOverrideWeeklyExclusiveQuest)) do
 			overrideCompleted[questId] = true
+		end
+		for questId in pairs(qcBreadcrumbQuests) do
+			if qcIsQuestInLog(questId) then
+				qcForEachBreadcrumb(questId, function(breadcrumb)
+					if not qcClosedOnceDone[breadcrumb] and not qcIsQuestCompleted(breadcrumb) and not qcIsQuestInLog(breadcrumb) then
+						overrideCompleted[breadcrumb] = true
+					end
+				end)
+			end
 		end
 	end
 
@@ -1975,15 +1997,11 @@ local function qcBreadcrumbChecks(qcQuestID)
 	else
 		qcToast.QuestID = qcQuestID
 		local qcCount = 0
-		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[qcQuestID]) do
-			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
+		qcForEachBreadcrumb(qcQuestID, function(qcBreadcrumbEntry)
+			if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
 				qcCount = (qcCount + 1)
-			else
-				if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
-					qcCount = (qcCount + 1)
-				end
 			end
-		end
+		end)
 		if (qcCount == 0) then
 			qcToast.QuestID = nil
 			qcToast:Hide()
@@ -2044,17 +2062,15 @@ function qcToast_OnEnter(self)
 		qcToastTooltip:SetOwner(qcToast, "ANCHOR_CURSOR")
 		qcToastTooltip:ClearLines()
 		qcToastTooltip:AddLine(qcL.BREADCRUMBQUESTS)
-		for qcBreadcrumbIndex, qcBreadcrumbEntry in pairs(qcBreadcrumbQuests[self.QuestID]) do
+		qcForEachBreadcrumb(self.QuestID, function(qcBreadcrumbEntry)
 			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
 				if (qcQuestName and qcBreadcrumbEntry) then qcToastTooltip:AddLine(tostring(COLOUR_DRUID .. qcQuestName .. COLOUR_MAGE .. " [" .. qcBreadcrumbEntry .. "]")) end
-			else
-				if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
+			elseif not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
 				if (qcQuestName and qcBreadcrumbEntry) then qcToastTooltip:AddLine(tostring(COLOUR_DRUID .. qcQuestName .. " [" .. qcBreadcrumbEntry .. "]")) end
-				end
 			end
-		end
+		end)
 		qcToastTooltip:Show()
 	end
 
@@ -2330,7 +2346,9 @@ local function qcEventHandler(self, event, ...)
 		qcMutuallyExclusiveChecks(qcQuestID)
 	elseif (event == "QUEST_ACCEPTED") or (event == "QUEST_REMOVED") then
 		if (event == "QUEST_ACCEPTED") then qcNoteUnavailableQuestSeen(..., "accepted") end
-		qcRequestRefresh(QC_REDRAW_ROWS, true)
+		-- A list that hides quests done or in the log loses or regains this one, and the breadcrumbs to it.
+		local qcRefilter = qcHides("L", "COMPLETED") or qcHides("L", "INPROGRESS")
+		qcRequestRefresh(qcRefilter and QC_REBUILD_LIST or QC_REDRAW_ROWS, true)
 	elseif (event == "QUEST_PROGRESS") or (event == "QUEST_COMPLETE") then
 		local qcQuestID = GetQuestID()
 		if not (qcQuestID == 0) then

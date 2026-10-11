@@ -433,8 +433,9 @@ Whether to backfill E is the user's decision
 
 `Audit-QuestTables.ps1` checks what no other step does:
 - in `qcQuest.lua`: the breadcrumbs (`qcBreadcrumbQuests`), the quests that close others once
-  they're done (`qcMutuallyExclusive`), the renown requirements, the daily and weekly limits and
-  the faction names;
+  they're done (`qcMutuallyExclusive`), the breadcrumbs the API closes only once their quest is done
+  (`qcClosedOnceDone`, which must match the API both ways), the renown requirements, the daily and
+  weekly limits and the faction names;
 - in `data\quests.jsonl`: the prerequisites.
 
 It needs the API cache from step 1, and writes `tools\quest_table_audit.csv`, one row per finding,
@@ -1951,6 +1952,11 @@ git diff --stat
   games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
   server, checks the clean-up of `qcFormerlyExclusive` on one of the game's groups, and on Forever walks
   the quests of `forever-quest-link-decisions.csv` (the level 10 rogue quests, and Bounty on Murlocs).
+  It also checks that the map hides a breadcrumb still to do while the quest it leads to is in the log,
+  keeps one done or in the log and those in `qcClosedOnceDone`, and that a hand-in ticks breadcrumbs of
+  breadcrumbs: on a chain from the game's data, on retail's quests listed as each other's breadcrumb and
+  its API breadcrumbs, and on Forever's level 16 rogue quests. Run it too for changes to the map's
+  filters in `qcBuildViewFilter`.
 - For changes to the quest list's tooltip (the storyline's name and the "Type:" row in `qcTooltips.lua`), run
   `Test-QuestTooltip.lua` for both games' TOCs. It must say "All checks passed." It draws the real tooltip for a
   quest in a storyline, a plain one and a daily one, with stand-ins for the game's quest calls that answer what each
@@ -1962,9 +1968,9 @@ git diff --stat
   also says how much room the page has left (33 px with the continent box in).
 - For changes to the zone icons' counting (`qcContinentPins.lua`, `qcGetZoneQuests` in `qcCore.lua`), run
   `Test-ContinentPins.lua` for both games' TOCs. It must say "All checks passed." It builds a made-up
-  continent from the game's own zones, counts a character step by step, checks every category against the
-  quest list's zone counter, and, with the client's UiMap table in `tools\`, gives every continent its
-  zones and times a pass.
+  continent from the game's own zones, counts a character step by step (a breadcrumb whose quest is in the
+  log counts as closed, not available), checks every category against the quest list's zone counter, and,
+  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 - **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or

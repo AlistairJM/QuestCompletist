@@ -76,6 +76,10 @@ qcMutuallyExclusive={
 [5]={6,10},
 [1]={1},
 }
+qcClosedOnceDone={
+[2]=true,
+[99]=true,
+}
 qcOverrideDailyExclusiveQuest={}
 qcOverrideWeeklyExclusiveQuest={}
 qcFactions={
@@ -117,6 +121,8 @@ try {
     Equal (Count-Kind 'exclusive: shuts itself out') 1 'A2: a quest that closes itself'
     Equal (Count-Kind 'exclusive: listed twice') 1 'A2: a quest listed twice'
     Equal (Count-Kind 'exclusive: quest flagged unavailable') 0 'A2: and nothing flagged that is not named'
+    Equal (Count-Kind 'closed once done: not a breadcrumb') 1 'A2: a quest kept while its quest is in the log that is no breadcrumb'
+    Equal (@($f | Where-Object { $_.Kind -eq 'closed once done: not a breadcrumb' }))[0].Quest '99' 'A2: is quest 99'
     Check (@($f | Where-Object { $_.Kind -match 'API|TrinityCore|client' }).Count -eq 0) 'A3: nothing from the API, TrinityCore or the client'
     Equal @($f | Where-Object { $_.Kind -match 'faction name: (faction not in|differs)|renown: faction' }).Count 0 'A3: and the factions are not held against the client'
     Check (-not (Test-Path "$w\tools\Faction-12.1.0.69933.csv")) 'A3: no table was downloaded'
