@@ -215,6 +215,12 @@
             <Anchor point="TOPLEFT" x ="190" y ="-416"/>
           </Anchors>
         </FontString>
+        <FontString name="$parentHiddenQuests" parentKey="qcHiddenQuests" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="TOP" hidden="true">
+          <Size x ="266" y ="32"/>
+          <Anchors>
+            <Anchor point="TOPLEFT" x ="35" y ="-90"/>
+          </Anchors>
+        </FontString>
       </Layer>
       <Layer level="BORDER">
         <Texture file="Interface\Addons\QuestCompletist\Images\TopLeft">

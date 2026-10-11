@@ -145,6 +145,7 @@ qcLocalize = setmetatable({
 	RECORDERCLEARED = "Le note sono state cancellate.", -- Needs review
 	SHOWCONTINENTICONS = "Mostra icone di zona sulle mappe dei continenti", -- Needs review
 	SHOWCONTINENTICONSTIP = "Segna ogni zona di una mappa continente in cui hai ancora missioni da fare e mostra i conteggi quando ci passi sopra con il mouse. Le missioni giornaliere, settimanali e ripetibili non vengono contate. Deve essere attiva anche l'opzione Mostra icone sulla mappa.", -- Needs review
+	QUESTSHIDDEN = "Missioni nascoste dai tuoi filtri: %d", -- Needs review
 	}, {__index = qcLocalize})
 
 end

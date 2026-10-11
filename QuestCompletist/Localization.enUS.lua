@@ -174,4 +174,5 @@ qcLocalize = {
 	RECORDERCLEARED = "The notes have been cleared.",
 	SHOWCONTINENTICONS = "Show Zone Icons on Continent Maps",
 	SHOWCONTINENTICONSTIP = "Marks each zone on a continent map where you still have quests to do, and shows the counts when you hover over it. Daily, weekly and repeatable quests aren't counted. Show Map Icons must also be ticked.",
+	QUESTSHIDDEN = "Quests hidden by your filters: %d",
 	}

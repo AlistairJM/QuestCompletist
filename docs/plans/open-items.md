@@ -83,7 +83,7 @@ again.
   quests has a menu entry and a zone row, none is empty, and the reachability run leaves no quest out.
   What only the game can show is the four starter areas, whose quests are filed under their parent
   zone: walk into Camp Narache, Shadowglen, Valley of Trials and New Tinkertown and see the list follow
-  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)). The new Quel'Thalas, Gilneas and Tol Barad submenus under Eastern Kingdoms, and Founder's Point and Razorwind Shores under Midnight's Other Categories, are offline-checked too (the three names come from the client's maps, with English as the fallback). The Main Zones and Other Categories submenus of Draenor and The Broken Isles (question 21) are offline-checked too.
+  Mulgore, Teldrassil, Durotar and Dun Morogh ([menu-review.md](menu-review.md)). The new Quel'Thalas, Gilneas and Tol Barad submenus under Eastern Kingdoms, and Founder's Point and Razorwind Shores under Midnight's Other Categories, are offline-checked too (the three names come from the client's maps, with English as the fallback). The Main Zones and Other Categories submenus of Draenor and The Broken Isles (question 21) are offline-checked too. The one new thing to look at is the line an empty list shows (question 26, "Quests hidden by your filters: N"): open any entry that lists nothing at the default filters, such as Rated PvP on retail.
 - **The calendar window's filters, on both games (#243, released in 112.6 on 9 October 2026).** The
   seasonal filter treats a holiday whose filter is unticked as running, on the reading of Blizzard's
   source that the game then leaves its events out of the calendar. Nobody has seen that in game.
@@ -199,7 +199,7 @@ again.
 | 23 | Split Lordaeron into Lordaeron, Quel'Thalas, Gilneas and Tol Barad (R26) | **yes, 10 October 2026, done**: named from the client's maps | [menu-review.md](menu-review.md), question 23 |
 | 24 | Merge Darkmoon Island into Darkmoon Faire and four one-quest entries into their zones (R15, R31) | yes, in one pass, because a category merge changes how the sweep tools file new quests | [menu-review.md](menu-review.md), question 24 |
 | 25 | Names that repeat, groups and categories that share a name, Forever's "Invasion" (R17 to R21, R25, F03) | leave; if it matters, show the menu path in the list header (no new text) | [menu-review.md](menu-review.md), question 25 |
-| 26 | Entries empty by default and tiny entries (R29, R30, R39, F06, F07, F09) | keep them, and have an empty list say how many quests the filters hide | [menu-review.md](menu-review.md), question 26 |
+| 26 | Entries empty by default and tiny entries (R29, R30, R39, F06, F07, F09) | **yes, 11 October 2026, done**: all kept; an empty list says "Quests hidden by your filters: N" on both games | [menu-review.md](menu-review.md), question 26 |
 | 27 | Rated PvP, 86 of 87 quests unavailable (R06) | keep | [menu-review.md](menu-review.md), question 27 |
 | 28 | Class Quests has no Evoker (R05) | leave | [menu-review.md](menu-review.md), question 28 |
 | 29 | Ordering rule for Retail's lists (R33) | keep the hand order | [menu-review.md](menu-review.md), question 29 |

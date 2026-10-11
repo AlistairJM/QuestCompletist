@@ -1077,6 +1077,23 @@ function qcGetZoneQuests(categoryIds, keepQuest)
 	return quests
 end
 
+-- An empty list says how many quests the filters hide. It's empty only when they hid the whole
+-- category, so that is every quest the category holds; a search, a category with no quests and a
+-- list with rows say nothing.
+function qcShowHiddenQuests(categoryId)
+	local hidden = 0
+	if categoryId and qcCurrentCategoryQuestCount == 0 then
+		hidden = #(qcCategoryIndex[categoryId] or {})
+	end
+	local line = qcQuestCompletistUI.qcHiddenQuests
+	if hidden > 0 then
+		line:SetText(string.format(qcL.QUESTSHIDDEN, hidden))
+		line:Show()
+	else
+		line:Hide()
+	end
+end
+
 function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 	if not (qcQuestCompletistUI:IsVisible()) then return nil end
 	local stringFormat = string.format
@@ -1097,6 +1114,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 		local completedInZone, totalInZone = qcGetZoneCompletionStats(categoryId)
 		local completionPercent = (totalInZone > 0) and math.floor((completedInZone / totalInZone) * 100) or 0
 		qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat(qcL.PROGRESS, completedInZone, totalInZone, completionPercent))
+		qcShowHiddenQuests(categoryId)
 	else
 		if (searchText) then
 			qcCurrentSearchText = searchText
@@ -1111,6 +1129,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			qcMenuSlider:SetValue(startIndex)
 			startIndex = qcMenuSlider:GetValue()
 			qcQuestCompletistUI.qcCurrentCategoryQuestCount:SetText(stringFormat(qcL.QUESTSFOUND, qcCurrentCategoryQuestCount))
+			qcShowHiddenQuests()
 		end
 	end
 	for i = 1, 16 do

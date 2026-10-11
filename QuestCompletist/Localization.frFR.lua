@@ -144,6 +144,7 @@ qcLocalize = setmetatable({
 	RECORDERCLEARED = "Les notes ont été effacées.", -- Needs review
 	SHOWCONTINENTICONS = "Afficher les icônes de zone sur les cartes de continent", -- Needs review
 	SHOWCONTINENTICONSTIP = "Marque chaque zone d'une carte de continent où il vous reste des quêtes à faire, et affiche les totaux au survol. Les quêtes journalières, hebdomadaires et répétables ne sont pas comptées. L'option d'affichage des points d'exclamation sur la carte doit aussi être cochée.", -- Needs review
+	QUESTSHIDDEN = "Quêtes cachées par vos filtres : %d", -- Needs review
 	}, {__index = qcLocalize})
 
 end

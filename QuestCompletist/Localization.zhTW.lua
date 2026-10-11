@@ -145,6 +145,7 @@ qcLocalize = setmetatable({
 	RECORDERCLEARED = "記錄已清除。", -- Needs review
 	SHOWCONTINENTICONS = "在大陸地圖上顯示區域圖示", -- Needs review
 	SHOWCONTINENTICONSTIP = "在大陸地圖上標出你仍有任務可做的每個區域，滑鼠移上去時顯示數量。每日、每週和可重複任務不計入。同時必須勾選「顯示地圖小圖示」。", -- Needs review
+	QUESTSHIDDEN = "被過濾器隱藏的任務：%d", -- Needs review
 	}, {__index = qcLocalize})
 
 end
