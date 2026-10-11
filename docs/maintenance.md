@@ -1913,7 +1913,10 @@ git diff --stat
   and run it on the code before and after a change to compare the two records line by line. It also draws
   stacks of pins through the map's own pass and clicks them: on made-up stacks it checks that the pin, its
   waypoint and its tooltip's first heading go by the first pin that has a name, and on every stack in the
-  data that each with a named pin is named.
+  data that each with a named pin is named. It also clicks a pin and a quest in the list with TomTom loaded
+  (TomTom's waypoint, nothing of the game's) and without it (the game's own waypoint and arrow, against
+  stand-ins for a client that allows the map, refuses it, turns the map pin off by rule, errors, or lacks
+  the functions), and checks that the pin's tooltip offers a click only where one will set a waypoint.
 - For changes to the saved settings or the options panel, run `Test-Settings.lua` for both games' TOCs. It must
   say "All checks passed." It builds the panel against frames that keep their anchors and heights, so it
   also says how much room the page has left (33 px with the continent box in).

@@ -1863,12 +1863,9 @@ function qcQuestClick(qcButtonIndex)
 		-- Unattainable becomes marked not done (0); anything else becomes unattainable.
 		qcCharacterCompletions[qcQuestID] = (qcCharacterCompletions[qcQuestID] == 2) and 0 or 2
   else
-    if (C_AddOns.IsAddOnLoaded('TomTom')) then
-        local mapId, pin = qcFindPinForQuest(qcQuestID)
-        if (mapId) then
-            TomTom:AddWaypoint(mapId, pin[4] / 100, pin[5] / 100, {title = qcNpcName(pin) or qcQuestName(qcQuestID)})
-            TomTom:SetClosestWaypoint()
-        end
+    local mapId, pin = qcFindPinForQuest(qcQuestID)
+    if (mapId) then
+        QC.qcSetWaypoint(mapId, pin, qcQuestID)
     end
 end
 
