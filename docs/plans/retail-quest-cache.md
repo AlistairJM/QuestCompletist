@@ -70,12 +70,16 @@ and not what a player is awarded: where the API and the cache agree they are one
 ## What it says about our data
 
 Each of these was counted by one analyst and recounted by a second with a different method; where the
-second differed, the number here is the second's. Nothing in our data was changed.
+second differed, the number here is the second's. Nothing in our data was changed by the counts; the
+Level section ends with what was changed afterwards, on 11 October 2026.
 
 ### Level
 
-The record has no level. `ContentTuning` (Blizzard's table, not in `tools\` yet) is the only source of
-a quest's minimum, in TrinityCore's `Player::GetQuestMinLevel` too. The API's `min_character_level`
+The record has no level. `ContentTuning` (Blizzard's table, in `tools\ContentTuning-12.1.0.69933.csv`
+since 11 October 2026: 2,929 rows) is the only source of
+a quest's minimum, in TrinityCore's `Player::GetQuestMinLevel` too. The counts below were taken on 9
+and 10 October 2026, before the table was there; what was decided and built with it is the last bullet.
+The API's `min_character_level`
 and `max_character_level` are a function of the cache's content tuning (741 tunings, 28,983 quests,
 no conflict, though the two are different builds), and the cache's content tuning equals the task
 table's for 4,125 of 4,125.
@@ -89,7 +93,10 @@ table's for 4,125 of 4,125.
   none. Together 34,371 quests have a Blizzard level range.
 - 37 content tunings in use have no range (154 quests, none with an API record): they need the
   `ContentTuning` table. It would also say whether the API shows `MinLevel` or `MinLevelWithDelta`,
-  and settle the rule for a quest of the other faction. Tuning 0 means no minimum.
+  and settle the rule for a quest of the other faction. Tuning 0 means no minimum. (With the table: every
+  tuning in use has a row, so those quests have a range, and the API shows the minimum without
+  `AllowedMinOffset`, that is `MinLevel`. The other-faction rule, a per-player maximum level for a quest
+  tuned for the other side, is not in any data file and is not applied.)
 - **Our 0** (246 quests, counted on 10 October 2026 against the API cache, the cache's tuning, the
   retail probe of build 12.1.0.69933 and, for old quests, Forever's cache and CMaNGOS). The API's
   minimum is 1 for 191 (a range from 1 to the cap: a quest with no level of its own, as the list now
@@ -103,13 +110,47 @@ table's for 4,125 of 4,125.
   90751). Of the 191, 1582 (Moonglow Vest) is level 18, minimum 8 in Classic's sources. On Forever's
   12 (level 0 or below) the game's cache says level 0 for 2 (8856, 96735) and lacks the other 10,
   for which CMaNGOS gives level 0, or -1 for 9321. The 22 with their own API minimum were set to it on 10 October 2026 (open-items.md row 33). The 191 stay 0: a 1 would hide them as low level for a high-level character, as every retail quest with a minimum of 1 is today.
-- **Decision for the user** (open-items.md row 14, beside row 8's refresh from the API): whether
-  retail's gate comes from the tuning. Forever's structure
-  already holds it: `level` stays the row's own (the list bracket and the sort) and the gate goes in
-  `qcQuestMinLevel`, empty on retail today. It would touch 1,828 quests. The maximum would also fix
-  the low-level filter hiding scaling quests early (21,972 quests have a maximum above our level).
-  The docs call refreshing retail's levels a separate decision, and the pipeline rule is that
-  existing values don't change without cause.
+- **Decision taken, 11 October 2026: option C** (open-items.md rows 14 and 8). Forever's structure
+  already held it: `level` stays the row's own (the list bracket, the sort and the low-level filter) and
+  the true minimum goes in `qcQuestMinLevel`, empty on retail until then. Row 8, overwriting retail's
+  `level` with the API's minimum, is **not taken**: the API's minimum is used for the gate, and the
+  stored level is unchanged. (The maximum, which would fix the low-level filter hiding scaling quests
+  early, is not used: 21,972 quests have a maximum above our level. That is decision 9.)
+  - **Built:** `QuestLevels.ps1` (the sources and the formula), `Apply-QuestMinLevels.ps1` (sets
+    `minLevel`; `-WhatIf` and `-Check`), `Compare-QuestLevels.ps1` (the sweep's check, with
+    `quest-levels-baseline.csv` in this folder) and `Test-QuestLevels.ps1` (160 checks), as step 2g of
+    [maintenance.md](../maintenance.md); `Compare-ClientTables.ps1` caches the table and fails on a
+    missing column. No addon code changed: the readers already took `qcQuestMinLevel[id] or level`.
+  - **The formula:** a quest's minimum is its tuning's `MinLevelSquish` plus a base that
+    `MinLevelScalingOffset` picks (0: nothing; 1: 1; 2: the level cap, 90; 3: the cap before it, 80),
+    and `AllowedMinOffset` is not part of it. Found against the API's own minimums, not from a
+    document. **It reproduces the API's `min_character_level` for 29,289 of the 29,289 quests that have an
+    API minimum and a tuning (100%)**: offset type 0 for 29,068, type 1 for 210, type 2 for 7, type 3
+    for 4, and the same formula on `MaxLevelSquish` and `MaxLevelScalingOffset` for the API's maximum.
+    The API's other 777 minimums are for quests that neither the cache nor the task table has. A
+    cross-check, once and by hand, on TrinityCore's `quest_template.ContentTuningID` (TDB 12.1.0.26091)
+    gave a tuning for 721 of them: 654 agree, and 67 have tuning 0 there (old quests the API gives a
+    minimum for and the table none), so 29,943 of the API's 30,066 minimums (99.6%) have been tested and
+    none disagreed. For the 2,522 tested quests whose `AllowedMinOffset` is -1, -2 or -4 the API shows the
+    minimum, not the minimum plus the offset; whether the game itself lets such a quest be taken that many
+    levels early is unknown. Five of the 2,929 tunings have a minimum beyond the cap (949 and 2085: 255;
+    6424: 251; 962: 91; 1958: 93), which is a marker and no level; only 949 is used by a quest of ours,
+    38708 "Purge the River" (level 45), which keeps what it had.
+  - **Sources, counted on 11 October 2026:** the API's minimum for 30,066 quests; of the 4,957 without,
+    the range for 4,476 (4,305 were counted before the table: it covers 171 more), tuning 0, which means
+    no minimum, for 17 (among them the 2 API records that give none), and none for 464 (463 in neither
+    the cache nor the task table, and 38708). API and range disagree for none of the 29,289 quests that
+    have both.
+  - **Changes: 1,628 quests get a `minLevel`** (1,828 were expected from the counts of 9 October, which
+    included the 191 quests that are 0 against 1, the same thing, and the 22 set to their API minimum on
+    10 October; no other field of any quest and no pin changed): 1,372 have the gate lowered and 256
+    raised. From the API 1,398 (the 1,180 over-gated, 218
+    under-gated); from the ranges 225 (187 lowered, 38 raised); from tuning 0 five, lowered to 0 (9422,
+    50341, 54255, 54256, 89346: level 5, 35, 50, 50 and 11). Large blocks lowered: Zaralek Cavern 265,
+    Mechagon 226, the Emerald Dream 201, as the plan for row 8 expected.
+  - **Cost:** `qcQuestData.lua` goes from 2,373,371 to 2,394,388 bytes (+21,017, +0.9%); loaded, +64.0 KB
+    (9,175.8 to 9,239.8 KB, +0.7%, a hash part of 2,048 slots), and about 1.5 to 2 ms more to load
+    (66 to 68 ms, Lua 5.1, 32-bit); [load-and-memory.md](load-and-memory.md) has the method.
 
 ### Reputation
 
@@ -305,13 +346,15 @@ the CSV and the E rows of the baseline file.
 
 ## Checks to build
 
-None of these changes data; each prints what it found and keeps a baseline. They are not built yet.
-Baselines belong in a file keyed by quest, since counts move with what a probe run asked for; the
-reputation pass's is `quest-reputation-cache-baseline.csv`, in this folder.
+None of these changes data; each prints what it found and keeps a baseline. They are not built yet,
+except Levels (11 October 2026: `Compare-QuestLevels.ps1`, step 2g of the runbook, with
+`quest-levels-baseline.csv` in this folder, class D a quest whose `minLevel` is not what its sources say
+and class N a quest no source speaks for; `Compare-ClientTables.ps1`, step 2b of "Before a sweep", watches
+the table's columns). Baselines belong in a file keyed by quest, since counts move with what a probe run
+asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in this folder.
 
 | Check | Where | Fails on |
 |---|---|---|
-| Levels: ours against the tuning's range, coverage of tunings with no range | `Compare-QuestLevels.ps1` and the `ContentTuning` table, step 2b | a quest that was equal in the baseline and is not |
 | Recurrence: daily, weekly, repeatable and scheduler against our types | an input to `Retype-ProbeRecurring.ps1` | nothing; it proposes |
 | Races: the 30 race IDs of ours (26 bits) that each of ours and the cache allows | `Compare-QuestRaces.ps1`, a new step 1e | a difference without a decision row |
 | Sort: our category against the sort's expected one | `Audit-QuestSort.ps1`, step 5 | a pair without an exception row |
@@ -319,8 +362,8 @@ reputation pass's is `quest-reputation-cache-baseline.csv`, in this folder.
 
 ## Decisions waiting
 
-1. Retail's gate level from the tuning (Level, above): row 14 of open-items.md, the other way to row 8,
-   which takes the API's minimum and leaves the 4,955 quests it has no record of without a level.
+1. ~~Retail's gate level from the tuning (Level, above)~~: **done**, option C, 11 October 2026
+   (open-items.md rows 14 and 8; row 8 is not taken).
 2. Backfill of the 2,043 quests' reputation from the cache, after a few checks in game.
 3. The type changes of Recurrence and flags.
 4. The race changes of Races: the two contradictions and the 19 stale masks recommended, the 49
@@ -344,3 +387,9 @@ reputation pass's is `quest-reputation-cache-baseline.csv`, in this folder.
   baseline file of the quests of classes B, E, F and G. It reproduced every number of the Reputation
   section on the real files. The one judgement was 1833: the Faction table does not hide it, but its
   index of -1 means no standing is kept, which puts quest 40839 in F, as the earlier count had it.
+- 2026-10-11: the user decided option C of rows 14 and 8 (see "Level"): `ContentTuning-12.1.0.69933.csv`
+  was downloaded once, the formula was found against the API's own minimums (29,289 of 29,289 agree), and
+  retail's `qcQuestMinLevel` was filled for 1,628 quests (`Apply-QuestMinLevels.ps1`); the second of the
+  checks to build, Levels, is `Compare-QuestLevels.ps1` with its baseline. A first run took the tuning
+  949's minimum of 255 for a level (quest 38708 got a gate of 255); a minimum beyond the level cap is now
+  no level, and the data was rebuilt from master.

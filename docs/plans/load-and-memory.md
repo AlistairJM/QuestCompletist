@@ -202,6 +202,17 @@ Around 38 places read or write it today.
     and it is the design the user approved.
   - Retail's file gains an empty table (22 bytes), and its loaded size is unchanged: 15,174.0 KB
     for the whole addon before and 15,173.5 KB after.
+- 2026-10-11, retail's `qcQuestMinLevel` is filled: 1,628 entries (`Apply-QuestMinLevels.ps1`; the quests'
+  minimum levels from the API and the client's level ranges, [data-structure.md](data-structure.md)).
+  Measured on `qcQuestData.lua` alone (Lua 5.1 on this PC, 32-bit; `dofile` in a fresh state, memory
+  after two full collections; load time the median of 8 runs of 20 loads, in three before-and-after pairs):
+  - The file goes from 2,373,371 to 2,394,388 bytes (+21,017, +0.9%): a line of about 13 bytes for each
+    entry.
+  - Loaded, from 9,175.8 to 9,239.8 KB (+64.0 KB, +0.7%): a hash part of 2,048 slots of 32 bytes. Forever's
+    4,180 keys cost 256 KB, a hash part of 8,192, the same 32 bytes a slot.
+  - Loading takes 65.1 to 66.2 ms before and 67.3 to 67.8 ms after (+1.5 to 2.2 ms).
+  - The whole addon on retail's TOC and WoW's 64-bit Lua were not measured; the table is a keyed table of
+    numbers, and +64 KB is under 0.5% of the 15,174 KB the whole addon took.
 
 ## The quest giver recorder (8 October 2026)
 

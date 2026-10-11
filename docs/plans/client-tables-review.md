@@ -114,7 +114,7 @@ on 7 October 2026.
 | Holidays, HolidayNames | 799, 160 / 22, 16 | Every calendar holiday with its name, dates and durations | Every ID in `qcHolidays` is there under its name; Hallow's End's second ID, 1405, is the kind of thing that has been found by hand in game. Forever's 22 rows include four new ones ("Call to Arms: Darkspear Islands") and still neither the Scourge Invasion nor the Ahn'Qiraj War Effort | **Use:** an offline check of `qcHolidays` in step 2b |
 | QuestV2CliTask (the columns above) | 6,242 / – | The task quests | Skill levels for 410 world quests that have no profession in our data; prerequisites for 2,114 task quests | **Used:** the profession of 410 quests and prerequisites for 850, steps 1d and 2c (Status); the skill level waits for [game-parity.md](game-parity.md) |
 | Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 740 of our 1,474 storylines and 5,946 quests. The game gives a quest's campaign at runtime | **Used:** the campaign line in the tooltip (Status); campaigns in the menu wait, and none of it is data the addon lacked |
-| ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | The client tables give a ContentTuningID only to task quests, areas and maps, but retail's quest cache gives one to every quest it holds; the API gives a range for 30,066 of our 35,023 quests, and `C_Map.GetMapLevels` a map's | No, until the levels check of [retail-quest-cache.md](retail-quest-cache.md) is built: it needs the table for 34 tunings (150 of our quests) |
+| ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | The client tables give a ContentTuningID only to task quests, areas and maps, but retail's quest cache gives one to every quest it holds; the API gives a range for 30,066 of our 35,023 quests, and `C_Map.GetMapLevels` a map's | **Yes, since 11 October 2026:** `ContentTuning-<build>.csv` (4 of its columns) gives the minimum level of the 4,476 quests the API has no record of, in retail's `qcQuestMinLevel` (`Apply-QuestMinLevels.ps1`, `Compare-QuestLevels.ps1`; [retail-quest-cache.md](retail-quest-cache.md), "Level"). The other tables of the family stay unused |
 | AdventureMapPOI | 514 / – | Points on the Legion, Battle for Azeroth and Torghast adventure maps | 500 name a quest, 475 ours, 30 with a pin. 420 are 12.1's Prey hunts, with no position; the 25 others are placed at the zone chosen, not at a giver | No |
 | QuestHub | 107 / – | A quest's hub, as an AreaPOI | 104 ours, 97 with a pin | No |
 | Bounty, BountySet | 135, 9 / – | The emissary quests | 134 ours, all recurring already (96 daily, 38 world quests); 96890 isn't in our data | No |
@@ -190,11 +190,14 @@ level ranges for the quests the API has (update, 9 October 2026: the retail ques
 ContentTuningID for all 32,713 quests it holds, so that ID, with the ranges the API implies for 741
 tunings, gives a range for 4,305 of the 4,955 the API has no record of, and the table would add 150
 more: [retail-quest-cache.md](retail-quest-cache.md)), though measuring it raised a data question
-worth its own note: on retail our `level` is the API's minimum, and the low-level filter compares
+worth its own note: on retail our `level` was the API's minimum (it was meant to be, and was not for
+1,398 quests), and the low-level filter compares
 it with the character's level, so a quest that scales up to 30 can count as low level long before the game greys it. The API's
 maximum would fix that; it isn't a table question. (Forever's `level` is the quest's own level,
 which that filter suits; its minimum is in `qcQuestMinLevel`, which the tooltip and the
-requirements filter read.)
+requirements filter read.) **Update, 11 October 2026:** the user took option C: the table is now used
+for the minimum, so retail keeps its `level` and holds the true minimum in `qcQuestMinLevel` too; the
+maximum is still not used (open-items.md decision 9).
 
 ## Decisions
 
