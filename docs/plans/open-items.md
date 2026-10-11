@@ -180,7 +180,7 @@ again.
 
 | # | Decision | Recommendation | Detail |
 |---|---|---|---|
-| 1 | Add the about 535 player-facing task quests the database lacks (decision 9), with no pins | yes, as an inflow step from `QuestV2CliTask` that skips hidden trackers | [game-api-review.md](game-api-review.md), "Decisions to take" |
+| 1 | Add the about 535 player-facing task quests the database lacks (decision 9), with no pins | **yes, 11 October 2026, done**: `Add-TaskQuests.ps1` (step 6b) added 506 quests, the 535 less 29 internal test and placeholder entries: 260 of type 128 (world quests and weeklies), 37 dailies and 209 others that the list shows by default, 41 of all in Uncategorized; retail alone | [game-api-review.md](game-api-review.md), "Decisions to take"; [maintenance.md](../maintenance.md), step 6b |
 | 2 | Pin the task quests already in the data that have a start and are not world quests (4,082 have a start and no pin: 3,148 of world-quest kinds, 758 of other kinds, 83 callings, 77 racing, 16 threat wrappers and bonus objectives) | **yes, 11 October 2026, done: the 758 kinds plus Dragonrider Racing** (the user: "yes, include racing, hold callings"). 814 quests are pinned: 737 of the 758 (21 start off their map) and the 77 racing quests (77 start gates on 12 maps, no giver). Pins went from 15,181 to 16,048 (15,971 for the 758 alone), quests with a pin from 24,931 to 25,745, and 844 of the 867 new pins have no giver. The racing pins show on the map at the default settings (its "Hide World and Weekly Quests" filter is off; the list's is on). **Still held, by their lines in `$noPinKinds` (deleting a line pins that kind):** the callings (83 daily quests with 98 places on 7 covenant sanctum maps, 86 nameless pins), until it is known whether the game still offers them, and the 11 Threat Wrapper (268) and 5 Bonus Objective with Completion Toast (283) quests that have a start, as the approval was for the 758, which has neither | quest-location-data-pipeline.md, "pins for the task quests that are not world quests" |
 | 3 | 82449 "The Call of the Worldsoul", a task-table quest | **resolved by row 2 (11 October 2026): it is pinned at its client start, nameless** (a Meta Quest, one of the 758, in Dornogal); the hand entry is not needed | same |
 | 4 | Item-started quests with a start point but no NPC (about 13% of all pins) | keep pinning them, as before | quest-location-data-pipeline.md, "pins from TrinityCore" |
@@ -237,8 +237,8 @@ again.
 - **Uncategorized after the Infinite Research refile**: a plain
   `Place-UncategorisedQuests.ps1 -Refile 0` would move 30 more (28 by pin's map, 2 by storyline);
   look through them with `-WhatIf` ([menu-review.md](menu-review.md)).
-- **272 quest IDs on pins or prerequisites with no quest row** (267 on pins only, 5 prerequisites
-  only: 30490, 54130, 59174, 89285, 91799): parked since phase 2 of
+- **265 quest IDs on pins or prerequisites with no quest row** (261 on pins only, 4 prerequisites
+  only: 30490, 54130, 59174, 89285): parked since phase 2 of
   [data-cleanup.md](data-cleanup.md); the menu review found nothing new.
 
 ## Code to finish

@@ -404,4 +404,7 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   949's minimum of 255 for a level (quest 38708 got a gate of 255); a minimum beyond the level cap is now
   no level, and the data was rebuilt from master. The same day the user chose to leave the quests on
   tuning 0 as they were: the five that a first rule gave a gate of 0 lost it (1,628 entries became 1,623),
-  and the 17 on tuning 0 are in the baseline's class N.
+  and the 17 on tuning 0 are in the baseline's class N. When step 6b's 506 task quests (decision 9) were
+  merged after it, step 2g gave 4 of them a `minLevel` (57326 "Prototypes for Profit" lowered from 50 to 10;
+  96746, 96995 and 97128 raised from 0 to 90), so the table holds 1,627, and 36868 and 36869 "Battle in
+  Ashran", whose tuning has a minimum beyond the cap, joined class N (483).
