@@ -1208,10 +1208,11 @@ file and can make the other of two rows 0.1 apart the place. On today's ledger t
 import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
 start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
 replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)). A giver the recorders have met since
-moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for one giver the player stood well off),
-because the recorder keeps where the player stood: the first import after the ledger grows moves such
-pins, and the review list's "recorded spot far from CMaNGOS" names a giver more than a point off
-("The importer reads the ledger" in the plan).
+moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for Darcy in Lakeshire, who walks a path
+whose one end is her CMaNGOS spawn), because the recorder keeps where the player stood: the first import
+after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS" names a
+giver more than a point off ("The importer reads the ledger" in the plan; whether such a place should
+still win is decision 38 of [plans/open-items.md](plans/open-items.md)).
 
 ## Text in other languages
 

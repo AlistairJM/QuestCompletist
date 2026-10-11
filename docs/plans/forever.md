@@ -903,9 +903,12 @@ further than 3 points, so no pin is counted as removed and added.
 
 - **The 36 pins that move in setup 3 (new):** 32 are givers the committed ledger never had (19 of 23 in setup 4,
   19 of 21 in setup 2): the recorded place replaces CMaNGOS's spawn, as the rule has always said. The
-  distances run from 0.02 to 0.36, median 0.04, and 27 are under 0.15, because the recorder keeps where the
+  distances run from 0.02 to 0.36, median 0.045, and 27 are under 0.15, because the recorder keeps where the
   player stood beside the NPC. One is over a point: Darcy (map 1433, 21.53,44.3 to 21.6,45.4, 1.10), the
-  review's only "recorded spot far from CMaNGOS" row. The largest ten, in map points: Darcy 1.10, Beached Sea
+  review's only "recorded spot far from CMaNGOS" row. She walks: CMaNGOS gives her a 16-point path in Lakeshire
+  (`MovementType` 2, about 1.4 points end to end), her spawn is one end of it, and the recorded place is 0.11
+  from the point where she waits longest, 32 seconds ([open-items.md](open-items.md), decision 38, asks whether
+  such a place should still win). The largest ten, in map points: Darcy 1.10, Beached Sea
   Creature 0.36 and 0.27, Guard Parker 0.26, Beached Sea Turtle 0.23 and 0.12, then Terenthis, Gubber Blump,
   Wizbang Cranktoggle and Sentinel Glynda Nal'Shea at 0.10 each. The other 4 (2 in setup 2) are givers the
   ledger had, whose pin sat on one row of a cluster of rows 0.1 apart and now moves to the row with more visits
@@ -948,12 +951,21 @@ further than 3 points, so no pin is counted as removed and added.
   each of their quests), each with one spawn; nine start a quest and have a pin. The recorder keys a
   giver by its ID, so five entries (175226, 175233, 176190, 176196, 176197) have a recorded place and move to it,
   by 0.36, 0.27, 0.02, 0.12 and 0.23 points, and the other four keep CMaNGOS's spawn. The 1.5-point rule applies to
-  one giver's places, never across entries of one name, so the names are not merged. Step 9 still merges pins of
-  one name within 3 points when they share a quest.
+  one giver's places, never across entries of one name, so the names are not merged. Step 9 takes a shared quest
+  off one of two pins of one name only when they are within 0.5 points (the addon draws them as one); up to 3
+  points apart it leaves both and lists them.
 - **A giver with two recorded places 1.5 to 3 points apart** does not exist in the data yet. The old importer
   gave one pin, at the more visited place; the new one gives two pins, each with the giver's quests, a pin per
   place as the user's pin spacing verdict allows (1.5 points apart, no closer). The CMaNGOS spawns of a giver and
   a quest's start points are still grouped by the old 3-point box; only recorded places moved.
+- **The spawns and start points at 1.5 points**, measured, not applied ([open-items.md](open-items.md), decision
+  37): grouped by `Test-NearPlace` instead of the box, on today's ledger and on #298's alike, the start points
+  change nothing and the spawns give 4 more pins (1,698 to 1,702) for three givers whose spawns stand 1.5 to 2.2
+  points apart: Theramore Lieutenant (Dustwallow Marsh, quest 1220) 2, Lunar Festival Emissary (Ironforge, 8870
+  to 8872) 1 and Argent Quartermaster (Darnassus, six Scourge Invasion quests) 1; 10 quests gain a pin and none
+  loses one. The CLUCK! chicken (3861), pinned once per map at its biggest group of spawns, moves on 3 of its 9
+  maps, by 1.9 (Elwynn Forest), 4.6 (Duskwood) and 9.0 points (Wetlands), as smaller groups make another group
+  the biggest.
 
 ### Seasonal quests with no holiday (11 October 2026)
 
@@ -1120,3 +1132,7 @@ Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
   regenerated. A step 10 run on today's ledger moves 1 existing pin by 0.1 of a map point; with the addon's
   42 givers in the ledger (PR #298) it moves 21 pins by 0.02 to 0.36 and adds quest 990's pin; with the probe's
   newest file read in as well it moves 36 pins by 0.02 to 1.1 and adds 6 (see "The importer reads the ledger").
+  Both recorders are kept (the user, the same day). Three questions wait in open-items.md: how a place's visits
+  are counted (36), whether CMaNGOS's spawns and the start points should be grouped at 1.5 points too (37: 4 more
+  pins and the chicken moved on 3 maps, measured) and whether a recorded place more than a point from the spawn
+  should still win (38: Darcy, who walks a path).
