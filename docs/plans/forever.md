@@ -1391,3 +1391,8 @@ The user took the recommendations:
 - 2026-10-11: Call of Earth on Zephras Isle is for shamans, from a new hand list of classes; Foror's
   Compendium takes its item's class from the client's `ItemSparse`, and a quest whose only prerequisite
   is for some classes is for them too (#307). See "Class quests the game files under a zone".
+- 2026-10-12: `Test-ForeverImport.ps1`, which came with the ledger importer, failed on master once #307
+  merged: its scratch world had no `ChrClasses` or `ItemSparse` table, so the importer tried to download
+  them for its made-up build, and it read the real link and class lists. The world now has both tables and
+  its own empty lists, and a section I checks the class rules (the starting items, the hand list, a
+  prerequisite chain, and the rows the importer refuses): 106 checks.
