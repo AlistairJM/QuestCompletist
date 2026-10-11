@@ -730,12 +730,12 @@ is pinned like the 758, callings stay out until it is known whether the game sti
 - **Things to know about the 737** (a reviewer's remarks, 11 October 2026). Start places are not
   capped at six on the client's path: 11886 "Unusual Activity" (10 places) ends with 9 pins and 11966 (7
   places) with 7; 82087's 7 places end as 6, as places within 1.5 points on one map share a pin (two of
-  11886's and two of 82087's stand on Stormwind City). So quests with more than
+  11886's places on Stormwind City share one, and two of 82087's three there). So quests with more than
   six pins went from 21 on master to 23. 23 of the pinned quests are in categories the TrinityCore pass
   holds as system ones, 5 of them Weekly Events with no holiday tag, whose pins show all year until
   decision 10 of [open-items.md](open-items.md) tags them. And the task table holds kinds that `$noPinKinds`
   does not list and the 758 does not name: World Event 82 (52 rows, none of ours), Emissary Quest 128 (2,
-  none), Maw Soul Spawn Tracker 273 (1, none) and Delve 288 (2, both of ours already pinned). No quest of
+  none), Maw Soul Spawn Tracker 273 (1, none), Delve 288 (2, both of ours already pinned), PvP 41 (1, ours), Island Weekly Quest 261 (2, both ours) and VenthyrPartyQuest 272 (47, 44 of ours; none of our 47 in these three has a start). No quest of
   ours of those kinds is waiting for a pin, but a task quest of such a kind that the task-quest change
   (#295, decision 1 of open-items.md) adds to the data will be pinned by the next pipeline run when it has
   a start place; add its line to `$noPinKinds` first to hold a kind.

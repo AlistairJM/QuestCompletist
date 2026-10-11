@@ -930,5 +930,6 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   racing, hold callings"). The world quests (3,148), callings (83, held until it is known whether the
   game still offers them) and 16 threat wrappers and bonus
   objectives still have none, by `$noPinKinds` in `Build-QuestLocationData.ps1`. The statements above that
-  "the 4,082 task quests stay unpinned" and "the pipeline never takes in task quests" are as of their
+  82449 "needs a hand entry" (it now has a nameless pin in Dornogal, map 2339 at 46.08, 49.64), "the 4,082 task quests
+  stay unpinned" and "the pipeline never takes in task quests" are as of their
   dates; decision 9 (adding task quests to the database) still gives its new quests no pins.
