@@ -1058,3 +1058,65 @@ function Get-RecordedReview($model, $pins, $decisions, $unavailable) {
     }
     return , $items
 }
+
+# --- What Forever's importer takes from the ledger ---------------------------------------------
+
+# Forever's pins are rebuilt by Import-ForeverData.ps1 every time, so for Forever the ledger is not a
+# place that fills and adds go to (as retail's pins are) but the importer's source of recorded givers:
+# for each giver the places that count (trusted, with a position), most seen first; the name its trusted
+# rows agree on; and for each quest the givers that trusted rows say offered it. The places are the merge
+# tool's own (Get-RecordedPlaces), so two places of a giver further apart than the radius are two.
+function Get-RecordedGiverInputs($model) {
+    $spots = @{}; $names = @{}; $offers = @{}
+    foreach ($key in $model.Givers.Keys) {
+        $giver = $model.Givers[$key]
+        $places = @($giver.Places | Where-Object { $_.Trusted -and $_.X -ge 0 } | Sort-Object @{ Expression = { -$_.Visits } }, Map, X, Y)
+        if ($places.Count -gt 0) {
+            $spots[$key] = @($places | ForEach-Object { [pscustomobject]@{ UiMap = $_.Map; X = $_.X; Y = $_.Y; Seen = $_.Visits } })
+        }
+        if ($giver.Name) { $names[$key] = $giver.Name }
+    }
+    foreach ($quest in $model.Offers.Keys) {
+        $offers[[int]$quest] = @($model.Offers[$quest] | Sort-Object { $_ } -Unique -CaseSensitive)
+    }
+    return [pscustomobject]@{ Spots = $spots; Names = $names; Offers = $offers }
+}
+
+function Describe-RecordedRow($row) {
+    $giver = "$($row.Kind):$($row.Npc)"
+    switch ($row.Role) {
+        'giver' { return "giver $giver '$($row.Name)'" }
+        'spot' { return "spot of $giver on map $($row.Map) at $(Format-PinNumber $row.X),$(Format-PinNumber $row.Y)" }
+        'offer' { return "offer of quest $($row.Quest) by $giver" }
+    }
+    return "$($row.Role) $giver"
+}
+
+# What of a source's notes the ledger lacks. Each giver (with a name), spot and offer in -Facts (as
+# Get-RecordedFacts left them: the builds, maps and quests the merge tool reads) must be a row of the
+# ledger with the source's tag and at least its number (visits for a spot, 1 for the rest). That is what
+# Import-RecordedGivers.ps1 leaves for the file, so a ledger that passes is one the tool has read the file
+# into. The ledger only grows, so it may hold more. Turn-ins and starts are not asked: the importer does
+# not read them. Returns the lacking rows as text, in the ledger's order.
+function Find-RecordedLedgerGaps($ledger, $facts) {
+    $tag = $facts.Tag
+    $asked = [pscustomobject]@{
+        Tag = $tag; Game = $facts.Game; Givers = $facts.Givers; Spots = $facts.Spots; Offers = $facts.Offers
+        Turnins = @(); Starts = @()
+    }
+    $wanted = New-LedgerTable
+    [void](Add-RecordedFacts $wanted $asked)
+    $gaps = New-Object System.Collections.Generic.List[string]
+    foreach ($row in (Get-RecordedSortedRows $wanted)) {
+        $want = (ConvertFrom-RecordedSrc $row.Src)[$tag]
+        $key = Get-RecordedKey $row
+        $have = $null
+        if ($ledger.Contains($key)) {
+            $src = ConvertFrom-RecordedSrc $ledger[$key].Src
+            if ($src.Contains($tag)) { $have = $src[$tag] }
+        }
+        if ($null -eq $have) { $gaps.Add("$(Describe-RecordedRow $row)") }
+        elseif ($have -lt $want) { $gaps.Add("$(Describe-RecordedRow $row), seen $want times in the file and $have in the ledger") }
+    }
+    return $gaps.ToArray()
+}

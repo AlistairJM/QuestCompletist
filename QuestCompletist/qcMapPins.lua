@@ -73,6 +73,42 @@ local function qcTomTomLoaded()
     return C_AddOns.IsAddOnLoaded("TomTom") and TomTom and TomTom.AddWaypoint and true
 end
 
+local function qcGameWaypointAllowed(mapId)
+    if not (C_Map and C_Map.CanSetUserWaypointOnMap and C_Map.SetUserWaypoint and C_SuperTrack and C_SuperTrack.SetSuperTrackedUserWaypoint
+        and UiMapPoint and UiMapPoint.CreateFromCoordinates) then
+        return false
+    end
+    local ok, allowed = pcall(function()
+        -- Blizzard's map places no pin while this rule is on, and asks the map as well.
+        local pinRule = Enum and Enum.GameRule and Enum.GameRule.WorldMapTrackingPinDisabled
+        if pinRule and C_GameRules and C_GameRules.IsGameRuleActive and C_GameRules.IsGameRuleActive(pinRule) then
+            return false
+        end
+        return C_Map.CanSetUserWaypointOnMap(mapId)
+    end)
+    return ok and allowed == true
+end
+
+local function qcWaypointAvailable(mapId)
+    return qcTomTomLoaded() or qcGameWaypointAllowed(mapId)
+end
+
+-- TomTom's waypoint where it is loaded, else the game's own, which replaces the player's and gets the
+-- arrow. Pins are in percent, the game's points 0 to 1.
+function QC.qcSetWaypoint(mapId, pinData, questId)
+    local x, y = pinData[4] / 100, pinData[5] / 100
+    if qcTomTomLoaded() then
+        TomTom:AddWaypoint(mapId, x, y, {title = qcNpcName(pinData) or qcQuestName(questId)})
+        TomTom:SetClosestWaypoint()
+    elseif qcGameWaypointAllowed(mapId) then
+        pcall(function()
+            if C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapId, x, y)) then
+                C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+            end
+        end)
+    end
+end
+
 -- How many done quests fold into one line on a pin's tooltip unless Shift is held.
 local QC_PIN_TOOLTIP = {foldDone = 2}
 
@@ -322,7 +358,8 @@ function qcPinMixin:OnMouseEnter()
         end
         qcAddPinQuestsToTooltip(others)
     end
-    if qcTomTomLoaded() then
+    local map = self:GetMap()
+    if qcWaypointAvailable(map and map:GetMapID()) then
         qcAddMapTooltipLine("|cff808080" .. qcL.PINWAYPOINT .. "|r", nil, GameTooltipTextSmall)
     end
 
@@ -333,15 +370,14 @@ function qcPinMixin:OnMouseLeave()
     qcMapTip.Close()
 end
 
--- Clicking a pin sets a TomTom waypoint to it, as clicking a quest in the list does. The map hands a
+-- Clicking a pin sets a waypoint to it, as clicking a quest in the list does. The map hands a
 -- pin's clicks to OnMouseClickAction, and its right-clicks to the map itself, to zoom out.
 function qcPinMixin:OnMouseClickAction(button)
-    if button ~= "LeftButton" or IsModifierKeyDown() or not qcTomTomLoaded() then return end
+    if button ~= "LeftButton" or IsModifierKeyDown() then return end
     local pinData = self.PinData
     local mapId = pinData and self:GetMap() and self:GetMap():GetMapID()
     if not mapId then return end
-    TomTom:AddWaypoint(mapId, pinData[4] / 100, pinData[5] / 100, {title = qcNpcName(pinData) or qcQuestName(pinData[6][1])})
-    TomTom:SetClosestWaypoint()
+    QC.qcSetWaypoint(mapId, pinData, pinData[6][1])
 end
 
 -- Pressing or letting go of Shift lists or folds the done quests of the pin under the mouse.

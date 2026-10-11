@@ -6,9 +6,9 @@ then cross-reference against this addon's own quests (data\quests.jsonl).
 A pin goes where a quest starts: its point 32 in QuestPOIBlob, else its point -1, which is the
 quest's own point (where it starts and ends when that is one place, the turn-in otherwise). A start on
 the parent map of another start of the quest (a continent over a zone) is left out. A quest with
-a point 32 and no point -1 on a map is placed if it has a pin already, or is one of our quests and not in
-the client's task table (QuestV2CliTask: world quests, bonus objectives and some dailies, which the addon
-doesn't pin).
+a point 32 and no point -1 on a map is placed if it has a pin already, or is one of our quests and not a
+task quest of a kind in $noPinKinds below. The client's task table (QuestV2CliTask) holds world quests and
+bonus objectives, which the addon doesn't pin, and also dailies, holiday and ordinary quests, which it does.
 
 A quest the client's export lists no point for at all, and that passes the rules in
 docs/plans/quest-location-data-pipeline.md ("October 2026, pins from TrinityCore"), gets its start
@@ -34,6 +34,56 @@ param(
 )
 . "$PSScriptRoot\AddonData.ps1"
 $toolsDir = $ToolsDir
+
+# The task quests (QuestV2CliTask, by its QuestInfoID) that get no pin; every other task quest is placed like any
+# quest of ours. Every QuestInfo kind named "World Quest" is here, and the run stops at one that isn't, so a kind
+# a new build adds can't start getting pins unseen. 265 is a hidden tracker, 268 an assault wrapper and 283 a
+# bonus objective, none of them named "World Quest". 271 is kept out until it is known whether the game still
+# offers callings: deleting its line pins that kind (docs/plans/open-items.md, decision 2).
+$noPinKinds = [ordered]@{
+    109 = 'World Quest'
+    110 = 'Epic World Quest'
+    111 = 'Elite World Quest'
+    112 = 'Epic Elite World Quest'
+    113 = 'PvP World Quest'
+    114 = 'First Aid World Quest'
+    115 = 'Battle Pet World Quest'
+    116 = 'Blacksmithing World Quest'
+    117 = 'Leatherworking World Quest'
+    118 = 'Alchemy World Quest'
+    119 = 'Herbalism World Quest'
+    120 = 'Mining World Quest'
+    121 = 'Tailoring World Quest'
+    122 = 'Engineering World Quest'
+    123 = 'Enchanting World Quest'
+    124 = 'Skinning World Quest'
+    125 = 'Jewelcrafting World Quest'
+    126 = 'Inscription World Quest'
+    129 = 'Archaeology World Quest'
+    130 = 'Fishing World Quest'
+    131 = 'Cooking World Quest'
+    135 = 'Rare World Quest'
+    136 = 'Rare Elite World Quest'
+    137 = 'Dungeon World Quest'
+    139 = 'Legion Invasion World Quest'
+    141 = 'Raid World Quest'
+    142 = 'Legion Invasion Elite World Quest'
+    144 = 'Legionfall World Quest'
+    145 = 'Legionfall Dungeon World Quest'
+    146 = 'Legion Invasion World Quest Wrapper'
+    151 = 'Magni World Quest - Azerite'
+    152 = 'Tortollan World Quest - 8.0'
+    259 = 'Faction Assault World Quest'
+    260 = 'Faction Assault Elite World Quest'
+    265 = 'Hidden Quest'
+    268 = 'Threat Wrapper'
+    271 = 'Calling Quest'
+    278 = 'PvP Elite World Quest'
+    283 = 'Bonus Objective with Completion Toast'
+    286 = 'Capstone World Quest'
+    295 = 'Prey World Quest'
+    296 = 'World Quest (Short Duration)'
+}
 
 Write-Output "Loading source tables..."
 $blobs = Import-Csv "$toolsDir\QuestPOIBlob.csv"
@@ -117,13 +167,20 @@ function Convert-Blob($blob) {
 # (docs\plans\quest-location-data-pipeline.md, "October 2026, the pin review"); its point 32 is
 # where it starts. A quest the client gives a point -1 is placed at its points 32 when it has any,
 # else at its point -1. A quest with a point 32 and no point -1 gets a location if it has a pin
-# already (to move that pin to its start) or is one of our quests and not in the task table.
+# already (to move that pin to its start) or is one of our quests and not a task quest of a kind in $noPinKinds.
 $pinned = New-Object System.Collections.Generic.HashSet[string]
 foreach ($pin in (Read-PinData $DataDir)) { foreach ($questId in $pin.quests) { [void]$pinned.Add([string]$questId) } }
 if (-not (Test-Path "$toolsDir\QuestV2CliTask.csv")) { throw "QuestV2CliTask.csv missing (step 1b): without it every task quest would get a pin" }
-$isTask = New-Object System.Collections.Generic.HashSet[string]
-foreach ($row in (Import-Csv "$toolsDir\QuestV2CliTask.csv")) { [void]$isTask.Add($row.ID) }
-if ($isTask.Count -eq 0) { throw "QuestV2CliTask.csv has no rows" }
+if (-not (Test-Path "$toolsDir\QuestInfo.csv")) { throw "QuestInfo.csv missing (step 1b): without it a World Quest kind missing from `$noPinKinds would get pins" }
+$kindName = @{ 0 = 'no kind' }
+foreach ($row in (Import-Csv "$toolsDir\QuestInfo.csv")) {
+    $kindName[[int]$row.ID] = $row.InfoName_lang
+    if ($row.InfoName_lang -match 'World Quest' -and -not $noPinKinds.Contains([int]$row.ID)) { throw "QuestInfo $($row.ID) ($($row.InfoName_lang)) is named World Quest and is not in `$noPinKinds: add it, or its quests would get pins" }
+}
+$taskKind = @{}
+foreach ($row in (Import-Csv "$toolsDir\QuestV2CliTask.csv")) { $taskKind[$row.ID] = [int]$row.QuestInfoID }
+if ($taskKind.Count -eq 0) { throw "QuestV2CliTask.csv has no rows" }
+function Test-NoPinKind([string]$questId) { return $taskKind.ContainsKey($questId) -and $noPinKinds.Contains($taskKind[$questId]) }
 $startConverted = @{}
 foreach ($blob in ($blobs | Where-Object { $_.ObjectiveIndex -eq "32" })) {
     $c = Convert-Blob $blob
@@ -147,7 +204,7 @@ function Test-AncestorMap($ancestor, $map) {
     return $false
 }
 $droppedParentCopies = 0
-$startOnly = @($startConverted.Keys | Where-Object { -not $ownConverted.ContainsKey($_) -and ($pinned.Contains($_) -or ($ourQuests.ContainsKey($_) -and -not $isTask.Contains($_))) })
+$startOnly = @($startConverted.Keys | Where-Object { -not $ownConverted.ContainsKey($_) -and ($pinned.Contains($_) -or ($ourQuests.ContainsKey($_) -and -not (Test-NoPinKind $_))) })
 foreach ($questId in (@($ownConverted.Keys) + $startOnly | Sort-Object { [int]$_ })) {
     if ($startConverted.ContainsKey($questId)) {
         # The client also lists a start on a parent map (a continent over a zone) at the same place.
@@ -182,10 +239,11 @@ foreach ($questId in (@($ownConverted.Keys) + $startOnly | Sort-Object { [int]$_
 
 # Quests the client's export lists no point for at all, from TrinityCore's quest_poi: the points the
 # server sends the client, with the same ObjectiveIndex 32 for where a quest starts. Only one of our
-# quests that has no pin, isn't a task quest, a system quest, a holiday quest or a removed one gets a
-# location, at each place it starts (docs\plans\quest-location-data-pipeline.md, "October 2026, pins
-# from TrinityCore"). What it leaves out for a reason a person should look at goes into
-# tools\quest_locations_tdb_review.csv.
+# quests that has no pin, isn't a task quest of a kind in $noPinKinds, a system quest, a holiday quest or a
+# removed one gets a location, at each place it starts (docs\plans\quest-location-data-pipeline.md, "October
+# 2026, pins from TrinityCore"). What it leaves out for a reason a person should look at goes into
+# tools\quest_locations_tdb_review.csv. The starters it reads here also go on the client's rows of a quest with
+# no pin, with the starter whose spawn stands at the start as its giver, for Assemble-PinDB.ps1 to name the pin.
 $tdbFile = if ($TdbFile) { $TdbFile } else { Get-ChildItem "$toolsDir\tdb\TDB_full_world_*.sql" -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1 -ExpandProperty FullName }
 $tdbPlaced = 0
 $tdbPlaces = 0
@@ -239,7 +297,7 @@ if (-not $tdbFile -or -not (Test-Path $LuaExe)) {
         $ours = $ourQuests[$questId]
         if (-not $ours) { return 'not in our data' }
         if ($pinned.Contains($questId)) { return 'already has a pin' }
-        if ($isTask.Contains($questId)) { return 'task quest' }
+        if (Test-NoPinKind $questId) { return 'task quest of a kind the addon does not pin' }
         if ($unavailable.Contains($questId)) { return 'flagged unavailable' }
         if (@(0, 1, 2, 4, 128) -notcontains [int]$ours.Type) { return 'quest type' }
         if ($ours.Holiday -or $ours.Profession) { return 'holiday or profession quest' }
@@ -310,8 +368,15 @@ if (-not $tdbFile -or -not (Test-Path $LuaExe)) {
     }
     $creatureName = @{}
     foreach ($row in (Read-DumpTable 'creature_template' '1,4' 30000)) { $f = $row.Split("`t"); $creatureName[$f[0]] = $f[1] }
+    foreach ($row in $results) {
+        if ($row.Source -ne 'client' -or $pinned.Contains($row.QuestID) -or -not $starterIds.ContainsKey($row.QuestID)) { continue }
+        $ids = @($starterIds[$row.QuestID] | Select-Object -Unique)
+        $row.StarterNpcIds = $ids -join '|'
+        $row.StarterNames = (@($ids | ForEach-Object { $creatureName[$_] } | Where-Object { $_ } | Select-Object -Unique)) -join '|'
+    }
     $wantedStarters = New-Object System.Collections.Generic.HashSet[string]
     foreach ($questId in $tdbStarts.Keys) { foreach ($id in $starterIds[$questId]) { [void]$wantedStarters.Add($id) } }
+    foreach ($row in $results) { if ($row.StarterNpcIds) { foreach ($id in $row.StarterNpcIds.Split('|')) { [void]$wantedStarters.Add($id) } } }
     $spawnsOf = @{}
     foreach ($row in (Read-DumpTable 'creature' '1,2,3,13,14' 150000)) {
         $f = $row.Split("`t")
@@ -330,6 +395,11 @@ if (-not $tdbFile -or -not (Test-Path $LuaExe)) {
             }
         }
         return $best
+    }
+    foreach ($row in $results) {
+        if ($row.Source -ne 'client' -or -not $row.StarterNpcIds) { continue }
+        $giver = Find-GiverAtPlace @($row.StarterNpcIds.Split('|')) @{ UiMapID = $row.UiMapID; X = [double]$row.MapX; Y = [double]$row.MapY }
+        if ($giver) { $row.GiverNpcId = $giver; $row.GiverName = $creatureName[$giver] }
     }
     $maxPlaces = 6
     foreach ($questId in ($tdbStarts.Keys | Sort-Object { [int]$_ })) {
@@ -381,6 +451,12 @@ Write-Output "Skipped (no matching region): $skippedNoRegion"
 Write-Output "Skipped (point outside every region of its map): $skippedOffMap"
 Write-Output "Quests placed at their start (point 32): $($questsAtStart.Count) ($($startOnly.Count) with no point -1, $(@($startOnly | Where-Object { -not $pinned.Contains($_) }).Count) of them with no pin yet); at their own point (-1): $($questsAtOwnPoint.Count)"
 Write-Output "Starts on a parent map of another start of the quest, left out: $droppedParentCopies"
+$taskNew = @($startOnly | Where-Object { $taskKind.ContainsKey($_) -and -not $pinned.Contains($_) })
+Write-Output "Task quests of a kind the addon pins, placed at their start with no pin yet: $($taskNew.Count)"
+foreach ($group in ($taskNew | Group-Object { $taskKind[$_] } | Sort-Object Count -Descending)) { Write-Output "  kind $($group.Name) ($($kindName[[int]$group.Name])): $($group.Count)" }
+$taskLeft = @($startConverted.Keys | Where-Object { $ourQuests.ContainsKey($_) -and -not $ownConverted.ContainsKey($_) -and -not $pinned.Contains($_) -and (Test-NoPinKind $_) })
+Write-Output "Task quests with a start and no pin, left out as a kind in `$noPinKinds: $($taskLeft.Count)"
+foreach ($group in ($taskLeft | Group-Object { $taskKind[$_] } | Sort-Object Count -Descending)) { Write-Output "  kind $($group.Name) ($($kindName[[int]$group.Name])): $($group.Count)" }
 Write-Output "Converted quest locations: $($results.Count)"
 
 $outFile = "$toolsDir\quest_locations.csv"

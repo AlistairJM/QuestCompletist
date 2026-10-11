@@ -1,5 +1,5 @@
 <#
-Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from five sources
+Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jsonl, from seven sources
 (docs/plans/forever.md, phase 3):
 
   - the client's tables for -Build (left out, the build of the newest tools\forever_probe_<revision>
@@ -9,8 +9,17 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     answered;
   - CMaNGOS's vanilla database (cmangos/classic-db, Full_DB, GPL-3.0): the old world, including the
     quests the beta didn't answer, and who starts each quest and where they stand;
-  - the beta probe's saved variables: which quests failed, the game's NPC names, and the recorder's
-    quest givers and spots;
+  - the beta probe's saved variables: which quests failed and the game's NPC names;
+  - the recorder's ledger, -LedgerFile (docs\plans\recorded-quest-givers.csv, which step 6d,
+    Import-RecordedGivers.ps1, fills from the probe's files and the addon's own notes): the quest givers
+    met in the game, where they stood, their English names and the quests they offered. Only what the
+    maintainer's own files saw, or two different players did, counts (RecordedGivers.ps1 decides). The
+    probe's own recorder notes are not read from its file: if the file holds a giver, spot or offer
+    the ledger lacks (step 6d was not run on it), the run stops, so a ledger behind the probe's file
+    can't silently drop its newest givers (of the versions -Builds counts). Only the probe's file is checked: the addon's own file and
+    players' files are not, and for them the import relies on step 10's item 1 in maintenance.md
+    (step 6d first). The file is read the way step 6d reads it, so -Builds (default: the versions
+    the TOCs in -AddonDir name) says which of its builds count;
   - -GiverFile and -ZoneFile, docs\plans\forever-quest-givers.csv and forever-quest-zones.csv:
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
     can't place. A listed NPC stands where CMaNGOS or the recorder puts it.
@@ -19,7 +28,7 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
     is a name in qcHolidays in qcCore.lua and Decision is SET.
 
 The game wins wherever it speaks. Title, level, minimum level, zone, recurrence and race restrictions
-come from the cache when it has the quest, a recorded spot wins over CMaNGOS's for that giver, and NPC
+come from the cache when it has the quest, a recorded place wins over CMaNGOS's spawns for that giver, and NPC
 names come from the probe. A quest's givers are CMaNGOS's, the recorder's and the hand list's together, but a
 listed giver the recorder didn't see offer the quest, when it saw another giver do so, is left out.
 Quests with internal titles ("<UNUSED>", "[DNT]" and the like, and test quests only the game knows)
@@ -77,8 +86,10 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
                     before it in its quest line (QuestLineXQuest's order), when the previous step is handed in on the
                     map this one starts on (the client's QuestPOIBlob points -1 and 32). A line that doesn't
                     chain that way, and a quest line that disagrees with another source, are listed in the review.
-Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's spots for the givers
-it saw. Spawns are converted to map positions with the client's UiMapAssignment frames. Frames are
+Pins are CMaNGOS's spawns of each quest's NPC or object givers, or the recorder's places for the givers
+it saw: the ledger's places of a giver on one map, rows within 1.5 map points of each other being one place
+(the merge tool's own test, so a giver's pins may stand 1.5 points apart, no closer). Spawns are converted
+to map positions with the client's UiMapAssignment frames. Frames are
 rectangles and overlap, so a spawn goes on the first of these maps whose frame holds it:
   1. the map our old Classic pins had for that NPC (git history before #89), or the one whose old
      pin stands nearest the spawn when the NPC has old pins on several of them;
@@ -132,6 +143,9 @@ param(
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
     [string]$ZoneFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-zones.csv'),
     [string]$HolidayFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-holiday-decisions.csv'),
+    [string]$LedgerFile = (Join-Path $PSScriptRoot '..\docs\plans\recorded-quest-givers.csv'),
+    [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
+    [string[]]$Builds = @(),
     [string]$ReviewFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [switch]$WhatIf
@@ -139,6 +153,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\RecordedGivers.ps1"
 . "$PSScriptRoot\QuestRemovals.ps1"
 . "$PSScriptRoot\ForeverAnswers.ps1"
 . "$PSScriptRoot\QuestLines.ps1"
@@ -362,6 +377,50 @@ foreach ($blob in $questBlobs) {
     if (-not $near) { $startSpots[$quest] += @($spot) }
 }
 
+# The recorded givers come from the ledger, which Import-RecordedGivers.ps1 (step 6d) fills from the probe's
+# files and the addon's own notes. If the probe's file holds a giver, spot or offer the ledger lacks, the
+# ledger is behind it and the newest givers would be dropped without a word, so nothing is written. The file is
+# read, and filtered, the way step 6d reads it (its builds, the game's maps, the quests the data has), and
+# the ledger must hold each note under the file's own source tag with at least the file's number. Only the
+# probe's file is checked: the addon's file and players' are left to the runbook's order (step 6d first).
+if ($Builds.Count -eq 0) { $Builds = @(Get-TocVersions $AddonDir) }
+if ($Builds.Count -eq 0) { throw "No versions to read the probe's file for: pass -Builds, or give -AddonDir the TOCs." }
+$probeTag = 'own-' + (ConvertTo-RecordedTag (Split-Path -Leaf (Split-Path -Parent (Resolve-Path $ProbeFile).Path)))
+$ledgerMaps = @{ retail = (New-Object 'System.Collections.Generic.HashSet[int]'); forever = (New-Object 'System.Collections.Generic.HashSet[int]') }
+foreach ($map in $uiMapType.Keys) { [void]$ledgerMaps.forever.Add($map) }
+$ledgerQuests = @{ retail = (New-Object 'System.Collections.Generic.HashSet[int]'); forever = (New-Object 'System.Collections.Generic.HashSet[int]') }
+$dataQuestPath = Join-Path $DataDir 'quests.jsonl'
+if (Test-Path -LiteralPath $dataQuestPath) {
+    foreach ($line in [IO.File]::ReadLines((Resolve-Path -LiteralPath $dataQuestPath).Path)) {
+        if ($line -match '^\{"id":(\d+),') { [void]$ledgerQuests.forever.Add([int]$Matches[1]) }
+    }
+}
+$probeRead = Read-RecordedFile $ProbeFile $probeTag $LuaExe (Join-Path $PSScriptRoot 'Read-RecordedGivers.lua') 64
+if ($probeRead.Refused) { throw "The probe's file $ProbeFile can't be read as recorder notes ($($probeRead.Refused)), which is how step 6d reads it too. Nothing was written." }
+$probeNotes = $null
+$ledgerGaps = @()
+$ledger = Read-RecordedLedger $LedgerFile
+if ($probeRead.Givers.Count + $probeRead.Spots.Count + $probeRead.Offers.Count -gt 0) {
+    $probeNotes = Get-RecordedFacts $probeRead $Builds $ledgerMaps $ledgerQuests
+    if ($probeNotes.Refused) {
+        $hint = if ($probeNotes.Refused -like 'none of its builds are read*') {
+            " The versions read are $($Builds -join ', '): if the TOCs don't name the file's version yet, pass it with -Builds, here and to step 6d."
+        } else { '' }
+        throw "The probe's file $ProbeFile can't be read as recorder notes ($($probeNotes.Refused)), which is how step 6d reads it too.$hint Nothing was written."
+    }
+    if ($probeNotes.Game -ne 'forever') { throw "The probe's file $ProbeFile is not Forever's: its builds say '$($probeNotes.Game)'. Nothing was written." }
+    $ledgerGaps = @(Find-RecordedLedgerGaps $ledger $probeNotes)
+}
+if ($ledgerGaps.Count) {
+    $shown = ($ledgerGaps | Select-Object -First 5) -join '; '
+    throw ("The ledger $LedgerFile lacks $($ledgerGaps.Count) of the recorder notes in the probe's file $ProbeFile (source $probeTag): $shown" +
+        $(if ($ledgerGaps.Count -gt 5) { "; and $($ledgerGaps.Count - 5) more" }) +
+        ". Run step 6d (Import-RecordedGivers.ps1) on the probe's file first, so the ledger keeps them (on a new build it needs UiMap-$Build.csv, which this run has made sure is in -ToolsDir), then run this again. Nothing was written.")
+}
+$recordedModel = Get-RecordedModel $ledger 'forever'
+$fromLedger = Get-RecordedGiverInputs $recordedModel
+$recordedSpots = $fromLedger.Spots; $recordedName = $fromLedger.Names; $recordedOffers = $fromLedger.Offers
+
 $outputEncoding = [Console]::OutputEncoding
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 $sql = [IO.Path]::GetTempFileName()
@@ -401,7 +460,7 @@ $handStarters = @{}
 foreach ($row in Import-Csv $GiverFile) { $handStarters[[int]$row.Quest] += @([int]$row.Npc); $starterNpcs[[int]$row.Npc] = $true }
 $handZone = @{}; foreach ($row in Import-Csv $ZoneFile) { $handZone[[int]$row.Quest] = [int]$row.Zone }
 $holidayFlagByName = @{}
-$qcCore = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\QuestCompletist\qcCore.lua'))
+$qcCore = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcCore.lua'))
 foreach ($entry in [regex]::Matches($qcCore, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=')) { $holidayFlagByName[$entry.Groups[2].Value] = [int]$entry.Groups[1].Value }
 if (-not $holidayFlagByName.Count) { throw "qcHolidays wasn't found in qcCore.lua." }
 $handHoliday = @{}
@@ -495,21 +554,12 @@ $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Spl
 $cache = @{}
 $cacheLines = [IO.File]::ReadAllLines($CacheFile)
 foreach ($q in (('[' + ($cacheLines -join ',') + ']') | ConvertFrom-Json)) { $cache[[int]$q.id] = $q }
-$probeResult = @{}; $gameNpcName = @{}; $recordedSpots = @{}; $recordedName = @{}; $recordedOffers = @{}
+$probeResult = @{}; $gameNpcName = @{}
 foreach ($line in $probeLines) {
     $f = $line.Split("`t")
     switch ($f[0]) {
         'quest' { if ($f[2] -eq $Build) { $probeResult[[int]$f[1]] = $f[3] } }
         'npc' { if ($f[2] -eq $Build -and $f[4]) { $gameNpcName[[int]$f[1]] = $f[4] } }
-        'spot' {
-            $parts = $f[4].Split(' ')
-            if ($parts.Count -eq 3) {
-                $key = "$($f[1]):$($f[2])"
-                $recordedSpots[$key] += @([pscustomobject]@{ UiMap = [int]$parts[0]; X = [decimal]$parts[1]; Y = [decimal]$parts[2]; Seen = [int]$f[5] })
-                if ($f[3]) { $recordedName[$key] = $f[3] }
-            }
-        }
-        'offer' { $recordedOffers[[int]$f[3]] += @("$($f[1]):$($f[2])") }
     }
 }
 
@@ -627,6 +677,15 @@ foreach ($id in $ids) {
         minLevel = $(if ($minLevel -ne $level) { $minLevel } else { $null }) }
 }
 
+foreach ($c in $recordedModel.NameConflicts) {
+    Add-Review 'recorded giver: trusted sources disagree on the name, none used' '' $c.Giver $c.Names
+}
+foreach ($note in $(if ($probeNotes) { $probeNotes.UnknownQuests })) {
+    if ($note.Role -eq 'offer' -and $records.ContainsKey([int]$note.Quest)) {
+        Add-Review 'recorded offer not in the ledger yet: the quest is new' $note.Quest "$($note.Kind):$($note.Npc)" "$($records[[int]$note.Quest].name): run step 6d on the new data, then this again"
+    }
+}
+
 $previousByNext = @{}
 foreach ($c in $cache.Values) { if ($c.nextQuest -and [int]$c.nextQuest -ne [int]$c.id) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
 foreach ($q in $records.Values) {
@@ -713,14 +772,7 @@ foreach ($q in $records.Values) {
 
 function Get-GiverSpots([string]$kind, [int]$id) {
     $recorded = $recordedSpots["${kind}:$id"]
-    if ($recorded) {
-        $spots = @()
-        foreach ($spot in ($recorded | Sort-Object { -$_.Seen }, UiMap, X, Y)) {
-            $near = $spots | Where-Object { $_.UiMap -eq $spot.UiMap -and [Math]::Abs($_.X - $spot.X) -lt 3 -and [Math]::Abs($_.Y - $spot.Y) -lt 3 }
-            if (-not $near) { $spots += $spot }
-        }
-        return $spots
-    }
+    if ($recorded) { return $recorded }
     $spawns = if ($kind -eq 'GameObject') { $objectSpawns[$id] } else { $npcSpawns[$id] }
     $spots = @()
     foreach ($spawn in $spawns) {
@@ -870,7 +922,7 @@ foreach ($key in $recordedSpots.Keys) {
         $same = @($spawns | ForEach-Object { Convert-ToMapSpot $_.Map $_.X $_.Y -OnUiMap $spot.UiMap } | Where-Object { $_ })
         if (-not $same) { continue }
         $closest = ($same | ForEach-Object { [Math]::Sqrt([double](($_.X - $spot.X) * ($_.X - $spot.X) + ($_.Y - $spot.Y) * ($_.Y - $spot.Y))) } | Measure-Object -Minimum).Minimum
-        if ($closest -gt 1) { Add-Review 'recorded spot far from CMaNGOS' '' $key ("{0} at {1} {2}: {3:0.0} map points from CMaNGOS's spawn" -f $recordedName[$key], $spot.X, $spot.Y, $closest) }
+        if ($closest -gt 1) { Add-Review 'recorded spot far from CMaNGOS' '' $key ("{0} at {1:0.0} {2:0.0}: {3:0.0} map points from CMaNGOS's spawn" -f $recordedName[$key], $spot.X, $spot.Y, $closest) }
     }
 }
 
@@ -914,6 +966,9 @@ Write-Host ("Reputation: {0} rewards on {1} quests, from the game's records. {2}
     $reputationLines.Count, $rewarding, $cmangosOnlyReputation)
 Write-Host ("Skills: {0} quests need a profession, {1} of them a level above 1." -f
     $skillLines.Count, @($skillLines | Where-Object { $_ -notmatch '"level":1\}$' }).Count)
+Write-Host ("Recorded givers (the ledger's Forever rows): {0} with a place, {1} places, {2} quests with an offer; {3} rows wait for a second source and are not used." -f
+    $recordedSpots.Count, @($recordedSpots.Values | ForEach-Object { $_ }).Count, $recordedOffers.Count,
+    @($ledger.Values | Where-Object { $_.Game -eq 'forever' -and -not (Test-RecordedTrusted $_) }).Count)
 $withMinLevel = @($questList | Where-Object { $null -ne $_.minLevel })
 Write-Host ("Minimum levels: {0} quests need another level than their own, {1} from the game and {2} from CMaNGOS; {3} are above the quest's level, {4} are 0." -f
     $withMinLevel.Count, @($withMinLevel | Where-Object { $cache.ContainsKey($_.id) }).Count, @($withMinLevel | Where-Object { -not $cache.ContainsKey($_.id) }).Count,
