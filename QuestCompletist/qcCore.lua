@@ -1579,15 +1579,30 @@ local function qcQueryQuestFlaggedComplete()
 	return qcFound, qcNewFlagged
 end
 
+-- Until 1 April 2027: links since found wrong ticked these quests when another was handed in. A tick
+-- the server doesn't confirm goes; the sync after it puts back any that a remaining link gives.
+local function qcDropFormerlyExclusiveTicks()
+	local qcDropped = false
+	for _, qcIndex in ipairs(qcFormerlyExclusive) do
+		if qcCharacterCompletions[qcIndex] == 1 and not C_QuestLog.IsQuestFlaggedCompleted(qcIndex) then
+			qcCharacterCompletions[qcIndex] = nil
+			qcDropped = true
+		end
+	end
+	return qcDropped
+end
+
 local function qcQuestQueryCompleted(qcAlwaysReport)
 
 	local qcFound = 0
 	local qcNewFlagged = 0
+	local qcDropped = false
 	local qcCompletedIDs = C_QuestLog.GetAllCompletedQuestIDs()
 
 	if not (qcCompletedIDs) or (#qcCompletedIDs == 0) then
 		qcFound, qcNewFlagged = qcQueryQuestFlaggedComplete()
 	else
+		qcDropped = qcDropFormerlyExclusiveTicks()
 		for _, qcIndex in ipairs(qcCompletedIDs) do
 			if not (qcQuestDatabase[qcIndex] == nil) then
 				qcFound = (qcFound + 1)
@@ -1598,7 +1613,7 @@ local function qcQuestQueryCompleted(qcAlwaysReport)
 		end
 	end
 
-	if (qcNewFlagged > 0) then
+	if (qcNewFlagged > 0) or qcDropped then
 		qcRequestRefresh(QC_REBUILD_LIST, true)
 	end
 	if (qcNewFlagged > 0) or (qcAlwaysReport) then

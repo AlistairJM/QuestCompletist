@@ -32,6 +32,9 @@ qcQuest.lua holds what the core reads:
     skills.jsonl;
   - each quest's breadcrumbs (qcBreadcrumbQuests) and the quests it shuts out
     (qcMutuallyExclusive), from links.jsonl;
+  - the quests whose "only one of these" links -LinkFile's REMOVE rows take out (qcFormerlyExclusive):
+    the addon ticked them when another of the group was handed in, so the login sync drops a tick
+    the server doesn't confirm;
   - empty tables for retail-only features.
 qcUnavailableQuests.lua is empty: no Forever quest is flagged yet.
 
@@ -42,6 +45,7 @@ param(
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data\forever'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist\Forever'),
     [string]$LocaleFile = (Join-Path $PSScriptRoot '..\QuestCompletist\Localization.enUS.lua'),
+    [string]$LinkFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-link-decisions.csv'),
     [string]$Build = "",
     [switch]$Check
 )
@@ -285,7 +289,9 @@ foreach ($row in (Get-ClientTable 'QuestLine' | Sort-Object { [int]$_.ID })) {
 foreach ($m in ($links | Where-Object { $_[2] })) { [void]$quest.Append("[$($m[1])]={$($m[2])},`r`n") }
 [void]$quest.Append("}`r`nqcMutuallyExclusive={`r`n")
 foreach ($m in ($links | Where-Object { $_[3] })) { [void]$quest.Append("[$($m[1])]={$($m[3])},`r`n") }
-[void]$quest.Append("}`r`n")
+$unlinked = @(Import-Csv $LinkFile | Where-Object { $_.Link -eq 'exclusive' -and $_.Decision -eq 'REMOVE' } |
+    ForEach-Object { [int]$_.Quest; [int]$_.Other } | Where-Object { $inData[$_] } | Sort-Object -Unique)
+[void]$quest.Append("}`r`nqcFormerlyExclusive={$($unlinked -join ',')}`r`n")
 foreach ($table in 'qcOverrideDailyExclusiveQuest', 'qcOverrideWeeklyExclusiveQuest') { [void]$quest.Append("$table={}`r`n") }
 $unavailable = "$header`r`nqcUnavailableQuests = {`r`n}`r`n"
 

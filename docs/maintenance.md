@@ -79,12 +79,15 @@ categories, the zone table, reputation rewards, storylines and so on).
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
-change goes into the importer or its sources, and the next import keeps it. Two more files there
+change goes into the importer or its sources, and the next import keeps it. Three more files there
 hold what retail keeps in `qcQuest.lua` by hand, and go into Forever's `qcQuest.lua`:
 - `data\forever\links.jsonl`, one line for each quest with breadcrumbs or quests it shuts out:
-  `{"quest":6383,"breadcrumbs":[235,742,6382]}`, `{"quest":235,"exclusiveWith":[742,6382]}`.
+  `{"quest":6383,"breadcrumbs":[235,742,6382]}`, `{"quest":235,"exclusiveWith":[742,6382]}`. A pair
+  `docs\plans\forever-quest-link-decisions.csv` removes is left out (step 10).
 - `data\forever\reputation.jsonl`, one line for each reputation reward:
   `{"quest":189,"faction":87,"amount":-500}`.
+- `data\forever\skills.jsonl`, one line for each quest that needs a profession, with the skill level
+  it needs: `{"quest":715,"skill":171,"level":1}`.
 
 `tools\Build-AddonData.ps1` checks the data files and writes the Lua files, for both games. With
 `-Check` it writes nothing and only says whether the Lua matches. It names any problem by file and
@@ -1068,7 +1071,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    new rows: quests the game hasn't confirmed, quests with no known giver or no pin, and places
    where CMaNGOS and our old Classic pins disagree.
    Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
-   recurring quests. The summary's "Storylines:" line is a watch on the client's `QuestLine` and
+   recurring quests, less the pairs a hand list removes (below). The summary's "Storylines:" line is a watch on the client's `QuestLine` and
    `QuestLineXQuest` tables, the only source of Forever's storylines: on builds 70205 to 70338 they had 3 and 22
    rows, so 11 of our quests were in 1 storyline. A rise in any of them means Blizzard has started to
    fill them in, and the menu and the quest list's storyline lines then have something to show.
@@ -1076,8 +1079,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    its quest line (the client's `QuestLineXQuest` order) when that one is handed in on the map this one
    starts on (the client's `QuestPOIBlob` points -1 and 32), which is the case for the ten steps after
    the first of "Toxic Soil", quest line 6026 (92742 to 92819, Westfall, Stormwind and Elwynn). The
-   summary's "Prerequisites:" line counts them (2,307 quests, 10 from the quest line order, on build
-   70338), and the review lists each as "prerequisite from the quest line order", a line whose places
+   summary's "Prerequisites:" line counts them (2,309 quests, 10 from the quest line order and 2 from
+   the hand list below, on build 70338 on 11 October 2026), and the review lists each as "prerequisite from the quest line order", a line whose places
    don't match as "quest line order not used", and one that disagrees with another source as
    "quest line order disagrees with the prerequisite". Look at all three after an import: a rise in
    the first means Blizzard filled in more quest lines. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
@@ -1139,6 +1142,21 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    and 6 Winter Veil quests the game files under Seasonal. The holiday is a name in `qcHolidays`,
    and each row says what the tag rests on. The review list names a row that another source also
    tags ("hand-kept holiday not needed") or tags otherwise, and one whose quest isn't imported.
+   Links CMaNGOS gets wrong are corrected by hand in `docs\plans\forever-quest-link-decisions.csv`
+   (quest, name, link, other quest, decision, evidence). A `prereq` row `SET`s the other quest as
+   the quest's prerequisite, over any other source's: a lead-in CMaNGOS has only as a breadcrumb,
+   though the server won't offer the quest without it. An `exclusive` row `REMOVE`s a pair from an
+   "only one of these" group, both ways round, where a character can do both. The first rows are the
+   level 10 rogue quests, tried on the beta on 11 October 2026: Snatch and Grab (2206) needs Seek out
+   SI: 7 (2205), Destiny Calls (2242) needs The Apple Falls (2241), and the three cities' lead-ins
+   (2205, 2218 and 2241) don't shut each other out. Each row says what it rests on: a test in the
+   game first, then first-hand reports such as Questie's issues and Wowhead's comments, as our own
+   data can't show what the server does. The review list names a row whose quests aren't imported,
+   a prerequisite another source already gives ("hand-kept prerequisite not needed") or gives
+   otherwise, and a pair that no longer shuts each other out. `Build-ForeverMenu.ps1` also writes the
+   quests of the `REMOVE` rows into `qcFormerlyExclusive`: the addon ticked them when another quest
+   of their group was handed in, so until 1 April 2027 the login sync drops such a tick when the
+   server doesn't confirm it ([releasing.md](releasing.md), "Dated changes").
    A giver no source has, like those of most of Forever's new quests, can be looked up by hand on
    Wowhead's Forever pages and added to `docs\plans\forever-quest-givers.csv` (quest, NPC, name,
    note). The NPC stands where CMaNGOS or the recorder puts it, and the recorder wins when it saw
@@ -1151,7 +1169,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    the war effort: its supply quests give the signets, and its officers take them.
 5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
    and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl`, `reputation.jsonl` and
-   `skills.jsonl`, with the factions' English names from the client's `Faction` table. A new zone
+   `skills.jsonl`, with the factions' English names from the client's `Faction` table, and the
+   quests of the link decisions' `REMOVE` rows as `qcFormerlyExclusive`. A new zone
    it can't place goes in its continent's "Other" group; add the zone to the script's region table.
    Categories and headings take the client's names where it has them: areas, classes, professions,
    races and its in-game UI strings (the script's `$headingSources` for headings). It lists the
@@ -1174,11 +1193,11 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
-   run of 9 October 2026 found 6 on 2,296 prerequisites and 350 table entries: five kept in
+   run of 11 October 2026 found 5 on 2,309 prerequisites and 347 table entries, all kept in
    `docs\plans\forever-quest-table-decisions.csv` (three prerequisites that name the other faction's
-   quest, two that name a repeatable one), and a quest whose own record in the game names itself as
-   its next quest (92727, which the importer no longer takes as its previous quest). Anything new is a
-   finding to look at before the pull request.
+   quest, two that name a repeatable one). The first run, on 9 October, also found a quest whose own
+   record in the game names itself as its next quest (92727, which the importer no longer takes as its
+   previous quest). Anything new is a finding to look at before the pull request.
 9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf`, then without `-WhatIf` if it lists anything
    (see step 6): the importer's pins can share a name and a quest at one spot. Run it before
    `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
@@ -1649,6 +1668,11 @@ git diff --stat
   stacks of pins through the map's own pass and clicks them: on made-up stacks it checks that the pin, its
   waypoint and its tooltip's first heading go by the first pin that has a name, and on every stack in the
   data that each with a named pin is named.
+- For changes to what the addon ticks (the login sync and hand-ins in `qcCore.lua`, with their
+  breadcrumbs and "only one of these" groups) or to Forever's links, run `Test-Completions.lua` for both
+  games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
+  server, checks the clean-up of `qcFormerlyExclusive` on one of the game's groups, and on Forever walks
+  the level 10 rogue quests of `forever-quest-link-decisions.csv`.
 - For changes to the saved settings or the options panel, run `Test-Settings.lua` for both games' TOCs. It must
   say "All checks passed." It builds the panel against frames that keep their anchors and heights, so it
   also says how much room the page has left (33 px with the continent box in).
@@ -1730,4 +1754,4 @@ git log --diff-filter=D --name-only --oneline -- tools
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`); the quest cache of either game, read by `Read-QuestCache.ps1`; `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
-| [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv` |
+| [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag; players' first-hand comments, with Questie's issues and a test in the game, as evidence for a WoW: Forever link CMaNGOS gets wrong | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv`; the link evidence is in `plans\forever-quest-link-decisions.csv`, read by `Import-ForeverData.ps1` and `Build-ForeverMenu.ps1` |
