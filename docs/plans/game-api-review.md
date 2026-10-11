@@ -924,9 +924,11 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   the first run after 12.1.5 and the next Forever run are read (`Get-ProbeLevelFacts`).
 - 2026-10-11: the task quests that are not world quests got pins (open-items.md decision 2, approved
   by the user; [quest-location-data-pipeline.md](quest-location-data-pipeline.md), last section). Of the 4,082
-  task quests in the data with a start and no pin, 737 got one (the 758 of kind 0, Combat Ally, Group,
-  Heroic, World Boss, Important Quest, Dungeon, Raid and Meta Quest, less 21 whose start lies off its
-  map); the world quests (3,148), callings (83), racing (77) and 16 threat wrappers and bonus
+  task quests in the data with a start and no pin, 814 got one: 737 of the 758 of kind 0, Combat Ally,
+  Group, Heroic, World Boss, Important Quest, Dungeon, Raid and Meta Quest (less 21 whose start lies off
+  its map) and the 77 Dragonrider Racing quests, which the user added the same day ("yes, include
+  racing, hold callings"). The world quests (3,148), callings (83, held until it is known whether the
+  game still offers them) and 16 threat wrappers and bonus
   objectives still have none, by `$noPinKinds` in `Build-QuestLocationData.ps1`. The statements above that
   "the 4,082 task quests stay unpinned" and "the pipeline never takes in task quests" are as of their
   dates; decision 9 (adding task quests to the database) still gives its new quests no pins.

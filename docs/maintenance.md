@@ -671,14 +671,19 @@ pin, it put about 7,600 quests at the hand-in ([plans/quest-location-data-pipeli
 "October 2026, pins at the start"). Point 32 on a parent map of another point 32 of the quest (a
 continent over a zone) is left out. A quest with a point 32 and no point -1 on a map is placed when it has a
 pin already (534 do), which it moves to its start, or when it is one of our quests and not a task
-quest of a kind the addon doesn't pin (193 more in October 2026, 737 on 11 October): a task quest is
+quest of a kind the addon doesn't pin (193 more in October 2026, 814 on 11 October, 77 of them
+Dragonrider Racing): a task quest is
 one in the client's task table, which holds the world quests and bonus objectives the addon doesn't
 pin, and also dailies, seasonal and ordinary quests, which it does. The kinds it doesn't are listed by
 `QuestInfoID` in `$noPinKinds`, a table at the top of `Build-QuestLocationData.ps1`: every `QuestInfo`
-named "World Quest", Hidden Quest, Threat Wrapper, Bonus Objective with Completion Toast, and for now
-Calling Quest (271) and Dragonrider Racing (281), whose lines are the ones to delete to pin them
-(`Test-QuestLocationKinds.ps1` checks that). The run stops at a `QuestInfo` named "World Quest" that
-the table lacks, so a kind a new build adds is looked at, not pinned; add its line. The tool needs
+named "World Quest", Hidden Quest, Threat Wrapper, Bonus Objective with Completion Toast, and Calling
+Quest (271), which is held until it is known whether the game still offers callings (delete its line to
+pin them; `Test-QuestLocationKinds.ps1` checks that). Dragonrider Racing (281) is pinned, nameless, as
+no source has a giver for it. The run stops at a `QuestInfo` named "World Quest" that
+the table lacks, so a kind a new build adds is looked at, not pinned; add its line. A task kind that is
+not named "World Quest" and is not in the table is pinned: World Event (82), Emissary Quest (128) and
+Delve (288) would be as soon as the task-quest change (#295) adds quests of those kinds that have a
+start, so read the run's count of new task quests by kind before applying, and add a line to hold one. The tool needs
 `UiMap.csv`, `QuestV2CliTask.csv` and `QuestInfo.csv` (it stops without the last two) as well as the
 tables above; step 5 downloads `UiMap.csv`, and step 1b `QuestV2CliTask.csv`, `QuestV2.csv` and
 `QuestInfo.csv`.
@@ -1630,7 +1635,7 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 15,971
+  or pins were meant to be added or removed. As of October 2026 they're 35,023 quests and 16,048
   pins for retail, and 5,097 quests and 1,698 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
