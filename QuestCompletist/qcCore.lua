@@ -191,7 +191,8 @@ qcCovenantsBits = {
 -- Invasion and the Ahn'Qiraj War Effort aren't on the calendar, so the seasonal filter always hides
 -- their quests. WoW's Anniversary is on the calendar as a new row every year (the 22nd is 1808); the
 -- calendar doesn't serve the rows named plain "WoW's Anniversary", and the sweep's step 2b reports each
--- new year's row. filter names the calendar window's filter that holds the holiday's events,
+-- new year's row. The Dragonriding Cups share one flag: each cup is a row of its own, and step 2b
+-- reports a new cup's row. filter names the calendar window's filter that holds the holiday's events,
 -- "HOLIDAYS" when it isn't given.
 local qcHolidays = {
 	{flag=1, name="Brewfest", eventIDs={372}},
@@ -214,6 +215,7 @@ local qcHolidays = {
 	{flag=131072, name="Moonkin Festival", eventIDs={694}},
 	{flag=262144, name="Hearthstone's 10th Anniversary", eventIDs={1462, 1578}},
 	{flag=524288, name="WoW's Anniversary", eventIDs={1808}},
+	{flag=1048576, name="Dragonriding Cups", eventIDs={1395, 1400, 1407, 1429}},
 }
 -- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
 -- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
