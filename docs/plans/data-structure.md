@@ -85,18 +85,20 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
 - **The row** is `{name, level, category, type, faction, race, class, storyline}`, with storyline
   left off when it's 0 (half the quests have none; a missing last value costs nothing).
 - **Profession, holiday, covenant and prereq** are in `qcQuestProfession` (1,742 quests),
-  `qcQuestHoliday` (1,103 on 10 October 2026; it grows as holiday quests are tagged), `qcQuestCovenant`
+  `qcQuestHoliday` (1,122 on 11 October 2026; it grows as holiday quests are tagged), `qcQuestCovenant`
   (777) and `qcQuestPrereq` (8,306), keyed by quest ID.
   Since 6 October 2026 a prereq can also be a list, and 8,306 quests have one
   ([quest-table-checks.md](quest-table-checks.md)).
   The code reads them as "nil means none", where it used to test for 0.
 - **The minimum level** is in `qcQuestMinLevel`, keyed by quest ID, since 9 October 2026. The row's
   level is the quest's own; the table holds the level a character needs to take a quest whose
-  minimum isn't its level, and keeps a 0. Retail's table is empty because its level is already read
-  as the minimum: it is meant to be the API's `min_character_level`, and today equals the API's for
-  28,455 of the 30,066 quests whose API record gives one (94.6%). Refreshing retail's levels from
-  the API is a separate decision ([maintenance.md](../maintenance.md#the-quest-and-pin-data-files)
-  has the counts). Forever's table has 4,180 entries. The tooltip's "Requires Level" line, the grey
+  minimum isn't its level, and keeps a 0. Retail's table was empty until 11 October 2026, because its
+  level was read as the minimum: it was meant to be the API's `min_character_level`, and was not for
+  1,398 of the 30,066 quests whose API record gives one. It now holds 1,627 entries, the API's minimum
+  or else the client's level range (`Apply-QuestMinLevels.ps1`), and the level stays the quest's own
+  (the user's decision, option C of open-items.md rows 14 and 8;
+  [maintenance.md](../maintenance.md#the-quest-and-pin-data-files) has the counts). Forever's table has
+  4,180 entries. The tooltip's "Requires Level" line, the grey
   pins and the requirements filter read `qcQuestMinLevel[id] or level`; the list's bracket, sort and
   low-level filter read the level. On Forever's quest data the table adds 48,948 bytes to the file
   (305,031 to 353,979) and 256 KB when loaded (a table with 4,180 keys; Lua 5.1, 32-bit), 20% of the
