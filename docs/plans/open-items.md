@@ -227,8 +227,8 @@ again.
 - **Uncategorized after the Infinite Research refile**: a plain
   `Place-UncategorisedQuests.ps1 -Refile 0` would move 30 more (28 by pin's map, 2 by storyline);
   look through them with `-WhatIf` ([menu-review.md](menu-review.md)).
-- **272 quest IDs on pins or prerequisites with no quest row** (267 on pins only, 5 prerequisites
-  only: 30490, 54130, 59174, 89285, 91799): parked since phase 2 of
+- **265 quest IDs on pins or prerequisites with no quest row** (261 on pins only, 4 prerequisites
+  only: 30490, 54130, 59174, 89285): parked since phase 2 of
   [data-cleanup.md](data-cleanup.md); the menu review found nothing new.
 
 ## Code to finish

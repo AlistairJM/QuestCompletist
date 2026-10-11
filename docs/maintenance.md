@@ -977,7 +977,7 @@ copy of the data and `Place-UncategorisedQuests.ps1`, so no old row is touched.
   steps below on their next run.
 - **What the addon does with them.** The quest list hides type 128 (world quests, weeklies) and type 4
   (dailies) by default, so only the type 1 and 64 rows show until a player unticks "Hide World and Weekly
-  Quests" or "Hide Daily Quests". There is no pin, so the zone maps show nothing new. The continent icons count
+  Quests" or "Hide Daily Quests". The new rows have no pins of their own, so the zone maps show nothing new except that six of them sit on pins that already exist: 49739 shows the Fire Marshal Jill pin that the "no data" filter used to hide, and 56802 and 56818 to 56821 join the Atolia Seapearl pin on Nazjatar. The continent icons count
   from categories and skip types 2, 4 and 128, so no world quest or daily counts, but a type 1 or 64
   row in a zone category does, as the existing one-time task quests do. Category 0 has a menu entry
   under Miscellaneous, so a quest it holds can be browsed to, and every search finds every new quest.
