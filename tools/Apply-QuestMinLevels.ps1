@@ -6,11 +6,12 @@ quest's own level, which is not the game's minimum for 1,398 of the 30,066 quest
 of: a level 1 character was told "Requires Level 30" for quests the game lets it take.
 
 The minimum is the API's min_character_level where the API has a record, else the client's level range
-for the quest's ContentTuningID (QuestLevels.ps1 has the formula and the sources; a quest with tuning 0
-has no minimum, and one with neither source is left as it is). It goes in the data file's `minLevel`
-field only where it differs from `level`, which stays the quest's own level (the list's bracket, sort and
-low-level filter read it); a minimum of 0 or 1 against a level of 0 or 1 is no difference. Nothing
-else in a record changes. Saved through AddonData.ps1, which rebuilds qcQuestData.lua.
+for the quest's ContentTuningID (QuestLevels.ps1 has the formula and the sources; a quest on tuning 0
+with no API minimum has no known minimum, so it holds no `minLevel` and its gate is its level, and one
+with neither source is left as it is). It goes in the data file's `minLevel` field only where it differs
+from `level`, which stays the quest's own level (the list's bracket, sort and low-level filter read it);
+a minimum of 0 or 1 against a level of 0 or 1 is no difference. Nothing else in a record changes. Saved
+through AddonData.ps1, which rebuilds qcQuestData.lua.
 
 Before anything is written the formula is tested against every quest that has both an API minimum and a
 tuning, and the run stops, changing nothing, unless at least -MinAgreement of at least -MinTested agree
@@ -76,7 +77,7 @@ foreach ($q in $world.Records) {
 
 $noneCount = 0
 foreach ($count in $none.Values) { $noneCount += $count }
-Write-Output ("Sources: the API for {0:N0} quests, the client's level range for {1:N0}, tuning 0 (no range, no minimum) for {2:N0}; {3:N0} have neither and stay as they are ({4})." -f
+Write-Output ("Sources: the API for {0:N0} quests, the client's level range for {1:N0}, tuning 0 (no range: no minLevel, the gate is the level) for {2:N0}; {3:N0} have neither and stay as they are ({4})." -f
     $bySource.api, $bySource.tuning, $bySource.tuning0, $noneCount,
     $(if ($none.Count) { (($none.Keys | Sort-Object | ForEach-Object { "$($none[$_]) $_" }) -join ', ') } else { 'none' }))
 $lowered = @($changes | Where-Object { $_.Direction -eq 'lowered' })

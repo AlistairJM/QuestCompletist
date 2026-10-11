@@ -3,17 +3,17 @@ Checks Apply-QuestMinLevels.ps1, Compare-QuestLevels.ps1 and QuestLevels.ps1 on 
 quest cache, a task table and a ContentTuning table made here, in a scratch folder: nothing in the
 checkout is read or written (but the scripts themselves) and nothing is downloaded. One world holds a
 quest for each way a minimum can come out: the API's and the formula's, an API record with no minimum,
-tuning 0, no source, a 0 against a 1, a minLevel that stays, goes or changes, a tuning the table has no
-row for, an offset type nobody knows, a tuning the API contradicts, and the cache's tuning against the
-task table's. The rest changes one thing at a time: the formula's agreement against the thresholds,
+tuning 0 (no minLevel, a 0 held there taken away, an API minimum still used), no source, a 0 against a
+1, a minLevel that stays, goes or changes, a tuning the table has no row for, an offset type nobody
+knows, a tuning the API contradicts, and the cache's tuning against the task table's. The rest changes one thing at a time: the formula's agreement against the thresholds,
 -WhatIf and -Check, a second run, quests added later, the baseline of Compare-QuestLevels.ps1, and the
 download of the table.
 
 The last section runs the same tools on the real files, when they are there: -RealToolsDir (this
 folder by default) with the API cache, the quest cache, the task table and a ContentTuning table. It
 copies the checkout's data into the scratch folder, takes every minLevel out, applies, and checks that
-the formula holds, that only minLevel fields are added, and that a second run changes nothing. It
-says whether the result is the checkout's own data.
+the formula holds, that only minLevel fields are added, none on tuning 0, and that a second run changes
+nothing. It says whether the result is the checkout's own data.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLevels.ps1 [-RealToolsDir <tools folder with the data>]
 
@@ -88,6 +88,9 @@ function New-World {
     $q[24] = New-Quest 80 90 12 $null
     $q[25] = New-Quest 75 80 13 $null
     $q[26] = New-Quest 45 $null 19 $null
+    $q[27] = New-Quest 35 $null 0 $null 0
+    $q[28] = New-Quest 20 'none' 0 $null
+    $q[29] = New-Quest 30 12 0 $null
     for ($id = 1000; $id -lt 1120; $id++) { $q[$id] = New-Quest 10 10 10 $null }
     return $q
 }
@@ -180,6 +183,13 @@ Equal (Get-WantedMinLevel 30 1) 1 'T2: a minimum of 1 against a higher level is 
 Equal (Get-WantedMinLevel 50 0) 0 'T2: and so is a 0 against a higher level'
 Equal (Get-WantedMinLevel 0 15) 15 'T2: and a minimum above a level of 0'
 Equal (Get-WantedMinLevel 2 1) 1 'T2: level 2 against 1 is an entry'
+Check ($null -eq (Get-WantedMinLevel 50 $null)) 'T2: no minimum known is no entry, whatever the level'
+$m = Get-QuestMinimum 7 @{} @{ 7 = 0 } @{} $null
+Equal $m.Source 'tuning0' 'T2: a quest on tuning 0 with no API minimum is tuning 0''s'
+Check ($null -eq $m.Minimum) 'T2: and has no minimum, so its gate stays its level'
+$m = Get-QuestMinimum 7 @{ 7 = 12 } @{ 7 = 0 } @{} $null
+Equal $m.Source 'api' 'T2: an API minimum still decides on tuning 0'
+Equal $m.Minimum 12 'T2: with its number'
 Equal (Get-QuestGate ([pscustomobject]@{ level = 30; minLevel = 5 })) 5 'T2: the gate is the minLevel'
 Equal (Get-QuestGate ([pscustomobject]@{ level = 30 })) 30 'T2: and else the level'
 Equal (Get-QuestGate ([pscustomobject]@{ level = 30; minLevel = 0 })) 0 'T2: a 0 is a gate'
@@ -234,33 +244,36 @@ Has $r.Text '126 agree (99.21%)  [ok]' 'A2: one quest, the one on tuning 18, dis
 Has $r.Text 'differs: quest 22 on tuning 18 (offset type 0): formula 20, API 22' 'A2: and is named'
 Has $r.Text 'offset type 0 (base 0): 123 tested, 122 agree' 'A2: each offset type has its line'
 Has $r.Text 'offset type 3 (base 80): 1 tested, 1 agree' 'A2: the last of them too'
-Has $r.Text 'not tested: 4 of the API''s 131 minimums (no tuning ID for 4, tuning 0 for 0, no row for 0, an unknown offset type for 0)' 'A2: and the API quests it could not test are counted, with why'
+Has $r.Text 'not tested: 5 of the API''s 132 minimums (no tuning ID for 4, tuning 0 for 1, no row for 0, an unknown offset type for 0)' 'A2: and the API quests it could not test are counted, with why'
 Has $r.Text 'the quest cache and the task table disagree on the tuning of 1 quests' 'A2: the one quest whose cache and task table differ is counted'
-Has $r.Text 'Sources: the API for 131 quests, the client''s level range for 7, tuning 0 (no range, no minimum) for 3; 5 have neither and stay as they are (1 above the cap, 1 no record, 1 no row, 2 unverified).' 'A3: the sources, with the quests that have none and why'
-Has $r.Text '127 quests already hold the minimum their sources give; 14 change: the gate is lowered for 6 and raised for 8.' 'A3: the changes by direction'
-Has $r.Text 'from api: 7 (2 lowered, 5 raised); minLevel added 5, changed 1, removed 1' 'A4: those from the API, with what happens to the field'
+Has $r.Text 'Sources: the API for 132 quests, the client''s level range for 7, tuning 0 (no range: no minLevel, the gate is the level) for 5; 5 have neither and stay as they are (1 above the cap, 1 no record, 1 no row, 2 unverified).' 'A3: the sources, with the quests that have none and why'
+Has $r.Text '129 quests already hold the minimum their sources give; 15 change: the gate is lowered for 6 and raised for 9.' 'A3: the changes by direction'
+Has $r.Text 'from api: 8 (3 lowered, 5 raised); minLevel added 6, changed 1, removed 1' 'A4: those from the API, with what happens to the field'
 Has $r.Text 'from tuning: 6 (3 lowered, 3 raised); minLevel added 6, changed 0, removed 0' 'A4: those from the formula'
-Has $r.Text 'from tuning0: 1 (1 lowered, 0 raised); minLevel added 1, changed 0, removed 0' 'A4: and the one from tuning 0'
-Has $r.Text '    7  level 50  gate 50 -> 0  tuning0  Quest 7' 'A4: an example line has the id, the level, the gate before and after, the source and the name'
+Has $r.Text 'from tuning0: 1 (0 lowered, 1 raised); minLevel added 0, changed 0, removed 1' 'A4: and the one from tuning 0, whose 0 goes'
+Has $r.Text '    27  level 35  gate 0 -> 35  tuning0  Quest 27' 'A4: an example line has the id, the level, the gate before and after, the source and the name'
+Lacks $r.Text '    7  level 50' 'A4: a quest on tuning 0 with no minLevel is not changed'
 
 $r = Invoke-Tool $Apply $world @{ Check = $true }
 Equal $r.Exit 1 'A5: -Check exits 1 when the data is not what the sources say'
 Equal (Get-Hashes $world) $beforeHashes 'A5: and writes nothing'
-Has $r.Text 'The data isn''t what the sources say for 14 quests' 'A5: and says how many'
+Has $r.Text 'The data isn''t what the sources say for 15 quests' 'A5: and says how many'
 
 $r = Invoke-Tool $Apply $world
 Equal $r.Exit 0 'A6: the run exits 0'
-Has $r.Text 'Saved: 14 quests changed, 15 quests now hold a minLevel.' 'A6: 14 quests change; 15 hold a minLevel after (12 added, 14 changed, 9 and 13 kept, 12 removed)'
+Has $r.Text 'Saved: 15 quests changed, 15 quests now hold a minLevel.' 'A6: 15 quests change; 15 hold a minLevel after (12 added, quest 14 changed, quests 9 and 13 kept, quests 12 and 27 removed)'
 $after = Get-Records $world
-$holding = @{ 2 = 1; 3 = 15; 4 = 10; 5 = 10; 7 = 0; 9 = 7; 13 = 12; 14 = 14; 15 = 80; 16 = 1; 19 = 5; 20 = 89; 21 = 0; 24 = 90; 25 = 80 }
+$holding = @{ 2 = 1; 3 = 15; 4 = 10; 5 = 10; 9 = 7; 13 = 12; 14 = 14; 15 = 80; 16 = 1; 19 = 5; 20 = 89; 21 = 0; 24 = 90; 25 = 80; 29 = 12 }
 foreach ($id in $holding.Keys) { Equal $after[$id].minLevel $holding[$id] "A7: quest $id holds minLevel $($holding[$id])" }
-$holdingNone = 1, 6, 8, 10, 11, 12, 17, 18, 22, 23, 26, 1000, 1119
+$holdingNone = 1, 6, 7, 8, 10, 11, 12, 17, 18, 22, 23, 26, 27, 28, 1000, 1119
 foreach ($id in $holdingNone) { Check ($null -eq $after[$id].minLevel) "A7: quest $id holds no minLevel (has '$($after[$id].minLevel)')" }
 Equal $after[17].level 50 'A8: a quest on a tuning nobody knows keeps its level'
 Equal $after[26].level 45 'A8: and so does one on a tuning whose minimum is beyond the level cap (255 marks a quest nobody can take)'
 Equal $after[9].minLevel 7 'A8: a minLevel on a quest with no source is left as it was'
 Equal $after[16].minLevel 1 'A8: a quest in the cache and the task table on different tunings takes the cache''s (tuning 11, minimum 1)'
 Equal $after[22].level 22 'A8: a quest the API gives 22 keeps it, though the formula says 20'
+Check ($null -eq $after[7].minLevel -and $null -eq $after[27].minLevel -and $null -eq $after[28].minLevel) 'A8: a quest on tuning 0 with no API minimum holds no minLevel, and loses the 0 it held, so its gate is its level'
+Equal $after[29].minLevel 12 'A8: one on tuning 0 with an API minimum takes the API''s'
 
 $changedFields = 0
 foreach ($id in $beforeRecords.Keys) {
@@ -274,7 +287,8 @@ Equal ((Get-Hashes $world).Split(',')[1]) $beforeHashes.Split(',')[1] 'A9: pins.
 Equal ((Get-Hashes $world).Split(',')[3]) $beforeHashes.Split(',')[3] 'A9: and so is qcPinDB.lua'
 $lua = Get-LuaMinLevels $world
 Equal $lua.Count 15 'A10: qcQuestMinLevel holds the 15 quests with a minLevel'
-Equal $lua[7] 0 'A10: and keeps the 0'
+Equal $lua[21] 0 'A10: and keeps the 0 of a range whose minimum is 0'
+Check (-not $lua.ContainsKey(7) -and -not $lua.ContainsKey(27)) 'A10: and has no entry for a quest on tuning 0 with no API minimum'
 $built = Invoke-AddonDataBuild -DataDir "$world\data" -AddonDir "$world\addon" -Check
 Check $built.Ok 'A10: the Lua matches the data'
 
@@ -290,18 +304,18 @@ Equal $r.Exit 0 'A11: -Check exits 0 then'
 $r = Invoke-Tool $Compare $world
 Equal $r.Exit 0 'C1: with no baseline and nothing different the run exits 0'
 Has $r.Text 'No baseline file at' 'C1: and says so'
-Has $r.Text '141 quests hold what their sources say, 0 do not (class D), 5 have no source (class N: 1 above the cap, 1 no record, 1 no row, 2 unverified).' 'C1: the classes, and why the quests have no source'
+Has $r.Text '139 quests hold what their sources say, 0 do not (class D), 10 have no source (class N: 1 above the cap, 1 no record, 1 no row, 5 tuning 0, 2 unverified).' 'C1: the classes, and why the quests have no source (tuning 0 is none)'
 Has $r.Text 'No quest that matched in the baseline differs now, and the formula reproduces the API.' 'C1: and ends well'
 Check (-not (Test-Path "$world\baseline.csv")) 'C1: it writes no baseline unasked'
 $r = Invoke-Tool $Compare $world @{ UpdateBaseline = $true }
 Equal $r.Exit 0 'C2: -UpdateBaseline exits 0'
 $bytes = [IO.File]::ReadAllBytes("$world\baseline.csv")
 Check ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) 'C2: the baseline starts with a byte order mark, as the reputation baseline does'
-$expectedBaseline = "`"Class`",`"QuestID`"`r`n`"N`",`"9`"`r`n`"N`",`"17`"`r`n`"N`",`"18`"`r`n`"N`",`"23`"`r`n`"N`",`"26`"`r`n"
-Equal ([IO.File]::ReadAllText("$world\baseline.csv").TrimStart([char]0xFEFF)) $expectedBaseline 'C2: it lists the five quests with no source, by class and id'
+$expectedBaseline = "`"Class`",`"QuestID`"`r`n" + ((7, 8, 9, 11, 17, 18, 23, 26, 27, 28 | ForEach-Object { "`"N`",`"$_`"`r`n" }) -join '')
+Equal ([IO.File]::ReadAllText("$world\baseline.csv").TrimStart([char]0xFEFF)) $expectedBaseline 'C2: it lists the ten quests with no source, tuning 0''s five among them, by class and id'
 $r = Invoke-Tool $Compare $world
 Equal $r.Exit 0 'C3: with the baseline the run exits 0'
-Has $r.Text 'N: 5 now, 5 in the baseline; 0 new, 0 gone' 'C3: and nothing is new'
+Has $r.Text 'N: 10 now, 10 in the baseline; 0 new, 0 gone' 'C3: and nothing is new'
 Has $r.Text 'D: 0 now, 0 in the baseline; 0 new, 0 gone' 'C3: in either class'
 
 $regress = Join-Path $Scratch 'regress'
@@ -325,7 +339,7 @@ Remove-Item "$lost\tools\quest_api_cache\3.json"
 [IO.File]::WriteAllText("$lost\tools\quest_api_cache\3.404", '', $utf8)
 $r = Invoke-Tool $Compare $lost
 Equal $r.Exit 0 'C6: a quest that loses its source is listed and does not fail the run'
-Has $r.Text 'N: 6 now, 5 in the baseline; 1 new, 0 gone' 'C6: it is new in class N'
+Has $r.Text 'N: 11 now, 10 in the baseline; 1 new, 0 gone' 'C6: it is new in class N'
 Has $r.Text 'new: 3 Quest 3: no source (no record): level 1, minLevel 15' 'C6: with its level and minLevel'
 
 $gone = Join-Path $Scratch 'gone'
@@ -334,7 +348,7 @@ Copy-Item $world $gone -Recurse
 [IO.File]::WriteAllText("$gone\data\quests.jsonl", [IO.File]::ReadAllText("$gone\data\quests.jsonl").Replace('{"id":17,"name":"Quest 17","level":50,', '{"id":17,"name":"Quest 17","level":10,'), $utf8)
 $r = Invoke-Tool $Compare $gone
 Equal $r.Exit 0 'C7: a quest that was in the baseline and has a source again is no failure'
-Has $r.Text 'N: 4 now, 5 in the baseline; 0 new, 1 gone' 'C7: it is gone from class N'
+Has $r.Text 'N: 9 now, 10 in the baseline; 0 new, 1 gone' 'C7: it is gone from class N'
 $drift = Join-Path $Scratch 'drift'
 Copy-Item $world $drift -Recurse
 [IO.File]::WriteAllText("$drift\tools\ContentTuning-$Build.csv", ((@($TuningHeader) + @(10..18 | ForEach-Object { New-Tuning $_ 9 0 })) -join "`n") + "`n", $utf8)
@@ -345,6 +359,14 @@ Has $r.Text 'the formula no longer reproduces the API''s minimums' 'C8: and the 
 $r = Invoke-Tool $Compare $world @{ BaselineFile = "$world\bad-baseline.csv" }
 Check ($r.Failure -ne '') 'C9: a baseline with a class that is not D or N stops the run'
 Has $r.Failure "has class 'X', not D or N" 'C9: and says which'
+$regain = Join-Path $Scratch 'regain'
+Copy-Item $world $regain -Recurse
+[IO.File]::WriteAllText("$regain\data\quests.jsonl", [IO.File]::ReadAllText("$regain\data\quests.jsonl").Replace('{"id":27,"name":"Quest 27","level":35,"zone":"Zone","category":1,"type":1,"faction":0,"race":0,"class":0}', '{"id":27,"name":"Quest 27","level":35,"zone":"Zone","category":1,"type":1,"faction":0,"race":0,"class":0,"minLevel":0}'), $utf8)
+$r = Invoke-Tool $Compare $regain
+Equal $r.Exit 1 'C10: a quest on tuning 0 that gets a minLevel again fails the run'
+Has $r.Text 'D: 1 now, 0 in the baseline; 1 new, 0 gone' 'C10: it is new in class D'
+Has $r.Text 'new: 27 Quest 27: gate 0, tuning0 says none (level 35)' 'C10: and is named, with the gate it should not have'
+Has $r.Text 'N: 9 now, 10 in the baseline; 0 new, 1 gone' 'C10: and has left class N'
 
 # --- Quests added later (the task quests of step 6) -------------------------------------------------
 $oldLines = [IO.File]::ReadAllLines("$world\data\quests.jsonl")
@@ -436,6 +458,7 @@ if (-not $haveReal) {
     if ($r.Text -match 'tested against ([\d,]+) quests .*: ([\d,]+) agree \((\d+\.\d+)%\)  \[ok\]') {
         Check ([double]$Matches[3] -ge 99.0 -and [int]($Matches[1] -replace ',') -ge 20000) "R1: it reproduces the API for at least 99% of 20,000 quests ($($Matches[2]) of $($Matches[1]), $($Matches[3])%)"
     }
+    Lacks $r.Text 'from tuning0:' 'R1: no quest on tuning 0 gets a minLevel'
     $appliedLines = [IO.File]::ReadAllLines("$realDir\data\quests.jsonl")
     Equal $appliedLines.Count $strippedLines.Count 'R2: the real data keeps all its quests'
     $addedOnly = 0; $bad = 0

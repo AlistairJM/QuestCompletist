@@ -1359,7 +1359,7 @@
 {"id":9417,"name":"The Arakkoa Threat","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":9418,"name":"Avruu's Orb","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":9420,"name":"The Finest Down","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":9422,"name":"Scouring the Desert","level":5,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":0}
+{"id":9422,"name":"Scouring the Desert","level":5,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":9423,"name":"Return to Obadei","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":448,"prereq":9390}
 {"id":9424,"name":"Makuru's Vengeance","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":448,"prereq":9423}
 {"id":9426,"name":"The Pools of Aggonar","level":10,"zone":"Hellfire Peninsula","category":96,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":448}
@@ -19379,7 +19379,7 @@
 {"id":50337,"name":"The G-Team","level":10,"zone":"Gnomeregan","category":85,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":50338,"name":"The G-Team","level":10,"zone":"Gnomeregan","category":85,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":50340,"name":"Steal Them Back","level":30,"zone":"Stormsong Valley","category":1061,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":50341,"name":"A Recent Discovery","level":35,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":576,"minLevel":0}
+{"id":50341,"name":"A Recent Discovery","level":35,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":576}
 {"id":50343,"name":"Mayhem at Mildenhall Meadery","level":10,"zone":"Stormsong Valley","category":1061,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5451,"minLevel":30}
 {"id":50349,"name":"An Overrun Mine","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5434}
 {"id":50351,"name":"Miner Operation","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5434}
@@ -21712,8 +21712,8 @@
 {"id":54251,"name":"The Ambassador","level":10,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":2,"race":61658034,"class":8191}
 {"id":54253,"name":"Bombs Away","level":10,"zone":"Vol'dun","category":1081,"type":128,"faction":2,"race":61658034,"class":8191}
 {"id":54254,"name":"Bombs Away","level":10,"zone":"Vol'dun","category":1081,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":54255,"name":"Short-Supply Reward","level":50,"zone":"Bfa Unknown","category":0,"type":1,"faction":0,"race":0,"class":8191,"storyline":815,"minLevel":0}
-{"id":54256,"name":"Short-Supply Reward","level":50,"zone":"Bfa Unknown","category":0,"type":1,"faction":0,"race":0,"class":8191,"storyline":815,"minLevel":0}
+{"id":54255,"name":"Short-Supply Reward","level":50,"zone":"Bfa Unknown","category":0,"type":1,"faction":0,"race":0,"class":8191,"storyline":815}
+{"id":54256,"name":"Short-Supply Reward","level":50,"zone":"Bfa Unknown","category":0,"type":1,"faction":0,"race":0,"class":8191,"storyline":815}
 {"id":54257,"name":"Captain Greensails","level":10,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":2,"race":61658034,"class":8191}
 {"id":54258,"name":"Mission Report: Vulpera Hideaway","level":50,"zone":"Horde War Campaign","category":1091,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":54260,"name":"Outpost Upgrade: Vulpera Hideaway","level":50,"zone":"Horde War Campaign","category":1091,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -32323,7 +32323,7 @@
 {"id":86619,"name":"Theater Troupe","level":80,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":86731,"name":"An Original Path Through Time","level":80,"zone":"Unknown","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":89263,"name":"Your Cut of the Spoils","level":11,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":89346,"name":"Your Cut of the Spoils","level":11,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":0}
+{"id":89346,"name":"Your Cut of the Spoils","level":11,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":86853,"name":"Sparks of War: Undermine","level":70,"zone":"Azj Kahet","category":1401,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":82739,"name":"Twilight Scheming","level":20,"zone":"Blackrock Depths","category":23,"type":1,"faction":3,"race":67108863,"class":16}
 {"id":86448,"name":"Piecing Things Together","level":70,"zone":"Delvers Headquarters","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}

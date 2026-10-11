@@ -8,11 +8,12 @@ It prints
     quest that has both: it fails below -MinAgreement of at least -MinTested quests, which is what a
     new level cap, a changed table or a hotfix to a tuning would look like;
   - the quests whose minimum, by the API or else the client's level range, is not what the data holds
-    (class D), which Apply-QuestMinLevels.ps1 sets right;
+    (class D), which Apply-QuestMinLevels.ps1 sets right; a quest on tuning 0 with no API minimum that
+    holds a minLevel is one, since its gate must be its level;
   - the quests no source gives a minimum for (class N): not in the quest cache or the task table
     ("no record"), on a tuning the table has no row for ("no row"), on one whose minimum is beyond the
-    level cap ("above the cap"), or on one the API contradicts or whose offset type it never
-    confirmed ("unverified").
+    level cap ("above the cap"), on one the API contradicts or whose offset type it never confirmed
+    ("unverified"), or on tuning 0 with no API minimum and no minLevel ("tuning 0").
 
 The quests of both classes are kept in the baseline file (-BaselineFile; -UpdateBaseline rewrites it
 from this run), and each run says what is new: a D quest that wasn't in the baseline is a quest that
@@ -52,7 +53,7 @@ $noSource = @{}
 foreach ($q in $world.Records) {
     $id = [int]$q.id
     $m = $world.Minimums[$id]
-    if ($m.Source -eq 'none') {
+    if ($m.Source -eq 'none' -or ($m.Source -eq 'tuning0' -and $null -eq $q.minLevel)) {
         [void]$now.N.Add($id)
         $noSource[$m.Why] = 1 + [int]$noSource[$m.Why]
         $details[$id] = "no source ($($m.Why)): level $($q.level), minLevel $(if ($null -ne $q.minLevel) { $q.minLevel } else { 'none' })"
@@ -63,7 +64,7 @@ foreach ($q in $world.Records) {
     $same = ($null -eq $wanted -and $null -eq $current) -or ($null -ne $wanted -and $null -ne $current -and [int]$wanted -eq [int]$current)
     if ($same) { $right++; continue }
     [void]$now.D.Add($id)
-    $details[$id] = "gate $(Get-QuestGate $q), $($m.Source) says $($m.Minimum) (level $($q.level))"
+    $details[$id] = "gate $(Get-QuestGate $q), $($m.Source) says $(if ($null -ne $m.Minimum) { $m.Minimum } else { 'none' }) (level $($q.level))"
 }
 Write-Output ("Against the data: {0:N0} quests hold what their sources say, {1:N0} do not (class D), {2:N0} have no source (class N: {3})." -f
     $right, $now.D.Count, $now.N.Count,

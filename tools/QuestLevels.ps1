@@ -9,8 +9,11 @@ Blizzard's sources give it, and the API's wins:
   - the client's level ranges. A quest's ContentTuningID is in the client's quest cache
     (tools\retail_quest_cache_<build>.jsonl, step 2e) for every quest it holds, and in the task table
     (tools\QuestV2CliTask.csv, step 1b) for task quests; the ContentTuning table
-    (tools\ContentTuning-<build>.csv, from wago.tools) turns the ID into a range. A quest with tuning 0
-    has no range and no minimum.
+    (tools\ContentTuning-<build>.csv, from wago.tools) turns the ID into a range. A quest on tuning 0
+    has no range, and nothing says what its minimum is: no quest the API gives a minimum for is on
+    tuning 0 in the quest cache or the task table, and on tuning 0 TrinityCore falls back to the quest's
+    own MinLevel, which no file of ours holds. So it gets no minLevel and its gate stays its level (the
+    user's decision of 11 October 2026); an API minimum still decides for a quest on tuning 0.
 
 A tuning's minimum is MinLevelSquish plus a base that MinLevelScalingOffset picks: 0 adds nothing (the
 squish value is the level), 1 adds 1, 2 adds the level cap (90) and 3 the level cap before it (80). The
@@ -24,7 +27,8 @@ rule that no data file can hold, so it isn't applied. A tuning whose minimum is 
 
 The data file keeps `level` as the quest's own level, which the list's bracket, sort and low-level
 filter read, and holds the minimum in `minLevel` only where it is not that: 0 and 1 both mean no
-minimum, so a quest whose level and minimum are both 0 or 1 gets no entry.
+minimum, so a quest whose level and minimum are both 0 or 1 gets no entry, and nor does a quest on
+tuning 0 with no API minimum.
 #>
 . "$PSScriptRoot\AddonData.ps1"
 
@@ -158,15 +162,16 @@ function Test-TuningFormula($apiMinimum, $questTuning, $tunings) {
 }
 
 # A quest's minimum and where it came from. Source is api (the API's record), tuning (the formula, for a
-# quest with no API minimum), tuning0 (the client gives it tuning 0: no range, so no minimum) or none,
-# with Why: no record, no row (the tuning isn't in the table), above the cap (a minimum beyond the
-# level cap, such as the 255 of tuning 949, is a marker and no level), unverified (the formula disagrees
-# with the API on that tuning, or its offset type has never agreed).
+# quest with no API minimum), tuning0 (the client gives it tuning 0: no range, so no minimum is known,
+# Minimum is null and the gate is the quest's level; Why says tuning 0) or none, with Why: no record, no
+# row (the tuning isn't in the table), above the cap (a minimum beyond the level cap, such as the 255 of
+# tuning 949, is a marker and no level), unverified (the formula disagrees with the API on that tuning,
+# or its offset type has never agreed).
 function Get-QuestMinimum([int]$id, $apiMinimum, $questTuning, $tunings, $validation) {
     if ($apiMinimum.ContainsKey($id)) { return [pscustomobject]@{ Source = 'api'; Minimum = $apiMinimum[$id]; Why = '' } }
     if (-not $questTuning.ContainsKey($id)) { return [pscustomobject]@{ Source = 'none'; Minimum = $null; Why = 'no record' } }
     $tuning = $questTuning[$id]
-    if ($tuning -eq 0) { return [pscustomobject]@{ Source = 'tuning0'; Minimum = 0; Why = '' } }
+    if ($tuning -eq 0) { return [pscustomobject]@{ Source = 'tuning0'; Minimum = $null; Why = 'tuning 0' } }
     if (-not $tunings.ContainsKey($tuning)) { return [pscustomobject]@{ Source = 'none'; Minimum = $null; Why = 'no row' } }
     $row = $tunings[$tuning]
     if ($null -ne $row.Minimum -and $row.Minimum -gt $script:LevelCap) { return [pscustomobject]@{ Source = 'none'; Minimum = $null; Why = 'above the cap' } }
@@ -176,9 +181,12 @@ function Get-QuestMinimum([int]$id, $apiMinimum, $questTuning, $tunings, $valida
     return [pscustomobject]@{ Source = 'tuning'; Minimum = $row.Minimum; Why = '' }
 }
 
-# What the quest's minLevel field should hold for a quest of this level: nothing (null) when the minimum
-# is the level, or when both are 0 or 1 (no minimum either way), else the minimum, 0 included.
-function Get-WantedMinLevel([int]$level, [int]$minimum) {
+# What the quest's minLevel field should hold for a quest of this level: nothing (null) when no minimum
+# is known (null, tuning 0), when the minimum is the level, or when both are 0 or 1 (no minimum either
+# way), else the minimum, 0 included.
+function Get-WantedMinLevel([int]$level, $minimum) {
+    if ($null -eq $minimum) { return $null }
+    $minimum = [int]$minimum
     if ($level -eq $minimum -or ($level -le 1 -and $minimum -le 1)) { return $null }
     return $minimum
 }
