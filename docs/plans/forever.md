@@ -852,13 +852,13 @@ through `Import-RecordedGivers.ps1` for the first time; the numbers are in
   so the addon's notes reach no Forever pin yet.
 - **What they would change:** the tool's rules pointed at Forever's pins by hand, in memory, fill no pin, find
   nothing for review and add one pin: quest 990 "Trek to Ashenvale", offered by Sentinel Selarin (3694) at
-  Darkshore 39.3, 43.5. She runs in after a quest at Terenthis is handed in, which is why CMaNGOS has her as the
-  quest's ender only. Of the 68 quests the notes show offered, 65 already have a pin, none further than 3
+  Darkshore 39.3, 43.5. She runs in after a quest at Terenthis is handed in; CMaNGOS names her as the quest's
+  starter but has no spawn for her (she is script-spawned), so only a recorded spot can place her. Of the 68 quests the notes show offered, 65 already have a pin, none further than 3
   points from where its giver stood, and the name of every recorded giver is its pin's. The other two, 6661 and
   6662 (Monty and Nipsy in the Deeprun Tram), cannot get a pin from the notes: the game named no map there.
 - **The probe's own file says the same and more:** its saved file in the game (11 October) is newer than the
   copy in `tools\forever_probe_70338` and holds 53 givers against 33, including everything the addon's file
-  holds, so step 10's copy of it should bring quest 990 in by the probe's route (not run).
+  holds, so step 10's copy of it should bring quest 990 in by the probe's route (not run); it would also move 25 existing pins by 0.02 to 0.36 map points, because the importer lets a recorded spot win over CMaNGOS's spawn (a reviewer's scratch run, not in this PR).
 - **So that the beta's new givers keep reaching the pins,** the importer has to read the ledger before the
   probe's own recorder is retired.
 

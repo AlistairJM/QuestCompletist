@@ -344,7 +344,7 @@ so nothing was written there.
 - **Rehearsal on Forever's pins, in memory, nothing saved** (`Get-RecordedPlan` and `Get-RecordedReview`
   pointed at `data\forever\pins.jsonl`): 0 fills, 0 for review, 1 add, 2 quests skipped for having no
   position (6661, 6662). The add is quest 990 "Trek to Ashenvale", Sentinel Selarin (3694), Darkshore
-  39.3, 43.5: no Forever pin carries the quest. CMaNGOS lists her as the quest's ender only, and Wowhead gives
+  39.3, 43.5: no Forever pin carries the quest. CMaNGOS lists her as the quest's starter but has no spawn for her (she is script-spawned), and Wowhead gives
   her as its start (she runs in beside Terenthis after "Escape Through Stealth" or "Force" is handed in, and
   leaves after some minutes). With the 46 Forever pins that carry a recorded offer blanked in memory, the plan
   gives back all 46 with their own NPC ID and name. 37 of the 42 creature givers have a Forever pin carrying
