@@ -16509,12 +16509,12 @@
 {"id":43458,"name":"WANTED: Perrexx","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":43459,"name":"WANTED: Thondrax","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":43460,"name":"WANTED: Kiranys Duskwhisper","level":45,"zone":"Val'sharah","category":1008,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":43461,"name":"A Time to Reflect","level":1,"zone":"Seasonal","category":173,"type":4,"faction":2,"race":61658034,"class":8191}
+{"id":43461,"name":"A Time to Reflect","level":1,"zone":"Seasonal","category":173,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":524288}
 {"id":43462,"name":"Mother Ozram","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":2,"storyline":236}
 {"id":43468,"name":"Blood for the Wolfe","level":10,"zone":"Rogue Campaign","category":1003,"type":1,"faction":3,"race":67108863,"class":8,"storyline":5853}
 {"id":43469,"name":"Where In the World is Mathias?","level":45,"zone":"Rogue Campaign","category":1003,"type":1,"faction":3,"race":67108863,"class":8,"storyline":5855}
 {"id":43470,"name":"Pruning the Garden","level":45,"zone":"Rogue Campaign","category":1003,"type":1,"faction":3,"race":67108863,"class":8,"storyline":5855}
-{"id":43472,"name":"The Historians","level":1,"zone":"Seasonal","category":173,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":43472,"name":"The Historians","level":1,"zone":"Seasonal","category":173,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":524288}
 {"id":43473,"name":"Experimental Potion: Test Subjects Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":43474,"name":"Experimental Potion: Test Subjects Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":43475,"name":"Experimental Potion: Test Subjects Needed","level":45,"zone":"Dalaran","category":1003,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -18087,10 +18087,10 @@
 {"id":47248,"name":"'Til Death Do Us Part","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":47249,"name":"Soulbound","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":335}
 {"id":47250,"name":"We'll Meet Again","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":335}
-{"id":47251,"name":"Interesting Times","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":47252,"name":"Interesting Times","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":47251,"name":"Interesting Times","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":524288}
+{"id":47252,"name":"Interesting Times","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":524288}
 {"id":47253,"name":"The Originals","level":30,"zone":"Legion Uncategorized Quests","category":1050,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":47254,"name":"The Originals","level":30,"zone":"Legion Uncategorized Quests","category":1050,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":47254,"name":"The Originals","level":30,"zone":"Legion Uncategorized Quests","category":1050,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":47257,"name":"The Bones of Xibala","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":47258,"name":"Prepare for a Siege","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":47259,"name":"Direhorn Daycare","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5402}
@@ -23204,16 +23204,16 @@
 {"id":57246,"name":"Eel Filet","level":50,"zone":"Nazjatar","category":1065,"type":2,"faction":1,"race":67108863,"class":8191}
 {"id":57247,"name":"Fathom Ray Wing","level":50,"zone":"Nazjatar","category":1065,"type":2,"faction":1,"race":64175181,"class":8191}
 {"id":57248,"name":"Giant Crab Leg","level":50,"zone":"Nazjatar","category":1065,"type":2,"faction":1,"race":64175181,"class":8191}
-{"id":57249,"name":"A Timely Invitation","level":30,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":57249,"name":"A Timely Invitation","level":30,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":57271,"name":"Trade District","level":50,"zone":"","category":0,"type":2,"faction":0,"race":0,"class":8191}
 {"id":57272,"name":"Bloodbound Effigy","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":57274,"name":"Quartermaster's Bounty","level":50,"zone":"Rated PvP","category":1094,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":57275,"name":"Something in Your Mind","level":50,"zone":"Professions","category":1064,"type":0,"faction":3,"race":67108863,"class":8191}
 {"id":57282,"name":"Mage Quarter","level":50,"zone":"","category":0,"type":2,"faction":0,"race":0,"class":8191}
 {"id":57290,"name":"Beginning the Descent","level":50,"zone":"Black Empire Campaign","category":1132,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1012}
-{"id":57298,"name":"How Things \"Really\" Happened...","level":30,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":57298,"name":"How Things \"Really\" Happened...","level":30,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":57299,"name":"Mysterious Sarcophagus","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":57300,"name":"Soldier of Time","level":30,"zone":"Seasonal","category":173,"type":138,"faction":3,"race":67108863,"class":8191}
+{"id":57300,"name":"Soldier of Time","level":30,"zone":"Seasonal","category":173,"type":138,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":57303,"name":"The Quartermaster","level":10,"zone":"Korrak's Revenge","category":0,"type":4,"faction":3,"race":67108863,"class":0}
 {"id":57323,"name":"Serpent Binding","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":57324,"name":"Sail With the Tide","level":50,"zone":"Stormsong Valley","category":1061,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5382}
@@ -23277,7 +23277,7 @@
 {"id":57581,"name":"Plucking Plumes","level":15,"zone":"Terokkar Forest","category":207,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":57587,"name":"Spirit Drinker","level":50,"zone":"Uldum","category":255,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":57590,"name":"Spirit Drinker","level":50,"zone":"Uldum","category":255,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":57637,"name":"Disturbance Detected: Firelands","level":35,"zone":"Firelands","category":173,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":57637,"name":"Disturbance Detected: Firelands","level":35,"zone":"Firelands","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":57642,"name":"A Winter Veil Gift","level":10,"zone":"Seasonal","category":173,"type":0,"faction":3,"race":67108863,"class":0,"holiday":8}
 {"id":57643,"name":"A Gently Shaken Gift","level":10,"zone":"Seasonal","category":173,"type":0,"faction":3,"race":67108863,"class":0,"holiday":8}
 {"id":57670,"name":"Unbeelievable Quality","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
@@ -24570,7 +24570,7 @@
 {"id":60194,"name":"The Call of the Hunt","level":50,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":8,"storyline":1103,"prereq":60193}
 {"id":60195,"name":"Build One More","level":60,"zone":"Abominable Stitching","category":1230,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16}
 {"id":60211,"name":"Spore Losers","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":60215,"name":"Timely Gate Crashers","level":30,"zone":"Unknown","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":60215,"name":"Timely Gate Crashers","level":30,"zone":"Unknown","category":0,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":60217,"name":"The Archon's Answer","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":520,"class":6144,"storyline":1055,"prereq":57266}
 {"id":60218,"name":"The Archon's Answer","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":1055,"prereq":57266}
 {"id":60219,"name":"The Archon's Answer","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":4,"storyline":1055,"prereq":57266}
@@ -31801,7 +31801,7 @@
 {"id":82653,"name":"Aggregation of Horrors","level":80,"zone":"The Ringing Deeps","category":1406,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":82658,"name":"Drop and Go","level":70,"zone":"Isle Of Dorn","category":1405,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":82659,"name":"Worldsoul: Nerub-ar Palace","level":70,"zone":"Quest (Weekly Meta","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5572,"prereq":82489}
-{"id":82672,"name":"Another Timely Invitation","level":10,"zone":"Quest (Important","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":82672,"name":"Another Timely Invitation","level":10,"zone":"Quest (Important","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":82676,"name":"Broken Masquerade","level":10,"zone":"Battle For Azeroth","category":66,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":82678,"name":"Archives: The First Disc","level":80,"zone":"Unknown","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5572,"prereq":82659}
 {"id":82679,"name":"Archives: Seeking History","level":80,"zone":"Quest (Meta","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5572,"prereq":82678}
@@ -32127,14 +32127,14 @@
 {"id":57308,"name":"The Battle of Alterac","level":10,"zone":"Alterac Valley","category":7,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":84693,"name":"Weaver's Lair Profession Table","level":78,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":84419,"name":"To da Ruins!","level":10,"zone":"Azuremyst Isle","category":17,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":82817,"name":"Disturbance Detected: Blackrock Depths","level":30,"zone":"Blackrock Depths","category":173,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":84735,"name":"Truth of the Dark Irons","level":30,"zone":"Blackrock Depths","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":84616,"name":"Celebrate Good Fun!","level":10,"zone":"Seasonal","category":173,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":82783,"name":"Chromie's Codex","level":10,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":83737,"name":"Chromie's Time Trips","level":1,"zone":"Seasonal","category":173,"type":2,"faction":3,"race":67108863,"class":8191}
+{"id":82817,"name":"Disturbance Detected: Blackrock Depths","level":30,"zone":"Blackrock Depths","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
+{"id":84735,"name":"Truth of the Dark Irons","level":30,"zone":"Blackrock Depths","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
+{"id":84616,"name":"Celebrate Good Fun!","level":10,"zone":"Seasonal","category":173,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":524288}
+{"id":82783,"name":"Chromie's Codex","level":10,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
+{"id":83737,"name":"Chromie's Time Trips","level":1,"zone":"Seasonal","category":173,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":84773,"name":"Crystalized Celebration Crate","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":84489,"name":"Shopping Squee!","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":83285,"name":"The Ancient Scroll","level":1,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":84489,"name":"Shopping Squee!","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
+{"id":83285,"name":"The Ancient Scroll","level":1,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":84924,"name":"A Bird's Tail","level":10,"zone":"Secrets of Azeroth","category":203,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":84923,"name":"A Bird's Tale","level":30,"zone":"Secrets of Azeroth","category":203,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":84583,"name":"A Hozen On My Back","level":30,"zone":"Secrets of Azeroth","category":203,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -32192,7 +32192,7 @@
 {"id":85026,"name":"Where Legends are Made","level":10,"zone":"Timewalking Campaign","category":1404,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5676,"prereq":[84424,84423]}
 {"id":81726,"name":"Report to the Trading Post","level":1,"zone":"Trading Post","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":81725,"name":"Report to the Trading Post","level":1,"zone":"Trading Post","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":84254,"name":"Meet and Greet","level":10,"zone":"Seasonal","category":203,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":84254,"name":"Meet and Greet","level":10,"zone":"Seasonal","category":203,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":85948,"name":"A Burning Journey Through Time","level":1,"zone":"Weekly Event","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":85949,"name":"A Frozen Journey Through Time","level":1,"zone":"Weekly Event","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":83274,"name":"An Original Path Through Time","level":80,"zone":"Weekly Event","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
