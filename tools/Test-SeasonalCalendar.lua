@@ -295,7 +295,9 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 				end
 			end
 		end
-		assert(ctx.pins[holidayName] or holidayName == ANNIVERSARY or holidayName == CUPS, "no pin of the " .. holidayName .. "'s quests in the data")
+		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125})[holidayName]
+		assert(flags[holidayName], "qcHolidays has no entry named " .. holidayName)
+		assert(ctx.pins[holidayName] or (probe and not env.qcQuestDatabase[probe]), "no pin of the " .. holidayName .. "'s quests in the data")
 	end
 	ctx.pin = ctx.pins["Lunar Festival"]
 	return ctx

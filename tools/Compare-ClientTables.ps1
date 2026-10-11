@@ -58,7 +58,7 @@ if (-not $Build -and -not $ForeverBuild) { throw "Give -Build (retail) and/or -F
 $questLike = 'Quest|POI|UiMap|UIMap|Area|Journal|Campaign|Holiday|ContentTuning|Waypoint|Storyline|Expansion'
 $rowPatterns = @{
     "WoW's Anniversary" = @{ Pattern = "^WoW's \d+(?:st|nd|rd|th) Anniversary$"; Row = "a new year's row" }
-    'Skyriding Cups' = @{ Pattern = "^(?:[\w'-]+ )+Cup$"; Row = "a cup's row" }
+    'Skyriding Cups' = @{ Pattern = "^(?:[\w'-]+ )+Cup$"; Row = "a row named like a cup (check that it is one)" }
 }
 
 function Get-TableList([string]$build) {
