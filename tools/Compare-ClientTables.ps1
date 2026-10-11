@@ -127,7 +127,8 @@ function Compare-Build([string]$build, [string]$game) {
 
 # The last date of a Holidays row, with its end after the row's durations (hours). A date is packed:
 # minute, hour, weekday, day and month from 0, and the year from 2000, where 31 is every year; a row
-# that loops or has an every-year date never ends.
+# that loops or has an every-year date never ends. A month, day, hour or minute set to its "any" value
+# counts as the latest it can mean.
 function Get-HolidayLastDate($row) {
     $never = [pscustomobject]@{ Start = $null; End = [datetime]::MaxValue }
     if ([int]$row.Looping -ne 0) { return $never }
@@ -139,7 +140,9 @@ function Get-HolidayLastDate($row) {
         if ($packed -le 0) { continue }
         $year = ($packed -shr 24) -band 31
         if ($year -eq 31) { return $never }
-        $start = New-Object DateTime (2000 + $year), ((($packed -shr 20) -band 15) + 1), ((($packed -shr 14) -band 63) + 1), (($packed -shr 6) -band 31), ($packed -band 63), 0
+        $month = [Math]::Min(12, (($packed -shr 20) -band 15) + 1)
+        $day = [Math]::Min([DateTime]::DaysInMonth(2000 + $year, $month), (($packed -shr 14) -band 63) + 1)
+        $start = New-Object DateTime (2000 + $year), $month, $day, ([Math]::Min(23, ($packed -shr 6) -band 31)), ([Math]::Min(59, $packed -band 63)), 0
         if (-not $last -or $start -gt $last.Start) { $last = [pscustomobject]@{ Start = $start; End = $start.AddHours($hours) } }
     }
     return $last

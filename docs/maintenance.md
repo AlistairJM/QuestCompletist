@@ -1352,7 +1352,10 @@ one per region (590 and 1587 to 1590, Flags 3, dated every year from 2016 to 202
 each year's ID. Step 2b matches it to the rows named "WoW's <ordinal> Anniversary" (`$yearlyNames` in
 `Compare-ClientTables.ps1`) and reports one that runs today or later and isn't in the entry, so next
 year's row is a finding of the sweep; until its ID is added, the anniversary's pins stay hidden while
-it runs, and `/qc holidays` lists the row under "Other calendar holidays". The 12.1.5 PTR's table
+it runs, and `/qc holidays` lists the row under "Other calendar holidays". A year can have one
+ordinal row per region (the 20th had six) and the check reports each; adding them all is harmless. The
+plain-named rows are left out, so a year dated only on them would pass step 2b silently and show only in
+`/qc holidays`. The 12.1.5 PTR's table
 (70077) has no 23rd row yet (11 October 2026). Step 2d needs no alias for it, since no API category,
 TrinityCore event or heading of ours names it. Forever's Holidays tables (70245, 70291 and 70338)
 have no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not on
