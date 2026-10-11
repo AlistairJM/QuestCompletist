@@ -88,7 +88,7 @@ again.
   If so, a `prereq` `REMOVE` row each. The warrior, mage, Silithus and Call of Earth rows rest on
   Questie's issues and Wowhead's comments and are checked offline by `Test-Completions.lua`
   ([forever.md](forever.md), "CMaNGOS's other links, reviewed against first-hand reports").
-- **CMaNGOS's other requirements on Forever** (11 October 2026, stacked on the three above; data, and a
+- **CMaNGOS's other requirements on Forever** (#308, 11 October 2026, stacked on the three above; data, and a
   small change to the quest window's breadcrumb notice on both games, untried in game, so not for a
   release until tried or the user says so). One look on the beta: at In Search of Anthion (8929) or
   Taming the Beast, the notice counts only the lead-ins this character can take. The 119 prerequisites

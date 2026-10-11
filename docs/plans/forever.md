@@ -1237,4 +1237,4 @@ nothing else. The gaps, and what the importer does with each now:
 - 2026-10-11: the importer reads the rest of CMaNGOS's requirements: 119 quests get or change a
   prerequisite from `NextQuestId`, negative groups and `RequiredCondition`, 141 lead-ins close once
   the quest their `NextQuestInChain` names is taken, and the breadcrumb notice counts only the ones a
-  character can take. See "The rest of CMaNGOS's requirements".
+  character can take (#308). See "The rest of CMaNGOS's requirements".
