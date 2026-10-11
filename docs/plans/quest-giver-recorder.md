@@ -54,7 +54,8 @@ than the code is left alone.
   `Item` GUID makes the event record nothing.
 - **Spots** are `map x y visits` joined by `;`: the *player's* place on the map in percent, to a
   tenth, which was within 0.04 to 0.14 map points of the NPC for the eight Forever NPCs measured.
-  `-1 -1` is no position (an instance, or a hidden value). A new place within 1.0 point of one held
+  `-1 -1` is no position on a map the game named (an instance, or a hidden value); when the game names no
+  map at all (the Deeprun Tram on the Forever beta) no spot is stored. A new place within 1.0 point of one held
   adds a visit to it; further away it is a new spot, up to four. A visit counts when the giver
   changes or 30 seconds have passed.
 - **Offers and turn-ins** are quest IDs joined by `,`, up to 60 each. A quest can be in both.
@@ -167,6 +168,41 @@ real order and payloads; `/qc report` and the `d` counters in the saved file sho
   language; memory in the game.
 
 Record the answers here.
+
+**First answers, 11 October 2026,** from the user's Forever beta file (builds 70291 and 70338; the
+account's file also holds settings and characters, so only `qcQuestRecorder` is read, through the reader).
+87 records: 42 givers (32 creatures, 10 objects), 40 spots, 45 quests, no starts, no odd record, no failure
+(`err.n` 0), no eviction. The file grew from 83 records at 12:35 to 87 at 13:12 while this was being read. Against the list:
+
+- **Windows seen:** gossip 87 (46 with quests: the other 41 were vendors, flight masters and the like, which
+  the handler drops), greeting 12, quest details 57, accepts 42, progress 27, hand-ins 38. Every window
+  that had a giver read it: 180 reads, all `ok`, all in the open world, and every accepted quest (42) found its
+  log heading. The three quests offered and not accepted have none, as designed. A notice board
+  ("WANTED: Murkdeep!") and object givers (Buzzboxes, beached turtles) were seen. Not seen: a daily, a
+  party-shared quest, a world quest, the splash-screen quest.
+- **Who is speaking:** `npc` answered at `GOSSIP_SHOW` (46 of 46) and `questnpc` at the quest windows
+  (134 of 134, greeting included), so the second token was never tried. Whether `npc` also answers at the
+  quest windows is not known, because the recorder asks `questnpc` first and counts only the token that answered.
+- **Secrecy and context:** no `hid`, `oth`, `none`, combat or instance read, no `skip:`, no `bit:unk`, no
+  `name:loc`. Nothing was hidden on Forever, so this says nothing about retail's 12.x.
+- **Positions:** 170 reads had one and 10 had none (`pos:nomap`: the game gave no map for the player).
+  The ten are the two givers with no spot, Monty and Nipsy in the Deeprun Tram (their quests' log heading),
+  at a place `IsInInstance` did not call an instance. **The plan said no position leaves `-1 -1`; with no
+  map the recorder stores no spot at all** (`readWhere` returns nothing and the giver's spots field stays
+  empty), so 40 spots for 42 givers. The importer lists their two quests (6661, 6662) as "the giver has no
+  trusted place with a position" and cannot pin them from this. The other 40 givers have one spot each,
+  never two, though three were met four or five times and 17 reads were beyond `CheckInteractDistance`
+  (`near:false`): none made a second spot. The spots lie 0.00 to 0.10 map points from the Forever pin of the
+  same NPC for the 28 creatures that have both (a pin is CMaNGOS's spawn, or a spot the probe's recorder took
+  earlier) and up to 0.36 for the beached objects, whose names are shared by four or five pins, so the
+  player's place is as close to the NPC as the 0.04 to 0.14 measured on eight NPCs.
+- **Starts:** none happened, so item and area-trigger starts are untried. `hook:none` and `api:greeting`
+  never counted: the popup hook installed and the greeting functions exist on Forever.
+- **Names and masks:** every name was English and clean (`name:ok` 180); the faction, race and class masks
+  are one value each (one character) and contradict nothing in the data.
+- **Still open:** retail (its file held 0 records on 11 October), a dungeon, delve, combat, mounted and taxi
+  read on either game, an item or area-trigger start, `/reload`, the toggle, the clear, `/qc report`, the
+  options panel's layout, memory in the game, a German client.
 
 ## The merge tool
 
@@ -325,15 +361,65 @@ gives. Those cases show up as `quest offered away from its pins`. Converting thr
 frames (`UiMapAssignment`) would recover them; it is not built. (3) The 1.5 point radius is a ceiling, tight
 on small maps. (4) Two accounts of one person count as two players (see Trust).
 
+## The first real run (11 October 2026)
+
+The user: "we could use the small amount of Forever data I have recorded to test the pipeline for the
+first time". The file was a copy of the beta account's `QuestCompletist.lua` in a scratch
+`recordings\own\forever\`; the probes' files and the client tables were copies of the main checkout's `tools\`,
+so nothing was written there.
+
+- **Read:** `own-forever`, recorder, schema 1, Forever: 87 records, 0 odd: 42 givers, 40 spots, 45 offers,
+  41 turn-ins, 45 quest records, 0 starts. Nothing was left out (no build, map or quest dropped, no offer for a
+  quest the data lacks). The four Forever probes' files and the retail probe's read as before and added nothing.
+- **Ledger:** Forever 121 rows to 231 (53 givers, 59 spots, 68 offers, 51 turn-ins), all trusted, all from the
+  maintainer's own files. 110 rows are new (20 givers, 25 spots, 32 offers, 33 turn-ins), 58 old rows gained the
+  addon's file as a source (13 of them a later last build), 63 are as they were. Retail: 0 rows.
+- **Pins:** none changed. The tool writes only retail's pins and the retail ledger is empty: 0 filled, 0
+  joined, 0 new, 0 for review. **It does not read Forever's pins, so its "0 cases for review" says nothing about
+  them**, and `Import-ForeverData.ps1` reads only the probe's own file, so the addon's notes reach nothing but
+  the ledger (What is left, 4).
+- **Lists beside the report:** `recorded_quest_types.csv` has one row (quest 2178, from the probes: recorded
+  one-time, data type 32, a profession quest, which is one-time by nature); the other four were empty and not
+  written.
+- **Rehearsal on Forever's pins, in memory, nothing saved** (`Get-RecordedPlan` and `Get-RecordedReview`
+  pointed at `data\forever\pins.jsonl`): 0 fills, 0 for review, 1 add, 2 quests skipped for having no
+  position (6661, 6662). The add is quest 990 "Trek to Ashenvale", Sentinel Selarin (3694), Darkshore
+  39.3, 43.5: no Forever pin carries the quest. CMaNGOS lists her as the quest's starter but has no spawn for her (she is script-spawned), and Wowhead gives
+  her as its start (she runs in beside Terenthis after "Escape Through Stealth" or "Force" is handed in, and
+  leaves after some minutes). With the 46 Forever pins that carry a recorded offer blanked in memory, the plan
+  gives back all 46 with their own NPC ID and name. 37 of the 42 creature givers have a Forever pin carrying
+  their ID, and each of the 37 bears the same name, exactly; so do the 11 object givers.
+- **Against the probe's own recorder:** the probe's saved file in the game (11 October, 13:12) holds 53 givers,
+  68 offers and 50 turn-ins; the copy in `tools\forever_probe_70338` is from 10 October and holds 33, 36 and 18,
+  which is most of why 110 ledger rows were new. The addon's file has no giver or offer the probe's newest lacks, all 40 of its spots
+  are the probe's to the tenth of a point, and it has one turn-in more (Bubulo Acerbus takes in 7807, which he
+  also offers). The probe's has 11 givers and 23 offers more, from sessions the addon's recorder did not see.
+  So the two agree where they overlap, and step 10's copy of the probe's file, not taken here, should bring
+  quest 990 into Forever's pins by the probe's route (the importer was not run).
+- **Twice:** a second run left the ledger, `data\` and the addon's files byte for byte.
+- **Checks, with the same results before and after, as no code changed:** `Test-RecordedGivers.lua` 366 and
+  `Test-RecordedGivers.ps1` 271 checks, 0 failed; `Test-QuestReachability.lua` on Forever's TOC all zeros (81
+  pins of events the calendar doesn't show, as before); `Build-AddonData.ps1 -Check` up to date (35,023 quests
+  and 15,181 pins; 5,097 and 1,698); `Audit-QuestTables.ps1 -Game forever -OwnDataOnly` 5 findings, 0 new;
+  `Test-ForeverChecks.ps1` 39 checks; `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` takes nothing off
+  (one pair of Venom Bottle pins left alone, as before); `luac -p` silent.
+- **Found:** no bug in the reader or the tool. What the real file shows is under "To try in game": no map
+  leaves no spot, no starts happened, and the recorder counts only the token that answered. And two things
+  about the tool: its report says nothing of Forever's pins, and `recorded_quest_types.csv` lists a one-time
+  quest whose data type is 32 (or 8, 16, 64) as disagreeing with a recorded "one-time".
+
 ## What is left
 
 1. **The in-game session** above. The recorder was released first, in 112.7, on the user's word.
-2. **The first real ingest** of the maintainer's own retail and Forever files: run step 6d `-WhatIf`,
-   read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin
-   pipeline. Open the call for players' files after one sweep has run clean.
+2. **The first real ingest** of the maintainer's own files: Forever's was done on 11 October 2026 (above;
+   the ledger only, no pin changed). Retail's file held 0 records that day, so retail's is open: run step 6d
+   `-WhatIf`, read the report, write `KEEP` rows, run it, then `Remove-DuplicatePinQuests.ps1 -WhatIf` and
+   the pin pipeline. Open the call for players' files after one sweep has run clean.
 3. **One probe for both games** (recommendation 2).
 4. **Forever's importer** reads the ledger, and its recorded-spot merge radius moves from 3 to 1.5
-   map points; the probe's own recorder (PR #139) is retired after one sweep.
+   map points; the probe's own recorder (PR #139) is retired after one sweep. Until the importer reads it,
+   retiring the probe's recorder would end the only way new givers reach Forever's pins (the first run's
+   rehearsal gives one add, quest 990).
 5. **Later, if wanted:** a copy-text window for the report; a novelty test so the file skips what the
    shipped pins hold; the map-frame conversion above; the instance rule; recorded recurrence and
    headings applied by steps 3 and the category steps rather than listed.
@@ -365,3 +451,8 @@ on small maps. (4) Two accounts of one person count as two players (see Trust).
   that nothing is sent. The in-game session now checks what players already have. The in-game
   `/qc report` text still invites players to attach their file to a comment; the README and the
   changelog do not, because the call for players' files waits for one clean sweep (see "What is left").
+- 2026-10-11: the first real run of the merge tool, on the user's Forever beta file (87 records, builds
+  70291 and 70338): read clean, the Forever ledger 121 to 231 rows, no pin changed (the tool writes none for
+  Forever), no bug found. The file's first answers to the in-game list (the order of the tokens, no map
+  leaves no spot, no starts) are under "To try in game", the run's numbers under "The first real run".
+  Retail's recorder file held 0 records.

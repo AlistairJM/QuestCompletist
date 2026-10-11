@@ -949,7 +949,11 @@ pin keeps the pin; a row with a quest and no map or place keeps the quest from g
 pin whose ID `pin-npc-id-decisions.csv` took off by hand is left alone). A second run changes nothing. After it, run
 `Remove-DuplicatePinQuests.ps1 -WhatIf` and rerun the pin pipeline, as after 6c. Forever's pins are
 rebuilt by `Import-ForeverData.ps1` every time, so for Forever this step only keeps the ledger; run it
-before step 10.
+before step 10. The report does not compare the ledger with Forever's pins either, so its "0 cases for
+review" says nothing about them. The first real run (11 October 2026, the Forever beta file: 87 records, 0
+odd, 42 givers, 40 spots, 45 offers, 41 turn-ins, no starts; the ledger 121 to 231 rows, no pin changed, a
+second run byte for byte) is the baseline to compare a sweep with; retail's file held 0 records that day. The
+numbers are in [plans/quest-giver-recorder.md](plans/quest-giver-recorder.md), "The first real run".
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -1825,7 +1829,10 @@ nothing opens those files but `Read-RecordedGivers.lua`. Do this every sweep, so
 the addon's cap. Forever's importer (step 10) still reads only the probe's file, and the addon's notes
 for Forever reach nothing but the ledger until the importer is made to read it (plans/quest-giver-recorder.md,
 "What is left"): keep the probe installed while you play the Forever beta, and copy its file as step 10 says,
-before or after step 6d. The probe's recorder is retired after one sweep that has run clean on the addon's.
+before or after step 6d. The probe's recorder is retired after one sweep that has run clean on the addon's,
+and not before the importer reads the ledger. On 11 October 2026 the probe's own saved file in the game was
+newer than the copy in `tools\` (53 givers, 68 offers and 50 turn-ins against 33, 36 and 18) and held everything
+the addon's file did, bar one turn-in, with the same 40 spots to the tenth of a point, and more; copy it before step 10.
 
 ## Checking a change before its pull request
 

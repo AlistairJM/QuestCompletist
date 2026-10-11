@@ -137,7 +137,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 
 | # | What | Effort | Notes |
 |---|---|---|---|
-| 1 | The recorder on retail (API review, recommendation 1) | small in the addon (built 8 October 2026), medium for the merge tool (built 9 October 2026) | the one check Forever has that retail lacks outright; the in-game session and the first real ingest are left |
+| 1 | The recorder on retail (API review, recommendation 1) | small in the addon (built 8 October 2026), medium for the merge tool (built 9 October 2026) | the one check Forever has that retail lacks outright; the in-game session and retail's first ingest are left (Forever's file was ingested on 11 October 2026: the ledger only, as the tool writes no Forever pins) |
 | 2 | One probe for both games: a retail mode for `Build-ProbeLists.ps1`, the quest-facts pass built once, the NPC pass run on retail each sweep, #42's probe retired | medium | ends the two-probes split; the Forever probe already loads on retail |
 | 3 | Profession skill requirements on retail: the `GetProfessionInfo` fallback (done 7 October 2026), then the in-game check of the expansion lines, then the data from `QuestV2CliTask` and TrinityCore | small code (done), medium data | the case that started this; the fallback makes the code the same on both, and changes nothing in game until retail has requirement data |
 | 4 | `Audit-QuestTables.ps1`'s consistency checks on Forever's generated tables, in step 10 | medium | done 9 October 2026 (`-Game forever`, `-OwnDataOnly`): 6 findings, five kept and one fixed |

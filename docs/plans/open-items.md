@@ -160,7 +160,13 @@ again.
   [quest-giver-recorder.md](quest-giver-recorder.md) ("To try in game"): the order of the events,
   whether the game hides who is speaking, whether the popup hook fires, what the options panel
   looks like in the longest language. It went out in 112.7 on the user's word, without this session
-  (9 October 2026), so the session now checks what players already have.
+  (9 October 2026), so the session now checks what players already have. **Forever answered part of it
+  on 11 October 2026** (the beta file, 87 records, read clean): every window's giver was readable (`npc` at
+  gossip, `questnpc` at the quest windows, nothing hidden), the popup hook installed, and the game named no
+  map in the Deeprun Tram, where the recorder keeps no spot at all. **Still open:** retail
+  (its recorder file held 0 records on 11 October), an item or area-trigger start, and a dungeon, delve,
+  combat, mounted or taxi read, on either game; the options panel's layout and `/qc report`
+  ([quest-giver-recorder.md](quest-giver-recorder.md), "To try in game").
 - **The probe on both games** (`tools/ForeverProbe`): **run and read** on 9 October (retail 12.1.0.69933:
   35,023 quests, 8,418 NPCs, 1,961 maps; the Forever beta, 70291) and 10 October (Forever, 70338); the
   results are in `tools\retail_probe_69933\` and `tools\forever_probe_70338\`. Pin names: 10,562 of
@@ -253,8 +259,8 @@ From [game-parity.md](game-parity.md), decision 3, with what is done:
 2. Retail map pass: **done** (#219 carries its record).
 3. **Built, waiting for the game:** the recorder on retail, with one probe for both games
    (recommendations 1 and 2). The addon half (#228) is released (112.7, untried) and waits for its in-game session;
-   the merge tool (step 6d) waits for a real recording
-   ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
+   the merge tool (step 6d) has read Forever's first recording (11 October: the ledger only, no pin changed)
+   and still waits for retail's ([quest-giver-recorder.md](quest-giver-recorder.md)); the secrecy watch of step 2b is built; the
    probe is on master as a dev-only addon (#232 to #237), and both games' first runs are in (9 and 10
    October; see "To try in game").
 4. The consistency checks of `Audit-QuestTables.ps1` and `Remove-DuplicatePinQuests.ps1` on Forever's
