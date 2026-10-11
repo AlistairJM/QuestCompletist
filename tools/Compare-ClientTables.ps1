@@ -31,6 +31,14 @@ quests' minimum levels (Apply-QuestMinLevels.ps1). It is cached as ContentTuning
 time, and a build whose copy lacks a column the formula reads (MinLevelSquish, MaxLevelSquish,
 MinLevelScalingOffset or MaxLevelScalingOffset) is a column change, whether or not an earlier copy exists.
 
+WoW's Anniversary is a new Holidays row every year, named with the year's ordinal ("WoW's 22nd
+Anniversary" is 1808), so its entry is compared with the rows of those names, $yearlyNames below,
+and not with the rows named plain "WoW's Anniversary" (590 and 1587 to 1590), which the calendar
+didn't serve when /qc holidays was run in game on 11 October 2026. A row of those names that runs on
+-Today or later and isn't in the entry is a finding: add its ID to the entry. Rows with no date to
+come, such as past years', are left out, and the entry keeps its past IDs, which cost nothing once
+their dates are gone.
+
   .\Compare-ClientTables.ps1 -Build 12.1.0.69933 -ForeverBuild 1.60.1.70245
 #>
 param(
@@ -38,13 +46,15 @@ param(
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
     [string]$Build = "",
     [string]$ForeverBuild = "",
-    [string]$DownloadDir = (Join-Path $env:TEMP 'client_tables')
+    [string]$DownloadDir = (Join-Path $env:TEMP 'client_tables'),
+    [datetime]$Today = [datetime]::Today
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 if (-not $Build -and -not $ForeverBuild) { throw "Give -Build (retail) and/or -ForeverBuild." }
 . "$PSScriptRoot\QuestLevels.ps1"
 $questLike = 'Quest|POI|UiMap|UIMap|Area|Journal|Campaign|Holiday|ContentTuning|Waypoint|Storyline|Expansion'
+$yearlyNames = @{ "WoW's Anniversary" = "^WoW's \d+(?:st|nd|rd|th) Anniversary$" }
 
 function Get-TableList([string]$build) {
     $page = (Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2?build=$build").Content
@@ -117,8 +127,10 @@ function Compare-Build([string]$build, [string]$game) {
     foreach ($row in Import-Csv (Get-BuildTable $build 'HolidayNames' $dir)) { $names[$row.ID] = $row.Name_lang }
     $byName = @{}
     $filterTypes = @{}
+    $rows = @{}
     foreach ($row in Import-Csv (Get-BuildTable $build 'Holidays' $dir)) {
         $filterTypes[[int]$row.ID] = [int]$row.CalendarFilterType
+        $rows[[int]$row.ID] = $row
         $name = $names[$row.HolidayNameID]
         if (-not $name) { continue }
         if (-not $byName.ContainsKey($name)) { $byName[$name] = New-Object System.Collections.Generic.List[int] }
@@ -126,6 +138,31 @@ function Compare-Build([string]$build, [string]$game) {
     }
     $script:holidaysByGame[$game] = $byName
     $script:filterTypesByGame[$game] = $filterTypes
+    $script:holidayRowsByGame[$game] = $rows
+    $script:holidayNamesByGame[$game] = $names
+}
+
+# The last date of a Holidays row, with its end after the row's durations (hours). A date is packed:
+# minute, hour, weekday, day and month from 0, and the year from 2000, where 31 is every year; a row
+# that loops or has an every-year date never ends. A month, day, hour or minute set to its "any" value
+# counts as the latest it can mean.
+function Get-HolidayLastDate($row) {
+    $never = [pscustomobject]@{ Start = $null; End = [datetime]::MaxValue }
+    if ([int]$row.Looping -ne 0) { return $never }
+    $hours = 0
+    for ($i = 0; $i -lt 10; $i++) { $hours += [int]$row."Duration_$i" }
+    $last = $null
+    for ($i = 0; $i -lt 26; $i++) {
+        $packed = [long]$row."Date_$i"
+        if ($packed -le 0) { continue }
+        $year = ($packed -shr 24) -band 31
+        if ($year -eq 31) { return $never }
+        $month = [Math]::Min(12, (($packed -shr 20) -band 15) + 1)
+        $day = [Math]::Min([DateTime]::DaysInMonth(2000 + $year, $month), (($packed -shr 14) -band 63) + 1)
+        $start = New-Object DateTime (2000 + $year), $month, $day, ([Math]::Min(23, ($packed -shr 6) -band 31)), ([Math]::Min(59, $packed -band 63)), 0
+        if (-not $last -or $start -gt $last.Start) { $last = [pscustomobject]@{ Start = $start; End = $start.AddHours($hours) } }
+    }
+    return $last
 }
 
 # The build's copy of a table, downloaded once per run; the first run also caches it in tools\ as
@@ -165,17 +202,33 @@ function Compare-Holidays {
                 }
             }
         }
+        $pattern = $yearlyNames[$name]
         $client = @{}
         foreach ($game in $games) {
-            $ids = $script:holidaysByGame[$game][$name]
+            $byName = $script:holidaysByGame[$game]
+            $ids = if ($pattern) { @($byName.Keys | Where-Object { $_ -match $pattern } | ForEach-Object { $byName[$_] }) } else { $byName[$name] }
             if (-not $ids) { continue }
             foreach ($id in $ids) { if (-not $client.ContainsKey($id)) { $client[$id] = @() }; $client[$id] += $game }
         }
         if ($client.Count -eq 0) { $absent += $name; continue }
         $new = @($client.Keys | Where-Object { $ours -notcontains $_ } | Sort-Object)
+        $dated = @{}
+        if ($pattern) {
+            foreach ($id in $new) { $dated[$id] = Get-HolidayLastDate $script:holidayRowsByGame[$client[$id][0]][$id] }
+            $new = @($new | Where-Object { $dated[$_] -and $dated[$_].End -ge $Today })
+        }
         $gone = @($ours | Where-Object { -not $client.ContainsKey($_) })
         if ($new.Count -eq 0 -and $gone.Count -eq 0) { $matched++; continue }
-        foreach ($id in $new) { Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')) that qcHolidays lacks"; $script:holidayFindings++ }
+        foreach ($id in $new) {
+            if ($pattern) {
+                $row = $script:holidayRowsByGame[$client[$id][0]][$id]
+                $when = if ($dated[$id].Start) { "from $($dated[$id].Start.ToString('yyyy-MM-dd'))" } else { 'every year' }
+                Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')), `"$($script:holidayNamesByGame[$client[$id][0]][$row.HolidayNameID])`" $when, a new year's row that qcHolidays lacks: add $id to the eventIDs of `"$name`" in qcHolidays"
+            } else {
+                Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')) that qcHolidays lacks"
+            }
+            $script:holidayFindings++
+        }
         if ($gone.Count -gt 0) {
             if ($games.Count -ge 2) { $script:holidayFindings++ }
             Write-Output ("  ${name}: qcHolidays has " + ($gone -join ', ') + ", which " + $(if ($games.Count -ge 2) { 'neither game has' } else { "$($games[0]) doesn't have (the other game may)" }))
@@ -188,6 +241,8 @@ $script:changedTotal = 0
 $script:holidayFindings = 0
 $script:holidaysByGame = @{}
 $script:filterTypesByGame = @{}
+$script:holidayRowsByGame = @{}
+$script:holidayNamesByGame = @{}
 if ($Build) { Compare-Build $Build 'retail' }
 if ($ForeverBuild) { Compare-Build $ForeverBuild 'WoW: Forever' }
 Compare-Holidays

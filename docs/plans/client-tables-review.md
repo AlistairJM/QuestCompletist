@@ -215,7 +215,10 @@ maximum is still not used (open-items.md decision 9).
 - 2026-10-07: the holiday check (recommendation 4) is part of step 2b, in
   `Compare-ClientTables.ps1` (#205): for each entry in `qcHolidays`, the Holidays rows of its name
   in each build given, through HolidayNames, against the IDs it lists. On the same builds, 15 of
-  the 17 holidays match and the two Forever events have no row, as expected.
+  the 17 holidays match and the two Forever events have no row, as expected. Since 11 October 2026
+  WoW's Anniversary, whose calendar event is a new row each year ("WoW's 22nd Anniversary" is
+  1808), is matched by those yearly names instead of its own, and a row of them that runs today or
+  later and is missing from its entry is a finding (maintenance.md, "Holidays").
 - 2026-10-07: floors from UiMapGroupMember (recommendation 3), a rule in `Add-ZoneTableMaps.ps1`
   (#206): 25 floors joined the zone table (Black Temple's 7, Dawn of the Infinite's 8,
   Amirdrassil's 3 boughs, the Exodar's 3, Mardum's 2, Greymane Manor's main floor, Tazavesh's

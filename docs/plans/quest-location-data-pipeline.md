@@ -423,7 +423,7 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   (`QuestV2CliTask`); flagged unavailable; a type other than 0, 1, 2, 4 or 128; tagged a holiday or
   profession quest; in a system category (Scenario, Delves, Prey, Warbands, Warfront Contribution,
   Path of Ascension, Covenant Assaults, Torghast, Time Rift, Weekly Events, World PvP and the
-  others in the script), a holiday's category, or Landfall, whose dailies look retired; named like
+  others in the script), a holiday's category, or Landfall, whose dailies looked retired (they do not: open-items.md row 34); named like
   an internal quest; absent from the client's `QuestV2`; disabled in TrinityCore; without a
   `quest_template` row; flagged tracking (0x400) or unavailable (0x4000), or auto-accept together
   with auto-complete (a scripted helper), or auto-accept with no starter (a trigger, not a giver);

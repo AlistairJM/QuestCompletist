@@ -197,7 +197,13 @@ then every tool refuses to save.
    with both games' calendar tables: an ID the client has under one of our holidays' names that
    `qcHolidays` lacks exits with 1 too, and goes into `qcHolidays` before the sweep goes on, as
    does a holiday whose calendar-window filter differs from the one the client's
-   `CalendarFilterType` puts it under. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
+   `CalendarFilterType` puts it under. WoW's Anniversary is matched by its yearly rows' names
+   instead ("WoW's 22nd Anniversary" and the like, see [Holidays](#holidays)): a row of those names
+   that runs today or later and is missing from its entry exits with 1, and its ID goes into the
+   entry; last year's rows are left out. On 11 October 2026 a run on retail 12.1.0.69933 and
+   Forever 1.60.1.70338 gave no finding: no column changes, and of 20 holidays 18 matched and the
+   Scourge Invasion and the Ahn'Qiraj War Effort have no row; the 12.1.5 PTR's (70077) calendar
+   tables gave the same holiday result, with no 23rd anniversary row yet. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
@@ -509,10 +515,13 @@ exits with 1 on a new finding: tag the quest in the data file and record a `SET`
 add the `PENDING` or `KEEP` row that says why it stays as it is. It only sees holidays with a flag in
 `qcHolidays`; the pending quests of one with no flag show up once a flag is added.
 
-Baseline on 10 October 2026: 840 quests in an API category read as a holiday, 579 in a TrinityCore
-event read as one and 994 filed under a holiday heading. That is 58 findings, all covered (57
-`PENDING`, 1 `KEEP`), so none is new. The first run also found quest 43472, filed under Midsummer
-while its `PENDING` row says WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
+Baseline on 11 October 2026: 840 quests in an API category read as a holiday, 579 in a TrinityCore
+event read as one and 1,016 filed under a holiday heading. That is 67 findings, all covered (56
+`PENDING`, 11 `KEEP`), so none is new, the same before and after the 19 WoW's Anniversary quests were
+tagged that day. No signal names that holiday (the API files its quests under the general "Seasonal",
+and neither TrinityCore's anniversary events nor our headings hold them), so step 2d checks them only
+through their `SET` rows. The first run also found quest 43472, filed under Midsummer while its
+`PENDING` row said WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
 run takes about 20 seconds.
 
 ### 2e. The retail quest cache
@@ -1321,23 +1330,30 @@ the game's own names for those headings in every language, through `Sync-QuestSo
 
 ## Holidays
 
-Seasonal quests need no yearly upkeep. The map's seasonal filter asks the game's calendar which
-holidays are running, and `qcHolidays` in `qcCore.lua` ties each holiday value in the quest
-database to the IDs of the game's Holidays table that its calendar event carries. The filter is the
-map's alone: the quest list keeps holiday quests in their own categories. A pin is drawn while any
-one of its quests passes the filter, so a pin that holds a tagged quest and ordinary ones stays drawn
-out of season, and only a pin whose quests are all tagged, for holidays that aren't running, goes. On
-9 October 2026 quest 81561 stood on three such mixed pins, and 11882 on one of its 8 pins.
+Seasonal quests need no yearly upkeep, except WoW's Anniversary, whose calendar event is a new row
+every year: step 2b of the sweep reports the new row, and its ID goes into the entry (below). The
+map's seasonal filter asks the game's calendar which holidays are running, and `qcHolidays` in
+`qcCore.lua` ties each holiday value in the quest database to the IDs of the game's Holidays table
+that its calendar event carries. The filter is the map's alone: the quest list keeps holiday quests
+in their own categories. A pin is drawn while any one of its quests passes the filter, so a pin that
+holds a tagged quest and ordinary ones stays drawn out of season, and only a pin whose quests are all
+tagged, for holidays that aren't running, goes. On 9 October 2026 quest 81561 stood on three such
+mixed pins, and 11882 on one of its 8 pins. Stacked pins are drawn as one while any of them is: on
+Tanaris, three anniversary pins (47254's, Chromie's and Yllana's) share a stack of seven with
+Bobadormu's and Alyx's untagged Secrets of Azeroth and weekly-event quests, so out of season the
+stack stays, under Bobadormu's name, without them.
 
 `/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
 running, each one's next dates, and any calendar holiday that isn't tied to a quest. Retail's list
 now includes Pirates' Day, because 42758 is the first retail quest tagged with it, and the Moonkin
 Festival and Hearthstone's 10th Anniversary, whose quests were tagged on 10 October 2026 (47430,
-and six Hearthstone quests, two of them pinned). A holiday there that should match one of ours,
-under a new ID, means an entry in `qcHolidays` needs that ID adding.
+and six Hearthstone quests, two of them pinned), and WoW's Anniversary, whose 19 quests were tagged
+on 11 October 2026 (seven of them pinned). A holiday there that should match one of ours, under a
+new ID, means an entry in `qcHolidays` needs that ID adding.
 Step 2b of a sweep finds the same offline, from the client's Holidays and HolidayNames tables: for
 each entry in `qcHolidays`, every ID the client has under that name in either game, against the
-IDs the entry lists. A new holiday with quests needs a new flag, an entry, and its quests' `holiday`
+IDs the entry lists; for WoW's Anniversary, every row named "WoW's <ordinal> Anniversary" that runs
+today or later. A new holiday with quests needs a new flag, an entry, and its quests' `holiday`
 set in `data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table
 from Holidays IDs to flags, so add the ID there too and rerun step 10. The importer also tags by
 heading (Ahn'Qiraj War, and the quests CMaNGOS files under Invasion) and by a small hand list,
@@ -1404,12 +1420,55 @@ filter changes nothing on the map for them, and the quest list never applies it.
 Hearthstone's 10th Anniversary is on retail's calendar for 2024 only. The client's Holidays table has
 two rows under that name, 1462 (from 11 March 2024) and 1578 (from 26 September 2024, one region),
 and none for a later year. Its entry lists both, so its pins stay hidden until the game dates the
-event again, and `/qc holidays` says it isn't on the calendar in the next 12 months. A later
-anniversary would be a row under a new name, which step 2b doesn't match to this entry: it shows in
-`/qc holidays` under "Other calendar holidays", and its ID goes into this entry. Step 2d reads
+event again, and `/qc holidays` says it isn't on the calendar in the next 12 months (it did so on
+retail on 11 October 2026). A later anniversary would be a row under a new name, which step 2b
+doesn't match to this entry: it shows in `/qc holidays` under "Other calendar holidays", and its ID
+goes into this entry. Step 2d reads
 Blizzard's quest category "Hearthstone Anniversary" as this entry through an alias in
 `Audit-QuestHolidays.ps1`. Neither this event nor the Moonkin Festival (694) is in Forever's Holidays
 table.
+
+WoW's Anniversary is on retail's calendar as a new Holidays row every year, named with the year's
+ordinal: "WoW's 21st Anniversary" is 1501 (from 16 November 2025) and "WoW's 22nd Anniversary" 1808
+(from 17 November 2026, for 504 hours). The table also has five rows named plain "WoW's Anniversary",
+one per region (590 and 1587 to 1590, Flags 3, dated every year from 2016 to 2026; 1587 is region
+4's, from 17 November 2026 for 504 hours), but on 11 October 2026 `/qc holidays` on retail listed
+1808 under "Other calendar holidays" and none of the five, so the entry lists 1808 alone. It keeps
+each year's ID. Step 2b matches it to the rows named "WoW's <ordinal> Anniversary" (`$yearlyNames` in
+`Compare-ClientTables.ps1`) and reports one that runs today or later and isn't in the entry, so next
+year's row is a finding of the sweep; until its ID is added, the anniversary's pins stay hidden while
+it runs, and `/qc holidays` lists the row under "Other calendar holidays". A year can have one
+ordinal row per region (the 20th had six) and the check reports each; adding them all is harmless. The
+plain-named rows are left out, so a year dated only on them would pass step 2b silently and show only in
+`/qc holidays`. The 12.1.5 PTR's table
+(70077) has no 23rd row yet (11 October 2026). Step 2d needs no alias for it, since no API category,
+TrinityCore event or heading of ours names it. Forever's Holidays tables (70245, 70291 and 70338)
+have no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not on
+Forever's calendar, which is no finding.
+
+Retail's calendar on 11 October 2026, as `/qc holidays` listed it on the user's realm (whose
+per-region rows are region 4's): every holiday our quests have was dated in the next 12 months
+except Hearthstone's 10th Anniversary, as expected. Brewfest (372) 2027-09-20 to 2027-10-06,
+Children's Week (201) 2027-05-03 to 05-10, Day of the Dead (409) 2026-11-01 to 11-03, Feast of
+Winter Veil (141) 2026-12-15 to 2027-01-02, Hallow's End (324) 2026-10-19 to 11-02, Harvest Festival
+(321) 2027-09-11 to 09-18, Love is in the Air (423) 2027-02-08 to 02-22, Lunar Festival (327)
+2027-02-02 to 02-16, Midsummer (341) 2027-06-21 to 07-05, Noblegarden (181) 2027-03-29 to 04-05,
+Pilgrim's Bounty (404) 2026-11-22 to 11-29, Pirates' Day (398) 2027-09-19 to 09-20, Trial of Style
+(691) 2027-03-20 to 03-27, Darkmoon Faire (479) 2026-11-01 to 11-07, Moonkin Festival (694)
+2026-11-12. The calendar holidays tied to no quest were Fireworks Spectacular (62), Pet Battle Bonus
+Event (599), Battleground Bonus Event (602), Arena Skirmish Bonus Event (610), World Quest Bonus
+Event (613), Hatching of the Hippogryphs (634), Volunteer Guard Day (635), Call of the Scarab (638),
+Thousand Boat Bash (642), Un'Goro Madness (644), Spring Balloon Festival (645), March of the Tadpoles
+(647), Glowcap Festival (648), Timewalking Dungeon Event (652, 1063, 1265, 1583, 1667, 1705, 1720),
+Fireworks Celebration (658), PvP Brawl: Southshore vs. Tarren Mill (669), Gravity Lapse (670),
+Warsong Scramble (671), Arathi Blizzard (673), Packed House (674), Auction House Dance Party (692),
+The Great Gnomeregan Run (696), PvP Brawl: Deep Six (704), Cooking Impossible (1049), Wanderer's
+Festival (1052), Free T-Shirt Day (1053), Luminous Luminaries (1054), Classic Ashran (1122), Temple
+of Hotmogu (1169), Deepwind Dunk (1241), Shado-Pan Showdown (1244), Kalimdor Cup (1395), Eastern
+Kingdoms Cup (1400), Delves Bonus Event (1560), Darkspear Dash (1793), Midnight Dungeon Event (1803)
+and WoW's 22nd Anniversary (1808), which went into `qcHolidays` that day. So the calendar serves Call
+of the Scarab (638), and The Great Gnomeregan Run (696) and the Kalimdor and Eastern Kingdoms Cups,
+which `PENDING` rows of `quest-holiday-decisions.csv` name, under those IDs.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
