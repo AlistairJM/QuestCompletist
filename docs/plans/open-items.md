@@ -55,7 +55,7 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
-- **Retail's minimum levels (11 October 2026, untried in game):** on a level 1 character, hover a pin of quest 24758 "The Rise of the Darkspear" (map 463, 42.8, 53.4), 14445 "Farewell, For Now" (Thrall, the Lost Isles) or 24430 "Blacken the Skies" (Azshara, 14.5, 65.7) and read the Requires Level line: none for the first two (it said 30 before), and 5 for the third.
+- **Retail's minimum levels (11 October 2026, untried in game):** on a level 1 Horde character, hover the pin of quest 24430 "Blacken the Skies" (Azshara, 14.5, 65.7) and read the Requires Level line: 5 (it said 30 before).
 - **The continent icons** (released in 112.8; the first look is done, the final build is untried; the probe's geometry pass is run): both games'
   dumps were read on 10 October and are the baseline (`continent-geometry-baseline.csv`, sweep step
   2f); retail's next dump comes with its map pass once 12.1.5 is live, plus `/qcprobe geometry`

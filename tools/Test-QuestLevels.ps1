@@ -460,5 +460,6 @@ if (-not $haveReal) {
 }
 
 [Threading.Thread]::CurrentThread.CurrentCulture = $savedCulture
+Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue
 Write-Output "$Passed checks passed, $Failed failed"
 if ($Failed -gt 0) { exit 1 }

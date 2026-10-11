@@ -611,7 +611,7 @@ It writes `minLevel` only where the minimum differs from `level`, treating 0 and
 a 0 where the sources say no minimum and the level is above 0. A second run changes nothing, byte for
 byte; after step 6 has added quests (or the task quests of open-items.md decision 1 are merged) a rerun
 covers just those and any quest whose source has moved. `-WhatIf` reports the sources, the changes by
-direction (the gate lowered or raised) and examples, and writes nothing; `-Check` is the same and exits 1
+direction (the gate lowered or raised) and examples, and writes no data (a missing ContentTuning table is still downloaded into `tools\` first); `-Check` is the same and exits 1
 when the data isn't what the sources say, for a Test- or Audit- step to call. First run, 11 October
 2026: 1,628 quests changed, all of them a `minLevel` added (no other field of any quest, and no pin):
 1,398 from the API (1,180 lowered, 218 raised), 225 from the client's ranges (187 lowered, 38 raised)

@@ -18,7 +18,7 @@ tuning, and the run stops, changing nothing, unless at least -MinAgreement of at
 and after quests are added to the data (the task quests of step 6) it covers just those, and any quest
 whose source has moved. Existing `minLevel` values change only when a source says so.
 
-  -WhatIf   report only: the sources, the changes by direction and examples; writes nothing
+  -WhatIf   report only: the sources, the changes by direction and examples; writes no data (a missing ContentTuning table is downloaded into tools\ first)
   -Check    like -WhatIf, but exits 1 when the data isn't what the sources say (for Test- and Audit- steps)
   -Refresh  download the ContentTuning table again (it is downloaded when tools\ lacks it for the build)
   -Build    the retail build of the table and the quest cache; the newest retail_quest_cache_<build>.jsonl's by default
