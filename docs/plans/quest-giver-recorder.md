@@ -312,7 +312,8 @@ the numbers of every source of the maintainer's own, and the probe's file is cum
 times is three in every later probe file), so the same visits count once per file read: 3, 3, 3 and 3 are
 12 once four probe files are in the ledger. Which of two rows 0.1 point apart seeds a place can then differ from
 what the newest file alone says, and Forever's importer, which pins at the seed, moves the pin
-([forever.md](forever.md), "The importer reads the ledger"). The weight is the merge tool's rule and is left as it is.
+([forever.md](forever.md), "The importer reads the ledger"). The weight is the merge tool's rule and is left as it is
+until the user decides ([open-items.md](open-items.md), decision 36).
 
 ## What is left
 

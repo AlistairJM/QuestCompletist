@@ -931,7 +931,8 @@ further than 3 points, so no pin is counted as removed and added.
   3 in each of four files and 12 in the ledger's sum for the maintainer's own sources, and that decides which of two
   rows 0.1 apart seeds a place. It is why Thundris Windweaver (37.4,40.1 in the newest file: 4 visits, against
   37.4,40.2: 3, in all four files) moves 0.1 in setup 1, where nothing else does. The rule is the merge tool's
-  and is left as it is (quest-giver-recorder.md, "Known limits", 5).
+  and is left as it is until the user decides ([open-items.md](open-items.md), decision 36;
+  quest-giver-recorder.md, "Known limits", 5).
 - **Equivalence:** a ledger built by step 6d from the one probe file alone (121 rows), run through the new
   importer, gives the old importer's files byte for byte: `quests.jsonl`, `pins.jsonl` (as written, and after
   step 9), `links.jsonl`, `reputation.jsonl`, `skills.jsonl`, `answers.jsonl` and the review list. The old

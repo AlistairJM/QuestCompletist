@@ -1199,8 +1199,12 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
 
 With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
-`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables or
-CMaNGOS, and is for review before its pull request. The committed `pins.jsonl` is a rerun's since the
+`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables,
+CMaNGOS or the ledger, and is for review before its pull request. Until decision 36 of
+[plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
+place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
+file and can make the other of two rows 0.1 apart the place. On today's ledger that moves Thundris Windweaver
+(map 1439) from 37.4,40.1 to 37.4,40.2, 0.1 of a map point. The committed `pins.jsonl` is a rerun's since the
 import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
 start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
 replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)). A giver the recorders have met since
