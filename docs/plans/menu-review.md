@@ -102,8 +102,9 @@ report's recommendation, it says so.
 - **R16 Tournament** is in Northrend and in World Events; both open the same list and it is an
   event, so both stay.
 - **R23 Amirdrassil** (zone and raid) keep the in-game names.
-- **R32, the 83 unused category definitions** are harmless. Removing them cascades into the locale
-  files (`Remove-ConvertedLocaleKeys.ps1`), so it is a pass of its own (question 31).
+- **R32, the 83 unused category definitions** were harmless. Removing them cascades into the locale
+  files (`Remove-ConvertedLocaleKeys.ps1`), so it was a pass of its own: 82 went on 11 October 2026 and
+  one stays (question 31).
 - **R35, R36, R38 to R40 and F08 to F10** are information rows with nothing to change.
 
 ## Decisions waiting for the user
@@ -124,7 +125,7 @@ one the report author would take.
 | 28 | R05 | Class Quests has no Evoker | leave: 37 of the 45 Evoker-only quests are the Forbidden Reach start, filed by zone |
 | 29 | R33 | Ordering rule: Retail's hand order, or alphabetical everywhere | keep the hand order (Monk is fixed); Forever sorts alphabetically in its generator already |
 | 30 | F04, F05 | Forever: Seasonal lumps Winter Veil (37), Love is in the Air (21), Hallow's End (7) and Harvest Festival (2); Deeprun Tram and Special stand loose | leave until after the 4 November launch, then look again |
-| 31 | R32 | Remove the 83 unused category definitions | yes, in a pass of its own with `Remove-ConvertedLocaleKeys.ps1`, after question 24 |
+| 31 | R32 | Remove the 83 unused category definitions | **yes, 11 October 2026, done**: in a pass of its own, after question 24. 82 definitions removed with the table rows and the 12 locale keys that went with them; Island Expeditions (1130) stays, because two tools still name it. Detail under "Question 31" below |
 
 ## Question 24: what the merge changed
 
@@ -231,6 +232,101 @@ quests unavailable) and any class, faction or race category the character can't 
 Elf Death Knight at the default settings 61 of retail's 480 categories and 15 of Forever's 113 open
 empty; the reachability report lists them.
 
+## Question 31: what the removal changed
+
+R32 is done, on the user's word of 11 October 2026, in a pass after question 24. A category definition
+counted as unused when no quest in `data\quests.jsonl` carries it, no menu entry names it (`arg1`), no
+row of `qcAreaIDToCategoryID` has it as a value, and nothing else names it: not `qcCategoryClientName`,
+not `QC_ZONE_EXTRA_CATEGORIES` in `qcContinentPins.lua`, and not the category numbers in the scripts of
+`tools\` (the 16 that `Place-UncategorisedQuests.ps1` names in its hand-kept rules are all in
+use; `Audit-QuestHolidays.ps1`, `Build-ForeverMenu.ps1` and `Audit-DungeonCategories.ps1` name none). The five
+categories of question 24 held quests, so none of them was among the 83: on that branch 563 definitions
+were left, 480 of them holding quests.
+
+**One of the 83 stays: Island Expeditions (1130).** `Build-QuestLocationData.ps1` and
+`Import-RecordedGivers.ps1` list it in `$systemCategories`, the categories whose quests they skip, and
+`Test-RecordedGivers.ps1` repeats the list. No quest is filed under it, so the definition is harmless, but
+the call was to keep what something still names, so the row stays with its locale key `ISLANDEXPEDITIONS`.
+Forever is untouched: it numbers its own categories, all 113 hold quests, and the six IDs it shares with the
+83 (4, 8, 38, 44, 405 and 406) are Blasted Lands, Swamp of Sorrows, Loch Modan, Redridge Mountains,
+Desolace and Stonetalon Mountains there, each in use.
+
+The 82 removed:
+
+| ID | Name | ID | Name | ID | Name |
+|---|---|---|---|---|---|
+| 4 | Ahn'Qiraj War | 286 | Cragplume Cauldron | 429 | Acherus: The Ebon Hold |
+| 8 | Ammen Vale | 294 | Logging | 500 | Stranglethorn Vale |
+| 34 | Camp Narache | 296 | Pickpocketing | 501 | The Barrens |
+| 35 | Cataclysm | 297 | Ruins of the First Bastion | 1043 | Argus |
+| 38 | Chill Breeze Valley | 300 | Spire of Light | 1048 | Emerald Dreamway |
+| 41 | Coldridge Valley | 303 | Stormshield Stronghold | 1066 | Mechagon City |
+| 44 | Dalaran City | 304 | Tailthrasher Basin | 1106 | Siege of Zuldazar |
+| 48 | Darkspear Strand | 307 | Teluuna Observatory | 1110 | Uldir |
+| 56 | Designer Island | 309 | The Forgotten Caves | 1131 | The Great Sea |
+| 73 | Epic | 310 | The Howling Crag | 1208 | Zereth Mortis Campaign |
+| 75 | Eye of the Storm | 313 | Warspear Outpost | 1290 | Shadowlands Uncategorized Quests |
+| 99 | Hillsbrad | 317 | Garrison | 1411 | Tazavesh |
+| 109 | Invasion | 403 | The Battle for Gilneas | 1422 | Dhar Bandar |
+| 111 | Isle of Conquest | 404 | Twin Peaks | 1423 | Earthen |
+| 123 | Legendary | 405 | Silvershard Mines | 1424 | Mourning Rise |
+| 144 | New Tinkertown | 406 | Temple of Kotmogu | 1504 | Neighborhood |
+| 160 | Redridge Canyons | 409 | The Black Morass | 1507 | Storm Fileds |
+| 162 | Reputation | 412 | Terrace of Endless Spring | 1701 | Heart of the Forest |
+| 167 | Ruins of Uldum | 415 | The Maelstrom | 1705 | Spires of Ascension |
+| 178 | Shadowglen | 416 | Mogu'shan Vaults | 1709 | Mists of Tirna Scithe |
+| 189 | Skettis | 418 | Blackwing Lair | 1722 | Uldaman: Legacy of Tyr |
+| 196 | Strand of the Ancients | 421 | Brawl'gar Arena | 1724 | The Stonevault |
+| 210 | The Barrier Hills | 422 | Isle of Giants | 1726 | Ara-Kara, City of Echoes |
+| 234 | The Thunder Forges | 423 | Plaguelands: The Scarlet Enclave | 1727 | The Rookery |
+| 263 | Valley of Trials | 424 | Onyxia's Lair | 1728 | Darkflame Cleft |
+| 268 | Warsong Gulch | 425 | Firelands | 1731 | Operation: Floodgate |
+| 282 | Beastwatch | 426 | Theramore's Fall |  |  |
+| 284 | Bloodmane Pridelands | 428 | Serpentshrine Cavern |  |  |
+
+What else changed:
+
+- `qcQuestCategories` has 481 rows instead of 563, and `qcCategoryUiMapID` 337 instead of 373 (36 of the
+  82 took their name from a map; `Build-CategoryUiMapIDs.ps1` drops those rows). `qcCategoryClientName`
+  stays at 111: `Build-CategoryClientNames.ps1` only names categories that hold quests, so it never had
+  a row for one of the 82. `qcAreaIDToCategoryID` (1,109 rows) and `qcMenu.lua` named none of them and
+  are as they were. A Lua dump of retail's menu before and after is identical (557 items), a dump of
+  `qcQuestCategories` shows exactly the 82 rows gone and the other 481 in their old order, and
+  `data\quests.jsonl` and the generated Lua data files are byte for byte what they were: the 480
+  categories that hold quests are the same.
+- Locale files: 12 keys go from all 11 (`THEBARRENS` is in English only), 122 lines: `DHARBANDAR`,
+  `EARTHEN`, `MOURNINGRISE`, `NEIGHBORHOOD`, `SIEGEOFZULDAZAR`, `SKETTIS`, `SPIREOFLIGHT`,
+  `STORMSHIELDSTRONGHOLD`, `STRANGLETHORNVALE`, `THEBARRENS`, `WARSPEAROUTPOST` and
+  `ZERETHMORTISCAMPAIGN`. Three more of the 82 had a key that something else still needs, so it stays:
+  `AHNQIRAJWAR` and `INVASION` are what Forever's own "Ahn'Qiraj War" and "Invasion" fall back to, and
+  `THEMAELSTROM` is the fallback of the heading the client names. The other 67 never had one.
+  `Test-Localization.lua` counts 159 keys of English's own (171) and 130 of each other language's (141).
+- `Remove-ConvertedLocaleKeys.ps1` found only 2 of the 12 (`STRANGLETHORNVALE` and `THEBARRENS`, whose names
+  categories of Forever's still carry). It skipped every other key that no category, heading or code named,
+  as the addon's own text, and the key of a category that has just been deleted is exactly that, so
+  `Test-Localization.lua` called the other 10 unused and the tool left them. It now removes an English key
+  nothing uses (`maintenance.md` already said it did), counting any string literal of capitals as a use so
+  that keys picked through a table, such as `UNAVAILABLEACCEPTED`, stay. On the branch's base it still
+  reports 0 lines, and on the branch it reports 0 after the run.
+- `Add-ZoneTableMaps.ps1`: its header used two of the removed categories as examples (500 "Stranglethorn
+  Vale", empty, and 429, Acherus); reworded. Its `-WhatIf` gives the same result as before (one map to
+  add, 2162 Alterac Valley, found before too).
+- `maintenance.md`: the key example under "Text in other languages" (`STRANGLETHORNVALE` is gone), the
+  list of what `Remove-ConvertedLocaleKeys.ps1` removes (step 5), and a paragraph on unused definitions
+  beside the one on merging categories (step 6).
+
+What the tools say now:
+
+- `Place-UncategorisedQuests.ps1 -WhatIf -Explain` on the branch and on its base: both would place 30
+  quests (28 by the pin's map, 2 by storyline) and leave 745. The CSV differs in one cell: quest 53131's pin
+  on map 1156 "The Great Sea" used to name category 1131 (by the map's name; no menu entry reaches it) and
+  names none now. A quest whose category is not defined still goes to Uncategorized, as the note on category
+  287 says: with quest 9319 put in category 4 (removed) in a scratch copy of the data, the tool would place 31
+  quests, the extra one by "undefined category, to Uncategorized".
+- `Audit-DungeonCategories.ps1`: the same 55 lines but two. The Black Morass (409) and Firelands (425)
+  were "not in the menu" and are "no category" now, with the same 3 and 1 tied quests filed elsewhere. The 16
+  instances whose unused category went (Blackwing Lair, Uldir and the like) no longer list one in the CSV.
+
 ## Noticed along the way
 
 - A plain `Place-UncategorisedQuests.ps1 -Refile 0` would now move 30 more quests out of
@@ -251,9 +347,9 @@ empty; the reachability report lists them.
 - `Build-UnavailableQuests.ps1` and [unavailable-quests.md](unavailable-quests.md) disagree: the doc
   says a task quest can be flagged if a decision row overrides, but the script has no override and
   stops on any task `FLAG` (since 11 October 2026 reason 3 is the override).
-- `Audit-DungeonCategories.ps1` still reports "not in the menu" for The Black Morass (409) and
-  Firelands (425). Both categories are empty, as before, and the zone rows for both were among the
-  deletions.
+- `Audit-DungeonCategories.ps1` reported "not in the menu" for The Black Morass (409) and Firelands
+  (425), two empty categories whose zone rows were among the deletions. Question 31 removed both, and it
+  says "no category" for them now.
 - The runbook's step-10 reachability example uses `tools\UiMap-<build>.csv`. Only the 70205 map file
   is in `tools\`, while the docs name 70245 as the current beta build.
 - Docs, updated with this change: `maintenance.md` step 6 (the name-prefix list of
@@ -293,3 +389,4 @@ empty; the reachability report lists them.
 - 2026-10-11: question 20 approved by the user and done on `data/flag-placeholder-quests`: the 22 placeholder-named quests that still showed are flagged (20 with reason 1, the 2 task quests with the builder's new reason 3, added in a second commit). Checked offline: `luac -p` is silent on all 44 Lua files; `Build-AddonData.ps1 -Check` passes; `qcUnavailableQuests.lua` gains exactly the 20 IDs; `Test-QuestReachability.lua` (both games) gives a report identical to master's, because it sweeps with every hide filter off, "Hide quests that are no longer available" included; with the default list settings the 20 are hidden for a character that has not done them and shown for one that has, or has them in its log, and the count of quests passing the default list falls from 18,052 to 18,033 for a Horde Blood Elf Death Knight (one of the 20 is Alliance-only); `Test-Localization.lua`, `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-SeasonalCalendar.lua` and `Test-ContinentPins.lua` (all both games) pass, and the continent icons count 9 fewer quests on Retail (13,447 to 13,438). Not tried in game: that the 20 are gone from the list, the map and the zone counters, and that the 9.1 Campaign entry opens empty. The numbers above were measured for the first 20; the second commit only adds 86645 and 94815 to the Lua file and changes its header line.
 - 2026-10-11: question 26 approved by the user and done, on branch `feat/empty-list-hidden-count` (cut from master 956ef50): an empty quest list says "Quests hidden by your filters: N" (`qcShowHiddenQuests` in `qcCore.lua`, a text `qcHiddenQuests` in `QuestCompletist.xml`, the new key `QUESTSHIDDEN` in all 11 locale files, the ten translations marked `-- Needs review`); every entry stays and no quest moved. Checked offline: `luac -p` is silent on all 27 addon Lua files, `Test-Localization.lua` says "No problems", `Test-QuestReachability.lua` (both games) has 0 Lua errors and a report equal to master's apart from its new section, whose checks (1,036 on retail, 292 on Forever) all pass and fail 82 and 37 of them on master's code, `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-ContinentPins.lua` and `Test-SeasonalCalendar.lua` (both games) say "All checks passed.", `Test-Recorder.lua` says "0 failed", and `Build-AddonData.ps1 -Check` says all four files are up to date. Not tried in game: how the line looks in the list (a centred line over the first rows).
 - 2026-10-11: question 24 approved by the user and done, on branch `feat/merge-small-categories` (cut from master 847ffda): Darkmoon Island and the four one-quest categories merged into their zones, 14 quests refiled, five categories deleted with their menu entries and client-name rows, four zone rows re-pointed (the detail is under "Question 24" above). Checked offline: a per-quest comparison of `data\quests.jsonl` with master (35,023 records, exactly the 14 differ, only in `category` and `zone`); a Lua dump of retail's menu before and after (only the five entries gone, 562 items to 557, nothing else moved); `qcQuestCategories` 568 rows to 563, `qcCategoryUiMapID` 376 to 373, `qcCategoryClientName` 113 to 111; `luac -p` is silent on all 48 Lua files; `Build-AddonData.ps1 -Check` passes; `Test-Localization.lua` says "No problems"; `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-ContinentPins.lua` and `Test-SeasonalCalendar.lua` (both games) say "All checks passed." (the continent icons count 4 more quests on retail, 13,436 to 13,440, because the four one-quest categories' quests now count in their zone's icon); `Test-QuestReachability.lua` (both games: 0 Lua errors, 0 quests in categories the list can't browse to) gives Forever's report as master's, and retail's as master's apart from the category count (485 to 480) and the empty-list checks (1,036 to 1,026, with the same 61 categories empty by default); `Remove-EmptyMenuEntries.ps1 -WhatIf` and `Remove-ConvertedLocaleKeys.ps1 -WhatIf` report 0; `Build-ForeverMenu.ps1 -Check` says Forever's three files are up to date; `Audit-DungeonCategories.ps1` gives master's result to the byte; `Audit-QuestHolidays.ps1` lists 67 findings against master's 57, none new (the ten more are the Darkmoon Island quests, covered by their `KEEP` rows, see "Noticed along the way"); the two generators reproduce master's tables byte for byte from master's inputs; and the 14 quests put back in category 0 file under the five targets on the branch and under the old IDs on master. Not tried in game: that the five entries are gone from the menu, that the 14 quests list under their zones, and that entering the maps of Greenstone Village, Unga Ingoo, Brewmoon Festival and Thunder Totem switches the list to their zones.
+- 2026-10-11: question 31 approved by the user and done, on branch `chore/remove-unused-categories` (stacked on `feat/merge-small-categories`, which must merge first): 82 of the 83 unused category definitions removed with their `qcCategoryUiMapID` rows and 12 locale keys; Island Expeditions (1130) kept because `Build-QuestLocationData.ps1` and `Import-RecordedGivers.ps1` name it (the detail is under "Question 31" above). Checked offline: `data\quests.jsonl` and the generated Lua data files byte for byte unchanged; a Lua dump of retail's menu before and after identical (557 items); `qcQuestCategories` 563 rows to 481, exactly the 82 gone, the rest in their order; `qcCategoryUiMapID` 373 to 337, `qcCategoryClientName` 111 as before; `luac -p` is silent on all 48 Lua files; `Build-AddonData.ps1 -Check` and `Build-ForeverMenu.ps1 -Check` pass; `Test-Localization.lua` says "No problems" (English 171 keys to 159, the others 141 to 130); `Test-Settings.lua`, `Test-MapTooltip.lua`, `Test-ContinentPins.lua` and `Test-SeasonalCalendar.lua` (both games) say "All checks passed.", and the first three print what the base's print (apart from the continent pass's timing line, and the tooltip's call record is identical too); `Test-QuestReachability.lua` (both games: 0 Lua errors, 0 quests never shown) gives reports byte for byte equal to the base's; `Remove-EmptyMenuEntries.ps1 -WhatIf` and `Remove-ConvertedLocaleKeys.ps1 -WhatIf` report 0; both generators reproduce the branch's tables byte for byte; `Audit-QuestHolidays.ps1` finds the same 67 (0 new); `Audit-DungeonCategories.ps1` and `Place-UncategorisedQuests.ps1` give the base's result but for the lines under "What the tools say now". Not tried in game: nothing visible changes, so what matters is that the menus and the lists load without a Lua error.

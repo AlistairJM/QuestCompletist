@@ -205,63 +205,62 @@ qcAreaIDToCategoryID={
 }	
 
 qcQuestCategories={
-{1,"Abyssal Depths"},{2,"Ahn'kahet: The Old Kingdom"},{3,"Ahn'Qiraj"},{4,"Ahn'Qiraj War"},{5,"Alchemy"},{6,"Alterac Mountains"},
-{7,"Alterac Valley"},{8,"Ammen Vale"},{9,"Arathi Basin"},{10,"Arathi Highlands"},{11,"Archaeology"},{12,"Ashenvale"},
+{1,"Abyssal Depths"},{2,"Ahn'kahet: The Old Kingdom"},{3,"Ahn'Qiraj"},{5,"Alchemy"},{6,"Alterac Mountains"},
+{7,"Alterac Valley"},{9,"Arathi Basin"},{10,"Arathi Highlands"},{11,"Archaeology"},{12,"Ashenvale"},
 {280,"Ashran"},{281,"Assault on the Dark Portal"},{13,"Auchenai Crypts"},{14,"Auchindoun"},{15,"Azjol-Nerub"},{16,"Azshara"},
-{17,"Azuremyst Isle"},{18,"Badlands"},{19,"Battle Pets"},{20,"Battlegrounds"},{282,"Beastwatch"},{21,"Blackfathom Deeps"},
+{17,"Azuremyst Isle"},{18,"Badlands"},{19,"Battle Pets"},{20,"Battlegrounds"},{21,"Blackfathom Deeps"},
 {22,"Blackrock Caverns"},{23,"Blackrock Depths"},{283,"Blackrock Foundry"},{24,"Lower Blackrock Spire"},{25,"Blacksmithing"},{26,"Blade's Edge Mountains"},
-{27,"Blasted Lands"},{284,"Bloodmane Pridelands"},{285,"Bloodmaul Slag Mines"},{28,"Bloodmyst Isle"},{29,"Borean Tundra"},{30,"Brawler's Guild"},
-{31,"Brewfest"},{33,"Burning Steppes"},{34,"Camp Narache"},{35,"Cataclysm"},{36,"Caverns of Time"},
-{37,"Children's Week"},{38,"Chill Breeze Valley"},{39,"Coilfang Reservoir"},{40,"Coldarra"},{41,"Coldridge Valley"},{42,"Cooking"},
-{286,"Cragplume Cauldron"},{43,"Dalaran"},{44,"Dalaran City"},{45,"Dalaran Crater"},{46,"Darkmoon Faire"},
-{47,"Darkshore"},{48,"Darkspear Strand"},{49,"Darnassus"},{50,"Day of the Dead"},{51,"Deadwind Pass"},{52,"Death Knight"},
-{53,"Deathknell"},{54,"Deepholm"},{55,"Deeprun Tram"},{56,"Designer Island"},{57,"Desolace"},
+{27,"Blasted Lands"},{285,"Bloodmaul Slag Mines"},{28,"Bloodmyst Isle"},{29,"Borean Tundra"},{30,"Brawler's Guild"},
+{31,"Brewfest"},{33,"Burning Steppes"},{36,"Caverns of Time"},
+{37,"Children's Week"},{39,"Coilfang Reservoir"},{40,"Coldarra"},{42,"Cooking"},
+{43,"Dalaran"},{45,"Dalaran Crater"},{46,"Darkmoon Faire"},
+{47,"Darkshore"},{49,"Darnassus"},{50,"Day of the Dead"},{51,"Deadwind Pass"},{52,"Death Knight"},
+{53,"Deathknell"},{54,"Deepholm"},{55,"Deeprun Tram"},{57,"Desolace"},
 {58,"Dire Maul - Capital Gardens"},{59,"Dragonblight"},{60,"Drak'Tharon Keep"},{61,"Dread Wastes"},{62,"Druid"},{63,"Dun Morogh"},
 {64,"Durotar"},{65,"Duskwood"},{66,"Dustwallow Marsh"},{67,"Eastern Plaguelands"},{68,"Echo Isles"},{69,"Elemental Bonds"},
-{70,"Elwynn Forest"},{71,"End Time"},{72,"Engineering"},{73,"Epic"},{74,"Eversong Woods"},{75,"Eye of the Storm"},
+{70,"Elwynn Forest"},{71,"End Time"},{72,"Engineering"},{74,"Eversong Woods"},
 {76,"Felwood"},{77,"Feralas"},{78,"Firelands Invasion"},{79,"First Aid"},{80,"Fishing"},{288,"Frostfire Ridge"},
-{317,"Garrison"},{289,"Garrison Campaign"},{290,"Garrison Support"},{81,"Gate of the Setting Sun"},{82,"Ghostlands"},{83,"Gilneas"},
+{289,"Garrison Campaign"},{290,"Garrison Support"},{81,"Gate of the Setting Sun"},{82,"Ghostlands"},{83,"Gilneas"},
 {84,"Gilneas City"},{85,"Gnomeregan"},{291,"Gorgrond"},{87,"Grim Batol"},{292,"Grimrail Depot"},
 {88,"Grizzly Hills"},{89,"Gundrak"},{90,"Hallow's End"},{91,"Halls of Lightning"},{92,"Halls of Origination"},{93,"Halls of Reflection"},
 {94,"Halls of Stone"},{95,"Hellfire Citadel"},{96,"Hellfire Peninsula"},{97,"Hellfire Ramparts"},{98,"Herbalism"},{318,"Highmaul"},
-{99,"Hillsbrad"},{100,"Hillsbrad Foothills"},{101,"Hour of Twilight"},{102,"Howling Fjord"},{103,"Hrothgar's Landing"},{104,"Hunter"},
-{105,"The Battle for Mount Hyjal"},{106,"Icecrown"},{107,"Icecrown Citadel"},{108,"Inscription"},{109,"Invasion"},{293,"Iron Docks"},
-{110,"Ironforge"},{111,"Isle of Conquest"},{112,"Isle of Quel'Danas"},{113,"Isle of Thunder"},{114,"Jade Temple Grounds"},{115,"Jewelcrafting"},
+{100,"Hillsbrad Foothills"},{101,"Hour of Twilight"},{102,"Howling Fjord"},{103,"Hrothgar's Landing"},{104,"Hunter"},
+{105,"The Battle for Mount Hyjal"},{106,"Icecrown"},{107,"Icecrown Citadel"},{108,"Inscription"},{293,"Iron Docks"},
+{110,"Ironforge"},{112,"Isle of Quel'Danas"},{113,"Isle of Thunder"},{114,"Jade Temple Grounds"},{115,"Jewelcrafting"},
 {116,"Karazhan"},{117,"Kelp'thar Forest"},{118,"Kezan"},{119,"Krasarang Wilds"},{120,"Kun-Lai Summit"},{121,"Landfall"},
-{122,"Leatherworking"},{123,"Legendary"},{124,"Loch Modan"},{294,"Logging"},{125,"Lost City of the Tol'vir"},{126,"Love is in the Air"},
+{122,"Leatherworking"},{124,"Loch Modan"},{125,"Lost City of the Tol'vir"},{126,"Love is in the Air"},
 {127,"Lunar Festival"},{128,"Mage"},{129,"Magisters' Terrace"},{130,"Magtheridon's Lair"},{131,"Mana-Tombs"},{132,"Maraudon"},
 {133,"Midsummer"},{134,"Mogu'shan Palace"},{135,"Molten Core"},{136,"Molten Front"},{137,"Monk"},{138,"Moonglade"},
 {139,"Mount Hyjal"},{140,"Mulgore"},{141,"Nagrand"},{314,"Nagrand - Draenor"},{142,"Naxxramas"},{143,"Netherstorm"},
-{144,"New Tinkertown"},{145,"Noblegarden"},{146,"Northern Barrens"},{147,"Northern Stranglethorn"},{295,"Northshire"},{148,"Orgrimmar"},
-{149,"Paladin"},{150,"Pandaren Brewmasters"},{151,"Pandaren Campaign"},{152,"Peak of Serenity"},{296,"Pickpocketing"},{153,"Pilgrim's Bounty"},
+{145,"Noblegarden"},{146,"Northern Barrens"},{147,"Northern Stranglethorn"},{295,"Northshire"},{148,"Orgrimmar"},
+{149,"Paladin"},{150,"Pandaren Brewmasters"},{151,"Pandaren Campaign"},{152,"Peak of Serenity"},{153,"Pilgrim's Bounty"},
 {154,"Pit of Saron"},{155,"Priest"},{156,"Proving Grounds"},{157,"Ragefire Chasm"},{158,"Razorfen Downs"},{159,"Razorfen Kraul"},
-{160,"Redridge Canyons"},{161,"Redridge Mountains"},{162,"Reputation"},{163,"Riding"},{164,"Rogue"},{165,"Ruins of Ahn'Qiraj"},
-{166,"Ruins of Gilneas"},{297,"Ruins of the First Bastion"},{167,"Ruins of Uldum"},{168,"Scarlet Halls"},{169,"Scarlet Monastery"},{170,"Scenario"},
+{161,"Redridge Mountains"},{163,"Riding"},{164,"Rogue"},{165,"Ruins of Ahn'Qiraj"},
+{166,"Ruins of Gilneas"},{168,"Scarlet Halls"},{169,"Scarlet Monastery"},{170,"Scenario"},
 {171,"Scholomance"},{172,"Searing Gorge"},{173,"Seasonal"},{174,"Sethekk Halls"},{175,"Shado-Pan Monastery"},{176,"Shadow Labyrinth"},
-{177,"Shadowfang Keep"},{178,"Shadowglen"},{298,"Shadowmoon Burial Grounds"},{179,"Shadowmoon Valley"},{315,"Shadowmoon Valley - Draenor"},{180,"Shaman"},
+{177,"Shadowfang Keep"},{298,"Shadowmoon Burial Grounds"},{179,"Shadowmoon Valley"},{315,"Shadowmoon Valley - Draenor"},{180,"Shaman"},
 {181,"Shattrath City"},{182,"Shimmering Expanse"},{183,"Sholazar Basin"},{184,"Siege of Niuzao Temple"},{185,"Siege of Orgrimmar"},{186,"Silithus"},
-{187,"Silvermoon City"},{188,"Silverpine Forest"},{189,"Skettis"},{299,"Skyreach"},{190,"Southern Barrens"},{191,"Special"},
-{300,"Spire of Light"},{301,"Spires of Arak"},{192,"Stonetalon Mountains"},{302,"Stormshield"},{303,"Stormshield Stronghold"},{193,"Stormstout Brewery"},
-{194,"Stormwind City"},{195,"Stormwind Harbor"},{196,"Strand of the Ancients"},{197,"Stratholme - Main Gate"},{198,"The Temple of Atal'hakkar"},{199,"Sunstrider Isle"},
-{200,"Sunwell Plateau"},{201,"Swamp of Sorrows"},{202,"Tailoring"},{304,"Tailthrasher Basin"},{305,"Talador"},{306,"Tanaan Jungle"},
-{203,"Tanaris"},{204,"Teldrassil"},{307,"Teluuna Observatory"},{205,"Tempest Keep"},{206,"Temple of the Jade Serpent"},{207,"Terokkar Forest"},
-{208,"The Arboretum"},{209,"The Arcatraz"},{210,"The Barrier Hills"},{211,"Black Temple"},{212,"The Blood Furnace"},{213,"The Botanica"},
+{187,"Silvermoon City"},{188,"Silverpine Forest"},{299,"Skyreach"},{190,"Southern Barrens"},{191,"Special"},
+{301,"Spires of Arak"},{192,"Stonetalon Mountains"},{302,"Stormshield"},{193,"Stormstout Brewery"},
+{194,"Stormwind City"},{195,"Stormwind Harbor"},{197,"Stratholme - Main Gate"},{198,"The Temple of Atal'hakkar"},{199,"Sunstrider Isle"},
+{200,"Sunwell Plateau"},{201,"Swamp of Sorrows"},{202,"Tailoring"},{305,"Talador"},{306,"Tanaan Jungle"},
+{203,"Tanaris"},{204,"Teldrassil"},{205,"Tempest Keep"},{206,"Temple of the Jade Serpent"},{207,"Terokkar Forest"},
+{208,"The Arboretum"},{209,"The Arcatraz"},{211,"Black Temple"},{212,"The Blood Furnace"},{213,"The Botanica"},
 {214,"The Cape of Stranglethorn"},{215,"Deadmines"},{308,"The Everbloom"},{216,"The Exodar"},{217,"The Eye of Eternity"},{218,"The Forge of Souls"},
-{309,"The Forgotten Caves"},{219,"The Halfhill Market"},{220,"The Hinterlands"},{310,"The Howling Crag"},{221,"The Jade Forest"},{222,"The Lost Isles"},
+{219,"The Halfhill Market"},{220,"The Hinterlands"},{221,"The Jade Forest"},{222,"The Lost Isles"},
 {223,"The Mechanar"},{224,"The Nexus"},{225,"The Obsidian Sanctum"},{226,"The Oculus"},{227,"The Ruby Sanctum"},{228,"The Shattered Halls"},
-{229,"The Slave Pens"},{230,"The Steamvault"},{231,"The Stockade"},{232,"The Stonecore"},{233,"The Storm Peaks"},{234,"The Thunder Forges"},
+{229,"The Slave Pens"},{230,"The Steamvault"},{231,"The Stockade"},{232,"The Stonecore"},{233,"The Storm Peaks"},
 {235,"The Underbog"},{236,"The Veiled Stair"},{237,"The Vortex Pinnacle"},{238,"The Wandering Isle"},{239,"The Zandalari"},{240,"Thousand Needles"},
 {241,"Throne of the Tides"},{242,"Throne of Thunder"},{243,"Thunder Bluff"},{244,"Timeless Isle"},{245,"Tirisfal Glades"},{246,"Tol Barad"},
 {247,"Tol Barad Peninsula"},{248,"Tournament"},{249,"Townlong Steppes"},{250,"Trial of the Champion"},{251,"Trial of the Crusader"},{252,"Twilight Highlands"},
 {253,"Uldaman"},{254,"Ulduar"},{255,"Uldum"},{0,"Uncategorized"},{256,"Undercity"},{258,"Un'Goro Crater"},
-{311,"Upper Blackrock Spire"},{259,"Utgarde Keep"},{260,"Utgarde Pinnacle"},{261,"Vale of Eternal Blossoms"},{262,"Valley of the Four Winds"},{263,"Valley of Trials"},
-{264,"Vashj'ir"},{265,"Wailing Caverns"},{266,"Warlock"},{267,"Warrior"},{268,"Warsong Gulch"},{312,"Warspear"},
-{313,"Warspear Outpost"},{269,"Well of Eternity"},{270,"Western Plaguelands"},{271,"Westfall"},{272,"Wetlands"},{273,"Wintergrasp"},
-{274,"Winterspring"},{275,"Zangarmarsh"},{276,"Zul'Aman"},{277,"Zul'Drak"},{278,"Zul'Farrak"},{279,"Zul'Gurub"},{400,"Mining"},{401,"Skinning"},{402,"Enchanting"},{403,"The Battle for Gilneas"},{404,"Twin Peaks"},{405,"Silvershard Mines"},{406,"Temple of Kotmogu"},{407,"Hellfire Citadel"},{408,"Old Hillsbrad Foothills"},
-{409,"The Black Morass"},{410,"The Culling of Stratholme"},{411,"The Deaths of Chromie"},{412,"Terrace of Endless Spring"},{413,"Winter Veil"},
-{415,"The Maelstrom"},{416,"Mogu'shan Vaults"},{417,"Crystalsong Forest"},{418,"Blackwing Lair"},{419,"Sinfall"},
-{421,"Brawl'gar Arena"},{422,"Isle of Giants"},{423,"Plaguelands: The Scarlet Enclave"},{424,"Onyxia's Lair"},{425,"Firelands"},{426,"Theramore's Fall"},{427,"Timerunning"},
-{428,"Serpentshrine Cavern"},{429,"Acherus: The Ebon Hold"},
+{311,"Upper Blackrock Spire"},{259,"Utgarde Keep"},{260,"Utgarde Pinnacle"},{261,"Vale of Eternal Blossoms"},{262,"Valley of the Four Winds"},
+{264,"Vashj'ir"},{265,"Wailing Caverns"},{266,"Warlock"},{267,"Warrior"},{312,"Warspear"},
+{269,"Well of Eternity"},{270,"Western Plaguelands"},{271,"Westfall"},{272,"Wetlands"},{273,"Wintergrasp"},
+{274,"Winterspring"},{275,"Zangarmarsh"},{276,"Zul'Aman"},{277,"Zul'Drak"},{278,"Zul'Farrak"},{279,"Zul'Gurub"},{400,"Mining"},{401,"Skinning"},{402,"Enchanting"},{407,"Hellfire Citadel"},{408,"Old Hillsbrad Foothills"},
+{410,"The Culling of Stratholme"},{411,"The Deaths of Chromie"},{413,"Winter Veil"},
+{417,"Crystalsong Forest"},{419,"Sinfall"},
+{427,"Timerunning"},
 
 -- Various Missing 
 
@@ -272,16 +271,14 @@ qcQuestCategories={
 {1021,"Acherus: The Ebon Hold (Death Knight)"},{1025,"Black Rook Hold"},{1026,"Cathedral of Eternal Night"},{1027,"Court of Stars"},{1028,"Darkheart Thicket"},
 {1029,"Eye of Azshara"},{1030,"Halls of Valor"},{1031,"Maw of Souls"},{1032,"Neltharion's Lair"},{1033,"Return to Karazhan"},{1034,"The Arcway"},
 {1035,"Vault of the Wardens"},{1036,"Assault on Violet Hold"},{1037,"The Emerald Nightmare"},{1038,"Trial of Valor"},{1039,"The Nighthold"},{1040,"Tomb of Sargeras"},
-{1041,"Krokuun"},{1042,"Antoran Wastes"},{1043,"Argus"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"Seat of the Triumvirate"},{1048,"Emerald Dreamway"},{1050,"Legion Uncategorized"},
+{1041,"Krokuun"},{1042,"Antoran Wastes"},{1044,"Mac'Aree"},{1045,"Antorus, the Burning Throne"},{1046,"Helheim"},{1047,"Seat of the Triumvirate"},{1050,"Legion Uncategorized"},
 --Bfa
-{1060,"Drustvar"},{1061,"Stormsong Valley"},{1062,"Tiragarde Sound"},{1063,"Mechagon Island"},{1064,"Chamber of Heart"},{1065,"Nazjatar"},{1066,"Mechagon City"},{1080,"Nazmir"},{1081,"Vol'dun"},{1082,"Zuldazar"},{1090,"Alliance War Campaign"},{1091,"Horde War Campaign"},{1092,"Warfront Contribution"},{1093,"Heritage"},{1094,"Rated PvP"},{1095,"World PvP"},
-{1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Freehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"},{1105,"Siege of Boralus"},{1106,"Siege of Zuldazar"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1110,"Uldir"},{1111,"Waycrest Manor"},{1112,"The MOTHERLODE!!"},{1113,"Battle of Dazar'alor"},{1114,"The Eternal Palace"},{1115,"Ny'alotha, the Waking City"},
-{1130,"Island Expeditions"},{1131,"The Great Sea"},{1132,"Black Empire Campaign"},{1133,"Visions of N'Zoth"},{1134,"Death Rising"},
---Classic
-{500,"Stranglethorn Vale"},{501,"The Barrens"},
+{1060,"Drustvar"},{1061,"Stormsong Valley"},{1062,"Tiragarde Sound"},{1063,"Mechagon Island"},{1064,"Chamber of Heart"},{1065,"Nazjatar"},{1080,"Nazmir"},{1081,"Vol'dun"},{1082,"Zuldazar"},{1090,"Alliance War Campaign"},{1091,"Horde War Campaign"},{1092,"Warfront Contribution"},{1093,"Heritage"},{1094,"Rated PvP"},{1095,"World PvP"},
+{1100,"Atal'Dazar"},{1101,"Crucible of Storms"},{1102,"Freehold"},{1103,"Kings' Rest"},{1104,"Shrine of the Storm"},{1105,"Siege of Boralus"},{1107,"Temple of Sethraliss"},{1108,"The Underrot"},{1109,"Tol Dagor"},{1111,"Waycrest Manor"},{1112,"The MOTHERLODE!!"},{1113,"Battle of Dazar'alor"},{1114,"The Eternal Palace"},{1115,"Ny'alotha, the Waking City"},
+{1130,"Island Expeditions"},{1132,"Black Empire Campaign"},{1133,"Visions of N'Zoth"},{1134,"Death Rising"},
 --Shadowlands
-{1200,"Ardenweald"},{1701,"Heart of the Forest"},{1201,"Bastion"},{1202,"Exile's Reach"},{1203,"Maldraxxus"},{1204,"Oribos"},{1205,"Revendreth"},{1206,"The Maw"},
-{1207,"Zereth Mortis"},{1208,"Zereth Mortis Campaign"},{1290,"Shadowlands Uncategorized Quests"},
+{1200,"Ardenweald"},{1201,"Bastion"},{1202,"Exile's Reach"},{1203,"Maldraxxus"},{1204,"Oribos"},{1205,"Revendreth"},{1206,"The Maw"},
+{1207,"Zereth Mortis"},
 {1220,"Kyrian"},{1221,"Necrolord"},{1222,"Night Fae"},{1223,"Venthyr"},
 {1230,"Abominable Stitching"},{1231,"Ember Court"},{1232,"Path of Ascension"},{1233,"Queen's Conservatory"},
 {1240,"9.1 Campaign"},{1241,"Covenant Assaults"},{1242,"Keeper's Respite"},{1243,"Korthia"},{1244,"Tazavesh, the Veiled Market"},{1245,"The Archivists' Codex"},{1246,"Torghast, Tower of the Damned"},{1247,"Covenant Sanctum"},
@@ -300,12 +297,8 @@ qcQuestCategories={
 {1408,"Undermine"},
 {1409,"Arathi Highlands"},
 {1410,"K'aresh"},
-{1411,"Tazavesh"},
 {1420,"Awakening the Machine"},
 {1421,"Deephaul Ravine"},	
-{1422,"Dhar Bandar"},	
-{1423,"Earthen"},
-{1424,"Mourning Rise"},
 {1425,"Nerub-ar Palace"},
 {1426,"Northrend Cup"},
 {1427,"Rambleshire"},
@@ -319,16 +312,14 @@ qcQuestCategories={
 {1501,"Founder's Point"},
 {1502,"Harandar"},
 {1503,"Isle of Quel'Danas"},
-{1504,"Neighborhood"},
 {1505,"Razorwind Shores"},
 {1506,"Slayer's Rise"},
-{1507,"Storm Fileds"},
 {1508,"Voidstorm"},
 {1509,"West Sanctum"},
 {1510,"Zul'Aman"},
 {1511,"Eversong Woods"},
 {1512,"Silvermoon City"},{1513,"The Coiled Isle"},{1514,"Prey"},
-{1702,"De Other Side"},{1703,"Theater of Pain"},{1704,"Sanguine Depths"},{1705,"Spires of Ascension"},{1706,"Plaguefall"},{1707,"The Necrotic Wake"},{1708,"Halls of Atonement"},{1709,"Mists of Tirna Scithe"},{1710,"Castle Nathria"},{1711,"Sanctum of Domination"},{1712,"Sepulcher of the First Ones"},{1713,"Algeth'ar Academy"},{1714,"Vault of the Incarnates"},{1715,"Brackenhide Hollow"},{1716,"Aberrus, the Shadowed Crucible"},{1717,"Halls of Infusion"},{1718,"Neltharus"},{1719,"Ruby Life Pools"},{1720,"The Azure Vault"},{1721,"The Nokhud Offensive"},{1722,"Uldaman: Legacy of Tyr"},{1723,"Dawn of the Infinite"},{1724,"The Stonevault"},{1725,"Cinderbrew Meadery"},{1726,"Ara-Kara, City of Echoes"},{1727,"The Rookery"},{1728,"Darkflame Cleft"},{1729,"Priory of the Sacred Flame"},{1730,"The Dawnbreaker"},{1731,"Operation: Floodgate"},{1732,"Eco-Dome Al'dani"},{1733,"Liberation of Undermine"},{1734,"Manaforge Omega"},{1735,"Weekly Events"},{1736,"The Violet Hold"},{1737,"Temple of Ahn'Qiraj"},{1738,"The Eye"},{1739,"Dire Maul - Warpwood Quarter"},{1740,"Dire Maul - Gordok Commons"},{1741,"Stratholme - Service Entrance"},{1742,"Windrunner Spire"},{1743,"Magisters' Terrace"},{1744,"Murder Row"},{1745,"The Voidspire"},{1746,"The Blinding Vale"},{1747,"Den of Nalorakk"},{1748,"Voidscar Arena"},{1749,"The Dreamrift"},{1750,"Maisara Caverns"},{1751,"Nexus-Point Xenas"},
+{1702,"De Other Side"},{1703,"Theater of Pain"},{1704,"Sanguine Depths"},{1706,"Plaguefall"},{1707,"The Necrotic Wake"},{1708,"Halls of Atonement"},{1710,"Castle Nathria"},{1711,"Sanctum of Domination"},{1712,"Sepulcher of the First Ones"},{1713,"Algeth'ar Academy"},{1714,"Vault of the Incarnates"},{1715,"Brackenhide Hollow"},{1716,"Aberrus, the Shadowed Crucible"},{1717,"Halls of Infusion"},{1718,"Neltharus"},{1719,"Ruby Life Pools"},{1720,"The Azure Vault"},{1721,"The Nokhud Offensive"},{1723,"Dawn of the Infinite"},{1725,"Cinderbrew Meadery"},{1729,"Priory of the Sacred Flame"},{1730,"The Dawnbreaker"},{1732,"Eco-Dome Al'dani"},{1733,"Liberation of Undermine"},{1734,"Manaforge Omega"},{1735,"Weekly Events"},{1736,"The Violet Hold"},{1737,"Temple of Ahn'Qiraj"},{1738,"The Eye"},{1739,"Dire Maul - Warpwood Quarter"},{1740,"Dire Maul - Gordok Commons"},{1741,"Stratholme - Service Entrance"},{1742,"Windrunner Spire"},{1743,"Magisters' Terrace"},{1744,"Murder Row"},{1745,"The Voidspire"},{1746,"The Blinding Vale"},{1747,"Den of Nalorakk"},{1748,"Voidscar Arena"},{1749,"The Dreamrift"},{1750,"Maisara Caverns"},{1751,"Nexus-Point Xenas"},
 }
 
 qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name the category
@@ -354,7 +345,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[28]=106,	-- Bloodmyst Isle
 	[29]=114,	-- Borean Tundra
 	[33]=36,	-- Burning Steppes
-	[34]=462,	-- Camp Narache
 	[36]=1552,	-- Caverns of Time
 	[43]=125,	-- Dalaran
 	[47]=62,	-- Darkshore
@@ -376,7 +366,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[70]=37,	-- Elwynn Forest
 	[71]=401,	-- End Time
 	[74]=94,	-- Eversong Woods
-	[75]=112,	-- Eye of the Storm
 	[76]=77,	-- Felwood
 	[77]=69,	-- Feralas
 	[81]=437,	-- Gate of the Setting Sun
@@ -400,7 +389,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[106]=118,	-- Icecrown
 	[107]=186,	-- Icecrown Citadel
 	[110]=87,	-- Ironforge
-	[111]=169,	-- Isle of Conquest
 	[112]=122,	-- Isle of Quel'Danas
 	[113]=504,	-- Isle of Thunder
 	[116]=350,	-- Karazhan
@@ -423,7 +411,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[141]=107,	-- Nagrand
 	[142]=162,	-- Naxxramas
 	[143]=109,	-- Netherstorm
-	[144]=469,	-- New Tinkertown
 	[146]=10,	-- Northern Barrens
 	[147]=50,	-- Northern Stranglethorn
 	[148]=85,	-- Orgrimmar
@@ -443,7 +430,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[175]=443,	-- Shado-Pan Monastery
 	[176]=260,	-- Shadow Labyrinth
 	[177]=310,	-- Shadowfang Keep
-	[178]=460,	-- Shadowglen
 	[179]=104,	-- Shadowmoon Valley
 	[181]=111,	-- Shattrath City
 	[182]=205,	-- Shimmering Expanse
@@ -457,7 +443,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[192]=65,	-- Stonetalon Mountains
 	[193]=439,	-- Stormstout Brewery
 	[194]=84,	-- Stormwind City
-	[196]=128,	-- Strand of the Ancients
 	[199]=467,	-- Sunstrider Isle
 	[200]=335,	-- Sunwell Plateau
 	[201]=51,	-- Swamp of Sorrows
@@ -513,10 +498,8 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[260]=136,	-- Utgarde Pinnacle
 	[261]=390,	-- Vale of Eternal Blossoms
 	[262]=376,	-- Valley of the Four Winds
-	[263]=461,	-- Valley of Trials
 	[264]=203,	-- Vashj'ir
 	[265]=279,	-- Wailing Caverns
-	[268]=92,	-- Warsong Gulch
 	[269]=398,	-- Well of Eternity
 	[270]=22,	-- Western Plaguelands
 	[271]=52,	-- Westfall
@@ -545,27 +528,12 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[311]=616,	-- Upper Blackrock Spire
 	[312]=624,	-- Warspear
 	[318]=610,	-- Highmaul
-	[403]=275,	-- The Battle for Gilneas
-	[404]=206,	-- Twin Peaks
-	[405]=423,	-- Silvershard Mines
-	[406]=417,	-- Temple of Kotmogu
 	[407]=661,	-- Hellfire Citadel
 	[408]=274,	-- Old Hillsbrad Foothills
-	[409]=273,	-- The Black Morass
 	[410]=130,	-- The Culling of Stratholme
 	[411]=897,	-- The Deaths of Chromie
-	[412]=456,	-- Terrace of Endless Spring
-	[415]=276,	-- The Maelstrom
-	[416]=471,	-- Mogu'shan Vaults
 	[417]=127,	-- Crystalsong Forest
-	[418]=287,	-- Blackwing Lair
 	[419]=1699,	-- Sinfall
-	[421]=503,	-- Brawl'gar Arena
-	[422]=507,	-- Isle of Giants
-	[423]=124,	-- Plaguelands: The Scarlet Enclave
-	[424]=248,	-- Onyxia's Lair
-	[425]=367,	-- Firelands
-	[428]=1554,	-- Serpentshrine Cavern
 	[1001]=630,	-- Azsuna
 	[1002]=646,	-- Broken Shore
 	[1003]=41,	-- Dalaran
@@ -590,17 +558,14 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1040]=850,	-- Tomb of Sargeras
 	[1041]=830,	-- Krokuun
 	[1042]=885,	-- Antoran Wastes
-	[1043]=905,	-- Argus
 	[1045]=909,	-- Antorus, the Burning Throne
 	[1046]=649,	-- Helheim
-	[1048]=715,	-- Emerald Dreamway
 	[1060]=896,	-- Drustvar
 	[1061]=942,	-- Stormsong Valley
 	[1062]=895,	-- Tiragarde Sound
 	[1063]=1462,	-- Mechagon Island
 	[1064]=1021,	-- Chamber of Heart
 	[1065]=1355,	-- Nazjatar
-	[1066]=1573,	-- Mechagon City
 	[1080]=863,	-- Nazmir
 	[1081]=864,	-- Vol'dun
 	[1082]=862,	-- Zuldazar
@@ -613,12 +578,10 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1107]=1038,	-- Temple of Sethraliss
 	[1108]=1041,	-- The Underrot
 	[1109]=974,	-- Tol Dagor
-	[1110]=1148,	-- Uldir
 	[1111]=1015,	-- Waycrest Manor
 	[1112]=1010,	-- The MOTHERLODE!!
 	[1113]=1352,	-- Battle of Dazar'alor
 	[1114]=1512,	-- The Eternal Palace
-	[1131]=1156,	-- The Great Sea
 	[1200]=1565,	-- Ardenweald
 	[1201]=1533,	-- Bastion
 	[1202]=1409,	-- Exile's Reach
@@ -653,7 +616,6 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1408]=2346,	-- Undermine
 	[1409]=2372,	-- Arathi Highlands
 	[1410]=2371,	-- K'aresh
-	[1411]=2472,	-- Tazavesh
 	[1421]=2345,	-- Deephaul Ravine
 	[1425]=2291,	-- Nerub-ar Palace
 	[1501]=2352,	-- Founder's Point
@@ -669,11 +631,9 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1702]=1677,	-- De Other Side
 	[1703]=1683,	-- Theater of Pain
 	[1704]=1675,	-- Sanguine Depths
-	[1705]=2017,	-- Spires of Ascension
 	[1706]=1674,	-- Plaguefall
 	[1707]=1666,	-- The Necrotic Wake
 	[1708]=1663,	-- Halls of Atonement
-	[1709]=1669,	-- Mists of Tirna Scithe
 	[1710]=1735,	-- Castle Nathria
 	[1711]=1998,	-- Sanctum of Domination
 	[1712]=2047,	-- Sepulcher of the First Ones
@@ -685,15 +645,10 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1719]=2094,	-- Ruby Life Pools
 	[1720]=2073,	-- The Azure Vault
 	[1721]=2093,	-- The Nokhud Offensive
-	[1722]=2071,	-- Uldaman: Legacy of Tyr
 	[1723]=2198,	-- Dawn of the Infinite
-	[1724]=2341,	-- The Stonevault
 	[1725]=2335,	-- Cinderbrew Meadery
-	[1727]=2315,	-- The Rookery
-	[1728]=2303,	-- Darkflame Cleft
 	[1729]=2308,	-- Priory of the Sacred Flame
 	[1730]=2359,	-- The Dawnbreaker
-	[1731]=2387,	-- Operation: Floodgate
 	[1732]=2449,	-- Eco-Dome Al'dani
 	[1734]=2460,	-- Manaforge Omega
 	[1736]=168,	-- The Violet Hold

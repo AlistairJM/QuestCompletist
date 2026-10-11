@@ -8,7 +8,8 @@ work that can only drift. Test-Localization.lua reports the same cases.
   Forever's menu is Build-ForeverMenu.ps1's, which writes no labels.
 - A key nothing uses any more goes from every locale file: no code names it, no menu heading shows
   it, and the client names every category with its name (qcCategoryUiMapID or
-  qcCategoryClientName) in its game.
+  qcCategoryClientName) in its game. That includes the key of a category taken out of
+  qcQuestCategories, which nothing falls back to any more.
 - A key only headings the client names (clientName) show keeps its English, their fallback, and
   loses its translations.
 
@@ -93,12 +94,12 @@ foreach ($game in $games) {
     if ($found -ne $inMenu) { throw "$($game.Menu): $inMenu qcL keys, but $found in entries this script reads. Has the menu's format changed?" }
 }
 
-# Keys the code names, apart from the menus: qcL.KEY, and a settings row's text, which the options
-# panel looks up.
+# Keys the code names, apart from the menus: qcL.KEY, and any string literal of capitals only, which is how
+# a settings row's text and the chat messages' keys (QC_SEEN_MESSAGE) reach qcL.
 $codeUses = @{}
 foreach ($lua in (Get-ChildItem $AddonDir -Recurse -Filter *.lua | Where-Object { $_.Name -notlike 'Localization.*' -and $_.Name -ne 'qcMenu.lua' })) {
     $text = Read-Text $lua.FullName
-    foreach ($m in [regex]::Matches($text, '(?:qcL|qcLocalize)(?:\.([A-Z0-9_]+)|\[\s*"([A-Z0-9_]+)"\s*\])|text\s*=\s*"([A-Z][A-Z0-9_]*)"')) {
+    foreach ($m in [regex]::Matches($text, '(?:qcL|qcLocalize)(?:\.([A-Z0-9_]+)|\[\s*"([A-Z0-9_]+)"\s*\])|"([A-Z][A-Z0-9_]*)"')) {
         foreach ($g in 1..3) { if ($m.Groups[$g].Success) { $codeUses[$m.Groups[$g].Value] = $lua.Name } }
     }
 }
@@ -107,7 +108,6 @@ $english = @{}
 foreach ($m in [regex]::Matches((Read-Text "$AddonDir\Localization.enUS.lua"), '(?m)^\s*([A-Z0-9_]+)\s*=\s*"')) { $english[$m.Groups[1].Value] = $true }
 $removable = @{}; $untranslate = @{}
 foreach ($key in $english.Keys) {
-    if (-not ($categoryKeys.ContainsKey($key) -or $labelKeys.ContainsKey($key) -or $plainUses.ContainsKey($key) -or $clientUses.ContainsKey($key))) { continue }   # the addon's own text
     if ($neededKeys.ContainsKey($key) -or $codeUses.ContainsKey($key) -or $plainUses.ContainsKey($key)) { continue }
     if ($clientUses.ContainsKey($key)) { $untranslate[$key] = $true } else { $removable[$key] = $true }
 }

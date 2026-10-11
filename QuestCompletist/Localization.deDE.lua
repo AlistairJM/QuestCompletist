@@ -46,21 +46,15 @@ qcLocalize = setmetatable({
 	QUESTSFOUND = "%d gefundene Quests",
 	SEASONAL = "Saisonbedingt",
 	SHOWMAPICONS = "Zeige Kartensymbole",
-	SKETTIS = "Skettis", -- Requires localization
 	SORTALPHA = "Sortierung: Alphabetisch",
 	SORTLEVEL = "Sortierung: Stufe",
 	SOUTHERNKALIMDOR = "Südliches Kalimdor",
 	SPECIALS = "Spezielles", -- Needs review
-	SPIREOFLIGHT = "Spire of Light", -- Requires localization
-	STORMSHIELDSTRONGHOLD = "Stormshield Stronghold", -- Requires localization
-	STRANGLETHORNVALE = "Schlingendorntal",
 	THEZANDALARI = "Die Zandalari",
 	TOURNAMENT = "Turnier",
-	WARSPEAROUTPOST = "Warspear Outpost", -- Requires localization
 	WEEKLYEVENTS = "Wöchentliche Events", -- Needs review
 	WORLDEVENTS = "Weltereignisse",
 	MACAREE = "Mac'Aree",
-	SIEGEOFZULDAZAR = "Siege of Zuldazar",	
 	ALLIANCEWARCAMPAIGN = "Kriegskampagne der Allianz",
 	HORDEWARCAMPAIGN = "Kriegskampagne der Horde",
 	WARFRONTCONTRIBUTION = "Warfront Contribution",
@@ -73,13 +67,9 @@ qcLocalize = setmetatable({
 	MAINZONES = "Hauptzonen", -- Needs review
 	OTHERCATEGORIES = "Weitere Kategorien", -- Needs review
 	COVENANTASSAULTS = "Paktangriffe",
-	ZERETHMORTISCAMPAIGN = "Zereth Mortis Campaign",
 -- Dragonflight Code
 		--TWW
 	--TWW
-	DHARBANDAR = "Dhar Bandar",	
-	EARTHEN = "Earthen",
-	MOURNINGRISE = "Mourning Rise",
 	NORTHRENDCUP = "Nordendpokal",
 	UPGRADESYSTEM = "Aufwertungssystem",
 	WARBANDS = "Kriegsmeuten",
@@ -88,7 +78,6 @@ qcLocalize = setmetatable({
 	GILNEASRECLAMATION = "Rückeroberung von Gilneas",
 	TIMERIFT = "Time Rift",
 	--MID
-	NEIGHBORHOOD = "Neighborhood",
 	PROGRESS = "%d/%d abgeschlossen (%d%%)", -- Needs review
 	SERVERQUERYRESULT = "Der Server meldet %d abgeschlossene Quests, die Quest Completist kennt, davon %d neu als abgeschlossen markiert.", -- Needs review
 	CACHECLEARED = "Cache geleert.", -- Needs review
