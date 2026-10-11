@@ -998,5 +998,5 @@ Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
   ledger and the data: 1,698 pins and no quest changes; see "The recorder's notes from the beta session".
 - 2026-10-11: the 29 seasonal quests that had no holiday are tagged: 12 Children's Week and 6 Winter Veil
   from a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by heading. 351 quests carry a holiday,
-  none of the 29 has a pin, and the nameless Holidays row 1879 waits for `/qc holidays` on the beta; see
-  "Seasonal quests with no holiday".
+  none of the 29 has a pin, and the nameless Holidays row 1879 waits for `/qc holidays` on the beta (#288);
+  see "Seasonal quests with no holiday".
