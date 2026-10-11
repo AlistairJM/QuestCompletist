@@ -928,7 +928,10 @@ holds the TrinityCore pass puts on a quest that no creature offers (not in `Ques
 holiday, a profession, a quest type other than 0, 1, 2, 4 and 128, and a task of a kind of
 `$noPinKinds` that the recorder doesn't hold itself) are waived when a creature offers it, and the report
 counts the quests by class; a world, bonus or hidden quest, a quest flagged unavailable, an internal name
-and a system category stay held. It never moves a pin, never changes an ID
+and a system category stay held, except six system categories whose quests mostly stand on a pin with an NPC
+already (World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver's Headquarters, Weekly Events:
+`` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
+It never moves a pin, never changes an ID
 or a name that is there, never takes a quest off a pin, and writes no pin if any of that would
 happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
 merge them and move one pin's quests): it is listed, as are a pin the recorded giver stood 1.5 to 3

@@ -548,7 +548,7 @@ covered by its quest and NPC pair and sits where the pipeline sorts it).
 - **The holds the TrinityCore pass puts on a quest are waived when a creature offers it** (not in
   `QuestV2`, the template inferences, Landfall, holiday, profession, a quest type other than 0, 1, 2, 4
   and 128); the ones that are definitions stay (unavailable, internal name, world, bonus or hidden task,
-  system category), and the new pins are counted by class so the user sees what the waiver let in. (A task of
+  system category; six system categories are allowed, see quest-giver-recorder.md, "Adds"), and the new pins are counted by class so the user sees what the waiver let in. (A task of
   another kind than world, bonus or hidden was one of the waived holds until 11 October 2026, when the
   TrinityCore pass stopped holding it; the report no longer counts that class. The kinds still in
   `$noPinKinds` that the tool does not hold itself, the callings and the threat wrappers, are waived
