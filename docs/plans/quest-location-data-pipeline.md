@@ -661,7 +661,7 @@ kinds of one table at the top of the script, `$noPinKinds`, keyed by `QuestInfoI
   icon 3, the profession pin of "A Gulper Ate the Rolly" (56373); the rest have icon 1. 23 of the 737
   are in categories the TrinityCore pass holds as system ones: 5 Weekly Events quests ("The Arena
   Calls", "A Call to Battle" and the like, whose holiday flag is decision 10 of open-items.md, so their
-  pins show all year), 17 of category 1134 and "Traversing Torghast". 14 are in Uncategorized, and 7
+  pins show all year), 17 of Death Rising (1134) and "Traversing Torghast". 14 are in Uncategorized, and 7
   pins stand on continent maps and 7 on orphan maps, as 14 and 994 old pins do.
 - **Names.** A quest new to the pins takes a neighbour's identity only when that NPC starts it, which
   `Assemble-PinDB.ps1` required of TrinityCore's starts alone. The client's starts of a quest with no
@@ -681,10 +681,10 @@ kinds of one table at the top of the script, `$noPinKinds`, keyed by `QuestInfoI
   it names, so a pin would stand off the map's edge (the pipeline's "point outside every region").
   Ten are Waking Shores quests filed under The Azure Span, kind 0 (69951, 69953, 69954, 69956, 69960,
   69961, 69969, 69970, 69972 and 69973: Bouldron, Karantun, Infernum, Grizzlerock, Gravlion, Frozion,
-  Voraazka, Kain Firebrand, Zurgaz Corebreaker and Rouen Icewind), at world points west of the map's
+  Voraazka, Kain Firebrand, Zurgaz Corebreaker and Rouen Icewind), at world points outside the map's
   box. Eleven are Heroic dungeon dailies (11354, 11362, 11363, 11368, 11370, 11372, 11374, 11375,
-  11384, 11388 and 11499, "WANTED: ..."), whose points lie in the Outland and dungeon maps and
-  nowhere near Shattrath; TrinityCore names Wind Trader Zhareem as the starter of all eleven, and his
+  11384, 11388 and 11499, "WANTED: ..."), whose points lie outside the boxes of Shattrath City and
+  of the dungeon maps they name; TrinityCore names Wind Trader Zhareem as the starter of all eleven, and his
   Shattrath pin already holds 11373 and 11369, so a line each on that pin would place them (not
   done: the pipeline has no rule for a start from a starter's spawn).
 - **Calling Quests (271) and Dragonrider Racing (281), reported and not applied.** Rerun with each line
