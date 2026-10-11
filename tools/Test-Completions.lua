@@ -28,6 +28,11 @@ the Alterac quests kept open, Moonglade closing its Heeding the Call lead-ins, a
 another is in the log (qcQuestNeedsInLog: its pin, tooltip and closing), and the quest window's
 breadcrumb notice, which counts only the lead-ins the character can take (shared code, Forever's case).
 
+And it checks Forever's class quests (docs/plans/forever-quest-class-decisions.csv and the importer's
+class rules): Zephras Isle's Call of Earth is a shaman's, and Foror's Compendium a warrior's or paladin's,
+as are the two Forging of Quel'Serrar quests after it, since a prerequisite a character can't take counts
+as met.
+
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-Completions.lua QuestCompletist QuestCompletist_Camelot.toc
@@ -298,7 +303,7 @@ else
 	end
 	local function snatchLine()
 		lines = {}
-		setmetatable({PinData = shaw, GetCenter = function() return 100, 100 end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		setmetatable({PinData = shaw, GetCenter = function() return 100, 100 end, GetMap = function() end}, {__index = env.qcPinMixin}):OnMouseEnter()
 		for _, text in ipairs(lines) do
 			if text:find("Snatch and Grab", 1, true) then return text end
 		end
@@ -328,7 +333,7 @@ else
 	end
 	local function pinLine(pin, name)
 		lines = {}
-		setmetatable({PinData = pin, GetCenter = function() return 100, 100 end}, {__index = env.qcPinMixin}):OnMouseEnter()
+		setmetatable({PinData = pin, GetCenter = function() return 100, 100 end, GetMap = function() end}, {__index = env.qcPinMixin}):OnMouseEnter()
 		for _, text in ipairs(lines) do
 			if text:find(name, 1, true) then return text end
 		end
@@ -681,6 +686,39 @@ else
 	lines = {}
 	env.qcToast_OnEnter(env.qcToast)
 	check("and its tooltip lists that one only, under its heading", #lines == 2, #lines .. " lines")
+	ctx.class, ctx.level = "ROGUE", 16
+end
+
+if not QUESTS[92466] then
+	print("Forever's class quests: not in this game's data")
+else
+	local EARTH, EARTH_2, EARTH_3, COMPENDIUM, FORGING, FORGING_2 = 92466, 92467, 92468, 7507, 7508, 7509
+	local function needs(questId) return QC.qcPinQuestNeeds(questId, QC.qcQuestStatus.Of(questId, QUESTS[questId])) end
+	local function canTake(...)
+		for _, questId in ipairs({...}) do
+			if QC.qcPrereq.CanTake(questId) then return true end
+		end
+		return false
+	end
+	local faction = env.UnitFactionGroup
+
+	print("Forever's class quests")
+	env.UnitFactionGroup = function() return "Horde", "Horde" end
+	ctx.class, ctx.level = "WARRIOR", 4
+	character("Orc", {}, {})
+	login()
+	check("an Orc warrior can't take any of Zephras Isle's Call of Earth", not canTake(EARTH, EARTH_2, EARTH_3))
+	ctx.class = "SHAMAN"
+	check("an Orc shaman can take all three", QC.qcPrereq.CanTake(EARTH) and QC.qcPrereq.CanTake(EARTH_2) and QC.qcPrereq.CanTake(EARTH_3))
+	env.UnitFactionGroup = faction
+	ctx.class, ctx.level = "WARRIOR", 60
+	character("Human", {}, {})
+	login()
+	check("a Human warrior can take Foror's Compendium", QC.qcPrereq.CanTake(COMPENDIUM))
+	local forging = needs(FORGING)
+	check("and The Forging of Quel'Serrar needs it", forging == "Requires Foror's Compendium", forging)
+	ctx.class = "MAGE"
+	check("a Human mage can take neither, nor the second Forging of Quel'Serrar", not canTake(COMPENDIUM, FORGING, FORGING_2))
 	ctx.class, ctx.level = "ROGUE", 16
 end
 

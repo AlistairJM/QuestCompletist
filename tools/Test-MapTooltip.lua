@@ -1,6 +1,8 @@
 --[[
 Checks the map's tooltip: what a quest giver's pin draws on it when the mouse enters, how it is cleared
-when the mouse leaves, and how it is redrawn when names arrive or Shift changes.
+when the mouse leaves, and how it is redrawn when names arrive or Shift changes. It also clicks pins and
+quests in the list, with TomTom and without, and checks which waypoint they set and where the game's own
+is refused.
 
 Loads the addon's own files with stand-ins for the WoW API, and gives the tooltip, its lines, its bars,
 dividers and icons stand-ins that write down every call they get. The checks read that record, and
@@ -116,6 +118,7 @@ local function newPin(pinData, x, y)
 	local pin = {__name = "pin" .. (counters.pin or 0) + 1, PinData = pinData}
 	counters.pin = (counters.pin or 0) + 1
 	pin.GetCenter = function() return x or 100, y or 100 end
+	pin.GetMap = function() return {GetMapID = function() return 84 end} end
 	return setmetatable(pin, {__index = function(_, key) return env.qcPinMixin[key] end})
 end
 
@@ -163,6 +166,7 @@ env = {
 	IsModifierKeyDown = function() return false end,
 	IsInInstance = function() return false end,
 	C_AddOns = {IsAddOnLoaded = function() return false end},
+	UiMapPoint = {},
 	UnitFactionGroup = function() return "Alliance", "Alliance" end,
 	UnitRace = function() return "NightElf", "NightElf" end,
 	UnitClass = function() return "DRUID", "DRUID" end,
@@ -496,8 +500,175 @@ stackMap.mapId = 84
 check("every stack in the data with a named pin is named for its first one", unnamed == 0,
 	string.format("%d stacks, %d with a nameless first pin", stacks, firstNameless))
 
-env.C_AddOns.IsAddOnLoaded = function() return false end
-env.TomTom = nil
+print("Without TomTom, a click sets the game's own waypoint")
+local tomtom = env.TomTom
+local function setTomTom(loaded, standIn)
+	env.C_AddOns.IsAddOnLoaded = function(name) return loaded and name == "TomTom" end
+	env.TomTom = loaded and (standIn or tomtom) or nil
+end
+local PIN_RULE = 1234
+local WAYPOINT_FUNCTIONS = {CanSetUserWaypointOnMap = true, SetUserWaypoint = true}
+local game
+local function installGameApi()
+	game = {allowed = {[84] = true}, ruleActive = false, setResult = true, calls = {}}
+	local function note(text) game.calls[#game.calls + 1] = text end
+	local api = {
+		GetBestMapForUnit = function() return nil end,
+		GetPlayerMapPosition = function() return nil end,
+		CanSetUserWaypointOnMap = function(mapId) note("can " .. tostring(mapId)); return game.allowed[mapId] == true end,
+		SetUserWaypoint = function(point) note("set"); game.waypoint = point; return game.setResult end,
+	}
+	env.C_Map = setmetatable({}, {__index = function(_, key)
+		if api[key] ~= nil or WAYPOINT_FUNCTIONS[key] then return api[key] end
+		return dummy
+	end})
+	env.C_SuperTrack = {SetSuperTrackedUserWaypoint = function(on) note("track " .. tostring(on)); game.superTracked = on end}
+	env.C_GameRules = {IsGameRuleActive = function(rule) return game.ruleActive and rule == PIN_RULE end}
+	env.Enum = {GameRule = {WorldMapTrackingPinDisabled = PIN_RULE}}
+	env.UiMapPoint = {CreateFromCoordinates = function(mapId, x, y) return {uiMapID = mapId, position = {x = x, y = y}} end}
+	return api
+end
+local function clickPin(data)
+	waypoints = {}
+	local clicked = newPin(data)
+	clicked.GetMap = function() return stackMap end
+	return pcall(clicked.OnMouseClickAction, clicked, "LeftButton")
+end
+local function near(a, b) return a ~= nil and math.abs(a - b) < 1e-9 end
+local function calls() return table.concat(game.calls, ",") end
+local function gameWaypointIs(mapId, x, y)
+	local point = game.waypoint
+	return point ~= nil and point.uiMapID == mapId and near(point.position.x, x) and near(point.position.y, y)
+end
+
+local dataA = {pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1]}}
+local dataB = {pinB[1], pinB[2], pinB[3], 20.5, 70.25, pinB[6]}
+
+installGameApi()
+setTomTom(true)
+local ok = clickPin(dataA)
+check("with TomTom loaded a click sets TomTom's waypoint", ok and #waypoints == 1 and waypoints[1].title == pinA[3] and near(waypoints[1].x, 0.503))
+check("and nothing of the game's own", calls() == "" and game.waypoint == nil, calls())
+
+setTomTom(false)
+ok = clickPin(dataA)
+check("without TomTom the click asks the game about the map, sets the waypoint and makes it the arrow's", ok and calls() == "can 84,set,track true", calls())
+check("the point is on that map, in the game's 0 to 1", gameWaypointIs(84, 0.503, 0.502))
+check("TomTom's list stays empty", #waypoints == 0)
+ok = clickPin(dataB)
+check("a second click replaces the first waypoint", ok and calls() == "can 84,set,track true,can 84,set,track true" and gameWaypointIs(84, 0.205, 0.7025), calls())
+
+local before = game.waypoint
+game.calls = {}
+game.allowed[84] = false
+ok = clickPin(dataA)
+check("a map the game refuses sets nothing and raises no error", ok and calls() == "can 84" and game.waypoint == before, calls())
+game.allowed[84], game.ruleActive = true, true
+game.calls = {}
+ok = clickPin(dataA)
+check("so does one where the game's rule turns the map pin off", ok and calls() == "" and game.waypoint == before, calls())
+game.ruleActive, game.setResult = false, false
+ok = clickPin(dataA)
+check("a waypoint the game doesn't set is not made the arrow's", ok and calls() == "can 84,set", calls())
+
+local api = installGameApi()
+api.CanSetUserWaypointOnMap = function() error("restricted") end
+ok = clickPin(dataA)
+check("a map check that raises an error is no error and sets nothing", ok and calls() == "", calls())
+api = installGameApi()
+api.SetUserWaypoint = function() error("restricted") end
+ok = clickPin(dataA)
+check("a waypoint call that raises an error is no error and makes nothing the arrow's", ok and calls() == "can 84", calls())
+
+installGameApi().SetUserWaypoint = nil
+ok = clickPin(dataA)
+check("a client without SetUserWaypoint does nothing and raises no error", ok and calls() == "", calls())
+installGameApi().CanSetUserWaypointOnMap = nil
+ok = clickPin(dataA)
+check("one without CanSetUserWaypointOnMap does nothing and raises no error", ok and calls() == "" and game.waypoint == nil, calls())
+installGameApi()
+env.C_SuperTrack = {}
+ok = clickPin(dataA)
+check("one without SetSuperTrackedUserWaypoint does nothing and raises no error", ok and calls() == "" and game.waypoint == nil, calls())
+installGameApi()
+env.C_SuperTrack = false
+ok = clickPin(dataA)
+check("one without C_SuperTrack does nothing and raises no error", ok and calls() == "" and game.waypoint == nil, calls())
+installGameApi()
+env.UiMapPoint = {}
+ok = clickPin(dataA)
+check("one without UiMapPoint.CreateFromCoordinates does nothing and raises no error", ok and calls() == "" and game.waypoint == nil, calls())
+installGameApi()
+env.C_Map = false
+ok = clickPin(dataA)
+check("one without C_Map does nothing and raises no error", ok and calls() == "", calls())
+installGameApi()
+env.C_GameRules, env.Enum = false, false
+ok = clickPin(dataA)
+check("one without the game rules still sets the waypoint", ok and calls() == "can 84,set,track true", calls())
+installGameApi()
+setTomTom(true, {})
+ok = clickPin(dataA)
+check("a TomTom without AddWaypoint is no TomTom: the game's waypoint is set", ok and calls() == "can 84,set,track true" and #waypoints == 0, calls())
+setTomTom(false)
+
+print("A pin's tooltip says a click sets a waypoint only where one will be set")
+local function waypointLine()
+	record = {}
+	newPin(singleData):OnMouseEnter()
+	return count("Click to set a waypoint")
+end
+installGameApi()
+check("on a map the game allows it does", waypointLine() == 1)
+check("and the line doesn't name TomTom", count("TomTom") == 0)
+game.allowed[84] = false
+check("on a map the game refuses it doesn't", waypointLine() == 0)
+game.allowed[84], game.ruleActive = true, true
+check("nor while the game's rule turns the map pin off", waypointLine() == 0)
+installGameApi()
+env.C_SuperTrack = {}
+check("nor on a client without the arrow", waypointLine() == 0)
+installGameApi()
+setTomTom(true)
+game.allowed[84] = false
+check("with TomTom loaded it does, whatever the game says", waypointLine() == 1)
+setTomTom(false)
+
+print("Clicking a quest in the list sets the waypoint the same way")
+local listQuest = pinA[6][1]
+env.qcMenuButton1 = {QuestID = listQuest}
+env.IsLeftShiftKeyDown = function() return false end
+env.IsLeftAltKeyDown = function() return false end
+installGameApi()
+local listMap, listPin = QC.qcFindPinForQuest(listQuest)
+check("the quest has a pin to go to", listMap ~= nil and listPin ~= nil)
+game.allowed[listMap] = true
+setTomTom(true)
+waypoints = {}
+ok = pcall(env.qcQuestClick, 1)
+check("with TomTom loaded the click sets TomTom's waypoint, titled as before", ok and #waypoints == 1 and waypoints[1].mapId == listMap
+	and near(waypoints[1].x, listPin[4] / 100) and near(waypoints[1].y, listPin[5] / 100)
+	and waypoints[1].title == (QC.qcNpcName(listPin) or QC.qcQuestName(listQuest)), waypoints[1] and waypoints[1].title)
+check("and nothing of the game's own", calls() == "", calls())
+setTomTom(false)
+waypoints = {}
+ok = pcall(env.qcQuestClick, 1)
+check("without TomTom it asks the game, sets the waypoint at the pin and makes it the arrow's", ok and calls() == "can " .. listMap .. ",set,track true", calls())
+check("on the pin's map, in the game's 0 to 1", gameWaypointIs(listMap, listPin[4] / 100, listPin[5] / 100))
+check("and TomTom's list stays empty", #waypoints == 0)
+game.calls, game.allowed[listMap] = {}, false
+before = game.waypoint
+ok = pcall(env.qcQuestClick, 1)
+check("a map the game refuses sets nothing and raises no error", ok and calls() == "can " .. listMap and game.waypoint == before, calls())
+installGameApi()
+env.C_SuperTrack = false
+ok = pcall(env.qcQuestClick, 1)
+check("a client without the functions does nothing and raises no error", ok and calls() == "", calls())
+
+env.C_Map, env.C_SuperTrack, env.C_GameRules, env.Enum = nil, nil, nil, nil
+env.UiMapPoint = {}
+env.qcMenuButton1, env.IsLeftShiftKeyDown, env.IsLeftAltKeyDown = nil, nil, nil
+setTomTom(false)
 
 -- The zone icons on a continent map are a second kind of pin on the same tooltip. The code before this one
 -- has no such pin, so the record above stays comparable with it.

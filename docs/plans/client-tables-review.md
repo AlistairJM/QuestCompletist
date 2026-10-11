@@ -114,7 +114,7 @@ on 7 October 2026.
 | Holidays, HolidayNames | 799, 160 / 22, 16 | Every calendar holiday with its name, dates and durations | Every ID in `qcHolidays` is there under its name; Hallow's End's second ID, 1405, is the kind of thing that has been found by hand in game. Forever's 22 rows include four new ones ("Call to Arms: Darkspear Islands") and still neither the Scourge Invasion nor the Ahn'Qiraj War Effort | **Use:** an offline check of `qcHolidays` in step 2b |
 | QuestV2CliTask (the columns above) | 6,242 / – | The task quests | Skill levels for 410 world quests that have no profession in our data; prerequisites for 2,114 task quests | **Used:** the profession of 410 quests and prerequisites for 850, steps 1d and 2c (Status); the skill level waits for [game-parity.md](game-parity.md) |
 | Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 740 of our 1,474 storylines and 5,946 quests. The game gives a quest's campaign at runtime | **Used:** the campaign line in the tooltip (Status); campaigns in the menu wait, and none of it is data the addon lacked |
-| ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | The client tables give a ContentTuningID only to task quests, areas and maps, but retail's quest cache gives one to every quest it holds; the API gives a range for 30,066 of our 35,023 quests, and `C_Map.GetMapLevels` a map's | No, until the levels check of [retail-quest-cache.md](retail-quest-cache.md) is built: it needs the table for 34 tunings (150 of our quests) |
+| ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | The client tables give a ContentTuningID only to task quests, areas and maps, but retail's quest cache gives one to every quest it holds; the API gives a range for 30,066 of our 35,023 quests, and `C_Map.GetMapLevels` a map's | **Yes, since 11 October 2026:** `ContentTuning-<build>.csv` (4 of its columns) gives the minimum level of the 4,476 quests the API has no record of, in retail's `qcQuestMinLevel` (`Apply-QuestMinLevels.ps1`, `Compare-QuestLevels.ps1`; [retail-quest-cache.md](retail-quest-cache.md), "Level"). The other tables of the family stay unused |
 | AdventureMapPOI | 514 / – | Points on the Legion, Battle for Azeroth and Torghast adventure maps | 500 name a quest, 475 ours, 30 with a pin. 420 are 12.1's Prey hunts, with no position; the 25 others are placed at the zone chosen, not at a giver | No |
 | QuestHub | 107 / – | A quest's hub, as an AreaPOI | 104 ours, 97 with a pin | No |
 | Bounty, BountySet | 135, 9 / – | The emissary quests | 134 ours, all recurring already (96 daily, 38 world quests); 96890 isn't in our data | No |
@@ -190,11 +190,14 @@ level ranges for the quests the API has (update, 9 October 2026: the retail ques
 ContentTuningID for all 32,713 quests it holds, so that ID, with the ranges the API implies for 741
 tunings, gives a range for 4,305 of the 4,955 the API has no record of, and the table would add 150
 more: [retail-quest-cache.md](retail-quest-cache.md)), though measuring it raised a data question
-worth its own note: on retail our `level` is the API's minimum, and the low-level filter compares
+worth its own note: on retail our `level` was the API's minimum (it was meant to be, and was not for
+1,398 quests), and the low-level filter compares
 it with the character's level, so a quest that scales up to 30 can count as low level long before the game greys it. The API's
 maximum would fix that; it isn't a table question. (Forever's `level` is the quest's own level,
 which that filter suits; its minimum is in `qcQuestMinLevel`, which the tooltip and the
-requirements filter read.)
+requirements filter read.) **Update, 11 October 2026:** the user took option C: the table is now used
+for the minimum, so retail keeps its `level` and holds the true minimum in `qcQuestMinLevel` too; the
+maximum is still not used (open-items.md decision 9).
 
 ## Decisions
 
@@ -212,7 +215,10 @@ requirements filter read.)
 - 2026-10-07: the holiday check (recommendation 4) is part of step 2b, in
   `Compare-ClientTables.ps1` (#205): for each entry in `qcHolidays`, the Holidays rows of its name
   in each build given, through HolidayNames, against the IDs it lists. On the same builds, 15 of
-  the 17 holidays match and the two Forever events have no row, as expected.
+  the 17 holidays match and the two Forever events have no row, as expected. Since 11 October 2026
+  WoW's Anniversary, whose calendar event is a new row each year ("WoW's 22nd Anniversary" is
+  1808), is matched by those yearly names instead of its own, and a row of them that runs today or
+  later and is missing from its entry is a finding (maintenance.md, "Holidays").
 - 2026-10-07: floors from UiMapGroupMember (recommendation 3), a rule in `Add-ZoneTableMaps.ps1`
   (#206): 25 floors joined the zone table (Black Temple's 7, Dawn of the Infinite's 8,
   Amirdrassil's 3 boughs, the Exodar's 3, Mardum's 2, Greymane Manor's main floor, Tazavesh's
@@ -284,3 +290,13 @@ requirements filter read.)
   which offline sit in Blizzard's utility campaigns ("Torghast Story Progression Skip" and
   "Catching Up!"), answer 0 and show no line. So the game does not hand out the utility
   campaigns for these, and no list of campaigns to skip is needed on that evidence.
+- 2026-10-11: the storyline's name and a "Type:" row in the quest list's tooltip (recommendation 5 of
+  [game-api-review.md](game-api-review.md), decision 4: "yes, use the game's text"). The storyline's
+  name comes from `C_QuestLine.GetQuestLineInfo` in the player's language when the game's quest line
+  is the one the list shows, which is ours, the smallest that holds the quest (above): 97.9% of the
+  16,737 storylined retail quests the 9 October probe loaded, and all 11 of Forever's; the others
+  keep our English name. The campaign line above is unchanged. The new row, below the quest ID, gives
+  the game's classification (Important, Legendary, Calling, Meta) and tag (Dungeon, Raid, Group, PvP,
+  Heroic, Scenario, Delve; Forever's tag 1 reads "Elite"), leaving out what the tooltip says already
+  (Campaign, Storyline, Repeatable). Both games, no new text; the numbers, the checks and what isn't
+  tried in game are in game-api-review.md, Status.
