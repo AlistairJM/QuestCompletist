@@ -244,7 +244,8 @@ From the beta's data (9 seconds, with the same files on a rerun):
   below.)
 - **Seasonal quests** get their holiday from CMaNGOS's events, which carry Blizzard's holiday IDs, or
   from their heading. That gives 146 seasonal quests, 137 of them with a holiday. (Since 6 October,
-  also from the events all their givers stand during: see "Event quests" below.)
+  also from the events all their givers stand during: see "Event quests" below. Since 11 October,
+  also from a hand list and two more headings: see "Seasonal quests with no holiday" below.)
 - **Skyborne** has no race bit in the addon yet. The data uses 67108864, and phase 4 adds it to
   `qcRaceBits`.
 
@@ -839,6 +840,47 @@ copy taken at 09:57 that morning. Importing them, on the master that has the que
   other direction.
 - The reachability check, the table audit and the pin names find nothing new.
 
+### Seasonal quests with no holiday (11 October 2026)
+
+The importer gave a quest its holiday from CMaNGOS's events, from the game's heading or from the events
+all its givers stand during. 29 quests that belong to a holiday had none, so the data called them
+ordinary. Found again from `quests.jsonl` on 11 October: the quests under the headings Special (-284),
+Seasonal (-22), Invasion (-368) and Ahn'Qiraj War (-365) with no holiday, less the ones that aren't a
+holiday's (the 41 "Friend of the Library" book quests and "CLUCK!" under Special, and Forever's own
+Invasion quest 98471, "Message from the Supreme Magister"). None has a pin.
+
+| Holiday | Quests | Why nothing tagged them |
+|---|---|---|
+| Children's Week | 12: 171, 558, 910, 911, 915, 925, 1479, 1558, 1687, 1800, 4822, 5502 | the Human and Orcish Orphans start them (two end with a matron), and neither orphan has a spawn in CMaNGOS (the Orphan Whistle summons them), so no event reached them; the matrons' 172 and 1468 are in CMaNGOS's event 10 and carry it |
+| Feast of Winter Veil | 6: 79482, 79483, 79492, 79495, 79637, 99145 | not in CMaNGOS; the game files them under Seasonal, a heading that names no holiday (79482, 79483, 79492 and 79495 are the user's keep list) |
+| Scourge Invasion | 9: 9247, 9292, 9295, 9299, 9300, 9301, 9302, 9304, 9310 | CMaNGOS files them under Invasion but has no event for them; letters and crystals start them |
+| Ahn'Qiraj War Effort | 2: 8530, 8617 (the Alliance's and the Horde's "Needs Singed Corestones!") | the game files them under Ahn'Qiraj War; CMaNGOS lacks them |
+
+- **The fix:** the Children's Week and Winter Veil quests go on a hand list, `forever-quest-holiday-decisions.csv`
+  (quest, name, holiday, decision, evidence), which the importer reads like the givers and zones
+  lists, with the evidence of each row. The other 11 follow their heading: the war effort's own
+  heading, Ahn'Qiraj War, as Darkmoon Faire, Lunar Festival and Midsummer already did, and CMaNGOS's
+  Invasion, not the game's, since the game's has 98471 in it. A hand-listed holiday wins over the
+  other sources, and the review says when one of them disagrees (none does).
+- **The result:** 351 quests carry a holiday, against 322. Exactly those 29 quests change, in
+  `holiday`, and 23 of them also in `type`, from 1 to 64: the importer makes a holiday quest that
+  doesn't recur seasonal, and the 6 Winter Veil quests were 64 already. No other field of any of the
+  5,097 quests changes; `pins.jsonl`, `links.jsonl`, `reputation.jsonl`, `skills.jsonl`,
+  `answers.jsonl` and the review list are byte for byte what a rerun of the old importer writes,
+  and so are the menu files. A second run writes the same files.
+- **In game** (read from the code and the offline checks; not tried in game): the seasonal filter
+  is the map's, and none of the 29 has a pin, so the map shows nothing different. The quest list
+  has no seasonal filter, so it shows all 29 in their categories as before, with the seasonal
+  icon in place of the ordinary one on the 23 that changed type. A quest of a holiday the calendar
+  doesn't show would be hidden on the map the day it gets a pin. Winter Veil (141) is dated from
+  15 December. Children's Week (201) has no dates after 2025 in build 70338's table, so its pins
+  (172 and 1468 hold the only two) are hidden until the game dates it. The Scourge Invasion and
+  the War Effort have no Holidays row at all, so their pins are hidden always, as the 81 that are
+  there already.
+- **Still open:** a nameless row, 1879, is dated from 15 November for 61 days, like a Winter Veil
+  that starts a month early. Run `/qc holidays` on the beta before 15 November, and add 1879 to
+  Winter Veil's IDs in `qcHolidays` if it lists it ([open-items.md](open-items.md), decision 12).
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -954,3 +996,7 @@ copy taken at 09:57 that morning. Importing them, on the master that has the que
   leaves the data; see "The beta's answers differ between runs".
 - 2026-10-10: the recorder's notes from the user's beta session (build 70338, 13 new givers) are in the
   ledger and the data: 1,698 pins and no quest changes; see "The recorder's notes from the beta session".
+- 2026-10-11: the 29 seasonal quests that had no holiday are tagged: 12 Children's Week and 6 Winter Veil
+  from a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by heading. 351 quests carry a holiday,
+  none of the 29 has a pin, and the nameless Holidays row 1879 waits for `/qc holidays` on the beta; see
+  "Seasonal quests with no holiday".

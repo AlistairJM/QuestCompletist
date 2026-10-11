@@ -1082,7 +1082,16 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    their description: the Darkmoon Faire's building days, the fishing contest's announcers and
    judges, and the Scourge Invasion and Ahn'Qiraj War Effort, which the calendar doesn't show, so
    their quests stay off the map. Recurring quests keep their type: a repeatable holiday quest is
-   repeatable, as on retail.
+   repeatable, as on retail, and any other holiday quest is seasonal (type 64), so tagging an
+   ordinary quest changes its type from 1 to 64.
+   A quest under the heading Ahn'Qiraj War is the war effort's, and one CMaNGOS files under
+   Invasion is the Scourge Invasion's; Forever's own Invasion quest (98471), which CMaNGOS lacks,
+   is neither. The seasonal quests no event or heading reaches get their holiday by hand, from
+   `docs\plans\forever-quest-holiday-decisions.csv` (quest, name, holiday, decision `SET`,
+   evidence): the 12 orphan quests of Children's Week, which orphans with no CMaNGOS spawn start,
+   and 6 Winter Veil quests the game files under Seasonal. The holiday is a name in `qcHolidays`,
+   and each row says what the tag rests on. The review list names a row that another source also
+   tags ("hand-kept holiday not needed") or tags otherwise, and one whose quest isn't imported.
    A giver no source has, like those of most of Forever's new quests, can be looked up by hand on
    Wowhead's Forever pages and added to `docs\plans\forever-quest-givers.csv` (quest, NPC, name,
    note). The NPC stands where CMaNGOS or the recorder puts it, and the recorder wins when it saw
@@ -1198,9 +1207,13 @@ Step 2b of a sweep finds the same offline, from the client's Holidays and Holida
 each entry in `qcHolidays`, every ID the client has under that name in either game, against the
 IDs the entry lists. A new holiday with quests needs a new flag, an entry, and its quests' `holiday`
 set in `data\quests.jsonl`. Forever's quests get theirs from the importer, through its own table
-from Holidays IDs to flags, so add the ID there too and rerun step 10.
+from Holidays IDs to flags, so add the ID there too and rerun step 10. The importer also tags by
+heading (Ahn'Qiraj War, and the quests CMaNGOS files under Invasion) and by a small hand list,
+`docs\plans\forever-quest-holiday-decisions.csv`, for quests that no event reaches; a new
+holiday's quests that need it go in that list, with their evidence.
 
-Retail's `holiday` values are hand data: no tool writes them (Forever's come from the importer).
+Retail's `holiday` values are hand data: no tool writes them (Forever's come from the importer
+and its hand list).
 They live in `data\quests.jsonl` and are changed there, by hand or through `AddonData.ps1`
 (`Read-QuestData`, `Set-RecordField` and `Save-QuestData`, which rebuilds the Lua as it saves).
 `Build-AddonData.ps1` rebuilds the Lua from the file and checks the records, and its `-Check` says
@@ -1245,6 +1258,16 @@ and in game it shows up as a calendar holiday not tied to a quest: add its ID. R
 problem with the Stranglethorn Fishing Extravaganza: `qcHolidays` carries it for Forever (event 301),
 but retail's Holidays table has no such row, so a retail quest tagged with it would be hidden for
 good, and its retail quests stay `PENDING` for that reason.
+
+Forever's calendar, in build 70338's Holidays table (dates decoded by hand): Children's Week (201)
+has dates only in 2023, 2024 and 2025, so the calendar has none to show and its pins stay hidden
+until the game dates it again (the two matron quests, 172 and 1468, hold the only two). Winter
+Veil (141) is dated from 15 December for 18 days. A row with no name, 1879, is dated from 15
+November for 61 days: if `/qc holidays` on the beta lists it under "Other calendar holidays" and it
+turns out to be Winter Veil's, add it to Winter Veil's IDs in `qcHolidays`
+([open-items.md](plans/open-items.md), decision 12). On 11 October 2026 the 29 seasonal quests
+that had no holiday were tagged (351 Forever quests have one now); none of the 29 has a pin, so the
+filter changes nothing on the map for them, and the quest list never applies it.
 
 Hearthstone's 10th Anniversary is on retail's calendar for 2024 only. The client's Holidays table has
 two rows under that name, 1462 (from 11 March 2024) and 1578 (from 26 September 2024, one region),
