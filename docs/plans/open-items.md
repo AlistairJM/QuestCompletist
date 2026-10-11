@@ -65,11 +65,18 @@ again.
   Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom, Korthia and the rest), enlarged the icon where
   its art allows and put a green check on finished zones (while the map shows completed quests);
   twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre and wait for the user to say which to move.
-- **Stacked pins and two new holidays** (#276 and #280, released in 112.9 untried; two optional lines on
-  retail). Click a stacked pin whose first quest has no giver name and see the named giver's icon, name and
-  TomTom title (Durotar around 45.7, 15.9 has one). `/qc holidays` should list the Moonkin Festival (694)
-  with dates and say Hearthstone's 10th Anniversary is not on the calendar in the next 12 months; if Moonkin
-  shows under "Other calendar holidays" with another ID, add that ID to its `qcHolidays` entry.
+- **Stacked pins** (#276, released in 112.9 untried; one optional line on retail). Click a stacked pin
+  whose first quest has no giver name and see the named giver's icon, name and TomTom title (Durotar
+  around 45.7, 15.9 has one). The holidays half of this item (#280) is answered: the user's
+  `/qc holidays` on retail, 11 October 2026, dated the Moonkin Festival (694) on 12 November 2026 and
+  said Hearthstone's 10th Anniversary is not on the calendar in the next 12 months, both as expected
+  ([maintenance.md](../maintenance.md), "Holidays").
+- **The anniversary's pins (retail, one look after 17 November 2026).** The 19 WoW's Anniversary quests
+  are tagged on calendar ID 1808, which `/qc holidays` listed on 11 October 2026. Offline, with the
+  default filters, their pins are hidden out of season (Moira Thaurissan's pin on Tanaris and 47254's
+  in the Caverns of Time go, and the Tanaris stack at Chromie loses its anniversary quests and stays
+  under Bobadormu's name) and shown with 1808 running. While the event runs, those pins should be on
+  the map; before 17 November they should not.
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
@@ -183,7 +190,7 @@ again.
 | 7 | Pin-per-quest (retail) or pin-per-spot (Forever) for nameless pins | decide, then align the tool that differs | game-parity.md, recommendation 11 |
 | 8 | Refresh retail's levels from the API: 1,589 quests differ from it (large blocks in Zaralek Cavern, Mechagon Island and the Emerald Dream, where the API gives a much lower minimum than we store), 4,955 have no API record, 224 are 0 | yes, from the API, after a look at those zones; a campaign or Chromie Time may gate some | client-tables-review.md (the note on `level`); maintenance.md, the data files |
 | 9 | Scaling quests: the list bracket and the low-level filter read a scaling range's floor, so they judge a quest low level too early | probe first, agreed 10 October 2026: #282 adds `IsQuestTrivial` and the content difficulty to the probe's facts pass (copy the probe into both AddOns folders again first); read the post-12.1.5 retail run and Forever's next run, then decide | game-api-review.md, recommendation 4 |
-| 10 | Holiday flags for the retail events `qcHolidays` has none for: the four Dragonriding cups (16 quests, 12 with pins, so those pins show all year), Secrets of Azeroth, WoW Anniversary, Dastardly Duos, the weekly bonus events, and the 54 Ahn'Qiraj War Effort and Scourge Invasion quests | a flag per event, tied to the calendar ID that `/qc holidays` lists under "Other calendar holidays" while it runs; one flag per cup or one shared is the user's call | `quest-holiday-decisions.csv`, the PENDING rows |
+| 10 | Holiday flags for the retail events `qcHolidays` has none for: the four Dragonriding cups (16 quests, 12 with pins, so those pins show all year), Secrets of Azeroth, WoW Anniversary, Dastardly Duos, the weekly bonus events, and the 54 Ahn'Qiraj War Effort and Scourge Invasion quests | **WoW Anniversary: yes, 11 October 2026 ("build it with 1808 and the yearly check"), done**: flag 524288 on calendar ID 1808, the 19 quests tagged, and step 2b reports each later year's row. For the other events: a flag per event, tied to the calendar ID that `/qc holidays` lists under "Other calendar holidays" while it runs; one flag per cup or one shared is the user's call; the next free flag is 1048576 | `quest-holiday-decisions.csv`, the PENDING rows; maintenance.md, "Holidays" |
 | 11 | Two quests of the holiday record: 56322 "Contained Alemental" (Wowhead lists Event: Brewfest) and the 12 "Bar Tab Barrel" quests, tagged Brewfest but still filed under the Dragon Isles zones, unlike the ten already under Brewfest | **yes, 10 October 2026, done**: 56322 tagged and the 12 Barrels refiled under Brewfest (31) | `quest-holiday-decisions.csv` |
 | 12 | Forever's 29 untagged seasonal quests (none has a pin: 12 Children's Week and 6 Winter Veil by a hand list, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by an importer rule), and its calendar gaps: no dates for Children's Week or the Darkmoon Faire on the beta, and a nameless Winter Veil-like Holidays row, 1879, that the date decode puts from 15 November (not on the beta's calendar when checked in game, 11 October 2026) | **tagging: yes, 11 October 2026, done in #288**: the 29 are tagged (12 Children's Week and 6 Winter Veil from `forever-quest-holiday-decisions.csv`, 9 Scourge Invasion and 2 Ahn'Qiraj War Effort by the importer's heading rules). **Checked by the user in game, 11 October 2026:** `/qc holidays` on the beta lists Winter Veil as 141 (15 December to 2 January) and not 1879, so nothing is added; Children's Week and the Darkmoon Faire are not on the beta's calendar, which hides nothing, since the seasonal filter is the map's only and none of the 29 has a pin | forever.md, "Seasonal quests with no holiday"; maintenance.md, "Holidays" |
 | 13 | A level of 0 or below reads as a level: 246 retail and 12 Forever quests show "[0]" in the list and count as low level for everyone | **yes, 10 October 2026, built in #283**: no level in the two readers; the sources for the 246 are under row 33 | `qcCore.lua`, the list row and the low-level filter |
