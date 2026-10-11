@@ -1046,4 +1046,4 @@ Subterfugin' (2238) in Ironforge, and The Apple Falls (2241) to Destiny Calls (2
   see "Seasonal quests with no holiday".
 - 2026-10-11: Snatch and Grab and Destiny Calls need their own city's rogue lead-in, and the three
   lead-ins no longer shut each other out, from a new hand list of link corrections; the login sync
-  drops the ticks the old group gave until April 2027. See "Lead-ins the server requires".
+  drops the ticks the old group gave until April 2027 (#297). See "Lead-ins the server requires".

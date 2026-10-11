@@ -65,7 +65,7 @@ again.
   Undermine, Nazjatar, Ahn'Qiraj: The Fallen Kingdom, Korthia and the rest), enlarged the icon where
   its art allows and put a green check on finished zones (while the map shows completed quests);
   twelve more retail zones and one Forever zone sit 50 px or more from their hit area's centre and wait for the user to say which to move.
-- **The level 10 rogue lead-ins on Forever** (11 October 2026, not yet tried in game, so not for a
+- **The level 10 rogue lead-ins on Forever** (#297, 11 October 2026, not yet tried in game, so not for a
   release until tried or the user says so). Two looks on the beta: on Rothro after `/reload`, Road to
   Salvation (2218) shows as not done; on a new Human rogue, Snatch and Grab (2206) on Master Mathias
   Shaw's pin is grey, "Requires Seek out SI: 7", until Seek out SI: 7 is handed in. Destiny Calls
