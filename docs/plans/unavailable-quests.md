@@ -119,13 +119,13 @@ it catches mistakes that no offline data can.
   decision, if it has one, and its summary counts the no-signal quests still to review.
 - **`tools/Build-UnavailableQuests.ps1`**: generates `qcUnavailableQuests.lua` from a
   reviewed decisions file, `docs/plans/unavailable-quest-decisions.csv`
-  (`QuestID, Name, Zone, Reason, Decision, Evidence`). `FLAG` rows, with reason 1 or 2, are the
+  (`QuestID, Name, Zone, Reason, Decision, Evidence`). `FLAG` rows, with reason 1, 2 or 3, are the
   quests it hides; `KEEP` rows record quests reviewed and left shown. This is the same pattern as the
   accuracy-cleanup decisions CSVs, so every flag carries its reason.
   - The file is generated in quest ID order, one entry per line, with a header comment saying
     it's generated.
-  - It refuses IDs that aren't in `qcQuestDatabase`, and task quests. It has no override for a task
-    quest (86645 and 94815 wait for one, see Phase 2).
+  - It refuses IDs that aren't in `qcQuestDatabase`, and task quests unless the row's reason is 3, the
+    override that flags a task quest on purpose (86645 and 94815, see Phase 2).
 
 ## Phases (one PR each)
 
@@ -213,12 +213,12 @@ evidence (see "Decisions already made").
   42905, 50384, 52052, 58328, 60227, 60228, 60559, 60937, 61636, 62828, 62987, 63947, 63948, 64231,
   76021, 77094, 84832, 85017, 85044 and 90087. Nothing leaves the data: a flagged quest is hidden unless
   the character has done it or has it in its log, and the alert for one picked up anyway is unchanged.
-- **2 stay KEEP and shown:** 86645 and 94815, "[DNT]" hidden quests in Eversong Woods. Both are client
-  task quests, which `Build-UnavailableQuests.ps1` refuses to flag; it has no override. They can follow
-  once the builder takes them.
+- **2 task quests are flagged with reason 3:** 86645 and 94815, "[DNT]" hidden quests in Eversong Woods.
+  `Build-UnavailableQuests.ps1` refuses a client task quest unless its row has reason 3, which says it is
+  flagged on purpose; reason 3 was added for these two on 11 October 2026.
 - 63947 and 63948 were the only quests of "9.1 Campaign" (category 1240), so that menu entry now opens
   an empty list by default, like Rated PvP (decision 27 of the menu review).
-- In all, 238 quests are flagged and 483 have KEEP rows.
+- In all, 240 quests are flagged and 481 have KEEP rows.
 
 ### Phase 3: maintenance
 - Periodically review `qcFlaggedButSeen` (from players who report it, or your own characters) and
@@ -228,8 +228,8 @@ evidence (see "Decisions already made").
 
 ## Verification checklist (every PR that changes the flag list)
 - `luac -p` clean on `qcUnavailableQuests.lua`.
-- Every flagged ID exists in `qcQuestDatabase` and is not a task quest.
-- Flag count in the Lua file = `FLAG` rows in the decisions CSV (238 on 11 October 2026).
+- Every flagged ID exists in `qcQuestDatabase` and is not a task quest, unless its reason is 3.
+- Flag count in the Lua file = `FLAG` rows in the decisions CSV (240 on 11 October 2026).
 - In-game: sample flagged quests are hidden; a completed flagged quest still shows.
 
 ## Not in scope
