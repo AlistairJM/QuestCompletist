@@ -324,7 +324,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1d | Professions (after steps 1b and 2e, whose tables and quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
-| 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers and TrinityCore (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers, TrinityCore and the decisions kept by hand (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
@@ -503,6 +503,10 @@ with a count for each kind.
     is done until the next reset, so the map would hide the quest again;
   - a breadcrumb, or a prerequisite that must be done, for the other faction: the addon counts
     such a prerequisite as met, so it does nothing;
+  - a prerequisite of another profession (`prereq: other profession`): one whose profession shares
+    none with the quest's, or any profession's for a quest with none. A character without it never
+    meets it, so the requirements filter hides the quest and its tooltip names a quest the profession
+    filter hides. Retail has none since 12 October 2026; Forever has two (769 and 5124, open-items);
   - a quest listed twice in a table, as Lua keeps only the last line.
 - **Against Blizzard's API:** the quests it says a quest requires, and the ones it says close a
   quest (a requirement that they're not done). It names at most 3 required quests, and often leaves
@@ -527,7 +531,7 @@ first run's findings and what was decided are in [plans/quest-table-checks.md](p
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
 prerequisite tables against the quests (a quest not in the data, a daily or repeatable quest in a pair
 or required by a one-time quest, a quest that requires itself or is required back, one for the other
-faction, a quest listed twice). Forever's tables are generated, so the checks for hand errors don't
+faction or another profession, a quest listed twice). Forever's tables are generated, so the checks for hand errors don't
 apply, and it reads no API cache, TrinityCore dump or client table. `-OwnDataOnly` does the same on
 either game's folders with no download. Forever's `KEEP` rows are in
 `docs\plans\forever-quest-table-decisions.csv`, and the findings go to
@@ -577,6 +581,15 @@ with `-WhatIf` first to see what it would change.
   task tables name it, as in a chain of world quests, which the game knows within the day or week;
   ours and TrinityCore's would hide the later quest after every reset (544 left out on 12 October
   2026, 102 kept).
+- **The prerequisites decided with the user** replace what the sources give:
+  `docs\plans\quest-link-decisions.csv`, in the columns of Forever's link decisions (`Quest`, `Name`,
+  `Link` = `prereq`, `Other`, `Decision` = `SET`, `Evidence`), where several rows for one quest are a
+  choice. The run counts them, and lists any that a source would now give something else, so a sweep
+  sees when Blizzard starts to name one. Since 12 October 2026 it holds Dragonflight's renown crafting
+  knowledge quests (45 rows). Each faction's Crafter's Knowledge I and II (`RenownRewards`) is one reward
+  per profession, given to a character with any of the set's professions (its `PlayerCondition`). So
+  each variant needs the renown quest before its set in Blizzard's line, and the reward after a set
+  skips the variants. The 109.97 data chained each variant to another profession's.
 - **A requirement that would make two quests each require the other** is left out, and listed.
 
 A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore changed. Each run
@@ -2440,6 +2453,10 @@ git diff --stat
   `Test-QuestTooltip.lua` for both games' TOCs. It must say "All checks passed." It draws the real tooltip for a
   quest in a storyline, a plain one and a daily one, with stand-ins for the game's quest calls that answer what each
   case says: the game's quest line is ours, another, nothing, an error, a secret value or no function at all.
+  It also takes every quest of a profession that has a quest to do first, for a character with that
+  profession alone. With every quest that character could do done, the list's filter, with the requirements
+  and profession filters on, must keep the quest. With nothing done, its "Required Quest" lines must name no
+  quest of another profession. Run it for changes to the prerequisites or the professions too.
   Give it a file as a third argument to write each case's lines out, and run it on the code before and after a
   change to compare them.
 - For changes to the saved settings or the options panel, run `Test-Settings.lua` for both games' TOCs. It must
@@ -2536,7 +2553,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), the quest category that names a holiday or a profession, and the rewards that are profession knowledge (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d), the profession category and rewards by `Sync-QuestProfessions.ps1` (step 1d) |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, the profession headings (`QuestSort`) and the items that are profession knowledge (`Item`, `ItemSparse`), questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, the profession headings (`QuestSort`) and the items that are profession knowledge (`Item`, `ItemSparse`), the professions a renown reward is given for (`RenownRewards`, `PlayerCondition`, `ModifierTree`, `SkillLine`; the evidence in `plans\quest-link-decisions.csv`), questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1` (on retail its sort names a profession's heading, for step 1d); `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |

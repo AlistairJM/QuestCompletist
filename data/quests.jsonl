@@ -28152,7 +28152,7 @@
 {"id":70806,"name":"Chunk of Sculpture","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":70807,"name":"Advanced Excavation Tools","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72032}
 {"id":70808,"name":"Initial Mysteries of the Dragon Isles Drakes","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72035}
-{"id":70809,"name":"Deeper Mysteries of the Dragon Isles Drakes","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72303}
+{"id":70809,"name":"Deeper Mysteries of the Dragon Isles Drakes","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72039}
 {"id":70810,"name":"Broader Mysteries of the Dragon Isles Drakes","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72047}
 {"id":70811,"name":"Expert Excavation Tools","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":70812,"name":"Expedition Cloaks","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72024}
@@ -28164,7 +28164,7 @@
 {"id":70818,"name":"New Dragonscale Equipment","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":70810}
 {"id":70819,"name":"Renowned Explorer's Armor","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72038}
 {"id":70820,"name":"The Basecamp 'Pets'","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72036}
-{"id":70821,"name":"Skitterfly Riding","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72309}
+{"id":70821,"name":"Skitterfly Riding","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":72048}
 {"id":70822,"name":"Lost Expedition Scouts","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380}
 {"id":70828,"name":"Wayfinder's Compass","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1380,"prereq":70808}
 {"id":70829,"name":"Cataloging Expeditions","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -28215,21 +28215,21 @@
 {"id":70891,"name":"Fitting In","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72689}
 {"id":70892,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1,"storyline":1383,"prereq":72690}
 {"id":70893,"name":"Community Feast","level":60,"zone":"The Azure Span","category":1303,"type":128,"faction":3,"race":67108863,"class":128}
-{"id":70895,"name":"Soaring in Style","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72333}
+{"id":70895,"name":"Soaring in Style","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72690}
 {"id":70896,"name":"Waist Not, Want Not","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72283}
 {"id":70897,"name":"A Coming of Age","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":70896}
 {"id":70899,"name":"Fifth Challenge of Tyr: Ingenuity","level":40,"zone":"Engine Of Innovation","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1373,"prereq":70881}
 {"id":70900,"name":"Innovating the Engine","level":40,"zone":"Engine Of Innovation","category":1306,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1373,"prereq":70341}
 {"id":70901,"name":"A Collection of Creatures","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72692}
-{"id":70902,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1383,"prereq":70889}
+{"id":70902,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1383,"prereq":72698}
 {"id":70903,"name":"Wielding Titanic Might","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72693}
 {"id":70904,"name":"Variety is the Spice of Life","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72695}
 {"id":70905,"name":"Flying with Our Colors","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":70904}
 {"id":70907,"name":"Maruuk Hunts","level":70,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":70908,"name":"Maruuk Hunts","level":70,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":70909,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1383,"prereq":70902}
-{"id":70910,"name":"Mysteries in Paper and Glass","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":70909}
-{"id":70911,"name":"Armored and Ready","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72336}
+{"id":70909,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1383,"prereq":72698}
+{"id":70910,"name":"Mysteries in Paper and Glass","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72698}
+{"id":70911,"name":"Armored and Ready","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":70910}
 {"id":70912,"name":"The Accord's High Standards","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72701}
 {"id":70913,"name":"To Bear Our Mantle","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":72702}
 {"id":70914,"name":"The Breadth of Dragon Weaponry","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1383,"prereq":70913}
@@ -28261,7 +28261,7 @@
 {"id":70945,"name":"Netting More","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":72393}
 {"id":70946,"name":"No One May Wield It","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":70947,"name":"Treasure-Mad Trambladd","level":40,"zone":"Thaldraszus","category":1302,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":70948,"name":"Hook, Line, and Swelter!","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":72322}
+{"id":70948,"name":"Hook, Line, and Swelter!","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70963}
 {"id":70950,"name":"Skewering Even Bigger Fish","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":72632}
 {"id":70951,"name":"Tackling the Tackle Box","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":70952,"name":"Abandoned... or Hidden Caches","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":72281}
@@ -28350,13 +28350,13 @@
 {"id":71067,"name":"Whistling Rocks","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":71066}
 {"id":71073,"name":"Mantle of Friendship","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72767}
 {"id":71074,"name":"Befriending Wings and Wind","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":71073}
-{"id":71075,"name":"Understanding Their Grace","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72313}
+{"id":71075,"name":"Understanding Their Grace","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72131}
 {"id":71079,"name":"Getting to the Point","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72768}
 {"id":71083,"name":"An Expected Unexpected Gift","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72770}
 {"id":71085,"name":"Representation Matters","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72771}
 {"id":71089,"name":"Get on the Horn","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72772}
 {"id":71090,"name":"From the Heart, For the Heart","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":71089}
-{"id":71091,"name":"The Highest Honor","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":72317}
+{"id":71091,"name":"The Highest Honor","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1381,"prereq":71090}
 {"id":71093,"name":"Legacy of Tyr: Secrets of the Past","level":70,"zone":"Dungeon","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":71094,"name":"Help Is Our Way!","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":71095,"name":"A Claw in Need","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -28533,44 +28533,44 @@
 {"id":72296,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":64,"storyline":1381,"prereq":72131}
 {"id":72297,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":64,"storyline":1381,"prereq":71090}
 {"id":72298,"name":"Valdrakken Accord","level":50,"zone":"World Quest","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":72299,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"storyline":1380,"prereq":72294}
-{"id":72300,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1380,"prereq":72299}
-{"id":72301,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1380,"prereq":72300}
-{"id":72302,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1380,"prereq":72301}
-{"id":72303,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1380,"prereq":72302}
-{"id":72304,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"storyline":1380,"prereq":72295}
-{"id":72305,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1380,"prereq":72304}
-{"id":72306,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1380,"prereq":72305}
+{"id":72299,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"storyline":1380,"prereq":72039}
+{"id":72300,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1380,"prereq":72039}
+{"id":72301,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1380,"prereq":72039}
+{"id":72302,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1380,"prereq":72039}
+{"id":72303,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1380,"prereq":72039}
+{"id":72304,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"storyline":1380,"prereq":72048}
+{"id":72305,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1380,"prereq":72048}
+{"id":72306,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1380,"prereq":72048}
 {"id":72307,"name":"Thieving Gnolls","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":72308,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1380,"prereq":72306}
-{"id":72309,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1380,"prereq":72308}
-{"id":72310,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1381,"prereq":72296}
-{"id":72311,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1,"storyline":1381,"prereq":72310}
-{"id":72312,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1381,"prereq":72311}
-{"id":72313,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1381,"prereq":72312}
-{"id":72314,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1,"storyline":1381,"prereq":72297}
-{"id":72315,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1381,"prereq":72314}
-{"id":72316,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1381,"prereq":72315}
-{"id":72317,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1381,"prereq":72316}
+{"id":72308,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1380,"prereq":72048}
+{"id":72309,"name":"Expedition Crafting Knowledge","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1380,"prereq":72048}
+{"id":72310,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1381,"prereq":72131}
+{"id":72311,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1,"storyline":1381,"prereq":72131}
+{"id":72312,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1381,"prereq":72131}
+{"id":72313,"name":"A Gift of Knowledge","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1381,"prereq":72131}
+{"id":72314,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1,"storyline":1381,"prereq":71090}
+{"id":72315,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1381,"prereq":71090}
+{"id":72316,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1381,"prereq":71090}
+{"id":72317,"name":"A Gift of Secrets","level":10,"zone":"Maruuk Centaur","category":1330,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1381,"prereq":71090}
 {"id":72318,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"storyline":1382,"prereq":70963}
-{"id":72319,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1382,"prereq":72318}
-{"id":72320,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1382,"prereq":72319}
-{"id":72321,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":64,"storyline":1382,"prereq":72320}
-{"id":72322,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1382,"prereq":72321}
+{"id":72319,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1382,"prereq":70963}
+{"id":72320,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1382,"prereq":70963}
+{"id":72321,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":64,"storyline":1382,"prereq":70963}
+{"id":72322,"name":"Iskaaran Crafter's Knowledge","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1382,"prereq":70963}
 {"id":72323,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"storyline":1382,"prereq":70972}
-{"id":72324,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1382,"prereq":72323}
-{"id":72325,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1382,"prereq":72324}
-{"id":72326,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":64,"storyline":1382,"prereq":72325}
-{"id":72327,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1382,"prereq":72326}
+{"id":72324,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256,"storyline":1382,"prereq":70972}
+{"id":72325,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32,"storyline":1382,"prereq":70972}
+{"id":72326,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":64,"storyline":1382,"prereq":70972}
+{"id":72327,"name":"Iskaaran Crafting Mastery","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024,"storyline":1382,"prereq":70972}
 {"id":72328,"name":"Our Ferocious, Armored Steeds","level":10,"zone":"Iskaara Tuskarr","category":1328,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":72329,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1383,"prereq":70892}
-{"id":72330,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1383,"prereq":72329}
-{"id":72331,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":16,"storyline":1383,"prereq":72330}
-{"id":72332,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1383,"prereq":72331}
-{"id":72333,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1383,"prereq":72332}
-{"id":72334,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":16,"storyline":1383,"prereq":70910}
-{"id":72335,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1383,"prereq":72334}
-{"id":72336,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1383,"prereq":72335}
+{"id":72329,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"storyline":1383,"prereq":72690}
+{"id":72330,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8,"storyline":1383,"prereq":72690}
+{"id":72331,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":16,"storyline":1383,"prereq":72690}
+{"id":72332,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1383,"prereq":72690}
+{"id":72333,"name":"Crafting Your Start","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1383,"prereq":72690}
+{"id":72334,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":16,"storyline":1383,"prereq":72698}
+{"id":72335,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512,"storyline":1383,"prereq":72698}
+{"id":72336,"name":"Crafting for Expertise","level":10,"zone":"Valdrakken Accord","category":1342,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128,"storyline":1383,"prereq":72698}
 {"id":72337,"name":"Greater Obsidian Key","level":10,"zone":"The Waking Shores","category":1305,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":72338,"name":"Greater Obsidian Key","level":10,"zone":"The Waking Shores","category":1305,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":72339,"name":"Engine of Innovation","level":40,"zone":"Engine Of Innovation","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -28731,7 +28731,7 @@
 {"id":72636,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70968}
 {"id":72637,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70962}
 {"id":72638,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70971}
-{"id":72639,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":72327}
+{"id":72639,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70972}
 {"id":72640,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70952}
 {"id":72641,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70961}
 {"id":72642,"name":"Dragon Isles Supplies","level":10,"zone":"Dragonscale Expedition","category":1324,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1382,"prereq":70977}

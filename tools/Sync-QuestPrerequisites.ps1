@@ -38,6 +38,10 @@ Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the
     on, where TrinityCore's requirement (its NextQuestID or PrevQuestID) says the same: any one of
     them will do. Where TrinityCore names none the follow-up is often a re-offer, not a requirement
     (1 in 4 where it has a row, October 2026), so those aren't taken.
+Last, the prerequisites decided with the user (-DecisionsFile, docs\plans\quest-link-decisions.csv,
+in the columns of WoW: Forever's link decisions) replace whatever the sources give: a quest's prereq
+SET rows name the quest it needs, and several rows for one quest are a choice. The run lists any the
+sources would give something else, so a sweep sees when Blizzard starts to name one.
 
 A one-time quest's required quest that recurs (daily, weekly or repeatable) is left out: the game
 only knows such a quest is done until the next reset, so the map would hide the one-time quest
@@ -61,6 +65,7 @@ param(
     [int]$ScoutingMapQuest = 95008,
     [string]$OffersFile = "",
     [string]$QuestCacheFile = "",
+    [string]$DecisionsFile = (Join-Path $PSScriptRoot '..\docs\plans\quest-link-decisions.csv'),
     [switch]$WhatIf
 )
 $ErrorActionPreference = 'Stop'
@@ -399,6 +404,27 @@ foreach ($id in $quests.Keys) {
     if ((Get-PartText $final[$id]) -ne (Get-PartText $quests[$id].prereq)) { $new[$id] = $final[$id] }
 }
 
+$decided = @{}
+foreach ($row in @(Import-Csv $DecisionsFile -Encoding UTF8)) {
+    if ($row.Quest -notmatch '^\d+$' -or $row.Other -notmatch '^\d+$') { throw "$DecisionsFile has a row whose quests, '$($row.Quest)' and '$($row.Other)', aren't both numbers." }
+    if ("$($row.Link) $($row.Decision)" -ne 'prereq SET') { throw "$DecisionsFile gives quest $($row.Quest) the link '$($row.Link)' with the decision '$($row.Decision)': only prereq SET rows are read." }
+    $quest = [int]$row.Quest; $other = [int]$row.Other
+    if ($quest -eq $other) { throw "$DecisionsFile makes quest $quest require itself." }
+    if ($decided[$quest] -contains $other) { throw "$DecisionsFile gives quest $quest the prerequisite $other twice." }
+    $decided[$quest] += @($other)
+}
+$decidedChanged = 0; $decidedSame = 0
+$overruled = New-Object System.Collections.Generic.List[string]
+$decidedMissing = New-Object System.Collections.Generic.List[string]
+foreach ($id in ($decided.Keys | Sort-Object)) {
+    $options = @($decided[$id] | Sort-Object)
+    if (-not $quests.ContainsKey($id) -or @($options | Where-Object { -not $quests.ContainsKey($_) }).Count) { $decidedMissing.Add("$id <- $($options -join ' or ')"); continue }
+    $value = if ($options.Count -eq 1) { $options[0] } else { , (, [object[]]$options) }
+    $text = ConvertTo-PrereqText $value '[' ']'
+    if ($new.ContainsKey($id) -and (ConvertTo-PrereqText $new[$id] '[' ']') -ne $text) { $overruled.Add("$id <- $(ConvertTo-PrereqText $new[$id] '[' ']')") }
+    if ((ConvertTo-PrereqText $quests[$id].prereq '[' ']') -eq $text) { $new.Remove($id); $decidedSame++ } else { $new[$id] = $value; $decidedChanged++ }
+}
+
 # Leave out a requirement that would make two quests each require the other, or a quest require itself.
 $cycles = New-Object System.Collections.Generic.List[string]
 function Get-Needs([int]$id) {
@@ -424,6 +450,9 @@ foreach ($id in @($new.Keys)) {
 "The client's follow-ups that TrinityCore's requirement repeats: {0} quests have one, {1} take it now." -f $followUp.Count, $followed
 "Left out as the game offered them together with the quest: $($contradicted.Count) required quests, and $($refused.Count) conditions."
 "Recurring quests' recurring requirements that Blizzard doesn't name, left out: $($notBlizzard.Count)"
+"Decided with the user ({0}): {1} quests, {2} change, {3} already match." -f (Split-Path -Leaf $DecisionsFile), $decided.Count, $decidedChanged, $decidedSame
+if ($overruled.Count) { "  The sources would give $($overruled.Count) of them something else, which the decisions overrule: " + ($overruled -join '; ') }
+if ($decidedMissing.Count) { "  $($decidedMissing.Count) name a quest not in the data, so they're left out: " + ($decidedMissing -join '; ') }
 "Left out as they'd go round in a circle: $($cycles.Count)" + $(if ($cycles.Count) { " (" + ($cycles -join '; ') + ")" } else { '' })
 "Changes: $($new.Count)"
 if ($WhatIf) {

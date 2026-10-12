@@ -41,6 +41,11 @@ The user agreed all of these ("keep all of these calls", 8 October 2026):
   recorder is not retired once the addon's has run a sweep. Both feed the ledger through step 6d, and
   Forever's importer reads the ledger, so what they saw is combined
   ([quest-giver-recorder.md](quest-giver-recorder.md), "What is left", 4).
+- **No prerequisite names another profession's quest** (12 October 2026, "Apply all 45" and "Yes, 2b
+  finding"). Dragonflight's renown crafting variants each need their set's renown quest, and the reward
+  after a set skips the variants (`quest-link-decisions.csv`, step 2c). The 109.97 data had chained them
+  across professions. `qcPrereq.CanTake` doesn't read professions: a character can learn one, and no
+  choice in either game mixes them. Step 2b's `prereq: other profession` watches both games instead.
 - **A check stays in the sweep even while it finds nothing**, and every feature or check built for
   one game goes to both unless a game can't support it
   ([game-parity.md](game-parity.md)).
@@ -384,6 +389,13 @@ again.
   [data-cleanup.md](data-cleanup.md); the menu review found nothing new. Since 12 October 2026 the
   tooltip and the pins' "Requires" text leave such a quest out and still count it, as for the
   client's hidden 90806 (`qcPrereq.Text`).
+- **Forever quests with no profession that need a profession quest** (step 2b's `prereq: other
+  profession`, 12 October 2026): 769 "Kodo Hide Bag" needs 768 "Gathering Leather" (Skinning), and 5124
+  "Fiery Plate Gauntlets" needs 5103 "Hot Fiery Death" (Blacksmithing). A character without the
+  profession never meets them. Each wants a profession for the quest, or its link removed in
+  `forever-quest-link-decisions.csv`, on evidence; until then both are `KEEP` rows of
+  `forever-quest-table-decisions.csv`, so step 10's check passes. Once both are settled, `Test-QuestTooltip.lua`'s
+  profession check can take quests with no profession too.
 - **What still shows with "unfinished requirements" hidden** on a level-90 character with no Midnight
   progress (12 October 2026, after the client's conditions and the campaign's chapter order): Eversong 67
   of 200 pinned quests, Silvermoon 96 of 214, Zul'Aman 56 of 197, Harandar 63 of 174, Voidstorm 18 of 144,
@@ -398,13 +410,6 @@ again.
     continent count at level 80 is 31 (54 before), mostly those.
   - Zul'Aman's line 6011 needs line 5724 done or a warband-wide test (ModifierTree type 383) that a
     prerequisite can't say, so it has no gate.
-- **Dragonflight's renown crafting quests require each other across professions**: 35 tagged quests
-  require another profession's variant (72330, Engineering, needs 72329, Blacksmithing, which needs
-  70892, Alchemy), and 9 renown rewards need one profession's variant (70895 "Soaring in Style" needs
-  72333, Tailoring). The links came with the 109.97 data; a character with one profession never meets
-  them, so "Hide Quests With Unfinished Requirements" hides them, and since 12 October 2026 the tooltip
-  can name a quest the profession filter hides. Point them at the step before the variants, or drop
-  the links between variants.
 - **93701 "Brittle and Brilliant"**, a Midnight trainer quest of Silvermoon City, is in the quest cache
   (quest info 267, Professions) and not in the data; 93707 and 93713 are only in `QuestV2`.
 
