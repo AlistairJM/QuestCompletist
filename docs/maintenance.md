@@ -806,14 +806,16 @@ no source has a giver for it. The run stops at a `QuestInfo` named "World Quest"
 the table lacks, so a kind a new build adds is looked at, not pinned; add its line. A task kind that is
 not named "World Quest" and is not in the table is pinned: World Event (82), Emissary Quest (128) and
 Delve (288) would be as soon as the task-quest change (#295) adds quests of those kinds that have a
-start, so read the run's count of new task quests by kind before applying, and add a line to hold one. The tool needs
+start, so read the run's count of new task quests by kind before applying, and add a line to hold one.
+Since #295, the next run pins 175 of its quests, 52 of them World Event (decision 40 of
+[plans/open-items.md](plans/open-items.md)). The tool needs
 `UiMap.csv`, `QuestV2CliTask.csv` and `QuestInfo.csv` (it stops without the last two) as well as the
 tables above; step 5 downloads `UiMap.csv`, and step 1b `QuestV2CliTask.csv`, `QuestV2.csv` and
 `QuestInfo.csv`.
 
 A quest the client's export lists no point for at all gets its start from TrinityCore's
 `quest_poi` (point 32; point -1 is mostly the hand-in and is not used) when it is a normal quest
-of ours with no pin: not a task, system, holiday or retired quest, in `QuestV2`, not disabled in
+of ours with no pin: not a task, system or holiday quest, not flagged unavailable, in `QuestV2`, not disabled in
 TrinityCore, and not an auto-accepted one with no giver
 ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026,
 pins from TrinityCore", has the rules; a task quest is held only when its kind is in `$noPinKinds`). The
@@ -948,13 +950,13 @@ file as well, or the next run reads it again, and a pin that source helped to fi
 On retail's pins it fills a pin's missing NPC ID (with its name) when a trusted creature offered one
 of the pin's quests and stood within 1.5 map points of it; and it gives a quest that has no pin one,
 at the place its giver was most seen, or adds the quest to the pin that giver already has. The
-holds the TrinityCore pass puts on a quest that no creature offers (not in `QuestV2`, Landfall, a
+holds the TrinityCore pass puts on a quest that no creature offers (not in `QuestV2`, a
 holiday, a profession, a quest type other than 0, 1, 2, 4 and 128, and a task of a kind of
 `$noPinKinds` that the recorder doesn't hold itself) are waived when a creature offers it, and the report
 counts the quests by class; a world, bonus or hidden quest, a quest flagged unavailable, an internal name
 and a system category stay held, except six system categories whose quests mostly stand on a pin with an NPC
 already (World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver's Headquarters, Weekly Events:
-`` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
+`$allowedSystemCategories` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
 It never moves a pin, never changes an ID
 or a name that is there, never takes a quest off a pin, and writes no pin if any of that would
 happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
@@ -2000,7 +2002,7 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,048
+  or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,084
   pins for retail, and 5,097 quests and 1,699 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
@@ -2116,10 +2118,12 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also
   checks the reader against them). It must say "0 failed".
-- For changes to `Build-QuestLocationData.ps1`'s kinds of task quest (`$noPinKinds`), run
+- For changes to `Build-QuestLocationData.ps1`'s kinds of task quest (`$noPinKinds`) or to what its
+  TrinityCore pass holds, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLocationKinds.ps1` (made-up client
-  tables in a scratch folder, nothing downloaded). It must say "0 failed". Run the pin pipeline (step 6)
-  before and after and compare the pins by quest: only the kinds the change names may gain or lose one.
+  tables and a made-up TrinityCore dump in a scratch folder, read with Lua 5.1, nothing downloaded). It must
+  say "0 failed". Run the pin pipeline (step 6) before and after and compare the pins by quest: only the
+  quests the change names may gain or lose one.
 - For changes to `Audit-QuestTables.ps1` or `Remove-DuplicatePinQuests.ps1`, or to the data and tables they
   check on Forever, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverChecks.ps1`. It
   must say "0 failed". It makes small data in a scratch folder for both, and ends with the two run on Forever's
