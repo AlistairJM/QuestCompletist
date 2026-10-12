@@ -170,7 +170,7 @@ again.
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When
   convenient, look at a few, and at these: quest 1036 "Avast Ye, Scallywag" (its pin is where the
   client puts its end, not at "Pretty Boy" Duncan), the class quests at Orgrimmar's and Stormwind's
-  hubs, the Silithus sigil quests (45749 to 45762, which may be retired), and the pins on the Caverns
+  hubs, and the pins on the Caverns
   of Time.
 - **The pins moved to quest starts (#219)** are checked by the user for a sample, not for every
   zone.
