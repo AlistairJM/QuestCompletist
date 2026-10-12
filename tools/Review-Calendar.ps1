@@ -10,22 +10,37 @@ HolidayNames tables of retail live (-Build), the retail PTR (-PtrBuild, when the
     calendar shows in the region, those it is not expected to show, and those dated for other regions only;
   - what /qc holidays should print on each game today, in its order and words, to set beside the one
     run in game (the sweep asks for one per game: maintenance.md, "Holidays");
-  - the comparison with the baseline (-BaselineFile, docs\plans\calendar-baseline.csv);
+  - the comparison with the baseline (-BaselineFile, docs\plans\calendar-baseline.csv, and beside it
+    calendar-baseline-rows.csv and calendar-baseline-facts.csv);
   - each fact of -DecisionsFile (docs\plans\calendar-decisions.csv), which lists the decisions taken on
-    the calendar's word: whether it still holds, and the decision to revisit when it doesn't. A fact only
-    the game can answer is listed as open until the file has the date it was seen.
+    the calendar's word: its outcome today, and the decision to revisit when that outcome has changed. A
+    fact only the game can answer is listed as open until the file has the date it was seen.
 
-The baseline holds every entry and every event with a date to come, per game (retail, ptr, forever): its
-IDs, whether it has a date to come, its last date ("never" for a row dated every year, or looping),
-whether that falls within -SoonDays, and whether a row of it is on the calendar by its Flags and name. A
-finding (exit 1) is a new event with dates to come, an entry or event with dates to come again, one whose
-rows come onto the calendar or leave it, and, for an entry or an event on the calendar, one that loses its
-dates to come, is gone from the table, has its last date moved earlier (dates removed) or has it come
-within -SoonDays of today. The same for an event off the calendar (a nameless row, the plain-named
-"WoW's Anniversary" rows), more dates and new rows of an event are listed and don't fail. The next run
-itself isn't compared, so the Darkmoon Faire's monthly move says nothing, and a sweep with nothing new is
-silent. -UpdateBaseline rewrites the rows of the games run, once the findings are read. A fact that no
-longer holds is a finding too.
+The baseline is three files, per game (retail, ptr, forever). The first holds every entry and every event
+with a date to come: its IDs, whether it has a date to come, its last date ("never" for a row dated every
+year, or looping), whether that falls within -SoonDays, and whether a row of it is on the calendar by its
+Flags and name. The -rows file holds each of their rows that an entry lists or that has a date to come:
+its Region, Flags, whether its Flags and name put it on the calendar, and its runs to come (the day each
+starts, as the calendar shows it, or the words of a row that repeats). The -facts file holds each table
+fact's outcome on each table.
+
+A finding (exit 1) is
+  - a new event with dates to come, an entry or event with dates to come again, and, for an entry or an
+    event on the calendar, one that loses its dates to come, is gone from the table, has its last date
+    moved earlier (dates removed) or has it come within -SoonDays of today;
+  - a row with runs to come that comes onto the calendar or leaves it, by its Flags and name, or by its
+    Region for region 4 (-Region): the user's calendar is region 4's, so a row that leaves it while other
+    regions keep their dates is a finding;
+  - for an entry's row, or a row on the calendar by its Flags and name, a run to come that is no longer in
+    the table (or the row itself gone), a repeating row that stops repeating, and (an entry's) a row dated
+    to come again;
+  - a fact whose outcome (holds, waits or fails) differs from the baseline's.
+The same for an event off the calendar (a nameless row, the plain-named "WoW's Anniversary" rows), more
+dates, more runs, new rows, an event that an entry now covers, and a new entry or fact are listed and
+don't fail. Only runs still to come are compared, so a run that passes, the Darkmoon Faire's monthly
+move, and a sweep with nothing new in the tables say nothing. A fact that fails, waits or is open is
+listed every sweep, and is a finding only when its outcome changes. -UpdateBaseline rewrites the rows of
+the games run, once the findings and changes are read.
 
 -SoonDays is 90: retail's patches come eight to twelve weeks apart, and each one's table dates the
 rotating events (the weekly bonus events, Timewalking, the Darkmoon Faire) a few months further, so an
@@ -66,10 +81,20 @@ if (-not $Build -and -not $PtrBuild -and -not $ForeverBuild) { throw "Give -Buil
 $Today = $Today.Date
 $BaselineFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($BaselineFile)
 $DecisionsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DecisionsFile)
+$baseName = Join-Path (Split-Path $BaselineFile) ([IO.Path]::GetFileNameWithoutExtension($BaselineFile))
+$RowsFile = "$baseName-rows.csv"
+$FactsFile = "$baseName-facts.csv"
 $windowEnd = (New-Object DateTime $Today.Year, $Today.Month, 1).AddMonths(13).AddSeconds(-1)
 $soonEnd = $Today.AddDays($SoonDays)
 $entries = Read-QcHolidays $AddonDir
 $findings = New-Object System.Collections.Generic.List[string]
+$FactOutcomes = New-Object System.Collections.Generic.List[object]
+
+# The weekly bonus events, by name: the Battleground, Arena Skirmish, Pet Battle, World Quest, Delves and
+# Apexis Bonus Events, and the Timewalking, Midnight and earlier expansions' Dungeon Events. On 12 October
+# 2026 these were the 14 names (15 rows) that match in retail's HolidayNames (12.1.0.69933 and the 12.1.5
+# PTR's 70077), and no other name there has "Event"; Forever's (1.60.1.70338) had none.
+$WeeklyEventPattern = '^.+ (?:Bonus|Dungeon) Event$'
 
 function Get-Table([string]$build, [string]$table) {
     $held = Join-Path $ToolsDir "$table-$build.csv"
@@ -94,6 +119,7 @@ function Get-FlagsInUse([string]$file) {
 
 function Format-Time([datetime]$t) { return $t.ToString('yyyy-MM-dd HH:mm') }
 function Format-Day([datetime]$t) { return $t.ToString('yyyy-MM-dd') }
+function ConvertTo-Day([string]$day) { return [datetime]::ParseExact($day, 'yyyy-MM-dd', $null) }
 
 function Get-RepeatWords($r, $last) {
     if ($null -eq $last -or $last.End -ne [datetime]::MaxValue) { return $null }
@@ -115,8 +141,8 @@ function Read-Game($game) {
         $name = [string]$names[$r.HolidayNameID]
         $rows[[int]$r.ID] = [pscustomobject]@{
             ID = [int]$r.ID; Row = $r; Name = $name; Region = [int]$r.Region; Flags = [int]$r.Flags
-            Filter = [int]$r.CalendarFilterType; Last = $last; ToCome = ($null -ne $last -and $last.End -ge $Today)
-            Shown = (Test-HolidayShown $r $name); Ours = (Test-HolidayRegion $r $Region)
+            Last = $last; ToCome = ($null -ne $last -and $last.End -ge $Today)
+            Shown = (Test-HolidayShown $r $name); Ours = (Test-HolidayRegion $r $Region); Weekly = ($name -match $WeeklyEventPattern)
             Runs = @(Get-HolidayRuns $r $Today $windowEnd | Where-Object { $_.End -gt $Today })
             Repeat = (Get-RepeatWords $r $last); Later = $null
         }
@@ -133,6 +159,24 @@ function Get-Next($row) {
     return @($row.Later)[0]
 }
 
+# A row's runs to come, as the baseline keeps them: the day each starts on the calendar, or the words of a
+# row that repeats, or nothing.
+function Get-FutureRuns($row) {
+    if (-not $row.ToCome) { return '' }
+    if ($row.Last.End -eq [datetime]::MaxValue) { return [string]$row.Repeat }
+    return (@(Get-HolidayRuns $row.Row $Today $row.Last.End | Where-Object { $_.End -gt $Today } | ForEach-Object { Format-Day $_.Start }) | Sort-Object -Unique) -join ' '
+}
+
+function Get-RunDays([string]$runs) {
+    if ($runs -match '^\d{4}-') { return @($runs -split ' ') }
+    return @()
+}
+
+function Get-RowState($row, [string]$kind, [string]$name) {
+    return [pscustomobject]@{ ID = $row.ID; Kind = $kind; Name = $name; Region = $row.Region; Flags = $row.Flags
+        Shown = $(if ($row.Shown) { 'yes' } else { 'no' }); Runs = (Get-FutureRuns $row) }
+}
+
 function Get-LastText($rows) {
     $ends = @($rows | Where-Object { $_.Last } | ForEach-Object { $_.Last.End })
     if ($ends.Count -eq 0) { return 'none' }
@@ -145,7 +189,7 @@ function Get-State($kind, [string]$name, $rows) {
     $rows = @($rows)
     $last = Get-LastText $rows
     $toCome = @($rows | Where-Object { $_.ToCome }).Count -gt 0
-    $soon = $toCome -and $last -ne 'never' -and [datetime]::ParseExact($last, 'yyyy-MM-dd', $null) -le $soonEnd
+    $soon = $toCome -and $last -ne 'never' -and (ConvertTo-Day $last) -le $soonEnd
     $shown = @($rows | Where-Object { $_.Shown }).Count -gt 0
     return [pscustomobject]@{
         Kind = $kind; Name = $name; IDs = (@($rows | ForEach-Object { $_.ID } | Sort-Object) -join ' ')
@@ -181,15 +225,16 @@ function Format-Run($first, [bool]$withID) {
     return "$(Format-Time $first.Run.Start) to $(Format-Time $first.Run.End)" + $(if ($withID) { " ($($first.Row.ID))" } else { '' })
 }
 
-function Test-Covered($row) {
+# The entry that covers a row: one of its IDs, or its name, or its $HolidayRowPatterns pattern.
+function Get-CoveringEntry($row) {
     foreach ($e in $entries) {
-        if ($e.IDs -contains $row.ID) { return $true }
+        if ($e.IDs -contains $row.ID) { return $e.Name }
         if (-not $row.Name) { continue }
         $pattern = $HolidayRowPatterns[$e.Name]
-        if ($pattern) { if ($row.Name -match $pattern.Pattern) { return $true } }
-        elseif ($row.Name -eq $e.Name) { return $true }
+        if ($pattern) { if ($row.Name -match $pattern.Pattern) { return $e.Name } }
+        elseif ($row.Name -eq $e.Name) { return $e.Name }
     }
-    return $false
+    return $null
 }
 
 function Write-Entries($game) {
@@ -198,6 +243,7 @@ function Write-Entries($game) {
         $rows = @($e.IDs | Where-Object { $game.Rows.ContainsKey($_) } | ForEach-Object { $game.Rows[$_] })
         $state = Get-State 'entry' $e.Name $rows
         $game.States.Add($state)
+        foreach ($row in $rows) { $game.RowStates[$row.ID] = Get-RowState $row 'entry' $e.Name }
         $unused = if (($game.InUse -band $e.Flag) -eq 0) { ' (no quest of this game has it)' } else { '' }
         if ($e.IDs.Count -eq 0) { Write-Output "  $($e.Name): no ID, never on the calendar$unused"; continue }
         if ($rows.Count -eq 0) { Write-Output "  $($e.Name): $($e.IDs -join ', ') not in this table$unused"; continue }
@@ -220,7 +266,7 @@ function Write-Entries($game) {
 function Write-Events($game) {
     $byName = @{}
     foreach ($row in $game.Rows.Values) {
-        if (Test-Covered $row) { continue }
+        if (Get-CoveringEntry $row) { continue }
         $key = if ($row.Name) { $row.Name } else { "#$($row.ID)" }
         if (-not $byName.ContainsKey($key)) { $byName[$key] = New-Object System.Collections.Generic.List[object] }
         $byName[$key].Add($row)
@@ -233,6 +279,7 @@ function Write-Events($game) {
         if ($state.ToCome -ne 'yes') { $game.Undated["event|$key"] = $state; continue }
         $game.States.Add($state)
         $dated = @($rows | Where-Object { $_.ToCome })
+        foreach ($row in $dated) { $game.RowStates[$row.ID] = Get-RowState $row 'event' $key }
         $oursShown = @($dated | Where-Object { $_.Ours -and $_.Shown })
         $oursHidden = @($dated | Where-Object { $_.Ours -and -not $_.Shown })
         $elsewhere = @($dated | Where-Object { -not $_.Ours })
@@ -292,13 +339,66 @@ function Write-Preview($game) {
     }
 }
 
+function New-Note([string]$key, [bool]$fail, [string]$text, [string]$what) {
+    return [pscustomobject]@{ Key = $key; Fail = $fail; Text = $text; What = $what }
+}
+
+# What changed in a row since the baseline ($o, a row of the -rows file; $n, the row now, or $null when the
+# table lacks it). Only runs still to come count: one that started since the baseline is no change.
+function Compare-Row([string]$key, $o, $n) {
+    $id = $o.ID
+    $strict = $o.Kind -eq 'entry' -or ($n -and $n.Kind -eq 'entry') -or $o.Shown -eq 'yes'
+    $days = @(Get-RunDays $o.Runs)
+    $repeat = [bool]$o.Runs -and $days.Count -eq 0
+    $coming = @($days | Where-Object { (ConvertTo-Day $_) -gt $Today })
+    $hadToCome = $repeat -or $coming.Count -gt 0
+    if (-not $n) {
+        if ($hadToCome) { return New-Note $key $strict "$id`: gone from the table, with runs to come ($(if ($repeat) { $o.Runs } else { $coming -join ', ' }))" 'gone' }
+        return New-Note $key $false "$id`: gone from the table" 'gone'
+    }
+    $nowDays = @(Get-RunDays $n.Runs)
+    $nowRepeat = [bool]$n.Runs -and $nowDays.Count -eq 0
+    if ($repeat -and $nowRepeat) {
+        if ($n.Runs -ne $o.Runs) { New-Note $key $false "$id`: repeats $($n.Runs) now, was $($o.Runs)" 'repeat' }
+    } elseif ($repeat) {
+        New-Note $key $strict "$id`: no longer repeats ($($o.Runs)): $(if ($nowDays.Count) { "its runs to come are $($nowDays -join ', ')" } else { 'no date to come' })" 'lost'
+    } elseif ($nowRepeat) {
+        New-Note $key $false "$id`: repeats $($n.Runs) now" 'added'
+    } else {
+        $lost = @($coming | Where-Object { $nowDays -notcontains $_ })
+        $added = @($nowDays | Where-Object { $days -notcontains $_ })
+        if ($lost.Count) {
+            $s = $lost.Count -gt 1
+            New-Note $key $strict "$id`: run$(if ($s) { 's' }) of $($lost -join ', ') removed before $(if ($s) { 'they' } else { 'it' }) came$(if (-not $nowDays.Count) { '; no date to come now' })" 'lost'
+        }
+        if ($added.Count) {
+            if ($hadToCome) { New-Note $key $false "$id`: more runs: $($added -join ', ')" 'added' }
+            else { New-Note $key ($o.Kind -eq 'entry' -or $n.Kind -eq 'entry') "$id`: dated to come again: $($added -join ', ')" 'again' }
+        }
+    }
+    $toCome = $hadToCome -or [bool]$n.Runs
+    if ($o.Shown -ne $n.Shown) {
+        $why = if ($o.Flags -ne [string]$n.Flags) { "Flags $($o.Flags) -> $($n.Flags)" } else { 'its name' }
+        $text = if ($n.Shown -eq 'yes') { "now on the calendar by its Flags and name ($why)" } else { "off the calendar by its Flags or name ($why)" }
+        New-Note $key $toCome "$id`: $text" 'shown'
+    }
+    if ($o.Region -ne [string]$n.Region) {
+        $was = Test-HolidayRegion ([pscustomobject]@{ Region = $o.Region }) $Region
+        $is = Test-HolidayRegion ([pscustomobject]@{ Region = $n.Region }) $Region
+        if ($was -ne $is -and $toCome -and ($o.Shown -eq 'yes' -or $n.Shown -eq 'yes')) {
+            New-Note $key $true "$id`: $(if ($is) { 'onto' } else { 'off' }) region $Region's calendar by its Region ($($o.Region) -> $($n.Region))" 'region'
+        } else { New-Note $key $false "$id`: Region $($o.Region) -> $($n.Region)" 'region' }
+    }
+}
+
 function Compare-Baseline($games) {
     $run = @($games | ForEach-Object { $_.Key })
-    Write-Output "== Against the baseline, $BaselineFile"
+    Write-Output "== Against the baseline, $BaselineFile and its -rows and -facts files"
     $now = @{}
     foreach ($g in $games) { foreach ($s in $g.States) { $now["$($g.Key)|$($s.Kind)|$($s.Name)"] = $s } }
-    if (-not (Test-Path $BaselineFile)) {
-        Write-Output "  There is no baseline: the $($now.Count) entries and dated events of this run would all be new. -UpdateBaseline writes one from this run."
+    $missing = @($BaselineFile, $RowsFile, $FactsFile | Where-Object { -not (Test-Path $_) } | ForEach-Object { Split-Path -Leaf $_ })
+    if ($missing.Count) {
+        Write-Output "  There is no baseline ($($missing -join ', ') missing): the $($now.Count) entries and dated events of this run would all be new. -UpdateBaseline writes one from this run."
         $findings.Add('no baseline')
         return
     }
@@ -306,71 +406,159 @@ function Compare-Baseline($games) {
     foreach ($b in (Import-Csv $BaselineFile)) { if ($run -contains $b.Game) { $old["$($b.Game)|$($b.Kind)|$($b.Name)"] = $b } }
     $byKey = @{}
     foreach ($g in $games) { $byKey[$g.Key] = $g }
-    $before = $findings.Count
-    $changes = 0
+    $notes = New-Object System.Collections.Generic.List[object]
+    $oldRows = @{}
+    foreach ($b in (Import-Csv $RowsFile)) { if ($run -contains $b.Game) { $oldRows["$($b.Game)|$($b.ID)"] = $b } }
+    foreach ($o in $oldRows.Values) {
+        $g = $byKey[$o.Game]
+        $id = [int]$o.ID
+        $n = $g.RowStates[$id]
+        if (-not $n -and $g.Rows.ContainsKey($id)) {
+            $row = $g.Rows[$id]
+            $cover = Get-CoveringEntry $row
+            $n = if ($cover) { Get-RowState $row 'entry' $cover } else { Get-RowState $row 'event' $(if ($row.Name) { $row.Name } else { "#$id" }) }
+        }
+        $key = if ($n) { "$($o.Game)|$($n.Kind)|$($n.Name)" } else { "$($o.Game)|$($o.Kind)|$($o.Name)" }
+        foreach ($note in @(Compare-Row $key $o $n)) { $notes.Add($note) }
+    }
+    foreach ($g in $games) {
+        $fresh = @{}
+        foreach ($n in ($g.RowStates.Values | Sort-Object ID)) {
+            $key = "$($g.Key)|$($n.Kind)|$($n.Name)"
+            if ($oldRows.ContainsKey("$($g.Key)|$($n.ID)") -or -not $n.Runs -or -not $old.ContainsKey($key)) { continue }
+            if (-not $fresh.ContainsKey($key)) { $fresh[$key] = @() }
+            $fresh[$key] += "$($n.ID) ($($n.Runs))"
+        }
+        foreach ($key in $fresh.Keys) { $notes.Add((New-Note $key $false "rows new to the baseline, dated to come: $($fresh[$key] -join '; ')" 'added')) }
+    }
     foreach ($key in (@($now.Keys) + @($old.Keys) | Sort-Object -Unique)) {
         $n = $now[$key]; $o = $old[$key]
         $part = $key -split '\|', 3
-        if (-not $n) { $n = $byKey[$part[0]].Undated["$($part[1])|$($part[2])"] }
-        $label = "$($part[0]) $($part[1]) ""$($part[2])"""
-        $say = @(); $fail = @()
+        $g = $byKey[$part[0]]
+        if (-not $n) { $n = $g.Undated["$($part[1])|$($part[2])"] }
+        $strict = $part[1] -eq 'entry' -or ($o -and $o.Shown -eq 'yes')
+        $mine = @($notes | Where-Object { $_.Key -eq $key })
+        $add = { param([bool]$fail, [string]$text, [string]$what) $notes.Add((New-Note $key $fail $text $what)) }
         if (-not $o) {
-            if ($n.ToCome -eq 'yes') { $fail += "new, dated to come (last $($n.Last))$(if ($n.Shown -eq 'no') { ', not on the calendar by its Flags or name' })" } else { $say += 'new, with no date to come' }
-        } else {
-            $lost = @()
-            if (-not $n) {
-                if ($o.ToCome -eq 'yes') { $lost += "gone from the table, which dated it to $($o.Last) (dates removed)" } else { $say += 'gone' }
-            } else {
-                if ($o.ToCome -eq 'yes' -and $n.ToCome -eq 'no') { $lost += "has no date to come any more (last $($n.Last))" }
-                if ($o.ToCome -eq 'no' -and $n.ToCome -eq 'yes') { $fail += "has dates to come again (last $($n.Last))" }
-                if ($o.Last -ne $n.Last) {
-                    $earlier = $n.Last -eq 'none' -or ($o.Last -eq 'never') -or ($o.Last -ne 'none' -and $n.Last -ne 'never' -and $n.Last -lt $o.Last)
-                    if ($earlier -and $n.ToCome -eq 'yes') { $lost += "dates removed: its last date was $($o.Last), now $($n.Last)" }
-                    elseif ($earlier) { $say += "last date $($o.Last) -> $($n.Last)" }
-                    else { $say += "more dates: last $($o.Last) -> $($n.Last)" }
-                }
-                if ($o.Soon -eq 'no' -and $n.Soon -eq 'yes') { $lost += "its dates run out on $($n.Last), within $SoonDays days" }
-                if ($o.Shown -ne $n.Shown) { $fail += $(if ($n.Shown -eq 'yes') { 'now on the calendar by its Flags and name' } else { 'no longer on the calendar by its Flags and name' }) }
-                if ($o.IDs -ne $n.IDs) { $say += "rows $($o.IDs) -> $($n.IDs)" }
-            }
-            if ($part[1] -eq 'entry' -or $o.Shown -eq 'yes') { $fail += $lost } else { $say += $lost }
+            if ($part[1] -eq 'entry') { & $add $false "new entry, $(if ($n.ToCome -eq 'yes') { "dated to come (last $($n.Last))" } else { 'with no date to come' })" 'new' }
+            elseif ($n.ToCome -eq 'yes') { & $add $true "new, dated to come (last $($n.Last))$(if ($n.Shown -eq 'no') { ', not on the calendar by its Flags or name' })" 'new' }
+            else { & $add $false 'new, with no date to come' 'new' }
+            continue
         }
-        foreach ($f in $fail) { Write-Output "  FINDING $label`: $f"; $findings.Add("$label`: $f") }
-        foreach ($t in $say) { Write-Output "  changed $label`: $t"; $changes++ }
+        if (-not $n) {
+            if ($part[1] -eq 'entry') { & $add $false 'not in qcHolidays any more' 'gone'; continue }
+            $covers = @($o.IDs -split ' ' | Where-Object { $_ -and $g.Rows.ContainsKey([int]$_) } | ForEach-Object { Get-CoveringEntry $g.Rows[[int]$_] } | Where-Object { $_ } | Sort-Object -Unique)
+            if ($covers.Count) { & $add $false "now covered by the entry $($covers -join ', ')" 'covered'; continue }
+            foreach ($note in $mine) { if ($note.What -eq 'gone') { [void]$notes.Remove($note) } }
+            if ($o.ToCome -eq 'yes') { & $add $strict "gone from the table, which had dates to come $(if ($o.Last -eq 'never') { 'with no end' } else { "to $($o.Last)" })" 'gone' } else { & $add $false 'gone from the table' 'gone' }
+            continue
+        }
+        if ($o.ToCome -eq 'yes' -and $n.ToCome -eq 'no') { & $add $strict "has no date to come any more (last $($n.Last))" 'lost' }
+        if ($o.ToCome -eq 'no' -and $n.ToCome -eq 'yes') { & $add $true "has dates to come again (last $($n.Last))" 'again' }
+        if ($o.Last -ne $n.Last) {
+            $earlier = $n.Last -eq 'none' -or ($o.Last -eq 'never') -or ($o.Last -ne 'none' -and $n.Last -ne 'never' -and $n.Last -lt $o.Last)
+            if ($earlier -and $n.ToCome -eq 'yes') {
+                if (-not @($mine | Where-Object { $_.What -eq 'lost' }).Count) { & $add $strict "dates removed: its last date was $($o.Last), now $($n.Last)" 'lost' }
+            }
+            elseif ($earlier) { & $add $false "last date $($o.Last) -> $($n.Last)" 'lost' }
+            else { & $add $false "more dates: last $($o.Last) -> $($n.Last)" 'added' }
+        }
+        if ($o.Soon -eq 'no' -and $n.Soon -eq 'yes') { & $add $strict "its dates run out on $($n.Last), within $SoonDays days" 'soon' }
+        if ($o.Shown -ne $n.Shown -and -not @($mine | Where-Object { $_.What -eq 'shown' }).Count) {
+            & $add $true $(if ($n.Shown -eq 'yes') { 'now on the calendar by its Flags and name' } else { 'no longer on the calendar by its Flags and name' }) 'shown'
+        }
+        if ($o.IDs -ne $n.IDs) {
+            & $add $false "rows $($o.IDs) -> $($n.IDs)" 'rows'
+            $covers = @($o.IDs -split ' ' | Where-Object { $_ -and ($n.IDs -split ' ') -notcontains $_ -and $g.Rows.ContainsKey([int]$_) } | ForEach-Object { Get-CoveringEntry $g.Rows[[int]$_] } | Where-Object { $_ } | Sort-Object -Unique)
+            if ($covers.Count) { & $add $false "some rows now covered by the entry $($covers -join ', ')" 'covered' }
+        }
+    }
+    $before = $findings.Count
+    $changes = 0
+    foreach ($key in (@($notes | ForEach-Object { $_.Key }) | Sort-Object -Unique)) {
+        $part = $key -split '\|', 3
+        $label = "$($part[0]) $($part[1]) ""$($part[2])"""
+        $mine = @($notes | Where-Object { $_.Key -eq $key })
+        foreach ($note in @($mine | Where-Object { $_.Fail })) { Write-Output "  FINDING $label`: $($note.Text)"; $findings.Add("$label`: $($note.Text)") }
+        foreach ($note in @($mine | Where-Object { -not $_.Fail })) { Write-Output "  changed $label`: $($note.Text)"; $changes++ }
     }
     Write-Output "  $($findings.Count - $before) finding(s) and $changes other change(s) against the baseline."
 }
 
-function Write-Baseline($games) {
-    $run = @($games | ForEach-Object { $_.Key })
-    $rows = @()
-    if (Test-Path $BaselineFile) { $rows = @(Import-Csv $BaselineFile | Where-Object { $run -notcontains $_.Game }) }
-    foreach ($g in $games) { foreach ($s in $g.States) { $rows += [pscustomobject]@{ Game = $g.Key; Kind = $s.Kind; Name = $s.Name; IDs = $s.IDs; ToCome = $s.ToCome; Last = $s.Last; Soon = $s.Soon; Shown = $s.Shown } } }
-    $order = @{ retail = 0; ptr = 1; forever = 2 }
+function Write-Csv([string]$path, [string[]]$columns, $rows) {
     $lines = New-Object System.Collections.Generic.List[string]
-    $lines.Add('"Game","Kind","Name","IDs","ToCome","Last","Soon","Shown"')
-    foreach ($r in ($rows | Sort-Object { $order[$_.Game] }, Kind, Name)) {
-        $lines.Add((@($r.Game, $r.Kind, $r.Name, $r.IDs, $r.ToCome, $r.Last, $r.Soon, $r.Shown) | ForEach-Object { '"' + ([string]$_).Replace('"', '""') + '"' }) -join ',')
-    }
-    [IO.File]::WriteAllText($BaselineFile, (($lines -join "`r`n") + "`r`n"), (New-Object Text.UTF8Encoding $true))
-    Write-Output "Baseline written: $($lines.Count - 1) rows -> $BaselineFile"
+    $lines.Add((@($columns | ForEach-Object { '"' + $_ + '"' }) -join ','))
+    foreach ($r in $rows) { $lines.Add((@($columns | ForEach-Object { '"' + ([string]$r.$_).Replace('"', '""') + '"' }) -join ',')) }
+    [IO.File]::WriteAllText($path, (($lines -join "`r`n") + "`r`n"), (New-Object Text.UTF8Encoding $true))
+    return $lines.Count - 1
 }
 
-# Whether every day from today to $until has a run of a weekly event (the calendar window's Weekly
-# Holidays filter, CalendarFilterType 0) on the region's calendar: the first day without one, and the last
-# day of the unbroken stretch from today.
-function Get-WeeklyCover($game, [int]$region, [datetime]$until) {
-    $to = $until.AddDays(400)
-    $runs = @(foreach ($row in $game.Rows.Values) {
-        if ($row.Filter -ne 0 -or -not $row.Shown -or -not (Test-HolidayRegion $row.Row $region)) { continue }
-        Get-HolidayRuns $row.Row $Today $to
+function Write-Baseline($games) {
+    $run = @($games | ForEach-Object { $_.Key })
+    $order = @{ retail = 0; ptr = 1; forever = 2 }
+    $kept = { param($file) if (Test-Path $file) { @(Import-Csv $file | Where-Object { $run -notcontains $_.Game }) } else { @() } }
+    $states = @(& $kept $BaselineFile) + @(foreach ($g in $games) { foreach ($s in $g.States) {
+        [pscustomobject]@{ Game = $g.Key; Kind = $s.Kind; Name = $s.Name; IDs = $s.IDs; ToCome = $s.ToCome; Last = $s.Last; Soon = $s.Soon; Shown = $s.Shown } } })
+    $rows = @(& $kept $RowsFile) + @(foreach ($g in $games) { foreach ($s in $g.RowStates.Values) {
+        [pscustomobject]@{ Game = $g.Key; ID = $s.ID; Kind = $s.Kind; Name = $s.Name; Region = $s.Region; Flags = $s.Flags; Shown = $s.Shown; Runs = $s.Runs } } })
+    $facts = @(& $kept $FactsFile) + $FactOutcomes.ToArray()
+    $counts = @(
+        (Write-Csv $BaselineFile @('Game', 'Kind', 'Name', 'IDs', 'ToCome', 'Last', 'Soon', 'Shown') ($states | Sort-Object { $order[$_.Game] }, Kind, Name)),
+        (Write-Csv $RowsFile @('Game', 'ID', 'Kind', 'Name', 'Region', 'Flags', 'Shown', 'Runs') ($rows | Sort-Object { $order[$_.Game] }, { [int]$_.ID })),
+        (Write-Csv $FactsFile @('Game', 'Decision', 'Fact', 'Outcome') ($facts | Sort-Object { $order[$_.Game] }, Decision, Fact)))
+    Write-Output "Baseline written: $($counts[0]) entries and events -> $BaselineFile; $($counts[1]) rows -> $RowsFile; $($counts[2]) fact outcomes -> $FactsFile"
+}
+
+# Whether some weekly bonus event ($WeeklyEventPattern) is on the region's calendar, by its Flags, name and
+# Region, every day from today to the last day the table dates one there: the days without one, and the
+# unbroken stretch from today.
+function Get-WeeklyCover($game, [int]$region) {
+    $dated = @(foreach ($row in $game.Rows.Values) {
+        if (-not $row.Weekly -or -not $row.Shown -or -not $row.ToCome -or -not (Test-HolidayRegion $row.Row $region)) { continue }
+        $row
     })
+    if ($dated.Count -eq 0) { return @{ Outcome = 'fails'; Why = "no weekly bonus event is dated to come on region $region's calendar" } }
+    $lastEnd = ($dated | ForEach-Object { $_.Last.End } | Measure-Object -Maximum).Maximum
+    $until = if ($lastEnd -eq [datetime]::MaxValue) { $Today.AddYears(1) } else { $lastEnd.AddTicks(-1).Date }
+    $through = if ($lastEnd -eq [datetime]::MaxValue) { "for a year, as one of them repeats" } else { "to $(Format-Day $until), the last day the table dates one for region $region" }
+    $runs = @(foreach ($row in $dated) { Get-HolidayRuns $row.Row $Today $until.AddDays(1) })
     $covered = { param([datetime]$day) foreach ($r in $runs) { if ($r.Start -lt $day.AddDays(1) -and $r.End -gt $day) { return $true } }; return $false }
-    $gap = $null
-    for ($day = $Today; $day -le $until; $day = $day.AddDays(1)) { if (-not (& $covered $day)) { $gap = $day; break } }
-    $end = $null
-    for ($day = $Today; $day -le $to; $day = $day.AddDays(1)) { if (& $covered $day) { $end = $day } else { break } }
-    return [pscustomobject]@{ Gap = $gap; End = $end }
+    $gaps = New-Object System.Collections.Generic.List[string]
+    $gapDays = 0; $from = $null; $to = $null; $unbroken = $null
+    for ($day = $Today; $day -le $until; $day = $day.AddDays(1)) {
+        if (& $covered $day) {
+            if ($from) { $gaps.Add($(if ($from -eq $to) { Format-Day $from } else { "$(Format-Day $from) to $(Format-Day $to)" })); $from = $null }
+            if ($gapDays -eq 0) { $unbroken = $day }
+            continue
+        }
+        $gapDays++
+        if (-not $from) { $from = $day }
+        $to = $day
+    }
+    if ($from) { $gaps.Add($(if ($from -eq $to) { Format-Day $from } else { "$(Format-Day $from) to $(Format-Day $to)" })) }
+    if ($gaps.Count -eq 0) { return @{ Outcome = 'holds'; Why = "every day from today $through" } }
+    $reach = if ($unbroken) { "unbroken from today to $(Format-Day $unbroken)" } else { 'none runs today' }
+    return @{ Outcome = 'fails'; Why = "no weekly bonus event on $($gaps -join ', ') ($gapDays day$(if ($gapDays -gt 1) { 's' })), from today $through; $reach" }
+}
+
+# A yearly entry ($HolidayRowPatterns, or its IDs): one of its rows on the region's calendar has a date to
+# come; or, between two years, it waits until a year after its last run began, when the next year's row is due.
+function Test-Yearly($game, [string]$name) {
+    $entry = @($entries | Where-Object { $_.Name -eq $name })[0]
+    if (-not $entry) { throw "No qcHolidays entry is named '$name' (fact 'yearly $name' in $DecisionsFile)" }
+    $pattern = $HolidayRowPatterns[$name]
+    $mine = @(foreach ($row in $game.Rows.Values) {
+        if (-not ($entry.IDs -contains $row.ID -or ($pattern -and $row.Name -match $pattern.Pattern))) { continue }
+        if ($row.Shown -and $row.Ours) { $row }
+    })
+    if ($mine.Count -eq 0) { return @{ Outcome = 'fails'; Why = "no row of it is on region $Region's calendar" } }
+    $dated = @($mine | Where-Object { $_.ToCome } | Sort-Object ID)
+    if ($dated.Count) { return @{ Outcome = 'holds'; Why = (@($dated | ForEach-Object { "$($_.ID) $(Get-RowWords $_)" }) -join '; ') } }
+    $last = @($mine | Where-Object { $_.Last } | Sort-Object { $_.Last.Start } | Select-Object -Last 1)[0]
+    if (-not $last) { return @{ Outcome = 'fails'; Why = 'never dated' } }
+    $due = $last.Last.Start.AddYears(1)
+    if ($Today -lt $due.Date) { return @{ Outcome = 'waits'; Why = "$($last.ID)'s run ended $(Format-Day $last.Last.End), and the table has no later row yet: the next year's is due by $(Format-Day $due), a year after $($last.ID) began; until it is in the table and the entry, the entry has no date to come" } }
+    return @{ Outcome = 'fails'; Why = "no row dated since $($last.ID) began on $(Format-Day $last.Last.Start): the next year's was due by $(Format-Day $due)" }
 }
 
 function Test-Fact($game, [string]$fact) {
@@ -379,41 +567,37 @@ function Test-Fact($game, [string]$fact) {
     $missing = @($ids | Where-Object { -not $game.Rows.ContainsKey($_) })
     switch ($words[0]) {
         'dated' {
-            if ($missing.Count) { return @{ Holds = $false; Why = "no row $($missing -join ', ')" } }
+            if ($missing.Count) { return @{ Outcome = 'fails'; Why = "no row $($missing -join ', ')" } }
             $what = @($ids | ForEach-Object { "$_ $(Get-RowWords $game.Rows[$_])" }) -join '; '
             $bad = @($ids | Where-Object { -not $game.Rows[$_].ToCome })
-            if ($bad.Count) { return @{ Holds = $false; Why = "no date to come for $($bad -join ', ') ($what)" } }
-            return @{ Holds = $true; Why = $what }
+            if ($bad.Count) { return @{ Outcome = 'fails'; Why = "no date to come for $($bad -join ', ') ($what)" } }
+            return @{ Outcome = 'holds'; Why = $what }
         }
         'no-date' {
             $what = @($ids | ForEach-Object { if ($game.Rows.ContainsKey($_)) { "$_ $(Get-RowWords $game.Rows[$_])" } else { "$_ no row" } }) -join '; '
             $bad = @($ids | Where-Object { $game.Rows.ContainsKey($_) -and $game.Rows[$_].ToCome })
-            if ($bad.Count) { return @{ Holds = $false; Why = "dated again: $what" } }
-            return @{ Holds = $true; Why = $what }
+            if ($bad.Count) { return @{ Outcome = 'fails'; Why = "dated again: $what" } }
+            return @{ Outcome = 'holds'; Why = $what }
         }
         'hidden' {
-            if ($missing.Count) { return @{ Holds = $false; Why = "no row $($missing -join ', ')" } }
+            if ($missing.Count) { return @{ Outcome = 'fails'; Why = "no row $($missing -join ', ')" } }
             $what = "Flags " + (@($ids | ForEach-Object { $game.Rows[$_].Flags }) -join ', ')
             $bad = @($ids | Where-Object { $game.Rows[$_].Shown })
-            if ($bad.Count) { return @{ Holds = $false; Why = "$($bad -join ', ') would now be on the calendar ($what)" } }
-            return @{ Holds = $true; Why = $what }
+            if ($bad.Count) { return @{ Outcome = 'fails'; Why = "$($bad -join ', ') would now be on the calendar ($what)" } }
+            return @{ Outcome = 'holds'; Why = $what }
         }
         'no-row' {
             $name = ($fact -replace '^\s*no-row\s+', '').Trim()
             $found = @($game.Rows.Values | Where-Object { $_.Name -eq $name } | ForEach-Object { $_.ID } | Sort-Object)
-            if ($found.Count) { return @{ Holds = $false; Why = "rows $($found -join ', ') have that name" } }
+            if ($found.Count) { return @{ Outcome = 'fails'; Why = "rows $($found -join ', ') have that name" } }
             $named = @($game.Names.Values | Where-Object { $_ -eq $name }).Count -gt 0
-            return @{ Holds = $true; Why = $(if ($named) { 'HolidayNames has the name, and no Holidays row uses it' } else { 'not in HolidayNames either' }) }
+            return @{ Outcome = 'holds'; Why = $(if ($named) { 'HolidayNames has the name, and no Holidays row uses it' } else { 'not in HolidayNames either' }) }
         }
         'weekly-every-day' {
-            $region = [int]$words[1]
-            $until = [datetime]::ParseExact($words[2], 'yyyy-MM-dd', $null)
-            $cover = Get-WeeklyCover $game $region $until
-            $reach = if ($cover.End) { "the unbroken run of days with one lasts to $(Format-Day $cover.End)" } else { 'none runs today' }
-            if ($until -lt $Today) { return @{ Holds = $false; Why = "its date has passed; $reach" } }
-            if ($cover.Gap) { return @{ Holds = $false; Why = "no weekly event on $(Format-Day $cover.Gap) in region $region; $reach" } }
-            return @{ Holds = $true; Why = "every day to $(Format-Day $until) in region $region; $reach" }
+            if ($words.Count -ne 2 -or $words[1] -notmatch '^\d+$') { throw "weekly-every-day takes a region and nothing else: '$fact' in $DecisionsFile" }
+            return Get-WeeklyCover $game ([int]$words[1])
         }
+        'yearly' { return Test-Yearly $game ($fact -replace '^\s*yearly\s+', '').Trim() }
         default { throw "Unknown fact '$fact' in $DecisionsFile" }
     }
 }
@@ -423,7 +607,13 @@ function Write-Decisions($games) {
     if (-not (Test-Path $DecisionsFile)) { Write-Output "  There is no decisions file."; return }
     $byGame = @{}
     foreach ($g in $games) { $byGame[$g.Key] = $g }
-    $open = 0; $failed = 0; $held = 0
+    $stored = $null
+    if (Test-Path $FactsFile) {
+        $stored = @{}
+        foreach ($b in (Import-Csv $FactsFile)) { $stored["$($b.Game)|$($b.Decision)|$($b.Fact)"] = $b.Outcome }
+    }
+    $count = @{ holds = 0; waits = 0; fails = 0; open = 0; changed = 0; new = 0 }
+    $listed = New-Object System.Collections.Generic.List[string]
     $groups = [ordered]@{}
     foreach ($d in (Import-Csv $DecisionsFile)) {
         if (-not $groups.Contains($d.Decision)) { $groups[$d.Decision] = New-Object System.Collections.Generic.List[object] }
@@ -436,8 +626,8 @@ function Write-Decisions($games) {
             $verb = ($d.Fact -split '\s+')[0]
             if ($verb -eq 'none') { Write-Output "    no fact  $($d.Game): nothing in the tables to check"; continue }
             if ($verb -in 'served', 'not-served', 'ask') {
-                if ($d.Seen) { Write-Output "    seen     $($d.Game): $($d.Fact): $($d.Seen)"; $held++; continue }
-                $open++
+                if ($d.Seen) { Write-Output "    seen     $($d.Game): $($d.Fact): $($d.Seen)"; $count.holds++; continue }
+                $count.open++
                 $table = $byGame[$d.Game]
                 $when = ''
                 if ($verb -eq 'served' -and $table) {
@@ -451,23 +641,38 @@ function Write-Decisions($games) {
                     }) -join '; ')
                 }
                 Write-Output "    open     $($d.Game): $($d.Fact)$when"
+                $listed.Add("    open     $($d.Game): $($d.Fact) ($name)")
                 continue
             }
             $targets = @(@($(if ($d.Game -eq 'retail') { $byGame['retail']; $byGame['ptr'] } else { $byGame[$d.Game] })) | Where-Object { $_ })
             if ($targets.Count -eq 0) { Write-Output "    skipped  $($d.Game): $($d.Fact) (no table of that game given)"; continue }
-            $results = @($targets | ForEach-Object { [pscustomobject]@{ Game = $_; Result = (Test-Fact $_ $d.Fact) } })
-            for ($i = 0; $i -lt $results.Count; $i++) {
-                $r = $results[$i]
-                $on = "$($r.Game.Label) $($r.Game.Build)"
-                if ($i -gt 0 -and $r.Result.Holds -eq $results[0].Result.Holds) { continue }
-                if ($r.Result.Holds) { Write-Output "    holds    $on`: $($d.Fact) ($($r.Result.Why))"; $held++; continue }
-                Write-Output "    FAILS    $on`: $($d.Fact): $($r.Result.Why)"
-                Write-Output "             revisit: $($d.IfChanged)"
-                $findings.Add("$name`: $($d.Fact) on $on"); $failed++
+            for ($i = 0; $i -lt $targets.Count; $i++) {
+                $t = $targets[$i]
+                $result = Test-Fact $t $d.Fact
+                $outcome = $result.Outcome
+                if ($i -eq 0) { $firstOutcome = $outcome }
+                $FactOutcomes.Add([pscustomobject]@{ Game = $t.Key; Decision = $name; Fact = $d.Fact; Outcome = $outcome })
+                $was = if ($null -ne $stored) { $stored["$($t.Key)|$name|$($d.Fact)"] } else { $null }
+                $changed = $null -ne $stored -and $was -and $was -ne $outcome
+                if ($i -gt 0 -and $outcome -eq $firstOutcome -and -not $changed -and ($null -eq $stored -or $was)) { continue }
+                $on = "$($t.Label) $($t.Build)"
+                $count[$outcome]++
+                Write-Output "    $($outcome.PadRight(8)) $on`: $($d.Fact)$(if ($outcome -eq 'holds') { " ($($result.Why))" } else { ": $($result.Why)" })"
+                if ($outcome -ne 'holds') { $listed.Add("    $($outcome.PadRight(8)) $on`: $($d.Fact) ($name)") }
+                if ($changed) {
+                    Write-Output "             FINDING: $was at the baseline, $outcome now. Revisit: $($d.IfChanged)"
+                    $findings.Add("$name`: $($d.Fact) on $on, $was -> $outcome"); $count.changed++
+                }
+                elseif ($null -ne $stored -and -not $was) { Write-Output "             new: no outcome in the baseline yet"; $count.new++ }
             }
         }
     }
-    Write-Output "  $held hold or were seen in game, $failed fail, $open open for the game to answer."
+    Write-Output "  $($count.holds) hold or were seen in game, $($count.waits) wait, $($count.fails) fail, $($count.open) open for the game to answer; $($count.changed) outcome(s) changed since the baseline, $($count.new) new."
+    if ($null -eq $stored) { Write-Output "  No fact outcomes in the baseline yet: -UpdateBaseline records them." }
+    if ($listed.Count) {
+        Write-Output "  Not holding today, listed every sweep (a finding only when an outcome changes):"
+        $listed | ForEach-Object { Write-Output $_ }
+    }
 }
 
 $games = @(
@@ -476,7 +681,7 @@ $games = @(
         @{ Key = 'forever'; Label = 'WoW: Forever'; Build = $ForeverBuild; Data = (Join-Path $DataDir 'forever\quests.jsonl') })) {
         if (-not $g.Build) { continue }
         $game = [pscustomobject]@{ Key = $g.Key; Label = $g.Label; Build = $g.Build; InUse = (Get-FlagsInUse $g.Data); Rows = $null; Names = $null
-            States = (New-Object System.Collections.Generic.List[object]); Undated = @{} }
+            States = (New-Object System.Collections.Generic.List[object]); Undated = @{}; RowStates = @{} }
         Read-Game $game
         $game
     })
@@ -499,7 +704,7 @@ Compare-Baseline $games
 Write-Decisions $games
 if ($UpdateBaseline) { Write-Baseline $games }
 if ($findings.Count -gt 0) {
-    Write-Output "$($findings.Count) finding(s): revisit what each names; once the baseline's are read, rerun with -UpdateBaseline."
+    Write-Output "$($findings.Count) finding(s): revisit what each names; once they and the changes are read, rerun with -UpdateBaseline."
     exit 1
 }
 Write-Output "No finding: the calendar tables say what the baseline and the decisions file expect."
