@@ -17505,22 +17505,22 @@
 {"id":45742,"name":"The Colossus of Zora","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
 {"id":45743,"name":"Judgement of Odyn","level":45,"zone":"Broken Shore","category":1002,"type":128,"faction":3,"race":67108863,"class":1,"prereq":46734}
 {"id":45744,"name":"Fall of the Felskorn","level":45,"zone":"Broken Shore","category":1002,"type":128,"faction":3,"race":67108863,"class":8190,"prereq":46734}
-{"id":45747,"name":"Cinder of Cynders","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45748,"name":"Pearl of Fathoms","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45749,"name":"Salt of Shards","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45750,"name":"Song of Zephyrs","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45751,"name":"Coreforged Sigil of Skaldrenox","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45752,"name":"Glimmering Sigil of Whirlaxis","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45753,"name":"Diamondine Sigil of Kazum","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45754,"name":"Tidal Sigil of Skwol","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45755,"name":"Cinder of Cynders","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
-{"id":45756,"name":"Pearl of Fathoms","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":67108863,"class":8191,"minLevel":1}
-{"id":45757,"name":"Salt of Shards","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
-{"id":45758,"name":"Song of Zephyrs","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
-{"id":45759,"name":"Coreforged Sigil of Skaldrenox","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
-{"id":45760,"name":"Glimmering Sigil of Whirlaxis","level":1,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":45761,"name":"Diamondine Sigil of Kazum","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
-{"id":45762,"name":"Tidal Sigil of Skwol","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
+{"id":45747,"name":"Cinder of Cynders","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45748,"name":"Pearl of Fathoms","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45749,"name":"Salt of Shards","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45750,"name":"Song of Zephyrs","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45751,"name":"Coreforged Sigil of Skaldrenox","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45752,"name":"Glimmering Sigil of Whirlaxis","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45753,"name":"Diamondine Sigil of Kazum","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45754,"name":"Tidal Sigil of Skwol","level":15,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45755,"name":"Cinder of Cynders","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45756,"name":"Pearl of Fathoms","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45757,"name":"Salt of Shards","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45758,"name":"Song of Zephyrs","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45759,"name":"Coreforged Sigil of Skaldrenox","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45760,"name":"Glimmering Sigil of Whirlaxis","level":1,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608}
+{"id":45761,"name":"Diamondine Sigil of Kazum","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608,"minLevel":1}
+{"id":45762,"name":"Tidal Sigil of Skwol","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608,"minLevel":1}
 {"id":45763,"name":"Demonic Disruption","level":45,"zone":"Shaman Campaign","category":1014,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5866}
 {"id":45764,"name":"Restoring Equilibrium","level":45,"zone":"Demon Hunter Campaign","category":1010,"type":1,"faction":3,"race":67108863,"class":2048,"storyline":5891}
 {"id":45765,"name":"Brothers and Sisters","level":45,"zone":"Shaman Campaign","category":1014,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5866}
@@ -17529,9 +17529,9 @@
 {"id":45769,"name":"Conflagration","level":45,"zone":"Shaman Campaign","category":1014,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5866}
 {"id":45771,"name":"A Time for Everything","level":45,"zone":"Monk Campaign","category":1015,"type":1,"faction":3,"race":67108863,"class":512,"storyline":5881}
 {"id":45776,"name":"Keys are a Crutch","level":45,"zone":"Broken Shore","category":1002,"type":128,"faction":3,"race":67108863,"class":8,"prereq":46734}
-{"id":45785,"name":"Call of the Scarab","level":1,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":45785,"name":"Call of the Scarab","level":1,"zone":"Silithus","category":186,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":8388608}
 {"id":45786,"name":"Feast of the Hounds","level":10,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":45787,"name":"Call of the Scarab","level":1,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191}
+{"id":45787,"name":"Call of the Scarab","level":1,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":8388608}
 {"id":45788,"name":"The Speaker Awaits","level":45,"zone":"Broken Shore","category":1002,"type":1,"faction":3,"race":67108863,"class":16,"storyline":789}
 {"id":45789,"name":"The Sunken Vault","level":45,"zone":"Netherlight Temple","category":1011,"type":1,"faction":3,"race":67108863,"class":16,"storyline":789}
 {"id":45790,"name":"Champion: Almai","level":45,"zone":"Monk Campaign","category":1015,"type":1,"faction":3,"race":67108863,"class":512,"storyline":5881}
