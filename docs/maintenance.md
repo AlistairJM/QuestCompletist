@@ -1980,7 +1980,9 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: in October 2026, `qcCore.lua` had 5 or more left (`luac -l` listed 195 on 11 October), `qcTooltips.lua` 150 (`luac -l` listed 50 on 11 October) and
+  has its own 200: `qcCore.lua` had room for 23 more on 12 October 2026, measured by adding
+  `local zzProbeN = N` lines to the end of a copy one at a time until `luac -p` failed (`luac -l` lists
+  197 there, as it also counts the locals of blocks that have closed). In October 2026 `qcTooltips.lua` had 150 left (`luac -l` listed 50 on 11 October) and
   `qcMapPins.lua` 149 (after the map's tooltip moved from one to the other). Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
@@ -2037,7 +2039,11 @@ git diff --stat
   It also checks that the map hides a breadcrumb still to do while the quest it leads to is in the log,
   keeps one done or in the log and those in `qcClosedOnceDone`, and that a hand-in ticks breadcrumbs of
   breadcrumbs: on a chain from the game's data, on retail's quests listed as each other's breadcrumb and
-  its API breadcrumbs, and on Forever's level 16 rogue quests. Run it too for changes to the map's
+  its API breadcrumbs, and on Forever's level 16 rogue quests. On Forever it also walks the rest of
+  CMaNGOS's requirements (#308): a quest that needs all of a group (A Donation of Runecloth), one of
+  several (Trek to Ashenvale, Covert Ops - Alpha), the quests a condition names, the Alterac quests kept
+  open, Moonglade's Heeding the Call lead-ins, and the quest window's breadcrumb notice counting only
+  the lead-ins the character can take (In Search of Anthion). Run it too for changes to the map's
   filters in `qcBuildViewFilter`.
 - For changes to the quest list's tooltip (the storyline's name and the "Type:" row in `qcTooltips.lua`), run
   `Test-QuestTooltip.lua` for both games' TOCs. It must say "All checks passed." It draws the real tooltip for a
