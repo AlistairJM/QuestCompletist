@@ -20,6 +20,8 @@ The tables it checks:
   qcMutuallyExclusive    [quest] = {quests}: quests that close once it's done.
   qcClosedOnceDone       [quest] = true: breadcrumbs the API closes only once their quest is done, so
                          the map keeps them while it's in the log.
+  qcQuestNeedsInLog      [quest] = {quests}: one of them must be in the log for it to be taken (only
+                         WoW: Forever's has any yet).
   qcRenownLevelRequirements, qcOverrideDailyExclusiveQuest, qcOverrideWeeklyExclusiveQuest, and
   qcFactions' English names. Each table is also checked for a quest listed twice, as Lua keeps only
   the last.
@@ -210,6 +212,17 @@ foreach ($id in ($exclusive.Keys | Sort-Object)) {
     }
 }
 
+# Quests that need another in the log: [quest] = {quests, one of which must be in the log}.
+$needsInLog = Read-ListTable 'qcQuestNeedsInLog' 'in the log'
+foreach ($id in ($needsInLog.Keys | Sort-Object)) {
+    foreach ($other in $needsInLog[$id]) {
+        foreach ($q in @($id, $other)) {
+            if (-not $quests.ContainsKey($q)) { Add-Finding 'in the log: quest not in the data' $id $other "$q isn't in quests.jsonl" }
+        }
+        if ($other -eq $id) { Add-Finding 'in the log: needs itself' $id $other '' }
+    }
+}
+
 # Quests the API says close another, and TrinityCore's breadcrumbs and groups, that our tables lack.
 foreach ($id in ($closedBy.Keys | Sort-Object)) {
     foreach ($closer in $closedBy[$id]) {
@@ -338,8 +351,8 @@ if (Test-Path $DecisionsFile) {
 foreach ($f in $findings) { $reason = $kept["$($f.Kind)|$($f.Quest)|$($f.Other)"]; if ($reason) { $f.Kept = $reason } }
 $findings | Sort-Object Kind, { [int]("0" + $_.Quest) }, { [int]("0" + $_.Other) } | Export-Csv -Path $OutFile -NoTypeInformation -Encoding UTF8
 
-"Tables: {0} breadcrumb targets, {1} quests with others they close, {2} renown requirements, {3} faction names; {4} quests with a prerequisite." -f
-    $breadcrumbs.Count, $exclusive.Count, $renown.Count, $factionNames.Count, @($quests.Values | Where-Object { $_.prereq }).Count
+"Tables: {0} breadcrumb targets, {1} quests with others they close, {2} renown requirements, {3} faction names, {4} quests that need another in the log; {5} quests with a prerequisite." -f
+    $breadcrumbs.Count, $exclusive.Count, $renown.Count, $factionNames.Count, $needsInLog.Count, @($quests.Values | Where-Object { $_.prereq }).Count
 if ($OwnDataOnly) {
     "Sources: the data and the tables only ($Game), so the API cache, TrinityCore and the client's tables were not read."
 } else {

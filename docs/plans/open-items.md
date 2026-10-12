@@ -107,6 +107,18 @@ again.
   (92466) to a Windshaper of another class at level 3 or 4? If he does, the three rows of
   `forever-quest-class-decisions.csv` go ([forever.md](forever.md), "Class quests the game files under
   a zone").
+- **CMaNGOS's other requirements on Forever** (#308, 11 October 2026; data, and a
+  small change to the quest window's breadcrumb notice on both games, untried in game, so not for a
+  release until tried or the user says so). One look on the beta: at In Search of Anthion (8929) or
+  Taming the Beast, the notice counts only the lead-ins this character can take. The 119 prerequisites
+  and 141 lead-ins closed by their next quest come from CMaNGOS and are checked offline by
+  `Test-Completions.lua` ([forever.md](forever.md), "The rest of CMaNGOS's requirements").
+- **Quests offered only while another is in the log, on Forever** (#309, 11 October 2026, stacked on the one
+  above; shared code, untried in game, so not for a release until tried or the user says so). One look
+  on the beta: a quest of `qcQuestNeedsInLog`, such as Digging Through the Dirt (254) in Duskwood, is
+  grey ("Requires Bride of the Embalmer in your quest log") until Bride of the Embalmer is taken, then
+  white. The rest is checked offline by `Test-Completions.lua` ([forever.md](forever.md), "Quests
+  offered only while another is in the log").
 - **Two retail breadcrumbs that close only once all their quests are done** (found 11 October 2026, data
   from 6 October). Blizzard's API keeps 65890 The Nelthazan Ruins offered while any of 65891, 65893 or
   66719 is still to do, and 66261 A Minor Setback while any of 66262, 66263 or 66264 is; our breadcrumb
@@ -311,7 +323,8 @@ again.
   lead-in the server requires, and an `ExclusiveGroup` a choice it doesn't enforce. The level 10 warrior
   and mage groups, Securing the Supply Lines, Call of Earth and 14 prerequisites were reviewed and
   corrected on 11 October 2026 ([forever.md](forever.md), "CMaNGOS's other links, reviewed against
-  first-hand reports"). Left: the rest of the 85 groups and 139 breadcrumbs, which no report has
+  first-hand reports"). Left: the rest of the 85 groups and 280 breadcrumbs (141 of them, since the
+  same day, the quests CMaNGOS's next quest in the chain closes), which no report has
   questioned yet; 24 quests whose prerequisite is their own breadcrumb, from the cache's next quest,
   that no report settles (11, 276, 297, 466, 729, 844, 870, 1085, 1338, 1420, 1473, 1501, 1688, 1699,
   1716, 1758, 1824, 1938, 1960, 2038, 2040, 2922, 2924, 2930); Great-father Winter's 6961, which
