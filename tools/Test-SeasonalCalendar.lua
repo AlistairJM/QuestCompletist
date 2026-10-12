@@ -19,7 +19,8 @@ the calendar didn't serve when it was checked in game on 11 October 2026 (and so
 83825, a Guest Relations quest of the 20th anniversary), and to the Skyriding Cups, whose one flag must
 follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429), and to The Great
 Gnomeregan Run (696) and Dastardly Duos, whose pins must follow any of its three rows (the stand-in
-calendar has no regions; 1689 is region 4's and 1599 another region's).
+calendar has no regions; 1689 is region 4's and 1599 another region's), and to Call of the Scarab
+(638), whose turn-ins' pins must show only while it runs.
 
 /qc holidays must list each ID of an entry that the calendar has in its 12 months, soonest first and
 once each, so a sweep can confirm every ID in game: Hallow's End's 324 and 1405, the Darkmoon Faire's
@@ -90,6 +91,7 @@ local GUEST_RELATIONS = 83825
 local CUPS = "Skyriding Cups"
 local GNOMEREGAN_RUN = "The Great Gnomeregan Run"
 local DUOS = "Dastardly Duos"
+local SCARAB = "Call of the Scarab"
 local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
 	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
 local function withLockout(events)
@@ -293,7 +295,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	for mapId in pairs(env.qcPinDB) do mapIds[#mapIds + 1] = mapId end
 	table.sort(mapIds)
 	ctx.pins = {}
-	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY, CUPS, GNOMEREGAN_RUN, DUOS}) do
+	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY, CUPS, GNOMEREGAN_RUN, DUOS, SCARAB}) do
 		for _, mapId in ipairs(mapIds) do
 			for _, pin in ipairs(env.qcPinDB[mapId]) do
 				local allOfIt = #pin[6] > 0
@@ -305,7 +307,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 				end
 			end
 		end
-		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125, [GNOMEREGAN_RUN] = 47709, [DUOS] = 86503})[holidayName]
+		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125, [GNOMEREGAN_RUN] = 47709, [DUOS] = 86503, [SCARAB] = 45747})[holidayName]
 		assert(flags[holidayName], "qcHolidays has no entry named " .. holidayName)
 		assert(ctx.pins[holidayName] or (probe and not env.qcQuestDatabase[probe]), "no pin of the " .. holidayName .. "'s quests in the data")
 	end
@@ -602,6 +604,8 @@ for _, entry in ipairs({
 		holiday(696, GNOMEREGAN_RUN, at(10, 9, 0), at(10, 11, 0))}},
 	{name = DUOS, title = "Dastardly Duos: its pins show while any of its rows runs", running = {
 		holiday(1689, DUOS, at(10, 6, 8), at(10, 20, 8)), holiday(1599, DUOS, at(10, 5, 8), at(10, 19, 8))}},
+	{name = SCARAB, title = "Call of the Scarab: its turn-ins' pins show only while row 638 runs", running = {
+		holiday(638, SCARAB, at(10, 9, 0), at(10, 12, 0))}},
 }) do
 	print(entry.title)
 	if not first.pins[entry.name] then
