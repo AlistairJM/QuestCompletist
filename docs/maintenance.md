@@ -443,8 +443,9 @@ Whether to backfill E is the user's decision
 `Audit-QuestTables.ps1` checks what no other step does:
 - in `qcQuest.lua`: the breadcrumbs (`qcBreadcrumbQuests`), the quests that close others once
   they're done (`qcMutuallyExclusive`), the breadcrumbs the API closes only once their quest is done
-  (`qcClosedOnceDone`, which must match the API both ways), the renown requirements, the daily and
-  weekly limits and the faction names;
+  (`qcClosedOnceDone`, which must match the API both ways), the quests offered only while another is
+  in the log (`qcQuestNeedsInLog`, empty on retail), the renown requirements, the daily and weekly
+  limits and the faction names;
 - in `data\quests.jsonl`: the prerequisites.
 
 It needs the API cache from step 1, and writes `tools\quest_table_audit.csv`, one row per finding,
@@ -1294,11 +1295,13 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    A quest's prerequisite is CMaNGOS's requirement, as its server checks it: its `PrevQuestId` or any
    quest whose `NextQuestId` names it, a negative `ExclusiveGroup`'s whole group, and a
    `RequiredCondition` that asks only for quests handed in, written as a list where it needs all of
-   several quests (`[7791,7793,7794]`) or one of several (`[[994,995]]`). A requirement a prerequisite
-   can't hold (a quest in the log, an aura, an area, the war effort's collections) is left out and listed
-   in the review as "CMaNGOS requirement not a prerequisite" (117 on build 70338: 35 "only while" a
-   quest is in the log, 82 conditions). A quest CMaNGOS gives no requirement takes the quest whose
-   follow-up it is in the cache, when only one names it.
+   several quests (`[7791,7793,7794]`) or one of several (`[[994,995]]`). A negative `PrevQuestId` or
+   `NextQuestId` means the quest is offered only while that one is in the log: `links.jsonl` gives it as
+   `needsInLog` (35 quests on build 70338, the "Links:" line's last number), which becomes
+   `qcQuestNeedsInLog`. A requirement neither can hold (an aura, an area, the war effort's collections)
+   is left out and listed in the review as "CMaNGOS requirement not a prerequisite" (82 conditions on
+   build 70338). A quest CMaNGOS gives no requirement takes the quest whose follow-up it is in the
+   cache, when only one names it.
    A quest with no prerequisite from CMaNGOS or the cache's follow-up links gets the quest before it in
    its quest line (the client's `QuestLineXQuest` order) when that one is handed in on the map this one
    starts on (the client's `QuestPOIBlob` points -1 and 32), which is the case for the ten steps after
@@ -1423,7 +1426,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    Signets' turn-ins, which CMaNGOS files under Reputation, go under Ahn'Qiraj War with the rest of
    the war effort: its supply quests give the signets, and its officers take them.
 5. `Build-ForeverMenu.ps1 -Build <build>` writes `QuestCompletist\Forever\qcMenu.lua`, `qcQuest.lua`
-   and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl`, `reputation.jsonl` and
+   and `qcUnavailableQuests.lua`. `qcQuest.lua` takes in `links.jsonl` (breadcrumbs,
+   `qcMutuallyExclusive` and `qcQuestNeedsInLog`), `reputation.jsonl` and
    `skills.jsonl`, with the factions' English names from the client's `Faction` table, and the
    quests of the link decisions' `REMOVE` rows as `qcFormerlyExclusive`. A new zone
    it can't place goes in its continent's "Other" group; add the zone to the script's region table.
@@ -1448,7 +1452,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
-   run of 11 October 2026 found 6 on 2,399 prerequisites and 412 table entries, all kept in
+   run of 11 October 2026 found 6 on 2,399 prerequisites and 447 table entries (35 of them quests that
+   need another in the log), all kept in
    `docs\plans\forever-quest-table-decisions.csv` (three prerequisites that name the other faction's
    quest, three that name a repeatable one, one of them as one of a choice). The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
@@ -1980,9 +1985,9 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: `qcCore.lua` had room for 23 more on 12 October 2026, measured by adding
+  has its own 200: `qcCore.lua` had room for 21 more on 12 October 2026, measured by adding
   `local zzProbeN = N` lines to the end of a copy one at a time until `luac -p` failed (`luac -l` lists
-  197 there, as it also counts the locals of blocks that have closed). In October 2026 `qcTooltips.lua` had 150 left (`luac -l` listed 50 on 11 October) and
+  199 there, as it also counts the locals of blocks that have closed). In October 2026 `qcTooltips.lua` had 150 left (`luac -l` listed 50 on 11 October) and
   `qcMapPins.lua` 149 (after the map's tooltip moved from one to the other). Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
@@ -2043,8 +2048,11 @@ git diff --stat
   CMaNGOS's requirements (#308): a quest that needs all of a group (A Donation of Runecloth), one of
   several (Trek to Ashenvale, Covert Ops - Alpha), the quests a condition names, the Alterac quests kept
   open, Moonglade's Heeding the Call lead-ins, and the quest window's breadcrumb notice counting only
-  the lead-ins the character can take (In Search of Anthion). Run it too for changes to the map's
-  filters in `qcBuildViewFilter`.
+  the lead-ins the character can take (In Search of Anthion). It also checks the quests offered only
+  while another is in the log (`qcQuestNeedsInLog`, #309): Digging Through the Dirt is grey, with a
+  line under Required Quest in its tooltip, until Bride of the Embalmer is in the log, and is ticked at
+  that quest's hand-in and by the login sync; the repeatable Earth Sapta isn't ticked when Call of
+  Earth is handed in. Run it too for changes to the map's filters in `qcBuildViewFilter`.
 - For changes to the quest list's tooltip (the storyline's name and the "Type:" row in `qcTooltips.lua`), run
   `Test-QuestTooltip.lua` for both games' TOCs. It must say "All checks passed." It draws the real tooltip for a
   quest in a storyline, a plain one and a daily one, with stand-ins for the game's quest calls that answer what each

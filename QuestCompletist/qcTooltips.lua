@@ -506,14 +506,19 @@ function qcUpdateTooltip(index)
             qcAddQuestTooltipDivider()
         end
 
-        -- The quests to do first, a line each; a choice of them shares a line.
+        -- The quests to do first, a line each; a choice of them shares a line, as do those one of which
+        -- must be in the log.
         local prereqParts = qcPrereq.Parts(questId)
         if prereqParts then
             for i, part in ipairs(prereqParts) do
                 qcQuestInformationTooltip:AddDoubleLine(i == 1 and qcL.REQUIREDQUEST or " ", qcPrereq.Text(part, qcPrereqQuestText, false))
             end
-            qcAddQuestTooltipDivider()
         end
+        local inLogOptions = qcPrereq.InLogOptions(questId)
+        if inLogOptions then
+            qcQuestInformationTooltip:AddDoubleLine(prereqParts and " " or qcL.REQUIREDQUEST, qcPrereq.InLogText(questId, qcPrereqQuestText))
+        end
+        if prereqParts or inLogOptions then qcAddQuestTooltipDivider() end
 		-- Renown and Faction requirements Start
         local renownInfo = qcRenownLevelRequirements[questId]
 

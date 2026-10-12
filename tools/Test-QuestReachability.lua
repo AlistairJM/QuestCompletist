@@ -10,8 +10,8 @@ Two settings tiers are checked:
   identity filters - faction, race/class, profession, covenant, seasonal, no-data and
                      requirements-not-met on; everything else off. Anything hidden here is hidden
                      from every possible character, which means contradictory data.
-Progress is best case: max level, every prerequisite done, max renown, nothing completed, and the
-character has every profession, at the highest skill.
+Progress is best case: max level, every prerequisite done, every quest another needs in the log in it,
+max renown, nothing completed, and the character has every profession, at the highest skill.
 
 The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn. An event the calendar
 never shows, such as the Scourge Invasion, can't be on, so its pins get a section of their own.
@@ -177,6 +177,7 @@ assert(pinCode and type(pinCode.Needs) == "function" and type(pinCode.Greyed) ==
 assert(questDataFile, "qcQuestData.lua is not in the TOC")
 
 local QUESTS = env.qcQuestDatabase
+ADDON_TABLE.qcPrereq.InLogMet = function() return true end
 local PIN_DB = env.qcPinDB
 local provider = env.qcMapDataProvider
 

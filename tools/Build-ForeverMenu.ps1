@@ -30,8 +30,9 @@ qcQuest.lua holds what the core reads:
     factions' English names (qcFactions), for when the game doesn't name one;
   - the profession, and the skill level in it, each quest needs (qcQuestSkillRequirements), from
     skills.jsonl;
-  - each quest's breadcrumbs (qcBreadcrumbQuests) and the quests it shuts out
-    (qcMutuallyExclusive), from links.jsonl;
+  - each quest's breadcrumbs (qcBreadcrumbQuests), the quests it shuts out (qcMutuallyExclusive) and
+    the quests one of which must be in the log for it to be taken (qcQuestNeedsInLog), from
+    links.jsonl;
   - the quests whose "only one of these" links -LinkFile's REMOVE rows take out (qcFormerlyExclusive):
     the addon ticked them when another of the group was handed in, so the login sync drops a tick
     the server doesn't confirm;
@@ -263,7 +264,7 @@ foreach ($m in (Read-DataLines 'reputation.jsonl' '^\{"quest":(\d+),"faction":(\
     $rewards[[int]$m[1]] += @("[$($m[2])]=$($m[3])")
     $factions[[int]$m[2]] = $true
 }
-$links = @(Read-DataLines 'links.jsonl' '^\{"quest":(\d+)(?:,"breadcrumbs":\[(\d+(?:,\d+)*)\])?(?:,"exclusiveWith":\[(\d+(?:,\d+)*)\])?\}$')
+$links = @(Read-DataLines 'links.jsonl' '^\{"quest":(\d+)(?:,"breadcrumbs":\[(\d+(?:,\d+)*)\])?(?:,"exclusiveWith":\[(\d+(?:,\d+)*)\])?(?:,"needsInLog":\[(\d+(?:,\d+)*)\])?\}$')
 $skills = @(Read-DataLines 'skills.jsonl' '^\{"quest":(\d+),"skill":(\d+),"level":(\d+)\}$')
 $factionName = @{}
 if ($factions.Count) { foreach ($row in Get-ClientTable 'Faction') { $factionName[[int]$row.ID] = $row.Name_lang } }
@@ -289,6 +290,8 @@ foreach ($row in (Get-ClientTable 'QuestLine' | Sort-Object { [int]$_.ID })) {
 foreach ($m in ($links | Where-Object { $_[2] })) { [void]$quest.Append("[$($m[1])]={$($m[2])},`r`n") }
 [void]$quest.Append("}`r`nqcMutuallyExclusive={`r`n")
 foreach ($m in ($links | Where-Object { $_[3] })) { [void]$quest.Append("[$($m[1])]={$($m[3])},`r`n") }
+[void]$quest.Append("}`r`nqcQuestNeedsInLog={`r`n")
+foreach ($m in ($links | Where-Object { $_[4] })) { [void]$quest.Append("[$($m[1])]={$($m[4])},`r`n") }
 $unlinked = @(Import-Csv $LinkFile | Where-Object { $_.Link -eq 'exclusive' -and $_.Decision -eq 'REMOVE' } |
     ForEach-Object { [int]$_.Quest; [int]$_.Other } | Where-Object { $inData[$_] } | Sort-Object -Unique)
 [void]$quest.Append("}`r`nqcFormerlyExclusive={$($unlinked -join ',')}`r`n")

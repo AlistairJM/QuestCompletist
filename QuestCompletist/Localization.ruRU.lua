@@ -89,6 +89,7 @@ qcLocalize = setmetatable({
 	LATERQUESTS = "... ещё %d", -- Needs review
 	THISQUEST = "это задание", -- Needs review
 	REQUIREDQUEST = "Требуется задание:", -- Needs review
+	INQUESTLOG = "%s в вашем журнале заданий", -- Needs review
 	REQUIREDFACTION = "Требуемая фракция:", -- Needs review
 	REQUIREDRENOWN = "Требуемый уровень известности:", -- Needs review
 	REQUIREDRANK = "Требуемый ранг:", -- Needs review

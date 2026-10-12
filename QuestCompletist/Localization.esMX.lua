@@ -89,6 +89,7 @@ qcLocalize = setmetatable({
 	LATERQUESTS = "... %d más", -- Needs review
 	THISQUEST = "esta misión", -- Needs review
 	REQUIREDQUEST = "Misión necesaria:", -- Needs review
+	INQUESTLOG = "%s en tu registro de misiones", -- Needs review
 	REQUIREDFACTION = "Facción necesaria:", -- Needs review
 	REQUIREDRENOWN = "Nivel de renombre necesario:", -- Needs review
 	REQUIREDRANK = "Rango necesario:", -- Needs review
