@@ -772,6 +772,10 @@ the probe of 9 October, and nothing flags them unavailable. `Build-QuestLocation
 holds them, and `Import-RecordedGivers.ps1` no longer counts Landfall among the holds it waives.
 
 - **Before.** 29 of the 73 had a pin (on 11 pins), 44 had none, 31 of those with a TrinityCore start.
+- **The nine the server refused.** 9 of the 31 newly pinned are the Horde dailies the server refused in the
+  9 October probe (32138, 32139, 32140, 32141, 32197, 32221, 32223, 32236, 32238). A refusal is a hint, not
+  proof (12 other Landfall quests went from refused to known between runs), and their `KEEP` rows in
+  `unavailable-quest-decisions.csv` now say they have pins, so a flag would take those pins off the map.
 - **Result** (build 12.1.0.69933, TrinityCore 1210.26091, master 9271dbb). The 31 pass every other
   rule of the pass and are placed at 37 start places (32236, 32237 and 32238 at three each). 36 places
   are new pins, one quest each and nameless; 32450 "The Time Is Now!" joined Blood Guard Gro'tash's pin
