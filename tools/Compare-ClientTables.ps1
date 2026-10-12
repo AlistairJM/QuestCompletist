@@ -31,8 +31,9 @@ quests' minimum levels (Apply-QuestMinLevels.ps1). It is cached as ContentTuning
 time, and a build whose copy lacks a column the formula reads (MinLevelSquish, MaxLevelSquish,
 MinLevelScalingOffset or MaxLevelScalingOffset) is a column change, whether or not an earlier copy exists.
 
-Two entries are compared with the rows whose names match a pattern ($rowPatterns below) instead of
-the rows of their own name. WoW's Anniversary is a new Holidays row every year, named with the
+Two entries are compared with the rows whose names match a pattern ($HolidayRowPatterns in
+HolidayTables.ps1) instead of the rows of their own name.
+WoW's Anniversary is a new Holidays row every year, named with the
 year's ordinal ("WoW's 22nd Anniversary" is 1808); the rows named plain "WoW's Anniversary" (590 and
 1587 to 1590) are left out, since the calendar didn't serve them when /qc holidays was run in game
 on 11 October 2026. The Skyriding Cups are a row per cup, each named "<Region> Cup" (Kalimdor
@@ -55,11 +56,8 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 if (-not $Build -and -not $ForeverBuild) { throw "Give -Build (retail) and/or -ForeverBuild." }
 . "$PSScriptRoot\QuestLevels.ps1"
+. "$PSScriptRoot\HolidayTables.ps1"
 $questLike = 'Quest|POI|UiMap|UIMap|Area|Journal|Campaign|Holiday|ContentTuning|Waypoint|Storyline|Expansion'
-$rowPatterns = @{
-    "WoW's Anniversary" = @{ Pattern = "^WoW's \d+(?:st|nd|rd|th) Anniversary$"; Row = "a new year's row" }
-    'Skyriding Cups' = @{ Pattern = "^(?:[\w'-]+ )+Cup$"; Row = "a row named like a cup (check that it is one)" }
-}
 
 function Get-TableList([string]$build) {
     $page = (Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2?build=$build").Content
@@ -147,29 +145,6 @@ function Compare-Build([string]$build, [string]$game) {
     $script:holidayNamesByGame[$game] = $names
 }
 
-# The last date of a Holidays row, with its end after the row's durations (hours). A date is packed:
-# minute, hour, weekday, day and month from 0, and the year from 2000, where 31 is every year; a row
-# that loops or has an every-year date never ends. A month, day, hour or minute set to its "any" value
-# counts as the latest it can mean.
-function Get-HolidayLastDate($row) {
-    $never = [pscustomobject]@{ Start = $null; End = [datetime]::MaxValue }
-    if ([int]$row.Looping -ne 0) { return $never }
-    $hours = 0
-    for ($i = 0; $i -lt 10; $i++) { $hours += [int]$row."Duration_$i" }
-    $last = $null
-    for ($i = 0; $i -lt 26; $i++) {
-        $packed = [long]$row."Date_$i"
-        if ($packed -le 0) { continue }
-        $year = ($packed -shr 24) -band 31
-        if ($year -eq 31) { return $never }
-        $month = [Math]::Min(12, (($packed -shr 20) -band 15) + 1)
-        $day = [Math]::Min([DateTime]::DaysInMonth(2000 + $year, $month), (($packed -shr 14) -band 63) + 1)
-        $start = New-Object DateTime (2000 + $year), $month, $day, ([Math]::Min(23, ($packed -shr 6) -band 31)), ([Math]::Min(59, $packed -band 63)), 0
-        if (-not $last -or $start -gt $last.Start) { $last = [pscustomobject]@{ Start = $start; End = $start.AddHours($hours) } }
-    }
-    return $last
-}
-
 # The build's copy of a table, downloaded once per run; the first run also caches it in tools\ as
 # <Table>-<build>.csv, so later runs compare its columns like any other table the tools read.
 function Get-BuildTable([string]$build, [string]$table, [string]$dir) {
@@ -184,18 +159,15 @@ function Get-BuildTable([string]$build, [string]$table, [string]$dir) {
 }
 
 function Compare-Holidays {
-    $core = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcCore.lua'))
-    $block = [regex]::Match($core, '(?s)local qcHolidays = \{(.*?)\r?\n\}').Groups[1].Value
-    $entries = [regex]::Matches($block, '\{flag=(\d+), name="((?:[^"\\]|\\.)*)", eventIDs=\{([\d, ]*)\}(?:, filter="(\w+)")?\}')
-    if ($entries.Count -eq 0) { throw "qcHolidays wasn't found in $AddonDir\qcCore.lua" }
+    $entries = Read-QcHolidays $AddonDir
     $games = @($script:holidaysByGame.Keys | Sort-Object)
     Write-Output "== qcHolidays against the calendar tables of $($games -join ' and ')"
     $filterOfType = @{ 0 = 'WEEKLY'; 1 = 'DARKMOON'; 2 = 'BATTLEGROUND' }
     $matched = 0; $absent = @()
     foreach ($e in $entries) {
-        $name = $e.Groups[2].Value
-        $ours = @($e.Groups[3].Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | ForEach-Object { [int]$_ })
-        $filter = if ($e.Groups[4].Success) { $e.Groups[4].Value } else { 'HOLIDAYS' }
+        $name = $e.Name
+        $ours = $e.IDs
+        $filter = $e.Filter
         foreach ($game in $games) {
             foreach ($id in $ours) {
                 if (-not $script:filterTypesByGame[$game].ContainsKey($id)) { continue }
@@ -207,7 +179,7 @@ function Compare-Holidays {
                 }
             }
         }
-        $byPattern = $rowPatterns[$name]
+        $byPattern = $HolidayRowPatterns[$name]
         $pattern = if ($byPattern) { $byPattern.Pattern }
         $client = @{}
         foreach ($game in $games) {
