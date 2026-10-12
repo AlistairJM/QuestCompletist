@@ -746,7 +746,11 @@ The same for an event off the calendar (a row with no name, the plain-named "WoW
 more dates or runs, new rows, an event that an entry now covers ("now covered by the entry ...", as for
 The Great Gnomeregan Run once it has its entry), and a new entry or fact are listed and don't fail. Only
 runs still to come are compared: one that has begun since the baseline is no change, so a run passing,
-the Darkmoon Faire's monthly move, and a sweep with nothing new in the tables say nothing. Once the
+the Darkmoon Faire's monthly move, and a sweep with nothing new in the tables say nothing beyond what
+time brings: an event's dates coming within the 90 days or running out, and a fact whose outcome turns
+as its days pass (the weekly fact below). A repeating row is kept as repeating, not by its date, so
+Blizzard moving a yearly holiday (Brewfest a week earlier, say) or shortening a run in the middle is no
+finding; the next-run list shows the new dates, and the per-game `/qc holidays` shows them in game. Once the
 findings and changes are read, `-UpdateBaseline` rewrites the three files' rows of the games run and
 keeps the others'. The 90 days: retail's patches come eight to twelve weeks apart, and each one's table dates
 the rotating events (the weekly bonus events, Timewalking, the Darkmoon Faire) a few months further, so
@@ -768,7 +772,11 @@ The tables answer these, each `holds`, `waits` or `fails`:
   2026, then waits until 17 November 2027 unless the 23rd's row comes first;
 - `weekly-every-day <region>`: some weekly bonus event is on that region's calendar, by its name, Flags
   and Region, every day from today to the last day the table dates one there; it fails on a day with
-  none, and when none is dated to come. The weekly bonus events are taken by name (`$WeeklyEventPattern`
+  none, and when none is dated to come. Its outcome can also turn with time alone, as the days with
+  none pass or the last dated run ends: on the 12.1.0 tables it fails today (no weekly event on 7 to 19
+  January and 28 January to 9 February 2027), holds from 10 February (only Timewalking 1583, 10 to 17
+  February, is left) and fails again from 18 February (none dated to come). Such a turn is a finding
+  like the others: read it, then `-UpdateBaseline`. The weekly bonus events are taken by name (`$WeeklyEventPattern`
   in `Review-Calendar.ps1`): the Battleground, Arena Skirmish, Pet Battle, World Quest, Delves and
   Apexis Bonus Events and the Timewalking, Midnight and older Dungeon Events, whatever calendar filter
   their row has (Timewalking's 1583 has `CalendarFilterType` 255, not the weekly 0, and the calendar

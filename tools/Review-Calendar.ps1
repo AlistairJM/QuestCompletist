@@ -38,7 +38,8 @@ A finding (exit 1) is
 The same for an event off the calendar (a nameless row, the plain-named "WoW's Anniversary" rows), more
 dates, more runs, new rows, an event that an entry now covers, and a new entry or fact are listed and
 don't fail. Only runs still to come are compared, so a run that passes, the Darkmoon Faire's monthly
-move, and a sweep with nothing new in the tables say nothing. A fact that fails, waits or is open is
+move, and a sweep with nothing new in the tables say nothing beyond what time brings (an event's dates
+coming within the window or running out, a fact whose outcome turns as its days pass). A fact that fails, waits or is open is
 listed every sweep, and is a finding only when its outcome changes. -UpdateBaseline rewrites the rows of
 the games run, once the findings and changes are read.
 
