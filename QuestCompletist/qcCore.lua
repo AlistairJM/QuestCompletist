@@ -216,6 +216,8 @@ local qcHolidays = {
 	{flag=262144, name="Hearthstone's 10th Anniversary", eventIDs={1462, 1578}},
 	{flag=524288, name="WoW's Anniversary", eventIDs={1808}},
 	{flag=1048576, name="Skyriding Cups", eventIDs={1395, 1400, 1407, 1429}},
+	{flag=2097152, name="Dastardly Duos", eventIDs={1599, 1673, 1689}},
+	{flag=4194304, name="The Great Gnomeregan Run", eventIDs={696}},
 }
 -- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
 -- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
