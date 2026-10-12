@@ -964,14 +964,16 @@ no source has a giver for it. The run stops at a `QuestInfo` named "World Quest"
 the table lacks, so a kind a new build adds is looked at, not pinned; add its line. A task kind that is
 not named "World Quest" and is not in the table is pinned: World Event (82), Emissary Quest (128) and
 Delve (288) would be as soon as the task-quest change (#295) adds quests of those kinds that have a
-start, so read the run's count of new task quests by kind before applying, and add a line to hold one. The tool needs
+start, so read the run's count of new task quests by kind before applying, and add a line to hold one.
+Since #295, the next run pins 175 of its quests, 52 of them World Event (decision 40 of
+[plans/open-items.md](plans/open-items.md)). The tool needs
 `UiMap.csv`, `QuestV2CliTask.csv` and `QuestInfo.csv` (it stops without the last two) as well as the
 tables above; step 5 downloads `UiMap.csv`, and step 1b `QuestV2CliTask.csv`, `QuestV2.csv` and
 `QuestInfo.csv`.
 
 A quest the client's export lists no point for at all gets its start from TrinityCore's
 `quest_poi` (point 32; point -1 is mostly the hand-in and is not used) when it is a normal quest
-of ours with no pin: not a task, system, holiday or retired quest, in `QuestV2`, not disabled in
+of ours with no pin: not a task, system or holiday quest, not flagged unavailable, in `QuestV2`, not disabled in
 TrinityCore, and not an auto-accepted one with no giver
 ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026,
 pins from TrinityCore", has the rules; a task quest is held only when its kind is in `$noPinKinds`). The
@@ -1106,13 +1108,13 @@ file as well, or the next run reads it again, and a pin that source helped to fi
 On retail's pins it fills a pin's missing NPC ID (with its name) when a trusted creature offered one
 of the pin's quests and stood within 1.5 map points of it; and it gives a quest that has no pin one,
 at the place its giver was most seen, or adds the quest to the pin that giver already has. The
-holds the TrinityCore pass puts on a quest that no creature offers (not in `QuestV2`, Landfall, a
+holds the TrinityCore pass puts on a quest that no creature offers (not in `QuestV2`, a
 holiday, a profession, a quest type other than 0, 1, 2, 4 and 128, and a task of a kind of
 `$noPinKinds` that the recorder doesn't hold itself) are waived when a creature offers it, and the report
 counts the quests by class; a world, bonus or hidden quest, a quest flagged unavailable, an internal name
 and a system category stay held, except six system categories whose quests mostly stand on a pin with an NPC
 already (World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver's Headquarters, Weekly Events:
-`` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
+`$allowedSystemCategories` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
 It never moves a pin, never changes an ID
 or a name that is there, never takes a quest off a pin, and writes no pin if any of that would
 happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
@@ -1152,7 +1154,9 @@ pins it removed; delete them, or `Apply-PinNpcIds.ps1` stops.
 start points like retail's, so only the half-point rule applies. The importer makes a pin for each
 object entry that starts a quest, and CMaNGOS gives some objects several entries of one name, so the
 first run, in October 2026, took quest 2933 off 10 "Venom Bottle" pins and quest 926 off one "Flawed
-Power Stones" pin, and removed those 11 pins.
+Power Stones" pin, and removed those 11 pins. Since 12 October 2026 the importer applies the same rule before
+it writes (`tools\DuplicatePins.ps1`, which both use), so on Forever this takes nothing off and only lists the
+one pair of Venom Bottle pins further apart.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
@@ -1616,20 +1620,24 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    quest, three that name a repeatable one, one of them as one of a choice). The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
    previous quest). Anything new is a finding to look at before the pull request.
-9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf`, then without `-WhatIf` if it lists anything
-   (see step 6): the importer's pins can share a name and a quest at one spot. Run it before
-   `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
+9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` (see step 6), as a check. Several CMaNGOS
+   entries of one object give pins of one name at one spot (Venom Bottle, Flawed Power Stones), and the
+   importer applies this tool's rule before it writes, so it should take nothing off and list only the one
+   pair of Venom Bottle pins further apart. A quest it would take off means the importer and the tool
+   disagree: find out why before running it without `-WhatIf`, which rebuilds `qcPinDB.lua` itself.
 
-With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
-`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables,
-CMaNGOS or the ledger, and is for review before its pull request. Until decision 36 of
+With the same sources, a rerun writes the same `quests.jsonl`, `pins.jsonl`, `links.jsonl`, `reputation.jsonl`,
+`skills.jsonl` and `answers.jsonl` byte for byte; `Test-ForeverImport.ps1` checks it on its own small world. So
+whatever changes in them comes from the game, the client's tables, CMaNGOS or the ledger, and is for review
+before its pull request. Until decision 36 of
 [plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
 place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
-file and can make the other of two rows 0.1 apart the place. On today's ledger that moves Thundris Windweaver
-(map 1439) from 37.4,40.1 to 37.4,40.2, 0.1 of a map point. The committed `pins.jsonl` is a rerun's since the
-import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
-start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
-replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)). A giver the recorders have met since
+file and can make the other of two rows 0.1 apart the place. That is why Thundris Windweaver's pin (map 1439)
+stands at 37.4,40.2 and not at 37.4,40.1, where the addon's file saw him more often. The committed `pins.jsonl`
+is the import of 12 October 2026 (build 70338, the ledger of #298), which moved 21 pins by 0.02 to 0.36 of a
+map point to the places the addon's own recorder file holds, and gave Trek to Ashenvale (990) a pin at
+Sentinel Selarin, whom CMaNGOS gives no spawn (the user reviewed each; see "A rerun of the import" in
+[plans/forever.md](plans/forever.md)). A giver the recorders have met since
 moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for Darcy in Lakeshire, who walks a path
 whose one end is her CMaNGOS spawn), because the recorder keeps where the player stood: the first import
 after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS" names a
@@ -2183,8 +2191,8 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 11 October 2026 they're 35,529 quests and 16,048
-  pins for retail, and 5,097 quests and 1,698 pins for Forever.
+  or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,084
+  pins for retail, and 5,097 quests and 1,699 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
@@ -2303,10 +2311,12 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also
   checks the reader against them). It must say "0 failed".
-- For changes to `Build-QuestLocationData.ps1`'s kinds of task quest (`$noPinKinds`), run
+- For changes to `Build-QuestLocationData.ps1`'s kinds of task quest (`$noPinKinds`) or to what its
+  TrinityCore pass holds, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLocationKinds.ps1` (made-up client
-  tables in a scratch folder, nothing downloaded). It must say "0 failed". Run the pin pipeline (step 6)
-  before and after and compare the pins by quest: only the kinds the change names may gain or lose one.
+  tables and a made-up TrinityCore dump in a scratch folder, read with Lua 5.1, nothing downloaded). It must
+  say "0 failed". Run the pin pipeline (step 6) before and after and compare the pins by quest: only the
+  quests the change names may gain or lose one.
 - For changes to `Audit-QuestTables.ps1` or `Remove-DuplicatePinQuests.ps1`, or to the data and tables they
   check on Forever, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverChecks.ps1`. It
   must say "0 failed". It makes small data in a scratch folder for both, and ends with the two run on Forever's
