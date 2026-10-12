@@ -281,10 +281,11 @@ placement already encoded. What it adds: 98 quests filed Uncategorized whose sor
 profession misfiles (15 Tailoring quests under Leatherworking, 12 Engineering quests under
 Enchanting, whose profession bit is also wrong: 4, Enchanting's, instead of 8), a starter-zone
 routing gap (the map ids 462, 460, 461 and 469 send the list to categories with no quests), and a way
-to see sort drift between builds. The profession misfiles were moved on 12 October 2026, and step 1d
-(`Sync-QuestProfessions.ps1`) now reads the sort as one of its sources of a quest's profession. Our category agrees with it for 96.4% of the quests that have an
+to see sort drift between builds. Our category agrees with it for 96.4% of the quests that have an
 expected category (28,437 of 29,484); about 560 of the 1,047 disagreements are the commonest filing of
-their sort or a parent or child of it, which is our deliberate regrouping.
+their sort or a parent or child of it, which is our deliberate regrouping. The profession misfiles were
+moved on 12 October 2026, and step 1d (`Sync-QuestProfessions.ps1`) now reads the sort as one of its
+sources of a quest's profession.
 
 ### Coverage and titles
 
@@ -379,7 +380,8 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
 3. The type changes of Recurrence and flags.
 4. The race changes of Races: the two contradictions and the 19 stale masks recommended, the 49
    narrowings a call.
-5. The Sort fixes, the 98 Uncategorized quests first.
+5. The Sort fixes, the 98 Uncategorized quests first. The 27 profession misfiles: **done**, 12 October
+   2026 (open-items.md row 18).
 6. Whether to keep "Starts from": only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`.
 
 ## Log
@@ -409,3 +411,7 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   merged after it, step 2g gave 4 of them a `minLevel` (57326 "Prototypes for Profit" lowered from 50 to 10;
   96746, 96995 and 97128 raised from 0 to 90), so the table holds 1,627, and 36868 and 36869 "Battle in
   Ashran", whose tuning has a minimum beyond the cap, joined class N (483).
+- 2026-10-12: the sort became a source of step 1d's profession tags (`Sync-QuestProfessions.ps1`, with
+  the API's category: Blizzard's profession heading), after players reported quests of other
+  professions on the map. The 27 profession misfiles of "Sort" moved to their own headings in the same
+  change, as rows of `quest-profession-decisions.csv`.
