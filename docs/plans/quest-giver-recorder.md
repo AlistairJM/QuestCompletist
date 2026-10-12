@@ -366,7 +366,7 @@ import again; a version the TOCs don't name is passed to both with `-Builds`, wh
 file that mixes a named and an unnamed version is read in part by both and does not stop, so its newest notes wait until
 `-Builds` names their version.
 Retail is untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
-small scratch world (80 checks, among them the files master's importer wrote there when the ledger holds the probe's
+small scratch world (106 checks since its classes section, among them the files master's importer wrote there when the ledger holds the probe's
 file alone, kept as written once by it), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
 import would move is measured in [forever.md](forever.md), "The importer reads the ledger".
 
