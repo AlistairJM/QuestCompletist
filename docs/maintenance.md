@@ -220,7 +220,9 @@ then every tool refuses to save.
    matched only the six cups' names in their HolidayNames (none in Forever's). Later that day,
    with Dastardly Duos and The Great Gnomeregan Run added (#314), retail and Forever gave no finding
    (of 23 holidays 21 matched, the two new ones by their own names, under the Holidays filter
-   their rows give, `CalendarFilterType` 255), nor did the PTR. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
+   their rows give, `CalendarFilterType` 255), nor did the PTR. With Call of the Scarab added
+   (#315), the same three builds gave no finding again (of 24 holidays 22 matched on retail and
+   Forever, the new one by its own name, row 638, under `CalendarFilterType` 255). Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
@@ -560,7 +562,10 @@ Relations quests of WoW's Anniversary (the alias for Secrets of Azeroth) and 7 o
 Duos quests (the API's category of that name; the other 4 have none). The anniversary's other 19
 quests are named by no signal (the API files them under the general "Seasonal", and neither
 TrinityCore's anniversary events nor our headings hold them), so step 2d checks them only through
-their `SET` rows, as it does The Great Gnomeregan Run's 47709. The first run also found quest 43472, filed under Midsummer while its
+their `SET` rows, as it does The Great Gnomeregan Run's 47709 and Call of the Scarab's 18 quests: the
+API gives those an area, Silithus (1377), and no category, TrinityCore has no event with them, and our
+heading for them is Silithus. With them tagged (#315), the run's counts and its 13 findings are the
+same, none new. The first run also found quest 43472, filed under Midsummer while its
 `PENDING` row said WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
 run takes about 20 seconds.
 
@@ -848,6 +853,16 @@ run says nothing. Retail's "What /qc holidays should print" now has a line for e
 the Scourge Invasion, the Ahn'Qiraj War Effort and Dastardly Duos among them ("not on the calendar in the
 next 12 months"), and The Great Gnomeregan Run (696) on its own line instead of under "Other calendar
 holidays".
+
+Later still, decision 35's answer added Call of the Scarab's entry (#315). Run again on the same tables,
+the review gave no finding and listed 5 changes: Call of the Scarab a new entry, dated to come on retail
+and on the PTR (every year, from 21 January 00:00 for 72 hours), where its event, 638, is "now covered by
+the entry", and with no date on Forever, whose table lacks the row; the decision's `dated 638` outcomes,
+under its new name, were new. With `-UpdateBaseline` the baseline holds 190 rows (24 entries for each
+game; 32 events on retail's and the PTR's calendars have no entry now), the same 383 in the rows file
+(638's on retail and on the PTR now an entry's) and 34 fact outcomes, and a run after it says nothing.
+Retail's "What /qc holidays should print" lists Call of the Scarab (638) on its own line instead of under
+"Other calendar holidays".
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (135 checks).
 
@@ -1724,11 +1739,16 @@ that its calendar event carries. The filter is the map's alone: the quest list k
 in their own categories. A pin is drawn while any one of its quests passes the filter, so a pin that
 holds a tagged quest and ordinary ones stays drawn out of season, and only a pin whose quests are all
 tagged, for holidays that aren't running, goes. On 9 October 2026 quest 81561 stood on three such
-mixed pins, and 11882 on one of its 8 pins. Stacked pins are drawn as one while any of them is: on
+mixed pins, and 11882 on one of its 8 pins; since the cups' quests were tagged (#310), 81561's three hold
+tagged quests alone, so 11882 is the only quest of a `SET` or `CORRECT` row with such a pin (recounted
+on 12 October 2026, #315). Stacked pins are drawn as one while any of them is: on
 Tanaris, three anniversary pins (47254's, Chromie's and Yllana's) share a stack of seven with
 Bobadormu's pin, which holds the weekly Timewalking quests 83274 and 85947 (untagged, the user's
 decision of 12 October 2026), and Alyx's three, whose Guest Relations quests are WoW's Anniversary's
 since #314, so out of season the stack stays, under Bobadormu's name, with the two weekly quests alone.
+In Ahn'Qiraj: The Fallen Kingdom, the pins of two Call of the Scarab turn-ins (45747 for the Horde and
+45755 for the Alliance, each holding its quest alone) stack with Windcaller Yessendra's, whose quests are
+untagged, so out of season her pin stays, under her name, without the turn-in.
 
 `/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
 running, each one's next dates, and any calendar holiday that isn't tied to a quest. Retail's list
@@ -1739,8 +1759,9 @@ whose 19 and 16 quests were tagged on 11 October 2026 (twelve of the cups' pinne
 2026 (#314) it also includes Dastardly Duos and The Great Gnomeregan Run, whose 11 quests and one
 were tagged that day (six and the one pinned), and the Scourge Invasion and the Ahn'Qiraj War Effort,
 whose 11 and 43 retail quests (none pinned) were tagged with them that day; the 57 Guest Relations
-quests took WoW's Anniversary, which now has 76 quests, 52 of them pinned. Each
-entry's line is the soonest event of any of its IDs, under that event's own name and ID, and under
+quests took WoW's Anniversary, which now has 76 quests, 52 of them pinned. Later that day (#315)
+Call of the Scarab joined them, with its 18 quests (the 16 turn-ins pinned), and left "Other calendar
+holidays". Each entry's line is the soonest event of any of its IDs, under that event's own name and ID, and under
 it a line for each other ID of the entry that the calendar has in its 12 months, soonest first, so
 each ID can be confirmed in game (Hallow's End's 324 and 1405, Love is in the Air's 423 and 335, the
 Darkmoon Faire's 479, 263 and 264, Hearthstone's 10th Anniversary's 1462 and 1578, the Skyriding Cups' four). Until 12
@@ -1781,7 +1802,12 @@ one, "The user ruled" for quests the user said belong to a holiday, "Left out by
 decision" for judgment calls the user left out, "Not decided", or, on `KEEP` rows, "Checked". The rows
 of decision 10's answers keep the evidence they had while pending and add "The user's decision of 12
 October 2026 (decision 10 of open-items.md)" with the user's words and the reason: 123 `SET` rows and
-77 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0.
+77 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0. The 18 `SET` rows of decision 35's answer
+(Call of the Scarab, #315) give the user's words and end "The user's decision of 12 October 2026
+(decision 35 of open-items.md)." The counts were recounted for every row on 12 October 2026 (#315):
+25 older rows were out of date, as pins came after them (the 12 Bar Tab Barrels, the 8 "Desecrate this
+Fire!" rows, 11886, 11964, 11966 and 82672 in `Pins`, and 81561 in `PinsAllYear`). A pin added or
+removed later leaves a row's counts as they were until the next recount.
 
 The evidence a tag rests on is Blizzard's API quest category when it is the holiday's own (the
 general "Seasonal" one names none), TrinityCore's `game_event_*_quest` and
@@ -1800,7 +1826,11 @@ anyway, since the rest were skipped already or TrinityCore has no start point fo
 October 2026 (#314), measured by running step 6's placement on scratch copies before and after: of
 the 72 quests tagged that day with no pin, 24 (15 of the Ahn'Qiraj War Effort, 9 of the Scourge
 Invasion) have a TrinityCore start but are disabled in TrinityCore, which the placement skipped already,
-and the other 48 have none; no location changed. The client's own points place a tagged quest as before.
+and the other 48 have none; no location changed. Nor for Call of the Scarab's two quests with no pin
+(#315), measured the same way: TrinityCore has a start for 45785 in Silithus but no giver, so the
+placement skipped it already as auto-accepted with no giver (it now skips it as a holiday quest), and
+none for 45787; `quest_locations.csv` and the review file came out the same. The client's own points
+place a tagged quest as before.
 
 Some events aren't on the calendar at all. The Scourge Invasion and the Ahn'Qiraj War Effort have
 entries in `qcHolidays` with no IDs, so the seasonal filter always hides their quests on the map, and
@@ -1915,6 +1945,23 @@ gnomes, filed under the general "Seasonal" in the API), has one pin, nameless, o
 only while the race runs. Neither event is in Forever's tables or data, so step 2b lists both as not on
 Forever's calendar, which is no finding.
 
+Call of the Scarab has an entry of its own since 12 October 2026 (#315, the user's answer to decision
+35: "yes, add the Call of the Scarab holiday"): flag 8388608 on row 638, the only row of its name, for
+every region, 72 hours from 21 January 00:00 every year, under the Holidays filter. `/qc holidays` on
+retail listed it under "Other calendar holidays" on 11 October 2026 and now lists it as the entry (next
+21 to 24 January 2027). Its 18 quests are the event's 16 turn-ins, 45747 to 45762 (four elemental
+items and four sigils of the Abyssal High Council, one ID per faction each, handed in for Qiraji
+Commendations), and the two "Call of the Scarab" quests 45785 (Horde) and 45787 (Alliance). The 16
+turn-ins stand on 24 pins, 20 in Silithus and 4 in Ahn'Qiraj: The Fallen Kingdom, each holding its quest
+alone, which show only while the event runs; the other two have none. On 11 October 2026 the user had
+kept the 16 shown and not flagged unavailable (decision 5), as the event is alive, and their `KEEP`
+rows in `unavailable-quest-decisions.csv` stay. No signal of step 2d names the event (the API files all
+18 under the area Silithus, 1377, with no category; TrinityCore has no event for it), so it checks them
+through their `SET` rows; step 2b matches the entry by its own name. 28 more quests of the event, 14
+meat turn-ins that wake the colossi and 14 world quests, are untagged until the user decides
+([open-items.md](plans/open-items.md), decision 39). Forever's tables have no row 638 and its data none
+of these quests, so step 2b lists the entry as not on Forever's calendar, which is no finding.
+
 Retail's calendar on 11 October 2026, as `/qc holidays` listed it on the user's realm (whose
 per-region rows are region 4's): every holiday our quests have was dated in the next 12 months
 except Hearthstone's 10th Anniversary, as expected. Brewfest (372) 2027-09-20 to 2027-10-06,
@@ -1936,8 +1983,8 @@ Festival (1052), Free T-Shirt Day (1053), Luminous Luminaries (1054), Classic As
 of Hotmogu (1169), Deepwind Dunk (1241), Shado-Pan Showdown (1244), Kalimdor Cup (1395), Eastern
 Kingdoms Cup (1400), Delves Bonus Event (1560), Darkspear Dash (1793), Midnight Dungeon Event (1803)
 and WoW's 22nd Anniversary (1808), which went into `qcHolidays` that day, as did the two cups, in
-the Skyriding Cups. So the calendar serves Call of the Scarab (638), whose flag is decision 35 of
-open-items.md, The Great Gnomeregan Run (696), whose entry came in on 12 October 2026 (#314), and the
+the Skyriding Cups. So the calendar serves Call of the Scarab (638) and The Great Gnomeregan Run
+(696), whose entries came in on 12 October 2026 (#315 and #314), and the
 Kalimdor and Eastern Kingdoms Cups, under those IDs. This list is the first comparison for step 2h's check in game: the
 review, run as of 11 October 2026, lists the same 58 IDs, and for each entry the same days (the
 Darkmoon Faire to 8 November 00:00, the end of the 7th). The IDs that decisions rest on are kept as
