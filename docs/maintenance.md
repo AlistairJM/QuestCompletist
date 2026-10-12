@@ -1467,11 +1467,12 @@ whatever changes in them comes from the game, the client's tables, CMaNGOS or th
 before its pull request. Until decision 36 of
 [plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
 place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
-file and can make the other of two rows 0.1 apart the place. On today's ledger that moves Thundris Windweaver
-(map 1439) from 37.4,40.1 to 37.4,40.2, 0.1 of a map point. The committed `pins.jsonl` is a rerun's since the
-import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
-start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
-replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)). A giver the recorders have met since
+file and can make the other of two rows 0.1 apart the place. That is why Thundris Windweaver's pin (map 1439)
+stands at 37.4,40.2 and not at 37.4,40.1, where the addon's file saw him more often. The committed `pins.jsonl`
+is the import of 12 October 2026 (build 70338, the ledger of #298), which moved 21 pins by 0.02 to 0.36 of a
+map point to the places the addon's own recorder file holds, and gave Trek to Ashenvale (990) a pin at
+Sentinel Selarin, whom CMaNGOS gives no spawn (the user reviewed each; see "A rerun of the import" in
+[plans/forever.md](plans/forever.md)). A giver the recorders have met since
 moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for Darcy in Lakeshire, who walks a path
 whose one end is her CMaNGOS spawn), because the recorder keeps where the player stood: the first import
 after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS" names a
@@ -1994,8 +1995,8 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 11 October 2026 they're 35,529 quests and 16,048
-  pins for retail, and 5,097 quests and 1,698 pins for Forever.
+  or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,048
+  pins for retail, and 5,097 quests and 1,699 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
