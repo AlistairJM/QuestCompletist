@@ -18,6 +18,10 @@ the Darkmoon Faire, and on retail to WoW's Anniversary, which must follow its ye
 the calendar didn't serve when it was checked in game on 11 October 2026, and to the Skyriding Cups,
 whose one flag must follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429).
 
+/qc holidays must list each ID of an entry that the calendar has in its 12 months, soonest first and
+once each, so a sweep can confirm every ID in game: Hallow's End's 324 and 1405, the Darkmoon Faire's
+479 in two months, and on retail the Kalimdor and Eastern Kingdoms Cups (1395 and 1400).
+
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua QuestCompletist QuestCompletist_Camelot.toc
@@ -573,6 +577,40 @@ else
 			check("/qc holidays lists it as running, under the cup's own name and ID", found, not found and said or nil)
 		end
 	end
+end
+
+print("/qc holidays lists every ID of an entry the calendar has in the next 12 months, soonest first, each once")
+do
+	local function on(year, month, day) return {year = year, month = month, monthDay = day, hour = 0, minute = 0} end
+	local events = quietOctober()
+	events[#events + 1] = holiday(1405, "Hallow's End", on(2027, 7, 25), on(2027, 8, 8))
+	events[#events + 1] = holiday(1400, "Eastern Kingdoms Cup", on(2027, 8, 24), on(2027, 9, 7))
+	events[#events + 1] = holiday(1395, "Kalimdor Cup", on(2027, 2, 23), on(2027, 3, 9))
+	for month = 11, 12 do
+		events[#events + 1] = holiday(479, "Darkmoon Faire", on(2026, month, 1), on(2026, month, 7), "calendarShowDarkmoon")
+	end
+	local ctx = load(withLockout(events))
+	ctx.login()
+	ctx.calendar.reply()
+	ctx.flush()
+	ctx.core.Print()
+	local said = "\n" .. table.concat(ctx.chat, "\n") .. "\n"
+	local hallows = said:find("\n  Hallow's End (324): 2026-10-18 04:00 to 2026-11-02 04:00\n    Hallow's End (1405): 2027-07-25 00:00 to 2027-08-08 00:00\n", 1, true) ~= nil
+	check("Hallow's End's second ID, 1405, has a line of its own under 324's", hallows, not hallows and said or nil)
+	local _, faires = said:gsub("Darkmoon Faire %(479%)", "")
+	check("the Darkmoon Faire's 479, on the calendar in two months, has one line", faires == 1, faires ~= 1 and ("lines: " .. faires) or nil)
+	local cupsFlag, cupsInUse = nil, false
+	for _, entry in ipairs(ctx.core.Holidays) do if entry.name == CUPS then cupsFlag = entry.flag end end
+	for _, flag in pairs(ctx.env.qcQuestHoliday) do if flag == cupsFlag then cupsInUse = true end end
+	if cupsInUse then
+		local cups = said:find("\n  Kalimdor Cup (1395): 2027-02-23 00:00 to 2027-03-09 00:00\n    Eastern Kingdoms Cup (1400): 2027-08-24 00:00 to 2027-09-07 00:00\n", 1, true) ~= nil
+		check("the cups' two IDs in the 12 months each have a line, the soonest first", cups, not cups and said or nil)
+	else
+		print("  no quest of this game has the Skyriding Cups' flag: the cups' lines skipped")
+	end
+	local others = said:match("Other calendar holidays, not tied to any quest:\n(.*)$") or ""
+	local apart = not others:find("(1405)", 1, true) and not others:find("(479)", 1, true) and not (cupsInUse and others:find("(1400)", 1, true))
+	check("none of the entries' IDs is among the other calendar holidays", apart, not apart and others or nil)
 end
 
 print("The game has none of the filters' CVars")
