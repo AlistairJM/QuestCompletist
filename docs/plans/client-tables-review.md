@@ -220,7 +220,10 @@ maximum is still not used (open-items.md decision 9).
   1808), is matched by those yearly names instead of its own, and a row of them that runs today or
   later and is missing from its entry is a finding (maintenance.md, "Holidays"). The Skyriding
   Cups, one entry for the four cups' rows since 11 October 2026, are matched the same way, by the
-  names "<Region> Cup".
+  names "<Region> Cup". Dastardly Duos (1599, 1673, 1689) and The Great Gnomeregan Run (696),
+  entries since 12 October 2026 (#314), and Call of the Scarab (638, #315, the same day) are
+  matched by their own names; with them, of 24 holidays 22 match on retail 12.1.0.69933 and
+  Forever 1.60.1.70338, and the other two are the Forever events with no row.
 - 2026-10-07: floors from UiMapGroupMember (recommendation 3), a rule in `Add-ZoneTableMaps.ps1`
   (#206): 25 floors joined the zone table (Black Temple's 7, Dawn of the Infinite's 8,
   Amirdrassil's 3 boughs, the Exodar's 3, Mardum's 2, Greymane Manor's main floor, Tazavesh's

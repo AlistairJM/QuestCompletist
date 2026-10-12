@@ -1026,7 +1026,7 @@ try {
     $run = Invoke-Tool $root
     foreach ($plainQuest in 664, 665, 666, 667, 668) { Check (-not ($run.Report -match "add   quest ${plainQuest}:.*held back")) "E46: quest $plainQuest is of an ordinary type and is not held back" }
     Check ($run.Report -match 'add   quest 660:.*held back by the pipeline as: holiday') 'E46: a holiday quest is named as one'
-    Check ($run.Report -match 'add   quest 661:.*held back by the pipeline as: Landfall') 'E46: a Landfall quest too'
+    Check (($run.Report -match 'add   quest 661:') -and -not ($run.Report -match 'add   quest 661:.*held back')) 'E46: a Landfall quest gets a pin and is not named as held back, as the pipeline no longer holds Landfall'
     Check ($run.Report -match 'add   quest 662:.*held back by the pipeline as: profession') 'E46: a profession quest too'
     Check ($run.Report -match 'add   quest 663:.*held back by the pipeline as: quest type 64') 'E46: and a quest of type 64'
     # ===================== what the review of 9 October 2026 found =====================
