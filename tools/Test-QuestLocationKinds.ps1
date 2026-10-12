@@ -4,11 +4,14 @@ scratch folder: nothing in the checkout is written and nothing is downloaded. A 
 QuestV2CliTask) is placed unless its QuestInfoID is a kind of $noPinKinds, a quest that has a pin already
 is placed whatever its kind, the run stops at a QuestInfo named World Quest that the table lacks, Dragonrider
 Racing (281) is placed and Calling Quest (271) is held, and deleting the 271 line is all it takes to pin the callings.
+On a made-up TrinityCore dump (read with Lua 5.1, -LuaExe), the TrinityCore pass places a Landfall quest the client
+lists no point for, under its starter, and still holds a quest of a holiday's category.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLocationKinds.ps1
 
 Ends with "N checks passed, M failed" and exits 1 on any failure.
 #>
+param([string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe')
 $ErrorActionPreference = 'Stop'
 $Builder = Join-Path $PSScriptRoot 'Build-QuestLocationData.ps1'
 $Passed = 0; $Failed = 0
@@ -68,13 +71,35 @@ function New-World([string]$name, [string]$extraInfo = '') {
     return $root
 }
 
-function Invoke-Builder([string]$root) {
+function Invoke-Builder([string]$root, [string]$tdbFile = '') {
+    $tdb = if ($tdbFile) { @('-TdbFile', $tdbFile, '-LuaExe', $LuaExe) } else { @('-LuaExe', "$root\no-lua.exe") }
     $saved = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
-    try { $out = @(& powershell -NoProfile -ExecutionPolicy Bypass -File "$root\scripts\Build-QuestLocationData.ps1" -ToolsDir "$root\tools" -DataDir "$root\data" -AddonDir "$root\addon" -LuaExe "$root\no-lua.exe" 2>&1) } finally { $ErrorActionPreference = $saved }
+    try { $out = @(& powershell -NoProfile -ExecutionPolicy Bypass -File "$root\scripts\Build-QuestLocationData.ps1" -ToolsDir "$root\tools" -DataDir "$root\data" -AddonDir "$root\addon" @tdb 2>&1) } finally { $ErrorActionPreference = $saved }
     $exit = $LASTEXITCODE
-    $placed = @()
-    if (Test-Path "$root\tools\quest_locations.csv") { $placed = @(Import-Csv "$root\tools\quest_locations.csv" | ForEach-Object { [int]$_.QuestID } | Sort-Object -Unique) }
-    return [pscustomobject]@{ Exit = $exit; Text = ($out | ForEach-Object { "$_" }) -join "`n"; Placed = ($placed -join ',') }
+    $rows = @()
+    if (Test-Path "$root\tools\quest_locations.csv") { $rows = @(Import-Csv "$root\tools\quest_locations.csv") }
+    $placed = @($rows | ForEach-Object { [int]$_.QuestID } | Sort-Object -Unique)
+    return [pscustomobject]@{ Exit = $exit; Text = ($out | ForEach-Object { "$_" }) -join "`n"; Placed = ($placed -join ','); Rows = $rows }
+}
+
+function Row([object[]]$values, [int]$columns) {
+    $all = @($values) + @(@(0) * ($columns - $values.Count))
+    return '(' + (($all | ForEach-Object { if ($_ -is [string]) { "'$_'" } else { "$_" } }) -join ',') + ')'
+}
+
+# Read-DumpTable stops at a table with fewer rows than a real dump has, so each table is padded with rows of
+# IDs no quest of the world uses.
+function Write-Dump([string]$path, [object[]]$tables) {
+    $writer = New-Object IO.StreamWriter($path, $false, (New-Object Text.UTF8Encoding($false)))
+    try {
+        foreach ($t in $tables) {
+            $rows = New-Object System.Collections.Generic.List[string]
+            foreach ($row in $t.Rows) { $rows.Add($row) }
+            $zeros = ',0' * ($t.Columns - 1)
+            for ($i = 0; $i -lt $t.Filler; $i++) { $rows.Add("($(900000 + $i)$zeros)") }
+            $writer.Write("INSERT INTO ``$($t.Name)`` VALUES " + ($rows -join ',') + ";`n")
+        }
+    } finally { $writer.Dispose() }
 }
 
 try {
@@ -115,6 +140,35 @@ try {
     Remove-Item "$root\tools\QuestInfo.csv"
     $r = Invoke-Builder $root
     Check ($r.Exit -ne 0) 'K6: without QuestInfo.csv the run stops'
+
+    $root = New-World 'trinitycore'
+    Copy-Item (Join-Path $PSScriptRoot 'Read-SqlDump.lua') "$root\scripts\Read-SqlDump.lua"
+    $tdbQuests = @{
+        2000 = @{ Line = '{"id":2000,"name":"Landfall daily","level":15,"zone":"Landfall","category":121,"type":4,"faction":1,"race":67108863,"class":8191}'; At = @(100, 100) }
+        2001 = @{ Line = '{"id":2001,"name":"Holiday category quest","level":10,"zone":"","category":31,"type":1,"faction":2,"race":67108863,"class":8191}'; At = @(-300, 300) }
+        2002 = @{ Line = '{"id":2002,"name":"Plain quest","level":10,"zone":"","category":10,"type":1,"faction":2,"race":67108863,"class":8191}'; At = @(-300, -300) }
+    }
+    $ids = @($tdbQuests.Keys | Sort-Object)
+    [IO.File]::AppendAllText("$root\data\quests.jsonl", ((@($ids | ForEach-Object { $tdbQuests[$_].Line }) -join "`n") + "`n"))
+    [IO.File]::WriteAllText("$root\tools\QuestV2.csv", "ID`r`n" + (($ids -join "`r`n") + "`r`n"))
+    Write-Dump "$root\tools\dump.sql" @(
+        @{ Name = 'quest_template'; Columns = 24; Filler = 30000; Rows = @($ids | ForEach-Object { Row @($_) 24 }) },
+        @{ Name = 'disables'; Columns = 3; Filler = 2000; Rows = @() },
+        @{ Name = 'creature_queststarter'; Columns = 2; Filler = 5000; Rows = @((Row @(7000, 2000) 2)) },
+        @{ Name = 'gameobject_queststarter'; Columns = 2; Filler = 1000; Rows = @() },
+        @{ Name = 'quest_poi'; Columns = 8; Filler = 40000; Rows = @($ids | ForEach-Object { Row @($_, 0, 0, 32, 0, 0, 0, 37) 8 }) },
+        @{ Name = 'quest_poi_points'; Columns = 5; Filler = 80000; Rows = @($ids | ForEach-Object { Row @($_, 0, 0, $tdbQuests[$_].At[0], $tdbQuests[$_].At[1]) 5 }) },
+        @{ Name = 'creature_template'; Columns = 4; Filler = 30000; Rows = @((Row @(7000, 0, 0, 'Landfall Giver') 4)) },
+        @{ Name = 'creature'; Columns = 14; Filler = 150000; Rows = @((Row @(1, 7000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100) 14)) }
+    )
+    $r = Invoke-Builder $root "$root\tools\dump.sql"
+    Equal $r.Exit 0 "K7: the run with a TrinityCore dump succeeds ($($r.Text.Substring(0, [math]::Min(600, $r.Text.Length))))"
+    $tc = @($r.Rows | Where-Object { $_.Source -eq 'trinitycore' })
+    Equal ((@($tc | ForEach-Object { $_.QuestID }) | Sort-Object) -join ',') '2000,2002' 'K7: TrinityCore''s starts place the Landfall quest and the plain one, not the quest of a holiday''s category'
+    $landfall = @($tc | Where-Object { $_.QuestID -eq '2000' })
+    Equal (($landfall | ForEach-Object { "$($_.UiMapID) $($_.MapX),$($_.MapY) $($_.GiverNpcId) $($_.GiverName)" }) -join '; ') '37 45,45 7000 Landfall Giver' 'K7: the Landfall quest stands at its start, named after its starter, whose spawn stands there'
+    Check ($r.Text -match 'not placed, holiday category: 1') 'K7: the quest of a holiday''s category is held as one'
+    Check ($r.Text -notmatch 'Landfall') 'K7: no reason the pass gives names Landfall'
 }
 finally {
     Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue
