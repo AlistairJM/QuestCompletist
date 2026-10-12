@@ -121,6 +121,10 @@ zones, whose frames reach over old ones (Mount Hyjal's covers parts of Felwood a
 Givers inside dungeons get no pin. A giver found in more than 3 places on one map, like the chickens
 that start CLUCK!, gets one pin on each of its maps, at its biggest group of spawns, when all its
 quests recur and none is a holiday's: those pins show all year. A holiday's givers keep every pin.
+CMaNGOS has several entries for some objects (Venom Bottle, Flawed Power Stones), each with its own spawns, so
+pins of one name can hold a quest at one spot: Remove-DuplicatePinQuests.ps1's rule (DuplicatePins.ps1) keeps it
+on one pin of those within half a map point of each other before the pins are written, so a rerun writes them as
+committed, with nothing left for that tool (step 10's item 9) to take off.
 A quest with no giver on a map gets a pin at its start point in the client's tables, if it has one,
 with no giver named: the tables don't say who stands there. A quest that has a giver's pin keeps it,
 and a start point more than 3 map points from all its pins on that map is listed for review. The
@@ -177,6 +181,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\DuplicatePins.ps1"
 . "$PSScriptRoot\RecordedGivers.ps1"
 . "$PSScriptRoot\QuestRemovals.ps1"
 . "$PSScriptRoot\ForeverAnswers.ps1"
@@ -1228,11 +1233,14 @@ $review | Sort-Object Kind, { [int]("0" + $_.Quest) }, { "$($_.Other)" } |
     Export-Csv -Path $ReviewFile -NoTypeInformation -Encoding UTF8
 
 $questList = @($records.Values | Sort-Object id)
-$pinList = @($pins.Values | Sort-Object map, Kind, GiverId, x, y)
+$duplicates = Remove-DuplicatePins @($pins.Values | Sort-Object map, Kind, GiverId, x, y)
+$pinList = $duplicates.Pins
 $fromBoth = @($questList | Where-Object { $cache.ContainsKey($_.id) -and $cmQuest.ContainsKey($_.id) }).Count
 $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $cmQuest.ContainsKey($_.id) }).Count
 Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, {3} from CMaNGOS only. {4} pins on {5} maps." -f
     $questList.Count, $fromBoth, $fromGame, ($questList.Count - $fromBoth - $fromGame), $pinList.Count, @($pinList | Select-Object -ExpandProperty map -Unique).Count)
+Write-Host ("Pins of one name at one spot: {0} quests taken off {1} pins, {2} pins removed; {3} quests stay on pins further apart." -f
+    $duplicates.TakenOff, $duplicates.Changed, $duplicates.Removed.Count, $duplicates.LeftAlone.Count)
 Write-Host ("Answer memory: {0} quests over {1} runs; {2} that the game didn't answer this run are kept from earlier ones; {3} have missed {4} runs in a row." -f
     $memory.Quests.Count, $memory.Runs.Count, @($questList | Where-Object { $carried[$_.id] }).Count, $gone.Count, $MaxMissedRuns)
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)

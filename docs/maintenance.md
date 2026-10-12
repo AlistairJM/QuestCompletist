@@ -996,7 +996,9 @@ pins it removed; delete them, or `Apply-PinNpcIds.ps1` stops.
 start points like retail's, so only the half-point rule applies. The importer makes a pin for each
 object entry that starts a quest, and CMaNGOS gives some objects several entries of one name, so the
 first run, in October 2026, took quest 2933 off 10 "Venom Bottle" pins and quest 926 off one "Flawed
-Power Stones" pin, and removed those 11 pins.
+Power Stones" pin, and removed those 11 pins. Since 12 October 2026 the importer applies the same rule before
+it writes (`tools\DuplicatePins.ps1`, which both use), so on Forever this takes nothing off and only lists the
+one pair of Venom Bottle pins further apart.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
@@ -1460,20 +1462,24 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    quest, three that name a repeatable one, one of them as one of a choice). The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
    previous quest). Anything new is a finding to look at before the pull request.
-9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf`, then without `-WhatIf` if it lists anything
-   (see step 6): the importer's pins can share a name and a quest at one spot. Run it before
-   `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
+9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` (see step 6), as a check. Several CMaNGOS
+   entries of one object give pins of one name at one spot (Venom Bottle, Flawed Power Stones), and the
+   importer applies this tool's rule before it writes, so it should take nothing off and list only the one
+   pair of Venom Bottle pins further apart. A quest it would take off means the importer and the tool
+   disagree: find out why before running it without `-WhatIf`, which rebuilds `qcPinDB.lua` itself.
 
-With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
-`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables,
-CMaNGOS or the ledger, and is for review before its pull request. Until decision 36 of
+With the same sources, a rerun writes the same `quests.jsonl`, `pins.jsonl`, `links.jsonl`, `reputation.jsonl`,
+`skills.jsonl` and `answers.jsonl` byte for byte; `Test-ForeverImport.ps1` checks it on its own small world. So
+whatever changes in them comes from the game, the client's tables, CMaNGOS or the ledger, and is for review
+before its pull request. Until decision 36 of
 [plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
 place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
-file and can make the other of two rows 0.1 apart the place. On today's ledger that moves Thundris Windweaver
-(map 1439) from 37.4,40.1 to 37.4,40.2, 0.1 of a map point. The committed `pins.jsonl` is a rerun's since the
-import of 10 October 2026 (build 70338), which moved the pin lines of quests 92748 to 92753 for the
-start point change of 8 October, and four NPC pins by under 0.1 of a map point, where a recorded spot
-replaced CMaNGOS's spawn (see [plans/forever.md](plans/forever.md)). A giver the recorders have met since
+file and can make the other of two rows 0.1 apart the place. That is why Thundris Windweaver's pin (map 1439)
+stands at 37.4,40.2 and not at 37.4,40.1, where the addon's file saw him more often. The committed `pins.jsonl`
+is the import of 12 October 2026 (build 70338, the ledger of #298), which moved 21 pins by 0.02 to 0.36 of a
+map point to the places the addon's own recorder file holds, and gave Trek to Ashenvale (990) a pin at
+Sentinel Selarin, whom CMaNGOS gives no spawn (the user reviewed each; see "A rerun of the import" in
+[plans/forever.md](plans/forever.md)). A giver the recorders have met since
 moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for Darcy in Lakeshire, who walks a path
 whose one end is her CMaNGOS spawn), because the recorder keeps where the player stood: the first import
 after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS" names a
@@ -1997,7 +2003,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,084
-  pins for retail, and 5,097 quests and 1,698 pins for Forever.
+  pins for retail, and 5,097 quests and 1,699 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.

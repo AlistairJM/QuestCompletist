@@ -1335,6 +1335,44 @@ code.
   needs a quest not in the data), the table audit (no new finding), and reachability on both games,
   whose best case now has the quest another needs in the log, as it has every prerequisite done.
 
+### A rerun of the import (12 October 2026)
+
+Two checks of the open pull requests on 12 October found that an import on master (f37f435), from build
+1.60.1.70338's tables and cache, classic-db z2815 and the main checkout's probe files, wrote a `pins.jsonl` 33 lines
+longer and 21 lines different from the committed one; the other five files were the same byte for byte. Measured
+on scratch copies, with each merge since the last change to the pins (#267) imported the same way:
+
+- **Before #306** (at #296 and at #298's merge) the only difference is 11 added lines: the duplicate object pins of
+  Venom Bottle (quest 2933, 10 pins) and Flawed Power Stones (926, 1) that step 10's item 9 has taken off every
+  import since 9 October. The committed file was that run's: import, then item 9.
+- **From #306 on** the import also moves 21 pins and adds one, the same at every merge since (setup 2 of "The
+  importer reads the ledger" above, reproduced to the pin): #306 made the importer read the ledger, #298 had put
+  the addon's own recorder file into it, and the pins were not regenerated, as that pull request said.
+- **The importer now takes the duplicates off itself.** `Remove-DuplicatePinQuests.ps1`'s rule moved into
+  `tools\DuplicatePins.ps1`, which the tool and the importer both use, and the importer applies it to its pins
+  before it writes, so a rerun writes `pins.jsonl` as committed and item 9 finds nothing to take off (it still
+  lists the one pair of Venom Bottle pins a point apart). An import on master followed by item 9 and an import
+  with this importer write the same file; retail's runs of the tool print the same as before.
+  `Test-ForeverImport.ps1` section J has three objects of one name start one quest, two of them 0.2 points apart
+  and one a point away: the quest stays on the first and the far one, and the tool then takes nothing off.
+- **The pins are regenerated** (1,698 to 1,699), after the user reviewed each change ("Commit all 22", 12
+  October). None of their quests has a start point in the client's tables. By cause:
+  - **A recorded place off the spawn by more than rounding** (6): Beached Sea Creature 4723 and 4728 (0.27,
+    0.36), Beached Sea Turtle 4725 and 4727 (0.23, 0.12), Sentinel Elissa Starbreeze and Erion Shadewhisper (0.07).
+  - **A recorded place that is the spawn to a tenth** (13, 0.02 to 0.06): Keryn Sylvius, Archaeologist Hollee,
+    Asterion, Balthule Shadowstrike, Beached Sea Turtle 4722, Buzzbox 323 and 411, Mysterious Red Crystal, Onu,
+    Sentinel Tysha Moonblade, Master Mathias Shaw, Renzik "The Shiv" and Chief Archaeologist Greywhisker. The rule
+    has always been that a recorded place wins, and the committed pins already follow it for 19 givers the probe
+    recorded, 11 of them exactly their spawn to a tenth; keeping the spawn where it rounds to the recorded place
+    would only move those 11 back.
+  - **Two rows 0.1 apart** (2): Sentinel Glynda Nal'Shea to 37.7,43.4, where the addon's file saw her 4 times (the
+    probe once, at 43.5); Thundris Windweaver to 37.4,40.2, by the visit sum of decision 36 alone (open-items.md
+    has what the proposed rule would move instead).
+  - **A new pin:** Trek to Ashenvale (990) at Sentinel Selarin, 39.3,43.5, whom CMaNGOS names but doesn't spawn.
+- **Checked:** with #308 and #309 merged, an import on the regenerated data writes all six files and the review
+  list byte for byte; item 9 takes nothing off; reachability, the table audit (6 findings, none new),
+  `Test-Completions.lua` on both TOCs, `Test-ForeverChecks.ps1` and `Test-ForeverImport.ps1` pass.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -1493,3 +1531,8 @@ code.
   them for its made-up build, and it read the real link and class lists. The world now has both tables and
   its own empty lists, and a section I checks the class rules (the starting items, the hand list, a
   prerequisite chain, and the rows the importer refuses): 106 checks.
+- 2026-10-12: a rerun of the import on master didn't write the committed `pins.jsonl`: the 11 duplicate object
+  pins item 9 takes off, and 21 moves and 1 new pin from the ledger #306 reads. The importer now takes the
+  duplicates off itself (`DuplicatePins.ps1`, shared with `Remove-DuplicatePinQuests.ps1`); section J of
+  `Test-ForeverImport.ps1` checks it (111 checks). The pins are regenerated after the user's review: 21 move by
+  0.02 to 0.36 to the addon's recorded places and Trek to Ashenvale gets one, 1,699 pins. See "A rerun of the import".
