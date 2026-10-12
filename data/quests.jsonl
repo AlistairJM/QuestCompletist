@@ -30018,9 +30018,9 @@
 {"id":76422,"name":"Infinity and Beyond","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5508,"prereq":76421}
 {"id":76423,"name":"No Limits","level":70,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5508}
 {"id":76425,"name":"Renowned with the Dream Wardens","level":70,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":76426,"name":"The Kalimdor Cup Circuit","level":30,"zone":"Kalimdor Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":76426,"name":"The Kalimdor Cup Circuit","level":30,"zone":"Kalimdor Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
 {"id":76427,"name":"A Dark Summons","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":5383,"prereq":75544}
-{"id":76429,"name":"The Kalimdor Cup Begins","level":30,"zone":"Kalimdor Cup","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":76429,"name":"The Kalimdor Cup Begins","level":30,"zone":"Kalimdor Cup","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
 {"id":76430,"name":"Beginning Impositions","level":30,"zone":"Darkmoon Faire","category":46,"type":1,"faction":2,"race":67108863,"class":256,"storyline":5383,"prereq":76427}
 {"id":76433,"name":"Ashen Soil","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5471,"prereq":77436,"minLevel":10}
 {"id":76434,"name":"Not Yet Lost","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5471,"prereq":76433,"minLevel":10}
@@ -30330,8 +30330,8 @@
 {"id":77833,"name":"Handling It: Concentrated Sophic Vellum","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5484}
 {"id":77835,"name":"Handling It: Rune of Shadowbinding","level":70,"zone":"Legendary","category":1303,"type":1,"faction":3,"race":67108863,"class":35,"storyline":5485}
 {"id":77838,"name":"Tattered Dreamleaf","level":70,"zone":"Legendary","category":1301,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77839,"name":"The Eastern Kingdoms Cup Circuit","level":30,"zone":"Eastern Kingdoms Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":77840,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":77839,"name":"The Eastern Kingdoms Cup Circuit","level":30,"zone":"Eastern Kingdoms Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
+{"id":77840,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
 {"id":77841,"name":"Ysera Invitational","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77842,"name":"Ysera Invitational - Advanced","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":77843,"name":"Ysera Invitational - Reverse","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -30411,14 +30411,14 @@
 {"id":78019,"name":"Shoreline Switchback - Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78020,"name":"Shoreline Switchback - Reverse Challenge","level":10,"zone":"Emerald Dream","category":1308,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":78033,"name":"Magical Bloom","level":1,"zone":"Emerald Dream","category":1308,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":78040,"name":"The Outland Cup Begins","level":30,"zone":"Outland Cup","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":78040,"name":"The Outland Cup Begins","level":30,"zone":"Outland Cup","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
 {"id":78041,"name":"Sky Mother's Ire","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78042,"name":"Aviana's Assessment","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78043,"name":"Q'onzu's Quandary","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78044,"name":"Appalling Pollen","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[78042,78043,77788],"minLevel":10}
 {"id":78045,"name":"Uproot the Cause","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[78043,78042,77788],"minLevel":10}
 {"id":78046,"name":"Overseer Oversight","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
-{"id":78047,"name":"The Outland Cup Circuit","level":30,"zone":"Outland Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":78047,"name":"The Outland Cup Circuit","level":30,"zone":"Outland Cup","category":1306,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
 {"id":78064,"name":"Q'onzu's Perception","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78065,"name":"The Q'onzu Query","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78066,"name":"The Answers You've Earned","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
@@ -30606,8 +30606,8 @@
 {"id":78871,"name":"Superbloom: Step 8","level":70,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78875,"name":"The Unkillable","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":128,"class":8191,"storyline":5504,"prereq":77882}
 {"id":78876,"name":"A Glowing Memento","level":70,"zone":"Amirdrassil The Dreams Hope","category":1344,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
-{"id":78880,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":194,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":78881,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":78880,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1048576}
+{"id":78881,"name":"The Eastern Kingdoms Cup Begins","level":30,"zone":"Unknown","category":148,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1048576}
 {"id":78890,"name":"Emerald Frenzy","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78892,"name":"Superbloom: Step 9","level":70,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":78893,"name":"A Scrap of Bronze","level":10,"zone":"Timerunning","category":427,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -30644,12 +30644,12 @@
 {"id":79021,"name":"Radiant Warnings","level":70,"zone":"The Harbinger","category":1348,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5519,"prereq":79020}
 {"id":79074,"name":"Summoning All Soldiers!","level":10,"zone":"Valdrakken","category":1306,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":79082,"name":"The Superbloom","level":70,"zone":"Emerald Dream","category":1308,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
-{"id":79127,"name":"The Outland Cup Begins","level":30,"zone":"Outland Cup","category":194,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":79128,"name":"The Outland Cup Begins","level":30,"zone":"Outland Cup","category":148,"type":1,"faction":2,"race":67108863,"class":8191}
-{"id":79130,"name":"The Northrend Cup Circuit","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":79131,"name":"The Northrend Cup Begins","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":79132,"name":"The Northrend Cup Begins","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":79133,"name":"The Northrend Cup Begins","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":79127,"name":"The Outland Cup Begins","level":30,"zone":"Outland Cup","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1048576}
+{"id":79128,"name":"The Outland Cup Begins","level":30,"zone":"Outland Cup","category":148,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1048576}
+{"id":79130,"name":"The Northrend Cup Circuit","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
+{"id":79131,"name":"The Northrend Cup Begins","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":1048576}
+{"id":79132,"name":"The Northrend Cup Begins","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1048576}
+{"id":79133,"name":"The Northrend Cup Begins","level":30,"zone":"Northrend Cup","category":1426,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1048576}
 {"id":79134,"name":"A Spring Awakening","level":1,"zone":"Noblegarden","category":145,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":512}
 {"id":79135,"name":"Quacking Down","level":1,"zone":"Noblegarden","category":145,"type":4,"faction":2,"race":67108863,"class":8191,"holiday":512}
 {"id":79136,"name":"A Spring Awakening","level":1,"zone":"Noblegarden","category":145,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":512}
@@ -32716,8 +32716,8 @@
 {"id":86704,"name":"Work It","level":70,"zone":"Unknown","category":1401,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":4096,"minLevel":1}
 {"id":86703,"name":"Work It","level":70,"zone":"Unknown","category":1404,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":4096,"minLevel":1}
 {"id":86699,"name":"Work It","level":70,"zone":"Unknown","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":4096,"minLevel":1}
-{"id":79125,"name":"The Kalimdor Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":79126,"name":"The Kalimdor Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":2,"race":67108863,"class":8191}
+{"id":79125,"name":"The Kalimdor Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":1048576}
+{"id":79126,"name":"The Kalimdor Cup Begins","level":30,"zone":"Unknown","category":0,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":1048576}
 {"id":77988,"name":"Test","level":10,"zone":"Unknown","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":86399,"name":"Don't Undermine the Crests","level":80,"zone":"Unknown","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":86396}
 {"id":81718,"name":"Report to the Trading Post","level":1,"zone":"Unknown","category":1403,"type":1,"faction":3,"race":67108863,"class":8191}

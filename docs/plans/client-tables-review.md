@@ -218,7 +218,9 @@ maximum is still not used (open-items.md decision 9).
   the 17 holidays match and the two Forever events have no row, as expected. Since 11 October 2026
   WoW's Anniversary, whose calendar event is a new row each year ("WoW's 22nd Anniversary" is
   1808), is matched by those yearly names instead of its own, and a row of them that runs today or
-  later and is missing from its entry is a finding (maintenance.md, "Holidays").
+  later and is missing from its entry is a finding (maintenance.md, "Holidays"). The Skyriding
+  Cups, one entry for the four cups' rows since 11 October 2026, are matched the same way, by the
+  names "<Region> Cup".
 - 2026-10-07: floors from UiMapGroupMember (recommendation 3), a rule in `Add-ZoneTableMaps.ps1`
   (#206): 25 floors joined the zone table (Black Temple's 7, Dawn of the Infinite's 8,
   Amirdrassil's 3 boughs, the Exodar's 3, Mardum's 2, Greymane Manor's main floor, Tazavesh's

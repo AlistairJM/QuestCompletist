@@ -1458,3 +1458,8 @@ nothing else. The gaps, and what the importer does with each now:
   prerequisite from `NextQuestId`, negative groups and `RequiredCondition`, 141 lead-ins close once
   the quest their `NextQuestInChain` names is taken, and the breadcrumb notice counts only the ones a
   character can take (#308). See "The rest of CMaNGOS's requirements".
+- 2026-10-12: `Test-ForeverImport.ps1`, which came with the ledger importer, failed on master once #307
+  merged: its scratch world had no `ChrClasses` or `ItemSparse` table, so the importer tried to download
+  them for its made-up build, and it read the real link and class lists. The world now has both tables and
+  its own empty lists, and a section I checks the class rules (the starting items, the hand list, a
+  prerequisite chain, and the rows the importer refuses): 106 checks.
