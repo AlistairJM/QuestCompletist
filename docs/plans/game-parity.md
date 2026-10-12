@@ -258,4 +258,5 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
   client's conditions on Midnight's quest lines and campaigns (`QuestConditions.ps1`) and campaign 270's chapter
   order, and drops required quests the map pass saw offered together with their quest and recurring links
   Blizzard doesn't name (recommendation 13's row). `qcPrereq.Text` leaves out a quest the data has no row for,
-  in both games' code. Forever's side is its own pull request: the CMaNGOS next quests the importer leaves out.
+  in both games' code. Forever needed nothing more: its importer has read CMaNGOS's next quests since #308 (291 of
+  293 links in its data; 7141 and 7142 are REMOVE rows).
