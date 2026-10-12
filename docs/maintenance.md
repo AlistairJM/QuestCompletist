@@ -1529,7 +1529,7 @@ and six Hearthstone quests, two of them pinned), and WoW's Anniversary and the S
 whose 19 and 16 quests were tagged on 11 October 2026 (seven and twelve of them pinned). It prints
 one line per entry: the soonest event of any of the entry's IDs, under that event's own name and
 ID, so an entry with several IDs (Hallow's End, Love is in the Air, the Darkmoon Faire, Hearthstone's
-10th Anniversary, the Dragonriding Cups) shows only its next one. A holiday there that should match one of ours, under a new ID, means an entry in
+10th Anniversary, the Skyriding Cups) shows only its next one. A holiday there that should match one of ours, under a new ID, means an entry in
 `qcHolidays` needs that ID adding.
 Step 2b of a sweep finds the same offline, from the client's Holidays and HolidayNames tables: for
 each entry in `qcHolidays`, every ID the client has under that name in either game, against the
