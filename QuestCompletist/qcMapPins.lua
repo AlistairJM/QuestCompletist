@@ -183,7 +183,8 @@ local function qcPinQuestNeeds(questId, state, anything)
         for _, part in ipairs(prereqParts) do
             if not qcPrereq.Met(part, false) then
                 if anything then return true end
-                needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcPrereq.Text(part, qcPrereqName, false))
+                local text = qcPrereq.Text(part, qcPrereqName, false)
+                if text then needs[#needs + 1] = string.format(ITEM_REQ_SKILL, text) end
             end
         end
     end

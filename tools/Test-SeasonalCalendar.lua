@@ -15,8 +15,16 @@ CVar and redraw from the day lists); whether the game really does hasn't been se
 The pins checked are the first ones in the data whose quests all belong to the Lunar Festival, and to
 the Darkmoon Faire, and on retail to WoW's Anniversary, which must follow its yearly row (1808, "WoW's
 22nd Anniversary") and not a per-region row named plain "WoW's Anniversary" (1587, region 4's), which
-the calendar didn't serve when it was checked in game on 11 October 2026, and to the Skyriding Cups,
-whose one flag must follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429).
+the calendar didn't serve when it was checked in game on 11 October 2026 (and so must the pin of
+83825, a Guest Relations quest of the 20th anniversary), and to the Skyriding Cups, whose one flag must
+follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429), and to The Great
+Gnomeregan Run (696) and Dastardly Duos, whose pins must follow any of its three rows (the stand-in
+calendar has no regions; 1689 is region 4's and 1599 another region's), and to Call of the Scarab
+(638), whose turn-ins' pins must show only while it runs.
+
+/qc holidays must list each ID of an entry that the calendar has in its 12 months, soonest first and
+once each, so a sweep can confirm every ID in game: Hallow's End's 324 and 1405, the Darkmoon Faire's
+479 in two months, and on retail the Kalimdor and Eastern Kingdoms Cups (1395 and 1400).
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-SeasonalCalendar.lua
@@ -79,7 +87,11 @@ local function quietOctober()
 end
 local LUNAR_FESTIVAL = holiday(327, "Lunar Festival", at(10, 2, 6), at(10, 16, 6))
 local ANNIVERSARY = "WoW's Anniversary"
+local GUEST_RELATIONS = 83825
 local CUPS = "Skyriding Cups"
+local GNOMEREGAN_RUN = "The Great Gnomeregan Run"
+local DUOS = "Dastardly Duos"
+local SCARAB = "Call of the Scarab"
 local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
 	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
 local function withLockout(events)
@@ -283,7 +295,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	for mapId in pairs(env.qcPinDB) do mapIds[#mapIds + 1] = mapId end
 	table.sort(mapIds)
 	ctx.pins = {}
-	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY, CUPS}) do
+	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY, CUPS, GNOMEREGAN_RUN, DUOS, SCARAB}) do
 		for _, mapId in ipairs(mapIds) do
 			for _, pin in ipairs(env.qcPinDB[mapId]) do
 				local allOfIt = #pin[6] > 0
@@ -295,10 +307,18 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 				end
 			end
 		end
-		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125})[holidayName]
+		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125, [GNOMEREGAN_RUN] = 47709, [DUOS] = 86503, [SCARAB] = 45747})[holidayName]
 		assert(flags[holidayName], "qcHolidays has no entry named " .. holidayName)
 		assert(ctx.pins[holidayName] or (probe and not env.qcQuestDatabase[probe]), "no pin of the " .. holidayName .. "'s quests in the data")
 	end
+	for _, mapId in ipairs(mapIds) do
+		for _, pin in ipairs(env.qcPinDB[mapId]) do
+			if pin[6][1] == GUEST_RELATIONS and not ctx.pins.guestRelations then
+				ctx.pins.guestRelations = {mapId = mapId, questId = pin[6][1], name = pin[3]}
+			end
+		end
+	end
+	assert(ctx.pins.guestRelations or not env.qcQuestDatabase[GUEST_RELATIONS], "no pin of quest " .. GUEST_RELATIONS .. " in the data")
 	ctx.pin = ctx.pins["Lunar Festival"]
 	return ctx
 end
@@ -542,10 +562,14 @@ else
 		ctx.login()
 		ctx.calendar.reply()
 		ctx.flush()
-		ctx.pin = ctx.pins[ANNIVERSARY]
-		ctx.openMap()
-		check(string.format("%s, the anniversary's pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
-			ctx.pinShown() == case[2], "answer: " .. ctx.active())
+		for _, which in ipairs({ANNIVERSARY, "guestRelations"}) do
+			ctx.pin = ctx.pins[which]
+			if ctx.pin then
+				ctx.openMap()
+				check(string.format("%s, the anniversary's pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
+					ctx.pinShown() == case[2], "answer: " .. ctx.active())
+			end
+		end
 	end
 end
 
@@ -573,6 +597,77 @@ else
 			check("/qc holidays lists it as running, under the cup's own name and ID", found, not found and said or nil)
 		end
 	end
+end
+
+for _, entry in ipairs({
+	{name = GNOMEREGAN_RUN, title = "The Great Gnomeregan Run: its pin shows only while row 696 runs", running = {
+		holiday(696, GNOMEREGAN_RUN, at(10, 9, 0), at(10, 11, 0))}},
+	{name = DUOS, title = "Dastardly Duos: its pins show while any of its rows runs", running = {
+		holiday(1689, DUOS, at(10, 6, 8), at(10, 20, 8)), holiday(1599, DUOS, at(10, 5, 8), at(10, 19, 8))}},
+	{name = SCARAB, title = "Call of the Scarab: its turn-ins' pins show only while row 638 runs", running = {
+		holiday(638, SCARAB, at(10, 9, 0), at(10, 12, 0))}},
+}) do
+	print(entry.title)
+	if not first.pins[entry.name] then
+		print("  no pin of the quests of " .. entry.name .. " in this game's data: skipped")
+	else
+		local cases = {{nil, false, "out of season"}}
+		for _, event in ipairs(entry.running) do
+			cases[#cases + 1] = {event, true, string.format("with %s (%d) running", event.title, event.eventID)}
+		end
+		for _, case in ipairs(cases) do
+			local events = quietOctober()
+			if case[1] then events[#events + 1] = case[1] end
+			local ctx = load(withLockout(events))
+			ctx.login()
+			ctx.calendar.reply()
+			ctx.flush()
+			ctx.pin = ctx.pins[entry.name]
+			ctx.openMap()
+			check(string.format("%s, the pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
+				ctx.pinShown() == case[2], "answer: " .. ctx.active())
+			if case[1] then
+				ctx.core.Print()
+				local said = table.concat(ctx.chat, "\n")
+				local found = said:find(string.format("Running|r %s (%d)", case[1].title, case[1].eventID), 1, true) ~= nil
+				check("/qc holidays lists it as running, under its own name and ID", found, not found and said or nil)
+			end
+		end
+	end
+end
+
+print("/qc holidays lists every ID of an entry the calendar has in the next 12 months, soonest first, each once")
+do
+	local function on(year, month, day) return {year = year, month = month, monthDay = day, hour = 0, minute = 0} end
+	local events = quietOctober()
+	events[#events + 1] = holiday(1405, "Hallow's End", on(2027, 7, 25), on(2027, 8, 8))
+	events[#events + 1] = holiday(1400, "Eastern Kingdoms Cup", on(2027, 8, 24), on(2027, 9, 7))
+	events[#events + 1] = holiday(1395, "Kalimdor Cup", on(2027, 2, 23), on(2027, 3, 9))
+	for month = 11, 12 do
+		events[#events + 1] = holiday(479, "Darkmoon Faire", on(2026, month, 1), on(2026, month, 7), "calendarShowDarkmoon")
+	end
+	local ctx = load(withLockout(events))
+	ctx.login()
+	ctx.calendar.reply()
+	ctx.flush()
+	ctx.core.Print()
+	local said = "\n" .. table.concat(ctx.chat, "\n") .. "\n"
+	local hallows = said:find("\n  Hallow's End (324): 2026-10-18 04:00 to 2026-11-02 04:00\n    Hallow's End (1405): 2027-07-25 00:00 to 2027-08-08 00:00\n", 1, true) ~= nil
+	check("Hallow's End's second ID, 1405, has a line of its own under 324's", hallows, not hallows and said or nil)
+	local _, faires = said:gsub("Darkmoon Faire %(479%)", "")
+	check("the Darkmoon Faire's 479, on the calendar in two months, has one line", faires == 1, faires ~= 1 and ("lines: " .. faires) or nil)
+	local cupsFlag, cupsInUse = nil, false
+	for _, entry in ipairs(ctx.core.Holidays) do if entry.name == CUPS then cupsFlag = entry.flag end end
+	for _, flag in pairs(ctx.env.qcQuestHoliday) do if flag == cupsFlag then cupsInUse = true end end
+	if cupsInUse then
+		local cups = said:find("\n  Kalimdor Cup (1395): 2027-02-23 00:00 to 2027-03-09 00:00\n    Eastern Kingdoms Cup (1400): 2027-08-24 00:00 to 2027-09-07 00:00\n", 1, true) ~= nil
+		check("the cups' two IDs in the 12 months each have a line, the soonest first", cups, not cups and said or nil)
+	else
+		print("  no quest of this game has the Skyriding Cups' flag: the cups' lines skipped")
+	end
+	local others = said:match("Other calendar holidays, not tied to any quest:\n(.*)$") or ""
+	local apart = not others:find("(1405)", 1, true) and not others:find("(479)", 1, true) and not (cupsInUse and others:find("(1400)", 1, true))
+	check("none of the entries' IDs is among the other calendar holidays", apart, not apart and others or nil)
 end
 
 print("The game has none of the filters' CVars")

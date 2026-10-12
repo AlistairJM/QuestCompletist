@@ -9,6 +9,9 @@ prerequisites in data\quests.jsonl, against every source that can speak to them:
     done, which close it. Where it speaks, it outranks TrinityCore;
   - the client's Faction table for -Build: which factions have renown or friendship ranks (as The
     Weaver has), and their English names;
+  - the client's conditions on the current expansion's quest lines and campaigns (QuestConditions.ps1,
+    -Campaign), which Sync-QuestPrerequisites.ps1 adds: a quest they name is the client's, the hidden
+    90806 included, so it's neither missing from the data nor one the API should name;
   - TrinityCore's world database, the newest tools\tdb\TDB_full_world_*.sql, for older quests:
     breadcrumbs (BreadcrumbForQuestId), groups of which only one can be done (a positive
     ExclusiveGroup) and previous quests (a positive PrevQuestID). It only speaks for a quest it has a
@@ -49,7 +52,8 @@ param(
     [string]$TdbFile = "",
     [string]$DecisionsFile = '',
     [string]$OutFile = "",
-    [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe"
+    [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
+    [int]$Campaign = 270
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
@@ -268,6 +272,16 @@ function Test-StepJustBefore([int]$id, [int]$prev) {
     $a = $order["$line|$prev"]; $b = $order["$line|$id"]
     return ($null -ne $a) -and ($null -ne $b) -and ($b - $a -eq 1)
 }
+# The client's conditions on the current expansion's quest lines and campaigns (QuestConditions.ps1):
+# the quests they name, the hidden 90806 among them, are the client's, not ones the API should name.
+$fromConditions = @{}
+if (-not $OwnDataOnly) {
+    . "$PSScriptRoot\QuestConditions.ps1"
+    foreach ($gate in (Get-ConditionGates (Import-ClientConditions $ToolsDir $Build) $Campaign $quests)) {
+        $named = Get-ConditionQuests $gate.Gate
+        foreach ($id in $gate.Quests) { foreach ($other in $named) { $fromConditions["$id|$other"] = $true } }
+    }
+}
 $tcNotTaken = 0
 foreach ($id in ($quests.Keys | Sort-Object)) {
     $value = $quests[$id].prereq
@@ -277,6 +291,7 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
         $ours = Get-PrereqQuests $value
         $musts = @(if ($value -is [array]) { $value | Where-Object { $_ -isnot [array] } } else { $value })
         foreach ($prereq in $ours) {
+            if ($fromConditions.ContainsKey("$id|$prereq")) { continue }
             if (-not $quests.ContainsKey($prereq)) { Add-Finding 'prereq: quest not in the data' $id $prereq '' }
             elseif (-not (Test-Checkable $id $prereq)) { Add-Finding 'prereq: recurring quest' $id $prereq "$(Get-QuestName $prereq) is type $($quests[$prereq].type), which the game doesn't keep as done" }
             if ($prereq -eq $id) { Add-Finding 'prereq: requires itself' $id $prereq '' }
