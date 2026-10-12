@@ -807,7 +807,7 @@ the table lacks, so a kind a new build adds is looked at, not pinned; add its li
 not named "World Quest" and is not in the table is pinned: World Event (82), Emissary Quest (128) and
 Delve (288) would be as soon as the task-quest change (#295) adds quests of those kinds that have a
 start, so read the run's count of new task quests by kind before applying, and add a line to hold one.
-Since #295, the next run pins 175 of its quests, 52 of them World Event (decision 39 of
+Since #295, the next run pins 175 of its quests, 52 of them World Event (decision 40 of
 [plans/open-items.md](plans/open-items.md)). The tool needs
 `UiMap.csv`, `QuestV2CliTask.csv` and `QuestInfo.csv` (it stops without the last two) as well as the
 tables above; step 5 downloads `UiMap.csv`, and step 1b `QuestV2CliTask.csv`, `QuestV2.csv` and

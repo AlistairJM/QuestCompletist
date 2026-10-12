@@ -823,7 +823,7 @@ holds them, and `Import-RecordedGivers.ps1` no longer counts Landfall among the 
   none of them Landfall's (202 places; kind 0 77, World Event 82 52, Group 1 20, Important Quest 282 12,
   World Boss 289 5, Meta Quest 284 4, Heroic 85 2, Dungeon 81 2, Raid 62 1): 186 new pins, and 11382
   and 11386 join Wind Trader Zhareem's pin. That is not this decision, so every round here left those
-  175 quests' rows out of `quest_locations.csv` after the location step (decision 39 of open-items.md).
+  175 quests' rows out of `quest_locations.csv` after the location step (decision 40 of open-items.md).
   So filtered, a round with master's scripts changed no byte, a round with the hold gone changed
   `Assemble-PinDB.ps1`'s result alone, and the next round, and one on the checkout's own files, changed
   nothing. Step 6d (`-WhatIf`) fills and adds nothing.
