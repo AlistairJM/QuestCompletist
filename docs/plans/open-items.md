@@ -64,6 +64,16 @@ again.
   (Netherstorm) should show "Type: Dungeon" and its storyline's name in your language. Forever: 19 "Tharil'zun"
   (Redridge Mountains) should show "Type: Elite". A storyline name still in English on another language's client
   is expected for about 2 quests in 100 (the game names a larger quest line); say if it is more.
+- **Midnight's "unfinished requirements" gates** (12 October 2026, data and the tooltip's text, untried in game).
+  Two lines on retail say whether the hidden quest 90806, which the client's conditions accept in place of
+  Voidstorm's 86509 and 86565 and which campaigns 284 and 324 require, is a character's or the warband's.
+  On a character that finished the campaign and on one that hasn't:
+  `/run for _,q in ipairs({90806,86509,86565}) do print(q,C_QuestLog.IsQuestFlaggedCompleted(q),C_QuestLog.IsQuestFlaggedCompletedOnAccount(q)) end`.
+  The addon reads the first column. If 90806 is true only in the second on a character the game lets into
+  Voidstorm's side lines, the check must read the warband's. And on an alt with no Midnight progress,
+  `/run local m=2437 C_QuestLine.RequestQuestLinesForMap(m) C_Timer.After(3,function() for _,q in ipairs(C_QuestLine.GetAvailableQuestLines(m)) do print(q.questID,q.questName) end end)`
+  lists what the game offers in Zul'Aman. The simulation with nothing done shows 56 Zul'Aman pins on a
+  level-90 Blood Elf; any the game doesn't list is a leak no Blizzard data explains.
 - **Waypoints without TomTom** (#300, built 11 October 2026, untried in game). With TomTom disabled, click a pin
   on a zone's map on each game and look for Blizzard's waypoint arrow. If nothing appears,
   `/run print(C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingPinDisabled), C_Map.CanSetUserWaypointOnMap(C_Map.GetBestMapForUnit("player")))`
@@ -339,7 +349,23 @@ again.
   look through them with `-WhatIf` ([menu-review.md](menu-review.md)).
 - **265 quest IDs on pins or prerequisites with no quest row** (261 on pins only, 4 prerequisites
   only: 30490, 54130, 59174, 89285): parked since phase 2 of
-  [data-cleanup.md](data-cleanup.md); the menu review found nothing new.
+  [data-cleanup.md](data-cleanup.md); the menu review found nothing new. Since 12 October 2026 the
+  tooltip and the pins' "Requires" text leave such a quest out and still count it, as for the
+  client's hidden 90806 (`qcPrereq.Text`).
+- **What still shows with "unfinished requirements" hidden** on a level-90 character with no Midnight
+  progress (12 October 2026, after the client's conditions and the campaign's chapter order): Eversong 67
+  of 200 pinned quests, Silvermoon 96 of 214, Zul'Aman 56 of 197, Harandar 63 of 174, Voidstorm 18 of 144,
+  The Coiled Isle 49 of 82. Blizzard's API names no required quest for any of the 186 shown on the last
+  four maps, and their lines have no condition the client lets us read, so no source gates them.
+  Most are 12.1 side lines (Coiled Isle's 6264 shows all 11 steps). Ways on: the game's own offers at run time
+  ([game-api-review.md](game-api-review.md), recommendation 9), or a reviewed per-line list. Also left:
+  - The recurring links Blizzard doesn't name were dropped (544). That also shows Saltheril's Haven's 20
+    dailies and weeklies (line 5841, Eversong) and Broken Throne's 4 dailies (5951, Zul'Aman) to a
+    character that hasn't unlocked them; neither line has a condition the client lets us read.
+  - Campaigns 357 to 359 (Val and Naigtal, 12.1) have only a world-state condition (5703); Voidstorm's
+    continent count at level 80 is 31 (54 before), mostly those.
+  - Zul'Aman's line 6011 needs line 5724 done or a warband-wide test (ModifierTree type 383) that a
+    prerequisite can't say, so it has no gate.
 
 ## Code to finish
 
