@@ -600,7 +600,7 @@ end
 for _, entry in ipairs({
 	{name = GNOMEREGAN_RUN, title = "The Great Gnomeregan Run: its pin shows only while row 696 runs", running = {
 		holiday(696, GNOMEREGAN_RUN, at(10, 9, 0), at(10, 11, 0))}},
-	{name = DUOS, title = "Dastardly Duos: its pins show while its region 4 row or another region's runs", running = {
+	{name = DUOS, title = "Dastardly Duos: its pins show while any of its rows runs", running = {
 		holiday(1689, DUOS, at(10, 6, 8), at(10, 20, 8)), holiday(1599, DUOS, at(10, 5, 8), at(10, 19, 8))}},
 }) do
 	print(entry.title)
