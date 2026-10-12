@@ -31,13 +31,15 @@ quests' minimum levels (Apply-QuestMinLevels.ps1). It is cached as ContentTuning
 time, and a build whose copy lacks a column the formula reads (MinLevelSquish, MaxLevelSquish,
 MinLevelScalingOffset or MaxLevelScalingOffset) is a column change, whether or not an earlier copy exists.
 
-WoW's Anniversary is a new Holidays row every year, named with the year's ordinal ("WoW's 22nd
-Anniversary" is 1808), so its entry is compared with the rows of those names, $yearlyNames below,
-and not with the rows named plain "WoW's Anniversary" (590 and 1587 to 1590), which the calendar
-didn't serve when /qc holidays was run in game on 11 October 2026. A row of those names that runs on
--Today or later and isn't in the entry is a finding: add its ID to the entry. Rows with no date to
-come, such as past years', are left out, and the entry keeps its past IDs, which cost nothing once
-their dates are gone.
+Two entries are compared with the rows whose names match a pattern ($rowPatterns below) instead of
+the rows of their own name. WoW's Anniversary is a new Holidays row every year, named with the
+year's ordinal ("WoW's 22nd Anniversary" is 1808); the rows named plain "WoW's Anniversary" (590 and
+1587 to 1590) are left out, since the calendar didn't serve them when /qc holidays was run in game
+on 11 October 2026. The Skyriding Cups are a row per cup, each named "<Region> Cup" (Kalimdor
+1395, Eastern Kingdoms 1400, Outland 1407, Northrend 1429; HolidayNames also has the Pandaria and
+Broken Isles Cups, with no row yet). A row matching the pattern that runs on -Today or later and
+isn't in the entry is a finding: add its ID to the entry. Rows with no date to come, such as past
+years', are left out, and the entry keeps its past IDs, which cost nothing once their dates are gone.
 
   .\Compare-ClientTables.ps1 -Build 12.1.0.69933 -ForeverBuild 1.60.1.70245
 #>
@@ -54,7 +56,10 @@ $ProgressPreference = 'SilentlyContinue'
 if (-not $Build -and -not $ForeverBuild) { throw "Give -Build (retail) and/or -ForeverBuild." }
 . "$PSScriptRoot\QuestLevels.ps1"
 $questLike = 'Quest|POI|UiMap|UIMap|Area|Journal|Campaign|Holiday|ContentTuning|Waypoint|Storyline|Expansion'
-$yearlyNames = @{ "WoW's Anniversary" = "^WoW's \d+(?:st|nd|rd|th) Anniversary$" }
+$rowPatterns = @{
+    "WoW's Anniversary" = @{ Pattern = "^WoW's \d+(?:st|nd|rd|th) Anniversary$"; Row = "a new year's row" }
+    'Skyriding Cups' = @{ Pattern = "^(?:[\w'-]+ )+Cup$"; Row = "a row named like a cup (check that it is one)" }
+}
 
 function Get-TableList([string]$build) {
     $page = (Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2?build=$build").Content
@@ -202,7 +207,8 @@ function Compare-Holidays {
                 }
             }
         }
-        $pattern = $yearlyNames[$name]
+        $byPattern = $rowPatterns[$name]
+        $pattern = if ($byPattern) { $byPattern.Pattern }
         $client = @{}
         foreach ($game in $games) {
             $byName = $script:holidaysByGame[$game]
@@ -223,7 +229,7 @@ function Compare-Holidays {
             if ($pattern) {
                 $row = $script:holidayRowsByGame[$client[$id][0]][$id]
                 $when = if ($dated[$id].Start) { "from $($dated[$id].Start.ToString('yyyy-MM-dd'))" } else { 'every year' }
-                Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')), `"$($script:holidayNamesByGame[$client[$id][0]][$row.HolidayNameID])`" $when, a new year's row that qcHolidays lacks: add $id to the eventIDs of `"$name`" in qcHolidays"
+                Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')), `"$($script:holidayNamesByGame[$client[$id][0]][$row.HolidayNameID])`" $when, $($byPattern.Row) that qcHolidays lacks: add $id to the eventIDs of `"$name`" in qcHolidays"
             } else {
                 Write-Output "  ${name}: the client has ID $id ($($client[$id] -join ', ')) that qcHolidays lacks"
             }
