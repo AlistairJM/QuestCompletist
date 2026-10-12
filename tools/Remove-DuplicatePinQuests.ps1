@@ -14,13 +14,15 @@ For each quest on two or more pins with the same name, each within 3 map points 
      nothing in the data says either is wrong.
 Where pins tie, the quest stays on the one with the most quests, then one with an NPC ID, then the
 first in the file. A pin left with no quests is removed. Pins with different names that offer the
-same quest are different quest givers (class trainers), and keep it.
+same quest are different quest givers (class trainers), and keep it. The rule is in DuplicatePins.ps1.
 
 Only data\pins.jsonl changes, then qcPinDB.lua is rebuilt. Running it again changes nothing.
   .\Remove-DuplicatePinQuests.ps1 -WhatIf     lists what would change
   .\Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf     the same on data\forever\pins.jsonl, whose
         pins the importer writes; Forever has no equivalent of retail's start points in
-        quest_locations.csv, so only the second rule applies, and it has no decisions file
+        quest_locations.csv, so only the second rule applies, and it has no decisions file. The
+        importer applies the same rule before it writes, so this finds nothing to take off there and
+        only lists the quests left on pins further apart
 #>
 param(
     [string]$Game = 'retail',
@@ -32,22 +34,12 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\DuplicatePins.ps1"
 if ($Game -notin 'retail', 'forever') { throw "-Game must be retail or forever." }
 $forever = $Game -eq 'forever'
 if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot $(if ($forever) { '..\data\forever' } else { '..\data' }) }
 if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot $(if ($forever) { '..\QuestCompletist\Forever' } else { '..\QuestCompletist' }) }
 if (-not $DecisionsCsv -and -not $forever) { $DecisionsCsv = Join-Path $PSScriptRoot '..\docs\plans\pin-npc-id-decisions.csv' }
-
-$groupDistance = 3.0
-$sameSpot = 1.5
-$drawnAsOne = 0.5
-
-$pins = @(Read-PinData $DataDir)
-$count = $pins.Count
-$x = New-Object double[] $count
-$y = New-Object double[] $count
-for ($i = 0; $i -lt $count; $i++) { $x[$i] = [double]$pins[$i].x; $y[$i] = [double]$pins[$i].y }
-function Get-Distance([int]$a, [int]$b) { $dx = $x[$a] - $x[$b]; $dy = $y[$a] - $y[$b]; return [math]::Sqrt($dx * $dx + $dy * $dy) }
 
 $startPoints = @{}
 foreach ($row in $(if ($forever) { @() } else { Import-Csv "$ToolsDir\quest_locations.csv" })) {
@@ -56,107 +48,21 @@ foreach ($row in $(if ($forever) { @() } else { Import-Csv "$ToolsDir\quest_loca
     $startPoints[$key].Add([double[]]@([double]$row.MapX, [double]$row.MapY))
 }
 
-# Pins are kept as indexes: every [pscustomobject] hashes alike, so keying a hashtable by pin is slow.
-$pinsOf = @{}
-for ($i = 0; $i -lt $count; $i++) {
-    if ($null -eq $pins[$i].name) { continue }
-    foreach ($questId in $pins[$i].quests) {
-        $key = "$($pins[$i].map)|$($pins[$i].name)|$questId"
-        if (-not $pinsOf.ContainsKey($key)) { $pinsOf[$key] = New-Object System.Collections.Generic.List[int] }
-        $pinsOf[$key].Add($i)
-    }
-}
-
-function Get-Preferred([int[]]$candidates) {
-    return $candidates | Sort-Object { -$pins[$_].quests.Count }, { if ($pins[$_].npc) { 0 } else { 1 } }, { $_ } | Select-Object -First 1
-}
-function Get-PinText([int]$i) {
-    $pin = $pins[$i]
-    return "$($pin.name)$(if ($pin.npc) { " [$($pin.npc)]" }) at $($pin.x), $($pin.y)"
-}
-
-$drop = @{}
-$leftAlone = New-Object System.Collections.Generic.List[string]
-foreach ($key in ($pinsOf.Keys | Sort-Object)) {
-    $holders = $pinsOf[$key]
-    if ($holders.Count -lt 2) { continue }
-    $map, $name, $questId = $key -split '\|', 3
-
-    $group = @{}
-    foreach ($i in $holders) { $group[$i] = $i }
-    $changed = $true
-    while ($changed) {
-        $changed = $false
-        foreach ($a in $holders) {
-            foreach ($b in $holders) {
-                if ($group[$a] -lt $group[$b] -and (Get-Distance $a $b) -le $groupDistance) { $group[$b] = $group[$a]; $changed = $true }
-            }
-        }
-    }
-
-    foreach ($members in ($holders | Group-Object { $group[$_] })) {
-        $near = [int[]]@($members.Group)
-        if ($near.Count -lt 2) { continue }
-        $keep = New-Object System.Collections.Generic.List[int]
-        foreach ($point in $startPoints["$map|$questId"]) {
-            $best = [double]::MaxValue
-            foreach ($i in $near) {
-                $dx = $x[$i] - $point[0]; $dy = $y[$i] - $point[1]
-                $best = [math]::Min($best, [math]::Sqrt($dx * $dx + $dy * $dy))
-            }
-            if ($best -gt $sameSpot) { continue }
-            $nearest = Get-Preferred @($near | Where-Object { $dx = $x[$_] - $point[0]; $dy = $y[$_] - $point[1]; [math]::Sqrt($dx * $dx + $dy * $dy) -le $best + 1e-9 })
-            if (-not $keep.Contains($nearest)) { $keep.Add($nearest) }
-        }
-        if ($keep.Count -eq 0) {
-            $spots = New-Object System.Collections.Generic.List[object]
-            foreach ($i in $near) {
-                $spot = $null
-                foreach ($s in $spots) { if ((Get-Distance $s[0] $i) -le $drawnAsOne) { $spot = $s; break } }
-                if ($null -ne $spot) { $spot.Add($i) } else { $spots.Add((New-Object System.Collections.Generic.List[int] (, [int[]]@($i)))) }
-            }
-            foreach ($s in $spots) { $keep.Add((Get-Preferred $s.ToArray())) }
-            if ($spots.Count -gt 1) { $leftAlone.Add("  map ${map}: quest $questId on " + (($keep | ForEach-Object { Get-PinText $_ }) -join '; ')) }
-        }
-        foreach ($i in $near) {
-            if ($keep.Contains($i)) { continue }
-            if (-not $drop.ContainsKey($i)) { $drop[$i] = New-Object System.Collections.Generic.List[int] }
-            $drop[$i].Add([int]$questId)
-        }
-    }
-}
-
-$kept = New-Object System.Collections.Generic.List[object]
-$removedPins = New-Object System.Collections.Generic.List[int]
-$takenOff = 0
-for ($i = 0; $i -lt $count; $i++) {
-    $pin = $pins[$i]
-    if (-not $drop.ContainsKey($i)) { $kept.Add($pin); continue }
-    $remaining = @($pin.quests | Where-Object { -not $drop[$i].Contains([int]$_) })
-    $takenOff += $pin.quests.Count - $remaining.Count
-    "map $($pin.map): $(Get-PinText $i) loses $($drop[$i] -join ', ')$(if (-not $remaining.Count) { ', and the pin goes' })"
-    if ($remaining.Count -eq 0) {
-        if ($null -ne $pin.note) { throw "Pin $(Get-PinText $i) on map $($pin.map) would go with its note: '$($pin.note)'" }
-        $removedPins.Add($i)
-        continue
-    }
-    Set-RecordField $pin 'quests' ([object[]]$remaining)
-    $kept.Add($pin)
-}
-
-"$(if ($WhatIf) { 'Would take' } else { 'Took' }) $takenOff quests off $($drop.Count) pins, removing $($removedPins.Count) pins left with none"
-if ($leftAlone.Count) {
-    "Left alone, as the pins are apart and the game has no start point to choose between them: $($leftAlone.Count)"
-    $leftAlone
+$result = Remove-DuplicatePins @(Read-PinData $DataDir) $startPoints
+$result.Changes
+"$(if ($WhatIf) { 'Would take' } else { 'Took' }) $($result.TakenOff) quests off $($result.Changed) pins, removing $($result.Removed.Count) pins left with none"
+if ($result.LeftAlone.Count) {
+    "Left alone, as the pins are apart and the game has no start point to choose between them: $($result.LeftAlone.Count)"
+    $result.LeftAlone
 }
 
 function Get-PlaceKey($map, $px, $py) {
     $format = '0.############################'
     return "$map|$(([decimal]$px).ToString($format, $script:Invariant))|$(([decimal]$py).ToString($format, $script:Invariant))"
 }
-if ($removedPins.Count -and $DecisionsCsv -and (Test-Path $DecisionsCsv)) {
+if ($result.Removed.Count -and $DecisionsCsv -and (Test-Path $DecisionsCsv)) {
     $gone = @{}
-    foreach ($i in $removedPins) { $gone[(Get-PlaceKey $pins[$i].map $pins[$i].x $pins[$i].y)] = $true }
+    foreach ($pin in $result.Removed) { $gone[(Get-PlaceKey $pin.map $pin.x $pin.y)] = $true }
     $rows = @(Import-Csv $DecisionsCsv -Encoding UTF8 | Where-Object {
         $gone.ContainsKey((Get-PlaceKey $_.Map ([decimal]::Parse($_.X, $script:Invariant)) ([decimal]::Parse($_.Y, $script:Invariant))))
     })
@@ -166,4 +72,4 @@ if ($removedPins.Count -and $DecisionsCsv -and (Test-Path $DecisionsCsv)) {
     }
 }
 
-if (-not $WhatIf -and $drop.Count) { Save-PinData $kept $DataDir $AddonDir }
+if (-not $WhatIf -and $result.Changed) { Save-PinData $result.Pins $DataDir $AddonDir }

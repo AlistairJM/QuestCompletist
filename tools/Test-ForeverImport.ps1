@@ -5,7 +5,9 @@ has its own client tables, CMaNGOS dump, quest cache, probe file, ledger and han
 probe file by Import-RecordedGivers.ps1 (step 6d), as in a sweep. Section H compares the importer's files
 with $MasterOutput, what master's importer wrote on its world; a change meant to alter those files writes
 them again, from a run checked by hand. Section I checks the classes it gives quests: from the items that
-start them (ItemSparse), from the hand list of classes, and from a quest's only prerequisite.
+start them (ItemSparse), from the hand list of classes, and from a quest's only prerequisite. Section J checks
+that pins of one name holding a quest at one spot are written as one, as Remove-DuplicatePinQuests.ps1 (step 10's
+item 9) would leave them.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1
 
@@ -171,13 +173,22 @@ function Get-ProbeGivers() {
 }
 
 # The world: tools, data and addon folders, the probe file, the dump and the cache.
-function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers)) {
+# -Bottles adds Nu Quest (9014), which three CMaNGOS objects of one name start, as several entries of Venom Bottle
+# do: 910014 at 40,60, 910015 0.2 points from it and 910016 a point from it.
+function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles) {
     $root = Join-Path $Scratch $name
     foreach ($dir in 'tools', 'tools\forever_probe_70900', 'data\forever', 'addon') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
     $t = "$root\tools"
     $quests = @{ 9001 = 'Alpha Quest'; 9002 = 'Beta Quest'; 9003 = 'Gamma Quest'; 9004 = 'Delta Quest'; 9005 = 'Epsilon Quest'
         9006 = 'Zeta Quest'; 9007 = 'Eta Quest'; 9008 = 'Theta Quest'; 9010 = 'Iota Quest'; 9011 = 'Kappa Quest'; 9012 = 'Lambda Quest'
         9013 = 'Mu Quest' }
+    $objectStarters = @(, @(910012, 9011)); $objectSpawns = @(, @(3, 910012, -400, -400)); $objectNames = @(, @(910012, 'Kappa Chest Old'))
+    if ($Bottles) {
+        $quests[9014] = 'Nu Quest'
+        $objectStarters += @(@(910014, 9014), @(910015, 9014), @(910016, 9014))
+        $objectSpawns += @(@(4, 910014, -200, 200), @(5, 910015, -204, 200), @(6, 910016, -220, 200))
+        $objectNames += @(@(910014, 'Nu Bottle'), @(910015, 'Nu Bottle'), @(910016, 'Nu Bottle'))
+    }
     Write-Lines "$t\QuestV2-$Build.csv" (@('ID') + @($quests.Keys | Sort-Object))
     Write-Lines "$t\AreaTable-$Build.csv" @('ID,ZoneName,AreaName_lang,ContinentID,ParentAreaID', '10,Alpha,Alpha Zone,1,0')
     Write-Lines "$t\ChrRaces-$Build.csv" @('ID,Name_lang', '1,Human')
@@ -195,9 +206,10 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     Write-Lines "$t\ItemSparse-$Build.csv" @('ID,Display_lang,StartQuestID,AllowableClass')
     Write-Lines "$t\forever_quest_cache_$Build.jsonl" @($quests.Keys | Sort-Object | ForEach-Object { Cache-Line $_ $quests[$_] })
     # CMaNGOS: 910001, 910007 and the object 910012 start quests and stand somewhere; the others are the recorder's alone.
-    Write-Dump "$t\ClassicDB_test.sql.gz" @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest'), @(9011, 'Kappa Quest')) @(@(910001, 9001), @(910007, 9007)) `
-        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver')) `
-        @(, @(910012, 9011)) @(, @(3, 910012, -400, -400)) @(, @(910012, 'Kappa Chest Old'))
+    $cmQuests = @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest'), @(9011, 'Kappa Quest'))
+    if ($Bottles) { $cmQuests += , @(9014, 'Nu Quest') }
+    Write-Dump "$t\ClassicDB_test.sql.gz" $cmQuests @(@(910001, 9001), @(910007, 9007)) `
+        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver')) $objectStarters $objectSpawns $objectNames
     Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" $Givers
     Write-Lines "$root\decisions.csv" @('Game,Quest,Decision,Reason')
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
@@ -540,6 +552,20 @@ try {
         Check ($r.Exit -ne 0 -and $r.Text -match [regex]::Escape($case.Says)) "I11: $($case.Label) stops the import ($($r.Text))"
         Equal (Hash-Data $w4) $before "I11: and nothing is written after $($case.Label)"
     }
+
+    # ---------- J: pins of one name at one spot, from several CMaNGOS entries of one object ----------
+    $w5 = New-World 'bottles' -ZetaKnown -Bottles
+    $r = Invoke-MergeTool $w5
+    $r = Invoke-Importer $w5
+    Equal $r.Exit 0 "J1: the importer runs with three objects of one name that start one quest ($($r.Text))"
+    $pins = Get-WorldPins $w5
+    Equal (Places-Of $pins 9014) '40,60 40,61' 'J1: of two pins of one name within half a point the quest stays on the first, and one a point away keeps it'
+    Check ($r.Text -match 'Pins of one name at one spot: 1 quests taken off 1 pins, 1 pins removed; 3 quests stay on pins further apart\.') "J2: the summary counts them, with Delta's and Epsilon's places ($($r.Text))"
+    $r = Run-Script (Join-Path $PSScriptRoot 'Remove-DuplicatePinQuests.ps1') @('-Game', 'forever', '-DataDir', "$w5\data\forever", '-AddonDir', "$w5\addon", '-WhatIf')
+    Check ($r.Exit -eq 0 -and $r.Text -match 'Would take 0 quests off 0 pins, removing 0 pins left with none') "J3: step 10's item 9 finds nothing left to take off ($($r.Text))"
+    $before = Hash-Data $w5
+    $r = Invoke-Importer $w5
+    Equal (Hash-Data $w5) $before 'J4: a rerun writes every data file byte for byte as it was'
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }
