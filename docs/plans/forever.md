@@ -1369,8 +1369,8 @@ on scratch copies, with each merge since the last change to the pins (#267) impo
     probe once, at 43.5); Thundris Windweaver to 37.4,40.2, by the visit sum of decision 36 alone (open-items.md
     has what the proposed rule would move instead).
   - **A new pin:** Trek to Ashenvale (990) at Sentinel Selarin, 39.3,43.5, whom CMaNGOS names but doesn't spawn.
-- **Checked:** with #308 merged, an import on the regenerated data writes all six files and the review list byte
-  for byte; item 9 takes nothing off; reachability, the table audit (6 findings, none new),
+- **Checked:** with #308 and #309 merged, an import on the regenerated data writes all six files and the review
+  list byte for byte; item 9 takes nothing off; reachability, the table audit (6 findings, none new),
   `Test-Completions.lua` on both TOCs, `Test-ForeverChecks.ps1` and `Test-ForeverImport.ps1` pass.
 
 ## Decisions
