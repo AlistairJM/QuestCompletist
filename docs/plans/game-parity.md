@@ -100,7 +100,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 | 4 storylines | `Build-QuestLines.ps1` | `Build-ForeverMenu.ps1` reads the same table | data (3 rows) | watched |
 | 5 zone table and client names | three tools | `Build-ForeverMenu.ps1` | – | equivalent |
 | 6 pins | the pipeline from `QuestPOIBlob` and TrinityCore's `quest_poi` | the importer from CMaNGOS, the recorder and the client's start points | the same rule, a pin at every place a source puts the pickup, from each game's sources (the data row above) | equivalent |
-| 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | `-Game forever` (9 October 2026) | it had never been pointed at Forever's folders; retail's start points (`quest_locations.csv`) have no Forever counterpart, so only its half-point rule applies | done: step 10 runs it after the import |
+| 6 duplicate quests on nearby pins (`Remove-DuplicatePinQuests.ps1`) | yes | `-Game forever` (9 October 2026) | it had never been pointed at Forever's folders; retail's start points (`quest_locations.csv`) have no Forever counterpart, so only its half-point rule applies | done: the importer applies its rule before it writes (12 October 2026), and step 10 runs it as a check |
 | 6d the addon's recorder merged into the pins | `Import-RecordedGivers.ps1`: blank NPC IDs and names filled, pins for quests no source places; the ledger and the lists, retail's and Forever's | the ledger and the lists only; Forever's pins are rebuilt by step 10, which reads the ledger for its recorded givers and stops if it is stale (since 11 October 2026) | process: a fill into Forever's pins would be overwritten at the next import, so the ledger is the importer's input instead | **Done 11 October 2026:** the importer reads the ledger and merges recorded places at 1.5 points ([quest-giver-recorder.md](quest-giver-recorder.md), "Forever's importer") |
 | 6c NPC IDs for named pins | TrinityCore (`Fill-PinNpcIds.ps1`), and the client's giver table with TrinityCore's starters, which also move a quest to its giver's pin (`Apply-ClientQuestGivers.ps1`) | CMaNGOS gives the IDs, from each quest's starter, so there is no neighbour's identity to correct | `CollectableSourceQuestSparse` is retail's alone | equivalent; nature |
 | 7 quests no longer obtainable | `Find-UnavailableQuestCandidates.ps1` | the importer's refused-quest rule | process | later, after launch |
@@ -247,3 +247,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-11: waypoints without TomTom (game-api-review.md, recommendation 6) built for both games in
   one change, gated on the functions and the game's answer for the map; checked with stand-ins for a
   client with the functions, one without, and a map that refuses; the in-game look is for both games.
+- 2026-10-12: Forever's importer applies `Remove-DuplicatePinQuests.ps1`'s rule itself before it writes (the rule is
+  in `DuplicatePins.ps1`, which both use), so a rerun writes `pins.jsonl` as committed and step 10's item 9 is a
+  check that takes nothing off. Retail's runs of the tool print the same as before (checked on the pins of
+  4 October, before its first run: 67 quests off 30 pins, and on today's).

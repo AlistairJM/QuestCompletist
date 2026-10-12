@@ -993,7 +993,9 @@ pins it removed; delete them, or `Apply-PinNpcIds.ps1` stops.
 start points like retail's, so only the half-point rule applies. The importer makes a pin for each
 object entry that starts a quest, and CMaNGOS gives some objects several entries of one name, so the
 first run, in October 2026, took quest 2933 off 10 "Venom Bottle" pins and quest 926 off one "Flawed
-Power Stones" pin, and removed those 11 pins.
+Power Stones" pin, and removed those 11 pins. Since 12 October 2026 the importer applies the same rule before
+it writes (`tools\DuplicatePins.ps1`, which both use), so on Forever this takes nothing off and only lists the
+one pair of Venom Bottle pins further apart.
 
 Quests that appear in the pin data but are missing from the database are fetched with
 `Fetch-GapQuestData.ps1` and added with `Insert-GapQuestEntries.ps1`. Run
@@ -1439,13 +1441,16 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    quest, two that name a repeatable one). The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
    previous quest). Anything new is a finding to look at before the pull request.
-9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf`, then without `-WhatIf` if it lists anything
-   (see step 6): the importer's pins can share a name and a quest at one spot. Run it before
-   `Build-AddonData.ps1 -Check`; it rebuilds `qcPinDB.lua` itself.
+9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` (see step 6), as a check. Several CMaNGOS
+   entries of one object give pins of one name at one spot (Venom Bottle, Flawed Power Stones), and the
+   importer applies this tool's rule before it writes, so it should take nothing off and list only the one
+   pair of Venom Bottle pins further apart. A quest it would take off means the importer and the tool
+   disagree: find out why before running it without `-WhatIf`, which rebuilds `qcPinDB.lua` itself.
 
-With the same sources, a rerun writes the same `quests.jsonl`, `links.jsonl`, `reputation.jsonl` and
-`skills.jsonl` byte for byte (and the same `pins.jsonl` before step 9 takes the duplicates off). So whatever changes in them comes from the game, the client's tables,
-CMaNGOS or the ledger, and is for review before its pull request. Until decision 36 of
+With the same sources, a rerun writes the same `quests.jsonl`, `pins.jsonl`, `links.jsonl`, `reputation.jsonl`,
+`skills.jsonl` and `answers.jsonl` byte for byte; `Test-ForeverImport.ps1` checks it on its own small world. So
+whatever changes in them comes from the game, the client's tables, CMaNGOS or the ledger, and is for review
+before its pull request. Until decision 36 of
 [plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
 place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
 file and can make the other of two rows 0.1 apart the place. On today's ledger that moves Thundris Windweaver

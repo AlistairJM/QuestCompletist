@@ -1245,6 +1245,27 @@ The user took the recommendations:
   an Orc shaman can, and that a Human mage can't take Foror's Compendium or the Forging of Quel'Serrar
   while a warrior can, the Forging needing the Compendium; the data before fails 2 of its 5 checks.
 
+### A rerun of the import (12 October 2026)
+
+Two checks of the open pull requests on 12 October found that an import on master (f37f435), from build
+1.60.1.70338's tables and cache, classic-db z2815 and the main checkout's probe files, wrote a `pins.jsonl` 33 lines
+longer and 21 lines different from the committed one; the other five files were the same byte for byte. Measured
+on scratch copies, with each merge since the last change to the pins (#267) imported the same way:
+
+- **Before #306** (at #296 and at #298's merge) the only difference is 11 added lines: the duplicate object pins of
+  Venom Bottle (quest 2933, 10 pins) and Flawed Power Stones (926, 1) that step 10's item 9 has taken off every
+  import since 9 October. The committed file was that run's: import, then item 9.
+- **From #306 on** the import also moves 21 pins and adds one, the same at every merge since (setup 2 of "The
+  importer reads the ledger" above, reproduced to the pin): #306 made the importer read the ledger, #298 had put
+  the addon's own recorder file into it, and the pins were not regenerated, as that pull request said.
+- **The importer now takes the duplicates off itself.** `Remove-DuplicatePinQuests.ps1`'s rule moved into
+  `tools\DuplicatePins.ps1`, which the tool and the importer both use, and the importer applies it to its pins
+  before it writes, so a rerun writes `pins.jsonl` as committed and item 9 finds nothing to take off (it still
+  lists the one pair of Venom Bottle pins a point apart). An import on master followed by item 9 and an import
+  with this importer write the same file; retail's runs of the tool print the same as before.
+  `Test-ForeverImport.ps1` section J has three objects of one name start one quest, two of them 0.2 points apart
+  and one a point away: the quest stays on the first and the far one, and the tool then takes nothing off.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -1396,3 +1417,7 @@ The user took the recommendations:
   them for its made-up build, and it read the real link and class lists. The world now has both tables and
   its own empty lists, and a section I checks the class rules (the starting items, the hand list, a
   prerequisite chain, and the rows the importer refuses): 106 checks.
+- 2026-10-12: a rerun of the import on master didn't write the committed `pins.jsonl`: the 11 duplicate object
+  pins item 9 takes off, and 21 moves and 1 new pin from the ledger #306 reads. The importer now takes the
+  duplicates off itself (`DuplicatePins.ps1`, shared with `Remove-DuplicatePinQuests.ps1`); section J of
+  `Test-ForeverImport.ps1` checks it (111 checks). See "A rerun of the import".
