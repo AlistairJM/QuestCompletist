@@ -216,6 +216,9 @@ local qcHolidays = {
 	{flag=262144, name="Hearthstone's 10th Anniversary", eventIDs={1462, 1578}},
 	{flag=524288, name="WoW's Anniversary", eventIDs={1808}},
 	{flag=1048576, name="Skyriding Cups", eventIDs={1395, 1400, 1407, 1429}},
+	{flag=2097152, name="Dastardly Duos", eventIDs={1599, 1673, 1689}},
+	{flag=4194304, name="The Great Gnomeregan Run", eventIDs={696}},
+	{flag=8388608, name="Call of the Scarab", eventIDs={638}},
 }
 -- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
 -- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
@@ -351,11 +354,12 @@ local function qcHolidayFlagsInUse()
 	return inUse
 end
 
--- /qc holidays: what the seasonal filter sees, and when each holiday next runs. Reading ahead
--- steps the calendar through the months, then sets it back to the current one.
+-- /qc holidays: what the seasonal filter sees, and when each holiday's IDs next run, soonest first, so a
+-- sweep can confirm each ID in game. Reading ahead steps the calendar through the months, then sets it back
+-- to the current one.
 local function qcScanCalendarHolidays(inUse)
 	local now = C_DateAndTime.GetCurrentCalendarTime()
-	local nextByFlag, untracked = {}, {}
+	local byFlag, listed, untracked = {}, {}, {}
 	for step = 0, 12 do
 		local monthIndex = now.month - 1 + step
 		C_Calendar.SetAbsMonth(monthIndex % 12 + 1, now.year + math.floor(monthIndex / 12))
@@ -366,7 +370,11 @@ local function qcScanCalendarHolidays(inUse)
 				if event and event.calendarType == "HOLIDAY" then
 					local flag = qcHolidayFlagByEventID[event.eventID]
 					if flag and bit.band(inUse, flag) ~= 0 then
-						nextByFlag[flag] = nextByFlag[flag] or event
+						if not listed[event.eventID] then
+							listed[event.eventID] = true
+							byFlag[flag] = byFlag[flag] or {}
+							table.insert(byFlag[flag], event)
+						end
 					elseif not untracked[event.eventID] then
 						untracked[event.eventID] = event.title
 					end
@@ -375,7 +383,7 @@ local function qcScanCalendarHolidays(inUse)
 		end
 	end
 	C_Calendar.SetAbsMonth(now.month, now.year)
-	return nextByFlag, untracked
+	return byFlag, untracked
 end
 
 local function qcPrintHolidays()
@@ -386,10 +394,10 @@ local function qcPrintHolidays()
 	local active = qcUpdateActiveHolidays()
 	local inUse = qcHolidayFlagsInUse()
 	qcCalendarBusy = true
-	local ok, nextByFlag, untracked = pcall(qcScanCalendarHolidays, inUse)
+	local ok, byFlag, untracked = pcall(qcScanCalendarHolidays, inUse)
 	qcCalendarBusy = false
 	if not ok then
-		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(nextByFlag))
+		print(QCADDON_CHAT_TITLE .. "The calendar can't be read right now: " .. tostring(byFlag))
 		return
 	end
 	if not active then
@@ -412,12 +420,14 @@ local function qcPrintHolidays()
 	end
 	print(QCADDON_CHAT_TITLE .. "Seasonal quests follow these calendar holidays:")
 	for _, holiday in ipairs(qcHolidays) do
-		local event = nextByFlag[holiday.flag]
+		local events = byFlag[holiday.flag]
 		local unticked = bit.band(qcFilteredHolidays, holiday.flag) ~= 0
 		local running = not unticked and qcActiveHolidays and bit.band(qcActiveHolidays, holiday.flag) ~= 0
-		if event then
-			print(string.format("  %s%s (%d): %s to %s", running and "|cff00ff00Running|r " or "", event.title,
-				event.eventID, qcFormatCalendarTime(event.startTime), qcFormatCalendarTime(event.endTime)))
+		if events then
+			for index, event in ipairs(events) do
+				print(string.format("%s%s%s (%d): %s to %s", index == 1 and "  " or "    ", (index == 1 and running) and "|cff00ff00Running|r " or "",
+					event.title, event.eventID, qcFormatCalendarTime(event.startTime), qcFormatCalendarTime(event.endTime)))
+			end
 		elseif bit.band(inUse, holiday.flag) ~= 0 and not unticked then
 			print(string.format("  %s: not on the calendar in the next 12 months", holiday.name))
 		end
@@ -510,13 +520,20 @@ function qcPrereq.Parts(questId)
 end
 
 -- A part as text: a quest as describe(questId) gives it, a choice as its options joined by "or",
--- and a list inside a choice as its quests in brackets.
+-- and a list inside a choice as its quests in brackets. A quest the database has no row for is a
+-- hidden one the game tracks, such as 90806 that Midnight's quest lines accept, which has no name:
+-- it counts, but isn't shown, and a part of only such quests gives nil.
 function qcPrereq.Text(part, describe, all)
-	if type(part) == "number" then return describe(part) end
+	if type(part) == "number" then
+		if not qcQuestDatabase[part] then return nil end
+		return describe(part)
+	end
 	local texts = {}
 	for _, item in ipairs(part) do
-		if qcPrereq.Applies(item) then texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
+		local text = qcPrereq.Applies(item) and qcPrereq.Text(item, describe, not all)
+		if text then texts[#texts + 1] = text end
 	end
+	if #texts == 0 then return nil end
 	if #texts == 1 then return texts[1] end
 	if all then return "(" .. table.concat(texts, ", ") .. ")" end
 	return table.concat(texts, " " .. (SERVICES_CONJUNCTION_OR or "or") .. " ")

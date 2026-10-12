@@ -667,6 +667,37 @@ reset()
 check("with every one of the game's calls missing, a storyline quest's tooltip is the plain one", sameLines(bareStory, baseline))
 check("and so is a daily quest's", sameLines(bareDaily, (draw(dailyQuest))))
 
+print("A quest the game tracks but never names")
+local function unnamed(questId) return type(questId) == "number" and env.qcQuestDatabase[questId] == nil end
+local choiceQuest, unnamedOnly
+for questId, need in pairs(env.qcQuestPrereq) do
+	if env.qcQuestDatabase[questId] then
+		local choice = type(need) == "table" and #need == 1 and need[1]
+		if unnamed(need) and (not unnamedOnly or questId < unnamedOnly) then unnamedOnly = questId end
+		if type(choice) == "table" and #choice == 2 and type(choice[1]) == "number" and not unnamed(choice[1]) and unnamed(choice[2])
+			and (not choiceQuest or questId < choiceQuest) then choiceQuest = questId end
+	end
+end
+if choiceQuest and unnamedOnly then
+	local required = env.qcLocalize.REQUIREDQUEST
+	local named, hiddenOption = unpack(env.qcQuestPrereq[choiceQuest][1])
+	local namedName = env.qcQuestDatabase[named][1]
+	reset()
+	local _, line = find(draw(choiceQuest), required)
+	local namesFirst = line ~= nil and line:find(namedName, 1, true) ~= nil and not line:find(env.UNKNOWN, 1, true)
+	check(string.format("%d needs %s or an unnamed quest: its line names only the first", choiceQuest, namedName), namesFirst, not namesFirst and line or nil)
+	reset()
+	check(string.format("%d needs only an unnamed quest: no Required Quest line", unnamedOnly), find(draw(unnamedOnly), required) == nil)
+	local hiddenQuest = env.qcQuestPrereq[unnamedOnly]
+	local completed = env.C_QuestLog.IsQuestFlaggedCompleted
+	check("and neither requirement is met while the unnamed quest isn't done", not QC.qcPrereq.QuestMet(unnamedOnly) and not QC.qcPrereq.QuestMet(choiceQuest))
+	env.C_QuestLog.IsQuestFlaggedCompleted = function(questId) return questId == hiddenQuest or questId == hiddenOption end
+	check("but both are once it is", QC.qcPrereq.QuestMet(unnamedOnly) and QC.qcPrereq.QuestMet(choiceQuest))
+	env.C_QuestLog.IsQuestFlaggedCompleted = completed
+else
+	print("  (no quest in this game's data needs one)")
+end
+
 if RECORD_FILE then
 	local out = assert(io.open(RECORD_FILE, "wb"))
 	for _, line in ipairs(recordLines) do out:write(line, "\n") end
