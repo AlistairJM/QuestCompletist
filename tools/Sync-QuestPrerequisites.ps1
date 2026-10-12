@@ -33,6 +33,11 @@ Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the
     needs no other quest of it gets the condition as well, the hidden quest 90806 included.
   - A required quest the game offered together with the quest, in the probe's map pass for -Build
     (-OffersFile), isn't one: it wasn't done, and the game offered the quest all the same.
+  - The client's own follow-ups (the quest cache's RewardNextQuest, tools\retail_quest_cache_<Build>.jsonl
+    from step 2e, or -QuestCacheFile) for a quest with no other requirement that the API is silent
+    on, where TrinityCore's requirement (its NextQuestID or PrevQuestID) says the same: any one of
+    them will do. Where TrinityCore names none the follow-up is often a re-offer, not a requirement
+    (1 in 4 where it has a row, October 2026), so those aren't taken.
 
 A one-time quest's required quest that recurs (daily, weekly or repeatable) is left out: the game
 only knows such a quest is done until the next reset, so the map would hide the one-time quest
@@ -55,6 +60,7 @@ param(
     [int]$ScoutingMapLine = 6131,
     [int]$ScoutingMapQuest = 95008,
     [string]$OffersFile = "",
+    [string]$QuestCacheFile = "",
     [switch]$WhatIf
 )
 $ErrorActionPreference = 'Stop'
@@ -160,16 +166,20 @@ foreach ($t in $tasks) {
     if ($null -ne $value) { $client[[int]$t.ID] = $value }
 }
 
-$tcPrev = @{}
+$tcPrev = @{}; $tcNext = @{}
 if (-not $TdbFile) {
     $TdbFile = Get-ChildItem "$ToolsDir\tdb\TDB_full_world_*.sql" -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1 -ExpandProperty FullName
 }
 if ($TdbFile) {
     $outputEncoding = [Console]::OutputEncoding
     [Console]::OutputEncoding = [Text.Encoding]::UTF8
-    try { $rows = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $TdbFile quest_template_addon '1,5') } finally { [Console]::OutputEncoding = $outputEncoding }
+    try { $rows = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $TdbFile quest_template_addon '1,5,6') } finally { [Console]::OutputEncoding = $outputEncoding }
     if ($LASTEXITCODE -ne 0) { throw "Read-SqlDump.lua failed on $TdbFile" }
-    foreach ($row in $rows) { $f = $row.Split("`t"); if ([int]$f[1] -gt 0) { $tcPrev[[int]$f[0]] = [int]$f[1] } }
+    foreach ($row in $rows) {
+        $f = $row.Split("`t")
+        if ([int]$f[1] -gt 0) { $tcPrev[[int]$f[0]] = [int]$f[1] }
+        if ([int]$f[2] -gt 0) { $tcNext[[int]$f[0]] = [int]$f[2] }
+    }
 }
 $lineCsv = "$ToolsDir\QuestLineXQuest-$Build.csv"
 if (-not (Test-Path $lineCsv)) { Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/QuestLineXQuest/csv?build=$Build" -OutFile $lineCsv }
@@ -273,6 +283,44 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
 $final = @{}
 foreach ($id in $quests.Keys) { if ($new.ContainsKey($id)) { $final[$id] = $new[$id] } else { $final[$id] = $own[$id] } }
 
+$offered = @{}
+if (-not $OffersFile) { $OffersFile = Join-Path $ToolsDir ("map_offers_retail_{0}.tsv" -f $Build.Split('.')[-1]) }
+if (Test-Path $OffersFile) {
+    foreach ($row in Import-Csv $OffersFile -Delimiter "`t") { if ($row.kind -eq 'offer') { $offered[[int]$row.id] = $true } }
+} else { "No map pass for $Build at $OffersFile, so no required quest is checked against the game's offers." }
+
+# The client's follow-ups: the quests whose hand-in offers this one next (the quest cache's
+# RewardNextQuest), where TrinityCore's requirement says the same. A follow-up the game offered
+# together with this quest, that recurs while this doesn't, is the other faction's, is no longer in
+# the game, or needs a higher level than this, isn't one.
+$unavailable = @{}
+foreach ($line in [IO.File]::ReadLines((Join-Path $AddonDir 'qcUnavailableQuests.lua'))) { if ($line -match '^\[(\d+)\]=') { $unavailable[[int]$Matches[1]] = $true } }
+function Get-MinLevel([int]$id) { if ($null -ne $quests[$id].minLevel) { return [int]$quests[$id].minLevel } return [int]$quests[$id].level }
+if (-not $QuestCacheFile) { $QuestCacheFile = Join-Path $ToolsDir "retail_quest_cache_$Build.jsonl" }
+$offeredAfter = @{}
+if (Test-Path $QuestCacheFile) {
+    foreach ($line in [IO.File]::ReadLines($QuestCacheFile)) {
+        if ($line -notmatch '"nextQuest":(\d+)') { continue }
+        $next = [int]$Matches[1]
+        if ($line -match '^\{"id":(\d+)') { $offeredAfter[$next] += @([int]$Matches[1]) }
+    }
+} else { "No quest cache for $Build at $QuestCacheFile, so no follow-up is taken." }
+$followUp = @{}
+foreach ($id in $offeredAfter.Keys) {
+    if (-not $quests.ContainsKey($id)) { continue }
+    $level = Get-MinLevel $id
+    $by = New-Object System.Collections.Generic.List[int]
+    foreach ($source in $offeredAfter[$id]) {
+        $a = [int]$source
+        if ($a -eq $id -or $by.Contains($a) -or -not $quests.ContainsKey($a)) { continue }
+        if (-not ($tcNext[$a] -eq $id -or $tcPrev[$id] -eq $a)) { continue }
+        if (($offered.ContainsKey($a) -and $offered.ContainsKey($id)) -or -not (Test-Checkable $id $a) -or (Test-OtherFaction $id $a)) { continue }
+        if ($unavailable.ContainsKey($a) -or ($level -gt 0 -and (Get-MinLevel $a) -gt $level)) { continue }
+        $by.Add($a)
+    }
+    if ($by.Count) { $by.Sort(); $followUp[$id] = $by.ToArray() }
+}
+
 $chapters = New-Object System.Collections.Generic.List[string]
 foreach ($id in ($chapterLinks.Keys | Sort-Object)) {
     if ($api.ContainsKey($id) -and $null -ne $api[$id]) { continue }
@@ -286,6 +334,7 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
     $named = @()
     if ($api.ContainsKey($id) -and $null -ne $api[$id]) { $named += Get-PrereqQuests $api[$id] }
     if ($client.ContainsKey($id)) { $named += Get-PrereqQuests $client[$id] }
+    if ($followUp.ContainsKey($id)) { $named += $followUp[$id] }
     $parts = New-Object System.Collections.Generic.List[object]
     foreach ($part in (Get-PrereqParts $final[$id])) {
         $theirs = @((Get-PrereqQuests $part) | Where-Object { (Test-Recurring $_) -and $named -notcontains $_ })
@@ -294,11 +343,29 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
     $final[$id] = Join-PrereqParts $parts
 }
 
-$offered = @{}
-if (-not $OffersFile) { $OffersFile = Join-Path $ToolsDir ("map_offers_retail_{0}.tsv" -f $Build.Split('.')[-1]) }
-if (Test-Path $OffersFile) {
-    foreach ($row in Import-Csv $OffersFile -Delimiter "`t") { if ($row.kind -eq 'offer') { $offered[[int]$row.id] = $true } }
-} else { "No map pass for $Build at $OffersFile, so no required quest is checked against the game's offers." }
+# A quest with no other requirement, that the API is silent on, needs one of its follow-ups' sources
+# done, unless that one already needs it.
+function Test-Needs([int]$from, [int]$target) {
+    $seen = @{}; $queue = New-Object System.Collections.Generic.Queue[int]; $queue.Enqueue($from)
+    while ($queue.Count) {
+        $at = $queue.Dequeue()
+        foreach ($other in (Get-PrereqQuests $final[$at])) {
+            if ($other -eq $target) { return $true }
+            if ($other -and $quests.ContainsKey($other) -and -not $seen.ContainsKey($other)) { $seen[$other] = $true; $queue.Enqueue($other) }
+        }
+    }
+    return $false
+}
+$followed = 0
+foreach ($id in ($followUp.Keys | Sort-Object)) {
+    if ($final[$id] -or ($api.ContainsKey($id) -and $null -ne $api[$id])) { continue }
+    $by = New-Object System.Collections.Generic.List[object]
+    foreach ($a in $followUp[$id]) { if (-not (Test-Needs $a $id)) { $by.Add($a) } }
+    if (-not $by.Count) { continue }
+    if ($by.Count -eq 1) { $final[$id] = [int]$by[0] } else { $final[$id] = Join-PrereqParts @(, $by.ToArray()) }
+    $followed++
+}
+
 $contradicted = New-Object System.Collections.Generic.List[string]
 foreach ($id in ($offered.Keys | Sort-Object)) {
     if (-not $quests.ContainsKey($id) -or -not $final[$id]) { continue }
@@ -354,6 +421,7 @@ foreach ($id in @($new.Keys)) {
 "From the client's task quests: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match; it names {4} quests we hold no data for, so those requirements are left out." -f $counts.fromClientNew, $counts.fromClientChanged, $counts.fromClientSame, $counts.keptClient, $script:notInData.Count
 "Campaign ${Campaign}: {0} chapters' first quests need the chapter before ({1} of them change)." -f $chapterLinks.Count, $chapters.Count
 "The client's conditions: {0} quest lines and campaigns, given to {1} quests ({2})." -f $gates.Count, (($gated.Values | Measure-Object -Sum).Sum), (($gated.Keys | Sort-Object | ForEach-Object { "$_ x$($gated[$_])" }) -join ', ')
+"The client's follow-ups that TrinityCore's requirement repeats: {0} quests have one, {1} take it now." -f $followUp.Count, $followed
 "Left out as the game offered them together with the quest: $($contradicted.Count) required quests, and $($refused.Count) conditions."
 "Recurring quests' recurring requirements that Blizzard doesn't name, left out: $($notBlizzard.Count)"
 "Left out as they'd go round in a circle: $($cycles.Count)" + $(if ($cycles.Count) { " (" + ($cycles -join '; ') + ")" } else { '' })

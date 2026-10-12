@@ -243,6 +243,20 @@ prerequisite, 116 sit with a different one, 43 point at quests we don't hold, 17
 a re-offer: where a second source speaks the edge agrees with it 90% (API), 96% (ours) and 98.8%
 (TrinityCore), so between 9% and about 70% are real gaps.
 
+**Taken where TrinityCore agrees (12 October 2026, the user's choice).** Step 2c now gives a quest with no
+requirement, that the API is silent on, the quests whose hand-in offers it (any one of them), where
+TrinityCore's own requirement (`quest_template_addon` NextQuestID or PrevQuestID) says the same, after
+the checks every source gets: not the game offering both at once (the map pass), not a recurring quest
+before a one-time one, not the other faction's, not an unavailable quest, not a higher level, no circle.
+On the cache of 12 October (33,123 quests, 7,343 with a follow-up) that is 1,465 quests: Classic 807,
+Wrath 307, Cata 296, TBC 218, Midnight 31 and a few others. TrinityCore's curated rows are the reason
+for the limit: for target quests it has a row for, it repeats 1,691 follow-ups and names none for 512
+and another for 20, so about 1 in 4 cache-only follow-ups is a re-offer, and for those that are only the
+step just before in the storyline it names none in 230 of 234. The 2,727 links without TrinityCore's
+word (1,237 storyline steps, 1,490 the cache alone, on 2,342 quests) were shown to the user and not
+taken; they need a source that can tell a requirement from a re-offer, such as the game's own offers
+at run time ([game-api-review.md](game-api-review.md), recommendation 9).
+
 What the edges found in our own data needs no cache: five prerequisite cycles over 38 quests (of 14,
 11, 5, 4 and 4), seven edges where our prerequisite runs against both the cache and the client's
 storyline (five of them inside the 14-cycle), and four places where the cache contradicts an

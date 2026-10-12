@@ -313,7 +313,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1d | Professions of task quests | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
-| 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the map pass's offers and TrinityCore (after the retail map pass) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers and TrinityCore (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
@@ -520,6 +520,14 @@ with `-WhatIf` first to see what it would change.
 - **A required quest the game offered together with the quest** in the newest map pass for `-Build`
   (`tools\map_offers_retail_<build>.tsv`, `-OffersFile`) is left out: it wasn't done, and the game offered
   the quest all the same. 32 on 12.1.0.69933. With no map pass for the build it says so and checks nothing.
+- **The client's own follow-ups** (the quest cache's `RewardNextQuest`, from step 2e's
+  `tools\retail_quest_cache_<build>.jsonl`, or `-QuestCacheFile`): a quest with no requirement, that the
+  API is silent on, needs one of the quests whose hand-in offers it, where TrinityCore's `NextQuestID`
+  or `PrevQuestID` says the same, and none of the checks above or below rules it out (also an
+  unavailable quest, or one that needs a higher level). 1,465 quests on 12 October 2026. A follow-up
+  TrinityCore doesn't repeat is often a re-offer, so it isn't taken ([plans/retail-quest-cache.md](plans/retail-quest-cache.md),
+  "Next quest"). Run step 2e on the newest cache first: the game's own `Cache\WDB\enUS\questcache.wdb`
+  is newer than the probe's copy after any play.
 - **A one-time quest never gets a daily, weekly or repeatable requirement,** and a choice that
   offers one is left out whole. A recurring quest keeps one only where Blizzard's API or the client's
   task tables name it, as in a chain of world quests, which the game knows within the day or week;
