@@ -217,7 +217,10 @@ then every tool refuses to save.
    Effort have no row; the 12.1.5 PTR's (70077) calendar tables gave the same holiday result, with
    no 23rd anniversary row yet. On 12 October 2026, with the Skyriding Cups added, the same
    builds and the PTR gave no finding either (of 21 holidays 19 matched), and the cups' pattern
-   matched only the six cups' names in their HolidayNames (none in Forever's). Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
+   matched only the six cups' names in their HolidayNames (none in Forever's). Later that day,
+   with Dastardly Duos and The Great Gnomeregan Run added (#314), retail and Forever gave no finding
+   (of 23 holidays 21 matched, the two new ones by their own names, under the Holidays filter
+   their rows give, `CalendarFilterType` 255), nor did the PTR. Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
@@ -527,9 +530,12 @@ A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore
 reads `qcHolidays` from `qcCore.lua`, and writes `tools\quest_holiday_audit.csv`, one row per
 finding. Three signals, each independent, can name a holiday: the quest's category in Blizzard's
 API, the game event TrinityCore puts it in (with the event's holiday), and the heading our data
-files it under. A name is a holiday's when it is a name in `qcHolidays` or one of five spellings
-the script lists. The summary prints every category and event it read as a holiday, so a spelling
-that stopped matching shows as a name missing there.
+files it under. A name is a holiday's when it is a name in `qcHolidays` or one of the 12 other names
+the script lists (`$aliases`): two spellings (Midsummer, Winter Veil), the API's names for the
+Ahn'Qiraj War Effort, the Scourge Invasion and Hearthstone's 10th Anniversary, the six cups' names,
+and the API's Secrets of Azeroth (646), which holds only the 20th anniversary's Guest Relations quests
+and is read as WoW's Anniversary. The summary prints every category and event it read as a holiday,
+so a spelling that stopped matching shows as a name missing there.
 - **untagged**, **wrong tag** (a signal names another holiday), and **untagged, an event with no
   flag** (TrinityCore has the quest in an event no `qcHolidays` entry names, such as New Year's Eve).
 - **decision not applied**, **out of date** or **for a quest not in the data:** a row of
@@ -540,16 +546,21 @@ A finding is covered, and not new, when the decisions file has a `PENDING` row f
 while the quest is still untagged, or a `KEEP` row while its tag is still the row's `Target`. The run
 exits with 1 on a new finding: tag the quest in the data file and record a `SET` or `CORRECT` row, or
 add the `PENDING` or `KEEP` row that says why it stays as it is. It only sees holidays with a flag in
-`qcHolidays`; the pending quests of one with no flag show up once a flag is added.
+`qcHolidays`; the quests of one with no flag show up once a flag is added.
 
-Baseline on 12 October 2026: 856 quests in an API category read as a holiday, 583 in a TrinityCore
-event read as one and 1,037 filed under a holiday heading. That is 67 findings, all covered (56
-`PENDING`, 11 `KEEP`), so none is new, the same rows before and after the 16 Skyriding cup quests
-were tagged on 11 October. Those quests count among the 856 and the 1,037: the API's four cup
-categories and our heading "Northrend Cup" are read as the Skyriding Cups through aliases in
-`Audit-QuestHolidays.ps1`. No signal names WoW's Anniversary (the API files its quests under the
-general "Seasonal", and neither TrinityCore's anniversary events nor our headings hold them), so
-step 2d checks its 19 quests only through their `SET` rows. The first run also found quest 43472, filed under Midsummer while its
+Baseline on 12 October 2026, after decision 10's answers (#314): 920 quests in an API category read
+as a holiday, 583 in a TrinityCore event read as one and 1,037 filed under a holiday heading. That is
+13 findings, all covered by `KEEP` rows (the Darkmoon Island Warlock quests, the Candy Bucket that
+TrinityCore puts in Love is in the Air, and the two New Year's Eve quests), so none is new; no row of
+the decisions file is `PENDING`. Before those answers it was 856 quests in a holiday's API category
+and 67 findings (56 `PENDING`: the Ahn'Qiraj War Effort's 43, the Scourge Invasion's 11 and the two
+New Year's Eve quests). The 920 count the 16 Skyriding cup quests (the API's four cup categories,
+and our heading "Northrend Cup", are read as the Skyriding Cups through aliases), the 57 Guest
+Relations quests of WoW's Anniversary (the alias for Secrets of Azeroth) and 7 of the 11 Dastardly
+Duos quests (the API's category of that name; the other 4 have none). The anniversary's other 19
+quests are named by no signal (the API files them under the general "Seasonal", and neither
+TrinityCore's anniversary events nor our headings hold them), so step 2d checks them only through
+their `SET` rows, as it does The Great Gnomeregan Run's 47709. The first run also found quest 43472, filed under Midsummer while its
 `PENDING` row said WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
 run takes about 20 seconds.
 
@@ -744,8 +755,8 @@ each table fact's outcome on each table (below). The run exits with 1 on a findi
 - a fact whose outcome changed (below).
 
 The same for an event off the calendar (a row with no name, the plain-named "WoW's Anniversary" rows),
-more dates or runs, new rows, an event that an entry now covers ("now covered by the entry ...", as for
-The Great Gnomeregan Run once it has its entry), and a new entry or fact are listed and don't fail. Only
+more dates or runs, new rows, an event that an entry now covers ("now covered by the entry ...", as The
+Great Gnomeregan Run was when its entry came in, #314), and a new entry or fact are listed and don't fail. Only
 runs still to come are compared: one that has begun since the baseline is no change, so a run passing,
 the Darkmoon Faire's monthly move, and a sweep with nothing new in the tables say nothing beyond what
 time brings: an event's dates coming within the 90 days or running out, and a fact whose outcome turns
@@ -825,6 +836,18 @@ same days. It said:
   plain-named "WoW's Anniversary" (1587, Flags 3) and ten rows with no name on retail, four with no name on
   Forever, 1879 among them.
 - **The PTR** differs from live only in the Darkmoon Faire's last date.
+
+Later that day decision 10's answers added two entries (#314). Run again on the same tables, the review
+gave no finding and listed 8 changes: Dastardly Duos a new entry with no date to come on each game (it
+was no event of the baseline, having no date to come); The Great Gnomeregan Run a new entry, dated to come
+on retail and on the PTR (to 14 October 2030), where its event, 696, is "now covered by the entry", and
+with no date on Forever, whose table lacks the row. With `-UpdateBaseline` the baseline holds 189 rows
+(23 entries for each game; 33 events on retail's and the PTR's calendars have no entry now), 383 in the rows file
+(the three Dastardly Duos rows on retail and on the PTR added) and the same 34 fact outcomes, and a second
+run says nothing. Retail's "What /qc holidays should print" now has a line for each entry its quests carry,
+the Scourge Invasion, the Ahn'Qiraj War Effort and Dastardly Duos among them ("not on the calendar in the
+next 12 months"), and The Great Gnomeregan Run (696) on its own line instead of under "Other calendar
+holidays".
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (135 checks).
 
@@ -1703,15 +1726,20 @@ holds a tagged quest and ordinary ones stays drawn out of season, and only a pin
 tagged, for holidays that aren't running, goes. On 9 October 2026 quest 81561 stood on three such
 mixed pins, and 11882 on one of its 8 pins. Stacked pins are drawn as one while any of them is: on
 Tanaris, three anniversary pins (47254's, Chromie's and Yllana's) share a stack of seven with
-Bobadormu's and Alyx's untagged Secrets of Azeroth and weekly-event quests, so out of season the
-stack stays, under Bobadormu's name, without them.
+Bobadormu's pin, which holds the weekly Timewalking quests 83274 and 85947 (untagged, the user's
+decision of 12 October 2026), and Alyx's three, whose Guest Relations quests are WoW's Anniversary's
+since #314, so out of season the stack stays, under Bobadormu's name, with the two weekly quests alone.
 
 `/qc holidays` in game lists what the filter sees: which of the holidays this game's quests have are
 running, each one's next dates, and any calendar holiday that isn't tied to a quest. Retail's list
 now includes Pirates' Day, because 42758 is the first retail quest tagged with it, and the Moonkin
 Festival and Hearthstone's 10th Anniversary, whose quests were tagged on 10 October 2026 (47430,
 and six Hearthstone quests, two of them pinned), and WoW's Anniversary and the Skyriding Cups,
-whose 19 and 16 quests were tagged on 11 October 2026 (seven and twelve of them pinned). Each
+whose 19 and 16 quests were tagged on 11 October 2026 (twelve of the cups' pinned). Since 12 October
+2026 (#314) it also includes Dastardly Duos and The Great Gnomeregan Run, whose 11 quests and one
+were tagged that day (six and the one pinned), and the Scourge Invasion and the Ahn'Qiraj War Effort,
+whose 11 and 43 retail quests (none pinned) were tagged with them that day; the 57 Guest Relations
+quests took WoW's Anniversary, which now has 76 quests, 52 of them pinned. Each
 entry's line is the soonest event of any of its IDs, under that event's own name and ID, and under
 it a line for each other ID of the entry that the calendar has in its 12 months, soonest first, so
 each ID can be confirmed in game (Hallow's End's 324 and 1405, Love is in the Air's 423 and 335, the
@@ -1738,9 +1766,10 @@ whether the Lua still matches. Every decision, with its evidence, is in
 `docs\plans\quest-holiday-decisions.csv`, one row per quest: `SET` rows are quests given their
 holiday, `CORRECT` rows tags that were wrong (with the category and zone text each moved to), `KEEP`
 rows tags and omissions checked and left as they are, and `PENDING` rows quests that may belong to a
-holiday and are left untagged. Read the file for what is pending; this page doesn't count it. A
-pending row says why: the user left it out by a decision, or it is undecided because the holiday has
-no flag in `qcHolidays`, the flag has no calendar ID in this game, or the evidence is doubtful.
+holiday and are left untagged until someone decides. Read the file for what is pending; this page
+doesn't count it (no row has been since the user answered decision 10 on 12 October 2026, #314). A
+pending row says why: it is undecided because the holiday has no flag in `qcHolidays`, the flag has no
+calendar ID in this game, or the evidence is doubtful.
 
 In that file, `Cur` and `Target` are the holiday value before and after (on a pending row, the value
 the quest would take, blank when no flag exists). `CurCategory`, `TargetCategory`, `CurZone` and
@@ -1749,7 +1778,10 @@ the quest would take, blank when no flag exists). `CurCategory`, `TargetCategory
 those also hold a quest with no holiday, so stay drawn out of season. The evidence says who
 decided: "Approved with the group" for the tagged quests the user approved as a group, not one by
 one, "The user ruled" for quests the user said belong to a holiday, "Left out by the user's
-decision" for judgment calls the user left out, "Not decided", or, on `KEEP` rows, "Checked".
+decision" for judgment calls the user left out, "Not decided", or, on `KEEP` rows, "Checked". The rows
+of decision 10's answers keep the evidence they had while pending and add "The user's decision of 12
+October 2026 (decision 10 of open-items.md)" with the user's words and the reason: 123 `SET` rows and
+77 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0.
 
 The evidence a tag rests on is Blizzard's API quest category when it is the holiday's own (the
 general "Seasonal" one names none), TrinityCore's `game_event_*_quest` and
@@ -1764,18 +1796,25 @@ TrinityCore placement already leaves out any quest with a `holiday` value, the h
 (31, 37, 46, 50, 90, 126, 127, 133, 145, 153, 413) and quests whose type isn't 0, 1, 2, 4 or 128, so
 tagging an ordinary quest that has no pin also stops that step placing one for it. On 9 October 2026
 that changed nothing: of the quests tagged that day without a pin, none would have been placed by it
-anyway, since the rest were skipped already or TrinityCore has no start point for them. The client's
-own points place a tagged quest as before.
+anyway, since the rest were skipped already or TrinityCore has no start point for them. Nor on 12
+October 2026 (#314), measured by running step 6's placement on scratch copies before and after: of
+the 72 quests tagged that day with no pin, 24 (15 of the Ahn'Qiraj War Effort, 9 of the Scourge
+Invasion) have a TrinityCore start but are disabled in TrinityCore, which the placement skipped already,
+and the other 48 have none; no location changed. The client's own points place a tagged quest as before.
 
-Some events aren't on the calendar at all. WoW: Forever's Scourge Invasion and Ahn'Qiraj War Effort
-have entries in `qcHolidays` with no IDs, so the seasonal filter always hides their quests on the map;
-the quest list still has them. `/qc holidays` says they're not on the calendar, and step 2b that no
-row of their names exists. If Blizzard ever adds one to the Holidays table, step 2b reports its ID,
+Some events aren't on the calendar at all. The Scourge Invasion and the Ahn'Qiraj War Effort have
+entries in `qcHolidays` with no IDs, so the seasonal filter always hides their quests on the map, and
+the continent icons don't count them; the quest list still has them. They were Forever's until 12
+October 2026, when retail's 11 and 43 quests of the two events (Blizzard's API files them under
+Invasion and Ahn'Qiraj War, which step 2d reads as the two entries) took them too, the user's answer
+to decision 10 (#314); none of retail's has a pin. `/qc holidays` says they're not on the calendar, and
+step 2b that no row of their names exists. If Blizzard ever adds one to the Holidays table, step 2b reports its ID,
 step 2h's `no-row` facts for them go from holding to failing, a finding (`calendar-decisions.csv`), and in game it shows up as a
 calendar holiday not tied to a quest: add its ID. Retail has the same
 problem with the Stranglethorn Fishing Extravaganza: `qcHolidays` carries it for Forever (event 301),
 but retail's Holidays table has no such row, so a retail quest tagged with it would be hidden for
-good, and its retail quests stay `PENDING` for that reason.
+good, and its seven retail quests stay untagged for that reason (`KEEP` rows, the user's decision of
+12 October 2026).
 
 Forever's calendar, in build 70338's Holidays table (dates decoded by hand at first, by step 2h's
 review every sweep since 12 October 2026): Children's Week (201)
@@ -1822,8 +1861,15 @@ After 8 December 2026, when 1808's run ends, the entry has no date to come until
 the table: step 2h's `yearly WoW's Anniversary` fact then goes from holding to waiting (a finding at that
 sweep), is listed as waiting every sweep after, and fails if no later row is in the table by 17 November
 2027, a year after 1808 began (`calendar-decisions.csv`). The 12.1.5 PTR's table
-(70077) has no 23rd row yet (11 October 2026). Step 2d needs no alias for it, since no API category,
-TrinityCore event or heading of ours names it. Forever's Holidays tables (70245, 70291 and 70338)
+(70077) has no 23rd row yet (11 October 2026). Since 12 October 2026 (#314, the user's answer to
+decision 10) the entry also holds the 20th anniversary's 57 Guest Relations quests (83794 to 85574;
+44 of them pinned, most in Tanaris near the Caverns of Time), which Blizzard's API files
+under its category Secrets of Azeroth (646); the client's rows of that name (1396, 1398 and 1399) are
+another event, of 2023, with no date to come. Step 2d reads that category as this entry through an alias
+in `Audit-QuestHolidays.ps1` (it holds no other quest of ours); no API category, TrinityCore event or
+heading names the entry's other 19 quests. Whether later anniversaries still offer the Guest Relations
+quests is open (an `ask` fact in `calendar-decisions.csv`): if they don't, their pins show while the
+anniversary runs for quests nobody can take. Forever's Holidays tables (70245, 70291 and 70338)
 have no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not on
 Forever's calendar, which is no finding.
 
@@ -1853,6 +1899,22 @@ aliases in `Audit-QuestHolidays.ps1`, so a new cup's quests show up there untagg
 Holidays tables (70245, 70291 and 70338) have no cup and its data no cup quest, so step 2b lists
 the entry as not on Forever's calendar, which is no finding.
 
+Dastardly Duos and The Great Gnomeregan Run have entries of their own since 12 October 2026 (#314, the
+user's answers to decision 10), each on the rows of its own name, which step 2b checks by that name.
+Dastardly Duos (flag 2097152), a limited-time event at Vinnie Sweets in Dornogal from patch 11.1.5, is
+three rows, one per region: 1599 (from 3 June 2025) and 1689 (region 4's, from 4 June 2025), for 42
+days each, and 1673 (10 April 2025, 48 hours). None is dated after 2025, so its 11 quests' pins (six,
+on Vinnie Sweets' and Wodin the Troll-Servant's pins on the Isle of Dorn) stay hidden until Blizzard
+dates it again, as Hearthstone's 10th Anniversary's do; step 2h's `no-date 1599 1673 1689` fact then
+goes from holding to failing, and `/qc holidays` says meanwhile that it is not on the calendar. Step 2d
+reads the API's category Dastardly Duos (651, 7 of the 11 quests) as the entry by its name. The Great
+Gnomeregan Run (flag 4194304) is row 696, for every region, 48 hours each October (10 to 12 October
+2026, then from 9 October 2027; the table dates it to 2030), which `/qc holidays` on retail listed
+under "Other calendar holidays" on 11 October 2026 and now lists as the entry. Its one quest, 47709 (for
+gnomes, filed under the general "Seasonal" in the API), has one pin, nameless, on map 469, which shows
+only while the race runs. Neither event is in Forever's tables or data, so step 2b lists both as not on
+Forever's calendar, which is no finding.
+
 Retail's calendar on 11 October 2026, as `/qc holidays` listed it on the user's realm (whose
 per-region rows are region 4's): every holiday our quests have was dated in the next 12 months
 except Hearthstone's 10th Anniversary, as expected. Brewfest (372) 2027-09-20 to 2027-10-06,
@@ -1874,9 +1936,9 @@ Festival (1052), Free T-Shirt Day (1053), Luminous Luminaries (1054), Classic As
 of Hotmogu (1169), Deepwind Dunk (1241), Shado-Pan Showdown (1244), Kalimdor Cup (1395), Eastern
 Kingdoms Cup (1400), Delves Bonus Event (1560), Darkspear Dash (1793), Midnight Dungeon Event (1803)
 and WoW's 22nd Anniversary (1808), which went into `qcHolidays` that day, as did the two cups, in
-the Skyriding Cups. So the calendar serves Call of the Scarab (638) and The Great Gnomeregan Run
-(696), which `PENDING` rows of `quest-holiday-decisions.csv` name, and the Kalimdor and Eastern
-Kingdoms Cups, under those IDs. This list is the first comparison for step 2h's check in game: the
+the Skyriding Cups. So the calendar serves Call of the Scarab (638), whose flag is decision 35 of
+open-items.md, The Great Gnomeregan Run (696), whose entry came in on 12 October 2026 (#314), and the
+Kalimdor and Eastern Kingdoms Cups, under those IDs. This list is the first comparison for step 2h's check in game: the
 review, run as of 11 October 2026, lists the same 58 IDs, and for each entry the same days (the
 Darkmoon Faire to 8 November 00:00, the end of the 7th). The IDs that decisions rest on are kept as
 facts in `docs\plans\calendar-decisions.csv`, with the day they were seen: 1808, 1395, 1400, 638 and
