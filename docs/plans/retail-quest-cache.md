@@ -281,7 +281,8 @@ placement already encoded. What it adds: 98 quests filed Uncategorized whose sor
 profession misfiles (15 Tailoring quests under Leatherworking, 12 Engineering quests under
 Enchanting, whose profession bit is also wrong: 4, Enchanting's, instead of 8), a starter-zone
 routing gap (the map ids 462, 460, 461 and 469 send the list to categories with no quests), and a way
-to see sort drift between builds. Our category agrees with it for 96.4% of the quests that have an
+to see sort drift between builds. The profession misfiles were moved on 12 October 2026, and step 1d
+(`Sync-QuestProfessions.ps1`) now reads the sort as one of its sources of a quest's profession. Our category agrees with it for 96.4% of the quests that have an
 expected category (28,437 of 29,484); about 560 of the 1,047 disagreements are the commonest filing of
 their sort or a parent or child of it, which is our deliberate regrouping.
 

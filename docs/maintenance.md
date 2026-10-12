@@ -310,7 +310,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1 | Faction, race and class | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
 | 1b | Second source for race and class, and the task-quest tables 1d and 2c read | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
-| 1d | Professions of task quests | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 1d | Professions (after step 2e, whose quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -Refresh -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 2c | Prerequisites from Blizzard's API, the client's task quests and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
@@ -369,22 +369,45 @@ To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-d
 `Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
 KEPT rather than raising it again, unless our value changes.
 
-### 1d. Professions of task quests
+### 1d. Professions
 
-`Sync-QuestProfessions.ps1` gives a world quest, bonus objective or calling the profession it needs,
-so "Hide Other Profession Quests" hides a Legion Mining world quest from a character without Mining.
-The API doesn't serve task quests, so the client says it, in two columns of `QuestV2CliTask` that
-agree wherever both speak: the skill the quest asks for, in the expansion's own line of the
-profession (its `SkillLine` row names the base profession), and the profession of its quest type
-(`QuestInfo`). Run it with `-WhatIf` first.
-- **Only a quest with no profession is given one.** A quest of ours that has another, a quest whose
-  two columns disagree and a skill line with no bit in `qcProfessionBits` are listed and left.
+`Sync-QuestProfessions.ps1` gives a quest the profession it needs, so "Hide Other Profession Quests"
+hides a Mining quest from a character without Mining. Three passes each read one kind of Blizzard
+data:
+- **Task quests** (world quests, bonus objectives, callings), which the API doesn't serve: two columns
+  of the client's `QuestV2CliTask` that agree wherever both speak, the skill the quest asks for, in
+  the expansion's own line of the profession (its `SkillLine` row names the base profession), and the
+  profession of its quest type (`QuestInfo`).
+- **Blizzard's profession headings:** the category of the quest's API record (step 1) and the sort in
+  the quest cache (step 2e), a `QuestSort` named as a profession is. Blizzard files quests this way up
+  to Battle for Azeroth; from Dragonflight on it uses one general "Professions" heading, which names
+  none.
+- **The knowledge a quest rewards:** a guaranteed reward that the client's `Item` table files as
+  Miscellaneous, Other and whose `ItemSparse` row needs a skill, such as Thalassian Miner's Notes.
+  Recipes, reagents and fishing poles need a skill too but are other classes. This is how
+  Midnight's and Dragonflight's profession quests are found.
+
+Quests none of them names, and quests our data has wrong, are decided by hand in
+[plans/quest-profession-decisions.csv](plans/quest-profession-decisions.csv): a `SET` row gives the
+quest its `Target` profession, and its `TargetCategory` when the row has one, while the data still
+has the row's `Cur`; a `KEEP` row keeps a quest as it is though Blizzard files it under a profession it
+doesn't need (the garrison Trading Post trades). Run it with `-Refresh -WhatIf` first: `-Refresh`
+downloads the six client tables for the build of the newest quest cache (`ItemSparse` is about 50 MB).
+- **Only a quest with no profession is given one.** A quest of ours that has another, a pass whose
+  sources disagree, passes that disagree with each other, and a skill line with no bit in
+  `qcProfessionBits` are listed and left. So is a decision the data no longer matches.
+- **It lists quests filed under another profession's heading** in our menu, for a decision to move.
 - **The skill level isn't kept.** It belongs with the skill requirements, which retail doesn't
   fill yet ([plans/game-parity.md](plans/game-parity.md), recommendation 3).
 
-A second run changes nothing, and step 6b gives the task quests it adds their profession the same
-way, so this step finds nothing in them. WoW: Forever has no such table, so its professions come from
-CMaNGOS in step 10.
+On 12 October 2026 the headings gave 65 quests a profession and the knowledge rewards 58 (the 14
+Midnight trainer quests of Silvermoon City among them); the decisions gave 27 more one, corrected 13
+(the Ub3r-Spanner storyline was Enchanting) and moved 28 to their own profession's heading: 1,910
+quests have one. A second run changes nothing, and step 6b gives
+the task quests it adds their profession the same way, so this step finds nothing in them.
+`Test-SyncQuestProfessions.ps1 -ToolsDir <the main checkout's tools>` checks the tool. WoW: Forever has
+no such tables, so its professions come from CMaNGOS in step 10, and every quest under one of its
+profession headings has one.
 ### 2. Reputation rewards
 
 `Compare-QuestReputation.ps1` compares `qcQuestReputation` against the API cache from step 1 and
@@ -2028,6 +2051,11 @@ git diff --stat
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;
   `-MadeUpOnly` runs the first half alone. It must say "0 failed".
+- For changes to `Sync-QuestProfessions.ps1` (step 1d) or its decisions file, run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestProfessions.ps1 -ToolsDir <the main checkout's tools folder>`.
+  It checks each pass, each kind of decision and each list on made-up tables, then (with the real
+  tables) takes the profession from quests of every pass and decision and checks that the tool gives
+  exactly that back; `-MadeUpOnly` runs the first half alone. It must say "0 failed".
 - For changes to the calendar code, run `Test-SeasonalCalendar.lua` for both games' TOCs (see
   [Holidays](#holidays)). It must say "All checks passed."
 - For changes to the map's tooltip (`qcTooltips.lua`, `qcMapPins.lua`), run `Test-MapTooltip.lua` for both
