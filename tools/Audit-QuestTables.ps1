@@ -74,6 +74,11 @@ function Test-OtherFaction([int]$a, [int]$b) {
     $fa = $quests[$a].faction; $fb = $quests[$b].faction
     return ($fa -eq 1 -and $fb -eq 2) -or ($fa -eq 2 -and $fb -eq 1)
 }
+function Test-OtherProfession([int]$a, [int]$b) {
+    if (-not ($quests.ContainsKey($a) -and $quests.ContainsKey($b))) { return $false }
+    $pb = [int64]$quests[$b].profession
+    return $pb -and -not ([int64]$quests[$a].profession -band $pb)
+}
 
 $luaText = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcQuest.lua'))
 function Get-TableLines([string]$name) {
@@ -280,6 +285,9 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
                 if ($theirs -contains $id) { Add-Finding 'prereq: each requires the other' $id $prereq '' }
             }
             if ($musts -contains $prereq -and (Test-OtherFaction $id $prereq)) { Add-Finding 'prereq: other faction' $id $prereq "$(Get-QuestName $id) requires $(Get-QuestName $prereq)" }
+            if (Test-OtherProfession $id $prereq) {
+                Add-Finding 'prereq: other profession' $id $prereq ("{0} (profession {1}) requires {2} (profession {3})" -f (Get-QuestName $id), [int64]$quests[$id].profession, (Get-QuestName $prereq), [int64]$quests[$prereq].profession)
+            }
             if ($api -and $api -notcontains $prereq -and -not (Test-StepJustBefore $id $prereq)) {
                 Add-Finding 'prereq: not one the API names' $id $prereq ("API: {0}" -f (($api | ForEach-Object { "$_ $(Get-QuestName $_)" }) -join ' | '))
             }

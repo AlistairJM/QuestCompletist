@@ -8,6 +8,10 @@ answer what a check tells them to, so each case says exactly what the game said:
 another line, nothing, an error, a secret value, or no such function at all. The tooltip stand-in keeps
 every line it is given, and the checks read those.
 
+Then every quest of a profession that has a quest to do first, for a character with that profession and no
+other: with every quest it could do done, the list's filter (requirements and profession on) keeps it, and
+with nothing done, its "Required Quest" lines name no quest of another profession.
+
 With a third argument, the lines of each case are written to that file, so one run on the code before a
 change and one after can be compared line by line.
 
@@ -666,6 +670,65 @@ local bareStory, bareDaily = draw(storyQuest), draw(dailyQuest)
 reset()
 check("with every one of the game's calls missing, a storyline quest's tooltip is the plain one", sameLines(bareStory, baseline))
 check("and so is a daily quest's", sameLines(bareDaily, (draw(dailyQuest))))
+
+print("A profession quest's requirement, for a character with that profession and no other")
+reset()
+local professionOf, done = env.qcQuestProfession, {}
+local skillOf, flags = {}, {}
+for skillLine, flag in pairs(env.qcProfessionBits) do
+	if not skillOf[flag] then skillOf[flag] = skillLine; flags[#flags + 1] = flag end
+end
+table.sort(flags)
+local realCompleted, realTitle = env.C_QuestLog.IsQuestFlaggedCompleted, env.C_QuestLog.GetTitleForQuestID
+local realProfessions, realProfessionInfo, realInLog = env.GetProfessions, env.GetProfessionInfo, ctx.inLog
+env.C_QuestLog.IsQuestFlaggedCompleted = function(questId) return done[questId] == true end
+env.C_QuestLog.GetTitleForQuestID = function(questId) return "#" .. questId end
+env.GetProfessions = function() return 1 end
+ctx.inLog = setmetatable({}, {__index = function() return 1 end})
+env.qcSettings.QC_L_HIDE_REQUIREMENTSNOTMET, env.qcSettings.QC_L_HIDE_PROFESSION = 1, 1
+
+local checked, unmet = 0, {}
+for _, flag in ipairs(flags) do
+	env.GetProfessionInfo = function() return nil, nil, 1000, nil, nil, nil, skillOf[flag], 0 end
+	for _, questId in ipairs(ids) do
+		done[questId] = not professionOf[questId] or bit.band(professionOf[questId], flag) ~= 0
+	end
+	local keep = QC.qcBuildViewFilter("L")
+	for _, questId in ipairs(ids) do
+		local mask = professionOf[questId]
+		if mask and bit.band(mask, flag) ~= 0 and env.qcQuestPrereq[questId] then
+			checked = checked + 1
+			if not keep(questId) then unmet[#unmet + 1] = questId .. " (" .. flag .. ")" end
+		end
+	end
+end
+check(string.format("all %d are met once the character has done every quest it could", checked), checked > 0 and #unmet == 0,
+	#unmet > 0 and (#unmet .. " not: " .. table.concat(unmet, ", ", 1, math.min(#unmet, 10))) or nil)
+
+done = {}
+local crossed, drawn = {}, 0
+for _, questId in ipairs(ids) do
+	local mask = professionOf[questId]
+	if mask and env.qcQuestPrereq[questId] then
+		drawn = drawn + 1
+		draw(questId)
+		local listing = false
+		for _, entry in ipairs(tooltip.entries) do
+			if entry.left == env.qcLocalize.REQUIREDQUEST then listing = true
+			elseif entry.left ~= " " or entry.right == " " then listing = false end
+			for other in (listing and entry.right or ""):gmatch("#(%d+)") do
+				local otherMask = professionOf[tonumber(other)]
+				if otherMask and bit.band(otherMask, mask) == 0 then crossed[#crossed + 1] = questId .. " <- " .. other end
+			end
+		end
+	end
+end
+check(string.format("none of their %d tooltips names another profession's quest to do first", drawn), drawn > 0 and #crossed == 0,
+	#crossed > 0 and (#crossed .. ": " .. table.concat(crossed, ", ", 1, math.min(#crossed, 10))) or nil)
+
+env.C_QuestLog.IsQuestFlaggedCompleted, env.C_QuestLog.GetTitleForQuestID = realCompleted, realTitle
+env.GetProfessions, env.GetProfessionInfo, ctx.inLog = realProfessions, realProfessionInfo, realInLog
+env.qcSettings.QC_L_HIDE_REQUIREMENTSNOTMET, env.qcSettings.QC_L_HIDE_PROFESSION = 0, 0
 
 if RECORD_FILE then
 	local out = assert(io.open(RECORD_FILE, "wb"))
