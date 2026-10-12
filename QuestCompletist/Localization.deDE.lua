@@ -90,6 +90,7 @@ qcLocalize = setmetatable({
 	LATERQUESTS = "... %d weitere", -- Needs review
 	THISQUEST = "diese Quest", -- Needs review
 	REQUIREDQUEST = "Benötigte Quest:", -- Needs review
+	INQUESTLOG = "%s in deinem Questlog", -- Needs review
 	REQUIREDFACTION = "Benötigte Fraktion:", -- Needs review
 	REQUIREDRENOWN = "Benötigte Ruhmstufe:", -- Needs review
 	REQUIREDRANK = "Benötigter Rang:", -- Needs review

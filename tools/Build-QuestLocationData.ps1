@@ -291,7 +291,6 @@ if (-not $tdbFile -or -not (Test-Path $LuaExe)) {
     foreach ($row in (Read-DumpTable 'gameobject_queststarter' '1,2' 1000)) { $f = $row.Split("`t"); [void]$hasStarter.Add($f[1]) }
     $systemCategories = @(170, 173, 191, 290, 1092, 1095, 1130, 1133, 1134, 1232, 1241, 1246, 1346, 1347, 1428, 1429, 1430, 1431, 1514, 1735)
     $holidayCategories = @(31, 37, 46, 50, 90, 126, 127, 133, 145, 153, 413)
-    $landfall = 121
     $internalName = '\[DNT\]|\bDNT\b|\bTBD\b|\bDEPRECATED\b|^Test$|Test Quest$|Flight Test$|\bJrz\b|\bPlaceholder\b|^Blank$|^(Conditional Objectives|Prey Contract:|Paragon of |Bonus Objective:)'
     function Get-TdbSkipReason([string]$questId) {
         $ours = $ourQuests[$questId]
@@ -303,7 +302,6 @@ if (-not $tdbFile -or -not (Test-Path $LuaExe)) {
         if ($ours.Holiday -or $ours.Profession) { return 'holiday or profession quest' }
         if ($holidayCategories -contains [int]$ours.Category) { return 'holiday category' }
         if ($systemCategories -contains [int]$ours.Category) { return 'system category' }
-        if ([int]$ours.Category -eq $landfall) { return 'Landfall (retired dailies)' }
         if ($ours.Name -match $internalName) { return 'internal name' }
         if (-not $questV2.Contains($questId)) { return 'not in the client' }
         if ($disabled.Contains($questId)) { return 'disabled in TrinityCore' }
