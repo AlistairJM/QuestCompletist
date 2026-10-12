@@ -25,11 +25,22 @@ against, as decided with the user on 6 October 2026:
     -ToolsDir); they're fetched for -Build when missing.
 A quest the API and the client are silent on keeps its prerequisite.
 
+Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the client's tables):
+  - The current expansion's campaign (-Campaign): each chapter's first quest needs the last quest of
+    the chapter before, where the API is silent on it. The zone campaigns the Scouting Map offers
+    in any order (-ScoutingMapLine) need what its quest (-ScoutingMapQuest) needs instead.
+  - The client's conditions on the expansion's quest lines and other campaigns: a quest on one that
+    needs no other quest of it gets the condition as well, the hidden quest 90806 included.
+  - A required quest the game offered together with the quest, in the probe's map pass for -Build
+    (-OffersFile), isn't one: it wasn't done, and the game offered the quest all the same.
+
 A one-time quest's required quest that recurs (daily, weekly or repeatable) is left out: the game
 only knows such a quest is done until the next reset, so the map would hide the one-time quest
 again. A choice that offers one is left out whole. A recurring quest keeps a recurring
-requirement, as in a chain of world quests, which the game knows within the day or week. A
-requirement that would make two quests each require the other is left out too, and listed.
+requirement only where Blizzard's API or the client's task tables name it, as in a chain of world
+quests, which the game knows within the day or week; our own and TrinityCore's would hide the later
+quest after every reset. A requirement that would make two quests each require the other is left
+out too, and listed.
 
 With -WhatIf it only reports. Otherwise it saves through AddonData.ps1, which rebuilds the Lua.
 #>
@@ -40,11 +51,16 @@ param(
     [string]$Build = "12.1.0.69933",
     [string]$TdbFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
+    [int]$Campaign = 270,
+    [int]$ScoutingMapLine = 6131,
+    [int]$ScoutingMapQuest = 95008,
+    [string]$OffersFile = "",
     [switch]$WhatIf
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestConditions.ps1"
 
 $records = Read-QuestData $DataDir
 $quests = @{}
@@ -77,22 +93,6 @@ function Convert-ApiNode($node) {
     if ($items.Count -eq 1) { return $items[0] }
     return [pscustomobject]@{ And = $isAnd; Items = $items.ToArray() }
 }
-# A simplified tree as a prereq: a quest, or a list that all must be done, whose inner lists are
-# choices, whose inner lists are all of it again. A choice at the top goes in a list of its own.
-function ConvertTo-Nested($group) {
-    $out = @()
-    foreach ($item in $group.Items) {
-        if ($item -is [pscustomobject]) { $out += , (ConvertTo-Nested $item) } else { $out += [int]$item }
-    }
-    return , $out
-}
-function ConvertTo-PrereqValue($value) {
-    if ($null -eq $value -or $value -is [string]) { return $null }
-    if ($value -isnot [pscustomobject]) { return [int]$value }
-    if (-not $value.And) { $value = [pscustomobject]@{ And = $true; Items = @($value) } }
-    return , (ConvertTo-Nested $value)
-}
-
 $api = @{}
 $cache = Join-Path $ToolsDir 'quest_api_cache'
 foreach ($file in (Get-ChildItem $cache -Filter *.json | Select-String -Pattern '"quests":\{"operator"' -List | Select-Object -ExpandProperty Path)) {
@@ -187,11 +187,66 @@ function Test-OtherFaction([int]$a, [int]$b) {
     return ($fa -eq 1 -and $fb -eq 2) -or ($fa -eq 2 -and $fb -eq 1)
 }
 
+# A prereq as the parts that each must be done, and back.
+function Get-PrereqParts($value) {
+    if ($null -eq $value -or ($value -isnot [array] -and $value -eq 0)) { return , @() }
+    return , @($value)
+}
+function Join-PrereqParts($parts) {
+    $list = New-Object System.Collections.Generic.List[object]
+    foreach ($part in $parts) { $list.Add($part) }
+    if ($list.Count -eq 0) { return $null }
+    if ($list.Count -eq 1 -and $list[0] -isnot [array]) { return [int]$list[0] }
+    return , $list.ToArray()
+}
+function Get-PartText($part) { return ConvertTo-PrereqText $part '[' ']' }
+
+# The client's conditions, as the parts each quest they cover gets: left out where they name a quest
+# that recurs and the quest doesn't, as the API's are.
+$conditionTables = Import-ClientConditions $ToolsDir $Build
+$gates = @(Get-ConditionGates $conditionTables $Campaign $quests)
+$chapterLinks = Get-ChapterLinks $conditionTables $Campaign $ScoutingMapLine $ScoutingMapQuest $quests
+function Select-Checkable($node, [int]$id) {
+    if ($null -eq $node -or $node -is [string]) { return $node }
+    if (-not (Test-ConditionGroup $node)) {
+        if ($quests.ContainsKey([int]$node) -and -not (Test-Checkable $id ([int]$node))) { return $null }
+        return $node
+    }
+    $joined = $null; $first = $true
+    foreach ($item in $node.Items) {
+        $part = Select-Checkable $item $id
+        if ($first) { $joined = $part; $first = $false } else { $joined = Join-Condition $node.And $joined $part }
+    }
+    return $joined
+}
+$gateParts = @{}
+foreach ($gate in $gates) {
+    foreach ($id in $gate.Quests) {
+        if (-not $quests.ContainsKey($id)) { continue }
+        $value = ConvertTo-PrereqValue (Select-Checkable $gate.Gate $id)
+        if ($null -eq $value) { continue }
+        if (-not $gateParts.ContainsKey($id)) { $gateParts[$id] = New-Object System.Collections.Generic.List[object] }
+        foreach ($part in (Get-PrereqParts $value)) { $gateParts[$id].Add([pscustomobject]@{ Gate = $gate; Part = $part }) }
+    }
+}
+# Ours without the parts a condition gave it, so each run starts from what the other sources say.
+$own = @{}
+foreach ($id in $quests.Keys) {
+    $parts = Get-PrereqParts $quests[$id].prereq
+    if ($gateParts.ContainsKey($id)) {
+        $given = @($gateParts[$id] | ForEach-Object { Get-PartText $_.Part })
+        $kept = New-Object System.Collections.Generic.List[object]
+        foreach ($part in $parts) { if ($given -notcontains (Get-PartText $part)) { $kept.Add($part) } }
+        $parts = $kept
+    }
+    $own[$id] = Join-PrereqParts $parts
+}
+
 $new = @{}
 $counts = [ordered]@{ fromApiNew = 0; fromApiChanged = 0; fromApiSame = 0; keptApi = 0; fromClientNew = 0; fromClientChanged = 0; fromClientSame = 0; keptClient = 0; fromTrinityCore = 0 }
 foreach ($id in ($quests.Keys | Sort-Object)) {
     $q = $quests[$id]
-    $ours = if ($q.prereq) { ConvertTo-PrereqText $q.prereq '[' ']' } else { '' }
+    $ours = if ($own[$id]) { ConvertTo-PrereqText $own[$id] '[' ']' } else { '' }
     $source = ''
     if ($api.ContainsKey($id) -and $null -ne $api[$id]) { $source = 'Api'; $value = $api[$id] }
     elseif ($client.ContainsKey($id) -and -not $api.ContainsKey($id)) { $source = 'Client'; $value = $client[$id] }
@@ -201,7 +256,7 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
         # One of ours that's missing from the list stays when it's the step just before the quest in
         # its storyline, as it nearly always is.
         $listed = Get-PrereqQuests $value
-        $ourQuests = if ($q.prereq) { Get-PrereqQuests $q.prereq } else { @() }
+        $ourQuests = if ($own[$id]) { Get-PrereqQuests $own[$id] } else { @() }
         $kept = @($ourQuests | Where-Object { $listed -notcontains $_ -and (Test-StepJustBefore $id $_) })
         if ($kept.Count) { $value = @($kept) + @($value); $counts["kept$source"]++ }
         $text = ConvertTo-PrereqText $value '[' ']'
@@ -214,6 +269,67 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
             $new[$id] = $prev; $counts.fromTrinityCore++
         }
     }
+}
+$final = @{}
+foreach ($id in $quests.Keys) { if ($new.ContainsKey($id)) { $final[$id] = $new[$id] } else { $final[$id] = $own[$id] } }
+
+$chapters = New-Object System.Collections.Generic.List[string]
+foreach ($id in ($chapterLinks.Keys | Sort-Object)) {
+    if ($api.ContainsKey($id) -and $null -ne $api[$id]) { continue }
+    if ((Get-PartText $final[$id]) -ne (Get-PartText $chapterLinks[$id])) { $chapters.Add("$id needs $(Get-PartText $chapterLinks[$id])") }
+    $final[$id] = $chapterLinks[$id]
+}
+
+$notBlizzard = New-Object System.Collections.Generic.List[string]
+foreach ($id in ($quests.Keys | Sort-Object)) {
+    if (-not (Test-Recurring $id) -or -not $final[$id]) { continue }
+    $named = @()
+    if ($api.ContainsKey($id) -and $null -ne $api[$id]) { $named += Get-PrereqQuests $api[$id] }
+    if ($client.ContainsKey($id)) { $named += Get-PrereqQuests $client[$id] }
+    $parts = New-Object System.Collections.Generic.List[object]
+    foreach ($part in (Get-PrereqParts $final[$id])) {
+        $theirs = @((Get-PrereqQuests $part) | Where-Object { (Test-Recurring $_) -and $named -notcontains $_ })
+        if ($theirs.Count) { $notBlizzard.Add("$id <- $(Get-PartText $part)") } else { $parts.Add($part) }
+    }
+    $final[$id] = Join-PrereqParts $parts
+}
+
+$offered = @{}
+if (-not $OffersFile) { $OffersFile = Join-Path $ToolsDir ("map_offers_retail_{0}.tsv" -f $Build.Split('.')[-1]) }
+if (Test-Path $OffersFile) {
+    foreach ($row in Import-Csv $OffersFile -Delimiter "`t") { if ($row.kind -eq 'offer') { $offered[[int]$row.id] = $true } }
+} else { "No map pass for $Build at $OffersFile, so no required quest is checked against the game's offers." }
+$contradicted = New-Object System.Collections.Generic.List[string]
+foreach ($id in ($offered.Keys | Sort-Object)) {
+    if (-not $quests.ContainsKey($id) -or -not $final[$id]) { continue }
+    $parts = New-Object System.Collections.Generic.List[object]
+    foreach ($part in (Get-PrereqParts $final[$id])) {
+        if ($part -isnot [array] -and $offered.ContainsKey([int]$part)) { $contradicted.Add("$id <- $part") } else { $parts.Add($part) }
+    }
+    $final[$id] = Join-PrereqParts $parts
+}
+
+$gated = @{}
+$refused = New-Object System.Collections.Generic.List[string]
+foreach ($id in ($gateParts.Keys | Sort-Object)) {
+    $needs = @(Get-PrereqQuests $final[$id])
+    $parts = New-Object System.Collections.Generic.List[object]
+    foreach ($part in (Get-PrereqParts $final[$id])) { $parts.Add($part) }
+    foreach ($given in $gateParts[$id]) {
+        if (@($needs | Where-Object { $given.Gate.Quests -contains $_ }).Count) { continue }
+        $text = Get-PartText $given.Part
+        if (@($parts | Where-Object { (Get-PartText $_) -eq $text }).Count) { continue }
+        $alsoOffered = @((Get-PrereqQuests $given.Part) | Where-Object { $offered.ContainsKey($_) })
+        if ($offered.ContainsKey($id) -and $alsoOffered.Count -and $given.Part -isnot [array]) { $refused.Add("$id <- $text"); continue }
+        $parts.Add($given.Part)
+        $gated["$($given.Gate.Kind) $($given.Gate.Id)"] = $gated["$($given.Gate.Kind) $($given.Gate.Id)"] + 1
+    }
+    $final[$id] = Join-PrereqParts $parts
+}
+
+$new = @{}
+foreach ($id in $quests.Keys) {
+    if ((Get-PartText $final[$id]) -ne (Get-PartText $quests[$id].prereq)) { $new[$id] = $final[$id] }
 }
 
 # Leave out a requirement that would make two quests each require the other, or a quest require itself.
@@ -236,9 +352,16 @@ foreach ($id in @($new.Keys)) {
 
 "From the API: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match. From TrinityCore: {4}." -f $counts.fromApiNew, $counts.fromApiChanged, $counts.fromApiSame, $counts.keptApi, $counts.fromTrinityCore
 "From the client's task quests: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match; it names {4} quests we hold no data for, so those requirements are left out." -f $counts.fromClientNew, $counts.fromClientChanged, $counts.fromClientSame, $counts.keptClient, $script:notInData.Count
+"Campaign ${Campaign}: {0} chapters' first quests need the chapter before ({1} of them change)." -f $chapterLinks.Count, $chapters.Count
+"The client's conditions: {0} quest lines and campaigns, given to {1} quests ({2})." -f $gates.Count, (($gated.Values | Measure-Object -Sum).Sum), (($gated.Keys | Sort-Object | ForEach-Object { "$_ x$($gated[$_])" }) -join ', ')
+"Left out as the game offered them together with the quest: $($contradicted.Count) required quests, and $($refused.Count) conditions."
+"Recurring quests' recurring requirements that Blizzard doesn't name, left out: $($notBlizzard.Count)"
 "Left out as they'd go round in a circle: $($cycles.Count)" + $(if ($cycles.Count) { " (" + ($cycles -join '; ') + ")" } else { '' })
 "Changes: $($new.Count)"
 if ($WhatIf) {
+    foreach ($list in @(@('Chapters', $chapters), @('Offered together', $contradicted), @('Conditions refused', $refused), @('Recurring, not Blizzard''s', $notBlizzard))) {
+        if ($list[1].Count) { "  $($list[0]): " + ($list[1] -join '; ') }
+    }
     foreach ($id in ($new.Keys | Sort-Object | Select-Object -First 40)) {
         $q = $quests[$id]
         "  {0} {1}: {2} -> {3}" -f $id, $q.name, $(if ($q.prereq) { ConvertTo-PrereqText $q.prereq '[' ']' } else { 'none' }), (ConvertTo-PrereqText $new[$id] '[' ']')

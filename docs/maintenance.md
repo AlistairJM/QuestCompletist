@@ -324,7 +324,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1d | Professions of task quests | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
-| 2c | Prerequisites from Blizzard's API, the client's task quests and TrinityCore | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the map pass's offers and TrinityCore (after the retail map pass) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
@@ -518,12 +518,32 @@ with `-WhatIf` first to see what it would change.
   or the whole choice it's in. The tables are those step 1b refreshes.
 - **Where the API is silent and we have none,** TrinityCore's previous quest is taken when it's the
   step just before in the quest's storyline (the client's `QuestLineXQuest` for `-Build`).
+- **The current expansion's campaign** (`-Campaign`, 270 for Midnight): each chapter's first quest
+  needs the last quest of the chapter before, where the API is silent on it. The zone campaigns the
+  Scouting Map offers in any order (`-ScoutingMapLine 6131`) need what its quest needs instead
+  (`-ScoutingMapQuest 95008`, "Adventuring in Midnight", whose objective is to choose one there).
+  Change both, and `-Campaign`, for the next expansion.
+- **The client's conditions on the expansion's quest lines and other campaigns** (`QuestLine.PlayerConditionID`
+  and `Campaign.Prerequisite`, read through `PlayerCondition` and `ModifierTree` by `QuestConditions.ps1`): a
+  quest on one that needs no other quest of it gets the condition too. Only conditions that name a quest of
+  `-Campaign`, or the hidden quest a line accepts in place of one, are taken: on 12.1.0.69933 that is 15
+  Voidstorm and Zul'Aman lines and campaigns 284 and 324, given to 213 quests, all through 86509, 86521,
+  86522, 86565 or the hidden 90806. The addon counts 90806 but doesn't name it (`qcPrereq.Text`). A game
+  feature switched on for everyone (type 289) is read as off; anything else it can't check is read as met.
+- **A required quest the game offered together with the quest** in the newest map pass for `-Build`
+  (`tools\map_offers_retail_<build>.tsv`, `-OffersFile`) is left out: it wasn't done, and the game offered
+  the quest all the same. 32 on 12.1.0.69933. With no map pass for the build it says so and checks nothing.
 - **A one-time quest never gets a daily, weekly or repeatable requirement,** and a choice that
-  offers one is left out whole. A recurring quest keeps one, as in a chain of world quests, which
-  the game knows within the day or week.
+  offers one is left out whole. A recurring quest keeps one only where Blizzard's API or the client's
+  task tables name it, as in a chain of world quests, which the game knows within the day or week;
+  ours and TrinityCore's would hide the later quest after every reset (544 left out on 12 October
+  2026, 102 kept).
 - **A requirement that would make two quests each require the other** is left out, and listed.
 
-A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore changed.
+A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore changed. Each run
+starts from ours without the conditions it gave, so a condition that changes or goes is changed or
+taken off too. Step 2b knows the conditions' quests as the client's (`-OwnDataOnly` doesn't read the
+client's tables, so there 90806 shows as a quest not in the data).
 
 ### 2d. Holiday tags
 
@@ -2257,9 +2277,11 @@ on different characters, with their answers compared, show whether the beta's an
 
 A map pass is read with `tools\Report-MapOffers.lua`, which prints each map's offers, with how far
 each is from the quest's pin, and the points of interest, events, hubs and entrances, and writes
-the rows as a TSV. Give `QuestCompletist` instead of `QuestCompletist\Forever` for a retail file:
+the rows as a TSV. Give `QuestCompletist` instead of `QuestCompletist\Forever` for a retail file, and
+name its TSV `map_offers_retail_<build number>.tsv`, which step 2c reads:
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Report-MapOffers.lua tools\forever_probe_<build number>\QCForeverProbe.lua QuestCompletist\Forever tools\map_offers_<build number>.tsv
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Report-MapOffers.lua tools\retail_probe_<build number>\QCForeverProbe.lua QuestCompletist tools\map_offers_retail_<build number>.tsv
 ```
 
 Leave the probe installed while you play Forever. Its recorder notes which quests each NPC or object
@@ -2324,6 +2346,9 @@ git diff --stat
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
+- For changes to `QuestConditions.ps1` (the client's quest line and campaign conditions, steps 2b and 2c), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestConditions.ps1` (made-up client tables). It
+  must say "0 failed". Then run step 2c with `-WhatIf` on the real tables: it must say "Changes: 0".
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;

@@ -520,13 +520,20 @@ function qcPrereq.Parts(questId)
 end
 
 -- A part as text: a quest as describe(questId) gives it, a choice as its options joined by "or",
--- and a list inside a choice as its quests in brackets.
+-- and a list inside a choice as its quests in brackets. A quest the database has no row for is a
+-- hidden one the game tracks, such as 90806 that Midnight's quest lines accept, which has no name:
+-- it counts, but isn't shown, and a part of only such quests gives nil.
 function qcPrereq.Text(part, describe, all)
-	if type(part) == "number" then return describe(part) end
+	if type(part) == "number" then
+		if not qcQuestDatabase[part] then return nil end
+		return describe(part)
+	end
 	local texts = {}
 	for _, item in ipairs(part) do
-		if qcPrereq.Applies(item) then texts[#texts + 1] = qcPrereq.Text(item, describe, not all) end
+		local text = qcPrereq.Applies(item) and qcPrereq.Text(item, describe, not all)
+		if text then texts[#texts + 1] = text end
 	end
+	if #texts == 0 then return nil end
 	if #texts == 1 then return texts[1] end
 	if all then return "(" .. table.concat(texts, ", ") .. ")" end
 	return table.concat(texts, " " .. (SERVICES_CONJUNCTION_OR or "or") .. " ")
