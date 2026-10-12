@@ -49,6 +49,9 @@ function New-World([string]$name) {
     Add-Quest $quests 9 'Horde' 1 2
     Add-Quest $quests 10 'Fine' 1 3 1
     Add-Quest $quests 11 'Gone' 1 3
+    Add-Quest $quests 13 'One of two, one Horde' 1 1 '[[10,9]]'
+    Add-Quest $quests 14 'Both of two, one Horde' 1 1 '[10,9]'
+    Add-Quest $quests 15 'One of two, one daily' 1 3 '[[1,2]]'
     [IO.File]::WriteAllText("$root\data\forever\quests.jsonl", (($quests -join "`n") + "`n"))
     $pins = @(
         '{"map":1411,"icon":1,"name":"Bottle","x":10,"y":10,"quests":[5]}',
@@ -110,12 +113,13 @@ try {
     Check ($r.Text -match '0 renown requirements') 'A1: an empty one-line table is empty, and does not swallow the next table'
     $f = @(Import-Csv $out)
     function Count-Kind([string]$kind) { return @($f | Where-Object { $_.Kind -eq $kind }).Count }
-    Equal (Count-Kind 'prereq: recurring quest') 1 'A2: a one-time quest that requires a daily one'
-    Equal (@($f | Where-Object { $_.Kind -eq 'prereq: recurring quest' }))[0].Quest '3' 'A2: is quest 3'
+    function Get-KindQuests([string]$kind) { return (@($f | Where-Object { $_.Kind -eq $kind } | ForEach-Object { [int]$_.Quest } | Sort-Object) -join ',') }
+    Equal (Count-Kind 'prereq: recurring quest') 2 'A2: a one-time quest that requires a daily one, alone or as one of a choice'
+    Equal (Get-KindQuests 'prereq: recurring quest') '3,15' 'A2: are quests 3 and 15'
     Equal (Count-Kind 'prereq: requires itself') 1 'A2: a quest that requires itself'
     Equal (Count-Kind 'prereq: each requires the other') 2 'A2: two that require each other (both ways round)'
     Equal (Count-Kind 'prereq: quest not in the data') 1 'A2: a prerequisite that is not in the data'
-    Equal (Count-Kind 'prereq: other faction') 1 'A2: a prerequisite of the other faction'
+    Equal (Get-KindQuests 'prereq: other faction') '8,14' 'A2: a prerequisite of the other faction, alone or in a list that needs all of it, but not as one of a choice'
     Equal (Count-Kind 'breadcrumb: recurring quest') 1 'A2: a breadcrumb that is a daily quest'
     Equal (Count-Kind 'breadcrumb: quest not in the data') 1 'A2: a breadcrumb pair naming a quest not in the data'
     Equal (Count-Kind 'exclusive: shuts itself out') 1 'A2: a quest that closes itself'

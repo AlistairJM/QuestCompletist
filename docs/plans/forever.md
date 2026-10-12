@@ -1245,6 +1245,69 @@ The user took the recommendations:
   an Orc shaman can, and that a Human mage can't take Foror's Compendium or the Forging of Quel'Serrar
   while a warrior can, the Forging needing the Compendium; the data before fails 2 of its 5 checks.
 
+### The rest of CMaNGOS's requirements (11 October 2026)
+
+What CMaNGOS's server checks before it offers a quest (mangos-classic's `ObjectMgr::LoadQuests`, and
+`SatisfyQuestPreviousQuest`, `SatisfyQuestExclusiveGroup`, `SatisfyQuestCondition`,
+`SatisfyQuestNextChain` and `SatisfyQuestPrevChain` in `Player.cpp`) was recounted against what the
+importer read: a quest's `PrevQuestId`, a positive `ExclusiveGroup` and `BreadcrumbForQuestId`, and
+nothing else. The gaps, and what the importer does with each now:
+
+- **`NextQuestId`:** a quest whose `NextQuestId` names another is one of that quest's previous quests,
+  any one of which will do, with its own `PrevQuestId`; one in a negative `ExclusiveGroup` needs its whole
+  group done instead, unless the quest has a `PrevQuestId` that isn't that one's `NextQuestId`. 77
+  one-time quests had no prerequisite though CMaNGOS requires one: 40 all of a group, such as the eight
+  A Donation of Runecloth (7795 to 7836), and 37 one of several or a single quest, such as Trek to
+  Ashenvale (990), which takes Escape Through Force or Escape Through Stealth. 12 more named one quest
+  where CMaNGOS takes any of several: Covert Ops - Alpha and Beta, The Binding, Expert Blacksmith!, A
+  Taste of Flame, Felstone Field and Gahrron's Withering Cauldron, the four More Components of
+  Importance and A Bubbling Cauldron.
+- **`RequiredCondition`:** one that asks only for quests handed in, joined by and and or (up to four
+  parts each, not two), is added to the prerequisite: 34 quests, 27 with none before (12 one-time;
+  15 recurring, the Scourgestone turn-ins, three Librams and The Changing of Paths), 5 that need more
+  than ours named (4964, 4975, 6135, 6163, 8728), and 2 whose `NextQuestId` links ask as much (207,
+  8742). The other 82 conditions ask for something a
+  prerequisite can't (the war effort's collections, an aura, an area, an item, a quest in the log), and
+  the review lists them as "CMaNGOS requirement not a prerequisite".
+- **Two removed by hand:** The Battle of Alterac (7141) and The Battle for Alterac (7142) would need
+  Speak with Prospector Stonehewer (7221) and Speak with Voggah Deathgrip (7222), which no creature,
+  object or item starts in CMaNGOS and the game hasn't answered (Questie #1782: not in the game). Two
+  `prereq` `REMOVE` rows keep them open.
+- **`NextQuestInChain`:** a quest closes once the quest its `NextQuestInChain` names is taken or done,
+  and that one can't be taken while it is in the log, as for a breadcrumb. So it is that quest's
+  breadcrumb, unless that quest needs it done: 141 links. 48 are lead-ins the follow-up doesn't need,
+  such as The New Frontier (1000, 1004, 1018), The Hunter's Path and Heeding the Call, and 11 single
+  ones such as Rot Hide Clues (439) and Kharan's Tale (4342); 91 are one option of the follow-up's
+  choice, mostly class, race or faction versions, such as the eight Just Compensation to In Search of
+  Anthion (8929); and 7221 and 7222.
+- **Shared code:** the quest window's breadcrumb notice counts and lists only the lead-ins this
+  character can take (`qcPrereq.CanTake`), so a warrior at In Search of Anthion sees "1 Breadcrumb
+  Available!", not 8. On both games.
+- **Not a prerequisite yet:** 35 quests can be taken only while another quest is in the log (a negative
+  `PrevQuestId`, or `NextQuestId` for 619), 10 of them one-time: Digging Through the Dirt (254),
+  Chapter I to IV (339 to 342), Chief Engineer Scooty (2842), the two Orb of Orahil shards (4962,
+  4963), Manna-Enriched Horse Feed (7645) and Love Song for Narain (8599). They stay white, listed in
+  the review. The user's decision: a keyed table, `qcQuestNeedsInLog`, in the next pull request.
+- **Kept:** a quest CMaNGOS gives no requirement still takes the cache's next quest, as Simple
+  Subterfugin' (2238) needs Road to Salvation (2218), proven in the game.
+- **Evidence:** QuestieDB's Forever data (master fc0668b) agrees with 86 of the 119 changed
+  prerequisites. It doesn't read `RequiredCondition`, gives 7141 and 7142 none, and reads 2764 and 2765
+  otherwise (2761 alone; all of 2761 to 2763). No first-hand report contradicts the rest, so they follow
+  CMaNGOS. The user saw the list, with names, before the commit.
+- **The result:** 2,399 prerequisites (126 of them lists, 2,175 from CMaNGOS's requirement and 34 with
+  its condition), 280 breadcrumbs to 157 quests (141 from `NextQuestInChain`), and the same 85 groups.
+  The table audit has one new finding, kept: The Pledge of Secrecy (3638) takes any of four Goblin
+  Engineering quests, and 3629 is repeatable.
+- **Retail:** TrinityCore's `quest_template_addon` has the same links, which retail's tools don't read
+  either: 396 of our retail quests have no prerequisite though a `NextQuestID` names them (390
+  one-time, 96 through a negative group), and 26 links are "in the log" ones. Retail's prerequisites
+  come from Blizzard's API by the user's decision of 10 October ([game-parity.md](game-parity.md),
+  recommendation 13), so nothing changes there.
+- **Checked** with `Test-Completions.lua` on both TOCs (A Donation of Runecloth, Trek to Ashenvale,
+  Covert Ops - Alpha, two conditions, the Alterac quests, Heeding the Call closing with Moonglade, and
+  the notice; the old notice code fails its two checks), `Test-ForeverChecks.ps1` (the audit on choices
+  and lists), reachability (unchanged on Forever) and two imports giving the same files.
+
 ### A rerun of the import (12 October 2026)
 
 Two checks of the open pull requests on 12 October found that an import on master (f37f435), from build
@@ -1412,6 +1475,10 @@ on scratch copies, with each merge since the last change to the pins (#267) impo
 - 2026-10-11: Call of Earth on Zephras Isle is for shamans, from a new hand list of classes; Foror's
   Compendium takes its item's class from the client's `ItemSparse`, and a quest whose only prerequisite
   is for some classes is for them too (#307). See "Class quests the game files under a zone".
+- 2026-10-11: the importer reads the rest of CMaNGOS's requirements: 119 quests get or change a
+  prerequisite from `NextQuestId`, negative groups and `RequiredCondition`, 141 lead-ins close once
+  the quest their `NextQuestInChain` names is taken, and the breadcrumb notice counts only the ones a
+  character can take (#308). See "The rest of CMaNGOS's requirements".
 - 2026-10-12: `Test-ForeverImport.ps1`, which came with the ledger importer, failed on master once #307
   merged: its scratch world had no `ChrClasses` or `ItemSparse` table, so the importer tried to download
   them for its made-up build, and it read the real link and class lists. The world now has both tables and

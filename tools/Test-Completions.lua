@@ -22,7 +22,10 @@ On WoW: Forever's TOC it also walks the level 10 warrior and mage quests, whose 
 corrected on 11 October 2026 from Questie's issues and Wowhead's comments: the lead-ins no longer shut each
 other out, the quests they lead to do, and each of those closes every lead-in. With them, Securing the
 Supply Lines and its breadcrumbs, the two first steps of the shamans' Call of Earth, Iron Coral's
-prerequisite, and the eight quests that no longer need their breadcrumb.
+prerequisite, and the eight quests that no longer need their breadcrumb. Then the rest of CMaNGOS's
+requirements, read since the same day: quests that need all of several or one of several, conditions,
+the Alterac quests kept open, Moonglade closing its Heeding the Call lead-ins, and the quest window's
+breadcrumb notice, which counts only the lead-ins the character can take (shared code, Forever's case).
 
 And it checks Forever's class quests (docs/plans/forever-quest-class-decisions.csv and the importer's
 class rules): Zephras Isle's Call of Earth is a shaman's, and Foror's Compendium a warrior's or paladin's,
@@ -571,6 +574,79 @@ else
 		if env.qcQuestPrereq[questId] then kept[#kept + 1] = questId end
 	end
 	check("the eight quests that don't need their breadcrumb have no prerequisite", #kept == 0, table.concat(kept, ", "))
+	ctx.class, ctx.level = "ROGUE", 16
+end
+
+if not QUESTS[7795] then
+	print("CMaNGOS's requirements and next quests in the chain: not in this game's data")
+else
+	local WOOL, SILK, MAGEWEAVE, RUNECLOTH = 7791, 7793, 7794, 7795
+	local STEALTH, TREK, GAXIM, ALPHA = 995, 990, 1077, 1079
+	local ALTERAC, STONEHEWER, MOONGLADE, ANTHION = 7141, 7221, 5921, 8929
+	local HEEDING = {5923, 5924, 5925}
+	local function needs(questId) return QC.qcPinQuestNeeds(questId, QC.qcQuestStatus.Of(questId, QUESTS[questId])) end
+	local function same(a, b) return table.concat(a or {}, ",") == table.concat(b, ",") end
+	env.SERVICES_CONJUNCTION_OR = "or"
+
+	print("CMaNGOS's requirements: NextQuestId, a negative ExclusiveGroup and RequiredCondition")
+	ctx.class, ctx.level = "WARRIOR", 60
+	character("Human", {}, {})
+	login()
+	local runecloth = needs(RUNECLOTH)
+	check("A Donation of Runecloth needs Stormwind's three other donations",
+		runecloth == "Requires A Donation of Wool, Requires A Donation of Silk, Requires A Donation of Mageweave", runecloth)
+	turnIn(WOOL)
+	turnIn(SILK)
+	runecloth = needs(RUNECLOTH)
+	check("with two of them done, it still needs the third", runecloth == "Requires A Donation of Mageweave", runecloth)
+	turnIn(MAGEWEAVE)
+	check("then it can be taken", not needs(RUNECLOTH), needs(RUNECLOTH))
+	local trek = needs(TREK)
+	check("Trek to Ashenvale needs either way out of Stonetalon", trek == "Requires Escape Through Force or Escape Through Stealth", trek)
+	turnIn(STEALTH)
+	check("and either will do", not needs(TREK), needs(TREK))
+	local alpha = needs(ALPHA)
+	check("Covert Ops - Alpha takes Special Delivery for Gaxim as well as its own previous quest",
+		alpha == "Requires Ineptitude + Chemicals = Fun or Special Delivery for Gaxim", alpha)
+	turnIn(GAXIM)
+	check("so after Special Delivery for Gaxim alone it can be taken", not needs(ALPHA), needs(ALPHA))
+	check("Galvan's Finest Pupil needs all three parts of its RequiredCondition", same(env.qcQuestPrereq[2764], {2761, 2762, 2763}))
+	check("Natural Materials needs the quest its RequiredCondition names", env.qcQuestPrereq[3128] == 3122)
+	check("The Battle of Alterac needs nothing, as no one gives Speak with Prospector Stonehewer",
+		env.qcQuestPrereq[ALTERAC] == nil and env.qcQuestPrereq[7142] == nil)
+	check("which is a lead-in it closes", listedUnder(ALTERAC, STONEHEWER))
+
+	print("A Night Elf druid's lead-ins to Moonglade, which closes them once taken (NextQuestInChain)")
+	ctx.class, ctx.level = "DRUID", 10
+	character("NightElf", {}, {})
+	login()
+	local hidden = {}
+	ctx.inLog[MOONGLADE] = 1
+	for _, questId in ipairs(HEEDING) do
+		if mapKeeps(questId) then hidden[#hidden + 1] = questId end
+	end
+	check("with Moonglade in the log, the map hides the three Heeding the Call", #hidden == 0, table.concat(hidden, ", "))
+	turnIn(MOONGLADE)
+	local left = {}
+	for _, questId in ipairs(HEEDING) do
+		if env.qcCharacterCompletions[questId] ~= 1 then left[#left + 1] = questId end
+	end
+	check("handing it in ticks all three", #left == 0, table.concat(left, ", "))
+
+	print("A Human warrior at In Search of Anthion, whose lead-ins are eight classes' Just Compensation")
+	local notice
+	env.qcToast = {Show = function() end, Hide = function() notice = nil end}
+	env.qcToastText = {SetText = function(_, text) notice = text end}
+	env.qcToastTooltip = newTooltip()
+	env.GetQuestID = function() return ANTHION end
+	ctx.class, ctx.level = "WARRIOR", 60
+	character("Human", {}, {})
+	login()
+	fire("QUEST_DETAIL")
+	check("the quest window's notice counts only the warrior's", notice == "1 Breadcrumb Available!", notice)
+	lines = {}
+	env.qcToast_OnEnter(env.qcToast)
+	check("and its tooltip lists that one only, under its heading", #lines == 2, #lines .. " lines")
 	ctx.class, ctx.level = "ROGUE", 16
 end
 
