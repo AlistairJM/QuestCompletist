@@ -83,6 +83,11 @@ qcClosedOnceDone={
 [2]=true,
 [99]=true,
 }
+qcQuestNeedsInLog={
+[3]={1},
+[4]={4},
+[10]={99},
+}
 qcOverrideDailyExclusiveQuest={}
 qcOverrideWeeklyExclusiveQuest={}
 qcFactions={
@@ -127,6 +132,8 @@ try {
     Equal (Count-Kind 'exclusive: quest flagged unavailable') 0 'A2: and nothing flagged that is not named'
     Equal (Count-Kind 'closed once done: not a breadcrumb') 1 'A2: a quest kept while its quest is in the log that is no breadcrumb'
     Equal (@($f | Where-Object { $_.Kind -eq 'closed once done: not a breadcrumb' }))[0].Quest '99' 'A2: is quest 99'
+    Equal (Get-KindQuests 'in the log: needs itself') '4' 'A2: a quest that needs itself in the log'
+    Equal (Get-KindQuests 'in the log: quest not in the data') '10' 'A2: one that needs a quest not in the data in the log'
     Check (@($f | Where-Object { $_.Kind -match 'API|TrinityCore|client' }).Count -eq 0) 'A3: nothing from the API, TrinityCore or the client'
     Equal @($f | Where-Object { $_.Kind -match 'faction name: (faction not in|differs)|renown: faction' }).Count 0 'A3: and the factions are not held against the client'
     Check (-not (Test-Path "$w\tools\Faction-12.1.0.69933.csv")) 'A3: no table was downloaded'

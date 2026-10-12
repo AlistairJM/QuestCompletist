@@ -113,6 +113,12 @@ again.
   Taming the Beast, the notice counts only the lead-ins this character can take. The 119 prerequisites
   and 141 lead-ins closed by their next quest come from CMaNGOS and are checked offline by
   `Test-Completions.lua` ([forever.md](forever.md), "The rest of CMaNGOS's requirements").
+- **Quests offered only while another is in the log, on Forever** (#309, 11 October 2026, stacked on the one
+  above; shared code, untried in game, so not for a release until tried or the user says so). One look
+  on the beta: a quest of `qcQuestNeedsInLog`, such as Digging Through the Dirt (254) in Duskwood, is
+  grey ("Requires Bride of the Embalmer in your quest log") until Bride of the Embalmer is taken, then
+  white. The rest is checked offline by `Test-Completions.lua` ([forever.md](forever.md), "Quests
+  offered only while another is in the log").
 - **Two retail breadcrumbs that close only once all their quests are done** (found 11 October 2026, data
   from 6 October). Blizzard's API keeps 65890 The Nelthazan Ruins offered while any of 65891, 65893 or
   66719 is still to do, and 66261 A Minor Setback while any of 66262, 66263 or 66264 is; our breadcrumb
@@ -337,13 +343,6 @@ again.
 
 ## Code to finish
 
-- **Quests that need another in the log, on Forever** (the user's decision, 11 October 2026: the next
-  pull request). 35 quests can be taken only while another quest is in the log (CMaNGOS's negative
-  `PrevQuestId`), 10 of them one-time, and show white meanwhile. The shape: a keyed table,
-  `qcQuestNeedsInLog` [quest] = the quest that must be in the log, read by shared code: grey unless that
-  quest is in the log, and a one-time one ticked once that quest is handed in. Forever's is filled from
-  CMaNGOS, retail's empty for now (TrinityCore has 26 such links) ([forever.md](forever.md), "The rest
-  of CMaNGOS's requirements").
 - **README** says retail has "over 15,000" quest-giver pins and Forever "around 1,700"; check both at
   each release.
 

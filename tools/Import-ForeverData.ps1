@@ -98,7 +98,8 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   prereq    -LinkFile's prerequisite or choice, else CMaNGOS's requirement: its previous quests (its PrevQuestId
                     and the quests whose NextQuestId names it, any one of them, or a negative ExclusiveGroup's whole
                     group) and a RequiredCondition that asks only for quests handed in, as a list where it needs
-                    several; one a prerequisite can't hold, such as a quest in the log, is listed for review. Else
+                    several; a quest that must be in the log goes in links.jsonl, and the rest a prerequisite
+                    can't hold is listed for review. Else
                     the quest whose follow-up this is in the cache, less one -LinkFile removes, or
                     else the quest before it in its quest line (QuestLineXQuest's order), when the previous step is handed in on the
                     map this one starts on (the client's QuestPOIBlob points -1 and 32). A line that doesn't
@@ -134,7 +135,9 @@ Three more files hold what Build-ForeverMenu.ps1 turns into the quest tooltip's 
 profession skill, and the quest window's warnings:
   links.jsonl       a line for each quest with links: its breadcrumbs, the quests that lead to it
                     and close once it's done (CMaNGOS's BreadcrumbForQuestId, the quests whose
-                    NextQuestInChain names it unless it needs them done, and -LinkFile's), and
+                    NextQuestInChain names it unless it needs them done, and -LinkFile's), the
+                    quests one of which must be in the log for it to be taken (needsInLog: a negative
+                    PrevQuestId, or another quest's negative NextQuestId), and
                     the quests it shuts out, the rest of its CMaNGOS ExclusiveGroup when that's
                     positive, as only one quest of such a group can be done, with the pairs -LinkFile
                     adds and less those it removes. Recurring
@@ -782,7 +785,7 @@ foreach ($id in $ids) {
 # PrevQuestId, unless that is a breadcrumb, and every quest whose NextQuestId names it: any one of them
 # will do. One in a negative ExclusiveGroup needs its whole group done instead, unless the quest has a
 # PrevQuestId that isn't that one's NextQuestId. A negative PrevQuestId or NextQuestId counts only while
-# that quest is in the log, which a prerequisite can't say. The RequiredCondition must hold too: one
+# that quest is in the log, which a prerequisite can't say: it goes in links.jsonl. The RequiredCondition must hold too: one
 # that asks only for quests handed in, with and and or of up to four parts, is added. A requirement is a tree of quests
 # ({Op='quest'; Id}) and of and and or ({Op; Items}); a part that can't be one is a string saying why.
 $cmPrevious = @{}; $cmGroups = @{}
@@ -816,8 +819,12 @@ function ConvertTo-NeedValue($need) {
 }
 function Get-PreviousNeed([int]$id) {
     $m = $cmQuest[$id]
-    $inLog = @($cmPrevious[$id] | Where-Object { $_ -lt 0 } | ForEach-Object { "$(-$_) ($($cmQuest[-$_].Title))" })
-    if ($inLog.Count) { return "only while $($inLog -join ' or ') is in the log" }
+    $inLog = @($cmPrevious[$id] | Where-Object { $_ -lt 0 } | ForEach-Object { -$_ } | Sort-Object -Unique)
+    $wholeGroup = @($inLog | Where-Object { $cmQuest[$_].Group -lt 0 -and -not ($m.Prev -and $cmQuest[$_].Next -ne [Math]::Abs($m.Prev)) })
+    if ($inLog.Count -and ($inLog.Count -lt @($cmPrevious[$id]).Count -or $wholeGroup.Count)) {
+        return "a quest in the log, a whole group or another quest done, which nothing here can say: $($cmPrevious[$id] -join ', ')"
+    }
+    if ($inLog.Count) { return [pscustomobject]@{ Op = 'inlog'; Ids = $inLog } }
     $parts = @(foreach ($quest in $cmPrevious[$id]) {
         $previous = $cmQuest[$quest]
         if ($previous.Group -lt 0 -and -not ($m.Prev -and $previous.Next -ne $m.Prev)) {
@@ -850,14 +857,19 @@ foreach ($note in $(if ($probeNotes) { $probeNotes.UnknownQuests })) {
 
 $previousByNext = @{}
 foreach ($c in $cache.Values) { if ($c.nextQuest -and [int]$c.nextQuest -ne [int]$c.id) { $previousByNext[[int]$c.nextQuest] += @([int]$c.id) } }
-$fromCmangos = 0; $fromCondition = 0
+$fromCmangos = 0; $fromCondition = 0; $needsInLog = @{}
 foreach ($q in $records.Values) {
     $m = $cmQuest[$q.id]
     $parts = @()
     if ($m -and $cmPrevious[$q.id]) { $parts += , (Get-PreviousNeed $q.id) }
     if ($m -and $m.Condition) { $parts += , (Get-ConditionNeed $m.Condition) }
     foreach ($why in @($parts | Where-Object { $_ -is [string] })) { Add-Review 'CMaNGOS requirement not a prerequisite' $q.id '' "$($q.name): $why" }
-    $parts = @($parts | Where-Object { $_ -isnot [string] })
+    foreach ($part in @($parts | Where-Object { $_.Op -eq 'inlog' })) {
+        $imported = @($part.Ids | Where-Object { $records.ContainsKey($_) })
+        if ($imported.Count) { $needsInLog[$q.id] = $imported }
+        else { Add-Review 'CMaNGOS requirement not a prerequisite' $q.id '' "$($q.name): only while $($part.Ids -join ' or ') is in the log, none of them imported" }
+    }
+    $parts = @($parts | Where-Object { $_ -isnot [string] -and $_.Op -ne 'inlog' })
     if ($parts.Count) {
         $need = Join-Need 'and' $parts
         $missing = @(Get-NeedQuests $need | Where-Object { -not $records.ContainsKey($_) } | Sort-Object -Unique)
@@ -1002,10 +1014,11 @@ foreach ($id in ($exclusiveWith.Keys | Sort-Object)) {
         $next = @(foreach ($member in $next) { if (-not $grouped[$member]) { $grouped[$member] = $true; $exclusiveWith[$member] } })
     }
 }
-$linkLines = @(foreach ($id in (@($breadcrumbs.Keys) + @($exclusiveWith.Keys) | Sort-Object -Unique)) {
+$linkLines = @(foreach ($id in (@($breadcrumbs.Keys) + @($exclusiveWith.Keys) + @($needsInLog.Keys) | Sort-Object -Unique)) {
     $line = '{"quest":' + $id
     if ($breadcrumbs[$id]) { $line += ',"breadcrumbs":[' + ($breadcrumbs[$id] -join ',') + ']' }
     if ($exclusiveWith[$id]) { $line += ',"exclusiveWith":[' + ($exclusiveWith[$id] -join ',') + ']' }
+    if ($needsInLog[$id]) { $line += ',"needsInLog":[' + ($needsInLog[$id] -join ',') + ']' }
     $line + '}'
 })
 $rewarding = 0; $cmangosOnlyReputation = 0
@@ -1233,9 +1246,9 @@ Write-Host ("Answer memory: {0} quests over {1} runs; {2} that the game didn't a
 Write-Host ("{0} quests filed under a subzone or an instance's outdoor area are under their zone or instance." -f $refiled)
 Write-Host ("Quests with a start point in the client's tables: {0} (ours: {1}; pinned there: {2}). Start points off their map: {3}. Quest records that name a giver: {4}." -f
     $startSpots.Count, @($startSpots.Keys | Where-Object { $records.ContainsKey($_) }).Count, $startPinned, $startOffMap, $gameGivers)
-Write-Host ("Links: {0} breadcrumbs lead to {1} quests, {2} of {3} added by hand and {4} closed by their next quest in the chain; {5} quests are in {6} groups of which only one can be done, after {7} of {8} pairs added and {9} of {10} removed by hand." -f
+Write-Host ("Links: {0} breadcrumbs lead to {1} quests, {2} of {3} added by hand and {4} closed by their next quest in the chain; {5} quests are in {6} groups of which only one can be done, after {7} of {8} pairs added and {9} of {10} removed by hand; {11} quests can be taken only while another is in the log." -f
     @($breadcrumbs.Values | ForEach-Object { $_ }).Count, $breadcrumbs.Count, $breadcrumbsAdded, $handBreadcrumbs.Count, $chainLeadIns, $exclusiveWith.Count, $exclusiveGroups,
-    $linked, $handLinks.Count, $unlinked, $handUnlinks.Count)
+    $linked, $handLinks.Count, $unlinked, $handUnlinks.Count, $needsInLog.Count)
 Write-Host ("Storylines: the client's QuestLine has {0} rows and QuestLineXQuest {1}; {2} of our quests belong to {3} storyline(s)." -f
     @(Get-ClientTable 'QuestLine').Count, @(Get-ClientTable 'QuestLineXQuest').Count,
     @($questList | Where-Object { $_.storyline }).Count, @($questList | Where-Object { $_.storyline } | Select-Object -ExpandProperty storyline -Unique).Count)

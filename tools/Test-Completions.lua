@@ -24,7 +24,8 @@ other out, the quests they lead to do, and each of those closes every lead-in. W
 Supply Lines and its breadcrumbs, the two first steps of the shamans' Call of Earth, Iron Coral's
 prerequisite, and the eight quests that no longer need their breadcrumb. Then the rest of CMaNGOS's
 requirements, read since the same day: quests that need all of several or one of several, conditions,
-the Alterac quests kept open, Moonglade closing its Heeding the Call lead-ins, and the quest window's
+the Alterac quests kept open, Moonglade closing its Heeding the Call lead-ins, a quest offered only while
+another is in the log (qcQuestNeedsInLog: its pin, tooltip and closing), and the quest window's
 breadcrumb notice, which counts only the lead-ins the character can take (shared code, Forever's case).
 
 And it checks Forever's class quests (docs/plans/forever-quest-class-decisions.csv and the importer's
@@ -149,6 +150,9 @@ env = {
 	C_TaskQuest = stubTable({GetQuestInfoByQuestID = function() return nil end}),
 	C_TooltipInfo = stubTable({GetHyperlink = function() return nil end}),
 	C_DateAndTime = stubTable({GetCurrentCalendarTime = function() return {year = 2026, month = 10, monthDay = 11, hour = 14, minute = 30} end}),
+	C_ClassColor = {GetClassColor = function() return {GenerateHexColorMarkup = function() return "|cffffffff" end} end},
+	C_CampaignInfo = false,
+	C_Map = stubTable({GetBestMapForUnit = function() return nil end}),
 }
 env._G = env
 setmetatable(env, {__index = function(_, key)
@@ -586,6 +590,8 @@ else
 	local HEEDING = {5923, 5924, 5925}
 	local function needs(questId) return QC.qcPinQuestNeeds(questId, QC.qcQuestStatus.Of(questId, QUESTS[questId])) end
 	local function same(a, b) return table.concat(a or {}, ",") == table.concat(b, ",") end
+	local faction = env.UnitFactionGroup
+	local function horde(on) env.UnitFactionGroup = on and function() return "Horde", "Horde" end or faction end
 	env.SERVICES_CONJUNCTION_OR = "or"
 
 	print("CMaNGOS's requirements: NextQuestId, a negative ExclusiveGroup and RequiredCondition")
@@ -632,6 +638,39 @@ else
 		if env.qcCharacterCompletions[questId] ~= 1 then left[#left + 1] = questId end
 	end
 	check("handing it in ticks all three", #left == 0, table.concat(left, ", "))
+
+	print("Digging Through the Dirt, offered only while Bride of the Embalmer is in the log")
+	local EMBALMER, DIGGING = 253, 254
+	ctx.class, ctx.level = "WARRIOR", 35
+	character("Human", {}, {})
+	login()
+	local digging = needs(DIGGING)
+	check("it's grey until then", digging == "Requires Bride of the Embalmer in your quest log", digging)
+	local tipLines = {}
+	if not rawget(env, "qcQuestInformationTooltip") then env.qcQuestInformationTooltipSetup() end
+	env.qcQuestInformationTooltip.AddDoubleLine = function(_, left, right) tipLines[#tipLines + 1] = tostring(left) .. " | " .. tostring(right) end
+	env.qcMenuButton1 = {QuestID = DIGGING}
+	local shown, err = pcall(env.qcUpdateTooltip, 1)
+	local tipLine
+	for _, text in ipairs(tipLines) do
+		if text:find("Bride of the Embalmer", 1, true) and text:find("in your quest log", 1, true) then tipLine = text end
+	end
+	check("and its tooltip says so under Required Quest", shown and tipLine ~= nil and tipLine:find(env.qcLocalize.REQUIREDQUEST, 1, true) == 1,
+		shown and (tipLine or "no such line") or tostring(err))
+	ctx.inLog[EMBALMER] = 1
+	check("with Bride of the Embalmer in the log, it can be taken", not needs(DIGGING), needs(DIGGING))
+	turnIn(EMBALMER)
+	check("handing that in closes it", env.qcCharacterCompletions[DIGGING] == 1)
+	character("Human", {EMBALMER}, {})
+	login()
+	check("and the login sync closes it for a character who handed that in before", env.qcCharacterCompletions[DIGGING] == 1)
+	ctx.class, ctx.level = "SHAMAN", 4
+	horde(true)
+	character("Orc", {}, {})
+	login()
+	turnIn(1520)
+	check("a repeatable one, Earth Sapta, isn't ticked when Call of Earth is handed in", env.qcCharacterCompletions[1462] == nil)
+	horde(false)
 
 	print("A Human warrior at In Search of Anthion, whose lead-ins are eight classes' Just Compensation")
 	local notice
