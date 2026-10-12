@@ -16,7 +16,9 @@ The pins checked are the first ones in the data whose quests all belong to the L
 the Darkmoon Faire, and on retail to WoW's Anniversary, which must follow its yearly row (1808, "WoW's
 22nd Anniversary") and not a per-region row named plain "WoW's Anniversary" (1587, region 4's), which
 the calendar didn't serve when it was checked in game on 11 October 2026, and to the Skyriding Cups,
-whose one flag must follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429).
+whose one flag must follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429), and to
+The Great Gnomeregan Run (696) and Dastardly Duos, whose pins must follow its region 4 row (1689) and
+another region's (1599).
 
 /qc holidays must list each ID of an entry that the calendar has in its 12 months, soonest first and
 once each, so a sweep can confirm every ID in game: Hallow's End's 324 and 1405, the Darkmoon Faire's
@@ -84,6 +86,8 @@ end
 local LUNAR_FESTIVAL = holiday(327, "Lunar Festival", at(10, 2, 6), at(10, 16, 6))
 local ANNIVERSARY = "WoW's Anniversary"
 local CUPS = "Skyriding Cups"
+local GNOMEREGAN_RUN = "The Great Gnomeregan Run"
+local DUOS = "Dastardly Duos"
 local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
 	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
 local function withLockout(events)
@@ -287,7 +291,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 	for mapId in pairs(env.qcPinDB) do mapIds[#mapIds + 1] = mapId end
 	table.sort(mapIds)
 	ctx.pins = {}
-	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY, CUPS}) do
+	for _, holidayName in ipairs({"Lunar Festival", "Darkmoon Faire", ANNIVERSARY, CUPS, GNOMEREGAN_RUN, DUOS}) do
 		for _, mapId in ipairs(mapIds) do
 			for _, pin in ipairs(env.qcPinDB[mapId]) do
 				local allOfIt = #pin[6] > 0
@@ -299,7 +303,7 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 				end
 			end
 		end
-		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125})[holidayName]
+		local probe = ({[ANNIVERSARY] = 47254, [CUPS] = 79125, [GNOMEREGAN_RUN] = 47709, [DUOS] = 86503})[holidayName]
 		assert(flags[holidayName], "qcHolidays has no entry named " .. holidayName)
 		assert(ctx.pins[holidayName] or (probe and not env.qcQuestDatabase[probe]), "no pin of the " .. holidayName .. "'s quests in the data")
 	end
@@ -575,6 +579,41 @@ else
 			local said = table.concat(ctx.chat, "\n")
 			local found = said:find(string.format("Running|r %s (%d)", case[1].title, case[1].eventID), 1, true) ~= nil
 			check("/qc holidays lists it as running, under the cup's own name and ID", found, not found and said or nil)
+		end
+	end
+end
+
+for _, entry in ipairs({
+	{name = GNOMEREGAN_RUN, title = "The Great Gnomeregan Run: its pin shows only while row 696 runs", running = {
+		holiday(696, GNOMEREGAN_RUN, at(10, 9, 0), at(10, 11, 0))}},
+	{name = DUOS, title = "Dastardly Duos: its pins show while its region 4 row or another region's runs", running = {
+		holiday(1689, DUOS, at(10, 6, 8), at(10, 20, 8)), holiday(1599, DUOS, at(10, 5, 8), at(10, 19, 8))}},
+}) do
+	print(entry.title)
+	if not first.pins[entry.name] then
+		print("  no pin of the quests of " .. entry.name .. " in this game's data: skipped")
+	else
+		local cases = {{nil, false, "out of season"}}
+		for _, event in ipairs(entry.running) do
+			cases[#cases + 1] = {event, true, string.format("with %s (%d) running", event.title, event.eventID)}
+		end
+		for _, case in ipairs(cases) do
+			local events = quietOctober()
+			if case[1] then events[#events + 1] = case[1] end
+			local ctx = load(withLockout(events))
+			ctx.login()
+			ctx.calendar.reply()
+			ctx.flush()
+			ctx.pin = ctx.pins[entry.name]
+			ctx.openMap()
+			check(string.format("%s, the pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
+				ctx.pinShown() == case[2], "answer: " .. ctx.active())
+			if case[1] then
+				ctx.core.Print()
+				local said = table.concat(ctx.chat, "\n")
+				local found = said:find(string.format("Running|r %s (%d)", case[1].title, case[1].eventID), 1, true) ~= nil
+				check("/qc holidays lists it as running, under its own name and ID", found, not found and said or nil)
+			end
 		end
 	end
 end
