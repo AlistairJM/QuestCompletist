@@ -1,6 +1,6 @@
 # Quest Completist
 
-See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places over 15,000 quest-giver pins on your world map.
+See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places over 16,000 quest-giver pins on your world map.
 
 Type **/qc** (or **/questc**) to open it, click its minimap button, or set a key binding.
 
@@ -39,7 +39,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 
 **Detailed quest tooltips**
 
-- Where the quest giver is, the quest's campaign and chapter, its storyline with your progress through it and your place in it, and the quests you need to do first.
+- Where the quest giver is, the quest's type, if it has one (like Dungeon, Raid or PvP), its campaign and chapter, its storyline with your progress through it and your place in it, and the quests you need to do first.
 - Renown and friendship rank requirements, with a ✓ or ✗, and the reputation it rewards.
 - On WoW: Forever, the profession and skill level a quest needs, like *Fishing (30)*, with a ✓ or ✗.
 - Warnings for breadcrumb quests, and for quests that lock out others ("you can only complete one of these").
@@ -50,7 +50,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 - Hide completed, in-progress, low-level, daily, weekly, repeatable or world quests, or ones you can't take yet.
 - Hide quests you've already done on another character in your Warband.
 - Hide quests you can no longer get, like Battle for Azeroth's old PvP rewards and hidden tracking quests (on by default).
-- Every filter can be set separately for the map and the quest list.
+- Every filter can be set separately for the map and the quest list. When your filters hide every quest in a zone or category, the list says how many.
 
 **Keeps itself up to date**
 
