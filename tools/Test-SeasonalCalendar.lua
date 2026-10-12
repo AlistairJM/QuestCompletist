@@ -15,10 +15,11 @@ CVar and redraw from the day lists); whether the game really does hasn't been se
 The pins checked are the first ones in the data whose quests all belong to the Lunar Festival, and to
 the Darkmoon Faire, and on retail to WoW's Anniversary, which must follow its yearly row (1808, "WoW's
 22nd Anniversary") and not a per-region row named plain "WoW's Anniversary" (1587, region 4's), which
-the calendar didn't serve when it was checked in game on 11 October 2026, and to the Skyriding Cups,
-whose one flag must follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429), and to
-The Great Gnomeregan Run (696) and Dastardly Duos, whose pins must follow its region 4 row (1689) and
-another region's (1599).
+the calendar didn't serve when it was checked in game on 11 October 2026 (and so must the pin of
+83825, a Guest Relations quest of the 20th anniversary), and to the Skyriding Cups, whose one flag must
+follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429), and to The Great
+Gnomeregan Run (696) and Dastardly Duos, whose pins must follow any of its three rows (the stand-in
+calendar has no regions; 1689 is region 4's and 1599 another region's).
 
 /qc holidays must list each ID of an entry that the calendar has in its 12 months, soonest first and
 once each, so a sweep can confirm every ID in game: Hallow's End's 324 and 1405, the Darkmoon Faire's
@@ -85,6 +86,7 @@ local function quietOctober()
 end
 local LUNAR_FESTIVAL = holiday(327, "Lunar Festival", at(10, 2, 6), at(10, 16, 6))
 local ANNIVERSARY = "WoW's Anniversary"
+local GUEST_RELATIONS = 83825
 local CUPS = "Skyriding Cups"
 local GNOMEREGAN_RUN = "The Great Gnomeregan Run"
 local DUOS = "Dastardly Duos"
@@ -307,6 +309,14 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 		assert(flags[holidayName], "qcHolidays has no entry named " .. holidayName)
 		assert(ctx.pins[holidayName] or (probe and not env.qcQuestDatabase[probe]), "no pin of the " .. holidayName .. "'s quests in the data")
 	end
+	for _, mapId in ipairs(mapIds) do
+		for _, pin in ipairs(env.qcPinDB[mapId]) do
+			if pin[6][1] == GUEST_RELATIONS and not ctx.pins.guestRelations then
+				ctx.pins.guestRelations = {mapId = mapId, questId = pin[6][1], name = pin[3]}
+			end
+		end
+	end
+	assert(ctx.pins.guestRelations or not env.qcQuestDatabase[GUEST_RELATIONS], "no pin of quest " .. GUEST_RELATIONS .. " in the data")
 	ctx.pin = ctx.pins["Lunar Festival"]
 	return ctx
 end
@@ -550,10 +560,14 @@ else
 		ctx.login()
 		ctx.calendar.reply()
 		ctx.flush()
-		ctx.pin = ctx.pins[ANNIVERSARY]
-		ctx.openMap()
-		check(string.format("%s, the anniversary's pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
-			ctx.pinShown() == case[2], "answer: " .. ctx.active())
+		for _, which in ipairs({ANNIVERSARY, "guestRelations"}) do
+			ctx.pin = ctx.pins[which]
+			if ctx.pin then
+				ctx.openMap()
+				check(string.format("%s, the anniversary's pin of quest %d is %s", case[3], ctx.pin.questId, case[2] and "shown" or "hidden"),
+					ctx.pinShown() == case[2], "answer: " .. ctx.active())
+			end
+		end
 	end
 end
 
