@@ -56,11 +56,13 @@ $holidays = @(foreach ($e in [regex]::Matches($block, '\{flag=(\d+), name="((?:[
 if ($holidays.Count -eq 0 -or $holidays.Count -ne ([regex]::Matches($block, 'flag=')).Count) { throw "qcHolidays wasn't read whole from $AddonDir\qcCore.lua" }
 
 function Get-Key([string]$name) { return ($name -replace '[\u2019'']', '').Trim().ToLowerInvariant() -replace '\s+', ' ' }
-# Names Blizzard's API and our headings give a holiday that qcHolidays spells otherwise.
+# Names Blizzard's API and our headings give a holiday that qcHolidays spells otherwise. The API's category
+# Secrets of Azeroth (646) holds the 20th anniversary's Guest Relations quests, not the 2023 event of that name.
 $aliases = [ordered]@{ 'Midsummer' = 'Midsummer Fire Festival'; 'Winter Veil' = 'Feast of Winter Veil'
     "Ahn'Qiraj War" = "Ahn'Qiraj War Effort"; 'Invasion' = 'Scourge Invasion'; 'Hearthstone Anniversary' = "Hearthstone's 10th Anniversary"
     'Kalimdor Cup' = 'Skyriding Cups'; 'Eastern Kingdoms Cup' = 'Skyriding Cups'; 'Outland Cup' = 'Skyriding Cups'
-    'Northrend Cup' = 'Skyriding Cups'; 'Pandaria Cup' = 'Skyriding Cups'; 'Broken Isles Cup' = 'Skyriding Cups' }
+    'Northrend Cup' = 'Skyriding Cups'; 'Pandaria Cup' = 'Skyriding Cups'; 'Broken Isles Cup' = 'Skyriding Cups'
+    'Secrets of Azeroth' = "WoW's Anniversary" }
 $byName = @{}; $byEventId = @{}; $holidayOfFlag = @{}
 foreach ($h in $holidays) {
     $byName[(Get-Key $h.Name)] = $h; $holidayOfFlag[$h.Flag] = $h

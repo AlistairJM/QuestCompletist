@@ -430,7 +430,8 @@ map points. `Build-QuestLocationData.ps1` now places the quests the client doesn
   `$noPinKinds` (all of `QuestV2CliTask` until 11 October 2026); flagged unavailable; a type other than 0, 1, 2, 4 or 128; tagged a holiday or
   profession quest; in a system category (Scenario, Delves, Prey, Warbands, Warfront Contribution,
   Path of Ascension, Covenant Assaults, Torghast, Time Rift, Weekly Events, World PvP and the
-  others in the script), a holiday's category, or Landfall, whose dailies looked retired (they do not: open-items.md row 34); named like
+  others in the script) or a holiday's category (Landfall's was held too until 12 October 2026: the
+  last section); named like
   an internal quest; absent from the client's `QuestV2`; disabled in TrinityCore; without a
   `quest_template` row; flagged tracking (0x400) or unavailable (0x4000), or auto-accept together
   with auto-complete (a scripted helper), or auto-accept with no starter (a trigger, not a giver);
@@ -546,11 +547,12 @@ covered by its quest and NPC pair and sits where the pipeline sorts it).
 - **A quest that has any pin, anywhere, gets no second one** from this tool; a giver that offers it somewhere
   else is listed (`quest offered away from its pins`).
 - **The holds the TrinityCore pass puts on a quest are waived when a creature offers it** (not in
-  `QuestV2`, the template inferences, Landfall, holiday, profession, a quest type other than 0, 1, 2, 4
+  `QuestV2`, the template inferences, holiday, profession, a quest type other than 0, 1, 2, 4
   and 128); the ones that are definitions stay (unavailable, internal name, world, bonus or hidden task,
   system category; six system categories are allowed, see quest-giver-recorder.md, "Adds"), and the new pins are counted by class so the user sees what the waiver let in. (A task of
   another kind than world, bonus or hidden was one of the waived holds until 11 October 2026, when the
-  TrinityCore pass stopped holding it; the report no longer counts that class. The kinds still in
+  TrinityCore pass stopped holding it; the report no longer counts that class. Landfall was one until
+  12 October 2026, for the same reason. The kinds still in
   `$noPinKinds` that the tool does not hold itself, the callings and the threat wrappers, are waived
   too when a creature offers the quest.)
 
@@ -759,3 +761,73 @@ is pinned like the 758, callings stay out until it is known whether the game sti
   the quests), and `Place-UncategorisedQuests.ps1 -WhatIf` would now also file 82449 "The Call of the
   Worldsoul" and 87327 under Dornogal by their new pins (not run). Not tried in game: that the pins show
   on the map and that the right quests are on them.
+
+## October 2026, Landfall's pins
+
+Decision 34 of [open-items.md](open-items.md), the user's call of 12 October 2026: "yes, drop the
+Landfall hold". The TrinityCore pass held every quest of category 121, Landfall, as "retired dailies".
+The evidence of 11 October (decision 5, and the `KEEP` rows in `unavailable-quest-decisions.csv`) says
+they are live: Blizzard's API serves all 73, `QuestV2` of both builds lists them, the server knew 64 in
+the probe of 9 October, and nothing flags them unavailable. `Build-QuestLocationData.ps1` no longer
+holds them, and `Import-RecordedGivers.ps1` no longer counts Landfall among the holds it waives.
+
+- **Before.** 29 of the 73 had a pin (on 11 pins), 44 had none, 31 of those with a TrinityCore start.
+- **The nine the server refused.** 9 of the 31 newly pinned are the Horde dailies the server refused in the
+  9 October probe (32138, 32139, 32140, 32141, 32197, 32221, 32223, 32236, 32238). A refusal is a hint, not
+  proof (12 other Landfall quests went from refused to known between runs), and their `KEEP` rows in
+  `unavailable-quest-decisions.csv` now say they have pins, so a flag would take those pins off the map.
+- **Result** (build 12.1.0.69933, TrinityCore 1210.26091, master 9271dbb). The 31 pass every other
+  rule of the pass and are placed at 37 start places (32236, 32237 and 32238 at three each). 36 places
+  are new pins, one quest each and nameless; 32450 "The Time Is Now!" joined Blood Guard Gro'tash's pin
+  at Domination Point, as TrinityCore names him its starter and its start is 0.04 points from his pin.
+  Pins went from 16,048 to 16,084 and quests with a pin from 25,745 to 25,776; pins with an NPC ID
+  (10,588) and with a name only (337) are unchanged, pins with neither went from 5,123 to 5,159. Of the
+  16,048 old pin lines, 16,047 are identical and in their order; Gro'tash's gained 32450. No quest lost
+  a pin, and no quest but these 31 gained one. 60 of the 73 have a pin now.
+- **Why nameless.** TrinityCore names a creature starter for 29 of the 31 (the "WANTED:" pair 32222 and
+  32223 start at the object 216322), but has no spawn for any of those 29 creatures, so no starter
+  stands at a start, and a quest joins a neighbour only when that NPC starts it (32450 alone). Step 6c,
+  which reads the client's giver table, filled and added nothing. Wowhead's Mists of Pandaria Classic
+  pages put four of the starters where the pins are: Zazzix "Toasty" Sparkrocket at 75.8,34.2 (32130,
+  32131, 32134 at 75.86,34.16), Shademaster Kiryn at 75.8,34.4 and 75.8,34.6 (32132, 32133, 32135 at
+  75.82,34.48), Belloc Brightblade at 76.2,34.0 (32118 at 76.33,34.07), and Kaelis Sunsoar at 30 spots
+  on a lower floor of Krasarang Wilds, among them 35.4,41.2 and 35.4,42.8, either side of the six pins'
+  35.35,41.88 on the Ruins of Ogudei's map. (TrinityCore's dump holds 552 creature spawns on Pandaria's
+  map in all.) No name was added by hand.
+- **Faction.** 35 of the 37 places are Horde quests and 2 Alliance. Lion's Landing, the Alliance's
+  base, is the cluster of King Varian Wrynn's, Admiral Taylor's and Marshal Troteman's pins (86.6 to 89.7,
+  29.4 to 33.1), and no new pin stands within 11 points of any of them. Domination Point, the Horde's,
+  is that of General Nazgrim's, Lor'themar Theron's and Blood Guard Gro'tash's (10.1 to 10.7, 53.7 to
+  55.7): the 10 new places within 4.2 points of Gro'tash's pin are all Horde quests. 12 more stand 10.4
+  to 15.4 points east of it (20.5 to 25.5, 58 to 62.4), Horde quests whose TrinityCore starters
+  (Grizzle Gearslip, Zino "The Shredder" Quickchop, Daxil "The Gem" Oregrind, Bixy Buzzsaw) carry the
+  faction template of Boss-Lady Trixel, Duke and Rivett Clutchpop, who start Horde quests at Domination
+  Point. 6 are Horde quests on the Ruins of Ogudei's own map (three share their names with Alliance
+  quests that start with Hilda Hornswaggle at 80.2,16.4 on Krasarang's). 7 stand 13.4 to 14 points west
+  of Marshal Troteman's pin (75.8 to 76.3, 34.1 to 34.5), where Wowhead puts their givers too. The two
+  Alliance quests, 32154 and 32446 (Sully "The Pickle" McLeary), stand at 17.41,78.67, 0.7 to 1.1 points
+  from the pins of Seraphine of the Winter, Mishka, Sky Admiral Rogers and Tinkmaster Overspark, which
+  held only Alliance quests before.
+- **Still without a pin: 13,** with no start in either source: the client lists no point for them and
+  TrinityCore only their turn-ins and objectives. Five "Beastmaster's Hunt" quests (32161, 32162, 32164,
+  32165, 32166), "Ancient's Fall", "End of an Elder" and "A Colossal Victory" (32170 to 32172), and five
+  "Beastmaster's Quarry" quests (32181, 32182, 32184, 32185, 32186), which TrinityCore has started by the
+  hunted beasts themselves.
+- **On the map at the default settings** (the addon's real map pass, through a scratch copy of the
+  reachability test, not committed): an Alliance Human of level 35 or 90 is drawn the 2 Alliance places
+  and none of the 35 Horde ones, a Horde Orc of level 35 or 90 the 35 Horde places and neither Alliance
+  one, none grey, with the quests' prerequisites done or not. They are dailies (type 4): the map's daily
+  filter is off by default and the list's on. The map's low-level filter, off by default, hides them at
+  level 35 and 90 (their level is 15), and at level 10 they are drawn grey.
+- **Checks.** The pipeline (location data, parse, join, `Assemble-PinDB.ps1 -Apply`,
+  `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1`, `Apply-ClientQuestGivers.ps1`,
+  `Remove-DuplicatePinQuests.ps1`) on scratch copies of the sources (retail 12.1.0.69933's tables and
+  TrinityCore 1210.26091, the newest of each by `Get-LatestBuilds.ps1` that day). A round on master as
+  it is does not leave the pins as they are: it pins 175 task quests that step 6b added on 11 October,
+  none of them Landfall's (202 places; kind 0 77, World Event 82 52, Group 1 20, Important Quest 282 12,
+  World Boss 289 5, Meta Quest 284 4, Heroic 85 2, Dungeon 81 2, Raid 62 1): 186 new pins, and 11382
+  and 11386 join Wind Trader Zhareem's pin. That is not this decision, so every round here left those
+  175 quests' rows out of `quest_locations.csv` after the location step (decision 40 of open-items.md).
+  So filtered, a round with master's scripts changed no byte, a round with the hold gone changed
+  `Assemble-PinDB.ps1`'s result alone, and the next round, and one on the checkout's own files, changed
+  nothing. Step 6d (`-WhatIf`) fills and adds nothing.
