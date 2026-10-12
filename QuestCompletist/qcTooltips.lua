@@ -514,10 +514,11 @@ function qcUpdateTooltip(index)
                 qcQuestInformationTooltip:AddDoubleLine(i == 1 and qcL.REQUIREDQUEST or " ", qcPrereq.Text(part, qcPrereqQuestText, false))
             end
         end
-        if qcPrereq.InLogOptions(questId) then
+        local inLogOptions = qcPrereq.InLogOptions(questId)
+        if inLogOptions then
             qcQuestInformationTooltip:AddDoubleLine(prereqParts and " " or qcL.REQUIREDQUEST, qcPrereq.InLogText(questId, qcPrereqQuestText))
         end
-        if prereqParts or qcPrereq.InLogOptions(questId) then qcAddQuestTooltipDivider() end
+        if prereqParts or inLogOptions then qcAddQuestTooltipDivider() end
 		-- Renown and Faction requirements Start
         local renownInfo = qcRenownLevelRequirements[questId]
 

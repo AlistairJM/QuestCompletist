@@ -1985,9 +1985,9 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: `qcCore.lua` had room for 23 more on 12 October 2026, measured by adding
+  has its own 200: `qcCore.lua` had room for 21 more on 12 October 2026, measured by adding
   `local zzProbeN = N` lines to the end of a copy one at a time until `luac -p` failed (`luac -l` lists
-  197 there, as it also counts the locals of blocks that have closed). In October 2026 `qcTooltips.lua` had 150 left (`luac -l` listed 50 on 11 October) and
+  199 there, as it also counts the locals of blocks that have closed). In October 2026 `qcTooltips.lua` had 150 left (`luac -l` listed 50 on 11 October) and
   `qcMapPins.lua` 149 (after the map's tooltip moved from one to the other). Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
   as the tooltips and map pins do. Every file gets the addon's own table (`select(2, ...)`), and
   `qcCore.lua` hands those files what they need through it, at its end. A new file goes in both
@@ -2048,8 +2048,11 @@ git diff --stat
   CMaNGOS's requirements (#308): a quest that needs all of a group (A Donation of Runecloth), one of
   several (Trek to Ashenvale, Covert Ops - Alpha), the quests a condition names, the Alterac quests kept
   open, Moonglade's Heeding the Call lead-ins, and the quest window's breadcrumb notice counting only
-  the lead-ins the character can take (In Search of Anthion). Run it too for changes to the map's
-  filters in `qcBuildViewFilter`.
+  the lead-ins the character can take (In Search of Anthion). It also checks the quests offered only
+  while another is in the log (`qcQuestNeedsInLog`, #309): Digging Through the Dirt is grey, with a
+  line under Required Quest in its tooltip, until Bride of the Embalmer is in the log, and is ticked at
+  that quest's hand-in and by the login sync; the repeatable Earth Sapta isn't ticked when Call of
+  Earth is handed in. Run it too for changes to the map's filters in `qcBuildViewFilter`.
 - For changes to the quest list's tooltip (the storyline's name and the "Type:" row in `qcTooltips.lua`), run
   `Test-QuestTooltip.lua` for both games' TOCs. It must say "All checks passed." It draws the real tooltip for a
   quest in a storyline, a plain one and a daily one, with stand-ins for the game's quest calls that answer what each

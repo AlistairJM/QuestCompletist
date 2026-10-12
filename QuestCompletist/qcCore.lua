@@ -874,8 +874,10 @@ end
 -- The quests one of which must be in the log for a quest to be offered (qcQuestNeedsInLog), of those
 -- this character can take; nil when there are none.
 function qcPrereq.InLogOptions(questId)
+	local others = qcQuestNeedsInLog[questId]
+	if not others then return end
 	local options = {}
-	for _, other in ipairs(qcQuestNeedsInLog[questId] or {}) do
+	for _, other in ipairs(others) do
 		if qcPrereq.CanTake(other) then options[#options + 1] = other end
 	end
 	if #options > 0 then return options end
@@ -2396,8 +2398,9 @@ local function qcEventHandler(self, event, ...)
 		qcMutuallyExclusiveChecks(qcQuestID)
 	elseif (event == "QUEST_ACCEPTED") or (event == "QUEST_REMOVED") then
 		if (event == "QUEST_ACCEPTED") then qcNoteUnavailableQuestSeen(..., "accepted") end
-		-- A list that hides quests done or in the log loses or regains this one, and the breadcrumbs to it.
-		local qcRefilter = qcHides("L", "COMPLETED") or qcHides("L", "INPROGRESS")
+		-- A list that hides quests done or in the log loses or regains this one, and the breadcrumbs to it;
+		-- one that hides unmet requirements, the quests offered only while this one is in the log.
+		local qcRefilter = qcHides("L", "COMPLETED") or qcHides("L", "INPROGRESS") or qcHides("L", "REQUIREMENTSNOTMET")
 		qcRequestRefresh(qcRefilter and QC_REBUILD_LIST or QC_REDRAW_ROWS, true)
 	elseif (event == "QUEST_PROGRESS") or (event == "QUEST_COMPLETE") then
 		local qcQuestID = GetQuestID()
