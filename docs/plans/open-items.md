@@ -10,6 +10,12 @@ Everything open was merged and released as 113.0 on 12 October 2026. On the same
 ahead with your recommendations" and keep the rest for later; the decision rows below say which were
 taken. What is left, in one place:
 
+- **The data sources review (12 October 2026):** [data-sources-review.md](data-sources-review.md) went field by
+  field through every source of both games. Its defects D1 to D19 (among them #320's board-quest prerequisites,
+  the Adventurer class lists, the Paladin Rescue faction tags, Forever's own-breadcrumb prerequisites and its
+  A Lesson to Learn givers), its 43 recommendations, its 14 decisions and its few in-game lines are the next
+  work; nothing there is decided yet.
+
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest
   window), 37 (one 1.5-point grouping radius for Forever's CMaNGOS spawns and start points) and 42 (the
@@ -29,7 +35,8 @@ taken. What is left, in one place:
 - **Found while writing 113.0's notes:** 12 quests still list their own breadcrumb as the quest to do first
   (from the 109.97 data; step 2c's follow-ups no longer add such links); 98 Midnight quests whose only
   requirement is the hidden quest 90806 show greyed with no "Requires" line, so the pin says nothing of why;
-  step 2g wasn't rerun after step 6b added 506 quests, so 502 of them gate on their own level; Dreadscar Rift,
+  step 2g wasn't rerun after step 6b added 506 quests, so 502 of them gate on their own level (harmless, checked
+  12 October 2026: their level already equals the client's formula, so a rerun changes nothing); Dreadscar Rift,
   Acherus: The Ebon Hold and Legion Uncategorized went under Other Categories in the Legion menu split
   without being named in the request; and game-api-review.md's recommendation 2 still gives the
   account-wide field as a reason, though the game counts an account-wide quest as done on every
