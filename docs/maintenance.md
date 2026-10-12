@@ -572,7 +572,9 @@ with `-WhatIf` first to see what it would change.
   `tools\retail_quest_cache_<build>.jsonl`, or `-QuestCacheFile`): a quest with no requirement, that the
   API is silent on, needs one of the quests whose hand-in offers it, where TrinityCore's `NextQuestID`
   or `PrevQuestID` says the same, and none of the checks above or below rules it out (also an
-  unavailable quest, or one that needs a higher level). 1,465 quests on 12 October 2026. A follow-up
+  unavailable quest, or one that needs a higher level). A breadcrumb into the quest (`qcBreadcrumbQuests`)
+  isn't one either: the game offers the quest to a character who skipped it (129 left out). 1,384 quests on
+  12 October 2026. A follow-up
   TrinityCore doesn't repeat is often a re-offer, so it isn't taken ([plans/retail-quest-cache.md](plans/retail-quest-cache.md),
   "Next quest"). Run step 2e on the newest cache first: the game's own `Cache\WDB\enUS\questcache.wdb`
   is newer than the probe's copy after any play.
