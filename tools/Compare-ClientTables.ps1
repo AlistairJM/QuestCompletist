@@ -32,7 +32,7 @@ time, and a build whose copy lacks a column the formula reads (MinLevelSquish, M
 MinLevelScalingOffset or MaxLevelScalingOffset) is a column change, whether or not an earlier copy exists.
 
 Two entries are compared with the rows whose names match a pattern ($HolidayRowPatterns in
-HolidayTables.ps1) instead of the rows of their own name.
+HolidayTables.ps1, which Review-Calendar.ps1 shares) instead of the rows of their own name.
 WoW's Anniversary is a new Holidays row every year, named with the
 year's ordinal ("WoW's 22nd Anniversary" is 1808); the rows named plain "WoW's Anniversary" (590 and
 1587 to 1590) are left out, since the calendar didn't serve them when /qc holidays was run in game
