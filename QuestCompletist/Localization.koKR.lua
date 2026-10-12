@@ -90,6 +90,7 @@ qcLocalize = setmetatable({
 	LATERQUESTS = "... %d개 더", -- Needs review
 	THISQUEST = "이 퀘스트", -- Needs review
 	REQUIREDQUEST = "필요 퀘스트:", -- Needs review
+	INQUESTLOG = "퀘스트 목록에 있는 %s", -- Needs review
 	REQUIREDFACTION = "필요 세력:", -- Needs review
 	REQUIREDRENOWN = "필요 명성 레벨:", -- Needs review
 	REQUIREDRANK = "필요 등급:", -- Needs review

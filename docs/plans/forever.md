@@ -1245,6 +1245,134 @@ The user took the recommendations:
   an Orc shaman can, and that a Human mage can't take Foror's Compendium or the Forging of Quel'Serrar
   while a warrior can, the Forging needing the Compendium; the data before fails 2 of its 5 checks.
 
+### The rest of CMaNGOS's requirements (11 October 2026)
+
+What CMaNGOS's server checks before it offers a quest (mangos-classic's `ObjectMgr::LoadQuests`, and
+`SatisfyQuestPreviousQuest`, `SatisfyQuestExclusiveGroup`, `SatisfyQuestCondition`,
+`SatisfyQuestNextChain` and `SatisfyQuestPrevChain` in `Player.cpp`) was recounted against what the
+importer read: a quest's `PrevQuestId`, a positive `ExclusiveGroup` and `BreadcrumbForQuestId`, and
+nothing else. The gaps, and what the importer does with each now:
+
+- **`NextQuestId`:** a quest whose `NextQuestId` names another is one of that quest's previous quests,
+  any one of which will do, with its own `PrevQuestId`; one in a negative `ExclusiveGroup` needs its whole
+  group done instead, unless the quest has a `PrevQuestId` that isn't that one's `NextQuestId`. 77
+  one-time quests had no prerequisite though CMaNGOS requires one: 40 all of a group, such as the eight
+  A Donation of Runecloth (7795 to 7836), and 37 one of several or a single quest, such as Trek to
+  Ashenvale (990), which takes Escape Through Force or Escape Through Stealth. 12 more named one quest
+  where CMaNGOS takes any of several: Covert Ops - Alpha and Beta, The Binding, Expert Blacksmith!, A
+  Taste of Flame, Felstone Field and Gahrron's Withering Cauldron, the four More Components of
+  Importance and A Bubbling Cauldron.
+- **`RequiredCondition`:** one that asks only for quests handed in, joined by and and or (up to four
+  parts each, not two), is added to the prerequisite: 34 quests, 27 with none before (12 one-time;
+  15 recurring, the Scourgestone turn-ins, three Librams and The Changing of Paths), 5 that need more
+  than ours named (4964, 4975, 6135, 6163, 8728), and 2 whose `NextQuestId` links ask as much (207,
+  8742). The other 82 conditions ask for something a
+  prerequisite can't (the war effort's collections, an aura, an area, an item, a quest in the log), and
+  the review lists them as "CMaNGOS requirement not a prerequisite".
+- **Two removed by hand:** The Battle of Alterac (7141) and The Battle for Alterac (7142) would need
+  Speak with Prospector Stonehewer (7221) and Speak with Voggah Deathgrip (7222), which no creature,
+  object or item starts in CMaNGOS and the game hasn't answered (Questie #1782: not in the game). Two
+  `prereq` `REMOVE` rows keep them open.
+- **`NextQuestInChain`:** a quest closes once the quest its `NextQuestInChain` names is taken or done,
+  and that one can't be taken while it is in the log, as for a breadcrumb. So it is that quest's
+  breadcrumb, unless that quest needs it done: 141 links. 48 are lead-ins the follow-up doesn't need,
+  such as The New Frontier (1000, 1004, 1018), The Hunter's Path and Heeding the Call, and 11 single
+  ones such as Rot Hide Clues (439) and Kharan's Tale (4342); 91 are one option of the follow-up's
+  choice, mostly class, race or faction versions, such as the eight Just Compensation to In Search of
+  Anthion (8929); and 7221 and 7222.
+- **Shared code:** the quest window's breadcrumb notice counts and lists only the lead-ins this
+  character can take (`qcPrereq.CanTake`), so a warrior at In Search of Anthion sees "1 Breadcrumb
+  Available!", not 8. On both games.
+- **Not a prerequisite yet:** 35 quests can be taken only while another quest is in the log (a negative
+  `PrevQuestId`, or `NextQuestId` for 619), 10 of them one-time: Digging Through the Dirt (254),
+  Chapter I to IV (339 to 342), Chief Engineer Scooty (2842), the two Orb of Orahil shards (4962,
+  4963), Manna-Enriched Horse Feed (7645) and Love Song for Narain (8599). They stay white, listed in
+  the review. The user's decision: a keyed table, `qcQuestNeedsInLog`, in the next pull request.
+- **Kept:** a quest CMaNGOS gives no requirement still takes the cache's next quest, as Simple
+  Subterfugin' (2238) needs Road to Salvation (2218), proven in the game.
+- **Evidence:** QuestieDB's Forever data (master fc0668b) agrees with 86 of the 119 changed
+  prerequisites. It doesn't read `RequiredCondition`, gives 7141 and 7142 none, and reads 2764 and 2765
+  otherwise (2761 alone; all of 2761 to 2763). No first-hand report contradicts the rest, so they follow
+  CMaNGOS. The user saw the list, with names, before the commit.
+- **The result:** 2,399 prerequisites (126 of them lists, 2,175 from CMaNGOS's requirement and 34 with
+  its condition), 280 breadcrumbs to 157 quests (141 from `NextQuestInChain`), and the same 85 groups.
+  The table audit has one new finding, kept: The Pledge of Secrecy (3638) takes any of four Goblin
+  Engineering quests, and 3629 is repeatable.
+- **Retail:** TrinityCore's `quest_template_addon` has the same links, which retail's tools don't read
+  either: 396 of our retail quests have no prerequisite though a `NextQuestID` names them (390
+  one-time, 96 through a negative group), and 26 links are "in the log" ones. Retail's prerequisites
+  come from Blizzard's API by the user's decision of 10 October ([game-parity.md](game-parity.md),
+  recommendation 13), so nothing changes there.
+- **Checked** with `Test-Completions.lua` on both TOCs (A Donation of Runecloth, Trek to Ashenvale,
+  Covert Ops - Alpha, two conditions, the Alterac quests, Heeding the Call closing with Moonglade, and
+  the notice; the old notice code fails its two checks), `Test-ForeverChecks.ps1` (the audit on choices
+  and lists), reachability (unchanged on Forever) and two imports giving the same files.
+
+### Quests offered only while another is in the log (11 October 2026)
+
+The user's choice for the 35 quests above that CMaNGOS offers only while another quest is in the log:
+a keyed table, `qcQuestNeedsInLog` [quest] = {quests, one of which must be in the log}, read by shared
+code.
+
+- **Data:** the importer writes the quests as `needsInLog` in `links.jsonl`, from CMaNGOS's negative
+  `PrevQuestId` (34) and a negative `NextQuestId` (Enticing Negolash, 619, either faction's Facing
+  Negolash). Its own `PrevQuestId` lets Testing for Impurities and Testing for Corruption (4561, 4661)
+  need only one quest of their negative group in the log, as the server's check does.
+  `Build-ForeverMenu.ps1` writes the table; retail's `qcQuest.lua` has it empty (TrinityCore has 26
+  such links, which retail's tools don't read).
+- **The addon:** such a quest counts as not offered (grey on the map, "Requires Bride of the Embalmer
+  in your quest log", hidden by the requirements filter, a line under Required Quest in its tooltip)
+  until one of its quests this character can take is in the log. Once that quest is handed in, a
+  one-time one is ticked, as a skipped breadcrumb is, at the hand-in and by the login sync; a
+  repeatable one, such as the shamans' Earth Sapta, isn't. One new text, `INQUESTLOG`, in every
+  language (the translations need review).
+- **The ten one-time quests:** Digging Through the Dirt (254), Chapter I to IV (339 to 342), Chief
+  Engineer Scooty (2842), the two Orb of Orahil shards (4962, 4963), Manna-Enriched Horse Feed (7645) and
+  Love Song for Narain (8599). The review keeps only the 82 conditions no table can hold.
+- **Checked** with `Test-Completions.lua` (Digging Through the Dirt grey, then open with Bride of the
+  Embalmer in the log, ticked at its hand-in and by the login sync; Earth Sapta not ticked),
+  `Test-ForeverChecks.ps1` (the audit's two new checks: a quest that needs itself in the log, one that
+  needs a quest not in the data), the table audit (no new finding), and reachability on both games,
+  whose best case now has the quest another needs in the log, as it has every prerequisite done.
+
+### A rerun of the import (12 October 2026)
+
+Two checks of the open pull requests on 12 October found that an import on master (f37f435), from build
+1.60.1.70338's tables and cache, classic-db z2815 and the main checkout's probe files, wrote a `pins.jsonl` 33 lines
+longer and 21 lines different from the committed one; the other five files were the same byte for byte. Measured
+on scratch copies, with each merge since the last change to the pins (#267) imported the same way:
+
+- **Before #306** (at #296 and at #298's merge) the only difference is 11 added lines: the duplicate object pins of
+  Venom Bottle (quest 2933, 10 pins) and Flawed Power Stones (926, 1) that step 10's item 9 has taken off every
+  import since 9 October. The committed file was that run's: import, then item 9.
+- **From #306 on** the import also moves 21 pins and adds one, the same at every merge since (setup 2 of "The
+  importer reads the ledger" above, reproduced to the pin): #306 made the importer read the ledger, #298 had put
+  the addon's own recorder file into it, and the pins were not regenerated, as that pull request said.
+- **The importer now takes the duplicates off itself.** `Remove-DuplicatePinQuests.ps1`'s rule moved into
+  `tools\DuplicatePins.ps1`, which the tool and the importer both use, and the importer applies it to its pins
+  before it writes, so a rerun writes `pins.jsonl` as committed and item 9 finds nothing to take off (it still
+  lists the one pair of Venom Bottle pins a point apart). An import on master followed by item 9 and an import
+  with this importer write the same file; retail's runs of the tool print the same as before.
+  `Test-ForeverImport.ps1` section J has three objects of one name start one quest, two of them 0.2 points apart
+  and one a point away: the quest stays on the first and the far one, and the tool then takes nothing off.
+- **The pins are regenerated** (1,698 to 1,699), after the user reviewed each change ("Commit all 22", 12
+  October). None of their quests has a start point in the client's tables. By cause:
+  - **A recorded place off the spawn by more than rounding** (6): Beached Sea Creature 4723 and 4728 (0.27,
+    0.36), Beached Sea Turtle 4725 and 4727 (0.23, 0.12), Sentinel Elissa Starbreeze and Erion Shadewhisper (0.07).
+  - **A recorded place that is the spawn to a tenth** (13, 0.02 to 0.06): Keryn Sylvius, Archaeologist Hollee,
+    Asterion, Balthule Shadowstrike, Beached Sea Turtle 4722, Buzzbox 323 and 411, Mysterious Red Crystal, Onu,
+    Sentinel Tysha Moonblade, Master Mathias Shaw, Renzik "The Shiv" and Chief Archaeologist Greywhisker. The rule
+    has always been that a recorded place wins, and the committed pins already follow it for 19 givers the probe
+    recorded, 11 of them exactly their spawn to a tenth; keeping the spawn where it rounds to the recorded place
+    would only move those 11 back.
+  - **Two rows 0.1 apart** (2): Sentinel Glynda Nal'Shea to 37.7,43.4, where the addon's file saw her 4 times (the
+    probe once, at 43.5); Thundris Windweaver to 37.4,40.2, by the visit sum of decision 36 alone (open-items.md
+    has what the proposed rule would move instead).
+  - **A new pin:** Trek to Ashenvale (990) at Sentinel Selarin, 39.3,43.5, whom CMaNGOS names but doesn't spawn.
+- **Checked:** with #308 and #309 merged, an import on the regenerated data writes all six files and the review
+  list byte for byte; item 9 takes nothing off; reachability, the table audit (6 findings, none new),
+  `Test-Completions.lua` on both TOCs, `Test-ForeverChecks.ps1` and `Test-ForeverImport.ps1` pass.
+
 ## Decisions
 
 1. **A longer-term project** (2026-10-04): the retail plan comes first.
@@ -1391,3 +1519,20 @@ The user took the recommendations:
 - 2026-10-11: Call of Earth on Zephras Isle is for shamans, from a new hand list of classes; Foror's
   Compendium takes its item's class from the client's `ItemSparse`, and a quest whose only prerequisite
   is for some classes is for them too (#307). See "Class quests the game files under a zone".
+- 2026-10-11: the importer reads the rest of CMaNGOS's requirements: 119 quests get or change a
+  prerequisite from `NextQuestId`, negative groups and `RequiredCondition`, 141 lead-ins close once
+  the quest their `NextQuestInChain` names is taken, and the breadcrumb notice counts only the ones a
+  character can take (#308). See "The rest of CMaNGOS's requirements".
+- 2026-10-11: the 35 quests offered only while another is in the log are grey until it is, and a
+  one-time one closes once that quest is handed in (`qcQuestNeedsInLog`, #309). See "Quests offered only
+  while another is in the log".
+- 2026-10-12: `Test-ForeverImport.ps1`, which came with the ledger importer, failed on master once #307
+  merged: its scratch world had no `ChrClasses` or `ItemSparse` table, so the importer tried to download
+  them for its made-up build, and it read the real link and class lists. The world now has both tables and
+  its own empty lists, and a section I checks the class rules (the starting items, the hand list, a
+  prerequisite chain, and the rows the importer refuses): 106 checks.
+- 2026-10-12: a rerun of the import on master didn't write the committed `pins.jsonl`: the 11 duplicate object
+  pins item 9 takes off, and 21 moves and 1 new pin from the ledger #306 reads. The importer now takes the
+  duplicates off itself (`DuplicatePins.ps1`, shared with `Remove-DuplicatePinQuests.ps1`); section J of
+  `Test-ForeverImport.ps1` checks it (111 checks). The pins are regenerated after the user's review: 21 move by
+  0.02 to 0.36 to the addon's recorded places and Trek to Ashenvale gets one, 1,699 pins. See "A rerun of the import".

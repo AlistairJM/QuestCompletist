@@ -562,6 +562,25 @@ local function qcUpdateSkippedBreadcrumbQuest(qcQuestID)
 	end)
 end
 
+-- A quest offered only while another is in the log closes once that one is handed in.
+local qcNeededInLogBy = nil
+local function qcUpdateClosedInLogQuests(qcQuestID)
+	if not qcNeededInLogBy then
+		qcNeededInLogBy = {}
+		for questId, others in pairs(qcQuestNeedsInLog) do
+			for _, other in ipairs(others) do
+				qcNeededInLogBy[other] = qcNeededInLogBy[other] or {}
+				table.insert(qcNeededInLogBy[other], questId)
+			end
+		end
+	end
+	for _, questId in ipairs(qcNeededInLogBy[qcQuestID] or {}) do
+		if (qcQuestDatabase[questId]) and not qcIsRecurringQuest(questId) then
+			qcCharacterCompletions[questId] = 1
+		end
+	end
+end
+
 local qcCategoryIndex = nil
 local qcQuestNameUpperCache = nil
 
@@ -861,6 +880,34 @@ local function qcIsQuestInLog(questId)
 	return logIndex ~= nil and logIndex > 0
 end
 
+-- The quests one of which must be in the log for a quest to be offered (qcQuestNeedsInLog), of those
+-- this character can take; nil when there are none.
+function qcPrereq.InLogOptions(questId)
+	local others = qcQuestNeedsInLog[questId]
+	if not others then return end
+	local options = {}
+	for _, other in ipairs(others) do
+		if qcPrereq.CanTake(other) then options[#options + 1] = other end
+	end
+	if #options > 0 then return options end
+end
+
+function qcPrereq.InLogMet(questId)
+	local options = qcPrereq.InLogOptions(questId)
+	if not options then return true end
+	for _, other in ipairs(options) do
+		if qcIsQuestInLog(other) then return true end
+	end
+	return false
+end
+
+-- Those quests as text, describe(questId) giving each, joined by "or".
+function qcPrereq.InLogText(questId, describe)
+	local texts = {}
+	for _, other in ipairs(qcPrereq.InLogOptions(questId) or {}) do texts[#texts + 1] = describe(other) end
+	return string.format(qcL.INQUESTLOG, table.concat(texts, " " .. (SERVICES_CONJUNCTION_OR or "or") .. " "))
+end
+
 -- The character's renown with a faction, or its rank with a friendship faction such as The Weaver,
 -- and whether it's a rank; nil when the game knows the faction as neither.
 local function qcFactionLevel(factionId)
@@ -891,11 +938,11 @@ local function qcSkillRank(skillLine)
 	return 0
 end
 
--- Whether the character has the level, the quests to do first, the renown or rank, and the skill in
--- a profession a quest needs. A renown level or skill the game doesn't give counts as met.
+-- Whether the character has the level, the quests to do first or have in the log, the renown or rank,
+-- and the skill in a profession a quest needs. A renown level or skill the game doesn't give counts as met.
 local function qcRequirementsMet(questId, e, playerLevel)
 	if (qcQuestMinLevel[questId] or e[2] or 0) > playerLevel then return false end
-	if not qcPrereq.QuestMet(questId) then return false end
+	if not qcPrereq.QuestMet(questId) or not qcPrereq.InLogMet(questId) then return false end
 	local renown = qcRenownLevelRequirements[questId]
 	local level = renown and qcFactionLevel(renown[1])
 	if level and level < renown[2] then return false end
@@ -1595,6 +1642,7 @@ local function qcRecordServerCompletion(qcIndex)
 	qcCharacterCompletions[qcIndex] = 1
 	qcUpdateMutuallyExclusiveCompletedQuest(qcIndex)
 	qcUpdateSkippedBreadcrumbQuest(qcIndex)
+	qcUpdateClosedInLogQuests(qcIndex)
 	return qcIsNew
 end
 
@@ -2008,8 +2056,9 @@ local function qcBreadcrumbChecks(qcQuestID)
 	else
 		qcToast.QuestID = qcQuestID
 		local qcCount = 0
+		-- Another class's, race's or faction's version of a lead-in isn't one this character can take.
 		qcForEachBreadcrumb(qcQuestID, function(qcBreadcrumbEntry)
-			if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
+			if not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) and qcPrereq.CanTake(qcBreadcrumbEntry) then
 				qcCount = (qcCount + 1)
 			end
 		end)
@@ -2074,7 +2123,8 @@ function qcToast_OnEnter(self)
 		qcToastTooltip:ClearLines()
 		qcToastTooltip:AddLine(qcL.BREADCRUMBQUESTS)
 		qcForEachBreadcrumb(self.QuestID, function(qcBreadcrumbEntry)
-			if (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
+			if not qcPrereq.CanTake(qcBreadcrumbEntry) then
+			elseif (qcCharacterCompletions[qcBreadcrumbEntry] == nil) then
 				local qcQuestName = qcGetToastQuestInformation(qcBreadcrumbEntry)
 				if (qcQuestName and qcBreadcrumbEntry) then qcToastTooltip:AddLine(tostring(COLOUR_DRUID .. qcQuestName .. COLOUR_MAGE .. " [" .. qcBreadcrumbEntry .. "]")) end
 			elseif not (qcCharacterCompletions[qcBreadcrumbEntry] == 1) then
@@ -2357,8 +2407,9 @@ local function qcEventHandler(self, event, ...)
 		qcMutuallyExclusiveChecks(qcQuestID)
 	elseif (event == "QUEST_ACCEPTED") or (event == "QUEST_REMOVED") then
 		if (event == "QUEST_ACCEPTED") then qcNoteUnavailableQuestSeen(..., "accepted") end
-		-- A list that hides quests done or in the log loses or regains this one, and the breadcrumbs to it.
-		local qcRefilter = qcHides("L", "COMPLETED") or qcHides("L", "INPROGRESS")
+		-- A list that hides quests done or in the log loses or regains this one, and the breadcrumbs to it;
+		-- one that hides unmet requirements, the quests offered only while this one is in the log.
+		local qcRefilter = qcHides("L", "COMPLETED") or qcHides("L", "INPROGRESS") or qcHides("L", "REQUIREMENTSNOTMET")
 		qcRequestRefresh(qcRefilter and QC_REBUILD_LIST or QC_REDRAW_ROWS, true)
 	elseif (event == "QUEST_PROGRESS") or (event == "QUEST_COMPLETE") then
 		local qcQuestID = GetQuestID()
@@ -2373,6 +2424,7 @@ local function qcEventHandler(self, event, ...)
 		qcUpdateCompletedQuest(qcQuestID)
 		qcUpdateMutuallyExclusiveCompletedQuest(qcQuestID)
 		qcUpdateSkippedBreadcrumbQuest(qcQuestID)
+		qcUpdateClosedInLogQuests(qcQuestID)
 		qcRequestRefresh(QC_REBUILD_LIST, true)
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 			local isInitialLogin, isReloadingUi = ...

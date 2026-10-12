@@ -1,10 +1,13 @@
 <#
 Checks what Import-ForeverData.ps1 (sweep step 10) takes from the recorder's ledger, on a small Forever
 world made in a scratch folder: nothing in the checkout is written and nothing is downloaded. The world
-has its own client tables, CMaNGOS dump, quest cache, probe file and ledger. The ledger is made from the
+has its own client tables, CMaNGOS dump, quest cache, probe file, ledger and hand lists. The ledger is made from the
 probe file by Import-RecordedGivers.ps1 (step 6d), as in a sweep. Section H compares the importer's files
 with $MasterOutput, what master's importer wrote on its world; a change meant to alter those files writes
-them again, from a run checked by hand.
+them again, from a run checked by hand. Section I checks the classes it gives quests: from the items that
+start them (ItemSparse), from the hand list of classes, and from a quest's only prerequisite. Section J checks
+that pins of one name holding a quest at one spot are written as one, as Remove-DuplicatePinQuests.ps1 (step 10's
+item 9) would leave them.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1
 
@@ -170,13 +173,22 @@ function Get-ProbeGivers() {
 }
 
 # The world: tools, data and addon folders, the probe file, the dump and the cache.
-function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers)) {
+# -Bottles adds Nu Quest (9014), which three CMaNGOS objects of one name start, as several entries of Venom Bottle
+# do: 910014 at 40,60, 910015 0.2 points from it and 910016 a point from it.
+function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles) {
     $root = Join-Path $Scratch $name
     foreach ($dir in 'tools', 'tools\forever_probe_70900', 'data\forever', 'addon') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
     $t = "$root\tools"
     $quests = @{ 9001 = 'Alpha Quest'; 9002 = 'Beta Quest'; 9003 = 'Gamma Quest'; 9004 = 'Delta Quest'; 9005 = 'Epsilon Quest'
         9006 = 'Zeta Quest'; 9007 = 'Eta Quest'; 9008 = 'Theta Quest'; 9010 = 'Iota Quest'; 9011 = 'Kappa Quest'; 9012 = 'Lambda Quest'
         9013 = 'Mu Quest' }
+    $objectStarters = @(, @(910012, 9011)); $objectSpawns = @(, @(3, 910012, -400, -400)); $objectNames = @(, @(910012, 'Kappa Chest Old'))
+    if ($Bottles) {
+        $quests[9014] = 'Nu Quest'
+        $objectStarters += @(@(910014, 9014), @(910015, 9014), @(910016, 9014))
+        $objectSpawns += @(@(4, 910014, -200, 200), @(5, 910015, -204, 200), @(6, 910016, -220, 200))
+        $objectNames += @(@(910014, 'Nu Bottle'), @(910015, 'Nu Bottle'), @(910016, 'Nu Bottle'))
+    }
     Write-Lines "$t\QuestV2-$Build.csv" (@('ID') + @($quests.Keys | Sort-Object))
     Write-Lines "$t\AreaTable-$Build.csv" @('ID,ZoneName,AreaName_lang,ContinentID,ParentAreaID', '10,Alpha,Alpha Zone,1,0')
     Write-Lines "$t\ChrRaces-$Build.csv" @('ID,Name_lang', '1,Human')
@@ -190,16 +202,21 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     Write-Lines "$t\QuestLine-$Build.csv" @('ID,Name_lang')
     Write-Lines "$t\QuestPOIBlob-$Build.csv" @('ID,MapID,UiMapID,Flags,NumPoints,QuestID,ObjectiveIndex,ObjectiveID')
     Write-Lines "$t\QuestPOIPoint-$Build.csv" @('ID,X,Y,Z,QuestPOIBlobID')
+    Write-Lines "$t\ChrClasses-$Build.csv" @('ID,Name_lang', '1,Warrior', '2,Paladin', '3,Hunter', '4,Rogue', '5,Priest', '7,Shaman', '8,Mage', '9,Warlock', '11,Druid')
+    Write-Lines "$t\ItemSparse-$Build.csv" @('ID,Display_lang,StartQuestID,AllowableClass')
     Write-Lines "$t\forever_quest_cache_$Build.jsonl" @($quests.Keys | Sort-Object | ForEach-Object { Cache-Line $_ $quests[$_] })
     # CMaNGOS: 910001, 910007 and the object 910012 start quests and stand somewhere; the others are the recorder's alone.
-    Write-Dump "$t\ClassicDB_test.sql.gz" @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest'), @(9011, 'Kappa Quest')) @(@(910001, 9001), @(910007, 9007)) `
-        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver')) `
-        @(, @(910012, 9011)) @(, @(3, 910012, -400, -400)) @(, @(910012, 'Kappa Chest Old'))
+    $cmQuests = @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest'), @(9011, 'Kappa Quest'))
+    if ($Bottles) { $cmQuests += , @(9014, 'Nu Quest') }
+    Write-Dump "$t\ClassicDB_test.sql.gz" $cmQuests @(@(910001, 9001), @(910007, 9007)) `
+        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver')) $objectStarters $objectSpawns $objectNames
     Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" $Givers
     Write-Lines "$root\decisions.csv" @('Game,Quest,Decision,Reason')
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
     Write-Lines "$root\zones.csv" @('Quest,Zone,Name,Note')
     Write-Lines "$root\holidays.csv" @('Quest,Name,Holiday,Decision,Evidence')
+    Write-Lines "$root\links.csv" @('Quest,Name,Link,Other,Decision,Evidence')
+    Write-Lines "$root\classes.csv" @('Quest,Name,Class,Decision,Evidence')
     # Retail's data (step 6d reads it) and Forever's data from an earlier import, which has every quest but 9006.
     [IO.File]::WriteAllText("$root\data\quests.jsonl", '{"id":100,"name":"Retail","level":10,"zone":"","category":10,"type":1,"faction":2,"race":67108863,"class":8191}' + "`n")
     [IO.File]::WriteAllText("$root\data\pins.jsonl", '{"map":84,"icon":1,"name":"Retail Giver","x":50,"y":50,"quests":[100]}' + "`n")
@@ -231,6 +248,7 @@ function Invoke-Importer([string]$root, [string[]]$more = @(), [string]$ledger =
     return Run-Script $Importer (@('-ToolsDir', "$root\tools", '-DataDir', "$root\data\forever", '-Build', $Build, '-ProbeFile', "$root\tools\forever_probe_70900\QCForeverProbe.lua",
         '-CmangosDump', "$root\tools\ClassicDB_test.sql.gz", '-CacheFile', "$root\tools\forever_quest_cache_$Build.jsonl",
         '-DecisionsFile', "$root\decisions.csv", '-GiverFile', "$root\givers.csv", '-ZoneFile', "$root\zones.csv", '-HolidayFile', "$root\holidays.csv",
+        '-LinkFile', "$root\links.csv", '-ClassFile', "$root\classes.csv",
         '-LedgerFile', $ledger, '-AddonDir', "$root\addon", '-ReviewFile', "$root\review.csv", '-RemovalsFile', "$root\removals.csv", '-LuaExe', $LuaExe) + $more)
 }
 
@@ -486,6 +504,68 @@ try {
     foreach ($file in $MasterOutput.Keys) {
         Equal ([IO.File]::ReadAllText("$w3\$file")) $MasterOutput[$file] "H1: $file is master's, byte for byte"
     }
+
+    # ---------- I: classes from the items that start a quest, the hand list and a quest's prerequisite ----------
+    # The probe's givers start 9001 and 9003 to 9006; 9002, 9008, 9010, 9012 and 9013 have none.
+    $w4 = New-World 'classes' -ZetaKnown
+    $r = Invoke-MergeTool $w4
+    Write-Lines "$w4\tools\ItemSparse-$Build.csv" @('ID,Display_lang,StartQuestID,AllowableClass', '920001,Alpha Note,9001,4', '920002,Beta Tome,9002,3',
+        '920003,Theta Page,9008,1', '920004,Theta Leaf,9008,2', '920005,Iota Totem,9010,64', '920006,Open Book,9012,-1', '920007,Wide Book,9013,1535')
+    Write-Lines "$w4\classes.csv" @('Quest,Name,Class,Decision,Evidence', '9004,Delta Quest,"Warrior, Paladin",SET,test', '9008,Theta Quest,Mage,SET,test',
+        '9010,Iota Quest,Shaman,SET,test', '9999,Nowhere,Druid,SET,test')
+    Write-Lines "$w4\links.csv" @('Quest,Name,Link,Other,Decision,Evidence', '9013,Mu Quest,prereq,9010,SET,test', '9012,Lambda Quest,prereq,9013,SET,test')
+    $r = Invoke-Importer $w4
+    Equal $r.Exit 0 "I1: the importer runs with starting items, a class list and prerequisites ($($r.Text))"
+    $class = @{}
+    foreach ($line in [IO.File]::ReadAllLines("$w4\data\forever\quests.jsonl")) { $q = $line | ConvertFrom-Json; $class[[int]$q.id] = [int]$q.class }
+    $review = @(Review-Kinds $w4)
+    function Reviewed([string]$kind, [string]$quest) { return , @($review | Where-Object { $_.Kind -eq $kind -and $_.Quest -eq $quest }) }
+    Equal $class[9001] 8191 'I2: an item for some classes doesn''t limit a quest a giver starts too'
+    Equal (Reviewed 'class of the items that start it not used: a giver starts it too' '9001').Count 1 'I2: and the review says so'
+    Equal $class[9002] 3 'I3: a quest only an item starts takes the classes that may use it'
+    Equal (Reviewed 'class from the items that start it' '9002')[0].Other '3' 'I3: and the review says so'
+    Equal $class[9010] 64 'I3: so does one whose hand-kept class is the same'
+    Equal (Reviewed 'hand-kept class not needed: another source gives it' '9010').Count 1 'I3: and that row is listed as not needed'
+    Equal (Reviewed 'class from the items that start it' '9008')[0].Other '3' 'I4: two items that start a quest give it the classes of both'
+    Equal $class[9008] 128 'I4: and a hand-kept class wins over them'
+    Equal (Reviewed 'hand-kept class differs from the other sources' '9008').Count 1 'I4: and is listed as differing'
+    Equal $class[9004] 3 'I5: a hand-kept class of two names limits a quest no other source does'
+    Equal (Reviewed 'hand-kept class differs from the other sources' '9004').Count 0 'I5: without a review row'
+    Equal $class[9013] 64 'I6: a quest whose only prerequisite is for some classes is for them too'
+    Equal $class[9012] 64 'I6: and so is the one after it, down the chain'
+    Equal (Reviewed 'class from its prerequisite' '9012')[0].Other '9013' 'I6: and the review names the prerequisite'
+    Equal (Reviewed 'class from its prerequisite' '9013')[0].Other '9010' 'I6: for each step'
+    Equal (@($review | Where-Object { $_.Quest -in '9012', '9013' -and $_.Kind -like '*items*' })).Count 0 'I7: an item any class may use, or every class this game has, limits nothing'
+    Equal (Reviewed 'hand-kept class for a quest not imported' '9999').Count 1 'I8: a hand-kept class for a quest not imported is listed'
+    Check ($r.Text -match 'Classes: 6 quests are for some classes only; 3 took it from the items that start them, 2 from their prerequisite and 3 by hand\.') "I9: the summary counts them ($($r.Text))"
+    $before = Hash-Data $w4
+    $r = Invoke-Importer $w4
+    Equal (Hash-Data $w4) $before 'I10: a rerun writes every data file byte for byte as it was'
+
+    # Rows the importer refuses, and a chain no class could take: each stops it before it writes anything.
+    foreach ($case in @(
+            @{ Row = '9004,Delta Quest,Death Knight,SET,test'; Says = "the class 'Death Knight', which the client's ChrClasses lacks"; Label = 'a class the client lacks' }
+            @{ Row = '9004,Delta Quest,Mage,KEEP,test'; Says = "the decision 'KEEP': it must be SET"; Label = 'a decision other than SET' }
+            @{ Row = '9013,Mu Quest,Mage,SET,test'; Says = 'which only class 64 can take'; Label = 'a class its prerequisite shuts out' })) {
+        Write-Lines "$w4\classes.csv" @('Quest,Name,Class,Decision,Evidence', '9010,Iota Quest,Shaman,SET,test', $case.Row)
+        $r = Invoke-Importer $w4
+        Check ($r.Exit -ne 0 -and $r.Text -match [regex]::Escape($case.Says)) "I11: $($case.Label) stops the import ($($r.Text))"
+        Equal (Hash-Data $w4) $before "I11: and nothing is written after $($case.Label)"
+    }
+
+    # ---------- J: pins of one name at one spot, from several CMaNGOS entries of one object ----------
+    $w5 = New-World 'bottles' -ZetaKnown -Bottles
+    $r = Invoke-MergeTool $w5
+    $r = Invoke-Importer $w5
+    Equal $r.Exit 0 "J1: the importer runs with three objects of one name that start one quest ($($r.Text))"
+    $pins = Get-WorldPins $w5
+    Equal (Places-Of $pins 9014) '40,60 40,61' 'J1: of two pins of one name within half a point the quest stays on the first, and one a point away keeps it'
+    Check ($r.Text -match 'Pins of one name at one spot: 1 quests taken off 1 pins, 1 pins removed; 3 quests stay on pins further apart\.') "J2: the summary counts them, with Delta's and Epsilon's places ($($r.Text))"
+    $r = Run-Script (Join-Path $PSScriptRoot 'Remove-DuplicatePinQuests.ps1') @('-Game', 'forever', '-DataDir', "$w5\data\forever", '-AddonDir', "$w5\addon", '-WhatIf')
+    Check ($r.Exit -eq 0 -and $r.Text -match 'Would take 0 quests off 0 pins, removing 0 pins left with none') "J3: step 10's item 9 finds nothing left to take off ($($r.Text))"
+    $before = Hash-Data $w5
+    $r = Invoke-Importer $w5
+    Equal (Hash-Data $w5) $before 'J4: a rerun writes every data file byte for byte as it was'
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }

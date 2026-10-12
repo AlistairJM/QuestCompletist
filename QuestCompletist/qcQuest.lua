@@ -14357,6 +14357,8 @@ qcMutuallyExclusive = {
 
 qcFormerlyExclusive = {}  -- QuestIds a removed qcMutuallyExclusive link ticked; only WoW: Forever's have them yet
 
+qcQuestNeedsInLog = {}  -- QuestId -> {QuestIds}, one of which must be in the log to take it; only WoW: Forever's have them yet
+
 -- Breadcrumbs from Blizzard's API (qcBreadcrumbQuests, 2026-10-06): it closes them once their quest is
 -- done, so the game still offers them while that quest is in the log (2026-10-11).
 qcClosedOnceDone = {

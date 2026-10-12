@@ -289,10 +289,11 @@ task whose `QuestInfo` kind is world, bonus, hidden, delve or the like (3,380 qu
 starter in TrinityCore) and a system category (Garrison Support, Torghast, Prey and so on) that
 `$allowedSystemCategories` in `Import-RecordedGivers.ps1` does not name (see below). **Waived because a
 creature offering the quest answers them:** not in `QuestV2` (it omits repeatables), the inferences from
-TrinityCore's templates, Landfall, holiday and profession quests, a quest type other than 0, 1, 2, 4 and
+TrinityCore's templates, holiday and profession quests, a quest type other than 0, 1, 2, 4 and
 128, and a task of a kind the pipeline keeps out that the tool doesn't hold itself (`$noPinKinds` in
 `Build-QuestLocationData.ps1`: callings and threat wrappers; until 11 October 2026 every task of
-another kind than world, bonus or hidden was held, and counted as a class). The report counts the
+another kind than world, bonus or hidden was held, and counted as a class, and until 12 October 2026
+so was Landfall). The report counts the
 quests by class, and
 [open-items.md](open-items.md) lists the waiver as a call the user may reverse.
 
@@ -366,7 +367,7 @@ import again; a version the TOCs don't name is passed to both with `-Builds`, wh
 file that mixes a named and an unnamed version is read in part by both and does not stop, so its newest notes wait until
 `-Builds` names their version.
 Retail is untouched, and nothing else reads the ledger's Forever rows. `Test-ForeverImport.ps1` runs the importer on a
-small scratch world (80 checks, among them the files master's importer wrote there when the ledger holds the probe's
+small scratch world (106 checks since its classes section, among them the files master's importer wrote there when the ledger holds the probe's
 file alone, kept as written once by it), `Test-RecordedGivers.ps1` section H checks the two functions; what a real
 import would move is measured in [forever.md](forever.md), "The importer reads the ledger".
 
