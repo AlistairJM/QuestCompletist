@@ -37,7 +37,8 @@ Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the
     from step 2e, or -QuestCacheFile) for a quest with no other requirement that the API is silent
     on, where TrinityCore's requirement (its NextQuestID or PrevQuestID) says the same: any one of
     them will do. Where TrinityCore names none the follow-up is often a re-offer, not a requirement
-    (1 in 4 where it has a row, October 2026), so those aren't taken.
+    (1 in 4 where it has a row, October 2026), so those aren't taken. Nor is a breadcrumb into the
+    quest (qcBreadcrumbQuests): the game offers the quest to a character who skipped it.
 Last, the prerequisites decided with the user (-DecisionsFile, docs\plans\quest-link-decisions.csv,
 in the columns of WoW: Forever's link decisions) replace whatever the sources give: a quest's prereq
 SET rows name the quest it needs, and several rows for one quest are a choice. The run lists any the
@@ -300,6 +301,15 @@ if (Test-Path $OffersFile) {
 # the game, or needs a higher level than this, isn't one.
 $unavailable = @{}
 foreach ($line in [IO.File]::ReadLines((Join-Path $AddonDir 'qcUnavailableQuests.lua'))) { if ($line -match '^\[(\d+)\]=') { $unavailable[[int]$Matches[1]] = $true } }
+$crumbBlock = [regex]::Match([IO.File]::ReadAllText((Join-Path $AddonDir 'qcQuest.lua')), '(?s)(?:^|\n)qcBreadcrumbQuests\s*=\s*\{[^\n]*\n(.*?)\n\}')
+if (-not $crumbBlock.Success) { throw "qcQuest.lua has no qcBreadcrumbQuests table." }
+$leadsTo = @{}
+foreach ($line in (($crumbBlock.Groups[1].Value -replace '(?s)--\[\[.*?\]\]', '' -replace '--[^\n]*', '') -split "`n")) {
+    if ($line -notmatch '^\s*\[(\d+)\]\s*=\s*\{([\d,\s]*)\}') { continue }
+    $target = $Matches[1]
+    foreach ($crumb in ($Matches[2] -split '[,\s]+' | Where-Object { $_ })) { $leadsTo["$crumb>$target"] = $true }
+}
+$leadIns = New-Object System.Collections.Generic.List[string]
 function Get-MinLevel([int]$id) { if ($null -ne $quests[$id].minLevel) { return [int]$quests[$id].minLevel } return [int]$quests[$id].level }
 if (-not $QuestCacheFile) { $QuestCacheFile = Join-Path $ToolsDir "retail_quest_cache_$Build.jsonl" }
 $offeredAfter = @{}
@@ -319,6 +329,7 @@ foreach ($id in $offeredAfter.Keys) {
         $a = [int]$source
         if ($a -eq $id -or $by.Contains($a) -or -not $quests.ContainsKey($a)) { continue }
         if (-not ($tcNext[$a] -eq $id -or $tcPrev[$id] -eq $a)) { continue }
+        if ($leadsTo.ContainsKey("$a>$id")) { $leadIns.Add("$id <- $a"); continue }
         if (($offered.ContainsKey($a) -and $offered.ContainsKey($id)) -or -not (Test-Checkable $id $a) -or (Test-OtherFaction $id $a)) { continue }
         if ($unavailable.ContainsKey($a) -or ($level -gt 0 -and (Get-MinLevel $a) -gt $level)) { continue }
         $by.Add($a)
@@ -447,7 +458,7 @@ foreach ($id in @($new.Keys)) {
 "From the client's task quests: {0} quests get a prerequisite, {1} change theirs ({3} keep ours as well), {2} already match; it names {4} quests we hold no data for, so those requirements are left out." -f $counts.fromClientNew, $counts.fromClientChanged, $counts.fromClientSame, $counts.keptClient, $script:notInData.Count
 "Campaign ${Campaign}: {0} chapters' first quests need the chapter before ({1} of them change)." -f $chapterLinks.Count, $chapters.Count
 "The client's conditions: {0} quest lines and campaigns, given to {1} quests ({2})." -f $gates.Count, (($gated.Values | Measure-Object -Sum).Sum), (($gated.Keys | Sort-Object | ForEach-Object { "$_ x$($gated[$_])" }) -join ', ')
-"The client's follow-ups that TrinityCore's requirement repeats: {0} quests have one, {1} take it now." -f $followUp.Count, $followed
+"The client's follow-ups that TrinityCore's requirement repeats: {0} quests have one, {1} take it now; {2} breadcrumbs into their quest left out." -f $followUp.Count, $followed, $leadIns.Count
 "Left out as the game offered them together with the quest: $($contradicted.Count) required quests, and $($refused.Count) conditions."
 "Recurring quests' recurring requirements that Blizzard doesn't name, left out: $($notBlizzard.Count)"
 "Decided with the user ({0}): {1} quests, {2} change, {3} already match." -f (Split-Path -Leaf $DecisionsFile), $decided.Count, $decidedChanged, $decidedSame
@@ -456,7 +467,7 @@ if ($decidedMissing.Count) { "  $($decidedMissing.Count) name a quest not in the
 "Left out as they'd go round in a circle: $($cycles.Count)" + $(if ($cycles.Count) { " (" + ($cycles -join '; ') + ")" } else { '' })
 "Changes: $($new.Count)"
 if ($WhatIf) {
-    foreach ($list in @(@('Chapters', $chapters), @('Offered together', $contradicted), @('Conditions refused', $refused), @('Recurring, not Blizzard''s', $notBlizzard))) {
+    foreach ($list in @(@('Chapters', $chapters), @('Offered together', $contradicted), @('Conditions refused', $refused), @('Recurring, not Blizzard''s', $notBlizzard), @('Breadcrumbs into their quest', $leadIns))) {
         if ($list[1].Count) { "  $($list[0]): " + ($list[1] -join '; ') }
     }
     foreach ($id in ($new.Keys | Sort-Object | Select-Object -First 40)) {

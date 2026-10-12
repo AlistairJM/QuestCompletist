@@ -86,7 +86,7 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   left off when it's 0 (half the quests have none; a missing last value costs nothing).
 - **Profession, holiday, covenant and prereq** are in `qcQuestProfession` (1,954 quests on 12
   October 2026), `qcQuestHoliday` (1,304 on 12 October 2026; it grows as holiday quests are
-  tagged), `qcQuestCovenant` (777) and `qcQuestPrereq` (9,457 on 12 October 2026), keyed by quest
+  tagged), `qcQuestCovenant` (777) and `qcQuestPrereq` (9,376 on 12 October 2026), keyed by quest
   ID. Since 6 October 2026 a prereq can also be a list
   ([quest-table-checks.md](quest-table-checks.md)).
   The code reads them as "nil means none", where it used to test for 0.

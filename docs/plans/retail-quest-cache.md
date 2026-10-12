@@ -255,7 +255,10 @@ and another for 20, so about 1 in 4 cache-only follow-ups is a re-offer, and for
 step just before in the storyline it names none in 230 of 234. The 2,727 links without TrinityCore's
 word (1,237 storyline steps, 1,490 the cache alone, on 2,342 quests) were shown to the user and not
 taken; they need a source that can tell a requirement from a re-offer, such as the game's own offers
-at run time ([game-api-review.md](game-api-review.md), recommendation 9).
+at run time ([game-api-review.md](game-api-review.md), recommendation 9). The same day, before the release, a
+breadcrumb into the quest (`qcBreadcrumbQuests`) stopped counting as one: 82 quests had been given their own
+lead-in as a requirement, such as Murozond's and Fuselight, Ho!'s, and the game offers a breadcrumb's quest to a
+character who skipped it; 1,384 quests keep a follow-up.
 
 What the edges found in our own data needs no cache: five prerequisite cycles over 38 quests (of 14,
 11, 5, 4 and 4), seven edges where our prerequisite runs against both the cache and the client's
