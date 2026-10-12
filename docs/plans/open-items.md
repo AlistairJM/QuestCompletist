@@ -393,7 +393,8 @@ again.
   profession`, 12 October 2026): 769 "Kodo Hide Bag" needs 768 "Gathering Leather" (Skinning), and 5124
   "Fiery Plate Gauntlets" needs 5103 "Hot Fiery Death" (Blacksmithing). A character without the
   profession never meets them. Each wants a profession for the quest, or its link removed in
-  `forever-quest-link-decisions.csv`, on evidence. Once both are settled, `Test-QuestTooltip.lua`'s
+  `forever-quest-link-decisions.csv`, on evidence; until then both are `KEEP` rows of
+  `forever-quest-table-decisions.csv`, so step 10's check passes. Once both are settled, `Test-QuestTooltip.lua`'s
   profession check can take quests with no profession too.
 - **What still shows with "unfinished requirements" hidden** on a level-90 character with no Midnight
   progress (12 October 2026, after the client's conditions and the campaign's chapter order): Eversong 67
