@@ -270,5 +270,19 @@ local spare = CANVAS_HEIGHT + lowest
 check(string.format("it ends %d px from the top of a %d px page, %d px to spare", -lowest, CANVAS_HEIGHT, spare), spare >= MARGIN)
 check("the continent box follows the map icons box closely", topOf(continent) == topOf(icons) - icons.height - 2)
 
+print("The quest ID box")
+local ids = env.qcIO_SHOW_QUEST_IDS
+check("a fresh install shows quest IDs", env.qcSettings.QC_SHOW_QUEST_IDS == 1)
+check("the box shares the minimap box's row, so the page stays as tall as it was", ids ~= nil and topOf(ids) == topOf(minimap))
+ids.checked = false
+ids.scripts.OnClick(ids)
+check("unticking saves 0", env.qcSettings.QC_SHOW_QUEST_IDS == 0)
+ids.checked = true
+ids.scripts.OnClick(ids)
+check("ticking saves 1", env.qcSettings.QC_SHOW_QUEST_IDS == 1)
+env.qcSettings = {QC_SETTINGS_VERSION = 2, QC_SHOW_QUEST_IDS = 0}
+env.qcCheckSettings()
+check("a setting of 0 is kept", env.qcSettings.QC_SHOW_QUEST_IDS == 0)
+
 print(failures == 0 and "All checks passed." or (failures .. " checks failed."))
 os.exit(failures == 0 and 0 or 1)

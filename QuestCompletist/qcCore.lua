@@ -2227,6 +2227,9 @@ function qcCheckSettings()
     if (qcSettings.QC_RECORD_GIVERS == nil) then
         qcSettings.QC_RECORD_GIVERS = 1
     end
+    if (qcSettings.QC_SHOW_QUEST_IDS == nil) then
+        qcSettings.QC_SHOW_QUEST_IDS = 1
+    end
     for _, filter in ipairs(QC_FILTERS) do
         for _, view in ipairs({"M", "L"}) do
             local key = "QC_" .. view .. "_HIDE_" .. filter.key
@@ -2243,6 +2246,7 @@ function qcApplySettings()
     qcIO_M_SHOW_CONTINENT:SetChecked(qcSettings.QC_M_SHOW_CONTINENT ~= 0)
     qcIO_MINIMAP_SHOW:SetChecked(qcSettings.QC_MINIMAP_SHOW ~= 0)
     qcIO_RECORD_GIVERS:SetChecked(qcSettings.QC_RECORD_GIVERS ~= 0)
+    qcIO_SHOW_QUEST_IDS:SetChecked(qcSettings.QC_SHOW_QUEST_IDS ~= 0)
     for key, box in pairs(qcFilterBoxes) do
         box:SetChecked(qcSettings[key] == 1)
     end
@@ -2344,6 +2348,19 @@ function qcInterfaceOptions_OnShow(self)
         qcShowMinimapButton(self:GetChecked())
     end)
 
+    qcIO_SHOW_QUEST_IDS = CreateFrame("CheckButton", "qcIO_SHOW_QUEST_IDS", self, "InterfaceOptionsCheckButtonTemplate")
+    qcIO_SHOW_QUEST_IDS:SetPoint("TOPLEFT", qcIO_MINIMAP_SHOW, "TOPLEFT", 280, 0)
+    _G[qcIO_SHOW_QUEST_IDS:GetName().."Text"]:SetText(qcL.SHOWQUESTIDS)
+    qcIO_SHOW_QUEST_IDS:SetScript("OnClick", function(self)
+        qcSettings.QC_SHOW_QUEST_IDS = self:GetChecked() and 1 or 0
+    end)
+    qcIO_SHOW_QUEST_IDS:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(qcL.SHOWQUESTIDSTIP, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    qcIO_SHOW_QUEST_IDS:SetScript("OnLeave", GameTooltip_Hide)
+
     qcIO_RECORD_GIVERS = CreateFrame("CheckButton", "qcIO_RECORD_GIVERS", self, "InterfaceOptionsCheckButtonTemplate")
     qcIO_RECORD_GIVERS:SetPoint("TOPLEFT", qcIO_MINIMAP_SHOW, "BOTTOMLEFT", 0, -4)
     _G[qcIO_RECORD_GIVERS:GetName().."Text"]:SetText(qcL.RECORDGIVERS)
@@ -2384,7 +2401,7 @@ end
 if QuestFrame_SetPortrait then
 	hooksecurefunc("QuestFrame_SetPortrait", function()
 		local questId = GetQuestID()
-		if questId and questId ~= 0 then
+		if questId and questId ~= 0 and qcSettings.QC_SHOW_QUEST_IDS ~= 0 then
 			local name = UnitName("questnpc")
 			if issecretvalue and issecretvalue(name) then name = nil end
 			QuestFrame:SetTitle(string.format("%s [%d]", name or "", questId))

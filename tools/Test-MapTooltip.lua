@@ -452,6 +452,14 @@ check("and sits at the first pin's point on the map's ID", waypoint and waypoint
 local heading = firstHeading(drawn[1])
 check("the tooltip's first heading is the same giver", heading and heading:find(":AddDoubleLine(" .. pinA[3] .. ",", 1, true) ~= nil, heading)
 check("and the nameless pin's quests follow under the other quests", count(otherQuests, 1) == 1)
+local npcIdText, questIdText = "|cff808080" .. pinA[2] .. "|r", "|cff808080" .. pinA[6][3] .. "|r"
+check("the heading shows the giver's NPC ID, and a quest line its quest ID", heading:find(npcIdText, 1, true) ~= nil and count(questIdText, 1) >= 1)
+env.qcSettings.QC_SHOW_QUEST_IDS = 0
+firstHeading(draw({nameless, namedA})[1])
+check("with quest IDs off the tooltip still names the giver and the quest", count(pinA[3], 1) >= 1 and count("Home Sweet Gnome", 1) == 1)
+check("but shows no NPC ID", count(npcIdText, 1) == 0)
+check("and no quest ID", count(questIdText, 1) == 0)
+env.qcSettings.QC_SHOW_QUEST_IDS = nil
 
 drawn = draw({namedA, nameless})
 check("a stack whose first pin is named stays named for it", drawn[1][3] == pinA[3] and drawn[1][4] == 50.3 and drawn[1][5] == 50.2)
