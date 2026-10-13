@@ -5,7 +5,7 @@ local TableInsert = table.insert
 local BitBand = bit.band
 local qcL = qcLocalize
 local COLOUR_HUNTER, COLOUR_MAGE = QC.COLOUR_HUNTER, QC.COLOUR_MAGE
-local QC_ICON_NORMAL, QC_ICON_COMPLETE = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE
+local QC_ICON_NORMAL, QC_ICON_COMPLETE, QC_ICON_PVP = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE, QC.QC_ICON_PVP
 local QC_PIN_ICONS, QC_PIN_ICON_RANK = QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK
 local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
@@ -46,7 +46,17 @@ local function qcSinglePinIcon(pinData)
     return QC_PIN_ICONS[icon] or QC_ICON_NORMAL
 end
 
+-- A pin whose quests are all PvP draws the PvP icon, over whatever kind of quest they are.
+local function qcAllPvp(questIds)
+    if not qcQuestPvP or #questIds == 0 then return false end
+    for _, questId in ipairs(questIds) do
+        if not qcQuestPvP[questId] then return false end
+    end
+    return true
+end
+
 local function qcPinIcon(pinData)
+    if qcAllPvp(pinData[6]) then return QC_ICON_PVP end
     if not pinData.stack then
         return qcSinglePinIcon(pinData)
     end

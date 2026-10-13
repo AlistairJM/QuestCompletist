@@ -466,6 +466,21 @@ check("a PvP quest's line has the crossed swords before its name", count("|A:que
 env.qcQuestPvP = {}
 firstHeading(draw({nameless, namedA})[1])
 check("a quest that is not in the PvP table has none", count("questlog-questtypeicon-pvp", 1) == 0)
+local function pinAtlas(data)
+	local atlas
+	local pin = newPin(data)
+	pin.UseFrameLevelType, pin.SetPosition, pin.SetSize = function() end, function() end, function() end
+	pin.Texture = {SetAtlas = function(_, name) atlas = name end, SetTexture = function() end, SetTexCoord = function() end, SetVertexColor = function() end}
+	pin:OnAcquired(data)
+	return atlas
+end
+local pvpAtlas = "questlog-questtypeicon-pvp"
+env.qcQuestPvP = {[pinA[6][1]] = 1, [pinA[6][2]] = 1}
+check("a pin whose quests are all PvP draws the PvP icon", pinAtlas({pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1], pinA[6][2]}}) == pvpAtlas)
+check("one with a quest that is not PvP keeps its own icon", pinAtlas({pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1], pinA[6][2], pinA[6][3]}}) ~= pvpAtlas)
+check("and so does one with no quests", pinAtlas({pinA[1], pinA[2], pinA[3], 50.3, 50.2, {}}) ~= pvpAtlas)
+env.qcQuestPvP = {}
+check("a pin with no PvP quest keeps its icon", pinAtlas({pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1], pinA[6][2]}}) ~= pvpAtlas)
 
 drawn = draw({namedA, nameless})
 check("a stack whose first pin is named stays named for it", drawn[1][3] == pinA[3] and drawn[1][4] == 50.3 and drawn[1][5] == 50.2)
