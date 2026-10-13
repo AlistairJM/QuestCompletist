@@ -54,8 +54,8 @@ function Normalize($s) { return ($s -replace "[^a-zA-Z0-9]", "").ToUpper() }
 
 function Resolve-Bitmask($namesJoined, $bitTable, $allValue, $maxNarrow) {
     if (-not $namesJoined) { return $allValue }
-    $names = $namesJoined -split ";"
-    if ($names -contains "Adventurer") { return $allValue }
+    $names = @($namesJoined -split ";" | Where-Object { $_ -notin "Adventurer", "Traveler" })
+    if ($names.Count -eq 0) { return $allValue }
     if ($names.Count -gt $maxNarrow) { return $allValue }
     $mask = 0
     foreach ($n in $names) {

@@ -53,13 +53,12 @@ function Normalize($s) { return ($s -replace "[^a-zA-Z0-9]", "").ToUpper() }
 # Falls back to "all" (unrestricted) whenever the list can't be resolved with
 # confidence - e.g. it names a race/class we don't have a bit for, lists so
 # many entries it's clearly a faction-equivalent expression rather than a
-# genuine narrow restriction (more than $maxNarrow entries), or contains a
-# non-class sentinel like "Adventurer" (seen on quests that also list every
-# other class - Blizzard's way of saying "no real restriction").
+# genuine narrow restriction (more than $maxNarrow entries), or names only a
+# non-class sentinel ("Adventurer", "Traveler"); the sentinels are left out of a longer list.
 function Resolve-Bitmask($namesJoined, $bitTable, $allValue, $maxNarrow) {
     if (-not $namesJoined) { return $allValue }
-    $names = $namesJoined -split ";"
-    if ($names -contains "Adventurer") { return $allValue }
+    $names = @($namesJoined -split ";" | Where-Object { $_ -notin "Adventurer", "Traveler" })
+    if ($names.Count -eq 0) { return $allValue }
     if ($names.Count -gt $maxNarrow) { return $allValue }
     $mask = 0
     foreach ($n in $names) {

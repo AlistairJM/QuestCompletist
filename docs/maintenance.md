@@ -370,6 +370,8 @@ task quests' races and classes (`QuestV2CliTask`), the conditions on a quest's s
 (`ItemSparse`: 36 quests on build 12.1.0.69933, and the 25 we have agree with ours). WoW: Forever's
 importer reads the same item columns (step 10).
 
+A class list that names Adventurer or Traveler (non-class entries) is read without them, not as "all classes" (13 October 2026: 21 fixes, and KEEP rows for the 175 lists that are wider than ours only because they predate Evoker, start in Acherus or belong to a class hall).
+
 Review before applying anything. Two lessons from the last cleanup:
 - A faction's race mask is not a stale placeholder.
 - Only restrictions the API actually asserts can be trusted.
@@ -574,7 +576,7 @@ with `-WhatIf` first to see what it would change.
   or `PrevQuestID` says the same, and none of the checks above or below rules it out (also an
   unavailable quest, or one that needs a higher level). A breadcrumb into the quest (`qcBreadcrumbQuests`)
   isn't one either: the game offers the quest to a character who skipped it (129 left out). 1,384 quests on
-  12 October 2026. A follow-up
+  12 October 2026. A board quest (Hero's Call, Warchief's Command) is a breadcrumb into the quest its follow-up names: it has a row in `qcBreadcrumbQuests`, so it is never taken. Where the cache names several lead-ins and TrinityCore repeats only some, the quest is left out and listed ("Left out as the cache names more lead-ins than TrinityCore repeats"; 14 on 13 October 2026). A follow-up
   TrinityCore doesn't repeat is often a re-offer, so it isn't taken ([plans/retail-quest-cache.md](plans/retail-quest-cache.md),
   "Next quest"). Run step 2e on the newest cache first: the game's own `Cache\WDB\enUS\questcache.wdb`
   is newer than the probe's copy after any play.
