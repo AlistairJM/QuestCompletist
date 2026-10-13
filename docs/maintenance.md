@@ -327,7 +327,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers, TrinityCore and the decisions kept by hand (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
-| 2g | The PvP tag, from the quest cache's kind of each quest (after step 2e; Forever's comes from its importer too): `pvp` on every quest the game calls PvP, PvP World Quest, War Mode PvP or PvP Conquest, for both games; lists, and leaves alone, the quests in battlegrounds, Wintergrasp, Tol Barad and Ashran the game doesn't tag | `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf`; the same with `-Game forever` | Only the last one |
+| 2i | The PvP tag, from the quest cache's kind of each quest (after step 2e; Forever's comes from its importer too): `pvp` on every quest the game calls PvP, PvP World Quest, War Mode PvP or PvP Conquest, for both games; lists, and leaves alone, the quests in battlegrounds, Wintergrasp, Tol Barad and Ashran the game doesn't tag | `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf`; the same with `-Game forever` | Only the last one |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
 | 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
@@ -942,6 +942,26 @@ Retail's "What /qc holidays should print" lists Call of the Scarab (638) on its 
 "Other calendar holidays".
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (135 checks).
+
+### 2i. The PvP tag
+
+`qcQuestPvP` (the `pvp` field of the data files) holds the quests the game itself calls PvP: the kind of
+each quest in the quest cache (`questInfo`, step 2e) is 41 PvP on both games, and on retail also 113 PvP
+World Quest, 255 War Mode PvP, 256 PvP Conquest and 278 PvP Elite World Quest. Nothing in the addon reads
+it yet. Every sweep, with the newest cache of each game:
+
+- `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf` when it would change anything.
+- Forever's comes from its importer (step 10), which sets it from the cache the same way; run
+  `Sync-QuestPvP.ps1 -Game forever -WhatIf` after the importer, and it must say 0 quests get `pvp`.
+- Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933, Forever
+  1.60.1.70338): retail 343 (PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP Elite World
+  Quest 6) with 2,458 of our quests the cache doesn't know; Forever 14 with 2,220 unknown. A kind the game
+  adds (a new `QuestInfo` row with PvP in its name, read in `toolsQuestInfo.csv`) belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
+- It also lists, and never changes, the quests in the places PvP happens that the game doesn't tag (retail 151:
+  Ashran 58, Tol Barad 68, Alterac Valley 16, Arathi Basin 3, Seething Shore 2; Forever 181, nearly all of
+  them unknown to the beta's cache). Whether any of them gets the tag is the user's call, so the list is read
+  each sweep for a count that moved or a quest the game has started to tag, and Forever's unknowns shrink as
+  the beta answers more.
 
 ### 3. Quest types
 
