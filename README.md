@@ -26,7 +26,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 
 - Different icons for normal, daily, weekly, repeatable, holiday, class and profession quests.
 - Quests in your log show a grey **?** (in progress) or a yellow **?** (ready to hand in), in the list and in its tooltips.
-- PvP quests, like the Alterac Valley and Wintergrasp ones, have the game's crossed swords before their name in the list and in the map pins' tooltips.
+- PvP quests, like the Alterac Valley and Wintergrasp ones, have the game's crossed swords before their name in the list and in the map pins' tooltips, and a pin whose quests are all PvP shows the crossed swords as its icon.
 - Dailies and repeatables are never marked "done", so you can see at a glance which dailies each zone has.
 
 **Quest givers on your world map**

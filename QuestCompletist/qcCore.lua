@@ -40,6 +40,7 @@ local QC_ICON_WEEKLY = {atlas="questlog-questtypeicon-weekly"}
 local QC_ICON_MONTHLY = {atlas="questlog-questtypeicon-monthly"}
 local QC_ICON_SPECIAL = {atlas="QuestLegendary"}
 local QC_ICON_CLASS = {atlas="questlog-questtypeicon-class"}
+local QC_ICON_PVP = {atlas="questlog-questtypeicon-pvp-2x"}
 local QC_ICON_COMPLETE = {atlas="common-icon-checkmark"}
 local QC_ICON_UNATTAINABLE = {atlas="common-icon-redx"}
 local QC_ICON_ALLIANCE = {atlas="poi-alliance"}
@@ -2536,4 +2537,4 @@ QC.CHAT_TITLE = QCADDON_CHAT_TITLE
 QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
-QC.qcPvpMark = qcPvpMark
+QC.qcPvpMark, QC.QC_ICON_PVP = qcPvpMark, QC_ICON_PVP
