@@ -460,6 +460,12 @@ check("with quest IDs off the tooltip still names the giver and the quest", coun
 check("but shows no NPC ID", count(npcIdText, 1) == 0)
 check("and no quest ID", count(questIdText, 1) == 0)
 env.qcSettings.QC_SHOW_QUEST_IDS = nil
+env.qcQuestPvP = {[pinA[6][3]] = 1}
+firstHeading(draw({nameless, namedA})[1])
+check("a PvP quest's line has the crossed swords before its name", count("|A:questlog-questtypeicon-pvp:14:14|a |cff", 1) == 1 and count("Home Sweet Gnome", 1) == 1)
+env.qcQuestPvP = {}
+firstHeading(draw({nameless, namedA})[1])
+check("a quest that is not in the PvP table has none", count("questlog-questtypeicon-pvp", 1) == 0)
 
 drawn = draw({namedA, nameless})
 check("a stack whose first pin is named stays named for it", drawn[1][3] == pinA[3] and drawn[1][4] == 50.3 and drawn[1][5] == 50.2)

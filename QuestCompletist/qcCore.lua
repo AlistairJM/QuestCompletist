@@ -708,6 +708,12 @@ local function qcQuestName(questId, waiting)
 	return entry and entry[1]
 end
 
+-- The game's crossed swords for a PvP quest (qcQuestPvP), to put before its name; nothing for the rest.
+local QC_PVP_MARK = "|A:questlog-questtypeicon-pvp:14:14|a "
+local function qcPvpMark(questId)
+	return qcQuestPvP and qcQuestPvP[questId] and QC_PVP_MARK or ""
+end
+
 -- Upper-cased client names for search: built on the first search, then kept up to date as names
 -- load. Only names that differ from the English one are kept, as search checks that anyway; on an
 -- English client that's a handful. string.upper folds only A-Z, so other letters match in case.
@@ -1232,7 +1238,8 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			local questType = e[4]
 			local questFaction = e[5]
 			local questName = qcQuestName(questId)
-			questRecord.QuestName:SetText((e[2] or 0) > 0 and stringFormat("[%d] %s",e[2],questName) or questName)
+			local shownName = qcPvpMark(questId) .. questName
+			questRecord.QuestName:SetText((e[2] or 0) > 0 and stringFormat("[%d] %s",e[2],shownName) or shownName)
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
@@ -2529,3 +2536,4 @@ QC.CHAT_TITLE = QCADDON_CHAT_TITLE
 QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
+QC.qcPvpMark = qcPvpMark

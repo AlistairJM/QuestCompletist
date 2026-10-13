@@ -9,7 +9,7 @@ local QC_ICON_NORMAL, QC_ICON_COMPLETE = QC.QC_ICON_NORMAL, QC.QC_ICON_COMPLETE
 local QC_PIN_ICONS, QC_PIN_ICON_RANK = QC.QC_PIN_ICONS, QC.QC_PIN_ICON_RANK
 local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessionIcon, QC.qcNormalPinIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
-local qcQuestName, qcMaskAllows, qcPrereq = QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq
+local qcQuestName, qcMaskAllows, qcPrereq, qcPvpMark = QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq, QC.qcPvpMark
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
 local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
@@ -242,8 +242,9 @@ local function qcAddPinQuestLine(questId, state)
     local icon, colour = qcQuestStatus.Look(questId, state)
     local name = qcQuestName(questId, qcMapTooltipWaiting)
     local needs = qcPinQuestNeeds(questId, state)
-    local text = needs and string.format("    |cff9d9d9d%s|r |cff808080(%s)|r", name, needs)
-        or string.format("    |cff%s%s|r", colour, name)
+    local mark = qcPvpMark(questId)
+    local text = needs and string.format("    %s|cff9d9d9d%s|r |cff808080(%s)|r", mark, name, needs)
+        or string.format("    %s|cff%s%s|r", mark, colour, name)
     local leftText = qcAddMapTooltipLine(text, qcIdText(questId))
     qcSetMapTooltipLineIcon(leftText, icon, needs)
 end
