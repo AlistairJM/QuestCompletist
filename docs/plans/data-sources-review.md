@@ -466,6 +466,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
   document against the evidence); no data, addon or tool change. game-parity.md's rows corrected and open-items.md pointed here, in the same pull request. Nothing
   decided yet.
 
+- 2026-10-13: recommendation 37 started: `Find-MissingQuests.ps1` (report only, both games) and its decisions and baseline files (555 retail and 130 Forever candidates); the importer's summary splits CMaNGOS-only quests into repeatable and other (481 and 1,666) and counts QuestV2 rows never answered (3,700). Nothing added to the data yet: the Midnight Candy Buckets and the other live-looking holiday quests wait for the user's OK.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

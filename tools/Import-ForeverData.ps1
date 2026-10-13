@@ -1239,6 +1239,9 @@ $fromBoth = @($questList | Where-Object { $cache.ContainsKey($_.id) -and $cmQues
 $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $cmQuest.ContainsKey($_.id) }).Count
 Write-Host ("{0} quests: {1} from the game and CMaNGOS, {2} from the game only, {3} from CMaNGOS only. {4} pins on {5} maps." -f
     $questList.Count, $fromBoth, $fromGame, ($questList.Count - $fromBoth - $fromGame), $pinList.Count, @($pinList | Select-Object -ExpandProperty map -Unique).Count)
+$cmOnly = @($questList | Where-Object { -not $cache.ContainsKey($_.id) })
+Write-Host ("Of the {0} quests from CMaNGOS only, {1} are repeatable (kept without the game) and {2} are not; {3} rows of the client's QuestV2 have never been answered by the game." -f
+    $cmOnly.Count, @($cmOnly | Where-Object { $cmQuest[$_.id].Special -band 1 }).Count, @($cmOnly | Where-Object { -not ($cmQuest[$_.id].Special -band 1) }).Count, @($inClient.Keys | Where-Object { -not $cache.ContainsKey($_) }).Count)
 Write-Host ("Pins of one name at one spot: {0} quests taken off {1} pins, {2} pins removed; {3} quests stay on pins further apart." -f
     $duplicates.TakenOff, $duplicates.Changed, $duplicates.Removed.Count, $duplicates.LeftAlone.Count)
 Write-Host ("Answer memory: {0} quests over {1} runs; {2} that the game didn't answer this run are kept from earlier ones; {3} have missed {4} runs in a row." -f
