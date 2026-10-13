@@ -233,8 +233,8 @@ function qcPinMixin:OnAcquired(pinData)
     self.Texture:SetVertexColor(shade, shade, shade)
 end
 
-local function qcQuestIdText(questId)
-    if qcSettings.QC_SHOW_QUEST_IDS ~= 0 then return string.format("|cff808080%d|r", questId) end
+local function qcIdText(id)
+    if qcSettings.QC_SHOW_QUEST_IDS ~= 0 then return string.format("|cff808080%d|r", id) end
 end
 
 -- A quest that can't be taken yet is greyed, with what stands in the way.
@@ -244,7 +244,7 @@ local function qcAddPinQuestLine(questId, state)
     local needs = qcPinQuestNeeds(questId, state)
     local text = needs and string.format("    |cff9d9d9d%s|r |cff808080(%s)|r", name, needs)
         or string.format("    |cff%s%s|r", colour, name)
-    local leftText = qcAddMapTooltipLine(text, qcQuestIdText(questId))
+    local leftText = qcAddMapTooltipLine(text, qcIdText(questId))
     qcSetMapTooltipLineIcon(leftText, icon, needs)
 end
 
@@ -305,7 +305,7 @@ local function qcAddPinQuestsToTooltip(pins)
         end
     end
     for _, questId in ipairs(noData) do
-        qcAddMapTooltipLine("    |cff808080" .. qcL.NOTINDATABASE .. "|r", qcQuestIdText(questId))
+        qcAddMapTooltipLine("    |cff808080" .. qcL.NOTINDATABASE .. "|r", qcIdText(questId))
     end
 
     for _, pinData in ipairs(pins) do
@@ -353,7 +353,7 @@ function qcPinMixin:OnMouseEnter()
             qcAddMapTooltipDivider()
         end
         local npcId = giver.pins[1][2]
-        qcAddMapTooltipLine(giver.name, npcId ~= 0 and string.format("|cff808080%d|r", npcId) or nil, GameTooltipHeaderText)
+        qcAddMapTooltipLine(giver.name, npcId ~= 0 and qcIdText(npcId) or nil, GameTooltipHeaderText)
         local subtitle = npcId ~= 0 and qcNpcSubtitles[npcId]
         if subtitle then
             qcAddMapTooltipLine("|cffc0c0c0" .. subtitle .. "|r", nil, GameTooltipTextSmall)
