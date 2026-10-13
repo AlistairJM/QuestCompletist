@@ -964,6 +964,13 @@ addon reads the table yet. Every sweep, with the newest cache of each game:
   Forever 176 (the game 14, CMaNGOS 161, one decision). The sources agreed wherever more than one answered,
   except 7838. A kind the game adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
   belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
+- Looked at on 13 October 2026 and not used, to be looked at again when a source changes: the quest cache's
+  `flags` and `flagsEx` (no bit marks PvP: retail's 0x4000 and 0x4000000 are 32% and 31% of the PvP quests and
+  0.2% and 1.4% of the rest, and are not PvP flags; Forever's 0x40, the raid size, is on 7 of its 15 PvP quests
+  and 2 others), `AreaTable.Flags` (0x10000 is on 198 areas, the battlegrounds and arenas among them, but also
+  Dustwallow Marsh and Kun-Lai Summit), and Wowhead, whose Quick Facts show "Type: PvP" for the quests the game
+  tags and nothing for the ones it doesn't (3 pages read; its pages can't be read in bulk). The Forever probe's
+  tags repeat the cache's, and the recorder and `recorded_quest_types.csv` hold no PvP data.
 - It also lists, and never changes, the quests in the places PvP happens that no source tags (retail 147: Ashran
   56, Tol Barad 68, Alterac Valley 15, Arathi Basin 3, Seething Shore 2; Forever 34: Alterac Valley 20, Arathi
   Basin 8, Warsong Gulch 6). Whether any of them gets the tag is the user's call, by a row in the decisions file,
