@@ -1360,8 +1360,8 @@
 {"id":1654,"name":"The Test of Righteousness","level":22,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2,"prereq":1653,"minLevel":20}
 {"id":1655,"name":"Bailor's Ore Shipment","level":22,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":0,"class":2,"minLevel":20}
 {"id":1656,"name":"A Task Unfinished","level":5,"zone":"Mulgore","category":215,"type":1,"faction":2,"race":0,"class":8191,"minLevel":1}
-{"id":1657,"name":"Stinking Up Southshore","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"minLevel":25}
-{"id":1658,"name":"Crashing the Wickerman Festival","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":16,"minLevel":25}
+{"id":1657,"name":"Stinking Up Southshore","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"pvp":1,"minLevel":25}
+{"id":1658,"name":"Crashing the Wickerman Festival","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":16,"pvp":1,"minLevel":25}
 {"id":1661,"name":"The Tome of Nobility","level":40,"zone":"Paladin","category":-141,"type":1,"faction":1,"race":5,"class":2}
 {"id":1665,"name":"Bartleby's Mug","level":10,"zone":"Warrior","category":-81,"type":1,"faction":1,"race":0,"class":1,"prereq":1640}
 {"id":1666,"name":"Marshal Haggard","level":10,"zone":"Warrior","category":-81,"type":1,"faction":1,"race":0,"class":1,"prereq":1665}
@@ -2599,8 +2599,8 @@
 {"id":5889,"name":"Salve via Gathering","level":55,"zone":"Felwood","category":361,"type":32,"faction":2,"race":0,"class":8191,"profession":256,"prereq":4102,"minLevel":48}
 {"id":5890,"name":"Salve via Skinning","level":55,"zone":"Felwood","category":361,"type":32,"faction":2,"race":0,"class":8191,"profession":1024,"prereq":4102,"minLevel":48}
 {"id":5891,"name":"Salve via Disenchanting","level":55,"zone":"Felwood","category":361,"type":32,"faction":2,"race":0,"class":8191,"profession":4,"prereq":4102,"minLevel":48}
-{"id":5892,"name":"Irondeep Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":5893,"name":"Coldtooth Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":5892,"name":"Irondeep Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":5893,"name":"Coldtooth Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":5901,"name":"A Plague Upon Thee","level":55,"zone":"Tirisfal Glades","category":85,"type":1,"faction":2,"race":0,"class":8191,"minLevel":48}
 {"id":5902,"name":"A Plague Upon Thee","level":55,"zone":"Tirisfal Glades","category":85,"type":1,"faction":2,"race":0,"class":8191,"prereq":5901,"minLevel":48}
 {"id":5903,"name":"A Plague Upon Thee","level":55,"zone":"Western Plaguelands","category":28,"type":1,"faction":1,"race":0,"class":8191,"minLevel":48}
@@ -2814,49 +2814,49 @@
 {"id":6741,"name":"More Booty!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"prereq":7224,"minLevel":51}
 {"id":6761,"name":"The New Frontier","level":55,"zone":"Darnassus","category":1657,"type":1,"faction":1,"race":0,"class":8191,"prereq":1015,"minLevel":54}
 {"id":6762,"name":"Rabine Saturna","level":55,"zone":"Darnassus","category":1657,"type":1,"faction":1,"race":0,"class":8191,"prereq":6761,"minLevel":54}
-{"id":6781,"name":"More Armor Scraps","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"prereq":7223,"minLevel":51}
-{"id":6801,"name":"Lokholar the Ice Lord","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":6781,"name":"More Armor Scraps","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":7223,"minLevel":51}
+{"id":6801,"name":"Lokholar the Ice Lord","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":6804,"name":"Poisoned Water","level":56,"zone":"Azshara","category":16,"type":1,"faction":3,"race":0,"class":8191,"minLevel":55}
 {"id":6805,"name":"Stormers and Rumblers","level":57,"zone":"Azshara","category":16,"type":1,"faction":3,"race":0,"class":8191,"minLevel":55}
 {"id":6821,"name":"Eye of the Emberseer","level":60,"zone":"Azshara","category":16,"type":1,"faction":3,"race":0,"class":8191,"prereq":[6804,6805],"minLevel":56}
 {"id":6822,"name":"The Molten Core","level":60,"zone":"Azshara","category":16,"type":1,"faction":3,"race":0,"class":8191,"prereq":6821,"minLevel":57}
 {"id":6823,"name":"Agent of Hydraxis","level":60,"zone":"Azshara","category":16,"type":1,"faction":3,"race":0,"class":8191,"prereq":6822}
 {"id":6824,"name":"Hands of the Enemy","level":60,"zone":"Azshara","category":16,"type":1,"faction":3,"race":0,"class":8191,"prereq":6823}
-{"id":6825,"name":"Call of Air - Guse's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":6826,"name":"Call of Air - Jeztor's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":6827,"name":"Call of Air - Mulverick's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":6825,"name":"Call of Air - Guse's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6826,"name":"Call of Air - Jeztor's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6827,"name":"Call of Air - Mulverick's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":6844,"name":"Umber, Archivist","level":57,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":1126,"minLevel":54}
 {"id":6845,"name":"Uncovering Past Secrets","level":57,"zone":"Moonglade","category":493,"type":1,"faction":3,"race":0,"class":8191,"prereq":6844,"minLevel":54}
 {"id":6846,"name":"Begin the Attack!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":1}
-{"id":6847,"name":"Master Ryson's All Seeing Eye","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":6848,"name":"Master Ryson's All Seeing Eye","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":6861,"name":"Zinfizzlex's Portable Shredder Unit","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":6862,"name":"Zinfizzlex's Portable Shredder Unit","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":6881,"name":"Ivus the Forest Lord","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
+{"id":6847,"name":"Master Ryson's All Seeing Eye","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6848,"name":"Master Ryson's All Seeing Eye","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6861,"name":"Zinfizzlex's Portable Shredder Unit","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6862,"name":"Zinfizzlex's Portable Shredder Unit","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6881,"name":"Ivus the Forest Lord","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":6901,"name":"Launch the Attack!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":1}
 {"id":6921,"name":"Amongst the Ruins","level":27,"zone":"Blackfathom Deeps","category":719,"type":1,"faction":2,"race":0,"class":8191,"minLevel":21}
 {"id":6922,"name":"Baron Aquanis","level":30,"zone":"Ashenvale","category":331,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":21}
-{"id":6941,"name":"Call of Air - Vipore's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":6942,"name":"Call of Air - Slidore's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":6943,"name":"Call of Air - Ichman's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
+{"id":6941,"name":"Call of Air - Vipore's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6942,"name":"Call of Air - Slidore's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":6943,"name":"Call of Air - Ichman's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":6961,"name":"Great-father Winter is Here!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8,"minLevel":10}
 {"id":6962,"name":"Treats for Great-father Winter","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8,"minLevel":10}
 {"id":6963,"name":"Stolen Winter Veil Treats","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8,"minLevel":30}
 {"id":6964,"name":"The Reason for the Season","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":8,"minLevel":10}
 {"id":6981,"name":"The Glowing Shard","level":26,"zone":"Wailing Caverns","category":718,"type":1,"faction":3,"race":0,"class":8191,"minLevel":15}
-{"id":6982,"name":"Coldtooth Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
+{"id":6982,"name":"Coldtooth Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":6983,"name":"You're a Mean One...","level":35,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":8,"prereq":6963,"minLevel":30}
 {"id":6984,"name":"A Smokywood Pastures Thank You!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":8,"prereq":6983,"minLevel":30}
-{"id":6985,"name":"Irondeep Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":6985,"name":"Irondeep Supplies","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":7001,"name":"Empty Stables","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7002,"name":"Ram Hide Harnesses","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":7002,"name":"Ram Hide Harnesses","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":7003,"name":"Zapped Giants","level":48,"zone":"Feralas","category":357,"type":1,"faction":3,"race":0,"class":8191,"minLevel":45}
 {"id":7021,"name":"Great-father Winter is Here!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8,"minLevel":10}
 {"id":7022,"name":"Greatfather Winter is Here!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":8,"minLevel":10}
 {"id":7023,"name":"Greatfather Winter is Here!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":8,"minLevel":10}
 {"id":7024,"name":"Great-father Winter is Here!","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":67109042,"class":8191,"holiday":8,"minLevel":10}
 {"id":7025,"name":"Treats for Greatfather Winter","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":67108941,"class":8191,"holiday":8,"minLevel":10}
-{"id":7026,"name":"Ram Riding Harnesses","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
+{"id":7026,"name":"Ram Riding Harnesses","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":7027,"name":"Empty Stables","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
 {"id":7028,"name":"Twisted Evils","level":47,"zone":"Maraudon","category":2100,"type":1,"faction":3,"race":0,"class":8191,"minLevel":41}
 {"id":7029,"name":"Vyletongue Corruption","level":47,"zone":"Maraudon","category":2100,"type":1,"faction":2,"race":0,"class":8191,"minLevel":41}
@@ -2875,16 +2875,16 @@
 {"id":7067,"name":"The Pariah's Instructions","level":48,"zone":"Maraudon","category":2100,"type":1,"faction":3,"race":0,"class":8191,"minLevel":39}
 {"id":7068,"name":"Shadowshard Fragments","level":42,"zone":"Maraudon","category":2100,"type":1,"faction":2,"race":0,"class":8191,"minLevel":38}
 {"id":7070,"name":"Shadowshard Fragments","level":42,"zone":"Maraudon","category":2100,"type":1,"faction":1,"race":0,"class":8191,"minLevel":38}
-{"id":7081,"name":"Alterac Valley Graveyards","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7082,"name":"The Graveyards of Alterac","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7101,"name":"Towers and Bunkers","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7102,"name":"Towers and Bunkers","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7121,"name":"The Quartermaster","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7122,"name":"Capture a Mine","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7123,"name":"Speak with our Quartermaster","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7124,"name":"Capture a Mine","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7141,"name":"The Battle of Alterac","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7142,"name":"The Battle for Alterac","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"minLevel":51}
+{"id":7081,"name":"Alterac Valley Graveyards","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7082,"name":"The Graveyards of Alterac","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7101,"name":"Towers and Bunkers","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7102,"name":"Towers and Bunkers","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7121,"name":"The Quartermaster","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7122,"name":"Capture a Mine","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7123,"name":"Speak with our Quartermaster","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7124,"name":"Capture a Mine","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7141,"name":"The Battle of Alterac","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7142,"name":"The Battle for Alterac","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":7161,"name":"Proving Grounds","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
 {"id":7162,"name":"Proving Grounds","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"minLevel":51}
 {"id":7163,"name":"Rise and Be Recognized","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"prereq":7161,"minLevel":51}
@@ -2900,42 +2900,42 @@
 {"id":7181,"name":"The Legend of Korrak","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
 {"id":7201,"name":"The Last Element","level":54,"zone":"Blackrock Depths","category":17803,"type":1,"faction":2,"race":0,"class":8191,"minLevel":48}
 {"id":7202,"name":"Korrak the Bloodrager","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7221,"name":"Speak with Prospector Stonehewer","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7222,"name":"Speak with Voggah Deathgrip","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7223,"name":"Armor Scraps","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7224,"name":"Enemy Booty","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7241,"name":"In Defense of Frostwolf","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7261,"name":"The Sovereign Imperative","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7281,"name":"Brotherly Love","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"minLevel":51}
-{"id":7282,"name":"Brotherly Love","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"minLevel":51}
-{"id":7301,"name":"Fallen Sky Lords","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7302,"name":"Fallen Sky Lords","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":7221,"name":"Speak with Prospector Stonehewer","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7222,"name":"Speak with Voggah Deathgrip","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7223,"name":"Armor Scraps","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7224,"name":"Enemy Booty","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7241,"name":"In Defense of Frostwolf","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7261,"name":"The Sovereign Imperative","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7281,"name":"Brotherly Love","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7282,"name":"Brotherly Love","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7301,"name":"Fallen Sky Lords","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7302,"name":"Fallen Sky Lords","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":7321,"name":"Soothing Turtle Bisque","level":31,"zone":"Cooking","category":-304,"type":32,"faction":2,"race":0,"class":8191,"profession":8192,"minLevel":28}
 {"id":7341,"name":"A Fair Trade","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"minLevel":52}
 {"id":7342,"name":"Arrows Are For Sissies","level":60,"zone":"Ironforge","category":1537,"type":2,"faction":1,"race":0,"class":8191,"minLevel":52}
-{"id":7361,"name":"Favor Amongst the Darkspear","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7362,"name":"Ally of the Tauren","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7363,"name":"The Human Condition","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7364,"name":"Gnomeregan Bounty","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7365,"name":"Staghelm's Requiem","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7366,"name":"The Archbishop's Mercy","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7367,"name":"Defusing the Threat","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7368,"name":"Defusing the Threat","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
+{"id":7361,"name":"Favor Amongst the Darkspear","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7362,"name":"Ally of the Tauren","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7363,"name":"The Human Condition","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7364,"name":"Gnomeregan Bounty","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7365,"name":"Staghelm's Requiem","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7366,"name":"The Archbishop's Mercy","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7367,"name":"Defusing the Threat","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7368,"name":"Defusing the Threat","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":7381,"name":"The Return of Korrak","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
 {"id":7382,"name":"Korrak the Everliving","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
 {"id":7383,"name":"Crown of the Earth","level":11,"zone":"Teldrassil","category":141,"type":1,"faction":1,"race":0,"class":8191,"prereq":933,"minLevel":1}
-{"id":7385,"name":"A Gallon of Blood","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7386,"name":"Crystal Cluster","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":7401,"name":"Wanted: DWARVES!","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":7402,"name":"Wanted: ORCS!","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"minLevel":51}
-{"id":7421,"name":"Darkspear Defense","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":55}
-{"id":7422,"name":"Tuft it Out","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":55}
-{"id":7423,"name":"I've Got A Fever For More Bone Chips","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":55}
-{"id":7424,"name":"What the Hoof?","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":55}
-{"id":7425,"name":"Staghelm's Mojo Jamboree","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":55}
-{"id":7426,"name":"One Man's Love","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":3,"race":0,"class":8191,"minLevel":55}
-{"id":7427,"name":"Wanted: MORE DWARVES!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":3,"race":0,"class":8191,"prereq":7401,"minLevel":55}
-{"id":7428,"name":"Wanted: MORE ORCS!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":3,"race":0,"class":8191,"prereq":7402,"minLevel":55}
+{"id":7385,"name":"A Gallon of Blood","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7386,"name":"Crystal Cluster","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7401,"name":"Wanted: DWARVES!","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7402,"name":"Wanted: ORCS!","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":7421,"name":"Darkspear Defense","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":7422,"name":"Tuft it Out","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":7423,"name":"I've Got A Fever For More Bone Chips","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":7424,"name":"What the Hoof?","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":7425,"name":"Staghelm's Mojo Jamboree","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":7426,"name":"One Man's Love","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":7427,"name":"Wanted: MORE DWARVES!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":3,"race":0,"class":8191,"pvp":1,"prereq":7401,"minLevel":55}
+{"id":7428,"name":"Wanted: MORE ORCS!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":3,"race":0,"class":8191,"pvp":1,"prereq":7402,"minLevel":55}
 {"id":7429,"name":"Free Knot!","level":60,"zone":"Dire Maul","category":2557,"type":2,"faction":3,"race":0,"class":8191,"prereq":5525,"minLevel":57}
 {"id":7441,"name":"Pusillin and the Elder Azj'Tordin","level":58,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191,"minLevel":54}
 {"id":7461,"name":"The Madness Within","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":3,"race":0,"class":8191,"minLevel":56}
@@ -3050,8 +3050,8 @@
 {"id":7785,"name":"Examine the Vessel","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
 {"id":7786,"name":"Thunderaan the Windseeker","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":7785}
 {"id":7787,"name":"Rise, Thunderfury!","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":7786}
-{"id":7788,"name":"Vanquish the Invaders!","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"minLevel":20}
-{"id":7789,"name":"Quell the Silverwing Usurpers","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"minLevel":20}
+{"id":7788,"name":"Vanquish the Invaders!","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":7789,"name":"Quell the Silverwing Usurpers","level":25,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":20}
 {"id":7791,"name":"A Donation of Wool","level":60,"zone":"Stormwind City","category":1519,"type":1,"faction":1,"race":0,"class":8191,"minLevel":12}
 {"id":7792,"name":"A Donation of Wool","level":60,"zone":"Darnassus","category":1657,"type":1,"faction":1,"race":0,"class":8191,"minLevel":12}
 {"id":7793,"name":"A Donation of Silk","level":60,"zone":"Stormwind City","category":1519,"type":1,"faction":1,"race":0,"class":8191,"minLevel":26}
@@ -3098,12 +3098,12 @@
 {"id":7835,"name":"A Donation of Mageweave","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"minLevel":40}
 {"id":7836,"name":"A Donation of Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"prereq":[7833,7834,7835],"minLevel":50}
 {"id":7837,"name":"Additional Runecloth","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"prereq":7836,"minLevel":50}
-{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191,"prereq":7810,"minLevel":0}
+{"id":7838,"name":"Arena Grandmaster","level":55,"zone":"Stranglethorn Vale","category":33,"type":2,"faction":3,"race":0,"class":8191,"pvp":1,"prereq":7810,"minLevel":0}
 {"id":7839,"name":"Vilebranch Hooligans","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"minLevel":44}
 {"id":7840,"name":"Lard Lost His Lunch","level":49,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"minLevel":44}
-{"id":7841,"name":"Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"minLevel":44}
-{"id":7842,"name":"Another Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"prereq":7841,"minLevel":44}
-{"id":7843,"name":"The Final Message to the Wildhammer","level":50,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"prereq":7842,"minLevel":44}
+{"id":7841,"name":"Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":44}
+{"id":7842,"name":"Another Message to the Wildhammer","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":7841,"minLevel":44}
+{"id":7843,"name":"The Final Message to the Wildhammer","level":50,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":7842,"minLevel":44}
 {"id":7844,"name":"Cannibalistic Cousins","level":48,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"minLevel":44}
 {"id":7845,"name":"Kidnapped Elder Torntusk!","level":51,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"minLevel":46}
 {"id":7846,"name":"Recover the Key!","level":51,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"prereq":7845,"minLevel":46}
@@ -3119,20 +3119,20 @@
 {"id":7866,"name":"Outrider Basic Care Package","level":34,"zone":"Ashenvale","category":331,"type":1,"faction":2,"race":0,"class":8191,"minLevel":25}
 {"id":7867,"name":"Outrider Standard Care Package","level":44,"zone":"Ashenvale","category":331,"type":1,"faction":2,"race":0,"class":8191,"minLevel":35}
 {"id":7868,"name":"Outrider Advanced Care Package","level":60,"zone":"Ashenvale","category":331,"type":1,"faction":2,"race":0,"class":8191,"minLevel":45}
-{"id":7871,"name":"Vanquish the Invaders!","level":35,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"minLevel":30}
-{"id":7872,"name":"Vanquish the Invaders!","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"minLevel":40}
-{"id":7873,"name":"Vanquish the Invaders!","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"minLevel":50}
-{"id":7874,"name":"Quell the Silverwing Usurpers","level":35,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"minLevel":30}
-{"id":7875,"name":"Quell the Silverwing Usurpers","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"minLevel":40}
-{"id":7876,"name":"Quell the Silverwing Usurpers","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"minLevel":50}
+{"id":7871,"name":"Vanquish the Invaders!","level":35,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":7872,"name":"Vanquish the Invaders!","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":7873,"name":"Vanquish the Invaders!","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":7874,"name":"Quell the Silverwing Usurpers","level":35,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":7875,"name":"Quell the Silverwing Usurpers","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":7876,"name":"Quell the Silverwing Usurpers","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":50}
 {"id":7877,"name":"The Treasure of the Shen'dralar","level":60,"zone":"Dire Maul","category":2557,"type":1,"faction":2,"race":0,"class":8191,"prereq":7461,"minLevel":56}
 {"id":7881,"name":"Carnival Boots","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":1}
 {"id":7882,"name":"Carnival Jerkins","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":10}
 {"id":7883,"name":"The World's Largest Gnome!","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":20}
 {"id":7884,"name":"Crocolisk Boy and the Bearded Murloc","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":30}
 {"id":7885,"name":"Armor Kits","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":40}
-{"id":7886,"name":"Talismans of Merit","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7873,"minLevel":50}
-{"id":7888,"name":"Talismans of Merit","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":7872,"minLevel":40}
+{"id":7886,"name":"Talismans of Merit","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":7873,"minLevel":50}
+{"id":7888,"name":"Talismans of Merit","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":7872,"minLevel":40}
 {"id":7889,"name":"Coarse Weightstone","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":1}
 {"id":7890,"name":"Heavy Grinding Stone","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":10}
 {"id":7891,"name":"Green Iron Bracers","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":20}
@@ -3151,8 +3151,8 @@
 {"id":7905,"name":"The Darkmoon Faire","level":60,"zone":"Ironforge","category":1537,"type":64,"faction":1,"race":0,"class":8191,"holiday":8192,"minLevel":6}
 {"id":7907,"name":"Darkmoon Beast Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":1}
 {"id":7908,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":1}
-{"id":7922,"name":"Mark of Honor","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7876,"minLevel":50}
-{"id":7923,"name":"Mark of Honor","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7875,"minLevel":40}
+{"id":7922,"name":"Mark of Honor","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":7876,"minLevel":50}
+{"id":7923,"name":"Mark of Honor","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":7875,"minLevel":40}
 {"id":7926,"name":"The Darkmoon Faire","level":60,"zone":"Orgrimmar","category":1637,"type":64,"faction":2,"race":0,"class":8191,"holiday":8192,"minLevel":6}
 {"id":7927,"name":"Darkmoon Portals Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":1}
 {"id":7928,"name":"Darkmoon Warlords Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":1}
@@ -3216,13 +3216,13 @@
 {"id":8077,"name":"Paragons of Power: The Demoniac's Robes","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":256}
 {"id":8078,"name":"Paragons of Power: The Vindicator's Belt","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1}
 {"id":8079,"name":"Paragons of Power: The Vindicator's Breastplate","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1}
-{"id":8080,"name":"Arathi Basin Resources!","level":55,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":50}
-{"id":8081,"name":"More Resource Crates","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8080,"minLevel":50}
+{"id":8080,"name":"Arathi Basin Resources!","level":55,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8081,"name":"More Resource Crates","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8080,"minLevel":50}
 {"id":8101,"name":"The Pebble of Kajaro","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":128}
 {"id":8102,"name":"The Pebble of Kajaro","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":128,"prereq":8101}
 {"id":8103,"name":"The Pebble of Kajaro","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":128,"prereq":8102}
 {"id":8104,"name":"The Jewel of Kajaro","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":128,"prereq":8103}
-{"id":8105,"name":"The Battle for Arathi Basin!","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"minLevel":50}
+{"id":8105,"name":"The Battle for Arathi Basin!","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":50}
 {"id":8106,"name":"Kezan's Taint","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":256}
 {"id":8107,"name":"Kezan's Taint","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":256,"prereq":8106}
 {"id":8108,"name":"Kezan's Taint","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":256,"prereq":8107}
@@ -3231,17 +3231,17 @@
 {"id":8111,"name":"Enchanted South Seas Kelp","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1024,"prereq":8110}
 {"id":8112,"name":"Enchanted South Seas Kelp","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1024,"prereq":8111}
 {"id":8113,"name":"Pristine Enchanted South Seas Kelp","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":1024,"prereq":8112}
-{"id":8114,"name":"Control Four Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8115,"name":"Control Five Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
+{"id":8114,"name":"Control Four Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1}
+{"id":8115,"name":"Control Five Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1}
 {"id":8116,"name":"Vision of Voodress","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":2,"race":0,"class":64}
 {"id":8117,"name":"Vision of Voodress","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":2,"race":0,"class":64,"prereq":8116}
 {"id":8118,"name":"Vision of Voodress","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":2,"race":0,"class":64,"prereq":8117}
 {"id":8119,"name":"The Unmarred Vision of Voodress","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":2,"race":0,"class":64,"prereq":8118}
-{"id":8120,"name":"The Battle for Arathi Basin!","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"minLevel":50}
-{"id":8121,"name":"Take Four Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8122,"name":"Take Five Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8123,"name":"Cut Arathor Supply Lines","level":55,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":50}
-{"id":8124,"name":"More Resource Crates","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8123,"minLevel":50}
+{"id":8120,"name":"The Battle for Arathi Basin!","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8121,"name":"Take Four Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1}
+{"id":8122,"name":"Take Five Bases","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1}
+{"id":8123,"name":"Cut Arathor Supply Lines","level":55,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8124,"name":"More Resource Crates","level":55,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8123,"minLevel":50}
 {"id":8141,"name":"Zandalarian Shadow Talisman","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8}
 {"id":8142,"name":"Zandalarian Shadow Talisman","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8,"prereq":8141}
 {"id":8143,"name":"Zandalarian Shadow Talisman","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8,"prereq":8142}
@@ -3254,20 +3254,20 @@
 {"id":8150,"name":"Honoring a Hero","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":3,"race":0,"class":8191,"holiday":32,"minLevel":30}
 {"id":8151,"name":"The Hunter's Charm","level":52,"zone":"Hunter","category":-261,"type":1,"faction":3,"race":0,"class":4,"minLevel":50}
 {"id":8153,"name":"Courser Antlers","level":52,"zone":"Hunter","category":-261,"type":1,"faction":3,"race":0,"class":4,"prereq":8151,"minLevel":50}
-{"id":8154,"name":"Arathi Basin Resources!","level":45,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":40}
-{"id":8155,"name":"Arathi Basin Resources!","level":25,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":20}
-{"id":8156,"name":"Arathi Basin Resources!","level":35,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":30}
-{"id":8157,"name":"More Resource Crates","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8154,"minLevel":40}
-{"id":8160,"name":"Cut Arathor Supply Lines","level":45,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":40}
-{"id":8161,"name":"Cut Arathor Supply Lines","level":35,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":30}
-{"id":8162,"name":"Cut Arathor Supply Lines","level":25,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":20}
-{"id":8163,"name":"More Resource Crates","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8160,"minLevel":40}
-{"id":8166,"name":"The Battle for Arathi Basin!","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"minLevel":40}
-{"id":8167,"name":"The Battle for Arathi Basin!","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"minLevel":30}
-{"id":8168,"name":"The Battle for Arathi Basin!","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"minLevel":20}
-{"id":8169,"name":"The Battle for Arathi Basin!","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"minLevel":40}
-{"id":8170,"name":"The Battle for Arathi Basin!","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"minLevel":30}
-{"id":8171,"name":"The Battle for Arathi Basin!","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"minLevel":20}
+{"id":8154,"name":"Arathi Basin Resources!","level":45,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8155,"name":"Arathi Basin Resources!","level":25,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8156,"name":"Arathi Basin Resources!","level":35,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8157,"name":"More Resource Crates","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8154,"minLevel":40}
+{"id":8160,"name":"Cut Arathor Supply Lines","level":45,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8161,"name":"Cut Arathor Supply Lines","level":35,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8162,"name":"Cut Arathor Supply Lines","level":25,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8163,"name":"More Resource Crates","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8160,"minLevel":40}
+{"id":8166,"name":"The Battle for Arathi Basin!","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8167,"name":"The Battle for Arathi Basin!","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8168,"name":"The Battle for Arathi Basin!","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8169,"name":"The Battle for Arathi Basin!","level":45,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8170,"name":"The Battle for Arathi Basin!","level":35,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8171,"name":"The Battle for Arathi Basin!","level":25,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":20}
 {"id":8181,"name":"Confront Yeh'kinya","level":58,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8191,"prereq":4788,"minLevel":40}
 {"id":8182,"name":"The Hand of Rastakhan","level":58,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"prereq":8181,"minLevel":40}
 {"id":8183,"name":"The Heart of Hakkar","level":60,"zone":"Zul'Gurub","category":1977,"type":1,"faction":3,"race":0,"class":8191,"minLevel":58}
@@ -3324,8 +3324,8 @@
 {"id":8265,"name":"Defiler's Advanced Care Package","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":45}
 {"id":8266,"name":"Ribbons of Sacrifice","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"minLevel":10}
 {"id":8268,"name":"Ribbons of Sacrifice","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"minLevel":10}
-{"id":8271,"name":"Hero of the Stormpike","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"prereq":7141,"minLevel":51}
-{"id":8272,"name":"Hero of the Frostwolf","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"prereq":7142,"minLevel":51}
+{"id":8271,"name":"Hero of the Stormpike","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"prereq":7141,"minLevel":51}
+{"id":8272,"name":"Hero of the Frostwolf","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"prereq":7142,"minLevel":51}
 {"id":8273,"name":"Oran's Gratitude","level":47,"zone":"The Hinterlands","category":47,"type":1,"faction":2,"race":0,"class":8191,"prereq":2782,"minLevel":42}
 {"id":8275,"name":"Taking Back Silithus","level":55,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"minLevel":54}
 {"id":8276,"name":"Taking Back Silithus","level":55,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"minLevel":54}
@@ -3342,15 +3342,15 @@
 {"id":8287,"name":"A Terrible Purpose","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8279,"minLevel":54}
 {"id":8288,"name":"Only One May Rise","level":60,"zone":"Blackwing Lair","category":2677,"type":1,"faction":3,"race":0,"class":8191,"prereq":8286}
 {"id":8290,"name":"Vanquish the Invaders","level":15,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":10}
-{"id":8291,"name":"Vanquish the Invaders!","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191}
-{"id":8292,"name":"Talismans of Merit","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8291}
-{"id":8293,"name":"Mark of Honor","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8294}
-{"id":8294,"name":"Quell the Silverwing Usurpers","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191}
+{"id":8291,"name":"Vanquish the Invaders!","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1}
+{"id":8292,"name":"Talismans of Merit","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8291}
+{"id":8293,"name":"Mark of Honor","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8294}
+{"id":8294,"name":"Quell the Silverwing Usurpers","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1}
 {"id":8295,"name":"Quell the Silverwing Usurpers","level":15,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":10}
-{"id":8297,"name":"Arathi Basin Resources!","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8298,"name":"More Resource Crates","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8297}
-{"id":8299,"name":"Cut Arathor Supply Lines","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8300,"name":"More Resource Crates","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8299}
+{"id":8297,"name":"Arathi Basin Resources!","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1}
+{"id":8298,"name":"More Resource Crates","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8297}
+{"id":8299,"name":"Cut Arathor Supply Lines","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1}
+{"id":8300,"name":"More Resource Crates","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8299}
 {"id":8301,"name":"The Path of the Righteous","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8288}
 {"id":8302,"name":"The Hand of the Righteous","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8301}
 {"id":8303,"name":"Anachronos","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8301}
@@ -3372,7 +3372,7 @@
 {"id":8319,"name":"Encrypted Twilight Texts","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8318,"minLevel":57}
 {"id":8320,"name":"Twilight Geolords","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8321,"name":"Vyral the Vile","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8320}
-{"id":8322,"name":"Rotten Eggs","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"minLevel":30}
+{"id":8322,"name":"Rotten Eggs","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"pvp":1,"minLevel":30}
 {"id":8323,"name":"True Believers","level":59,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8279,"minLevel":54}
 {"id":8324,"name":"Still Believing","level":59,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8323,"minLevel":54}
 {"id":8331,"name":"Aurel Goldleaf","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
@@ -3391,15 +3391,15 @@
 {"id":8364,"name":"Abyssal Scepters","level":60,"zone":"Silithus","category":1377,"type":2,"faction":3,"race":0,"class":8191,"prereq":8352}
 {"id":8365,"name":"Pirate Hats Ahoy!","level":45,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"minLevel":40}
 {"id":8366,"name":"Southsea Shakedown","level":45,"zone":"Tanaris","category":440,"type":1,"faction":3,"race":0,"class":8191,"minLevel":40}
-{"id":8367,"name":"For Great Honor","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":8368,"name":"Battle of Warsong Gulch","level":19,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"minLevel":10}
-{"id":8369,"name":"Invaders of Alterac Valley","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"minLevel":51}
-{"id":8370,"name":"Conquering Arathi Basin","level":29,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":20}
-{"id":8371,"name":"Concerted Efforts","level":60,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":8372,"name":"Fight for Warsong Gulch","level":19,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"minLevel":10}
-{"id":8373,"name":"The Power of Pine","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":16,"minLevel":25}
-{"id":8374,"name":"Claiming Arathi Basin","level":29,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":20}
-{"id":8375,"name":"Remember Alterac Valley!","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"minLevel":51}
+{"id":8367,"name":"For Great Honor","level":60,"zone":"Orgrimmar","category":1637,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":8368,"name":"Battle of Warsong Gulch","level":19,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":10}
+{"id":8369,"name":"Invaders of Alterac Valley","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":8370,"name":"Conquering Arathi Basin","level":29,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8371,"name":"Concerted Efforts","level":60,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
+{"id":8372,"name":"Fight for Warsong Gulch","level":19,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":10}
+{"id":8373,"name":"The Power of Pine","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":1,"race":0,"class":8191,"holiday":16,"pvp":1,"minLevel":25}
+{"id":8374,"name":"Claiming Arathi Basin","level":29,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8375,"name":"Remember Alterac Valley!","level":60,"zone":"Alterac Valley","category":2597,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":51}
 {"id":8376,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":1,"race":0,"class":2,"prereq":8315,"minLevel":58}
 {"id":8377,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":4,"prereq":8315,"minLevel":58}
 {"id":8378,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8,"prereq":8315,"minLevel":58}
@@ -3407,28 +3407,28 @@
 {"id":8380,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":2,"race":0,"class":64,"prereq":8315,"minLevel":58}
 {"id":8381,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":384,"prereq":8315,"minLevel":58}
 {"id":8382,"name":"Armaments of War","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":1024,"prereq":8315,"minLevel":58}
-{"id":8383,"name":"Remember Alterac Valley!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"prereq":8375,"minLevel":51}
-{"id":8385,"name":"Concerted Efforts","level":60,"zone":"Ironforge","category":1537,"type":2,"faction":1,"race":0,"class":8191,"prereq":8371,"minLevel":51}
-{"id":8387,"name":"Invaders of Alterac Valley","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"prereq":8369,"minLevel":51}
-{"id":8388,"name":"For Great Honor","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"prereq":8367,"minLevel":51}
-{"id":8391,"name":"Claiming Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8393,"minLevel":30}
-{"id":8392,"name":"Claiming Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8394,"minLevel":40}
-{"id":8393,"name":"Claiming Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":30}
-{"id":8394,"name":"Claiming Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":40}
-{"id":8395,"name":"Claiming Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"minLevel":50}
-{"id":8396,"name":"Claiming Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8397,"name":"Claiming Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8395,"minLevel":50}
-{"id":8398,"name":"Claiming Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8396}
-{"id":8399,"name":"Fight for Warsong Gulch","level":29,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"minLevel":20}
-{"id":8400,"name":"Fight for Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"minLevel":30}
-{"id":8401,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"minLevel":40}
-{"id":8402,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"minLevel":50}
-{"id":8403,"name":"Fight for Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191}
-{"id":8405,"name":"Fight for Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8400,"minLevel":30}
-{"id":8406,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8401,"minLevel":40}
-{"id":8407,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8402,"minLevel":50}
-{"id":8408,"name":"Fight for Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8403}
-{"id":8409,"name":"Ruined Kegs","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"prereq":8322,"minLevel":25}
+{"id":8383,"name":"Remember Alterac Valley!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8375,"minLevel":51}
+{"id":8385,"name":"Concerted Efforts","level":60,"zone":"Ironforge","category":1537,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8371,"minLevel":51}
+{"id":8387,"name":"Invaders of Alterac Valley","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8369,"minLevel":51}
+{"id":8388,"name":"For Great Honor","level":60,"zone":"Orgrimmar","category":1637,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8367,"minLevel":51}
+{"id":8391,"name":"Claiming Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8393,"minLevel":30}
+{"id":8392,"name":"Claiming Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8394,"minLevel":40}
+{"id":8393,"name":"Claiming Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8394,"name":"Claiming Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8395,"name":"Claiming Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8396,"name":"Claiming Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191,"pvp":1}
+{"id":8397,"name":"Claiming Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8395,"minLevel":50}
+{"id":8398,"name":"Claiming Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8396}
+{"id":8399,"name":"Fight for Warsong Gulch","level":29,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8400,"name":"Fight for Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8401,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8402,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8403,"name":"Fight for Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":1,"race":0,"class":8191,"pvp":1}
+{"id":8405,"name":"Fight for Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8400,"minLevel":30}
+{"id":8406,"name":"Fight for Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8401,"minLevel":40}
+{"id":8407,"name":"Fight for Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8402,"minLevel":50}
+{"id":8408,"name":"Fight for Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":8403}
+{"id":8409,"name":"Ruined Kegs","level":60,"zone":"Seasonal","category":-22,"type":64,"faction":2,"race":0,"class":8191,"holiday":16,"pvp":1,"prereq":8322,"minLevel":25}
 {"id":8410,"name":"Elemental Mastery","level":50,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64}
 {"id":8411,"name":"Mastering the Elements","level":50,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64}
 {"id":8412,"name":"Spirit Totem","level":52,"zone":"Shaman","category":-82,"type":1,"faction":2,"race":0,"class":64,"prereq":8410,"minLevel":50}
@@ -3445,23 +3445,23 @@
 {"id":8423,"name":"Warrior Kinship","level":52,"zone":"Warrior","category":-81,"type":1,"faction":3,"race":0,"class":1,"minLevel":50}
 {"id":8424,"name":"War on the Shadowsworn","level":52,"zone":"Warrior","category":-81,"type":1,"faction":3,"race":0,"class":1,"prereq":8423,"minLevel":50}
 {"id":8425,"name":"Voodoo Feathers","level":52,"zone":"Warrior","category":-81,"type":1,"faction":3,"race":0,"class":1,"prereq":8424,"minLevel":50}
-{"id":8426,"name":"Battle of Warsong Gulch","level":29,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"minLevel":20}
-{"id":8427,"name":"Battle of Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"minLevel":30}
-{"id":8428,"name":"Battle of Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"minLevel":40}
-{"id":8429,"name":"Battle of Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"minLevel":50}
-{"id":8430,"name":"Battle of Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8432,"name":"Battle of Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8427,"minLevel":30}
-{"id":8433,"name":"Battle of Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8428,"minLevel":40}
-{"id":8434,"name":"Battle of Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8429,"minLevel":50}
-{"id":8435,"name":"Battle of Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8430}
-{"id":8436,"name":"Conquering Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":30}
-{"id":8437,"name":"Conquering Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":40}
-{"id":8438,"name":"Conquering Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"minLevel":50}
-{"id":8439,"name":"Conquering Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
-{"id":8440,"name":"Conquering Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8436,"minLevel":30}
-{"id":8441,"name":"Conquering Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8437,"minLevel":40}
-{"id":8442,"name":"Conquering Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8438,"minLevel":50}
-{"id":8443,"name":"Conquering Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"prereq":8439}
+{"id":8426,"name":"Battle of Warsong Gulch","level":29,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":20}
+{"id":8427,"name":"Battle of Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8428,"name":"Battle of Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8429,"name":"Battle of Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8430,"name":"Battle of Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":1,"faction":2,"race":0,"class":8191,"pvp":1}
+{"id":8432,"name":"Battle of Warsong Gulch","level":39,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8427,"minLevel":30}
+{"id":8433,"name":"Battle of Warsong Gulch","level":49,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8428,"minLevel":40}
+{"id":8434,"name":"Battle of Warsong Gulch","level":59,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8429,"minLevel":50}
+{"id":8435,"name":"Battle of Warsong Gulch","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8430}
+{"id":8436,"name":"Conquering Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":8437,"name":"Conquering Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":8438,"name":"Conquering Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":8439,"name":"Conquering Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191,"pvp":1}
+{"id":8440,"name":"Conquering Arathi Basin","level":39,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8436,"minLevel":30}
+{"id":8441,"name":"Conquering Arathi Basin","level":49,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8437,"minLevel":40}
+{"id":8442,"name":"Conquering Arathi Basin","level":59,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8438,"minLevel":50}
+{"id":8443,"name":"Conquering Arathi Basin","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":8439}
 {"id":8446,"name":"Shrouded in Nightmare","level":60,"zone":"Moonglade","category":493,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8447,"name":"Waking Legends","level":60,"zone":"Moonglade","category":493,"type":1,"faction":3,"race":0,"class":8191,"prereq":8446}
 {"id":8460,"name":"Timbermaw Ally","level":48,"zone":"Felwood","category":361,"type":1,"faction":3,"race":0,"class":8191,"minLevel":45}
@@ -4111,8 +4111,8 @@
 {"id":9416,"name":"Report to General Kirika","level":60,"zone":"Silithus","category":1377,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":1}
 {"id":9419,"name":"Scouring the Desert","level":60,"zone":"Silithus","category":1377,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":9415,"minLevel":1}
 {"id":9422,"name":"Scouring the Desert","level":60,"zone":"Silithus","category":1377,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":9416,"minLevel":1}
-{"id":9664,"name":"Establishing New Outposts","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":1,"race":0,"class":8191,"minLevel":55}
-{"id":9665,"name":"Bolstering Our Defenses","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191,"minLevel":55}
+{"id":9664,"name":"Establishing New Outposts","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":55}
+{"id":9665,"name":"Bolstering Our Defenses","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":55}
 {"id":65593,"name":"Hearts of the Lovers","level":20,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256}
 {"id":65597,"name":"The Binding","level":20,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256,"prereq":65593}
 {"id":65601,"name":"Love Hurts","level":20,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256}

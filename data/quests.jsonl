@@ -13529,8 +13529,8 @@
 {"id":37469,"name":"The Tidestone: Shattered","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5749}
 {"id":37470,"name":"The Head of the Snake","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5749}
 {"id":37474,"name":"Basics First","level":1,"zone":"Battle Pets","category":19,"type":1,"faction":3,"race":67108863,"class":0}
-{"id":37481,"name":"Bonus Objective: Kill Horde Leaders","level":40,"zone":"Ashran","category":280,"type":1,"faction":1,"race":67108863,"class":8191}
-{"id":37482,"name":"Bonus Objective: Kill Horde Leaders","level":40,"zone":"Ashran","category":280,"type":1,"faction":1,"race":67108863,"class":8191}
+{"id":37481,"name":"Bonus Objective: Kill Horde Leaders","level":40,"zone":"Ashran","category":280,"type":1,"faction":1,"race":67108863,"class":8191,"pvp":1}
+{"id":37482,"name":"Bonus Objective: Kill Horde Leaders","level":40,"zone":"Ashran","category":280,"type":1,"faction":1,"race":67108863,"class":8191,"pvp":1}
 {"id":37483,"name":"Captian's Whistle","level":40,"zone":"Ashran","category":280,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":37486,"name":"Nar'thalas Still Suffers","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5749}
 {"id":37492,"name":"A Rather Long Walk","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5753}
@@ -17480,7 +17480,7 @@
 {"id":45654,"name":"Ahn'Qiraj: C'thun","level":15,"zone":"Ahn'Qiraj","category":3,"type":128,"faction":2,"race":61658034,"class":8191,"minLevel":1}
 {"id":45655,"name":"The Colossus of Ashi","level":15,"zone":"Silithus","category":186,"type":4,"faction":2,"race":61658034,"class":8191,"minLevel":1}
 {"id":45656,"name":"Lesser Wind Stones","level":15,"zone":"Silithus","category":186,"type":4,"faction":2,"race":61658034,"class":8191,"minLevel":1}
-{"id":45657,"name":"Silithyst","level":15,"zone":"Silithus","category":186,"type":4,"faction":2,"race":61658034,"class":8191,"minLevel":1}
+{"id":45657,"name":"Silithyst","level":15,"zone":"Silithus","category":186,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1,"minLevel":1}
 {"id":45674,"name":"The Colossus of Regal","level":15,"zone":"Silithus","category":186,"type":4,"faction":2,"race":61658034,"class":8191,"minLevel":1}
 {"id":45675,"name":"The Colossus of Zora","level":15,"zone":"Silithus","category":186,"type":4,"faction":2,"race":61658034,"class":8191,"minLevel":1}
 {"id":45706,"name":"The Power of Thousands","level":45,"zone":"Shaman Campaign","category":1014,"type":1,"faction":3,"race":67108863,"class":64,"storyline":5866}
@@ -17500,7 +17500,7 @@
 {"id":45737,"name":"Ahn'Qiraj: C'thun","level":15,"zone":"Ahn'Qiraj","category":3,"type":128,"faction":1,"race":64175181,"class":8191,"minLevel":1}
 {"id":45738,"name":"The Colossus of Ashi","level":15,"zone":"Silithus","category":186,"type":4,"faction":1,"race":64175181,"class":8191,"minLevel":1}
 {"id":45739,"name":"Lesser Wind Stones","level":15,"zone":"Silithus","category":186,"type":4,"faction":1,"race":64175181,"class":8191,"minLevel":1}
-{"id":45740,"name":"Silithyst","level":15,"zone":"Silithus","category":186,"type":4,"faction":1,"race":64175181,"class":8191,"minLevel":1}
+{"id":45740,"name":"Silithyst","level":15,"zone":"Silithus","category":186,"type":4,"faction":1,"race":64175181,"class":8191,"pvp":1,"minLevel":1}
 {"id":45741,"name":"The Colossus of Regal","level":15,"zone":"Silithus","category":186,"type":4,"faction":1,"race":64175181,"class":8191,"minLevel":1}
 {"id":45742,"name":"The Colossus of Zora","level":15,"zone":"Silithus","category":186,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":1}
 {"id":45743,"name":"Judgement of Odyn","level":45,"zone":"Broken Shore","category":1002,"type":128,"faction":3,"race":67108863,"class":1,"prereq":46734}
@@ -20862,10 +20862,10 @@
 {"id":52778,"name":"Siege of Boralus: Crushing the Horde","level":50,"zone":"Siege of Boralus","category":1105,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":52779,"name":"Crawg in the Bog","level":50,"zone":"Nasmir","category":1080,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":52780,"name":"Siege of Boralus: Breaking the Alliance","level":50,"zone":"Siege of Boralus","category":1105,"type":4,"faction":2,"race":61658034,"class":8191}
-{"id":52782,"name":"Call to Arms: Stormsong Valley","level":50,"zone":"Stormsong Valley","category":1095,"type":4,"faction":1,"race":64175181,"class":8191}
+{"id":52782,"name":"Call to Arms: Stormsong Valley","level":50,"zone":"Stormsong Valley","category":1095,"type":4,"faction":1,"race":64175181,"class":8191,"pvp":1}
 {"id":52784,"name":"The Horde Slayer","level":10,"zone":"World Pvp","category":1095,"type":1,"faction":1,"race":64175181,"class":8191,"pvp":1}
 {"id":52785,"name":"Smashing Zalamar","level":50,"zone":"Nazmir","category":1080,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":52786,"name":"The Alliance Slayer","level":10,"zone":"World Pvp","category":1095,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":52786,"name":"The Alliance Slayer","level":10,"zone":"World Pvp","category":1095,"type":1,"faction":2,"race":61658034,"class":8191,"pvp":1}
 {"id":52787,"name":"Numbing the Pain","level":10,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5372}
 {"id":52788,"name":"Leave None Alive","level":50,"zone":"Alliance War Campaign","category":1090,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":737}
 {"id":52789,"name":"Silencing the Advisor","level":50,"zone":"Alliance War Campaign","category":1090,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":737}
@@ -20941,14 +20941,14 @@
 {"id":52947,"name":"Ettin Outta Here","level":50,"zone":"Stormsong Valley","category":1061,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":52948,"name":"Call to Arms: Tiragarde Sound","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":1,"race":64175181,"class":8191,"pvp":1}
 {"id":52949,"name":"Call to Arms: Nazmir","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":1,"race":64175181,"class":8191,"pvp":1}
-{"id":52950,"name":"Call to Arms: Vol'dun","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":1,"race":64175181,"class":8191}
+{"id":52950,"name":"Call to Arms: Vol'dun","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":1,"race":64175181,"class":8191,"pvp":1}
 {"id":52951,"name":"Call to Arms: Zuldazar","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":1,"race":64175181,"class":8191,"pvp":1}
 {"id":52952,"name":"Call to Arms: Zuldazar","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1}
-{"id":52953,"name":"Call to Arms: Vol'dun","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191}
+{"id":52953,"name":"Call to Arms: Vol'dun","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1}
 {"id":52954,"name":"Call to Arms: Nazmir","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1}
 {"id":52955,"name":"Tyranny of the Light","level":50,"zone":"Bfa Unknown","category":64,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":780,"minLevel":40}
 {"id":52956,"name":"Call to Arms: Tiragarde Sound","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1}
-{"id":52957,"name":"Call to Arms: Stormsong Valley","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191}
+{"id":52957,"name":"Call to Arms: Stormsong Valley","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1}
 {"id":52958,"name":"Call to Arms: Drustvar","level":50,"zone":"War Mode PvP","category":1095,"type":4,"faction":2,"race":61658034,"class":8191,"pvp":1}
 {"id":52962,"name":"Mission Report: Mistvine Ledge","level":50,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":52963,"name":"Mistvine Ledge","level":50,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191}
@@ -21666,7 +21666,7 @@
 {"id":54177,"name":"A Brilliant Distraction","level":50,"zone":"Horde War Campaign","category":1091,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":848}
 {"id":54178,"name":"Catching a Ride","level":50,"zone":"Horde War Campaign","category":1091,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":848,"prereq":[54175,54176,54177]}
 {"id":54179,"name":"Through the Front Door","level":50,"zone":"Horde War Campaign","category":1091,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":848}
-{"id":54180,"name":"Quest","level":50,"zone":"Weekly PvP Conquest","category":0,"type":4,"faction":0,"race":0,"class":0}
+{"id":54180,"name":"Quest","level":50,"zone":"Weekly PvP Conquest","category":0,"type":4,"faction":0,"race":0,"class":0,"pvp":1}
 {"id":54182,"name":"Bilgewater Bash Brothers","level":10,"zone":"Tiragarde Sound","category":1062,"type":128,"faction":1,"race":64175181,"class":8191}
 {"id":54183,"name":"Dead Reckoning","level":50,"zone":"Tiragarde Sound","category":1062,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":847}
 {"id":54184,"name":"Trouble in Gnomeregan","level":50,"zone":"Battle Pets","category":19,"type":1,"faction":1,"race":64175181,"class":8191}
@@ -23493,7 +23493,7 @@
 {"id":58780,"name":"Heralds of the Hive","level":50,"zone":"Uldum","category":255,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":58781,"name":"Terrors from the Deep","level":50,"zone":"Uldum","category":255,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":58782,"name":"Things Left Behind","level":50,"zone":"Uldum","category":255,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":58801,"name":"Enter the Void","level":50,"zone":"Uldum","category":255,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":58801,"name":"Enter the Void","level":50,"zone":"Uldum","category":255,"type":4,"faction":3,"race":67108863,"class":8191,"pvp":1}
 {"id":58802,"name":"The Incredible Egg","level":50,"zone":"Uldum","category":255,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":58803,"name":"Match the Hatch","level":50,"zone":"Uldum","category":255,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":58804,"name":"Void Incubation","level":50,"zone":"Uldum","category":255,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -31258,19 +31258,19 @@
 {"id":80177,"name":"Arcane Experiments","level":75,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5552,"prereq":80176}
 {"id":80178,"name":"A Murder Most Foul","level":75,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5552,"prereq":80177}
 {"id":80179,"name":"Finding Justice","level":75,"zone":"Hallowfall","category":1404,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5552,"prereq":80178}
-{"id":80184,"name":"Preserving in Battle","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":80185,"name":"Preserving Solo","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":80186,"name":"Preserving in War","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":80187,"name":"Preserving in Skirmishes","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":80188,"name":"Preserving in Arenas","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":80189,"name":"Preserving Teamwork","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":80184,"name":"Preserving in Battle","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":80185,"name":"Preserving Solo","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":80186,"name":"Preserving in War","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":80187,"name":"Preserving in Skirmishes","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":80188,"name":"Preserving in Arenas","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":80189,"name":"Preserving Teamwork","level":80,"zone":"Dornogal","category":1403,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
 {"id":80202,"name":"Hot Pollenate-o","level":73,"zone":"The Ringing Deeps","category":1406,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5627,"prereq":79998}
 {"id":80203,"name":"Social Clues","level":78,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5613}
 {"id":80204,"name":"Espionage and Ventriloquism","level":78,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5613,"prereq":80203}
 {"id":80205,"name":"Pulling Strings","level":78,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5613,"prereq":80206}
 {"id":80206,"name":"Marionette Mercy","level":78,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5613,"prereq":80204}
 {"id":80207,"name":"How Scandalous!","level":70,"zone":"Dornogal","category":1403,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5605}
-{"id":80208,"name":"Digging into Trouble","level":80,"zone":"The Ringing Deeps","category":1406,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5588}
+{"id":80208,"name":"Digging into Trouble","level":80,"zone":"The Ringing Deeps","category":1406,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1,"storyline":5588}
 {"id":80209,"name":"An Oddball in Dornogal","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5571,"prereq":80456}
 {"id":80210,"name":"Found Around the Unbound","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5571,"prereq":80209}
 {"id":80211,"name":"The Pillage of Freywold Village","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5571,"prereq":80210}
@@ -32124,7 +32124,7 @@
 {"id":85718,"name":"A Shining Stone","level":70,"zone":"Isle Of Dorn","category":1405,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":86481,"name":"Short-Supply Reward","level":30,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":85947,"name":"An Original Journey Through Time","level":1,"zone":"Weekly Event","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":57308,"name":"The Battle of Alterac","level":10,"zone":"Alterac Valley","category":7,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":57308,"name":"The Battle of Alterac","level":10,"zone":"Alterac Valley","category":7,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
 {"id":84693,"name":"Weaver's Lair Profession Table","level":78,"zone":"Azj Kahet","category":1401,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":84419,"name":"To da Ruins!","level":10,"zone":"Azuremyst Isle","category":17,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":82817,"name":"Disturbance Detected: Blackrock Depths","level":30,"zone":"Blackrock Depths","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
@@ -33484,7 +33484,7 @@
 {"id":42095,"name":"Nightmare Dragon","level":45,"zone":"Val'sharah","category":1008,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":43326,"name":"Scouting","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":43330,"name":"Fire for Effect","level":45,"zone":"Azsuna","category":1001,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":57319,"name":"The Battle for Alterac","level":10,"zone":"Korraks Revenge","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":57319,"name":"The Battle for Alterac","level":10,"zone":"Korraks Revenge","category":0,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
 {"id":83521,"name":"Little Help, Please?","level":80,"zone":"Undermine","category":1408,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":84457,"name":"To Morning Breeze","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":4096,"class":8191,"storyline":5682,"prereq":84468}
 {"id":84832,"name":"[DNT] Example Breadcrumb to DF","level":1,"zone":"Housing Npc Prototype Neighborhood","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5689,"prereq":83547}
