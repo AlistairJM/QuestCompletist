@@ -474,7 +474,7 @@ local function pinAtlas(data)
 	pin:OnAcquired(data)
 	return atlas
 end
-local pvpAtlas = "questlog-questtypeicon-pvp-2x"
+local pvpAtlas = "questlog-questtypeicon-pvp"
 env.qcQuestPvP = {[pinA[6][1]] = 1, [pinA[6][2]] = 1}
 check("a pin whose quests are all PvP draws the PvP icon", pinAtlas({pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1], pinA[6][2]}}) == pvpAtlas)
 check("one with a quest that is not PvP keeps its own icon", pinAtlas({pinA[1], pinA[2], pinA[3], 50.3, 50.2, {pinA[6][1], pinA[6][2], pinA[6][3]}}) ~= pvpAtlas)
