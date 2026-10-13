@@ -66,6 +66,8 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   level     the quest's own level: the game's, else CMaNGOS's QuestLevel.
   minLevel  the level a character needs to take the quest: the game's, else CMaNGOS's MinLevel, as
             given (0 is kept, for no minimum). Left out where it is the quest's level.
+  pvp       1 where the game's record calls the quest PvP (its questInfo is 41), else, for a quest the game hasn't
+            answered, where CMaNGOS's Type is 41; -PvpFile (docs\plans\quest-pvp-decisions.csv) decides first; as Sync-QuestPvP.ps1 sets it.
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
             profession, holiday and Forever's other headings; CMaNGOS's when the game's record
             has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
@@ -169,6 +171,7 @@ param(
     [string]$ProbeFile = "",
     [string]$CmangosDump = "",
     [string]$GiverFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-givers.csv'),
+    [string]$PvpFile = (Join-Path $PSScriptRoot '..\docs\plans\quest-pvp-decisions.csv'),
     [string]$ZoneFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-zones.csv'),
     [string]$HolidayFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-holiday-decisions.csv'),
     [string]$LinkFile = (Join-Path $PSScriptRoot '..\docs\plans\forever-quest-link-decisions.csv'),
@@ -462,7 +465,7 @@ try {
     $gzip.CopyTo($target)
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
-    foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89,11,24,12,27'), @('conditions', '1,2,3,4,5,6,7,8'), @('creature_questrelation', '1,2'),
+    foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89,11,24,12,27,7'), @('conditions', '1,2,3,4,5,6,7,8'), @('creature_questrelation', '1,2'),
             @('gameobject_questrelation', '1,2'), @('creature_involvedrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'), @('creature_spawn_entry', '1,2'), @('gameobject_spawn_entry', '1,2'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5,7'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'), @('game_event_gameobject', '1,2'))) {
@@ -476,12 +479,16 @@ try {
     [Console]::OutputEncoding = $outputEncoding
 }
 
+$pvpDecision = @{}
+if (Test-Path $PvpFile) {
+    foreach ($row in @(Import-Csv $PvpFile -Encoding UTF8 | Where-Object { $_.Game -eq 'forever' })) { $pvpDecision[[int]$row.QuestID] = $row.Decision -eq 'PVP' }
+}
 $cmQuest = @{}
 foreach ($line in $dump.quest_template) {
     $f = $line.Split("`t")
     $cmQuest[[int]$f[0]] = [pscustomobject]@{ Zone = [int]$f[1]; MinLevel = [int]$f[2]; Level = [int]$f[3]; Classes = [int]$f[4]
         Races = [int]$f[5]; Skill = [int]$f[6]; Special = [int]$f[7]; Prev = [int]$f[8]; Title = $f[9]; Group = [int]$f[10]; BreadcrumbFor = [int]$f[11]; Reputation = [int]$f[12] -ne 0
-        SkillLevel = [int]$f[13]; Next = [int]$f[14]; Condition = [int]$f[15]; ChainNext = [int]$f[16] }
+        SkillLevel = [int]$f[13]; Next = [int]$f[14]; Condition = [int]$f[15]; ChainNext = [int]$f[16]; Type = [int]$f[17] }
 }
 $cmCondition = @{}
 foreach ($line in $dump.conditions) {
@@ -803,7 +810,7 @@ foreach ($id in $ids) {
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $level
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
         type = $type; faction = $faction; race = $race; class = $class; profession = $profession; holiday = $holiday
-        covenant = 0; storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0
+        covenant = 0; pvp = $(if ($(if ($pvpDecision.ContainsKey($id)) { $pvpDecision[$id] } elseif ($c) { [int]$c.questInfo -eq 41 } elseif ($m) { $m.Type -eq 41 } else { $false })) { 1 } else { 0 }); storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0
         minLevel = $(if ($minLevel -ne $level) { $minLevel } else { $null }) }
 }
 
