@@ -111,7 +111,7 @@ function Quest-Row([int]$id, [string]$title) {
     return '(' + ($fields -join ',') + ')'
 }
 
-function Write-Dump([string]$path, $quests, $starters, $spawns, $names, $objectStarters = @(), $objectSpawns = @(), $objectNames = @()) {
+function Write-Dump([string]$path, $quests, $starters, $spawns, $names, $objectStarters = @(), $objectSpawns = @(), $objectNames = @(), $extraSql = @()) {
     $sql = New-Object System.Collections.Generic.List[string]
     if ($quests.Count) { $sql.Add('INSERT INTO `quest_template` VALUES ' + (($quests | ForEach-Object { Quest-Row $_[0] $_[1] }) -join ',') + ';') }
     if ($starters.Count) { $sql.Add('INSERT INTO `creature_questrelation` VALUES ' + (($starters | ForEach-Object { "($($_[0]),$($_[1]))" }) -join ',') + ';') }
@@ -120,6 +120,7 @@ function Write-Dump([string]$path, $quests, $starters, $spawns, $names, $objectS
     if ($objectStarters.Count) { $sql.Add('INSERT INTO `gameobject_questrelation` VALUES ' + (($objectStarters | ForEach-Object { "($($_[0]),$($_[1]))" }) -join ',') + ';') }
     if ($objectSpawns.Count) { $sql.Add('INSERT INTO `gameobject` VALUES ' + (($objectSpawns | ForEach-Object { "($($_[0]),$($_[1]),1,0,$($_[2]),$($_[3]),5.0)" }) -join ',') + ';') }
     if ($objectNames.Count) { $sql.Add('INSERT INTO `gameobject_template` VALUES ' + (($objectNames | ForEach-Object { "($($_[0]),2,0,'$($_[1])')" }) -join ',') + ';') }
+    foreach ($line in $extraSql) { $sql.Add($line) }
     $bytes = [Text.Encoding]::UTF8.GetBytes(($sql -join "`n") + "`n")
     $stream = [IO.File]::Create($path)
     $gzip = New-Object System.IO.Compression.GZipStream($stream, [IO.Compression.CompressionMode]::Compress)
@@ -175,7 +176,7 @@ function Get-ProbeGivers() {
 # The world: tools, data and addon folders, the probe file, the dump and the cache.
 # -Bottles adds Nu Quest (9014), which three CMaNGOS objects of one name start, as several entries of Venom Bottle
 # do: 910014 at 40,60, 910015 0.2 points from it and 910016 a point from it.
-function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles) {
+function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles, [switch]$Spawn) {
     $root = Join-Path $Scratch $name
     foreach ($dir in 'tools', 'tools\forever_probe_70900', 'data\forever', 'addon') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
     $t = "$root\tools"
@@ -208,8 +209,16 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     # CMaNGOS: 910001, 910007 and the object 910012 start quests and stand somewhere; the others are the recorder's alone.
     $cmQuests = @(@(9001, 'Alpha Quest'), @(9007, 'Eta Quest'), @(9011, 'Kappa Quest'))
     if ($Bottles) { $cmQuests += , @(9014, 'Nu Quest') }
-    Write-Dump "$t\ClassicDB_test.sql.gz" $cmQuests @(@(910001, 9001), @(910007, 9007)) `
-        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver')) $objectStarters $objectSpawns $objectNames
+    $starters = @(@(910001, 9001), @(910007, 9007)); $extraSql = @()
+    if ($Spawn) {
+        # 9015's giver stands only through creature_spawn_entry: its creature row has id 0.
+        $quests[9015] = 'Xi Quest'; $cmQuests += , @(9015, 'Xi Quest'); $starters += , @(910020, 9015)
+        $extraSql = @('INSERT INTO `creature` VALUES (20,0,1,0,200,-200,5.0);', 'INSERT INTO `creature_spawn_entry` VALUES (20,910020);')
+        Write-Lines "$t\QuestV2-$Build.csv" (@('ID') + @($quests.Keys | Sort-Object))
+        Write-Lines "$t\forever_quest_cache_$Build.jsonl" @($quests.Keys | Sort-Object | ForEach-Object { Cache-Line $_ $quests[$_] })
+    }
+    Write-Dump "$t\ClassicDB_test.sql.gz" $cmQuests $starters `
+        @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver'), @(910020, 'Xi Giver')) $objectStarters $objectSpawns $objectNames $extraSql
     Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" $Givers
     Write-Lines "$root\decisions.csv" @('Game,Quest,Decision,Reason')
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
@@ -566,6 +575,19 @@ try {
     $before = Hash-Data $w5
     $r = Invoke-Importer $w5
     Equal (Hash-Data $w5) $before 'J4: a rerun writes every data file byte for byte as it was'
+
+    # ---------- K: a spawn CMaNGOS lists only through creature_spawn_entry, and a giver the hand list takes off a quest ----------
+    $w6 = New-World 'spawnentry' -ZetaKnown -Spawn
+    $r = Invoke-MergeTool $w6
+    Write-Lines "$w6\givers.csv" @('Quest,Npc,Name,Note,Decision', '9007,910007,Eta Giver,test,REMOVE', '9007,910001,Alpha Giver,test,ADD')
+    $r = Invoke-Importer $w6
+    Equal $r.Exit 0 "K1: the importer runs with a spawn entered through creature_spawn_entry and a giver taken off a quest ($($r.Text))"
+    $pins = Get-WorldPins $w6
+    Equal (Places-Of $pins 9015) '60,40' 'K1: a quest whose giver spawns only through creature_spawn_entry gets a pin there'
+    Equal (Places-Of $pins 9007) '52,51' 'K2: a giver the hand list takes off a quest no longer pins it (70,30), and the one it adds does (Alpha Giver''s recorded place)'
+    Write-Lines "$w6\givers.csv" @('Quest,Npc,Name,Note,Decision', '9007,910007,Eta Giver,test,DROP')
+    $r = Invoke-Importer $w6
+    Check ($r.Exit -ne 0 -and $r.Text -match "the decision 'DROP'") "K3: a giver decision other than ADD or REMOVE stops the import ($($r.Text))"
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }

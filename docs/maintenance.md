@@ -1691,8 +1691,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    moot, and a row another source already gives or contradicts.
    A giver no source has, like those of most of Forever's new quests, can be looked up by hand on
    Wowhead's Forever pages and added to `docs\plans\forever-quest-givers.csv` (quest, NPC, name,
-   note). The NPC stands where CMaNGOS or the recorder puts it, and the recorder wins when it saw
-   another giver offer the quest. A quest filed under a heading that isn't a place, a race's (Night
+   note, an optional decision). The NPC stands where CMaNGOS or the recorder puts it, and the recorder wins when it saw
+   another giver offer the quest. A row whose Decision is REMOVE takes the NPC off the quest instead, for a starter CMaNGOS has the wrong way round (26 and 27, A Lesson to Learn, whose givers classic-db update 4777 swaps). A quest filed under a heading that isn't a place, a race's (Night
    Elf), Treasure Map, Epic or Legendary, goes under a zone instead: the one
    `docs\plans\forever-quest-zones.csv` gives it by hand (quest, zone's `AreaTable` ID, name,
    note), else its pins' zone, else the zone of the NPC CMaNGOS has it handed in to, else

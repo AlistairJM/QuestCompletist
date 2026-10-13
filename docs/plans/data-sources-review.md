@@ -466,6 +466,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
   document against the evidence); no data, addon or tool change. game-parity.md's rows corrected and open-items.md pointed here, in the same pull request. Nothing
   decided yet.
 
+- 2026-10-13: D7, D18 and D19 fixed (Forever; its own pull request). 26/27 swap givers by a REMOVE/ADD decision, 28/29 take the other quest's prerequisite, creature_spawn_entry is read (7281 and 7302 pinned), and a spawn in several holidays' events counts for none. 4736/4737, 4967/4968 and 8228/8229 are still for the user.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
