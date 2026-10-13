@@ -1523,7 +1523,7 @@
 {"map":1456,"icon":9,"npc":3030,"name":"Siln Skychaser","x":22.82,"y":21.11,"quests":[8410]}
 {"map":1456,"icon":9,"npc":3031,"name":"Tigor Skychaser","x":23.64,"y":18.79,"quests":[8410]}
 {"map":1456,"icon":9,"npc":3032,"name":"Beram Skychaser","x":21.99,"y":18.8,"quests":[1523,8410]}
-{"map":1456,"icon":9,"npc":3033,"name":"Turak Runetotem","x":76.48,"y":27.22,"quests":[26,5922,6002,6126,9063]}
+{"map":1456,"icon":9,"npc":3033,"name":"Turak Runetotem","x":76.48,"y":27.22,"quests":[27,5922,6002,6126,9063]}
 {"map":1456,"icon":9,"npc":3034,"name":"Sheal Runetotem","x":77.14,"y":27.02,"quests":[9063]}
 {"map":1456,"icon":9,"npc":3038,"name":"Kary Thunderhorn","x":58.49,"y":88.33,"quests":[6065,8151]}
 {"map":1456,"icon":9,"npc":3041,"name":"Torm Ragetotem","x":57.24,"y":87.37,"quests":[1718,8417]}
@@ -1577,7 +1577,7 @@
 {"map":1457,"icon":9,"npc":4205,"name":"Dorion","x":42.21,"y":7.27,"quests":[6073,8151]}
 {"map":1457,"icon":9,"npc":4214,"name":"Erion Shadewhisper","x":34.5,"y":26,"quests":[2260]}
 {"map":1457,"icon":9,"npc":4215,"name":"Anishar","x":37.92,"y":20.92,"quests":[8233]}
-{"map":1457,"icon":1,"npc":4217,"name":"Mathrengyl Bearwalker","x":35.37,"y":8.4,"quests":[27,3785,3803,5921,6001,6121,6762,9063]}
+{"map":1457,"icon":1,"npc":4217,"name":"Mathrengyl Bearwalker","x":35.37,"y":8.4,"quests":[26,3785,3803,5921,6001,6121,6762,9063]}
 {"map":1457,"icon":9,"npc":4218,"name":"Denatharion","x":34.77,"y":7.37,"quests":[5925,9063]}
 {"map":1457,"icon":9,"npc":4219,"name":"Fylerian Nightwing","x":33.51,"y":8.35,"quests":[5924]}
 {"map":1457,"icon":1,"npc":4241,"name":"Mydrannul","x":70.68,"y":45.38,"quests":[6344]}
@@ -1669,6 +1669,8 @@
 {"map":1459,"icon":1,"npc":12096,"name":"Stormpike Quartermaster","x":43.12,"y":17.62,"quests":[5892,6982]}
 {"map":1459,"icon":1,"npc":12097,"name":"Frostwolf Quartermaster","x":46.62,"y":84.22,"quests":[5893,6985]}
 {"map":1459,"icon":1,"npc":13151,"name":"Syndicate Master Ryson","x":56.94,"y":49.94,"quests":[6847,6848]}
+{"map":1459,"icon":1,"npc":13153,"name":"Commander Mulfort","x":49.4,"y":88.35,"quests":[7302]}
+{"map":1459,"icon":1,"npc":13154,"name":"Commander Louis Philips","x":50.41,"y":65.49,"quests":[7281]}
 {"map":1459,"icon":1,"npc":13176,"name":"Smith Regzar","x":49.5,"y":82.72,"quests":[6741,7224]}
 {"map":1459,"icon":1,"npc":13179,"name":"Wing Commander Guse","x":49.85,"y":85.57,"quests":[6825]}
 {"map":1459,"icon":1,"npc":13180,"name":"Wing Commander Jeztor","x":54.23,"y":25.43,"quests":[6826]}

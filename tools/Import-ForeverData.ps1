@@ -23,6 +23,8 @@ Builds WoW: Forever's quest and pin data, data\forever\quests.jsonl and pins.jso
   - -GiverFile and -ZoneFile, docs\plans\forever-quest-givers.csv and forever-quest-zones.csv:
     givers and zones looked up by hand on Wowhead's Forever pages, for quests the other sources
     can't place. A listed NPC stands where CMaNGOS or the recorder puts it.
+    A Decision column (ADD, the default, or REMOVE) lets a row take a starter CMaNGOS lists off a quest too,
+    for a giver the dump has the wrong way round (classic-db update 4777 swaps those of quests 26 and 27).
   - -HolidayFile, docs\plans\forever-quest-holiday-decisions.csv: the holiday of quests no other
     source ties to one, with the evidence for each (Quest, Name, Holiday, Decision, Evidence). Holiday
     is a name in qcHolidays in qcCore.lua and Decision is SET.
@@ -461,7 +463,7 @@ try {
     $target.Close(); $gzip.Close(); $source.Close()
     $dump = @{}
     foreach ($read in @(@('quest_template', '1,3,4,6,8,9,10,22,23,31,25,26,89,11,24,12,27'), @('conditions', '1,2,3,4,5,6,7,8'), @('creature_questrelation', '1,2'),
-            @('gameobject_questrelation', '1,2'), @('creature_involvedrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'),
+            @('gameobject_questrelation', '1,2'), @('creature_involvedrelation', '1,2'), @('creature', '1,2,3,5,6,7'), @('gameobject', '1,2,3,5,6,7'), @('creature_spawn_entry', '1,2'), @('gameobject_spawn_entry', '1,2'),
             @('creature_template', '1,2'), @('gameobject_template', '1,4'), @('item_template', '1,111'),
             @('game_event', '1,5,7'), @('game_event_quest', '1,2'), @('game_event_creature', '1,2'), @('game_event_gameobject', '1,2'))) {
         $dump[$read[0]] = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $sql $read[0] $read[1])
@@ -491,7 +493,16 @@ foreach ($line in $dump.creature_questrelation) { $f = $line.Split("`t"); $creat
 foreach ($line in $dump.gameobject_questrelation) { $f = $line.Split("`t"); $objectStarters[[int]$f[1]] += @([int]$f[0]) }
 $starterNpcs = @{}; foreach ($list in $creatureStarters.Values) { foreach ($npc in $list) { $starterNpcs[$npc] = $true } }
 $handStarters = @{}
-foreach ($row in Import-Csv $GiverFile) { $handStarters[[int]$row.Quest] += @([int]$row.Npc); $starterNpcs[[int]$row.Npc] = $true }
+$handRemovedStarters = New-Object System.Collections.Generic.List[object]
+foreach ($row in Import-Csv $GiverFile) {
+    $quest = [int]$row.Quest; $npc = [int]$row.Npc
+    if ($row.Decision -eq 'REMOVE') {
+        $handRemovedStarters.Add([pscustomobject]@{ Quest = $quest; Npc = $npc; Had = (@($creatureStarters[$quest]) -contains $npc) })
+        $creatureStarters[$quest] = @($creatureStarters[$quest] | Where-Object { $_ -ne $npc })
+        if (-not $creatureStarters[$quest].Count) { $creatureStarters.Remove($quest) }
+    } elseif ($row.Decision -and $row.Decision -ne 'ADD') { throw "$GiverFile gives quest $quest the decision '$($row.Decision)': it is ADD (the default) or REMOVE." }
+    else { $handStarters[$quest] += @($npc); $starterNpcs[$npc] = $true }
+}
 $handZone = @{}; foreach ($row in Import-Csv $ZoneFile) { $handZone[[int]$row.Quest] = [int]$row.Zone }
 $holidayFlagByName = @{}
 $qcCore = [IO.File]::ReadAllText((Join-Path $AddonDir 'qcCore.lua'))
@@ -577,10 +588,19 @@ foreach ($line in $dump.game_event) {
 }
 $questHoliday = @{}
 foreach ($line in $dump.game_event_quest) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $questHoliday[[int]$f[0]] = $flag } }
+$ambiguousSpawns = New-Object System.Collections.Generic.List[string]
 $spawnHoliday = @{}
-foreach ($line in $dump.game_event_creature) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $spawnHoliday[[int]$f[0]] = $flag } }
+foreach ($line in $dump.game_event_creature) {
+    $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; $guid = [int]$f[0]
+    if (-not $flag) { continue }
+    if ($spawnHoliday.ContainsKey($guid) -and $spawnHoliday[$guid] -ne $flag) { if ($null -ne $spawnHoliday[$guid]) { $ambiguousSpawns.Add("creature $guid") }; $spawnHoliday[$guid] = $null } elseif (-not $spawnHoliday.ContainsKey($guid)) { $spawnHoliday[$guid] = $flag }
+}
 $objectSpawnHoliday = @{}
-foreach ($line in $dump.game_event_gameobject) { $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; if ($flag) { $objectSpawnHoliday[[int]$f[0]] = $flag } }
+foreach ($line in $dump.game_event_gameobject) {
+    $f = $line.Split("`t"); $flag = $eventHoliday[[int]$f[1]]; $guid = [int]$f[0]
+    if (-not $flag) { continue }
+    if ($objectSpawnHoliday.ContainsKey($guid) -and $objectSpawnHoliday[$guid] -ne $flag) { if ($null -ne $objectSpawnHoliday[$guid]) { $ambiguousSpawns.Add("object $guid") }; $objectSpawnHoliday[$guid] = $null } elseif (-not $objectSpawnHoliday.ContainsKey($guid)) { $objectSpawnHoliday[$guid] = $flag }
+}
 $oldPins = New-Object System.Collections.Generic.List[object]
 # Each NPC's old pin maps, with where in the world each pin stands, from its map's frame.
 $oldPinMaps = @{}
@@ -601,17 +621,21 @@ foreach ($line in (git -C $repoRoot show "a9bc11c^:QuestCompletist/qcPinDB.lua")
             X = $frame.MaxX - $fy * ($frame.MaxX - $frame.MinX); Y = $frame.MaxY - $fx * ($frame.MaxY - $frame.MinY) })
     }
 }
+$spawnEntries = @{}; foreach ($line in $dump.creature_spawn_entry) { $f = $line.Split("`t"); $spawnEntries[[int]$f[0]] += @([int]$f[1]) }
+$objectSpawnEntries = @{}; foreach ($line in $dump.gameobject_spawn_entry) { $f = $line.Split("`t"); $objectSpawnEntries[[int]$f[0]] += @([int]$f[1]) }
 $npcSpawns = @{}; $npcHoliday = @{}; $oldPinNpcSpawns = @{}; $enderSpawns = @{}
 foreach ($line in $dump.creature) {
     $f = $line.Split("`t")
-    $npc = [int]$f[1]
-    $spawn = [pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }
-    if ($oldPinMaps.ContainsKey($npc)) { $oldPinNpcSpawns[$npc] += @($spawn) }
-    if ($enderNpcs[$npc]) { $enderSpawns[$npc] += @($spawn) }
-    if (-not $starterNpcs[$npc]) { continue }
-    $npcSpawns[$npc] += @($spawn)
-    $holiday = $spawnHoliday[[int]$f[0]]
-    if (-not $npcHoliday.ContainsKey($npc)) { $npcHoliday[$npc] = $holiday } elseif ($npcHoliday[$npc] -ne $holiday) { $npcHoliday[$npc] = $null }
+    $entries = if ([int]$f[1]) { @([int]$f[1]) } else { @($spawnEntries[[int]$f[0]]) }
+    foreach ($npc in $entries) {
+        $spawn = [pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] }
+        if ($oldPinMaps.ContainsKey($npc)) { $oldPinNpcSpawns[$npc] += @($spawn) }
+        if ($enderNpcs[$npc]) { $enderSpawns[$npc] += @($spawn) }
+        if (-not $starterNpcs[$npc]) { continue }
+        $npcSpawns[$npc] += @($spawn)
+        $holiday = $spawnHoliday[[int]$f[0]]
+        if (-not $npcHoliday.ContainsKey($npc)) { $npcHoliday[$npc] = $holiday } elseif ($npcHoliday[$npc] -ne $holiday) { $npcHoliday[$npc] = $null }
+    }
 }
 foreach ($npc in $oldPinNpcSpawns.Keys) {
     foreach ($spawn in $oldPinNpcSpawns[$npc]) {
@@ -630,11 +654,13 @@ foreach ($npc in $oldPinNpcSpawns.Keys) {
 $objectSpawns = @{}; $objectHoliday = @{}
 foreach ($line in $dump.gameobject) {
     $f = $line.Split("`t")
-    $object = [int]$f[1]
-    if (-not $starterObjects[$object]) { continue }
-    $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] })
-    $holiday = $objectSpawnHoliday[[int]$f[0]]
-    if (-not $objectHoliday.ContainsKey($object)) { $objectHoliday[$object] = $holiday } elseif ($objectHoliday[$object] -ne $holiday) { $objectHoliday[$object] = $null }
+    $objectEntries = if ([int]$f[1]) { @([int]$f[1]) } else { @($objectSpawnEntries[[int]$f[0]]) }
+    foreach ($object in $objectEntries) {
+        if (-not $starterObjects[$object]) { continue }
+        $objectSpawns[$object] += @([pscustomobject]@{ Map = [int]$f[2]; X = [double]$f[3]; Y = [double]$f[4]; Z = [double]$f[5] })
+        $holiday = $objectSpawnHoliday[[int]$f[0]]
+        if (-not $objectHoliday.ContainsKey($object)) { $objectHoliday[$object] = $holiday } elseif ($objectHoliday[$object] -ne $holiday) { $objectHoliday[$object] = $null }
+    }
 }
 $cmNpcName = @{}; foreach ($line in $dump.creature_template) { $f = $line.Split("`t"); if ($starterNpcs[[int]$f[0]]) { $cmNpcName[[int]$f[0]] = $f[1] } }
 $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Split("`t"); if ($starterObjects[[int]$f[0]]) { $objectName[[int]$f[0]] = $f[1] } }
@@ -679,6 +705,7 @@ $review = New-Object System.Collections.Generic.List[object]
 function Add-Review([string]$kind, $quest, $other, [string]$detail) {
     $review.Add([pscustomobject]@{ Kind = $kind; Quest = $quest; Other = $other; Detail = $detail })
 }
+foreach ($spawn in $ambiguousSpawns) { Add-Review 'spawn in the events of several holidays' $null $spawn "CMaNGOS lists this spawn in events of more than one holiday, so it counts for none." }
 
 foreach ($id in $keep.Keys) {
     if (-not $cache.ContainsKey($id) -and -not $cmQuest.ContainsKey($id)) { throw "$DecisionsFile says to keep quest $id, which neither the game's answers nor CMaNGOS have." }
@@ -968,7 +995,7 @@ foreach ($key in ($handBreadcrumbs.Keys | Sort-Object)) {
 }
 # A quest closes once the quest its NextQuestInChain names is taken or done, and that one can't be taken
 # while it is in the log (SatisfyQuestNextChain and SatisfyQuestPrevChain in Player.cpp), as for a
-# breadcrumb. So it is one, unless the other quest needs it done, which closes nothing.
+# breadcrumb. So it is one, unless the other quest needs it done, which closes nothing, or is the other faction's, which no character takes both of.
 function Test-PrereqRequires($value, [int]$quest, [bool]$all = $true) {
     if ($value -isnot [array]) { return [int]$value -eq $quest }
     foreach ($item in $value) {
@@ -981,6 +1008,7 @@ $chainLeadIns = 0
 foreach ($id in ($cmQuest.Keys | Sort-Object)) {
     $next = $cmQuest[$id].ChainNext
     if (-not $linkable[$id] -or -not $linkable[$next] -or $breadcrumbs[$next] -contains $id) { continue }
+    if ($records[$id].faction -ne 3 -and $records[$next].faction -ne 3 -and $records[$id].faction -ne $records[$next].faction) { continue }
     if ($records[$next].prereq -and (Test-PrereqRequires $records[$next].prereq $id)) { continue }
     $breadcrumbs[$next] = @(@($breadcrumbs[$next] | Where-Object { $_ }) + $id | Sort-Object)
     $chainLeadIns++
@@ -1162,6 +1190,10 @@ foreach ($id in ($records.Keys | Sort-Object)) {
     }
 }
 foreach ($quest in $handStarters.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-listed quest not imported' $quest ($handStarters[$quest] -join ', ') '' } }
+foreach ($removal in $handRemovedStarters) {
+    if (-not $records.ContainsKey($removal.Quest)) { Add-Review 'hand-kept giver removal for a quest not imported' $removal.Quest $removal.Npc '' }
+    elseif (-not $removal.Had) { Add-Review 'hand-kept giver removal not needed' $removal.Quest $removal.Npc "CMaNGOS doesn't list NPC $($removal.Npc) as a starter of it." }
+}
 foreach ($quest in $handHoliday.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-kept holiday for a quest not imported' $quest $handHoliday[$quest] '' } }
 foreach ($quest in $handClass.Keys) { if (-not $records.ContainsKey($quest)) { Add-Review 'hand-kept class for a quest not imported' $quest $handClass[$quest] '' } }
 

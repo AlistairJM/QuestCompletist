@@ -22,8 +22,8 @@
 {"id":25,"name":"Stonetalon Standstill","level":25,"zone":"Ashenvale","category":331,"type":1,"faction":2,"race":0,"class":8191,"minLevel":23}
 {"id":26,"name":"A Lesson to Learn","level":16,"zone":"Druid","category":-263,"type":1,"faction":1,"race":67108872,"class":1024}
 {"id":27,"name":"A Lesson to Learn","level":16,"zone":"Druid","category":-263,"type":1,"faction":2,"race":67108896,"class":1024}
-{"id":28,"name":"Trial of the Lake","level":16,"zone":"Druid","category":-263,"type":1,"faction":2,"race":67108896,"class":1024,"prereq":26}
-{"id":29,"name":"Trial of the Lake","level":16,"zone":"Druid","category":-263,"type":1,"faction":1,"race":67108872,"class":1024,"prereq":27}
+{"id":28,"name":"Trial of the Lake","level":16,"zone":"Druid","category":-263,"type":1,"faction":2,"race":67108896,"class":1024,"prereq":27}
+{"id":29,"name":"Trial of the Lake","level":16,"zone":"Druid","category":-263,"type":1,"faction":1,"race":67108872,"class":1024,"prereq":26}
 {"id":30,"name":"Trial of the Sea Lion","level":16,"zone":"Druid","category":-263,"type":1,"faction":2,"race":67109024,"class":1024,"prereq":28}
 {"id":31,"name":"Aquatic Form","level":16,"zone":"Druid","category":-263,"type":1,"faction":2,"race":67109024,"class":1024,"prereq":30}
 {"id":32,"name":"Rise of the Silithid","level":48,"zone":"Tanaris","category":440,"type":1,"faction":2,"race":0,"class":8191,"prereq":113,"minLevel":39}

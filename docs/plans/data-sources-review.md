@@ -467,6 +467,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
   decided yet.
 - 2026-10-13: D1, D2, D3 and D13 fixed (the PR after #324, retail only). 28 breadcrumb rows were added or extended for the board and lead-in quests, and 28 quests lost a prerequisite on them; 28504 left the Thousand Needles group, the Gilneas trio and the three 10562/10595/25428 pairs are no longer exclusive; 85249 needs 85082 only (a decision row); Resolve-Bitmask skips Adventurer and Traveler, 21 class fixes applied and 175 KEEP rows added (44920 Order of Incantations is left for the user: ours 2093, the API 4095); `qcFormerlyExclusive` seeded with 10 quests. Step 2c now leaves a quest out when the cache names more lead-ins than TrinityCore repeats (14 listed, their existing prerequisites untouched: 12468, 26682 and 12 others need a look).
 
+- 2026-10-13: D7, D18 and D19 fixed (Forever; its own pull request). 26/27 swap givers by a REMOVE/ADD decision, 28/29 take the other quest's prerequisite, creature_spawn_entry is read (7281 and 7302 pinned), and a spawn in several holidays' events counts for none. 4736/4737, 4967/4968 and 8228/8229 are still for the user.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

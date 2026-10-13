@@ -1,2 +1,6 @@
-Quest,Npc,Name,Note
-97979,3595,Shanda,"The Goddess Provides. Wowhead's Forever pages, 2026-10-06: Shanda starts and ends it, in Teldrassil."
+Quest,Npc,Name,Note,Decision
+97979,3595,Shanda,"The Goddess Provides. Wowhead's Forever pages, 2026-10-06: Shanda starts and ends it, in Teldrassil.",ADD
+26,3033,Turak Runetotem,"The cache's races make quest 26 Alliance-only and 27 Horde-only, but CMaNGOS's starters are the other way round; classic-db update 4777 (not applied) swaps them. Data-sources review D7, 2026-10-13.",REMOVE
+26,4217,Mathrengyl Bearwalker,"The cache's races make quest 26 Alliance-only and 27 Horde-only, but CMaNGOS's starters are the other way round; classic-db update 4777 (not applied) swaps them. Data-sources review D7, 2026-10-13.",ADD
+27,4217,Mathrengyl Bearwalker,"The cache's races make quest 26 Alliance-only and 27 Horde-only, but CMaNGOS's starters are the other way round; classic-db update 4777 (not applied) swaps them. Data-sources review D7, 2026-10-13.",REMOVE
+27,3033,Turak Runetotem,"The cache's races make quest 26 Alliance-only and 27 Horde-only, but CMaNGOS's starters are the other way round; classic-db update 4777 (not applied) swaps them. Data-sources review D7, 2026-10-13.",ADD
