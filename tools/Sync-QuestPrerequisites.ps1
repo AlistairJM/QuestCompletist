@@ -310,6 +310,7 @@ foreach ($line in (($crumbBlock.Groups[1].Value -replace '(?s)--\[\[.*?\]\]', ''
     foreach ($crumb in ($Matches[2] -split '[,\s]+' | Where-Object { $_ })) { $leadsTo["$crumb>$target"] = $true }
 }
 $leadIns = New-Object System.Collections.Generic.List[string]
+$severalLeadIns = New-Object System.Collections.Generic.List[string]
 function Get-MinLevel([int]$id) { if ($null -ne $quests[$id].minLevel) { return [int]$quests[$id].minLevel } return [int]$quests[$id].level }
 if (-not $QuestCacheFile) { $QuestCacheFile = Join-Path $ToolsDir "retail_quest_cache_$Build.jsonl" }
 $offeredAfter = @{}
@@ -325,15 +326,17 @@ foreach ($id in $offeredAfter.Keys) {
     if (-not $quests.ContainsKey($id)) { continue }
     $level = Get-MinLevel $id
     $by = New-Object System.Collections.Generic.List[int]
+    $unrepeated = 0
     foreach ($source in $offeredAfter[$id]) {
         $a = [int]$source
         if ($a -eq $id -or $by.Contains($a) -or -not $quests.ContainsKey($a)) { continue }
-        if (-not ($tcNext[$a] -eq $id -or $tcPrev[$id] -eq $a)) { continue }
-        if ($leadsTo.ContainsKey("$a>$id")) { $leadIns.Add("$id <- $a"); continue }
+        if ($leadsTo.ContainsKey("$a>$id")) { if ($tcNext[$a] -eq $id -or $tcPrev[$id] -eq $a) { $leadIns.Add("$id <- $a") }; continue }
         if (($offered.ContainsKey($a) -and $offered.ContainsKey($id)) -or -not (Test-Checkable $id $a) -or (Test-OtherFaction $id $a)) { continue }
         if ($unavailable.ContainsKey($a) -or ($level -gt 0 -and (Get-MinLevel $a) -gt $level)) { continue }
+        if (-not ($tcNext[$a] -eq $id -or $tcPrev[$id] -eq $a)) { $unrepeated++; continue }
         $by.Add($a)
     }
+    if ($by.Count -and $unrepeated) { $severalLeadIns.Add("$id <- $($by -join '/') (the cache also names $unrepeated TrinityCore doesn't repeat)"); continue }
     if ($by.Count) { $by.Sort(); $followUp[$id] = $by.ToArray() }
 }
 
@@ -459,6 +462,7 @@ foreach ($id in @($new.Keys)) {
 "Campaign ${Campaign}: {0} chapters' first quests need the chapter before ({1} of them change)." -f $chapterLinks.Count, $chapters.Count
 "The client's conditions: {0} quest lines and campaigns, given to {1} quests ({2})." -f $gates.Count, (($gated.Values | Measure-Object -Sum).Sum), (($gated.Keys | Sort-Object | ForEach-Object { "$_ x$($gated[$_])" }) -join ', ')
 "The client's follow-ups that TrinityCore's requirement repeats: {0} quests have one, {1} take it now; {2} breadcrumbs into their quest left out." -f $followUp.Count, $followed, $leadIns.Count
+"Left out as the cache names more lead-ins than TrinityCore repeats: $($severalLeadIns.Count)" + $(if ($severalLeadIns.Count) { " (" + ($severalLeadIns -join '; ') + ")" } else { '' })
 "Left out as the game offered them together with the quest: $($contradicted.Count) required quests, and $($refused.Count) conditions."
 "Recurring quests' recurring requirements that Blizzard doesn't name, left out: $($notBlizzard.Count)"
 "Decided with the user ({0}): {1} quests, {2} change, {3} already match." -f (Split-Path -Leaf $DecisionsFile), $decided.Count, $decidedChanged, $decidedSame
