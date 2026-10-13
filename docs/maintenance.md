@@ -956,7 +956,7 @@ it yet. Every sweep, with the newest cache of each game:
 - Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933, Forever
   1.60.1.70338): retail 343 (PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP Elite World
   Quest 6) with 2,458 of our quests the cache doesn't know; Forever 14 with 2,220 unknown. A kind the game
-  adds (a new `QuestInfo` row with PvP in its name, read in `toolsQuestInfo.csv`) belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
+  adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`) belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
 - It also lists, and never changes, the quests in the places PvP happens that the game doesn't tag (retail 151:
   Ashran 58, Tol Barad 68, Alterac Valley 16, Arathi Basin 3, Seething Shore 2; Forever 181, nearly all of
   them unknown to the beta's cache). Whether any of them gets the tag is the user's call, so the list is read
