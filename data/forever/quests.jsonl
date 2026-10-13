@@ -2833,7 +2833,7 @@
 {"id":6861,"name":"Zinfizzlex's Portable Shredder Unit","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":51}
 {"id":6862,"name":"Zinfizzlex's Portable Shredder Unit","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
 {"id":6881,"name":"Ivus the Forest Lord","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
-{"id":6901,"name":"Launch the Attack!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"minLevel":1}
+{"id":6901,"name":"Launch the Attack!","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":1}
 {"id":6921,"name":"Amongst the Ruins","level":27,"zone":"Blackfathom Deeps","category":719,"type":1,"faction":2,"race":0,"class":8191,"minLevel":21}
 {"id":6922,"name":"Baron Aquanis","level":30,"zone":"Ashenvale","category":331,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":21}
 {"id":6941,"name":"Call of Air - Vipore's Fleet","level":60,"zone":"Alterac Valley","category":2597,"type":2,"faction":1,"race":0,"class":8191,"minLevel":51}
@@ -3070,7 +3070,7 @@
 {"id":7807,"name":"A Donation of Wool","level":60,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"minLevel":12}
 {"id":7808,"name":"A Donation of Silk","level":60,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"minLevel":26}
 {"id":7809,"name":"A Donation of Mageweave","level":60,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"minLevel":40}
-{"id":7810,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"minLevel":1}
+{"id":7810,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":1}
 {"id":7811,"name":"A Donation of Runecloth","level":60,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"prereq":[7807,7808,7809],"minLevel":50}
 {"id":7812,"name":"Additional Runecloth","level":60,"zone":"Ironforge","category":1537,"type":2,"faction":1,"race":0,"class":8191,"prereq":7811,"minLevel":50}
 {"id":7813,"name":"A Donation of Wool","level":60,"zone":"Undercity","category":1497,"type":1,"faction":2,"race":0,"class":8191,"minLevel":12}
@@ -3150,7 +3150,7 @@
 {"id":7903,"name":"Evil Bat Eyes","level":60,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":40}
 {"id":7905,"name":"The Darkmoon Faire","level":60,"zone":"Ironforge","category":1537,"type":64,"faction":1,"race":0,"class":8191,"holiday":8192,"minLevel":6}
 {"id":7907,"name":"Darkmoon Beast Deck","level":55,"zone":"Darkmoon Faire","category":-364,"type":2,"faction":3,"race":0,"class":8191,"holiday":8192,"minLevel":1}
-{"id":7908,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"minLevel":1}
+{"id":7908,"name":"Arena Master","level":55,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":1}
 {"id":7922,"name":"Mark of Honor","level":55,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7876,"minLevel":50}
 {"id":7923,"name":"Mark of Honor","level":45,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":7875,"minLevel":40}
 {"id":7926,"name":"The Darkmoon Faire","level":60,"zone":"Orgrimmar","category":1637,"type":64,"faction":2,"race":0,"class":8191,"holiday":8192,"minLevel":6}
@@ -3341,12 +3341,12 @@
 {"id":8286,"name":"What Tomorrow Brings","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191}
 {"id":8287,"name":"A Terrible Purpose","level":60,"zone":"Silithus","category":1377,"type":1,"faction":3,"race":0,"class":8191,"prereq":8279,"minLevel":54}
 {"id":8288,"name":"Only One May Rise","level":60,"zone":"Blackwing Lair","category":2677,"type":1,"faction":3,"race":0,"class":8191,"prereq":8286}
-{"id":8290,"name":"Vanquish the Invaders","level":15,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"minLevel":10}
+{"id":8290,"name":"Vanquish the Invaders","level":15,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"pvp":1,"minLevel":10}
 {"id":8291,"name":"Vanquish the Invaders!","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191}
 {"id":8292,"name":"Talismans of Merit","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":1,"race":0,"class":8191,"prereq":8291}
 {"id":8293,"name":"Mark of Honor","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"prereq":8294}
 {"id":8294,"name":"Quell the Silverwing Usurpers","level":60,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191}
-{"id":8295,"name":"Quell the Silverwing Usurpers","level":15,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"minLevel":10}
+{"id":8295,"name":"Quell the Silverwing Usurpers","level":15,"zone":"Warsong Gulch","category":3277,"type":2,"faction":2,"race":0,"class":8191,"pvp":1,"minLevel":10}
 {"id":8297,"name":"Arathi Basin Resources!","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":1,"race":0,"class":8191}
 {"id":8298,"name":"More Resource Crates","level":60,"zone":"Arathi Basin","category":3358,"type":2,"faction":1,"race":0,"class":8191,"prereq":8297}
 {"id":8299,"name":"Cut Arathor Supply Lines","level":60,"zone":"Arathi Basin","category":3358,"type":1,"faction":2,"race":0,"class":8191}
@@ -4109,8 +4109,8 @@
 {"id":9389,"name":"Flickering Flames in the Eastern Kingdoms","level":25,"zone":"Midsummer","category":-369,"type":64,"faction":3,"race":0,"class":8191,"holiday":256,"minLevel":1}
 {"id":9415,"name":"Report to Marshal Bluewall","level":60,"zone":"Silithus","category":1377,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":1}
 {"id":9416,"name":"Report to General Kirika","level":60,"zone":"Silithus","category":1377,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":1}
-{"id":9419,"name":"Scouring the Desert","level":60,"zone":"Silithus","category":1377,"type":1,"faction":1,"race":0,"class":8191,"prereq":9415,"minLevel":1}
-{"id":9422,"name":"Scouring the Desert","level":60,"zone":"Silithus","category":1377,"type":1,"faction":2,"race":0,"class":8191,"prereq":9416,"minLevel":1}
+{"id":9419,"name":"Scouring the Desert","level":60,"zone":"Silithus","category":1377,"type":1,"faction":1,"race":0,"class":8191,"pvp":1,"prereq":9415,"minLevel":1}
+{"id":9422,"name":"Scouring the Desert","level":60,"zone":"Silithus","category":1377,"type":1,"faction":2,"race":0,"class":8191,"pvp":1,"prereq":9416,"minLevel":1}
 {"id":9664,"name":"Establishing New Outposts","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":1,"race":0,"class":8191,"minLevel":55}
 {"id":9665,"name":"Bolstering Our Defenses","level":60,"zone":"Eastern Plaguelands","category":139,"type":1,"faction":2,"race":0,"class":8191,"minLevel":55}
 {"id":65593,"name":"Hearts of the Lovers","level":20,"zone":"Warlock","category":-61,"type":1,"faction":3,"race":0,"class":256}
@@ -5040,16 +5040,16 @@
 {"id":98815,"name":"Highland Hides","level":28,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":3,"race":0,"class":8191,"minLevel":24}
 {"id":98823,"name":"Earthen Echo","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":95664,"minLevel":24}
 {"id":98824,"name":"Prehistoric Prism","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":1,"race":67108941,"class":8191,"prereq":95810,"minLevel":24}
-{"id":98887,"name":"Conflict at Darkspear Islands","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
-{"id":98889,"name":"Conflict at Darkspear Islands","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":40}
-{"id":98891,"name":"Conflict at Darkspear Islands","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":50}
-{"id":98893,"name":"Conflict at Darkspear Islands","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
-{"id":98895,"name":"Darkspear Islands Clash","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
+{"id":98887,"name":"Conflict at Darkspear Islands","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":98889,"name":"Conflict at Darkspear Islands","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":98891,"name":"Conflict at Darkspear Islands","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":98893,"name":"Conflict at Darkspear Islands","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1}
+{"id":98895,"name":"Darkspear Islands Clash","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
 {"id":98897,"name":"Darkspear Islands Clash","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":40}
 {"id":98899,"name":"Darkspear Islands Clash","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":50}
 {"id":98901,"name":"Darkspear Islands Clash","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
-{"id":98903,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
-{"id":98906,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
+{"id":98903,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":98906,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
 {"id":98910,"name":"Darkspear's Basic Care Package","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":98913,"name":"Theramore Basic Care Package","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":98977,"name":"Mossheart the Elder","level":60,"zone":"Lunar Festival","category":-366,"type":64,"faction":3,"race":0,"class":8191,"holiday":128,"minLevel":1}

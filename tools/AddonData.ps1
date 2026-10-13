@@ -7,7 +7,7 @@ data\quests.jsonl and data\pins.jsonl are the master copy of the quests and pins
 record per line, with named fields:
 	{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}
 	{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}
-Fields that are empty are left out: a quest's profession, holiday, covenant, storyline and prereq
+Fields that are empty are left out: a quest's profession, holiday, covenant, pvp, storyline and prereq
 when 0, and a pin's npc when 0, its name when it has none and its note when it has none. A quest's
 prereq is the quest to do first, or a list of quests that all must be done; a list inside that
 list is a choice, any one of which will do, and a list inside a choice is all of it again:
@@ -24,8 +24,8 @@ $DefaultDataDir = Join-Path $PSScriptRoot '..\data'
 $DefaultAddonDir = Join-Path $PSScriptRoot '..\QuestCompletist'
 
 $QuestFields = @('id', 'name', 'level', 'zone', 'category', 'type', 'faction', 'race', 'class',
-    'profession', 'holiday', 'covenant', 'storyline', 'prereq', 'minLevel')
-$QuestOptionalFields = @('profession', 'holiday', 'covenant', 'storyline', 'prereq', 'minLevel')
+    'profession', 'holiday', 'covenant', 'pvp', 'storyline', 'prereq', 'minLevel')
+$QuestOptionalFields = @('profession', 'holiday', 'covenant', 'pvp', 'storyline', 'prereq', 'minLevel')
 $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
@@ -66,6 +66,7 @@ function ConvertTo-QuestJsonLines($quests) {
         if ($q.profession) { [void]$sb.Append(',"profession":' + $q.profession) }
         if ($q.holiday) { [void]$sb.Append(',"holiday":' + $q.holiday) }
         if ($q.covenant) { [void]$sb.Append(',"covenant":' + $q.covenant) }
+        if ($q.pvp) { [void]$sb.Append(',"pvp":' + $q.pvp) }
         if ($q.storyline) { [void]$sb.Append(',"storyline":' + $q.storyline) }
         $prereq = $q.prereq
         if ($prereq) { [void]$sb.Append(',"prereq":' + $(if ($prereq -is [array]) { ConvertTo-PrereqText $prereq '[' ']' } else { $prereq })) }
@@ -134,7 +135,7 @@ function Test-QuestRecords($quests) {
             ($q.level -is [int]) -and ($q.category -is [int]) -and ($q.type -is [int]) -and ($q.faction -is [int]) -and
             ($q.race -is [int]) -and ($q.class -is [int]) -and
             ($null -eq $q.profession -or $q.profession -is [int]) -and ($null -eq $q.holiday -or $q.holiday -is [int]) -and
-            ($null -eq $q.covenant -or $q.covenant -is [int]) -and ($null -eq $q.storyline -or $q.storyline -is [int]) -and
+            ($null -eq $q.covenant -or $q.covenant -is [int]) -and ($null -eq $q.pvp -or $q.pvp -is [int]) -and ($null -eq $q.storyline -or $q.storyline -is [int]) -and
             ($null -eq $q.minLevel -or ($q.minLevel -is [int] -and $q.minLevel -ge 0 -and $q.minLevel -ne $q.level)) -and
             ($null -eq $q.prereq -or ($q.prereq -is [int] -and $q.prereq -ge 0) -or (Test-PrereqValue $q.prereq)) -and -not ($name -match '[\x00-\x1f]') -and -not ($zone -match '[\x00-\x1f]')
         if (-not $sound) {
@@ -205,7 +206,7 @@ function Test-PinRecords($pins) {
 
 # The whole of qcQuestData.lua, each line ending in CRLF. A quest's row in qcQuestDatabase is
 # {name, level, category, type, faction, race, class, storyline}, with storyline left off when it's
-# 0; profession, holiday, covenant and prereq, which most quests don't have, go in tables of their
+# 0; profession, holiday, covenant, pvp and prereq, which most quests don't have, go in tables of their
 # own keyed by quest ID, a prereq list as a Lua table. qcQuestMinLevel holds the level a character
 # needs to take a quest whose own level (the row's) is not that; a quest it lacks needs the row's
 # level. The zone text isn't written: the game never reads it.
@@ -220,6 +221,7 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data') {
         qcQuestProfession = @{ Field = 'profession' }
         qcQuestHoliday = @{ Field = 'holiday' }
         qcQuestCovenant = @{ Field = 'covenant' }
+        qcQuestPvP = @{ Field = 'pvp' }
         qcQuestPrereq = @{ Field = 'prereq' }
         qcQuestMinLevel = @{ Field = 'minLevel'; ZeroIsValue = $true }
     }

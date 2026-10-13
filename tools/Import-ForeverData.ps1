@@ -66,6 +66,7 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
   level     the quest's own level: the game's, else CMaNGOS's QuestLevel.
   minLevel  the level a character needs to take the quest: the game's, else CMaNGOS's MinLevel, as
             given (0 is kept, for no minimum). Left out where it is the quest's level.
+  pvp       1 where the game's record calls the quest PvP (its questInfo is 41), as Sync-QuestPvP.ps1 sets it.
   category  Blizzard's own: the zone's AreaTable ID, or the negative QuestSort ID for class,
             profession, holiday and Forever's other headings; CMaNGOS's when the game's record
             has none; 0 for none, or for an area the client's AreaTable doesn't have. A quest
@@ -803,7 +804,7 @@ foreach ($id in $ids) {
     $records[$id] = [pscustomobject]@{ id = $id; name = $title; level = $level
         zone = $(if ($sortName.ContainsKey($category)) { $sortName[$category] } else { '' }); category = $category
         type = $type; faction = $faction; race = $race; class = $class; profession = $profession; holiday = $holiday
-        covenant = 0; storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0
+        covenant = 0; pvp = $(if ($c -and [int]$c.questInfo -eq 41) { 1 } else { 0 }); storyline = $(if ($storylineOf.ContainsKey($id)) { $storylineOf[$id] } else { 0 }); prereq = 0
         minLevel = $(if ($minLevel -ne $level) { $minLevel } else { $null }) }
 }
 

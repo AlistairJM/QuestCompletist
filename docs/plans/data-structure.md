@@ -90,6 +90,7 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   ID. Since 6 October 2026 a prereq can also be a list
   ([quest-table-checks.md](quest-table-checks.md)).
   The code reads them as "nil means none", where it used to test for 0.
+- **PvP** is `qcQuestPvP`, keyed by quest ID, since 13 October 2026: 343 retail quests and 14 on Forever that the game's quest cache calls PvP (`Sync-QuestPvP.ps1`). Nothing in the addon reads it yet.
 - **The minimum level** is in `qcQuestMinLevel`, keyed by quest ID, since 9 October 2026. The row's
   level is the quest's own; the table holds the level a character needs to take a quest whose
   minimum isn't its level, and keeps a 0. Retail's table was empty until 11 October 2026, because its

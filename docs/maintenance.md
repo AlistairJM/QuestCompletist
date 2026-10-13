@@ -94,9 +94,9 @@ hold what retail keeps in `qcQuest.lua` by hand, and go into Forever's `qcQuest.
 line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
 In `qcQuestData.lua` a quest's row in `qcQuestDatabase` is `{name, level, category, type, faction,
-race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant and
+race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant, PvP and
 prerequisite, which most quests don't have, and the minimum level, where it isn't the row's level,
-are in `qcQuestProfession`, `qcQuestHoliday`, `qcQuestCovenant`, `qcQuestPrereq` and
+are in `qcQuestProfession`, `qcQuestHoliday`, `qcQuestCovenant`, `qcQuestPvP`, `qcQuestPrereq` and
 `qcQuestMinLevel`, keyed by quest ID, a list of prerequisites as a Lua table.
 The zone text stays in the data file only: the game never reads it.
 
@@ -327,6 +327,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers, TrinityCore and the decisions kept by hand (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
+| 2g | The PvP tag, from the quest cache's kind of each quest (after step 2e; Forever's comes from its importer too): `pvp` on every quest the game calls PvP, PvP World Quest, War Mode PvP or PvP Conquest, for both games; lists, and leaves alone, the quests in battlegrounds, Wintergrasp, Tol Barad and Ashran the game doesn't tag | `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf`; the same with `-Game forever` | Only the last one |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
 | 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
