@@ -43,6 +43,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 - Renown and friendship rank requirements, with a ✓ or ✗, and the reputation it rewards.
 - On WoW: Forever, the profession and skill level a quest needs, like *Fishing (30)*, with a ✓ or ✗.
 - Warnings for breadcrumb quests, and for quests that lock out others ("you can only complete one of these").
+- Quest IDs show at the top of the quest dialog and in the list and map pin tooltips. Untick *Show Quest IDs* in the options to hide them.
 
 **Filters to show only what matters to you**
 

@@ -233,6 +233,10 @@ function qcPinMixin:OnAcquired(pinData)
     self.Texture:SetVertexColor(shade, shade, shade)
 end
 
+local function qcQuestIdText(questId)
+    if qcSettings.QC_SHOW_QUEST_IDS ~= 0 then return string.format("|cff808080%d|r", questId) end
+end
+
 -- A quest that can't be taken yet is greyed, with what stands in the way.
 local function qcAddPinQuestLine(questId, state)
     local icon, colour = qcQuestStatus.Look(questId, state)
@@ -240,7 +244,7 @@ local function qcAddPinQuestLine(questId, state)
     local needs = qcPinQuestNeeds(questId, state)
     local text = needs and string.format("    |cff9d9d9d%s|r |cff808080(%s)|r", name, needs)
         or string.format("    |cff%s%s|r", colour, name)
-    local leftText = qcAddMapTooltipLine(text, string.format("|cff808080%d|r", questId))
+    local leftText = qcAddMapTooltipLine(text, qcQuestIdText(questId))
     qcSetMapTooltipLineIcon(leftText, icon, needs)
 end
 
@@ -301,7 +305,7 @@ local function qcAddPinQuestsToTooltip(pins)
         end
     end
     for _, questId in ipairs(noData) do
-        qcAddMapTooltipLine("    |cff808080" .. qcL.NOTINDATABASE .. "|r", string.format("|cff808080%d|r", questId))
+        qcAddMapTooltipLine("    |cff808080" .. qcL.NOTINDATABASE .. "|r", qcQuestIdText(questId))
     end
 
     for _, pinData in ipairs(pins) do

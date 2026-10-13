@@ -415,8 +415,10 @@ function qcUpdateTooltip(index)
             qcQuestInformationTooltip:AddLine(qcL.NODETAILS, 0.5, 0.5, 0.5)
         end
         qcAddQuestTooltipDivider()
-        qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("%s%d|r", COLOUR_MAGE, questId))
-        qcAddQuestTooltipDivider()
+        if qcSettings.QC_SHOW_QUEST_IDS ~= 0 then
+            qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTID, stringFormat("%s%d|r", COLOUR_MAGE, questId))
+            qcAddQuestTooltipDivider()
+        end
 
         -- Restore ATT hook if we temporarily replaced it
         if att_HookBackup then
