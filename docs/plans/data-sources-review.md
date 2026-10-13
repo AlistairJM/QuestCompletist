@@ -469,6 +469,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-13: D7, D18 and D19 fixed (Forever; its own pull request). 26/27 swap givers by a REMOVE/ADD decision, 28/29 take the other quest's prerequisite, creature_spawn_entry is read (7281 and 7302 pinned), and a spawn in several holidays' events counts for none. 4736/4737, 4967/4968 and 8228/8229 are still for the user.
 
+- 2026-10-13: recommendation 37 started: `Find-MissingQuests.ps1` (report only, both games) and its decisions and baseline files (555 retail and 130 Forever candidates); the importer's summary splits CMaNGOS-only quests into repeatable and other (481 and 1,666) and counts QuestV2 rows never answered (3,700). Nothing added to the data yet: the Midnight Candy Buckets and the other live-looking holiday quests wait for the user's OK.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
