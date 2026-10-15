@@ -86,7 +86,9 @@ try {
         '[7] = {build = "12.1.5.70400", result = "fail"},',
         '[8] = {build = "12.1.0.69933", result = "ok", level = 5, trivial = true, contentDifficulty = 0},',
         '[9] = {build = "12.1.5.70400", result = "timeout"},',
-        '[10] = {build = "12.1.5.70400", result = "ok", level = 12, trivial = true, contentDifficulty = 4},'
+        '[10] = {build = "12.1.5.70400", result = "ok", level = 12, trivial = true, contentDifficulty = 4},',
+        '[11] = {build = "12.1.5.70400", result = "cached", level = 0, trivial = false, contentDifficulty = 2},',
+        '[12] = {build = "12.1.5.70400", result = "cached", trivial = false, contentDifficulty = 2},'
     ) -join "`n"
     $levelRuns = @(
         '{kind = "quests", build = "12.1.5.70400", time = 5, character = "Horde Orc WARRIOR", level = 20, answered = 9, asked = 10, facts = {trivial = "C_QuestLog.IsQuestTrivial", contentDifficulty = "C_PlayerInfo.GetContentDifficultyQuestForPlayer"}, trivialRange = {UnitQuestTrivialLevelRange = 4, UnitQuestTrivialLevelRangeScaling = 7}},',
@@ -154,6 +156,8 @@ try {
     Equal $lf.TrivialRange 6 'T9: the character''s trivial range'
     Check ($lf.TrivialRangeScaling -is [bool] -and -not $lf.TrivialRangeScaling) 'T9: and $false for a scaling range the client lacks'
     Equal $lf.Loaded 7 'T9: seven loaded quests of that build (not the refused one, the timed-out one or the other build''s)'
+    Equal $lf.Partial 2 'T9: two cached rows with no level above 0 are records held in part, counted apart'
+    Check (-not $lf.Quests.ContainsKey('11') -and -not $lf.Quests.ContainsKey('12')) 'T9: and left out of the tallies'
     Equal $lf.Trivial['true'] 3 'T9: three are trivial'
     Equal $lf.Trivial['false'] 3 'T9: three are not'
     Equal $lf.Trivial['none'] 1 'T9: and one has no answer'

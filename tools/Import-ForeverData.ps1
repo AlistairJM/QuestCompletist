@@ -698,14 +698,8 @@ if (-not $memory.Runs.Count) {
     }
 }
 Update-AnswerMemory $memory (Read-CacheLines $CacheFile) $probeResult $Build
-$carried = @{}
-foreach ($id in ($memory.Quests.Keys | Sort-Object)) {
-    if ($cache.ContainsKey($id) -or $removeOk[$id]) { continue }
-    $entry = $memory.Quests[$id]
-    if ($entry.Missed -ge $MaxMissedRuns -and -not $keep[$id]) { continue }
-    $cache[$id] = $entry.Raw | ConvertFrom-Json
-    $carried[$id] = $entry
-}
+$carried = Get-CarriedAnswers $memory $cache $MaxMissedRuns $keep $removeOk
+foreach ($id in $carried.Keys) { $cache[$id] = $carried[$id].Raw | ConvertFrom-Json }
 $gone = @(Get-QuestsMissedSince $memory $MaxMissedRuns | Where-Object { -not $cache.ContainsKey($_) })
 
 $review = New-Object System.Collections.Generic.List[object]
