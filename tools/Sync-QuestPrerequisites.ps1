@@ -38,7 +38,8 @@ Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the
     on, where TrinityCore's requirement (its NextQuestID or PrevQuestID) says the same: any one of
     them will do. Where TrinityCore names none the follow-up is often a re-offer, not a requirement
     (1 in 4 where it has a row, October 2026), so those aren't taken. Nor is a breadcrumb into the
-    quest (qcBreadcrumbQuests): the game offers the quest to a character who skipped it.
+    quest (qcBreadcrumbQuests): the game offers the quest to a character who skipped it. A cache
+    that looks partial (QuestCacheFiles.ps1) is warned about: its gaps are follow-ups not taken.
 Last, the prerequisites decided with the user (-DecisionsFile, docs\plans\quest-link-decisions.csv,
 in the columns of WoW: Forever's link decisions) replace whatever the sources give: a quest's prereq
 SET rows name the quest it needs, and several rows for one quest are a choice. The run lists any the
@@ -73,6 +74,7 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
 . "$PSScriptRoot\QuestConditions.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 
 $records = Read-QuestData $DataDir
 $quests = @{}
@@ -315,6 +317,7 @@ function Get-MinLevel([int]$id) { if ($null -ne $quests[$id].minLevel) { return 
 if (-not $QuestCacheFile) { $QuestCacheFile = Join-Path $ToolsDir "retail_quest_cache_$Build.jsonl" }
 $offeredAfter = @{}
 if (Test-Path $QuestCacheFile) {
+    Get-QuestCacheWarning $QuestCacheFile $quests.Keys
     foreach ($line in [IO.File]::ReadLines($QuestCacheFile)) {
         if ($line -notmatch '"nextQuest":(\d+)') { continue }
         $next = [int]$Matches[1]

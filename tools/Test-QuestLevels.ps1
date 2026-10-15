@@ -7,8 +7,9 @@ tuning 0 (no minLevel, a 0 held there taken away, an API minimum still used), no
 1, a minLevel that stays, goes or changes, a tuning the table has no row for, an offset type nobody
 knows, a tuning the API contradicts, and the cache's tuning against the task table's. The rest changes
 one thing at a time: the formula's agreement against the thresholds,
--WhatIf and -Check, a second run, quests added later, the baseline of Compare-QuestLevels.ps1, and the
-download of the table.
+-WhatIf and -Check, a second run, quests added later, the baseline of Compare-QuestLevels.ps1, the
+download of the table, and a quest cache that looks partial (QuestCacheFiles.ps1's warning against the
+build before's cache and our data, and -UpdateBaseline refused unless -AcceptPartialCache).
 
 The last section runs the same tools on the real files, when they are there: -RealToolsDir (this
 folder by default) with the API cache, the quest cache, the task table and a ContentTuning table. It
@@ -436,6 +437,78 @@ $r = Invoke-Tool $Apply $noColumn
 Check ($r.Failure -ne '') 'G1: a table that lacks a column the formula reads stops the run'
 Has $r.Failure "no 'MinLevelSquish' column" 'G1: naming it'
 Equal (Get-Hashes $noColumn) $noColumnHashes 'G1: and nothing is written'
+
+# --- A quest cache that looks partial (QuestCacheFiles.ps1) ---------------------------------------------------
+function Write-Cache([string]$dir, [string]$file, $ids) {
+    New-Item -ItemType Directory $dir -Force | Out-Null
+    [IO.File]::WriteAllText("$dir\$file", ((@($ids | ForEach-Object { '{"id":' + $_ + ',"title":"Quest ' + $_ + '","contentTuning":10,"sort":0,"questType":2}' }) -join "`n") + "`n"), $utf8)
+    return "$dir\$file"
+}
+$sizeDir = Join-Path $Scratch 'cache-size'
+$newest = Write-Cache $sizeDir 'retail_quest_cache_12.1.5.70391.jsonl' (1..90)
+Equal @(Get-QuestCacheWarning $newest).Count 0 'K1: a cache with no build before it, and no data given, is not warned about'
+$null = Write-Cache $sizeDir 'retail_quest_cache_12.1.0.69933.jsonl' (1..100)
+Equal @(Get-QuestCacheWarning $newest).Count 0 'K1: nor one with 90 of the 100 quests of the build before: 90% is enough'
+$newest = Write-Cache $sizeDir 'retail_quest_cache_12.1.5.70391.jsonl' (1..89)
+$w = @(Get-QuestCacheWarning $newest)
+Equal $w.Count 2 'K2: 89 of them is warned about, in two lines'
+Equal $w[0] 'WARNING: retail_quest_cache_12.1.5.70391.jsonl looks partial, with under 90% of the quests it should hold: 89 against the 100 of retail_quest_cache_12.1.0.69933.jsonl, the build before (89.0%).' 'K2: the first names both counts and the cache of the build before'
+Equal $w[1] 'WARNING: a probe run cut short, or one whose quests the server refused, leaves a cache like this, and what it lacks reads as quests no source speaks for. Ask the missing quests again, and don''t let a smaller cache replace this one (docs\maintenance.md, step 2e).' 'K2: the second why it matters and what to do'
+$null = Write-Cache $sizeDir 'retail_quest_cache_12.1.0.9.jsonl' (1..50)
+$null = Write-Cache $sizeDir 'retail_quest_cache_12.0.7.99999.jsonl' (1..50)
+$null = Write-Cache $sizeDir 'retail_quest_cache_12.1.10.1.jsonl' (1..1000)
+$null = Write-Cache $sizeDir 'retail_quest_cache_notabuild.jsonl' (1..1000)
+$null = Write-Cache $sizeDir 'forever_quest_cache_1.60.1.70374.jsonl' (1..1000)
+Has (@(Get-QuestCacheWarning $newest) -join "`n") 'against the 100 of retail_quest_cache_12.1.0.69933.jsonl' 'K3: the build before is the newest earlier one, by version and not by text; a later build, a name with no build and the other game''s cache are not it'
+Equal ((@(Get-QuestCacheFiles $sizeDir) | ForEach-Object { $_.Name }) -join ',') 'retail_quest_cache_12.0.7.99999.jsonl,retail_quest_cache_12.1.0.9.jsonl,retail_quest_cache_12.1.0.69933.jsonl,retail_quest_cache_12.1.5.70391.jsonl,retail_quest_cache_12.1.10.1.jsonl' 'K3: Get-QuestCacheFiles lists the game''s caches by version'
+Equal ((@(Get-QuestCacheFiles $sizeDir 'forever') | ForEach-Object { $_.Name }) -join ',') 'forever_quest_cache_1.60.1.70374.jsonl' 'K3: and Forever''s apart'
+$emptyDir = Join-Path $Scratch 'cache-empty'
+$null = Write-Cache $emptyDir 'retail_quest_cache_12.1.0.69933.jsonl' @()
+$alone = Write-Cache $emptyDir 'retail_quest_cache_12.1.5.70391.jsonl' (1..5)
+Equal @(Get-QuestCacheWarning $alone).Count 0 'K4: an empty cache of the build before is no measure'
+$oursDir = Join-Path $Scratch 'cache-ours'
+$alone = Write-Cache $oursDir 'retail_quest_cache_12.1.5.70391.jsonl' (@(1..89) + @(500..520))
+Equal @(Get-QuestCacheWarning $alone (1..98)).Count 0 'K5: 89 of our 98 quests (90.8%) is not warned about'
+$w = @(Get-QuestCacheWarning $alone (1..99))
+Equal $w[0] 'WARNING: retail_quest_cache_12.1.5.70391.jsonl looks partial, with under 90% of the quests it should hold: 89 of our 99 (89.9%).' 'K5: 89 of our 99 is, and the quests only in the cache do not count'
+$w = @(Get-QuestCacheWarning $newest (1..100))
+Equal $w[0] 'WARNING: retail_quest_cache_12.1.5.70391.jsonl looks partial, with under 90% of the quests it should hold: 89 against the 100 of retail_quest_cache_12.1.0.69933.jsonl, the build before (89.0%), and 89 of our 100 (89.0%).' 'K6: both counts at once, in one line'
+$odd = Write-Cache $oursDir 'retail_quest_cache_test.jsonl' (1..10)
+Equal @(Get-QuestCacheWarning $odd (1..20))[0] 'WARNING: retail_quest_cache_test.jsonl looks partial, with under 90% of the quests it should hold: 10 of our 20 (50.0%).' 'K7: a cache whose name holds no build is held to our data alone'
+$null = Write-Cache $oursDir 'forever_quest_cache_1.60.1.70338.jsonl' (1..100)
+$w = @(Get-QuestCacheWarning (Write-Cache $oursDir 'forever_quest_cache_1.60.1.70374.jsonl' (1..80)))
+Has $w[0] '80 against the 100 of forever_quest_cache_1.60.1.70338.jsonl, the build before (80.0%)' 'K8: Forever''s cache is held to the build before too'
+Has $w[1] '(docs\maintenance.md, step 10).' 'K8: and the warning names its step'
+
+$partial = Join-Path $Scratch 'partial'
+Copy-Item $world $partial -Recurse
+$r = Invoke-Tool $Compare $partial
+Equal $r.Exit 0 'K9: the made-up world passes the check'
+Lacks $r.Text 'looks partial' 'K9: and its cache, 142 of its 151 quests, is not warned about'
+$before = @(foreach ($line in [IO.File]::ReadAllLines("$partial\tools\retail_quest_cache_$Build.jsonl")) { $line }) + @(5000..5207 | ForEach-Object { '{"id":' + $_ + ',"title":"Quest ' + $_ + '","contentTuning":10,"sort":0,"questType":2}' })
+[IO.File]::WriteAllText("$partial\tools\retail_quest_cache_12.0.7.99999.jsonl", (($before -join "`n") + "`n"), $utf8)
+$r = Invoke-Tool $Compare $partial
+Equal $r.Exit 0 'K9: with a larger cache of the build before, the check exits as it did'
+Has $r.Text "WARNING: retail_quest_cache_$Build.jsonl looks partial, with under 90% of the quests it should hold: 142 against the 350 of retail_quest_cache_12.0.7.99999.jsonl, the build before (40.6%)." 'K9: and warns, with both counts'
+Has $r.Text 'Retail build 12.1.0.69933:' 'K9: the newest cache is still the one read'
+$baselineBefore = [IO.File]::ReadAllText("$partial\baseline.csv")
+$r = Invoke-Tool $Compare $partial @{ UpdateBaseline = $true }
+Equal $r.Exit 1 'K10: -UpdateBaseline is refused while the warning stands'
+Has $r.Text 'Baseline not written: the quest cache looks partial (the warning above).' 'K10: and says so'
+Has $r.Text 'FAILED: -UpdateBaseline was refused, as the quest cache looks partial' 'K10: in the FAILED line'
+Equal ([IO.File]::ReadAllText("$partial\baseline.csv")) $baselineBefore 'K10: and the baseline is left as it was'
+$r = Invoke-Tool $Compare $partial @{ UpdateBaseline = $true; AcceptPartialCache = $true }
+Equal $r.Exit 0 'K11: -AcceptPartialCache lets it write all the same'
+Has $r.Text 'Baseline written: ' 'K11: the baseline'
+Has $r.Text 'looks partial' 'K11: with the warning still shown'
+$partialHashes = Get-Hashes $partial
+$r = Invoke-Tool $Apply $partial @{ WhatIf = $true }
+Equal $r.Exit 0 'K12: Apply-QuestMinLevels.ps1 -WhatIf exits as it did'
+Has $r.Text "WARNING: retail_quest_cache_$Build.jsonl looks partial" 'K12: and warns'
+$r = Invoke-Tool $Apply $partial
+Equal $r.Exit 0 'K12: and a run of it too'
+Has $r.Text 'Nothing to change' 'K12: which has nothing to change here'
+Equal (Get-Hashes $partial) $partialHashes 'K12: and writes nothing'
 
 # --- The real files ------------------------------------------------------------------------------------------
 $realTable = @(Get-ChildItem "$RealToolsDir\ContentTuning-*.csv" -ErrorAction SilentlyContinue | Where-Object { $_.BaseName -match '^ContentTuning-\d+\.\d+\.\d+\.\d+$' })

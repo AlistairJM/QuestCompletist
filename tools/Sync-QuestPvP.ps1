@@ -29,8 +29,10 @@ Reads tools\<game>_quest_cache_<build>.jsonl (the newest unless -Build is given)
 the importer last wrote it, the API cache, the task table, TrinityCore's tools\tdb\TDB_full_world_*.sql or
 CMaNGOS's tools\ClassicDB_*.sql.gz; a source that is missing is named and skipped (unlike the importer, it
 doesn't make a missing answer memory from the caches). Run it on Forever after the importer (step 10): when
-the memory's last run isn't the cache's build, it says so. Safe to rerun: a second run changes nothing. With
--WhatIf it only reports; otherwise it saves through AddonData.ps1, which rebuilds the Lua.
+the memory's last run isn't the cache's build, it says so. A quest cache that looks partial
+(QuestCacheFiles.ps1) is warned about: retail's against the build before's and our data, Forever's against
+the build before's alone, as it holds only what the beta has answered. Safe to rerun: a second run changes
+nothing. With -WhatIf it only reports; otherwise it saves through AddonData.ps1, which rebuilds the Lua.
 #>
 param(
     [ValidateSet('retail', 'forever')]
@@ -53,6 +55,7 @@ $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\AddonData.ps1"
 . "$PSScriptRoot\ForeverAnswers.ps1"
 . "$PSScriptRoot\QuestRemovals.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot $(if ($Game -eq 'forever') { '..\data\forever' } else { '..\data' }) }
 if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot $(if ($Game -eq 'forever') { '..\QuestCompletist\Forever' } else { '..\QuestCompletist' }) }
 
@@ -70,9 +73,7 @@ function Read-Dump([string]$file, [string]$table, [string]$columns) {
 }
 
 if (-not $Build) {
-    $newest = Get-ChildItem "$ToolsDir\${Game}_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
-        Where-Object { $_.BaseName -match "^${Game}_quest_cache_\d+\.\d+\.\d+\.\d+$" } |
-        Sort-Object { [version]($_.BaseName -replace "^${Game}_quest_cache_") } | Select-Object -Last 1
+    $newest = Get-QuestCacheFiles $ToolsDir $Game | Select-Object -Last 1
     if (-not $newest) { throw "No ${Game}_quest_cache_<build>.jsonl under ${ToolsDir}: run Read-QuestCache.ps1 first, or give -Build." }
     $Build = $newest.BaseName -replace "^${Game}_quest_cache_"
 }
@@ -180,6 +181,7 @@ foreach ($q in $records) {
 
 "Build $Build ($Game): the game's cache has $answeredNow quests" + $(if ($Game -eq 'forever') { ", and the answer memory $($carried.Count) more it answered on an earlier build" } else { '' }) + "; no source answers for $unanswered of ours."
 if ($memoryNote) { $memoryNote }
+Get-QuestCacheWarning $cacheFile $(if ($Game -eq 'retail') { $inData.Keys })
 "Read: " + (($sources | Where-Object { $_.Name } | ForEach-Object { "$($_.Name) $($_.Answers.Count)" }) -join ', ') + $(if ($skipped.Count) { ". Not found, skipped: " + ($skipped -join ', ') } else { '' }) + '.'
 "PvP kinds: " + (($pvpKinds | ForEach-Object { "$_ $($kindName[$_])" }) -join ', ') + "."
 "{0} quests get pvp ({1}), {2} already have it." -f $changes.Count, (($bySource.Keys | ForEach-Object { "$_ $($bySource[$_])" }) -join ', '), $same
