@@ -26,8 +26,8 @@ Source: `tools/Find-UnavailableQuestCandidates.ps1`, which writes
 game client's own tables (wago.tools), our pin database, and Blizzard's API cache.
 
 **Candidates:** the 924 non-task quests Blizzard's API returns 404 for. Task quests (world
-quests and bonus objectives) are excluded: the API never serves them, and the Phase 3 spot-check
-found them live.
+quests and bonus objectives) are excluded: the API serves few of them (1,306 of the 5,740 in the
+data on 12.1.5, October 2026), so a 404 says little, and the Phase 3 spot-check found them live.
 
 | Bucket | Quests | No positive signal | What they are |
 |---|---|---|---|
