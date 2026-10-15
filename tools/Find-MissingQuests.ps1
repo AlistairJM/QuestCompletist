@@ -17,9 +17,9 @@ retired flag (0x4000), a title that marks it as internal (placeholders, tests, p
 finder rows and the like), no title, a disables row in the emulator
 (TrinityCore's sourceType 1), a quest type of 1 in the cache. A candidate has at least one of: an emulator
 starter (a creature or an object), a start point (point 32 in the client's QuestPOIBlob, or in
-TrinityCore's quest_poi), a quest line row (QuestLineXQuest-<newest QuestV2 build>.csv; on retail, failing that,
-the unnumbered QuestLineXQuest.csv, and on Forever its newest numbered one), an item that starts it (ItemSparse
-StartQuestID).
+TrinityCore's quest_poi), a quest line row (QuestLineXQuest-<newest QuestV2 build>.csv, else the game's newest
+numbered one up to that build, else on retail the unnumbered QuestLineXQuest.csv, of an unknown build), an item
+that starts it (ItemSparse StartQuestID, its table found the same way).
 Anything else is "noEvidence".
 
 Decisions already taken are in docs\plans\missing-quest-decisions.csv (Game, Quest, Name, Decision, Reason):
@@ -56,6 +56,20 @@ function Newest-Build([string]$pattern, [string]$prefix) {
     $names = @(Get-ChildItem (Join-Path $ToolsDir $pattern) -ErrorAction SilentlyContinue | ForEach-Object { $_.Name -replace "^$prefix-(.*)\.csv$", '$1' } | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' })
     return @($names | Sort-Object { [version]$_ })
 }
+function Find-ClientTable([string]$table, [string]$what) {
+    $builds = @(Newest-Build "$table-*.csv" $table | Where-Object { $_ -like $buildLike -and [version]$_ -le [version]$latest })
+    if ($builds.Count) {
+        $file = "$table-$($builds[-1]).csv"
+        $note = if ($builds[-1] -ne $latest) { "No $table-$latest.csv: ${what}s from $file." } else { '' }
+    } elseif ($Game -eq 'retail' -and (Test-Path (Join-Path $ToolsDir "$table.csv"))) {
+        $file = "$table.csv"
+        $note = "No $table-<build>.csv up to ${latest}: ${what}s from the unnumbered $file, of an unknown build."
+    } else {
+        $file = ''
+        $note = "No $table table for $Game in ${ToolsDir}: $what evidence is missing."
+    }
+    return [pscustomobject]@{ Path = $(if ($file) { Join-Path $ToolsDir $file } else { '' }); Note = $note }
+}
 function Read-Ids([string]$path) {
     $ids = @{}
     foreach ($row in (Import-Csv $path)) { $ids[[int]$row.ID] = $true }
@@ -74,7 +88,8 @@ $pinned = @{}
 foreach ($pin in (Read-PinData $DataDir)) { foreach ($q in $pin.quests) { $pinned[[int]$q] = $true } }
 
 # Client: QuestV2, and the PTR's when it is newer than the live build's.
-$clientBuilds = @(Newest-Build 'QuestV2-*.csv' 'QuestV2' | Where-Object { if ($Game -eq 'forever') { $_ -like '1.*' } else { $_ -like '12.*' } })
+$buildLike = if ($Game -eq 'forever') { '1.*' } else { '12.*' }
+$clientBuilds = @(Newest-Build 'QuestV2-*.csv' 'QuestV2' | Where-Object { $_ -like $buildLike })
 if (-not $clientBuilds.Count) { throw "No QuestV2-<build>.csv for $Game in $ToolsDir." }
 if ($Build) { $clientBuilds = @($clientBuilds | Where-Object { [version]$_ -le [version]$Build }) }
 $clientKnown = @{}
@@ -138,20 +153,13 @@ foreach ($file in (Get-ChildItem (Join-Path $ToolsDir 'QuestPOIBlob*.csv') -Erro
     foreach ($row in (Import-Csv $file.FullName)) { $clientPoi[[int]$row.QuestID] = $true; if ($row.ObjectiveIndex -eq '32') { $clientStart32[[int]$row.QuestID] = $true } }
 }
 $questLine = @{}
-$lineFile = Join-Path $ToolsDir "QuestLineXQuest-$latest.csv"
-if (-not (Test-Path $lineFile)) {
-    # The unnumbered table is retail's (step 7 downloads it); Forever's tools write only numbered ones.
-    $lineFile = if ($Game -eq 'retail') { Join-Path $ToolsDir 'QuestLineXQuest.csv' } else {
-        $lineBuilds = @(Newest-Build 'QuestLineXQuest-*.csv' 'QuestLineXQuest' | Where-Object { $_ -like '1.*' -and [version]$_ -le [version]$latest })
-        if ($lineBuilds.Count) { Join-Path $ToolsDir "QuestLineXQuest-$($lineBuilds[-1]).csv" } else { '' }
-    }
-    if ($lineFile -and (Test-Path $lineFile)) { Write-Output "No QuestLineXQuest-$latest.csv: quest lines from $(Split-Path $lineFile -Leaf)." }
-    else { Write-Output "No QuestLineXQuest table for $Game in ${ToolsDir}: quest line evidence is missing."; $lineFile = '' }
-}
-if ($lineFile) { foreach ($row in (Import-Csv $lineFile)) { $questLine[[int]$row.QuestID] = [int]$row.QuestLineID } }
+$lineTable = Find-ClientTable 'QuestLineXQuest' 'quest line'
+if ($lineTable.Note) { Write-Output $lineTable.Note }
+if ($lineTable.Path) { foreach ($row in (Import-Csv $lineTable.Path)) { $questLine[[int]$row.QuestID] = [int]$row.QuestLineID } }
 $itemStart = @{}
-$itemFile = if ($Game -eq 'retail') { Join-Path $ToolsDir 'ItemSparse.csv' } else { Join-Path $ToolsDir "ItemSparse-$latest.csv" }
-if (Test-Path $itemFile) { foreach ($row in (Import-Csv $itemFile)) { if ([int]$row.StartQuestID) { $itemStart[[int]$row.StartQuestID] = $true } } }
+$itemTable = Find-ClientTable 'ItemSparse' 'start item'
+if ($itemTable.Note) { Write-Output $itemTable.Note }
+if ($itemTable.Path) { foreach ($row in (Import-Csv $itemTable.Path)) { if ([int]$row.StartQuestID) { $itemStart[[int]$row.StartQuestID] = $true } } }
 foreach ($id in $emItemStart.Keys) { $itemStart[$id] = $true }
 
 # Decisions.

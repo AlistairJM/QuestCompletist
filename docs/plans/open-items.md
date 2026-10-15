@@ -453,8 +453,9 @@ again.
     continent count at level 80 is 31 (54 before), mostly those.
   - Zul'Aman's line 6011 needs line 5724 done or a warband-wide test (ModifierTree type 383) that a
     prerequisite can't say, so it has no gate.
-- **93701 "Brittle and Brilliant"**, a Midnight trainer quest of Silvermoon City, is in the quest cache
-  (quest info 267, Professions) and not in the data; 93707 and 93713 are only in `QuestV2`.
+- **93701 "Brittle and Brilliant"**, a Midnight trainer quest of Silvermoon City, is in the 12.1.0.69933
+  quest cache (quest info 267, Professions) and not in the data; 93707 and 93713 are only in `QuestV2`. The
+  12.1.5.70391 cache lacks it, so `Find-MissingQuests.ps1`, which reads the newest cache, files it as untitled.
 
 ## Code to finish
 
