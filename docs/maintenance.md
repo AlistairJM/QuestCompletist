@@ -961,9 +961,9 @@ addon reads the table yet. Every sweep, with the newest cache of each game:
 - Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933): retail 363
   (the game 343: PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP Elite World Quest 6; the API
   4, the task table 3, TrinityCore 13), 109 of our quests no source answers for. Forever, 14 October 2026 (cache
-  1.60.1.70374): 183 (the game 32, CMaNGOS 150, one decision), 5 of our quests no source answers for; on 70338 it
-  was 176, the game 14. The sources agreed wherever more than one answered,
-  except 7838. A kind the game adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
+  1.60.1.70374): 183 (the game 32, CMaNGOS 150, one decision), 5 of our quests no source answers for (the newest
+  cache alone; with the answer memory, #342, 0); on 70338 it was 176, the game 14. The sources agreed wherever
+  more than one answered, except 7838. A kind the game adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
   belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
 - Looked at on 13 October 2026 and not used, to be looked at again when a source changes: the quest cache's
   `flags` and `flagsEx` (no bit marks PvP: retail's 0x4000 and 0x4000000 are 32% and 31% of the PvP quests and
@@ -1802,7 +1802,8 @@ the addon's file and the newest probe file saw him more often. The committed `pi
 14 October 2026 (build 70374, with the ledger at 326 Forever rows), which the user reviewed and accepted pin
 by pin. It moved 26 pins and added 5. 21 givers new to the ledger moved to their recorded places: 20 by 0.02
 to 0.26 of a map point, and Darcy in Lakeshire by 1.1 (she walks a path, and her CMaNGOS spawn is one end of
-it). 5 givers the ledger already had moved 0.1 to 0.14 to the row seen more often. The 5 new pins are for
+it). 4 givers the ledger already had moved 0.1 to 0.14 to the row seen more often, and Gubber Blump, whose two
+rows now tie at 6 visits, to the lower one (36.1,44.9). The 5 new pins are for
 quests only the game knew: four givers in Elwynn Forest and the Wanted: Incinerator Gar'im poster in
 Redridge Mountains (see the status of 14 October in [plans/forever.md](plans/forever.md)). A giver the
 recorders meet later moves its pin the same way, because the recorder keeps where the player stood: the

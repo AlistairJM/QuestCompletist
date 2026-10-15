@@ -1547,13 +1547,14 @@ on scratch copies, with each merge since the last change to the pins (#267) impo
   rows (2,354 on 1,871 quests) and 4,202 quests have a minimum level. Step 6d took the recorders' newer notes into
   the ledger (231 to 326 Forever rows; every note is of build 70338 or earlier). **31 pin changes** (1,701 to 1,706
   pins): 21 givers new to the ledger move to their recorded places, Darcy by 1.1 map points and the others by 0.02
-  to 0.26; 5 givers the ledger had move 0.1 to 0.14 to the row seen more often, Thundris Windweaver back to
-  37.4,40.1; and 5 pins are new, for 91723, 91725, 91732 and 91733 (four givers in Elwynn Forest) and 95999 (the
-  Wanted: Incinerator Gar'im poster in Redridge Mountains). 98581, 109 and 1097 join the pins of the givers seen offering them. The user
+  to 0.26; 4 givers the ledger had move 0.1 to 0.14 to the row seen more often (Thundris Windweaver back to
+  37.4,40.1), and Gubber Blump, whose two rows now tie at 6 visits, to the lower one (36.1,44.9); and 5 pins are
+  new, for 91723, 91725, 91732 and 91733 (four givers in Elwynn Forest) and 95999 (the Wanted: Incinerator
+  Gar'im poster in Redridge Mountains). 98581, 109 and 1097 join the pins of the givers seen offering them. The user
   accepted all of it, Darcy's move too: decision 38 stands as taken on 12 October, so the recorded place wins
   (open-items.md). Checks: `Build-AddonData.ps1 -Check` up to date, `Show-RemovedQuests.ps1 -Game forever` lists
   none, the table audit 6 findings and none new, item 9 takes nothing off, `Test-ForeverChecks.ps1` 43 and
   `Test-ForeverImport.ps1` 115 checks with 0 failed, and `Test-Completions.lua` passes on both TOCs. The
-  reachability check is all zeros except its "bracket" lines (53 at each level, 46 on master). Those fail because
-  the test doesn't expect the list's PvP mark, which the pull request fix/reachability-pvp-mark fixes; with that
-  pull request's test, they read 0 too.
+  reachability check is all zeros apart from the 81 event pins, as before, and its "bracket" lines (53 at each
+  level, 46 on master). Those fail because the test doesn't expect the list's PvP mark, which #336 fixes; with
+  that pull request's test, they read 0 too.
