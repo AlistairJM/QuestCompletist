@@ -473,6 +473,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-13: the 15 Midnight Candy Buckets (97142-97213) are in the data, on the user's word (PR after #327); retail has 35,544 quests. The older buckets and the Ahune, Headless Horseman and gift quests are still undecided. The step-6 rules ask for a retail quest-type probe after quests are added (maintenance.md): the buckets are one-time holiday quests like the 265 already there.
 
+- 2026-10-15: recommendation 43 in part, for the 12.1.5 sweep: the twelve retail tools whose `-Build` default was 12.1.0.69933 now default to 12.1.5.70391, changed by hand as maintenance.md's "Pin the builds" asks at a new patch (`Get-LatestBuilds.ps1` passed the old defaults, since it only compares a default with its own version's newest build). `Test-ContinentPins.lua` reads Forever's newest `UiMap-1.60.1.<build>.csv` instead of 70338's. Still open: tools that work out their build, build-named tables only, and the build printed.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

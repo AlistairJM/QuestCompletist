@@ -181,8 +181,11 @@ then every tool refuses to save.
    `Sync-QuestSortNames.ps1`'s `-ForeverBuild`) take the build of the newest `tools\forever_probe_<revision>`
    results when it is left out, and say which: the importer needs the tables, the quest cache and the
    probe's answers on one build, and the check says when those results are behind the installed client.
-   Retail's tools still carry a build as their default, which the check lists when it is older than the
-   newest build of its version: pass the build, or change the default, at the sweep for a new patch.
+   Twelve of retail's tools still carry a build as their `-Build` default, 12.1.5.70391 since 15 October
+   2026 (the check counts them under "Pinned builds"). The check lists a default only when it is older
+   than the newest build of its own version, so a default left on the patch before still reads `ok`: all
+   twelve were on 12.1.0.69933 while 12.1.5.70391 was live, and the check passed them. So at the sweep for
+   a new patch, change the twelve defaults to the new live build; between patches, pass the build.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest build.
 2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
    table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
@@ -333,7 +336,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
+| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
 | 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1d, 2c and 4 again, for the new rows | The applying run |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
@@ -1034,12 +1037,16 @@ the `fact <quest> questLineID <id>` lines) with each quest's `storyline`.
 
 ### 5. Zone table and category names from the client
 
-`Build-CategoryUiMapIDs.ps1 -Refresh` downloads the game's map table (`UiMap.csv`) for the pinned
-build and maps quest categories to game maps, so the client supplies their names in every language.
+`Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` downloads the game's map table
+(`UiMap.csv`) for that build and maps quest categories to game maps, so the client supplies their
+names in every language. Each of this step's tools downloads a table for `-Build` only with
+`-Refresh` or when the file is missing, and retail's file names carry no build, so without `-Refresh`
+a run reads whatever build's table is already there.
 
-Then run `Add-ZoneTableMaps.ps1 -WhatIf`, then without `-WhatIf`. It adds the maps missing from
-`qcAreaIDToCategoryID`, which turns the map you're on into a quest category. The addon switches the
-quest list through it when you enter a zone, and `Place-UncategorisedQuests.ps1` files quests by it.
+Then run `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh -WhatIf`, then without `-WhatIf`. It
+adds the maps missing from `qcAreaIDToCategoryID`, which turns the map you're on into a quest
+category. The addon switches the quest list through it when you enter a zone, and
+`Place-UncategorisedQuests.ps1` files quests by it.
 Nothing else maintains it, so new dungeons and new versions of a zone's map drift out of it. A map
 is added when a category is named by it, when it has the same name and parent as a map already
 listed (a dungeon's other floors), when it's in the client's map group (`UiMapGroupMember`, the
@@ -1050,9 +1057,9 @@ and never changes an existing entry. A floor it leaves out because its name is a
 (The Stockade, in Stormwind City's group) is listed, for adding by hand if that's wrong. Run
 `Build-CategoryUiMapIDs.ps1` again afterwards, without `-Refresh`, so it sees the new maps.
 
-Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
-other client tables: classes, professions, covenants, dungeons, achievement categories (the world
-events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
+Then run `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh`. It names the categories
+that aren't maps from other client tables: classes, professions, covenants, dungeons, achievement
+categories (the world events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
 `qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
 The same tool writes `clientName` into `qcMenu.lua` for the menu headings it lists (continents,
 expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
@@ -2508,7 +2515,9 @@ git diff --stat
   `Test-ContinentPins.lua` for both games' TOCs. It must say "All checks passed." It builds a made-up
   continent from the game's own zones, counts a character step by step (a breadcrumb whose quest is in the
   log counts as closed, not available), checks every category against the quest list's zone counter, and,
-  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass.
+  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass. Retail's
+  table is `UiMap.csv`; Forever's is the newest `UiMap-1.60.1.<build>.csv` by build number, unless a third
+  argument names another.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 - **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or

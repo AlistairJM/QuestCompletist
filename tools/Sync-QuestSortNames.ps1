@@ -21,14 +21,14 @@ the files changes. A rerun with no client changes leaves every file byte-identic
 Reads tools\QuestSort.<locale>.csv (retail) and tools\QuestSort-<Forever build>.<locale>.csv,
 downloaded when missing or with -Refresh.
 
-  .\Sync-QuestSortNames.ps1 -Build 12.1.0.69933 -WhatIf
-  .\Sync-QuestSortNames.ps1 -Build 12.1.0.69933 -ForeverBuild 1.60.1.70338
+  .\Sync-QuestSortNames.ps1 -Build 12.1.5.70391 -WhatIf
+  .\Sync-QuestSortNames.ps1 -Build 12.1.5.70391 -ForeverBuild 1.60.1.70374
 -ForeverBuild left out is the build of the newest tools\forever_probe_<revision> results.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [string]$ForeverBuild = "",
     [switch]$Refresh,
     [switch]$WhatIf

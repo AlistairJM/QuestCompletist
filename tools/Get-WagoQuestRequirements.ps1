@@ -21,7 +21,7 @@ empty value = wago says nothing about that field.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [switch]$Refresh
 )
 

@@ -48,7 +48,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = '',
     [string]$AddonDir = '',
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [string]$TdbFile = "",
     [string]$DecisionsFile = '',
     [string]$OutFile = "",
