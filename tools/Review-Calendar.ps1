@@ -38,12 +38,12 @@ A finding (exit 1) is
 The same for an event off the calendar (a nameless row, the plain-named "WoW's Anniversary" rows), more
 dates, more runs, new rows, an event that an entry now covers, and a new entry or fact are listed and
 don't fail, and so is every change of a raid opening (an event whose rows are all named, of one moment,
-with no Duration, and Flags 13), in a part of its own: new, running out, lapsing. Only runs still to
-come are compared, so a run that passes, the Darkmoon Faire's monthly
-move, and a sweep with nothing new in the tables say nothing beyond what time brings (an event's dates
-coming within the window or running out, a fact whose outcome turns as its days pass). A fact that fails, waits or is open is
-listed every sweep, and is a finding only when its outcome changes. -UpdateBaseline rewrites the rows of
-the games run, once the findings and changes are read.
+with no Duration, and Flags 13), in a part of its own: new, running out, lapsing. Only runs still to come
+are compared, so a run that passes, the Darkmoon Faire's monthly move, and a sweep with nothing new in
+the tables say nothing beyond what time brings (an event's dates coming within the window or running
+out, a fact whose outcome turns as its days pass). A fact that fails, waits or is open is listed every
+sweep, and is a finding only when its outcome changes. -UpdateBaseline rewrites the rows of the games
+run, once the findings and changes are read.
 
 -SoonDays is 90: retail's patches come eight to twelve weeks apart, and each one's table dates the
 rotating events (the weekly bonus events, Timewalking, the Darkmoon Faire) a few months further, so an
@@ -100,9 +100,9 @@ $FactOutcomes = New-Object System.Collections.Generic.List[object]
 $WeeklyEventPattern = '^.+ (?:Bonus|Dungeon) Event$'
 
 # A raid's opening: a named row of one moment (no Duration) with Flags 13, as The Unbinding of Kith'ix
-# (465, rows 1880 to 1891) in 12.1.5, whose table (70391) has 135 such rows for nine raids. No entry
-# follows one and nothing is done when one appears or lapses, so the changes of an event of these rows
-# alone are listed apart against the baseline, never a finding.
+# (HolidayNames 465, rows 1880 to 1891) in 12.1.5, whose table (70391) has 135 such rows for nine raids.
+# No entry follows one and nothing is done when one appears or lapses, so the changes of an event of
+# these rows alone are listed apart against the baseline, never a finding.
 function Test-RaidOpening($row, [string]$name) {
     if (-not $name -or [int]$row.Flags -ne 13) { return $false }
     for ($i = 0; $i -lt 10; $i++) { if ([int]$row."Duration_$i" -ne 0) { return $false } }

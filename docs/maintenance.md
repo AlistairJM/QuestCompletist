@@ -822,10 +822,11 @@ whether a row of it is on the calendar by its Flags and name, in any region. `ca
 holds each of their rows that an entry lists or that has a date to come: its `Region`, its `Flags`,
 whether those and its name put it on the calendar, and its runs to come (the day each starts on the
 calendar, or the words of a row that repeats, such as `every year`). `calendar-baseline-facts.csv` holds
-each table fact's outcome on each table (below). The run exits with 1 on a finding:
-- a new event with dates to come (not a raid opening, below); an entry or event with dates to come
-  again; and, for an entry or an event on the calendar, one that loses its dates to come, is gone from
-  the table, has its last date moved earlier (dates removed), or has it come within 90 days;
+each table fact's outcome on each table (below). The run exits with 1 on a finding, never for a raid
+opening still in the table ("Raid openings", below):
+- a new event with dates to come; an entry or event with dates to come again; and, for an entry or an
+  event on the calendar, one that loses its dates to come, is gone from the table, has its last date
+  moved earlier (dates removed), or has it come within 90 days;
 - a row with runs to come that comes onto the calendar or leaves it, by its Flags and name, or by its
   Region for region 4: Call of the Scarab's 638 or WoW's Anniversary's 1808 moved to another region, its
   dates kept there, is a finding, as the user's calendar no longer shows it;
@@ -853,13 +854,14 @@ time to read the PTR's table and to decide.
 
 **Raid openings** are listed apart and never fail the run. The table dates each raid's opening as an
 event of its own: a row per region, named for the raid, of one moment (every `Duration` 0) and with
-`Flags` 13, so on the calendar by its Flags and name. The Unbinding of Kith'ix (465, rows 1880 to 1891)
-is new in 12.1.5, whose table (70391) holds 135 such rows for nine raids. No entry follows one and nothing
-is done when one appears or lapses, so every change of an event whose rows are all of these (new, running
-out within the 90 days, no date to come any more) is listed as a change under "Raid openings" at the end
-of the comparison (`Test-RaidOpening` in `Review-Calendar.ps1`). An event with any other row stays as
-before (Aberrus, 421, has a 24-hour row, 1361, beside its 19 of one moment), and so does one gone from
-the table, which the review can no longer tell from another. On 15 October 2026 (retail 12.1.5.70391, the
+`Flags` 13, so on the calendar by its Flags and name. The Unbinding of Kith'ix (HolidayNames 465, rows
+1880 to 1891) is new in 12.1.5, whose table (70391) holds 135 such rows for nine raids. No entry follows
+one and nothing is done when one appears or lapses, so every change of an event whose rows are all of
+these (new, running out within the 90 days, no date to come any more, or any other, such as a run
+removed or a row moved to another region) is listed as a change under "Raid openings" at the end of the
+comparison (`Test-RaidOpening` in `Review-Calendar.ps1`). An event with any other row stays as before
+(Aberrus, name 421, has a 24-hour row, 1361, beside its 19 of one moment), and so does one gone from the
+table, which the review can no longer tell from another. On 15 October 2026 (retail 12.1.5.70391, the
 PTR's 70340, Forever 1.60.1.70374) this turned the run's 2 findings, Kith'ix new on live and on the PTR,
 into changes, and nothing else moved.
 
