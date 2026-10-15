@@ -31,7 +31,10 @@ The tables it checks:
 
 Each finding is a row of -OutFile: Kind, Quest, Other, Detail, and Kept. A finding reviewed and left
 as it is gets a KEEP row in -DecisionsFile (Kind, Quest, Other, Decision, Reason); later runs mark it
-kept and count only the rest as new. A finding that's fixed in the data goes away by itself.
+kept and count only the rest as new. A finding that's fixed in the data goes away by itself, and its
+KEEP row is then a finding of its own, "decision out of date": a row that matches no finding. Only a
+run that read every source judges the rows (retail's with the TrinityCore dump, or -Game forever), as
+a check it skips finds nothing. The run lists the new findings and exits with 1 when there is one.
 
   -OwnDataOnly  checks only what the data and the tables say about themselves (the first group above and
                 the prerequisites' own consistency): it reads no API cache, TrinityCore dump or client
@@ -369,10 +372,22 @@ foreach ($faction in (@($renown.Values) | Sort-Object -Unique)) {
 
 $kept = @{}
 if (Test-Path $DecisionsFile) {
-    foreach ($d in (Import-Csv $DecisionsFile)) { if ($d.Decision -eq 'KEEP') { $kept["$($d.Kind)|$($d.Quest)|$($d.Other)"] = $d.Reason } }
+    foreach ($d in (Import-Csv $DecisionsFile)) { if ($d.Decision -eq 'KEEP') { $kept["$($d.Kind)|$($d.Quest)|$($d.Other)"] = $d } }
 }
-foreach ($f in $findings) { $reason = $kept["$($f.Kind)|$($f.Quest)|$($f.Other)"]; if ($reason) { $f.Kept = $reason } }
-$findings | Sort-Object Kind, { [int]("0" + $_.Quest) }, { [int]("0" + $_.Other) } | Export-Csv -Path $OutFile -NoTypeInformation -Encoding UTF8
+$matched = @{}
+foreach ($f in $findings) {
+    $key = "$($f.Kind)|$($f.Quest)|$($f.Other)"
+    if ($kept.ContainsKey($key)) { $matched[$key] = $true; if ($kept[$key].Reason) { $f.Kept = $kept[$key].Reason } }
+}
+$keepJudged = $forever -or (-not $OwnDataOnly -and $TdbFile)
+if ($keepJudged) {
+    foreach ($key in @($kept.Keys | Where-Object { -not $matched.ContainsKey($_) })) {
+        $d = $kept[$key]
+        Add-Finding 'decision out of date' $d.Quest $d.Other "the KEEP row for '$($d.Kind)' matches no finding"
+    }
+}
+$findings = @($findings | Sort-Object Kind, { [int]("0" + $_.Quest) }, { [int]("0" + $_.Other) }, Detail)
+$findings | Export-Csv -Path $OutFile -NoTypeInformation -Encoding UTF8
 
 "Tables: {0} breadcrumb targets, {1} quests with others they close, {2} renown requirements, {3} faction names, {4} quests that need another in the log; {5} quests with a prerequisite." -f
     $breadcrumbs.Count, $exclusive.Count, $renown.Count, $factionNames.Count, $needsInLog.Count, @($quests.Values | Where-Object { $_.prereq }).Count
@@ -384,8 +399,15 @@ if ($OwnDataOnly) {
     "TrinityCore offers previous quests for $tcNotTaken more quests we have none for, but none that's the step just before in the quest's storyline, so they aren't taken."
     "TrinityCore has $tcGroupsLacked groups of which only one can be done that we lack ($tcPairsLacked pairs). They aren't taken: it also groups quests one character can do all of."
 }
+if (-not $keepJudged) { "The KEEP rows weren't held against the findings: this run didn't read every source." }
+$undecided = @($findings | Where-Object { -not $_.Kept })
 $findings | Group-Object Kind | Sort-Object Name | ForEach-Object {
     $new = @($_.Group | Where-Object { -not $_.Kept }).Count
     "  {0}: {1}{2}" -f $_.Name, $_.Count, $(if ($new -ne $_.Count) { " ($new new)" } else { '' })
 }
-"Findings: $($findings.Count), of which new: $(@($findings | Where-Object { -not $_.Kept }).Count). Written to $OutFile"
+foreach ($f in ($undecided | Select-Object -First 50)) {
+    "NEW  {0}  {1}{2}{3}" -f $f.Kind, $f.Quest, $(if ($f.Other) { " $($f.Other)" }), $(if ($f.Detail) { ": $($f.Detail)" })
+}
+if ($undecided.Count -gt 50) { "... and $($undecided.Count - 50) more in the report" }
+"Findings: $($findings.Count), of which new: $($undecided.Count). Written to $OutFile"
+if ($undecided.Count) { exit 1 }

@@ -1,5 +1,5 @@
-# Dot-sourced by Import-ForeverData.ps1: data\forever\answers.jsonl, what the game has ever said about each
-# quest and how many runs in a row it has not said it. A run is one client build's quest cache.
+# Dot-sourced by Import-ForeverData.ps1 and Sync-QuestPvP.ps1: data\forever\answers.jsonl, what the game has
+# ever said about each quest and how many runs in a row it has not said it. A run is one client build's quest cache.
 #
 #   {"runs":["1.60.1.70205","1.60.1.70291"]}
 #   {"id":329,"seen":"1.60.1.70338","missed":0,"record":{...a line of forever_quest_cache_<build>.jsonl...}}
@@ -55,6 +55,19 @@ function Update-AnswerMemory($memory, $rawById, $asked, [string]$run) {
             $memory.Quests[$id].Missed++
         }
     }
+}
+
+# The quests the game hasn't answered now whose last record still counts: not let go by a REMOVE decision,
+# and missed fewer than $maxMissedRuns runs in a row unless a KEEP decision holds them. ID to memory entry.
+function Get-CarriedAnswers($memory, $answered, [int]$maxMissedRuns, $keep, $removeOk) {
+    $carried = @{}
+    foreach ($id in ($memory.Quests.Keys | Sort-Object)) {
+        if ($answered.ContainsKey($id) -or $removeOk[$id]) { continue }
+        $entry = $memory.Quests[$id]
+        if ($entry.Missed -ge $maxMissedRuns -and -not $keep[$id]) { continue }
+        $carried[$id] = $entry
+    }
+    return $carried
 }
 
 function Get-QuestsMissedSince($memory, [int]$runs) {
