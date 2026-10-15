@@ -313,7 +313,10 @@ listed: they follow the user's "check everything every sweep" rule.
 6. **The TrinityCore pass's holds** (rec 30): place holiday, seasonal and profession quests (337) together
    with object spawns for the 258 Candy Buckets? *Recommended: yes, all at once.*
 7. **Nameless pins per quest or per spot** (open-items row 7, game-parity recommendation 11): per spot on
-   retail would remove 1,672 of its 5,159 nameless pins. *Still the user's call.*
+   retail would remove 1,672 of its 5,159 nameless pins. **Decided: per spot in both games (13 October
+   2026), within 1.5 map points (15 October),** which merges 2,745 of the 5,364 nameless pins the 12.1.5
+   tables give retail (the 1,672 counted only the merges at the very same point); built in the tools
+   (`tools\PinRules.ps1`), the pin data to follow in a pull request of its own.
 8. **Category names:** rename Mac'Aree, Time Rift and Weekly Events to Blizzard's "Eredath",
    "Time Rifts" and "Weekly Event", so the client names them in every language? *Recommended: yes ("match
    Blizzard exactly").*
@@ -532,7 +535,7 @@ checking pass carry "(new)"; duplicates name the finding they were merged into.
 | Pin positions | Item-started quests: neither game uses emulator loot sources; Forever's 200 stay pinless and retail's 70 item-named pins are legacy | both | confirmed, corrected | low |
 | Pin positions | Both games pin a quest with no point 32 at its point -1, the hand-in for most quests | both | confirmed, corrected | low |
 | Pin positions | Retail object-started quests: 151 nameless pins and 40 unpinned board quests that TrinityCore's object spawns could place and name | retail | confirmed, corrected | medium |
-| Pin positions | Nameless pins: per quest on retail, per spot on Forever (new retail numbers for row 7) | both | confirmed | low |
+| Pin positions | Nameless pins: per quest on retail, per spot on Forever (new retail numbers for row 7) | both | confirmed; decided per spot in both, 1.5 points, built in the tools (decision 7) | low |
 | Pin positions | The recorder's precedence differs: it never moves a retail pin, but replaces all of a Forever giver's spawns | both | merged into "The recorder outranks CMaNGOS on Forever but only fills blanks on retail" | low |
 | Pin positions | No sweep check records how far the pin sources agree, on either game | both | confirmed, corrected | high |
 | Pin positions | The map pass is compared with the pins by hand only, and neighbour-map offers read as mismatches | both | confirmed | medium |

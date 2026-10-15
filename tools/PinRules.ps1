@@ -11,7 +11,8 @@ point, Forever at its giver; and retail carries over what its pins already hold 
   - Rows of one giver on one map share the pin whose first row stands nearest them within one spot; rows that name
     nobody (no NPC ID and no name) share a pin per spot the same way (Find-PinGroup, Add-PinGroup). The tool says who
     the giver is (Get-PinGiverKey: an NPC ID, else a name; Forever keys its givers by their entry).
-  - A pin whose quests bring different icons takes the icon of its quests (Get-PinQuestIcon).
+  - The icon of a pin from its quests (Get-PinQuestIcon): every Forever pin takes it, and on retail a nameless pin
+    whose rows bring different icons does, where the other pins keep the icon they carry over.
   - When a giver is found for some quests of a nameless pin, those quests move to the giver's pin: its pin on that map
     within one spot, else a new one at the nameless pin's place (Split-NamelessPin, Find-GiverPin, New-GiverPin). The
     pin takes the giver only when that giver has every quest on it, so a spot is never named after one quest's giver.

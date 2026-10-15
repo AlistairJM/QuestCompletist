@@ -505,7 +505,7 @@ $report.Add("")
 $report.Add("$($filled.Count) pins with no NPC ID take the client's giver, standing within $nearPin points:")
 foreach ($line in $filled) { $report.Add("  $line") }
 $report.Add("")
-$report.Add("$($splitLines.Count) times a nameless pin gives quests to their giver's pin, the giver standing within $nearPin points, and keeps the quests it has another giver or none for:")
+$report.Add("$($splitLines.Count) givers take quests off a nameless pin to a pin of their own, standing within $nearPin points; the nameless pin keeps its other quests, and no name:")
 foreach ($line in $splitLines) { $report.Add("  $line") }
 $report.Add("")
 $report.Add("$($fillNameless.Count) nameless pins would take a giver the database doesn't name (look up by hand):")
@@ -537,7 +537,7 @@ foreach ($line in $offMap) { $report.Add("  $line") }
 
 $unplaced = @(($otherId + $idlessFar + $fillRenamed) | Where-Object { -not $decided.Contains($_.Key) })
 $unplacedNew = @($unplaced | Where-Object { -not $kept.ContainsKey($_.Key) }).Count
-Write-Output "$agree quests agree with the client ($($agreeFar.Count) pins far from every spawn); $($filled.Count) pins get an ID; $($movedLines.Count) pins give quests to the giver at the same spot and nameless pins give quests to their giver's pin $($splitLines.Count) times ($($emptied.Count) pins left empty go); $($added.Count) pins added and $($joined.Count) joined for quests without one; $($unplaced.Count) quests or pins left to review, $unplacedNew of them new."
+Write-Output "$agree quests agree with the client ($($agreeFar.Count) pins far from every spawn); $($filled.Count) pins get an ID; $($movedLines.Count) pins give quests to the giver at the same spot and $($splitLines.Count) givers take quests off a nameless pin ($($emptied.Count) pins left empty go); $($added.Count) pins added and $($joined.Count) joined for quests without one; $($unplaced.Count) quests or pins left to review, $unplacedNew of them new."
 Write-Output "Report: $ReportFile"
 if ($WhatIf) { Write-Output "WhatIf: nothing changed."; exit 0 }
 if ($filled.Count + $added.Count + $joined.Count + $movedLines.Count + $splitLines.Count -gt 0) { Save-PinData $ordered $DataDir $AddonDir }

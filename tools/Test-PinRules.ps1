@@ -91,7 +91,7 @@ function New-World([string]$name) {
     [IO.File]::WriteAllText("$t\QuestV2CliTask.csv", "ID,QuestInfoID`r`n")
     [IO.File]::WriteAllText("$t\QuestInfo.csv", "ID,InfoName_lang,Type,Modifiers,Profession`r`n0,None,0,0,0`r`n")
     $quests = New-Object System.Collections.Generic.List[string]
-    foreach ($id in 1001..1006 + 1011..1016) { Add-Quest $quests $id }
+    foreach ($id in 1001..1006 + 1011..1018) { Add-Quest $quests $id }
     Add-Quest $quests 1007 64
     Add-Quest $quests 1008 1 4
     Add-Quest $quests 1009 1 4
@@ -105,16 +105,17 @@ function New-World([string]$name) {
     ) -join "`n") + "`n"))
     # Where the quests start, as Build-QuestLocationData.ps1 writes it: three quests at one spot (1001 to 1003), a spot
     # of two with one giver (1014, 1015), another three (1011 to 1013), the 1.5-point edge (1004 to 1006), two spots
-    # whose quests bring different icons (1007 and 1008, 1009 and 1010), and Spot Giver's quest.
+    # whose quests bring different icons (1007 and 1008, 1009 and 1010), Spot Giver's quest, and two quests no pin has yet
+    # by Spot Giver's pin: 1017, which TrinityCore says Spot Giver starts, and 1018, which it doesn't.
     $rows = @(
         @(1001, 40, 40), @(1002, 40.5, 40.3), @(1003, 39.6, 40.8),
         @(1014, 80, 80), @(1015, 80.4, 79.8),
         @(1011, 70, 70), @(1012, 70.5, 70.4), @(1013, 69.7, 70.6),
         @(1004, 60, 60), @(1005, 61.5, 60), @(1006, 60, 61.51),
         @(1007, 20.2, 20.1), @(1008, 20.5, 20.4), @(1009, 25.1, 25), @(1010, 25.4, 25.3),
-        @(1016, 10.3, 10.2))
+        @(1016, 10.3, 10.2), @(1017, 10.8, 10.5, '7001'), @(1018, 11.2, 10.9))
     $rows | ForEach-Object { [pscustomobject][ordered]@{ QuestID = $_[0]; UiMapID = 37; MapX = $_[1]; MapY = $_[2]; NumPointsUsed = 1; ObjectiveIndex = 32
-        InOurDB = 'True'; OurQuestName = "Quest $($_[0])"; OurZoneName = ''; Source = 'client'; StarterNpcIds = ''; StarterNames = ''; GiverNpcId = ''; GiverName = '' } } |
+        InOurDB = 'True'; OurQuestName = "Quest $($_[0])"; OurZoneName = ''; Source = 'client'; StarterNpcIds = $(if ($_.Count -gt 3) { $_[3] } else { '' }); StarterNames = ''; GiverNpcId = ''; GiverName = '' } } |
         Export-Csv "$t\quest_locations.csv" -NoTypeInformation -Encoding UTF8
     [IO.File]::WriteAllText("$root\addon\qcUnavailableQuests.lua", "qcUnavailableQuests = {`r`n}`r`n")
     [IO.File]::WriteAllText("$root\addon\QuestCompletist.toc", "## Interface: 120100, 120105`r`n")
@@ -193,7 +194,8 @@ try {
     Equal (Describe-Quest $pins 1006) 'nobody at 60,61.51 icon 1: 1006' 'A3: 1.51 points away it gets a pin of its own'
     Equal (Describe-Quest $pins 1007) 'nobody at 20,20 icon 1: 1007,1008' 'A4: a seasonal quest''s pin (icon 5) and a profession quest at one spot: the normal icon, from the quests, at the old pin''s place'
     Equal (Describe-Quest $pins 1009) 'nobody at 25,25 icon 3: 1009,1010' 'A4: two profession quests, one drawn as normal: the profession icon'
-    Equal (Describe-Quest $pins 1016) '7001 Spot Giver at 10,10 icon 1: 1016' 'A5: a giver''s pin is as it was'
+    Equal (Describe-Quest $pins 1016) '7001 Spot Giver at 10,10 icon 1: 1016,1017' 'A5: a giver''s pin is where it was, and a quest no pin has that starts by it, and that it starts, joins it'
+    Equal (Describe-Quest $pins 1018) 'nobody at 11.2,10.9 icon 1: 1018' 'A5: one it doesn''t start names nobody'
     $r = Invoke-Pipeline $w
     $first = [IO.File]::ReadAllText("$w\data\pins.jsonl")
     $r = Invoke-Pipeline $w
@@ -208,7 +210,7 @@ try {
     Equal (Describe-Quest $pins 1001) 'nobody at 40,40 icon 1: 1001,1003' 'B3: the other two stay together on the nameless pin, and nobody renames it'
     Equal (Describe-Quest $pins 1014) '7004 Pair Giver at 80,80 icon 1: 1014,1015' 'B4: a nameless pin whose every quest has one giver takes it'
     $report = if (Test-Path "$w\client-giver-report.txt") { [IO.File]::ReadAllText("$w\client-giver-report.txt") } else { '' }
-    Check ($report -match '1 times a nameless pin gives quests to their giver''s pin' -and $report -match '1 pins with no NPC ID take the client''s giver') "B5: the report lists the move and the fill ($report)"
+    Check ($report -match '1 givers take quests off a nameless pin to a pin of their own' -and $report -match '1 pins with no NPC ID take the client''s giver') "B5: the report lists the move and the fill ($report)"
     $before = [IO.File]::ReadAllText("$w\data\pins.jsonl")
     $r = Invoke-ClientGivers $w
     Equal ([IO.File]::ReadAllText("$w\data\pins.jsonl")) $before 'B6: a second run changes nothing'

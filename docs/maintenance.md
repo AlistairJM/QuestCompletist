@@ -1257,14 +1257,39 @@ run were within 10 yards of point 32. On the 12.1.5 pass (14 October 2026) the p
 points of 243 of its 412 offers and more than 5 points from 1; Eversong Woods (map 2395) answered no
 offers that run.
 
-- An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
+The grouping rule and the order a pin's giver is chosen in are `tools\PinRules.ps1`, which Forever's
+importer uses too (step 10), so the pins of both games follow one rule; what stays retail's own is
+the carry-over of what its pins hold (the borrowed names, the old pairs kept, the positions reused):
+- A pin names the first of these that has someone: the quest's existing pin nearest the start (the
+  carry-over), a starter whose TrinityCore spawn stands at the start, and a known NPC within 1.5 map
+  points that starts the quest. With none, it names nobody.
+- A giver's quests share a pin only where they start within 1.5 map points of each other (3 until
   October 2026, when the user chose that a quest with a start point in the client's data keeps it
   rather than joining its giver's pin up to 3 points away; see the pipeline plan, "October 2026,
-  after the NPC IDs").
+  after the NPC IDs"). The giver is the pin's NPC ID, or its name when it has no ID.
+- Quests that name nobody (no NPC ID and no name) share one pin per spot, in both games: a start
+  within 1.5 map points of such a pin's first start joins it, the nearest when several are in reach.
+  Until October 2026 retail gave them a pin per quest and place (decided 13 October, the 1.5 points
+  on 15 October: [plans/open-items.md](plans/open-items.md), row 7). When the quests of a spot bring
+  different icons, the pin takes its quests' icon (seasonal, profession or class when every quest is
+  one, else normal); otherwise the icon it brings stays.
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
-  Notes that find no pin are listed. Two groups of one NPC that land on the same coordinates this
-  way become one pin, so a rebuild leaves no two pins of an NPC closer than 1.5 points.
+  Notes that find no pin are listed. Two groups of one giver, or two that name nobody, that land on
+  the same coordinates this way become one pin, so a rebuild leaves no two pins of a giver closer
+  than 1.5 points. With the reused coordinates, a start can end up a little more than 1.5 points from
+  its pin (16 starts, 1.5 to 2.1 points, on the 12.1.5 data).
 - Pins are written in a fixed order.
+
+On the 12.1.5 tables (build 12.1.5.70391, 16 October 2026) the pipeline makes 13,549 pins where the
+rule of a pin per nameless quest made 16,294 from the same inputs: 2,745 of the 5,364 nameless pins
+merge into others, leaving 2,619, and the 10,593 pins with an NPC ID and the 337 with only a name are
+line for line the same. No quest gains or loses its last pin: 7 quests whose starts straddle two
+spots sit on two nameless pins close by, 2 quests with several pins on one map have one fewer, and 8
+spots whose quests bring different icons take their quests' (for 3, another than their first pin's).
+The pin data still holds a pin per quest: applying the rule is its own
+pull request, after the 12.1.5 story quests
+([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026, one
+pin per spot").
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
 September 30 locations were last applied in October 2026 (see the pipeline plan, "October 2026
@@ -1303,7 +1328,12 @@ of its spawns. Blizzard's data over TrinityCore's wherever both speak.
   Pandaria).
 - **A pin with no NPC ID takes the giver** when a spawn stands within 3 map points of it and
   TrinityCore names no other starter, with the giver's name from TrinityCore's database if the pin
-  has none.
+  has none. A pin with no name holds what starts at its spot, so it takes the giver only when the
+  giver is found for every quest on it. Otherwise the quests the giver is found for move to its
+  pin within 1.5 points, or to a new one at the nameless pin's place, and the others stay on the
+  nameless pin, which keeps no name (`Split-NamelessPin` in `PinRules.ps1`; the import of Forever
+  gets the same by placing every quest at its giver each time). A quest two givers are found for
+  stays, and is listed with the pins whose quests name different givers.
 - **A quest with no pin gets one** at the giver's spawn, on the smallest zone map that holds it,
   joining a pin of that giver within 1.5 points.
 - **A giver farther than that is listed, not acted on.** The pins stand at the client's start
@@ -1357,9 +1387,11 @@ counts the quests by class; a world, bonus or hidden quest, a quest flagged unav
 and a system category stay held, except six system categories whose quests mostly stand on a pin with an NPC
 already (World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver's Headquarters, Weekly Events:
 `$allowedSystemCategories` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
-It never moves a pin, never changes an ID
-or a name that is there, never takes a quest off a pin, and writes no pin if any of that would
-happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
+A pin with no name is filled only when the giver offered every quest on it; otherwise the quests a
+trusted giver offered there move to its pin within 1.5 points, or to a new pin of the giver at the
+nameless pin's place, and the others stay, as in step 6c. It never moves a pin, never changes an ID
+or a name that is there, never takes a quest off a pin but in such a move, and writes no pin if any
+of that would happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
 merge them and move one pin's quests): it is listed, as are a pin the recorded giver stood 1.5 to 3
 points from, a giver recorded where the game gave no position, and trusted sources that disagree on a
 name (the giver then has none). Everything that needs a person is in `tools\recorded-giver-report.txt`,
@@ -1809,7 +1841,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
    Pins follow the same rule as retail's ([plans/game-parity.md](plans/game-parity.md)): a normal quest
    gets a pin at every place a source puts its pickup, named after the giver when one stands there and
-   nameless otherwise. Forever's sources are CMaNGOS's creature and object givers with their spawns,
+   nameless otherwise, with one nameless pin per 1.5-point spot (`tools\PinRules.ps1`, shared with step 6).
+   On build 70374 that changes nothing: the 11 quests pinned at their start stand on 4 pins, the quests of
+   each at one point, and no two of the 4 are within 1.5 points. A quest whose giver turns up later
+   leaves the spot for its giver's pin at the next import. Forever's sources are CMaNGOS's creature and object givers with their spawns,
    the recorder's places, the hand list and the client's start points (point 32 first). A giver the
    ledger has a trusted place for stands there instead of at CMaNGOS's spawns, and its places within
    1.5 map points of each other (the merge tool's test) are one pin, two places further apart are two. It has no
@@ -2749,7 +2784,17 @@ git diff --stat
   ledger filled from the probe's file alone, the files
   master's importer wrote on that world (kept in the test as written once by it, 448bd64). It must say
   "0 failed". A change that is meant to alter those files means writing the expected text again, from a run
-  that has been checked by hand.
+  that has been checked by hand. Its section L checks the pins of start points with no giver: one per
+  1.5-point spot, the icon from the quests, and a giver found later taking its quest off the spot.
+- For changes to `PinRules.ps1`, `Assemble-PinDB.ps1` or `Apply-ClientQuestGivers.ps1`, or to how
+  `RecordedGivers.ps1` fills a pin, run `powershell -NoProfile -ExecutionPolicy Bypass -File
+  tools\Test-PinRules.ps1` (the rules, then the pipeline and both fill tools on a world made in a scratch
+  folder: three quests at one spot with no giver share a pin, the icon of a spot whose quests bring
+  different ones, the 1.5-point edge, and a giver found for one quest from the client's giver table and from
+  the recorder taking that quest to its own pin while the other two stay on the nameless one, through a
+  rebuild). It must say "0 failed"; `-Tools` runs it on another copy of the tools, to see what fails
+  there. Also run `Test-ForeverImport.ps1` and `Test-RecordedGivers.ps1`, as both games use the rules,
+  and the pin pipeline (step 6) on scratch copies before and after, comparing the candidates' pins.
 - For changes to `Read-ApiDocs.lua` or `Compare-ApiDocs.ps1`, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also
