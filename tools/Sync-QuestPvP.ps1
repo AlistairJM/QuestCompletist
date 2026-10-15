@@ -27,9 +27,10 @@ that no source tags: a judgement of ours, not the data's.
 
 Reads tools\<game>_quest_cache_<build>.jsonl (the newest unless -Build is given), Forever's answer memory as
 the importer last wrote it, the API cache, the task table, TrinityCore's tools\tdb\TDB_full_world_*.sql or
-CMaNGOS's tools\ClassicDB_*.sql.gz; a source that is missing is named and skipped. Safe to rerun: a second
-run changes nothing. With -WhatIf it only reports; otherwise it saves through AddonData.ps1, which rebuilds
-the Lua.
+CMaNGOS's tools\ClassicDB_*.sql.gz; a source that is missing is named and skipped (unlike the importer, it
+doesn't make a missing answer memory from the caches). Run it on Forever after the importer (step 10): when
+the memory's last run isn't the cache's build, it says so. Safe to rerun: a second run changes nothing. With
+-WhatIf it only reports; otherwise it saves through AddonData.ps1, which rebuilds the Lua.
 #>
 param(
     [ValidateSet('retail', 'forever')]
@@ -88,16 +89,24 @@ foreach ($line in [IO.File]::ReadLines($cacheFile)) {
     $cache[[int]$record.id] = Get-Kind $record
 }
 $answeredNow = $cache.Count
+$skipped = @()
+$memoryNote = ''
 if ($Game -eq 'forever') {
     if (-not $AnswerFile) { $AnswerFile = Join-Path $DataDir 'answers.jsonl' }
+    if (-not (Test-Path -LiteralPath $AnswerFile)) { $skipped += "Forever's answer memory ($AnswerFile)" }
     $keep = @{}; $removeOk = @{}
     foreach ($d in (Read-RemovalDecisions $RemovalDecisionsFile 'forever')) {
         if ($d.Decision -eq 'KEEP') { $keep[$d.Quest] = $true } else { $removeOk[$d.Quest] = $true }
     }
-    $carried = Get-CarriedAnswers (Read-AnswerMemory $AnswerFile) $cache $MaxMissedRuns $keep $removeOk
+    $memory = Read-AnswerMemory $AnswerFile
+    $lastRun = if ($memory.Runs.Count) { $memory.Runs[$memory.Runs.Count - 1] } else { $Build }
+    if ($lastRun -ne $Build) {
+        $memoryNote = "The answer memory's last run is $lastRun, not ${Build}, so what it keeps may not be what the importer keeps on ${Build}: " +
+            $(if ([version]$lastRun -lt [version]$Build) { 'run the importer (step 10) first.' } else { 'its records can come from a later build.' })
+    }
+    $carried = Get-CarriedAnswers $memory $cache $MaxMissedRuns $keep $removeOk
     foreach ($id in $carried.Keys) { $cache[$id] = Get-Kind ($carried[$id].Raw | ConvertFrom-Json) }
 }
-$skipped = @()
 $api = @{}; $task = @{}; $emulator = @{}; $emulatorName = ''
 if ($Game -eq 'retail') {
     $apiDir = Join-Path $ToolsDir 'quest_api_cache'
@@ -170,6 +179,7 @@ foreach ($q in $records) {
 }
 
 "Build $Build ($Game): the game's cache has $answeredNow quests" + $(if ($Game -eq 'forever') { ", and the answer memory $($carried.Count) more it answered on an earlier build" } else { '' }) + "; no source answers for $unanswered of ours."
+if ($memoryNote) { $memoryNote }
 "Read: " + (($sources | Where-Object { $_.Name } | ForEach-Object { "$($_.Name) $($_.Answers.Count)" }) -join ', ') + $(if ($skipped.Count) { ". Not found, skipped: " + ($skipped -join ', ') } else { '' }) + '.'
 "PvP kinds: " + (($pvpKinds | ForEach-Object { "$_ $($kindName[$_])" }) -join ', ') + "."
 "{0} quests get pvp ({1}), {2} already have it." -f $changes.Count, (($bySource.Keys | ForEach-Object { "$_ $($bySource[$_])" }) -join ', '), $same
