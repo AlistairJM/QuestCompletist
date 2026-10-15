@@ -49,7 +49,7 @@ function Get-ProbeQuests([string]$Path, [string]$LuaExe = 'C:\Program Files (x86
 # trivial ranges. A function or a range is $false when the client has no such call, $null when it gave nothing. The
 # counts are keyed by strings: 'true', 'false' and 'none' for Trivial; '0' to '4', 'none' and 'other' for Difficulty;
 # 'true/0' for both. A cached row with no level above 0 is a record the client held only in part, whose answers are
-# defaults (5,236 rows of the 12.1.5 run before the probe asked about them): it is counted in Partial, not tallied.
+# defaults (5,242 rows of the 12.1.5 run before the probe asked about them): it is counted in Partial, not tallied.
 function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
     if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
     $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path facts)
@@ -81,7 +81,7 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
         $row = $rows[$id]
         if ($row.Build -cne $run.Build -or @('ok', 'cached', 'late') -cnotcontains $row.Result) { continue }
         if ($row.Result -ceq 'cached' -and -not ($row.ContainsKey('level') -and $row.level -match '^\d+$' -and [int]$row.level -gt 0)) { $partial++; continue }
-        $t =if ($row.ContainsKey('trivial') -and @('true', 'false') -ccontains $row.trivial) { $row.trivial } else { 'none' }
+        $t = if ($row.ContainsKey('trivial') -and @('true', 'false') -ccontains $row.trivial) { $row.trivial } else { 'none' }
         $d = if (-not $row.ContainsKey('contentDifficulty')) { 'none' } elseif ($row.contentDifficulty -cmatch '^[0-4]$') { $row.contentDifficulty } else { 'other' }
         $trivial[$t]++
         $difficulty[$d]++

@@ -2,8 +2,8 @@
 Checks the probe (tools/ForeverProbe/QCForeverProbe) offline, with stand-ins for the WoW API that play
 out a run on a clock of their own and look at the table the game would save.
 
-What it covers: the quest pass (answered, failed, never answered, late, already cached, the number in
-flight, rerun and "all", stopping), the NPC pass (named at once, on a re-check, late, never; placeholders
+What it covers: the quest pass (answered, failed, never answered, late, already cached, held only in
+part, every refusal asked once more, the number in flight, rerun and "all", stopping), the NPC pass (named at once, on a re-check, late, never; placeholders
 and hidden names), the map pass (answered, not answered, asked again, Forever's and retail's differences),
 the recorder (every event it reads, a giver that is hidden or not a creature, a start without a giver),
 the commands and the saved table surviving being written out and read back. What it can't: whether
@@ -214,6 +214,7 @@ local function newWorld(options)
 			if S.sequence[questId] then answer = table.remove(S.sequence[questId], 1) or "ok" end
 			if answer == "never" then return end
 			local delay, success = 300, true
+			if type(answer) == "table" then delay, success = answer.delay, not answer.fail end
 			if answer == "fail" then success = false end
 			if answer == "late" then delay = 12000 end
 			w.pending = w.pending or {}
@@ -362,6 +363,14 @@ local function newWorld(options)
 			steps = steps + 1
 		end
 		return steps * TICK_MS / 1000
+	end
+	function w.runUntil(part, maxSeconds)
+		local steps = 0
+		while w.running() and not w.said(part) and steps < (maxSeconds or 3600) * 1000 / TICK_MS do
+			w.step()
+			steps = steps + 1
+		end
+		return w.said(part)
 	end
 	function w.db() return env.QCForeverProbeDB end
 	return w
@@ -626,17 +635,35 @@ do
 	w.boot()
 	w.slash("quests")
 	check(w.said("quest pass: asking about 5, 1 at a time"), "Q10: a quest pass asks one at a time by default")
-	w.run(300)
+	check(w.runUntil("refused once more", 300), "Q10: the pass says it asks the refused again")
 	local db = w.db()
+	local firstAt, firstMs = {}, {}
+	for i = 1001, 1003 do firstAt[i], firstMs[i] = db.quests[i].at, db.quests[i].ms end
+	w.run(300)
 	check(w.maxConcurrent <= 1, "Q10: never more than one in flight (" .. tostring(w.maxConcurrent) .. ")")
 	equal(db.quests[1001].result, "ok", "Q10: a quest refused and then given is ok")
 	equal(db.quests[1001].retried, true, "Q10: and marked as asked again")
 	equal(db.quests[1001].title, "Q1001", "Q10: with its facts")
+	check(type(firstAt[1001]) == "number", "Q10: the refusal kept when it came")
+	equal(db.quests[1001].at, firstAt[1001], "Q10: and keeps it once given")
+	equal(db.quests[1001].ms, firstMs[1001], "Q10: with the refusal's time")
+	check(type(db.quests[1001].retriedAt) == "number" and db.quests[1001].retriedAt > firstAt[1001],
+		"Q10: the second answer's time is kept apart (" .. tostring(db.quests[1001].retriedAt) .. ")")
+	check(type(db.quests[1001].retriedMs) == "number" and db.quests[1001].retriedMs >= 250 and db.quests[1001].retriedMs <= 400,
+		"Q10: with how long it took (" .. tostring(db.quests[1001].retriedMs) .. ")")
 	equal(db.quests[1002].result, "fail", "Q10: one refused twice stays fail")
 	equal(db.quests[1002].retried, true, "Q10: and is marked")
+	equal(db.quests[1002].at, firstAt[1002], "Q10: with its first refusal's time")
+	check(type(db.quests[1002].retriedAt) == "number" and db.quests[1002].retriedAt > firstAt[1002], "Q10: and the second's")
 	equal(db.quests[1003].result, "fail", "Q10: one whose second ask gets no answer keeps its refusal")
+	equal(db.quests[1003].retried, true, "Q10: and is marked as asked again")
+	equal(db.quests[1003].at, firstAt[1003], "Q10: with its refusal's time")
+	equal(db.quests[1003].retriedAt, nil, "Q10: and no second answer's")
 	equal(db.quests[1000].retried, nil, "Q10: a quest given at once is not asked again")
 	local run = db.runs[#db.runs]
+	local marked = 0
+	for _, facts in pairs(db.quests) do if facts.retried then marked = marked + 1 end end
+	equal(marked, run.retried, "Q10: every quest the run counts as asked again says so")
 	equal(run.retried, 3, "Q10: three asked again")
 	equal(run.recovered, 1, "Q10: one of them given")
 	equal(run.counts.ok, 3, "Q10: so three ok")
@@ -649,6 +676,104 @@ do
 	w.slash("npcs")
 	check(w.said("NPC pass: asking about 2, 4 at a time"), "Q10: the NPC pass keeps 4 at a time")
 	w.run(60)
+end
+
+-- A refused quest the game holds in full by the time it is asked again is not counted twice
+do
+	local w = newWorld({questIds = quests(2)})
+	for i = 1000, 1001 do w.S.quests[i] = {title = "Q" .. i, level = 10} end
+	w.S.answer[1001] = "fail"
+	w.boot()
+	w.slash("quests")
+	w.runUntil("refused once more", 60)
+	local db = w.db()
+	local firstAt = db.quests[1001].at
+	w.S.cached[1001] = true
+	w.run(60)
+	equal(db.quests[1001].result, "cached", "Q11: a refused quest held when asked again is cached")
+	equal(db.quests[1001].retried, true, "Q11: and marked as asked again")
+	equal(db.quests[1001].title, "Q1001", "Q11: with its facts")
+	equal(db.quests[1001].at, firstAt, "Q11: keeping its refusal's time")
+	equal(db.quests[1001].retriedAt, nil, "Q11: and no second answer's")
+	equal(w.calls.RequestLoadQuestByID, 2, "Q11: no request for it the second time")
+	local run = db.runs[#db.runs]
+	equal(run.answered, run.asked, "Q11: answered matches asked")
+	equal(run.counts.cached, 1, "Q11: one cached")
+	equal(run.counts.fail, 0, "Q11: and no refusal left")
+	equal(run.retried, 1, "Q11: one asked again")
+	equal(run.recovered, 1, "Q11: and recovered")
+	check(w.said("Finished the quest pass: 2 of 2"), "Q11: the closing line")
+
+	-- stopped while asking again, the run row counts only what was asked again
+	local w2 = newWorld({questIds = quests(6)})
+	for i = 1000, 1005 do w2.S.quests[i] = {title = "Q" .. i, level = 10} end
+	for i = 1001, 1005 do w2.S.sequence[i] = {"fail", "fail"} end
+	w2.boot()
+	w2.slash("quests")
+	w2.runUntil("refused once more", 60)
+	for _ = 1, 8 do w2.step() end
+	w2.slash("stop")
+	db = w2.db()
+	run = db.runs[#db.runs]
+	local marked = 0
+	for _, facts in pairs(db.quests) do if facts.retried then marked = marked + 1 end end
+	equal(run.stopped, true, "Q11: the run row says stopped")
+	equal(run.retried, 1, "Q11: one asked again before the stop")
+	equal(marked, run.retried, "Q11: and one row says so")
+	equal(run.recovered, 0, "Q11: none recovered")
+	equal(run.counts.fail, 5, "Q11: five still refused")
+	local before = w2.calls.RequestLoadQuestByID
+	for i = 1001, 1005 do w2.S.sequence[i] = nil end
+	w2.slash("quests")
+	w2.run(60)
+	equal(w2.calls.RequestLoadQuestByID - before, 5, "Q11: a rerun asks the five refused")
+	equal(db.quests[1005].result, "ok", "Q11: which answer now")
+end
+
+-- A refusal that comes after both tries ran out is asked again too
+do
+	local w = newWorld({questIds = quests(1)})
+	w.S.quests[1000] = {title = "Q1000", level = 10}
+	w.S.sequence[1000] = {{fail = true, delay = 12000}, "never", "ok"}
+	w.boot()
+	w.slash("quests")
+	w.run(120)
+	local db = w.db()
+	equal(db.quests[1000].result, "ok", "Q12: a late refusal is asked again and given")
+	equal(db.quests[1000].retried, true, "Q12: and marked as asked again")
+	check(type(db.quests[1000].at) == "number" and db.quests[1000].at >= 12000, "Q12: keeping when the refusal came (" .. tostring(db.quests[1000].at) .. ")")
+	equal(w.calls.RequestLoadQuestByID, 3, "Q12: two tries and the second ask")
+	local run = db.runs[#db.runs]
+	equal(run.counts.ok, 1, "Q12: one ok")
+	equal(run.counts.timeout, 0, "Q12: no timeout left")
+	equal(run.counts.fail, 0, "Q12: and no refusal")
+	equal(run.answered, 1, "Q12: one answered")
+	equal(run.retried, 1, "Q12: one asked again")
+	equal(run.recovered, 1, "Q12: and recovered")
+	equal(run.refusedFacts.isWorld.asked, 1, "Q12: the refusal is tallied once")
+
+	-- one that comes while the refused are being asked again is asked at once
+	local w2 = newWorld({questIds = quests(2)})
+	for i = 1000, 1001 do w2.S.quests[i] = {title = "Q" .. i, level = 10} end
+	w2.S.sequence[1000] = {"fail", "ok"}
+	w2.S.sequence[1001] = {{fail = true, delay = 25000}, "never", "ok"}
+	w2.boot()
+	w2.slash("quests")
+	w2.runUntil("refused once more", 60)
+	check(w2.said("asking the 1 refused once more"), "Q12: the late refusal is not in yet when the second asks start")
+	equal(w2.db().quests[1001].result, "timeout", "Q12: so it reads timeout then")
+	w2.run(120)
+	db = w2.db()
+	equal(db.quests[1001].result, "ok", "Q12: and is given when asked again")
+	equal(db.quests[1001].retried, true, "Q12: marked as asked again")
+	run = db.runs[#db.runs]
+	equal(run.retried, 2, "Q12: both asked again")
+	equal(run.recovered, 2, "Q12: both recovered")
+	equal(run.counts.ok, 2, "Q12: two ok")
+	equal(run.answered, 2, "Q12: two answered")
+	equal(run.refusedFacts.isWorld.asked, 2, "Q12: each refusal tallied once")
+	equal(w2.calls.RequestLoadQuestByID, 5, "Q12: two asks, a second try, and two second asks")
+	check(w2.maxConcurrent <= 1, "Q12: one at a time (" .. tostring(w2.maxConcurrent) .. ")")
 end
 
 -- A quest the game holds only in part (no level yet) is asked, and so is an old row saved that way
