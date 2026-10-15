@@ -1543,7 +1543,8 @@ the newest build, and files the new rows through a scratch copy of the data and
     fetched the new rows' API records, so 11378, 11382, 11386 and 57326 were still without their
     rewards at the 12.1.5 sweep, whose compare (14 October 2026) lists them as `api-only`. The compare
     counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
-    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`;
+    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`
+    (refused, as step 2g's is, while the cache looks partial: step 2e);
   - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
     without `-WhatIf`, for the PvP tag, which it also reads from the task table: on 14 October 2026,
     248 of the data's 5,740 task quests had a minimum level and 52 the tag;
@@ -2605,11 +2606,11 @@ git diff --stat
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
   that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
-  `Test-AddTaskQuests.ps1` and `Test-SyncQuestProfessions.ps1`. Each must say "0 failed". Two more print it
-  and have no tests, so run them with `-WhatIf` on the real files in `tools\`: `Sync-QuestPvP.ps1 -Game retail`,
-  `Sync-QuestPvP.ps1 -Game forever` and `Sync-QuestPrerequisites.ps1 -Build <newest retail build>`.
-  Sync-QuestPvP's first line must name the build of its game's newest cache, and each must warn only when the
-  cache looks partial.
+  `Test-AddTaskQuests.ps1`, `Test-SyncQuestProfessions.ps1` and `Test-SyncQuestPvP.ps1` (which checks that
+  retail's cache is warned about when it holds too few of our quests, and that Forever's isn't held to our
+  quests). Each must say "0 failed". `Sync-QuestPrerequisites.ps1` prints it too and has no test, so run it with `-WhatIf` on the
+  real files in `tools\`: `Sync-QuestPrerequisites.ps1 -Build <newest retail build> -WhatIf` must warn only
+  when that cache looks partial.
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
@@ -2630,8 +2631,9 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestPvP.ps1`. It makes a Forever world
   (two quest caches, an answer memory, a CMaNGOS dump, removal decisions) and a retail one in a scratch folder
   (nothing downloaded) and checks which source tags each quest, a quest kept from an earlier run included, that
-  a missing memory is named as skipped and one out of step with the cache is named, that `-WhatIf` writes
-  nothing and that a second run changes nothing. It must say "0 failed".
+  a missing memory is named as skipped and one out of step with the cache is named, that retail's cache
+  is warned about when it holds too few of our quests and Forever's isn't, that `-WhatIf` writes nothing and
+  that a second run changes nothing. It must say "0 failed".
 - For changes to the calendar code, `/qc holidays` included, run `Test-SeasonalCalendar.lua` for both
   games' TOCs (see [Holidays](#holidays)). It must say "All checks passed."
 - For changes to `Review-Calendar.ps1` or `HolidayTables.ps1` (step 2h, and the holiday check of step

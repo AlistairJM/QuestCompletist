@@ -10,8 +10,10 @@ is downloaded.
      over the memory, an older cache isn't read, and without the memory, which is named as skipped, a kept
      quest has no answer. -WhatIf writes nothing; the real run tags exactly the quests the report named, the
      data passes the record checks and the Lua matches, the memory is never written, and a second run changes
-     no byte. A memory whose last run is behind the cache's build, or ahead of it, is named.
-  R  Retail: an answer memory beside retail's data is not read or named.
+     no byte. A memory whose last run is behind the cache's build, or ahead of it, is named. The cache, 2 of
+     our 10 quests but more than the build before's, isn't warned about as partial.
+  R  Retail: an answer memory beside retail's data is not read or named. The cache, 1 of our 2 quests, is
+     warned about as partial.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestPvP.ps1
 
@@ -99,6 +101,7 @@ try {
     Check ($report.Text -match "(?m)^Build 9\.9\.9\.99999 \(forever\): the game's cache has 2 quests, and the answer memory 4 more it answered on an earlier build; no source answers for 2 of ours\.") "F1: it reads the newest cache and keeps four quests from the memory ($($report.Text))"
     Check ($report.Text -match '(?m)^Read: the game 6, .*CMaNGOS 5\.') 'F1: the kept answers count as the game''s'
     Check ($report.Text -notmatch 'Not found, skipped|last run') "F1: with the memory of the cache's build, nothing is named as missing or out of step ($($report.Text))"
+    Check ($report.Text -notmatch 'WARNING') "F1: Forever's cache is checked against the build before's alone, so 2 of our 10 isn't warned about ($($report.Text))"
     Check ($report.Text -match '(?m)^5 quests get pvp \(the game 3, CMaNGOS 2\), 1 already have it\.') "F1: five get pvp, three by the game and two by CMaNGOS ($($report.Text))"
     Equal (Listed $report.Text 'Would set pvp on') '3001,3002,3003,3005,3006' 'F1: the newest cache, a kept quest, a KEEP past the missed runs, and CMaNGOS for a quest let go'
     Equal (Listed $report.Text 'Has pvp, but no source calls the quest PvP') '3010' 'F2: a kept PvP quest that has pvp is not listed as having no source; one with no source is'
@@ -149,6 +152,7 @@ try {
     Check ($retail.Text -match "(?m)^Build 9\.9\.9\.99999 \(retail\): the game's cache has 1 quests; no source answers for 1 of ours\.") "R1: it names no answer memory ($($retail.Text))"
     Equal (Listed $retail.Text 'Would set pvp on') '4001' 'R1: and tags only what the cache says'
     Check ($retail.Text -notmatch 'answer memory') 'R1: nor names the memory as skipped or out of step'
+    Check ($retail.Text -match '(?m)^WARNING: retail_quest_cache_9\.9\.9\.99999\.jsonl looks partial, .*: 1 of our 2 \(') "R2: retail's cache is checked against our data and warned about ($($retail.Text))"
 } finally {
     if (Test-Path $Scratch) { Remove-Item $Scratch -Recurse -Force }
 }
