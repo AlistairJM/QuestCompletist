@@ -113,7 +113,8 @@ try {
     $w = New-World 'audit'
     $out = "$w\tools\audit.csv"
     $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', "$w\none.csv", '-OutFile', $out)
-    Equal $r.Exit 0 'A1: the audit runs on Forever''s layout with nothing downloaded'
+    Equal $r.Exit 1 'A1: the audit runs on Forever''s layout with nothing downloaded, and fails on its new findings'
+    Check ($r.Text -match '(?m)^NEW  prereq: requires itself  4 4$') "A1: and lists them ($($r.Text))"
     Check ($r.Text -match 'Sources: the data and the tables only \(forever\)') "A1: and says what it did not read ($($r.Text))"
     Check ($r.Text -match '0 renown requirements') 'A1: an empty one-line table is empty, and does not swallow the next table'
     $f = @(Import-Csv $out)
@@ -139,11 +140,14 @@ try {
     Check (-not (Test-Path "$w\tools\Faction-12.1.0.69933.csv")) 'A3: no table was downloaded'
 
     $keep = "$w\keep.csv"
-    [IO.File]::WriteAllText($keep, "Kind,Quest,Other,Decision,Reason`r`nprereq: requires itself,4,4,KEEP,looked at`r`n")
+    [IO.File]::WriteAllText($keep, "Kind,Quest,Other,Decision,Reason`r`nprereq: requires itself,4,4,KEEP,looked at`r`nprereq: requires itself,5,5,KEEP,fixed since`r`n")
     $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', $keep, '-OutFile', $out)
     $kept = @(Import-Csv $out | Where-Object { $_.Kept })
     Equal $kept.Count 1 'A4: a KEEP row marks its finding'
     Check ($r.Text -match 'prereq: requires itself: 1 \(0 new\)') 'A4: and it no longer counts as new'
+    $stale = @(Import-Csv $out | Where-Object { $_.Kind -eq 'decision out of date' })
+    Equal (($stale | ForEach-Object { "$($_.Quest) $($_.Other): $($_.Detail)" }) -join ' | ') "5 5: the KEEP row for 'prereq: requires itself' matches no finding" 'A4: a KEEP row that matches no finding is a finding of its own'
+    Check ($r.Text -match '(?m)^NEW  decision out of date  5 5: ') "A4: and is listed as new ($($r.Text))"
 
     $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', "$w\none.csv", '-OutFile', "$w\tools\second.csv")
     $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', "$w\none.csv", '-OutFile', "$w\tools\third.csv")
@@ -153,8 +157,17 @@ try {
 
     # -OwnDataOnly on the retail layout reads the same data and tables
     $r = Run-Script $Audit @('-OwnDataOnly', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', "$w\none.csv", '-OutFile', "$w\tools\retail.csv")
-    Equal $r.Exit 0 'A7: -OwnDataOnly alone also needs nothing downloaded'
+    Equal $r.Exit 1 'A7: -OwnDataOnly alone also needs nothing downloaded'
     Equal (Get-Content "$w\tools\retail.csv" -Raw) (Get-Content "$w\tools\second.csv" -Raw) 'A7: and finds the same'
+    $r = Run-Script $Audit @('-OwnDataOnly', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', $keep, '-OutFile', "$w\tools\retail.csv")
+    Equal @(Import-Csv "$w\tools\retail.csv" | Where-Object { $_.Kind -eq 'decision out of date' }).Count 0 'A7: on retail it skips the API, TrinityCore and the client, so it judges no KEEP row'
+    Check ($r.Text -match "The KEEP rows weren't held against the findings") "A7: and says so ($($r.Text))"
+
+    $all = "$w\all.csv"
+    Import-Csv "$w\tools\second.csv" | ForEach-Object { [pscustomobject]@{ Kind = $_.Kind; Quest = $_.Quest; Other = $_.Other; Decision = 'KEEP'; Reason = 'looked at' } } | Export-Csv $all -NoTypeInformation
+    $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', $all, '-OutFile', "$w\tools\all.csv")
+    Equal $r.Exit 0 'A8: with every finding kept the run exits 0'
+    Check ($r.Text -match 'of which new: 0\.' -and $r.Text -notmatch '(?m)^NEW ') "A8: and lists nothing new ($($r.Text))"
 
     # --- the duplicate-quest removal ---------------------------------------------------------------
     $w = New-World 'pins'
