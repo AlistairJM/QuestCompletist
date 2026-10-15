@@ -37,11 +37,13 @@ A finding (exit 1) is
   - a fact whose outcome (holds, waits or fails) differs from the baseline's.
 The same for an event off the calendar (a nameless row, the plain-named "WoW's Anniversary" rows), more
 dates, more runs, new rows, an event that an entry now covers, and a new entry or fact are listed and
-don't fail. Only runs still to come are compared, so a run that passes, the Darkmoon Faire's monthly
-move, and a sweep with nothing new in the tables say nothing beyond what time brings (an event's dates
-coming within the window or running out, a fact whose outcome turns as its days pass). A fact that fails, waits or is open is
-listed every sweep, and is a finding only when its outcome changes. -UpdateBaseline rewrites the rows of
-the games run, once the findings and changes are read.
+don't fail, and so is every change of a raid opening still in the table (an event whose rows are all
+named, of one moment, with no Duration, and Flags 13), in a part of its own: new, running out, lapsing.
+Only runs still to come are compared, so a run that passes, the Darkmoon Faire's monthly move, and a
+sweep with nothing new in the tables say nothing beyond what time brings (an event's dates coming within
+the window or running out, a fact whose outcome turns as its days pass). A fact that fails, waits or is
+open is listed every sweep, and is a finding only when its outcome changes. -UpdateBaseline rewrites the
+rows of the games run, once the findings and changes are read.
 
 -SoonDays is 90: retail's patches come eight to twelve weeks apart, and each one's table dates the
 rotating events (the weekly bonus events, Timewalking, the Darkmoon Faire) a few months further, so an
@@ -97,6 +99,16 @@ $FactOutcomes = New-Object System.Collections.Generic.List[object]
 # PTR's 70077), and no other name there has "Event"; Forever's (1.60.1.70338) had none.
 $WeeklyEventPattern = '^.+ (?:Bonus|Dungeon) Event$'
 
+# A raid's opening: a named row of one moment (no Duration) with Flags 13, as The Unbinding of Kith'ix
+# (HolidayNames 465, rows 1880 to 1891) in 12.1.5, whose table (70391) has 135 such rows for nine raids.
+# No entry follows one and nothing is done when one appears or lapses, so the changes of an event of
+# these rows alone are listed apart against the baseline, never a finding.
+function Test-RaidOpening($row, [string]$name) {
+    if (-not $name -or [int]$row.Flags -ne 13) { return $false }
+    for ($i = 0; $i -lt 10; $i++) { if ([int]$row."Duration_$i" -ne 0) { return $false } }
+    return $true
+}
+
 function Get-Table([string]$build, [string]$table) {
     $held = Join-Path $ToolsDir "$table-$build.csv"
     if (Test-Path $held) { return $held }
@@ -144,6 +156,7 @@ function Read-Game($game) {
             ID = [int]$r.ID; Row = $r; Name = $name; Region = [int]$r.Region; Flags = [int]$r.Flags
             Last = $last; ToCome = ($null -ne $last -and $last.End -ge $Today)
             Shown = (Test-HolidayShown $r $name); Ours = (Test-HolidayRegion $r $Region); Weekly = ($name -match $WeeklyEventPattern)
+            Opening = (Test-RaidOpening $r $name)
             Runs = @(Get-HolidayRuns $r $Today $windowEnd | Where-Object { $_.End -gt $Today })
             Repeat = (Get-RepeatWords $r $last); Later = $null
         }
@@ -276,6 +289,7 @@ function Write-Events($game) {
     $nameless = @{ shown = @(); hidden = @(); elsewhere = @() }
     foreach ($key in ($byName.Keys | Sort-Object { $_ -notlike '#*' }, { if ($_ -like '#*') { [int]$_.Substring(1) } else { $_ } })) {
         $rows = @($byName[$key] | Sort-Object ID)
+        if (-not @($rows | Where-Object { -not $_.Opening }).Count) { $game.Openings[$key] = $true }
         $state = Get-State 'event' $key $rows
         if ($state.ToCome -ne 'yes') { $game.Undated["event|$key"] = $state; continue }
         $game.States.Add($state)
@@ -476,12 +490,21 @@ function Compare-Baseline($games) {
     }
     $before = $findings.Count
     $changes = 0
+    $openings = New-Object System.Collections.Generic.List[string]
     foreach ($key in (@($notes | ForEach-Object { $_.Key }) | Sort-Object -Unique)) {
         $part = $key -split '\|', 3
         $label = "$($part[0]) $($part[1]) ""$($part[2])"""
         $mine = @($notes | Where-Object { $_.Key -eq $key })
+        if ($part[1] -eq 'event' -and $byKey[$part[0]].Openings.ContainsKey($part[2])) {
+            foreach ($note in $mine) { $openings.Add("    changed $label`: $($note.Text)"); $changes++ }
+            continue
+        }
         foreach ($note in @($mine | Where-Object { $_.Fail })) { Write-Output "  FINDING $label`: $($note.Text)"; $findings.Add("$label`: $($note.Text)") }
         foreach ($note in @($mine | Where-Object { -not $_.Fail })) { Write-Output "  changed $label`: $($note.Text)"; $changes++ }
+    }
+    if ($openings.Count) {
+        Write-Output "  Raid openings (events of named rows of one moment, Flags 13), listed and never a finding:"
+        $openings | ForEach-Object { Write-Output $_ }
     }
     Write-Output "  $($findings.Count - $before) finding(s) and $changes other change(s) against the baseline."
 }
@@ -682,7 +705,7 @@ $games = @(
         @{ Key = 'forever'; Label = 'WoW: Forever'; Build = $ForeverBuild; Data = (Join-Path $DataDir 'forever\quests.jsonl') })) {
         if (-not $g.Build) { continue }
         $game = [pscustomobject]@{ Key = $g.Key; Label = $g.Label; Build = $g.Build; InUse = (Get-FlagsInUse $g.Data); Rows = $null; Names = $null
-            States = (New-Object System.Collections.Generic.List[object]); Undated = @{}; RowStates = @{} }
+            States = (New-Object System.Collections.Generic.List[object]); Undated = @{}; RowStates = @{}; Openings = @{} }
         Read-Game $game
         $game
     })
