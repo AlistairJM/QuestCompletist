@@ -650,7 +650,9 @@ On 15 October 2026, with the 12.1.5 API cache (12.1.5_70077), the counts were 98
 the findings 15: the API now files the Candy Exchanges 92567 and 92569 under Hallow's End, and their
 `KEEP` rows held them untagged. With 12.1.5's Hallow's End quests tagged (the two exchanges, the eight
 task quests of step 6b and 18 quests new to the data), the counts are 1,004, 587 (four of the new Horde
-Candy Buckets are in TrinityCore's Hallow's End event) and 1,080, and the findings the same 13, none new.
+Candy Buckets are in TrinityCore's Hallow's End event) and 1,082 (with Broomstick Express and Specter
+Inspector, 92104 and 92455, moved from Uncategorized under the Hallow's End heading too), and the findings
+the same 13, none new.
 
 ### 2e. The retail quest cache
 

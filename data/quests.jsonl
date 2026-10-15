@@ -34458,7 +34458,7 @@
 {"id":92092,"name":"Unlock Ability 6 - Level 7","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92093,"name":"Unlock Ability 7 - Level 8","level":80,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92099,"name":"Endeavor Reward","level":25,"zone":"Eastern Kingdoms","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":92104,"name":"Broomstick Express","level":1,"zone":"Eastern Kingdoms","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92104,"name":"Broomstick Express","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":92105,"name":"Papers, Please!","level":90,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5986}
 {"id":92119,"name":"Bitterbloom Burn Down","level":90,"zone":"Harandar","category":1502,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5983}
 {"id":92120,"name":"To Understand Magic","level":90,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5986}
@@ -34535,7 +34535,7 @@
 {"id":92451,"name":"I Think I Can","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92450}
 {"id":92452,"name":"Not According to Plan","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92451}
 {"id":92453,"name":"Fearless","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92452}
-{"id":92455,"name":"Specter Inspector","level":1,"zone":"Eastern Kingdoms","category":0,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92455,"name":"Specter Inspector","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":92492,"name":"Honorin' de Sacrifice","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6011}
 {"id":92493,"name":"What Remains of Idago","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6011,"prereq":92492}
 {"id":92495,"name":"Disruptin' de Blade","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6011,"prereq":92493}
