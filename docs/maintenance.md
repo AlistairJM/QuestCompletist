@@ -947,7 +947,9 @@ Retail's "What /qc holidays should print" lists Call of the Scarab (638) on its 
 
 `qcQuestPvP` (the `pvp` field of the data files) holds the quests that are PvP. A quest takes the answer of the
 first source that has one: the game's quest cache (`questInfo`, step 2e: 41 PvP on both games, and on retail
-also 113 PvP World Quest, 255 War Mode PvP, 256 PvP Conquest and 278 PvP Elite World Quest), then on retail
+also 113 PvP World Quest, 255 War Mode PvP, 256 PvP Conquest and 278 PvP Elite World Quest; on Forever also the
+last record in `data\forever\answers.jsonl` of a quest the beta answered only on an earlier build, for the quests
+the importer keeps from it, by the same code in `ForeverAnswers.ps1`), then on retail
 Blizzard's API (type 41) and the client's task table (`QuestInfoID`), then the emulator for a quest the game
 hasn't answered (TrinityCore's `QuestInfoID` on retail, CMaNGOS's `Type` on Forever, the same kinds). The game's
 "not PvP" stands over an emulator that says PvP. Hand decisions, which come first, are in
@@ -956,8 +958,10 @@ arena quest) is PvP by the user's word, where the game has no kind for it and CM
 addon reads the table yet. Every sweep, with the newest cache of each game:
 
 - `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf` when it would change anything.
-- Forever's comes from its importer (step 10), which applies the same order (cache, then CMaNGOS, decisions
-  first); run `Sync-QuestPvP.ps1 -Game forever -WhatIf` after the importer, and it must say 0 quests get `pvp`.
+- Forever's comes from its importer (step 10), which applies the same order (cache and answer memory, then
+  CMaNGOS, decisions first); run `Sync-QuestPvP.ps1 -Game forever -WhatIf` after the importer, and it must say
+  0 quests get `pvp` and list nothing under "Has pvp, but no source calls the quest PvP". Its first line says how
+  many quests the answer memory adds to the newest cache.
 - Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933, Forever
   1.60.1.70338): retail 363 (the game 343: PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP
   Elite World Quest 6; the API 4, the task table 3, TrinityCore 13), 109 of our quests no source answers for;
@@ -1649,6 +1653,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    and the review lists it as "kept from an earlier run"; only after `-MaxMissedRuns` (10) runs in a
    row does it stop being imported. With no answers file it is made from the `forever_quest_cache_<build>.jsonl`
    files in `tools\`, so keep each run's. The summary's "Answer memory:" line counts them.
+   `Sync-QuestPvP.ps1 -Game forever` (step 2i) reads the same file, through the same code in
+   `ForeverAnswers.ps1`, so a quest kept from an earlier run gets the same PvP answer from both.
    **No quest leaves the data unseen.** Before it writes anything, the importer compares its quests
    with `data\forever\quests.jsonl` and stops, writing nothing, if any would go (ten missed runs, an
    internal title, a CMaNGOS change): it lists them, with ID, name and zone, in the output and in
@@ -2456,6 +2462,11 @@ git diff --stat
   (with the real tables) takes the profession, heading or zone from quests of every pass and kind of
   decision and checks that the tool gives exactly that back; `-MadeUpOnly` runs the first half alone. It
   must say "0 failed".
+- For changes to `Sync-QuestPvP.ps1` (step 2i), or to `ForeverAnswers.ps1`, run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestPvP.ps1`. It makes a Forever world
+  (two quest caches, an answer memory, a CMaNGOS dump, removal decisions) and a retail one in a scratch folder
+  (nothing downloaded) and checks which source tags each quest, a quest kept from an earlier run included, that
+  `-WhatIf` writes nothing and that a second run changes nothing. It must say "0 failed".
 - For changes to the calendar code, `/qc holidays` included, run `Test-SeasonalCalendar.lua` for both
   games' TOCs (see [Holidays](#holidays)). It must say "All checks passed."
 - For changes to `Review-Calendar.ps1` or `HolidayTables.ps1` (step 2h, and the holiday check of step
