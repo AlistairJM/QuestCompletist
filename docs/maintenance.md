@@ -405,8 +405,11 @@ The decisions from that cleanup are in
 [plans/quest-database-accuracy-cleanup.md](plans/quest-database-accuracy-cleanup.md).
 `Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time. A value changed by hand gets
 a `FIX` row in `docs\plans\quest-accuracy-manual-decisions.csv`, from `Cur` to `Target`, with the
-reason. Categorize reads only that file's `KEEP` rows (below), so a value changed away from the API's
-also needs a `KEEP` row with the new value in `Cur` (44920, 15 October 2026).
+reason. Categorize reads only that file's `KEEP` rows (below), and applies them only to rows it
+marks MANUAL. If it would mark the changed value MANUAL (as it does 44920's pre-Evoker list,
+15 October 2026), the value also needs a `KEEP` row with the new value in `Cur`, which turns it into
+KEPT. A `KEEP` row doesn't hold back a FIX, so a hand change against a narrowing the API asserts
+needs Categorize changed or the fix left unapplied.
 
 To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-decisions.csv` with
 `Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
@@ -1615,6 +1618,9 @@ only; see [plans/unavailable-quests.md](plans/unavailable-quests.md). Its summar
 that have no sign of being live and no decision yet: those are the ones to review, in groups, with
 the user.
 
+Before this step, rerun step 1's audit after any pull request that adds quests: the audit fetches
+the API records `tools\quest_api_cache` lacks, and this step reads the API only through that cache.
+
 The quests the addon hides as unavailable are the FLAG rows of
 `docs/plans/unavailable-quest-decisions.csv`. A quest reviewed and left shown gets a KEEP row, with
 the evidence, so later sweeps don't raise it again. After changing that file, run
@@ -1640,10 +1646,11 @@ The 12.1.5 baseline (15 October 2026: the client's tables of 12.1.5.70391, the A
 October, the probe of 15 October): the API 404s on 925 non-task quests, 527 of them with no sign of
 being live, 0 of those undecided; 191 are not in `QuestV2`, 34 of them unknown to the server too. The
 one undecided quest was 94474 The Great Vault: it is in `QuestV2`, the probe loaded it and the quest
-cache holds it, so it got a KEEP row on the user's word, and it moved from Azuremyst Isle to Silvermoon
-City, the game's sort for it. The cache must hold the records of the quests added since step 1 ran: #347 fetched its 29 into a
-folder of its own, and without them the run counts 943, 530 and 193 and lists 92568, 92570 and 54709
-as undecided.
+cache holds it, so it got a KEEP row on the user's word, and it moved from Azuremyst Isle to
+Silvermoon City, the game's sort for it. Its quest-cache record carries the server's Deprecated flag
+(0x4000), the one sign against it. On 15 October 2026 the 29 quests #347 added were missing from
+`tools\quest_api_cache`; without them the run counts 943, 530 and 193 and lists 92568, 92570 and
+54709 as undecided.
 
 ### 8. Dungeons and raids against the Dungeon Journal
 
