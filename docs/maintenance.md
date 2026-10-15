@@ -2285,7 +2285,12 @@ It began as pull request #139, which stays open as the record; its files are in
    replacing any copy there, and restart the game fully.
 3. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
    time (the server stops answering a burst); one that gets no answer in 5 seconds is asked once more,
-   and a quest the game already has data for isn't asked. It says how many minutes are left every 500
+   and a quest the game already holds in full (a level above 0) isn't asked. One it holds only in part
+   is, and a rerun asks again a quest saved as cached with no level: before this rule the 12.1.5 run
+   saved 5,242 such placeholders as cached, most of them task quests, which never reached the quest
+   cache. Each answer keeps when it came (`at`, in ms from the run's start), and `/qcprobe quests 1`
+   asks one at a time, the way to tell a server that throttles from one that refuses (the 12.1.5 run
+   had 4,959 refusals at 4 in flight). It says how many minutes are left every 500
    quests; stopping it (`/qcprobe stop`) and running it again picks up where it was, across logouts. The
    first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long. For every
    quest that loads it also saves the facts of API review recommendation 2 (whether the quest is

@@ -594,7 +594,7 @@ end
 -- HaveQuestData answers for a quest the game has, with no title yet
 do
 	local w = newWorld({questIds = quests(2)})
-	w.S.quests[1000] = {title = "Has data"}
+	w.S.quests[1000] = {title = "Has data", level = 20}
 	w.S.quests[1001] = {title = "Does not"}
 	w.env.HaveQuestData = function(questId) return questId == 1000 end
 	w.boot()
@@ -612,6 +612,51 @@ do
 	equal(w2.db().quests[1000].result, "ok", "Q8: a HaveQuestData that errors is as if it said no")
 end
 
+-- A quest the game holds only in part (no level yet) is asked, and so is an old row saved that way
+do
+	local w = newWorld({questIds = quests(4)})
+	w.S.quests[1000] = {title = "Full", level = 30}
+	w.S.quests[1001] = {title = "Part"}
+	w.S.quests[1002] = {title = "Part, level 0", level = 0}
+	w.S.quests[1003] = {title = "Asked"}
+	w.S.cached[1000], w.S.cached[1001], w.S.cached[1002] = true, true, true
+	w.env.HaveQuestData = function(questId) return questId ~= 1003 end
+	w.boot()
+	w.slash("quests")
+	w.run(60)
+	local db = w.db()
+	equal(db.quests[1000].result, "cached", "Q9: a quest held in full is cached")
+	equal(db.quests[1000].at, nil, "Q9: with no answer time")
+	equal(db.quests[1001].result, "ok", "Q9: one held with no level is asked")
+	equal(db.quests[1002].result, "ok", "Q9: and one held at level 0")
+	equal(w.calls.RequestLoadQuestByID, 3, "Q9: three requests")
+	check(type(db.quests[1003].at) == "number" and db.quests[1003].at >= 250 and db.quests[1003].at <= 1000,
+		"Q9: an answer keeps when it came in the run (" .. tostring(db.quests[1003].at) .. ")")
+	db.quests[1001] = {build = db.quests[1001].build, result = "cached"}
+	db.quests[1002] = {build = db.quests[1002].build, result = "cached", level = 0}
+	db.quests[1003] = {build = db.quests[1003].build, result = "cached", level = 12}
+	local before = w.calls.RequestLoadQuestByID
+	w.slash("quests")
+	w.run(60)
+	equal(w.calls.RequestLoadQuestByID - before, 2, "Q9: a rerun asks again the rows saved as cached with no level")
+	equal(db.quests[1001].result, "ok", "Q9: the first answers")
+	equal(db.quests[1003].result, "cached", "Q9: a row saved with a level is left alone")
+	equal(db.runs[#db.runs].asked, 2, "Q9: the rerun asked two")
+
+	local w2 = newWorld({questIds = quests(2)})
+	w2.env.C_QuestLog.GetQuestDifficultyLevel = nil
+	w2.S.quests[1000] = {title = "No level function"}
+	w2.S.quests[1001] = {title = "Asked"}
+	w2.S.cached[1000] = true
+	w2.boot()
+	w2.slash("quests")
+	w2.run(60)
+	equal(w2.db().quests[1000].result, "cached", "Q9: a client with no level function keeps the title rule")
+	equal(w2.calls.RequestLoadQuestByID, 1, "Q9: and asks only the other")
+	w2.slash("quests")
+	check(w2.said("every quest is answered on this build"), "Q9: and a rerun there asks nothing again")
+end
+
 -- The facts pass
 do
 	local w = newWorld({questIds = quests(6), factionGlobal = true, undocumented = true})
@@ -621,7 +666,7 @@ do
 	S.quests[1001] = {title = "Plain", isTask = false, isWorld = false, taskZone = 99}
 	S.quests[1002] = {title = "Fails"}
 	S.quests[1003] = {title = "Never"}
-	S.quests[1004] = {title = "Cached", accountQuest = true}
+	S.quests[1004] = {title = "Cached", accountQuest = true, level = 30}
 	S.answer[1002] = "fail"
 	S.answer[1003] = "never"
 	S.cached[1004] = true

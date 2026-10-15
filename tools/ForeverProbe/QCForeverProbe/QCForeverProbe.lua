@@ -8,8 +8,10 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               answers quests up to about level 40, so rerun it when the beta opens
                               higher levels.
 /qcprobe quests all           asks about every quest again
-                              A quest the game already has data for (HaveQuestData, or a title) is
-                              not asked; one that gets no answer in 5 seconds is asked once more.
+                              A quest the game already holds in full (HaveQuestData or a title, and a
+                              level above 0) is not asked; one held only in part is, and a rerun asks
+                              again a quest saved as cached with no level. One that gets no answer in
+                              5 seconds is asked once more.
 /qcprobe npcs [in flight]     names the NPCs in the game's list (NpcIDs_*.lua): the NPC of every pin, and on Forever CMaNGOS's givers
 /qcprobe npcs all             names every NPC again
 /qcprobe maps [wait seconds]  asks the server for each map's quest offers (the storyline starts
@@ -34,7 +36,8 @@ The recorder notes, while you play, which quests each NPC or object offers and t
 stood, the quest log heading of each quest you accept, and quests started from items.
 
 QCForeverProbeDB holds:
-  quests[id]    build, result (ok, fail, timeout, late or cached), ms, title, level, tagID, tagName,
+  quests[id]    build, result (ok, fail, timeout, late or cached), ms, at (when the answer came, in ms
+                from the run's start; not for cached), title, level, tagID, tagName,
                 tagElite, elite, repeatable, questType, groupSize, classification, and the
                 facts of docs/plans/game-api-review.md, recommendation 2: isTask, isWorld, taskZone
                 (task quests), accountQuest, factionGroup, important, meta, questLineID, campaignID,
@@ -323,13 +326,26 @@ local function questFacts(questId, result, ms)
 	return facts
 end
 
+-- The client can hold part of a quest's record without the server's (a task quest from its own tables;
+-- on 12.1.5, 5,236 such rows had level 0 and default facts), so a held quest counts only with a level.
 local function haveQuestData(questId)
+	local have = false
 	if HaveQuestData then
-		local ok, have = pcall(HaveQuestData, questId)
-		if ok and have then return true end
+		local ok, answer = pcall(HaveQuestData, questId)
+		have = ok and answer and true or false
 	end
-	local title = try(C_QuestLog.GetTitleForQuestID, questId)
-	return title ~= nil and title ~= ""
+	if not have then
+		local title = try(C_QuestLog.GetTitleForQuestID, questId)
+		have = title ~= nil and title ~= ""
+	end
+	if not have or not C_QuestLog.GetQuestDifficultyLevel then return have end
+	local level = try(C_QuestLog.GetQuestDifficultyLevel, questId)
+	return type(level) == "number" and not secret(level) and level > 0
+end
+
+local function heldInPart(facts)
+	return facts.result == "cached" and C_QuestLog.GetQuestDifficultyLevel ~= nil
+		and not (type(facts.level) == "number" and facts.level > 0)
 end
 
 local function startQuests(all, inFlight)
@@ -340,7 +356,7 @@ local function startQuests(all, inFlight)
 	local queue = {}
 	for _, questId in ipairs(probe.questIds) do
 		local facts = db.quests[questId]
-		if all or not facts or facts.build ~= build or (facts.result ~= "ok" and facts.result ~= "cached") then
+		if all or not facts or facts.build ~= build or (facts.result ~= "ok" and facts.result ~= "cached") or heldInPart(facts) then
 			queue[#queue + 1] = questId
 		end
 	end
@@ -372,6 +388,7 @@ local function startQuests(all, inFlight)
 			return
 		end
 		db.quests[questId] = questFacts(questId, "timeout")
+		db.quests[questId].at = math.floor(debugprofilestop() - r.startedMs + 0.5)
 		count(r, "timeout")
 	end
 	r.answered = function(questId, success)
@@ -381,11 +398,13 @@ local function startQuests(all, inFlight)
 			r.inFlightCount = r.inFlightCount - 1
 			local result = success and "ok" or "fail"
 			db.quests[questId] = questFacts(questId, result, debugprofilestop() - started)
+			db.quests[questId].at = math.floor(debugprofilestop() - r.startedMs + 0.5)
 			count(r, result)
 		elseif r.timedOut[questId] then
 			started = r.timedOut[questId]
 			r.timedOut[questId] = nil
 			db.quests[questId] = questFacts(questId, "late", debugprofilestop() - started)
+			db.quests[questId].at = math.floor(debugprofilestop() - r.startedMs + 0.5)
 			recount(r, "timeout", "late")
 		end
 	end
