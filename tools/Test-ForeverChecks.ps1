@@ -137,7 +137,7 @@ try {
     Equal (Get-KindQuests 'in the log: quest not in the data') '10' 'A2: one that needs a quest not in the data in the log'
     Check (@($f | Where-Object { $_.Kind -match 'API|TrinityCore|client' }).Count -eq 0) 'A3: nothing from the API, TrinityCore or the client'
     Equal @($f | Where-Object { $_.Kind -match 'faction name: (faction not in|differs)|renown: faction' }).Count 0 'A3: and the factions are not held against the client'
-    Check (-not (Test-Path "$w\tools\Faction-12.1.0.69933.csv")) 'A3: no table was downloaded'
+    Equal (@(Get-ChildItem -LiteralPath "$w\tools" -File | ForEach-Object Name) -join ',') 'audit.csv' 'A3: no table was downloaded'
 
     $keep = "$w\keep.csv"
     [IO.File]::WriteAllText($keep, "Kind,Quest,Other,Decision,Reason`r`nprereq: requires itself,4,4,KEEP,looked at`r`nprereq: requires itself,5,5,KEEP,fixed since`r`n")

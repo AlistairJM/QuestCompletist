@@ -12,7 +12,7 @@ Where several mapped ids carry the matching name, the lowest is stored.
 param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua'),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [switch]$Refresh
 )
 

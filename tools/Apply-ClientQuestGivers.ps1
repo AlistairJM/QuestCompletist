@@ -54,7 +54,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [string]$TdbFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [string]$ReportFile = (Join-Path $PSScriptRoot 'client-giver-report.txt'),

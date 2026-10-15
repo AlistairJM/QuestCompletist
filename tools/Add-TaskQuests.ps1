@@ -53,7 +53,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [string]$Cache = '',
     [switch]$Refresh,
     [switch]$WhatIf

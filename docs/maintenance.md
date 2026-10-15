@@ -181,8 +181,16 @@ then every tool refuses to save.
    `Sync-QuestSortNames.ps1`'s `-ForeverBuild`) take the build of the newest `tools\forever_probe_<revision>`
    results when it is left out, and say which: the importer needs the tables, the quest cache and the
    probe's answers on one build, and the check says when those results are behind the installed client.
-   Retail's tools still carry a build as their default, which the check lists when it is older than the
-   newest build of its version: pass the build, or change the default, at the sweep for a new patch.
+   Twelve of retail's tools still carry a build as their `-Build` default (the check counts them under
+   "Pinned builds"). The check lists a default only when it is older than the newest build of its own
+   version, so a default left on the patch before still reads `ok`: all twelve were on 12.1.0.69933 while
+   12.1.5.70391 was live, and the check passed them. So at the sweep for a new patch, change the twelve
+   defaults to the new live build
+   (`Select-String -Path tools\*.ps1 -Pattern '^\s*\[string\]\$Build = "\d'` lists them: Add-TaskQuests,
+   Add-ZoneTableMaps, Apply-ClientQuestGivers, Audit-DungeonCategories, Audit-QuestTables,
+   Build-CategoryClientNames, Build-CategoryUiMapIDs, Build-QuestLines, Find-UnavailableQuestCandidates,
+   Get-WagoQuestRequirements, Sync-QuestPrerequisites and Sync-QuestSortNames, whose help examples name
+   the builds too); between patches, pass the build.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest build.
 2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
    table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
@@ -2700,7 +2708,9 @@ git diff --stat
   `Test-ContinentPins.lua` for both games' TOCs. It must say "All checks passed." It builds a made-up
   continent from the game's own zones, counts a character step by step (a breadcrumb whose quest is in the
   log counts as closed, not available), checks every category against the quest list's zone counter, and,
-  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass.
+  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass. Retail's
+  table is `UiMap.csv`; Forever's is the newest `UiMap-1.60.1.<build>.csv` by build number, unless a third
+  argument names another.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 - **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or
