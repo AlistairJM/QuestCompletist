@@ -966,10 +966,10 @@ addon reads the table yet. Every sweep, with the newest cache of each game:
 - Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933, Forever
   1.60.1.70338): retail 363 (the game 343: PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP
   Elite World Quest 6; the API 4, the task table 3, TrinityCore 13), 109 of our quests no source answers for;
-  Forever 176 (the game 14, CMaNGOS 161, one decision; counted before Sync read the answer memory: on the same
-  data it now counts 179, the game 27, CMaNGOS 151 and one decision, the three more being 98897, 98899 and 98901,
-  kept from 70291). The sources agreed wherever more than one answered,
-  except 7838. A kind the game adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
+  Forever 179 (the game 27, CMaNGOS 151, one decision), 0 of our quests no source answers for (36 with the
+  newest cache alone), counted again on 15 October with the answer memory; without it, on 13 October, 176 (the
+  game 14, CMaNGOS 161), the three fewer being 98897, 98899 and 98901, kept from 70291. The sources agreed
+  wherever more than one answered, except 7838. A kind the game adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
   belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
 - Looked at on 13 October 2026 and not used, to be looked at again when a source changes: the quest cache's
   `flags` and `flagsEx` (no bit marks PvP: retail's 0x4000 and 0x4000000 are 32% and 31% of the PvP quests and
