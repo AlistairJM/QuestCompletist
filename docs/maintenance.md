@@ -1409,9 +1409,9 @@ then says "no category" instead of "not in the menu" for a dungeon whose unused 
 `Add-TaskQuests.ps1` adds the quests of the client's own task table (`tools\QuestV2CliTask.csv`, step 1b)
 that `data\quests.jsonl` doesn't hold: world quests, bonus objectives, world events, Prey and Special
 Assignment quests and the like. Nothing else finds them: the pin pipeline takes a quest through a giver
-point, which a task quest has none of, and Blizzard's API can't list quests: it answers only for a
-quest it is asked about, and it knows only some task quests (on 12.1.5, 6 of the 11 new ones and
-1,306 of the 5,740 in the data).
+point, which a task quest has none of, and Blizzard's API knows only some task quests (on 12.1.5, 6 of
+the 11 new ones and 1,306 of the 5,740 in the data), so neither its quest records nor its area,
+category and type lists can find the rest.
 Run it with `-WhatIf` first: it prints the counts and the quests it can't place and writes nothing. A
 second run adds nothing and changes no byte, and no row that is there is changed or removed. It reads
 `QuestV2CliTask`, `QuestInfo`, `SkillLine`, `QuestPOIBlob`, `UiMap` and `ChrRaces` from `-ToolsDir`
@@ -1464,7 +1464,11 @@ old row is touched.
   retail's alone ([plans/game-parity.md](plans/game-parity.md)).
 - **The 12.1.5 run (15 October 2026, build 12.1.5.70391):** 6,258 rows; 5,740 in the data; 478 hidden
   trackers (471 by the flag, 6 by QuestInfo 265, 1 by the title); 29 internal entries; 11 added (4 type 1,
-  6 type 4, 1 type 128), 2 of them left in category 0 (97219 and 97241, no map point). Eight are Hallow's
+  6 type 4, 1 type 128), 2 of them left in category 0 (97219 and 97241, no map point). Step 1 hadn't
+  fetched the new rows' API records yet, so the tool filed them by map point, not by API area: 98390
+  went to Voidstorm (1508), where its one client point is, but its API area is Silvermoon City, where
+  98379 before it is filed, so it was moved to 1512 by hand. `Place-UncategorisedQuests.ps1` refiles
+  only category 0, so check each new row's API area once step 1 has its record. Eight are Hallow's
   End quests (Sugar Run x3, A Haunted Home, Candy Crafting x3, Community Candy Crawl). None has a
   namesake in the data, so the tool gave them no holiday, and they were tagged Hallow's End and filed
   under its heading by hand, with `SET` rows in
@@ -1945,9 +1949,10 @@ one, "The user ruled" for quests the user said belong to a holiday, "Left out by
 decision" for judgment calls the user left out, "Not decided", or, on `KEEP` rows, "Checked". The rows
 of decision 10's answers keep the evidence they had while pending and add "The user's decision of 12
 October 2026 (decision 10 of open-items.md)" with the user's words and the reason: 123 `SET` rows and
-77 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0. The 18 `SET` rows of decision 35's answer
-(Call of the Scarab, #315) give the user's words and end "The user's decision of 12 October 2026
-(decision 35 of open-items.md)." The counts were recounted for every row on 12 October 2026 (#315):
+76 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0 (77 until 15 October 2026, when #347
+tagged the Candy Exchanges 92567 and 92569 and added a row for 93598, filed with the weekly events).
+The 18 `SET` rows of decision 35's answer (Call of the Scarab, #315) give the user's words and end
+"The user's decision of 12 October 2026 (decision 35 of open-items.md)." The counts were recounted for every row on 12 October 2026 (#315):
 25 older rows were out of date, as pins came after them (the 12 Bar Tab Barrels, the 8 "Desecrate this
 Fire!" rows, 11886, 11964, 11966 and 82672 in `Pins`, and 81561 in `PinsAllYear`). A pin added or
 removed later leaves a row's counts as they were until the next recount.

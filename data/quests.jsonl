@@ -35549,7 +35549,7 @@
 {"id":97219,"name":"Candy Crafting","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16,"prereq":92498}
 {"id":97241,"name":"Voices of Stone","level":0,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":98379,"name":"Ancient Depths, Ancient Venom","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":97981}
-{"id":98390,"name":"Ascending with Venomstones","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":98379}
+{"id":98390,"name":"Ascending with Venomstones","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":98379}
 {"id":98421,"name":"Candy Crafting","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16,"prereq":93400}
 {"id":98422,"name":"Candy Crafting","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16,"prereq":95826}
 {"id":98801,"name":"Community Candy Crawl","level":0,"zone":"Hallow's End","category":90,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":16}
