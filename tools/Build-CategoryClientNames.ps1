@@ -18,7 +18,7 @@ param(
     [string]$QuestFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcQuest.lua'),
     [string]$MenuFile = (Join-Path $PSScriptRoot '..\QuestCompletist\qcMenu.lua'),
     [string]$LocaleFile = (Join-Path $PSScriptRoot '..\QuestCompletist\Localization.enUS.lua'),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [switch]$Refresh
 )
 . "$PSScriptRoot\AddonData.ps1"

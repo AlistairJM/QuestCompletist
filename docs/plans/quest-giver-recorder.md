@@ -498,3 +498,8 @@ so nothing was written there.
   move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired: the user
   decided the same day to keep both recorders ("yes, keep both, go ahead"), so the probe's notes and the addon's
   are combined through the ledger ("What is left", 4).
+- 2026-10-14: step 6d in the 12.1.5 sweep read the addon's Forever file (144 records, 0 odd: 69 givers, 67 spots,
+  76 offers, 49 turn-ins) and the probe's file of build 70374 (164 records: 80 givers, 88 spots, 99 offers, 58
+  turn-ins). The Forever ledger went from 231 to 326 rows, all trusted; every note is of build 70338 or earlier.
+  Retail's file held 0 records again. Forever's import then read the ledger and moved 26 pins and added 5, which
+  the user accepted ([forever.md](forever.md), status of 14 October).

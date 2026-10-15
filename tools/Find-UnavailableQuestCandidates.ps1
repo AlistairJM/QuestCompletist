@@ -33,7 +33,7 @@ param(
     [string]$ProbeResults = '',
     [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe',
     [string[]]$SampleIds = @(),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [switch]$Refresh
 )
 $ProgressPreference = "SilentlyContinue"

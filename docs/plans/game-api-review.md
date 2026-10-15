@@ -719,10 +719,11 @@ variables are `tools/retail_probe_69933/QCForeverProbe.lua` and the reader's row
 Nothing in the addon or the pipeline changed with these results. Decisions 8 and 9 below come from
 them.
 
-## Probe runs since (9 and 10 October 2026)
+## Probe runs since (9, 10 and 14 October 2026)
 
 The probe ran on both games, with the lists built for the installed builds (retail 12.1.0.69933, the
-Forever beta 1.60.1.70291, then 70338 the next day).
+Forever beta 1.60.1.70291, then 70338 the next day). Forever ran again on 1.60.1.70374 on 14 October (last
+bullet).
 
 - **Maps:** the totals of 7 October again. Retail: 439 offers, 77 forced quests, 459 points of
   interest, 290 dungeon entrances, 14 hubs, 182 maps with a level range and 657 that allow a waypoint
@@ -735,13 +736,21 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   quest, campaign or story quest; 11 quests have a quest line. A refused quest saved no facts, so
   whether `GetQuestLineInfo` answers for one, and whether `IsAccountQuest` needs loaded data, were not
   known; the probe now tallies each function on the refused quests (`refusedFacts` in the quest run's
-  row), and records the character and level of every run.
+  row), and records the character and level of every run. Forever's 14 October run answered both (last
+  bullet).
 - **The quest pass on retail:** all 35,023 quests answered, 33,802 loaded (31,425 on 29 September,
   same build), so 183 newly loaded quests classify as Recurring.
 - **The quest pass on Forever differs between runs:** about 80 of 7,320 quests are answered in one run
   and refused in the next (see [forever.md](forever.md), "The beta's answers differ between runs").
 - **Pin names:** 10,562 of 10,564 retail pins and 1,503 of 1,503 Forever pins carry the game's own
   NPC name; the two retail ones differ by a trailing space.
+- **Forever on 1.60.1.70374 (14 October, a level 16 Night Elf rogue, `tools\forever_probe_70374\`):**
+  the map totals are the same (no offers, 16 points of interest), and so is the continent geometry
+  (`Compare-ContinentGeometry.lua` against 70338's baseline). Of the 4,279 quests the server refused,
+  `GetQuestLineInfo` and `GetQuestFactionGroup` answered none, and `IsAccountQuest` answered every one
+  without loaded data (all false), as the other ten functions did; only
+  `GetContentDifficultyQuestForPlayer` gave a value above 0. Retail's half of the question waits for its
+  12.1.5.70391 files (`tools\retail_probe_70391\`) to be read.
 
 ## Decisions to take
 

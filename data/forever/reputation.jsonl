@@ -452,9 +452,12 @@
 {"quest":574,"faction":72,"amount":100}
 {"quest":575,"faction":21,"amount":100}
 {"quest":575,"faction":87,"amount":-500}
+{"quest":577,"faction":21,"amount":100}
+{"quest":577,"faction":87,"amount":-500}
 {"quest":581,"faction":530,"amount":100}
 {"quest":582,"faction":530,"amount":100}
 {"quest":584,"faction":530,"amount":100}
+{"quest":585,"faction":530,"amount":75}
 {"quest":586,"faction":530,"amount":100}
 {"quest":590,"faction":68,"amount":50}
 {"quest":596,"faction":530,"amount":100}
@@ -477,6 +480,7 @@
 {"quest":633,"faction":47,"amount":100}
 {"quest":637,"faction":47,"amount":100}
 {"quest":638,"faction":530,"amount":25}
+{"quest":639,"faction":530,"amount":100}
 {"quest":647,"faction":47,"amount":150}
 {"quest":655,"faction":76,"amount":25}
 {"quest":658,"faction":72,"amount":100}
@@ -502,6 +506,7 @@
 {"quest":690,"faction":47,"amount":75}
 {"quest":691,"faction":72,"amount":150}
 {"quest":693,"faction":47,"amount":100}
+{"quest":694,"faction":72,"amount":100}
 {"quest":700,"faction":47,"amount":100}
 {"quest":701,"faction":76,"amount":100}
 {"quest":702,"faction":76,"amount":25}
@@ -936,7 +941,9 @@
 {"quest":1418,"faction":76,"amount":50}
 {"quest":1419,"faction":76,"amount":100}
 {"quest":1420,"faction":76,"amount":75}
+{"quest":1421,"faction":72,"amount":100}
 {"quest":1423,"faction":72,"amount":25}
+{"quest":1425,"faction":72,"amount":75}
 {"quest":1431,"faction":76,"amount":25}
 {"quest":1432,"faction":76,"amount":50}
 {"quest":1434,"faction":68,"amount":100}
@@ -956,6 +963,7 @@
 {"quest":1459,"faction":47,"amount":100}
 {"quest":1465,"faction":69,"amount":75}
 {"quest":1466,"faction":47,"amount":100}
+{"quest":1467,"faction":47,"amount":100}
 {"quest":1468,"faction":469,"amount":10}
 {"quest":1470,"faction":68,"amount":75}
 {"quest":1480,"faction":68,"amount":50}
@@ -1302,6 +1310,10 @@
 {"quest":7871,"faction":890,"amount":200}
 {"quest":7871,"faction":890,"amount":200}
 {"quest":7871,"faction":890,"amount":200}
+{"quest":7874,"faction":889,"amount":200}
+{"quest":7874,"faction":889,"amount":200}
+{"quest":7874,"faction":889,"amount":200}
+{"quest":7874,"faction":889,"amount":200}
 {"quest":7883,"faction":909,"amount":100}
 {"quest":7891,"faction":909,"amount":100}
 {"quest":7896,"faction":909,"amount":100}
@@ -1322,6 +1334,7 @@
 {"quest":8150,"faction":67,"amount":200}
 {"quest":8155,"faction":509,"amount":200}
 {"quest":8156,"faction":509,"amount":200}
+{"quest":8161,"faction":510,"amount":200}
 {"quest":8162,"faction":510,"amount":200}
 {"quest":8266,"faction":890,"amount":50}
 {"quest":8268,"faction":889,"amount":50}
@@ -2125,6 +2138,10 @@
 {"quest":95775,"faction":76,"amount":100}
 {"quest":95776,"faction":530,"amount":100}
 {"quest":95776,"faction":76,"amount":100}
+{"quest":95786,"faction":72,"amount":100}
+{"quest":95786,"faction":67,"amount":100}
+{"quest":95787,"faction":72,"amount":100}
+{"quest":95788,"faction":72,"amount":100}
 {"quest":95803,"faction":68,"amount":50}
 {"quest":95805,"faction":81,"amount":50}
 {"quest":95981,"faction":68,"amount":100}
@@ -2294,7 +2311,11 @@
 {"quest":98899,"faction":2799,"amount":150}
 {"quest":98901,"faction":2799,"amount":150}
 {"quest":98903,"faction":2799,"amount":200}
+{"quest":98904,"faction":2799,"amount":200}
+{"quest":98905,"faction":2799,"amount":200}
 {"quest":98906,"faction":2798,"amount":200}
+{"quest":98907,"faction":2798,"amount":200}
+{"quest":98908,"faction":2798,"amount":200}
 {"quest":98910,"faction":510,"amount":10}
 {"quest":98913,"faction":509,"amount":10}
 {"quest":98977,"faction":67,"amount":50}

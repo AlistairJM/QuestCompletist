@@ -10,8 +10,9 @@ downloaded.
      without a heading and a zone, SET to none, KEEP, and each way a row is out of date), that a decided
      quest isn't listed for what the passes say, the quests filed under another profession's heading,
      that -WhatIf writes nothing, that the data passes the record checks and the Lua matches, and that
-     a second run changes no byte. Then -Game forever on made-up WoW: Forever quests with the
-     checkout's Forever menu.
+     a second run changes no byte, and that its quest cache, with 7 of the 32 quests, is warned about
+     as one that looks partial. Then -Game forever on made-up WoW: Forever quests with the checkout's
+     Forever menu.
   B  The real tables, API records and quest cache (in -ToolsDir) against a scratch copy of the
      checkout's data and decisions: nothing is left to do, then quests each pass and each kind of
      decision gave a profession, heading or zone lose it and the tool must give exactly that back, and
@@ -158,6 +159,7 @@ try {
     $dry = Invoke-Tool ($common + '-WhatIf')
     Equal $dry.Exit 0 "A1: -WhatIf succeeds ($($dry.Text))"
     Check ($dry.Text -match 'Build 9\.9\.9\.99999\.') 'A1: the build is the newest quest cache''s'
+    Check ($dry.Text -match 'WARNING: retail_quest_cache_9\.9\.9\.99999\.jsonl looks partial, with under 90% of the quests it should hold: 7 of our 32 \(21[.,]9%\)\.') "A1: a quest cache with 7 of our 32 quests is warned about ($($dry.Text))"
     Check ($dry.Text -notmatch 'Downloading') 'A1: it downloads nothing when the tables are there'
     Check ($dry.Text -match '3 headings name a profession') "A1: Mining, Engineering and Herbalism are profession headings, Professions isn't"
     Check ($dry.Text -match '3 knowledge items need a skill') 'A1: the recipe is no knowledge item, and the item needing no skill doesn''t count'
