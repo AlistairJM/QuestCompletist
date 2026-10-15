@@ -157,7 +157,8 @@ try {
 
     # -OwnDataOnly on the retail layout reads the same data and tables
     $r = Run-Script $Audit @('-OwnDataOnly', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', "$w\none.csv", '-OutFile', "$w\tools\retail.csv")
-    Equal $r.Exit 1 'A7: -OwnDataOnly alone also needs nothing downloaded'
+    Equal $r.Exit 1 'A7: -OwnDataOnly alone also needs nothing downloaded, and fails on its new findings'
+    Check ($r.Text -match 'Findings: \d+, of which new: \d+\.') "A7: and runs to the end ($($r.Text))"
     Equal (Get-Content "$w\tools\retail.csv" -Raw) (Get-Content "$w\tools\second.csv" -Raw) 'A7: and finds the same'
     $r = Run-Script $Audit @('-OwnDataOnly', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', $keep, '-OutFile', "$w\tools\retail.csv")
     Equal @(Import-Csv "$w\tools\retail.csv" | Where-Object { $_.Kind -eq 'decision out of date' }).Count 0 'A7: on retail it skips the API, TrinityCore and the client, so it judges no KEEP row'
@@ -168,6 +169,10 @@ try {
     $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', $all, '-OutFile', "$w\tools\all.csv")
     Equal $r.Exit 0 'A8: with every finding kept the run exits 0'
     Check ($r.Text -match 'of which new: 0\.' -and $r.Text -notmatch '(?m)^NEW ') "A8: and lists nothing new ($($r.Text))"
+    Add-Content $all '"prereq: requires itself","5","5","KEEP","fixed since"'
+    $r = Run-Script $Audit @('-Game', 'forever', '-ToolsDir', "$w\tools", '-DataDir', "$w\data\forever", '-AddonDir', "$w\addon\Forever", '-DecisionsFile', $all, '-OutFile', "$w\tools\all.csv")
+    Equal $r.Exit 1 'A8: a KEEP row that keeps nothing alone fails the run'
+    Check ($r.Text -match 'of which new: 1\.' -and $r.Text -match '(?m)^NEW  decision out of date  5 5: ') "A8: as the one new finding ($($r.Text))"
 
     # --- the duplicate-quest removal ---------------------------------------------------------------
     $w = New-World 'pins'

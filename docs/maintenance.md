@@ -535,13 +535,15 @@ first run's findings and what was decided are in [plans/quest-table-checks.md](p
 A `KEEP` row that matches no finding is a new finding too, **decision out of date**, with the row's
 `Kind` in its detail: the data or a source changed, so the row keeps nothing. Take it out, or move it
 to the finding that took its place once that has been looked at. Only a run that read every source
-judges the rows: one with `-OwnDataOnly`, or with no TrinityCore dump, skips checks that would have found
-something, so it says it held no row against the findings. The first run with this check, on 15
-October 2026 (12.1.5.70391), reported 129 findings, 10 of them new. 3 were one-time quests that require
+judges the rows: a retail run with `-OwnDataOnly`, or with no TrinityCore dump, skips checks that would
+have found something, so it says it held no row against the findings. The first run with this check,
+on 15 October 2026 (12.1.5.70391), reported 129 findings, 10 of them new. 3 were one-time quests that require
 a quest retyped as weekly on 10 October (#257): 83531 requires 83530, 89056 requires 89197 and 89057
-requires 85721. The other 7 were rows out of date: six `prereq: recurring quest` rows whose quest is
-now weekly too (83530, 85470, 85721, 88659, 89195 and 89197), and the `prereq: quest not in the data`
-row for 91798, whose 91799 step 6b added on 11 October.
+requires 85721. The other 7 were rows out of date: six `prereq: recurring quest` rows whose quest #257
+retyped as weekly too (83530, 85470, 85721, 88659, 89195 and 89197), and the `prereq: quest not in the
+data` row for 91798, whose 91799 step 6b added on 11 October. Step 2c then dropped all seven links on 12
+October (recurring links Blizzard doesn't name), so none of those quests has a prerequisite now and no
+finding took the rows' place.
 
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
