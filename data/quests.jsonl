@@ -17161,7 +17161,7 @@
 {"id":44917,"name":"Return to Karazhan: The Tower of Power","level":45,"zone":"Return to Karazhan ","category":1033,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":44918,"name":"A Message From Our Enemies","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":288}
 {"id":44919,"name":"A Challenge From Our Enemies","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":288}
-{"id":44920,"name":"Order of Incantations","level":45,"zone":"Artifact","category":16,"type":1,"faction":3,"race":67108863,"class":2093,"storyline":313}
+{"id":44920,"name":"Order of Incantations","level":45,"zone":"Artifact","category":16,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":313}
 {"id":44921,"name":"Lone Wolf","level":45,"zone":"Moonglade","category":62,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":5886}
 {"id":44922,"name":"Inside the Winter Storm","level":10,"zone":"Stormheim","category":1006,"type":1,"faction":2,"race":67108863,"class":8191}
 {"id":44923,"name":"Helarjar Landing: Vrekt","level":45,"zone":"Stormheim","category":1006,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":44721}
@@ -34958,7 +34958,7 @@
 {"id":94469,"name":"A Handful of Voidlight Marl","level":80,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94470,"name":"A Cluster of Voidlight Marl","level":80,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94471,"name":"A Trove of Voidlight Marl","level":80,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":94474,"name":"The Great Vault","level":90,"zone":"Azuremyst Isle","category":17,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":94474,"name":"The Great Vault","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94475,"name":"The Voidspire: Flicker in the Hollow","level":90,"zone":"The Voidspire","category":1745,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94476,"name":"The Voidspire: Flicker in the Hollow","level":90,"zone":"The Voidspire","category":1745,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94477,"name":"The Voidspire: Flicker in the Hollow","level":90,"zone":"The Voidspire","category":1745,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -35540,7 +35540,7 @@
 {"id":97208,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":97209,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":97210,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
-{"id":97212,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":97212,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":16}
 {"id":97213,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":92498,"name":"Sugar Run","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":93400,"name":"Sugar Run","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}

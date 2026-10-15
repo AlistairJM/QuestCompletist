@@ -475,6 +475,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-15: Hallow's End for 12.1.5, on the user's word (the 12.1.5 sweep's item 8, option A). 18 quests that the 12.1.5 API files under Hallow's End are in the data, with no pins: nine candy dailies (92535-92537, 93401, 95822, 95825, 95827-95829), the Drustvar and Duskwood Candy Exchanges (92568, 92570), the Alliance-only Midnight bucket 97211 and six Horde-only buckets (12391, 12393, 12946, 13468, 28959, 54709). Step 6b's eight Hallow's End task quests and the Candy Exchanges 92567 and 92569 are tagged too, all under the Hallow's End heading; retail has 35,573 quests. 52991 '[REMOVED]' was left out, with a `SKIP` row. The buckets 12346 (retired) and 28997, and the Ahune, Headless Horseman and gift quests, are still undecided.
 
+- 2026-10-15: step 1 and two quests for 12.1.5, on the user's word (the 12.1.5 sweep's decisions 10b and 10c). 44920 Order of Incantations, which D3 left for the user, has every class: the API lists every class but Evoker, plus Adventurer, read like the 117 pre-Evoker lists, with a `FIX` row and a `KEEP` row. 94474 The Great Vault (recommendation 13's API-served quest, and one of recommendation 19's misfiles) gets a `KEEP` row in unavailable-quest-decisions.csv and moves to Silvermoon City (1512): 12.1.5's API 404s on it, but `QuestV2`, the probe and the quest cache all have it. The other four Silvermoon quests under Azuremyst Isle (94993, 95008, 95114, 95276) are unchanged. Step 1's one fix made the Midnight bucket 97212 Horde only, as the API and TrinityCore say.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
