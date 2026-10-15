@@ -443,7 +443,9 @@ from CMaNGOS in step 10, whose item 10 runs this tool's heading check on Forever
 writes `quest_reputation_compare.csv`. Then `Apply-ReputationBackfill.ps1` adds the rewards the API
 lists and we don't have, and corrects the ones whose amounts differ from the API's. It leaves a
 reward only we list alone and counts it: check those by hand, as the API may simply not list a
-reward the game gives. In October 2026 all 11,035 of our rewards matched the API.
+reward the game gives. On 15 October 2026 (API cache `12.1.5_70077`) the API pass found 4 rewards to
+add, step 6b's 11378, 11382, 11386 and 57326 (below), none to correct and none only we list; with them,
+all 11,039 of our rewards match the API.
 
 Its cache pass (retail only, report-only) then checks the same rewards against the client's own
 quest cache. It needs step 2e's `Read-QuestCache.ps1` to have written
@@ -478,7 +480,7 @@ still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on 
 The run exits with 1 on a class C or D quest, and says the reader looks moved when there are 100 or
 more C quests (`-ReaderMovedAt`): run `Compare-QuestCache.ps1` then, and don't use the cache's
 rewards that sweep. It prints the three builds (the API's, the cache's, the Faction table's) and warns
-when they differ, as they do in October 2026 (API `12.1.0_68914`, cache `12.1.0.69933`); a few C
+when they differ, as they did on 15 October 2026 (API `12.1.5_70077`, cache and Faction table `12.1.5.70391`); a few C
 quests may be a hotfix between them. B, E, F and G move with what a probe run asked for, so their
 quests are kept in `docs\plans\quest-reputation-cache-baseline.csv`, and each run says how many are
 new and gone against it. Once those are explained, rerun with `-UpdateBaseline` and commit the file.
@@ -489,6 +491,20 @@ record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the c
 them new rows) and G to 2,852 (401 new, the new rows the cache lacks), and the baseline file was rewritten.
 Whether to backfill E is the user's decision
 ([plans/retail-quest-cache.md](plans/retail-quest-cache.md)); nothing here changes data.
+
+On 15 October 2026 (cache 12.1.5.70391, API cache 12.1.5_70077, Faction table 12.1.5.70391) C and D
+were 0 and B the same 3 quests, and the cache reproduced all 10,054 of the API's rewards on the quests
+it holds: A 9,329, E 433 quests with 581 rewards (all of them quests the API has no record of), F 130,
+G 8,975 (1,707 with a reward row of ours) and H 18 (none with a reward). That cache is partial: it
+holds 26,598 of our 35,573 quests ([In the game](#in-the-game), the probe's step 3), and E, F and G
+moved for that alone. The 1,709 E and 32 F quests gone from the baseline are all quests it lacks, now in G, and the
+57 new E and 9 new F quests were all in G; G also lost the 243 quests it holds that the 12.1.0 cache
+did not, and gained the 6,366 it lacks. So the baseline file stays as it was until a complete 12.1.5
+cache is read. The API cache of 14 October has no record of the 29 quests #347 added (18 Hallow's End
+quests and 11 task quests), so the API pass counts 5,388 quests with none: the 5,359 the API does not
+know and those 29. The records fetched for #347 on 15 October, in the same namespace, list no
+reputation reward for the 24 the API knows, and it does not know 97219, 97241, 98421, 98422 and 98801;
+the quest cache holds none of the 29. Step 2 has nothing to add for them when step 1 next fetches.
 
 ### 2b. The tables kept by hand
 
@@ -1520,7 +1536,7 @@ old row is touched.
   - step 2, `Compare-QuestReputation.ps1` and then `Apply-ReputationBackfill.ps1`, for the rewards the
     API lists. After step 6b's first run (11 October 2026, below), step 2 ran before step 1 had
     fetched the new rows' API records, so 11378, 11382, 11386 and 57326 were still without their
-    rewards at the 12.1.5 sweep, whose compare (14 October 2026) lists them as `api-only`. The compare
+    rewards at the 12.1.5 sweep, whose compare (14 October 2026) listed them as `api-only`; step 2 added them on 15 October 2026. The compare
     counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
     and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`;
   - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
