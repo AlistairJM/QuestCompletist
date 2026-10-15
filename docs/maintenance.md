@@ -371,7 +371,7 @@ task quests' races and classes (`QuestV2CliTask`), the conditions on a quest's s
 (`ItemSparse`: 36 quests on build 12.1.0.69933, and the 25 we have agree with ours). WoW: Forever's
 importer reads the same item columns (step 10).
 
-So run step 1b first, and start the audit only when it has finished. The audit reads
+Run step 1b first, and start the audit only when it has finished. The audit reads
 `quest_wago_requirements.csv` once, when it starts, and a 1b run beside it leaves the audit on the
 old file: on 14 October 2026 the two ran together, and the audit was run again from the cache it had
 filled.
@@ -1041,8 +1041,11 @@ the `fact <quest> questLineID <id>` lines) with each quest's `storyline`.
 
 `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` downloads the game's map table
 (`UiMap.csv`) for that build and maps quest categories to game maps, so the client supplies their
-names in every language. Pass `-Build` wherever this step downloads: with `-Refresh` and no `-Build`,
-a tool downloads the tables of the build it has as its default, which after a patch is the one before.
+names in every language. A tool of this step downloads a table only with `-Refresh` or when the
+file is missing, and retail's file names carry no build, so without `-Refresh` a run reads
+whatever build's table is already there. Without `-Build` it downloads the tables of the build it
+has as its default, which after a patch is the one before. So each run here that downloads passes
+both.
 
 Then run `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh -WhatIf`, then without `-WhatIf`.
 It adds the maps missing from `qcAreaIDToCategoryID`, which turns the map you're on into a quest
@@ -1331,11 +1334,6 @@ same data. It lists any new quest it couldn't place; those stay in category 0, U
 quests go at the end of `data\quests.jsonl`. Like the other scripts that write, both take `-DataDir`
 and `-AddonDir`, so they can run against a scratch copy.
 
-Once the inserter has added quests, run steps 2b and 2c again for them: 2b checks the tables kept
-by hand and the prerequisites against what the API says of them, and 2c gives them their
-prerequisites. Then run steps 2g and 4, for their minimum levels and storylines, and the probe and
-step 3, for their types ([The sweep](#the-sweep)).
-
 `Place-UncategorisedQuests.ps1` also works on its own, on every quest without a category or in a
 category that isn't defined. Run it with `-WhatIf` first. It files each quest by the first of these
 that gives an answer:
@@ -1385,6 +1383,11 @@ file new ones by their quest-giver's zone. It only finds new cases, so it's safe
 After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf`, then without
 `-WhatIf`. It removes menu entries whose category no longer holds any quests, except Uncategorized.
 
+Once the inserter has added quests, and `File-WeeklyEventQuests.ps1` has filed them, run steps 2b
+and 2c again for them: 2b checks the tables kept by hand and the prerequisites against what the API
+says of them, and 2c gives them their prerequisites. Then run steps 2g and 4, for their minimum
+levels and storylines, and the probe and step 3, for their types ([The sweep](#the-sweep)).
+
 Merging a category into another is a refile with more to clean up (Darkmoon Island and four one-quest
 categories went into their zones on 11 October 2026). Refile its quests first, with `Set-RecordField`
 and `Save-QuestData` from `AddonData.ps1`: the target's category and the zone text the target's other
@@ -1415,8 +1418,9 @@ then says "no category" instead of "not in the menu" for a dungeon whose unused 
 `Add-TaskQuests.ps1` adds the quests of the client's own task table (`tools\QuestV2CliTask.csv`, step 1b)
 that `data\quests.jsonl` doesn't hold: world quests, bonus objectives, world events, Prey and Special
 Assignment quests and the like. Nothing else finds them: the pin pipeline takes a quest through a giver
-point, which a task quest has none of, and Blizzard's API answers only for a quest it is asked about,
-and for some task quests only (on 12.1.5, 6 of the 11 new ones and 1,306 of the 5,740 in the data).
+point, which a task quest has none of, and Blizzard's API can't list quests: it answers only for a
+quest it is asked about, and it knows only some task quests (on 12.1.5, 6 of the 11 new ones and
+1,306 of the 5,740 in the data).
 Run it with `-WhatIf` first: it prints the counts and the quests it can't place and writes nothing. A
 second run adds nothing and changes no byte, and no row that is there is changed or removed. It reads
 `QuestV2CliTask`, `QuestInfo`, `SkillLine`, `QuestPOIBlob`, `UiMap` and `ChrRaces` from `-ToolsDir`
@@ -1459,11 +1463,11 @@ old row is touched.
     checks their faction, race and class;
   - step 1d, which finds nothing: the profession is set;
   - step 2, `Compare-QuestReputation.ps1` and then `Apply-ReputationBackfill.ps1`, for the rewards the
-    API lists. After this step's first run (below), step 2 ran before step 1 had fetched the new rows,
-    so 11378, 11382, 11386 and 57326 waited until the 12.1.5 sweep for their rewards. The compare
-    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
-    and the new rows the cache lacks in G (401): they are explained, so rerun it with
-    `-UpdateBaseline`;
+    API lists. After step 6b's first run (11 October 2026, below), step 2 ran before step 1 had
+    fetched the new rows' API records, so 11378, 11382, 11386 and 57326 waited until the 12.1.5 sweep
+    for their rewards. The compare counts the new rows with a cache reward on a visible faction in
+    class E (42 on 11 October 2026) and the new rows the cache lacks in G (401): they are explained,
+    so rerun it with `-UpdateBaseline`;
   - step 2c (the prerequisites the client names, 112 of the new rows on 11 October 2026 and no old row)
     and step 4 (59 storylines, no old row);
   - `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf` if it lists any: placement files a
