@@ -250,3 +250,7 @@ The review's code change, decision 2 and the last 3 findings:
 - 2026-10-07: step 2c takes the client's task-quest tables for task quests (client-tables-review.md,
   Status): 687 quests gained a prerequisite, 90 changed. The check found one new finding, an
   other-faction quest, and kept it (121 findings, all decided).
+- 2026-10-15: the check lists its new findings and exits with 1 on one, as step 2d does, and a KEEP row
+  that matches no finding is a finding of its own ("decision out of date"). Its first run on
+  12.1.5.70391 found 7 such rows and 3 new findings, left for a data change
+  ([maintenance.md](../maintenance.md#2b-the-tables-kept-by-hand)).

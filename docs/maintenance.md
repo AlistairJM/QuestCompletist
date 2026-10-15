@@ -495,8 +495,10 @@ Whether to backfill E is the user's decision
   limits and the faction names;
 - in `data\quests.jsonl`: the prerequisites.
 
-It needs the API cache from step 1, and writes `tools\quest_table_audit.csv`, one row per finding,
-with a count for each kind.
+It needs the API cache from step 1 and the TrinityCore dump ([Before a sweep](#before-a-sweep), item 5),
+and writes `tools\quest_table_audit.csv` (or `-OutFile`), one row per finding, with a count for each kind.
+It lists the new findings (the first 50; the report has them all) and exits with 1 when there is one,
+as step 2d does.
 
 - **Against our own data:**
   - a quest that isn't in `quests.jsonl`, or is flagged unavailable;
@@ -530,6 +532,19 @@ add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and 
 the report, then `Decision` and `Reason`. Later runs mark it kept and count only the rest as new. The
 first run's findings and what was decided are in [plans/quest-table-checks.md](plans/quest-table-checks.md).
 
+A `KEEP` row that matches no finding is a new finding too, **decision out of date**, with the row's
+`Kind` in its detail: the data or a source changed, so the row keeps nothing. Take it out, or move it
+to the finding that took its place once that has been looked at. Only a run that read every source
+judges the rows: a retail run with `-OwnDataOnly`, or with no TrinityCore dump, skips checks that would
+have found something, so it says it held no row against the findings. The first run with this check,
+on 15 October 2026 (12.1.5.70391), reported 129 findings, 10 of them new. 3 were one-time quests that require
+a quest retyped as weekly on 10 October (#257): 83531 requires 83530, 89056 requires 89197 and 89057
+requires 85721. The other 7 were rows out of date: six `prereq: recurring quest` rows whose quest #257
+retyped as weekly too (83530, 85470, 85721, 88659, 89195 and 89197), and the `prereq: quest not in the
+data` row for 91798, whose 91799 step 6b added on 11 October. Step 2c then dropped all seven links on 12
+October (recurring links Blizzard doesn't name), so none of those quests has a prerequisite now and no
+finding took the rows' place.
+
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
 prerequisite tables against the quests (a quest not in the data, a daily or repeatable quest in a pair
@@ -538,7 +553,8 @@ faction or another profession, a quest listed twice). Forever's tables are gener
 apply, and it reads no API cache, TrinityCore dump or client table. `-OwnDataOnly` does the same on
 either game's folders with no download. Forever's `KEEP` rows are in
 `docs\plans\forever-quest-table-decisions.csv`, and the findings go to
-`tools\quest_table_audit_forever.csv`.
+`tools\quest_table_audit_forever.csv`. As those checks are all Forever has, its rows are held against
+the findings, and one that matches none is out of date, as on retail; on 15 October 2026 none was.
 
 ### 2c. Prerequisites
 
@@ -1773,12 +1789,13 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
-   run of 11 October 2026 found 6 on 2,399 prerequisites and 447 table entries (35 of them quests that
+   run of 15 October 2026 found 6 on 2,399 prerequisites and 447 table entries (35 of them quests that
    need another in the log), all kept in
-   `docs\plans\forever-quest-table-decisions.csv` (three prerequisites that name the other faction's
-   quest, three that name a repeatable one, one of them as one of a choice). The first run, on 9 October, also found a quest whose own
+   `docs\plans\forever-quest-table-decisions.csv` (a prerequisite that names the other faction's
+   quest, three that name a repeatable one, one of them as one of a choice, and two of another
+   profession), and no row of that file out of date. The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
-   previous quest). Anything new is a finding to look at before the pull request.
+   previous quest). Anything new is a finding to look at before the pull request: the run exits with 1.
 9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` (see step 6), as a check. Several CMaNGOS
    entries of one object give pins of one name at one spot (Venom Bottle, Flawed Power Stones), and the
    importer applies this tool's rule before it writes, so it should take nothing off and list only the one
@@ -2568,7 +2585,8 @@ git diff --stat
 - For changes to `Audit-QuestTables.ps1` or `Remove-DuplicatePinQuests.ps1`, or to the data and tables they
   check on Forever, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverChecks.ps1`. It
   must say "0 failed". It makes small data in a scratch folder for both, and ends with the two run on Forever's
-  committed data, which must have no finding the decisions file doesn't keep and no duplicate to remove.
+  committed data, which must have no finding the decisions file doesn't keep, no row of that file that keeps
+  nothing, and no duplicate to remove.
 
 ## Bundled libraries
 
