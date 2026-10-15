@@ -21,7 +21,8 @@ the grey pins and the requirements filter must follow each quest's minLevel (els
 file qcQuestData.lua was built from, while the low-level filter and the bracket and sort of the list (its
 first 16 rows in each category) must still follow its level. A level of 0 or below is no level: the
 row prints the bare name and the low-level filter keeps the quest, which made-up quests check apart from
-the data. Any wrong reading fails the run (exit status 1).
+the data. A PvP quest's name (qcQuestPvP) is led by the game's crossed swords, as the list draws it.
+Any wrong reading fails the run (exit status 1).
 
 An empty quest list says how many quests the filters hide (qcUpdateQuestList's line): made-up quests in
 made-up categories, each kind hidden by a filter of its own, check that the line gives the number the
@@ -706,6 +707,7 @@ for i = 1, 16 do
 	_G["qcMenuButton" .. i] = buttons[i]
 end
 env.qcMenuSlider = stubTable({SetValue = function(self, value) self.value = value end, GetValue = function(self) return self.value end})
+local PVP_MARK = "|A:questlog-questtypeicon-pvp:14:14|a "
 
 local levelProblems = 0
 if next(minimumLevels) then
@@ -770,7 +772,10 @@ if next(minimumLevels) then
 				local id, text = button.QuestID, button.QuestName.text
 				local own = ownLevels[id]
 				if text == "#" then break end
-				if own and text ~= (own > 0 and string.format("[%d] %s", own, QUESTS[id][1]) or QUESTS[id][1]) then bracket[id] = true end
+				if own then
+					local name = (env.qcQuestPvP and env.qcQuestPvP[id] and PVP_MARK or "") .. QUESTS[id][1]
+					if text ~= (own > 0 and string.format("[%d] %s", own, name) or name) then bracket[id] = true end
+				end
 				if own and own < previous then order[id] = true end
 				previous = own or previous
 			end
@@ -789,7 +794,7 @@ if next(minimumLevels) then
 		out(string.format("  pins greyed although a quest on them can be taken: %d; not greyed although none can: %d",
 			count(greyWrongly), count(plainWrongly)))
 		out("  low-level filter not following the quest's own level (a level of 0 or below is never low): " .. ids(lowLevel))
-		out("  list row not '[level] name', or not the bare name for a level of 0 or below (first 16 rows of each category): " .. ids(bracket))
+		out("  list row not '[level] name', or not the bare name for a level of 0 or below, the name led by the PvP mark on a PvP quest (first 16 rows of each category): " .. ids(bracket))
 		out("  list sort not by the quest's own level (first 16 rows of each category): " .. ids(order))
 		out("  quests in qcQuestData.lua that the data file lacks: " .. ids(notInData))
 		out()

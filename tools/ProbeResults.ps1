@@ -48,7 +48,8 @@ function Get-ProbeQuests([string]$Path, [string]$LuaExe = 'C:\Program Files (x86
 # 2 Fair, 3 Difficult, 4 Impossible) and GetQuestDifficultyLevel (Level), with the character's level and its two
 # trivial ranges. A function or a range is $false when the client has no such call, $null when it gave nothing. The
 # counts are keyed by strings: 'true', 'false' and 'none' for Trivial; '0' to '4', 'none' and 'other' for Difficulty;
-# 'true/0' for both.
+# 'true/0' for both. A cached row with no level above 0 is a record the client held only in part, whose answers are
+# defaults (5,242 rows of the 12.1.5 run before the probe asked about them): it is counted in Partial, not tallied.
 function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
     if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
     $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path facts)
@@ -75,9 +76,11 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
     $difficulty = [ordered]@{ '0' = 0; '1' = 0; '2' = 0; '3' = 0; '4' = 0; 'none' = 0; 'other' = 0 }
     $together = @{}
     $quests = @{}
+    $partial = 0
     foreach ($id in $rows.Keys) {
         $row = $rows[$id]
         if ($row.Build -cne $run.Build -or @('ok', 'cached', 'late') -cnotcontains $row.Result) { continue }
+        if ($row.Result -ceq 'cached' -and -not ($row.ContainsKey('level') -and $row.level -match '^\d+$' -and [int]$row.level -gt 0)) { $partial++; continue }
         $t = if ($row.ContainsKey('trivial') -and @('true', 'false') -ccontains $row.trivial) { $row.trivial } else { 'none' }
         $d = if (-not $row.ContainsKey('contentDifficulty')) { 'none' } elseif ($row.contentDifficulty -cmatch '^[0-4]$') { $row.contentDifficulty } else { 'other' }
         $trivial[$t]++
@@ -99,6 +102,7 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
         TrivialRange = & $answer $run.Ranges['UnitQuestTrivialLevelRange'] $true
         TrivialRangeScaling = & $answer $run.Ranges['UnitQuestTrivialLevelRangeScaling'] $true
         Loaded = $quests.Count
+        Partial = $partial
         Trivial = $trivial
         Difficulty = $difficulty
         Together = $together
