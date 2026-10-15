@@ -48,6 +48,7 @@ does:
 | #153 | 587 | October 2026 review, below. |
 | #156 | 603 | October 2026, the last sets, below. |
 | 9 October probe | 53 | Typed one-time, and the game says Recurring, from the probe's first retail run (`Retype-ProbeRecurring.ps1`), below. |
+| 12.1.5 sweep | 2 | Pilgrim's Bounty's "Sharing a Bountiful Feast", typed seasonal, made daily by Blizzard in 12.1.5. By hand, on the user's decision, below. |
 
 **#133, October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
 one-time, so its 79 weeklies got a permanent tick: Wintergrasp's, Wrath raids' "… Must Die!",
@@ -145,6 +146,18 @@ quests, 33,802 loaded against the 29 September type probe's 31,425) gave `Retype
   (2) and a few others.
 - Only the type field changed, no quest left the data, and `Test-QuestReachability.lua` reads the same
   before and after. Their pins now hide with the other repeatable and recurring quests by default.
+
+**The 12.1.5 sweep, 15 October 2026.** "Sharing a Bountiful Feast", 14064 (Alliance) and 14065 (Horde),
+the Pilgrim's Bounty feast, were typed seasonal (64) and became daily (4), keeping their Pilgrim's Bounty
+tag, like the event's ten other dailies (14048, 14051, 14053 to 14055 and 14058 to 14062).
+- Blizzard made them daily in 12.1.5: the API's records of 12.1.5_70077 flag them `is_daily` and those of
+  12.1.0_68914 flag nothing, and the quest cache of 12.1.5.70391 gives them the daily flag (flags 4104,
+  recurring daily), where 12.1.0.69933's gave flags 8 and no recurrence.
+- No tool retypes a seasonal quest (`Retype-FlaggedWorldQuests.ps1` takes type 128 and
+  `Retype-ProbeRecurring.ps1` the one-time types), so the change is by hand, on the user's decision.
+- Only the type field changed. The holiday audit (step 2d) gives the same 13 findings, none new, and
+  `Test-QuestReachability.lua` reads the same before and after. A completion recorded while they were
+  seasonal goes at the next daily reset, as the other dailies' do.
 
 ## Still open
 
