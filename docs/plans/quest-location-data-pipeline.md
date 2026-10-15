@@ -649,10 +649,11 @@ is pinned like the 758, callings stay out until it is known whether the game sti
   differ from the request: the lists leave 16 quests out, 11 Threat Wrappers (268, the "Assault:"
   quests) and 5 Bonus Objectives with Completion Toast (283), which are not named "World Quest"; and
   21 of the 758 have a start point outside every region of their map, so only 737 can be placed.
-- **The table.** 42 kinds: the 38 `QuestInfo` rows named "World Quest" (109 to 152, 259, 260, 278,
-  286, 295, 296), Hidden Quest 265, Threat Wrapper 268, Calling Quest 271 and Bonus Objective with
-  Completion Toast 283. Dragonrider Racing 281 was the 43rd until the user's call of 11 October 2026;
-  its line is gone, so racing is placed. It is listed, not read from `QuestInfo.csv`, so
+- **The table.** 43 kinds: the 39 `QuestInfo` rows named "World Quest" (109 to 152, 259, 260, 278,
+  286, 295, 296, and 298 Lair World Quest, which 12.1.5 added), Hidden Quest 265, Threat Wrapper 268,
+  Calling Quest 271 and Bonus Objective with Completion Toast 283. Dragonrider Racing 281 was in it too
+  until the user's call of 11 October 2026; its line is gone, so racing is placed. Important Quest (Raid)
+  297, also new in 12.1.5, is not a world quest kind and is placed. The table is listed, not read from `QuestInfo.csv`, so
   a name change or a kind a new build adds cannot change what is pinned unseen; the run stops
   with a message at a `QuestInfo` named World Quest that the table lacks, and a task kind that
   `QuestInfo.csv` has no row for is placed. 268 and 283 are in it to match the 758 the user
