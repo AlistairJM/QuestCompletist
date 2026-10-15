@@ -130,7 +130,11 @@ pins of one name can hold a quest at one spot: Remove-DuplicatePinQuests.ps1's r
 on one pin of those within half a map point of each other before the pins are written, so a rerun writes them as
 committed, with nothing left for that tool (step 10's item 9) to take off.
 A quest with no giver on a map gets a pin at its start point in the client's tables, if it has one,
-with no giver named: the tables don't say who stands there. A quest that has a giver's pin keeps it,
+with no giver named: the tables don't say who stands there. Such start points within 1.5 map points of
+each other on one map share one pin, one per spot, by the rules both games share (PinRules.ps1, which
+also chooses a giver pin's name: the game's, else the recorder's, else CMaNGOS's, and every pin's icon
+from its quests). A quest whose giver becomes known leaves the spot for the giver's pin at the next
+import, and the spot's other quests stay where they are. A quest that has a giver's pin keeps it,
 and a start point more than 3 map points from all its pins on that map is listed for review. The
 summary counts the client's start points, and the quests whose record in the cache names a giver
 (none so far), so a rerun shows when Blizzard fills in more of either.
@@ -186,6 +190,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\PinRules.ps1"
 . "$PSScriptRoot\DuplicatePins.ps1"
 . "$PSScriptRoot\RecordedGivers.ps1"
 . "$PSScriptRoot\QuestRemovals.ps1"
@@ -1103,18 +1108,25 @@ function Get-GiverSpots([string]$kind, [int]$id) {
     return $spots
 }
 
-$pins = @{}
+# The pins, grouped by PinRules.ps1: a giver's by its key (Creature:, GameObject: or Vehicle: and its entry), the
+# start points that name nobody by spot alone.
+$pins = New-Object System.Collections.Generic.List[object]
+$pinGroups = New-PinGroups
 $spotCache = @{}
 $startPinned = 0
 
+function Get-Pin([int]$map, [string]$giver, [decimal]$x, [decimal]$y, $new) {
+    $pin = Find-PinGroup $pinGroups $map $giver $x $y
+    if ($pin) { return $pin }
+    $pins.Add($new)
+    return Add-PinGroup $pinGroups $map $giver $x $y $new
+}
+
 function Add-StartPins([int]$id) {
     foreach ($spot in $startSpots[$id]) {
-        $pinKey = "$($spot.UiMap)|Start|$($spot.X)|$($spot.Y)"
-        if (-not $pins.ContainsKey($pinKey)) {
-            $pins[$pinKey] = [pscustomobject]@{ map = $spot.UiMap; icon = 1; npc = 0; name = $null; x = $spot.X; y = $spot.Y
-                quests = (New-Object System.Collections.Generic.List[int]); note = $null; Kind = 'Start'; GiverId = 0 }
-        }
-        $pins[$pinKey].quests.Add($id)
+        $pin = Get-Pin $spot.UiMap '' $spot.X $spot.Y ([pscustomobject]@{ map = $spot.UiMap; icon = 1; npc = 0; name = $null; x = $spot.X; y = $spot.Y
+            quests = (New-Object System.Collections.Generic.List[int]); note = $null; Kind = 'Start'; GiverId = 0 })
+        if (-not $pin.quests.Contains($id)) { $pin.quests.Add($id) }
     }
 }
 
@@ -1157,18 +1169,15 @@ foreach ($id in ($records.Keys | Sort-Object)) {
         $kind, $giverId = $key.Split(':')
         $giverId = [int]$giverId
         if (-not $spotCache.ContainsKey($key)) { $spotCache[$key] = @(Get-GiverSpots $kind $giverId) }
+        $isObject = $kind -eq 'GameObject'
+        $name = (Select-PinIdentity ([ordered]@{ game = $(if (-not $isObject) { $gameNpcName[$giverId] }); recorded = $recordedName[$key]
+                    emulator = $(if ($isObject) { $objectName[$giverId] } else { $cmNpcName[$giverId] }) })).Value
         foreach ($spot in $spotCache[$key]) {
-            $isObject = $kind -eq 'GameObject'
-            $pinKey = "$($spot.UiMap)|$key|$($spot.X)|$($spot.Y)"
-            if (-not $pins.ContainsKey($pinKey)) {
-                $name = if ($isObject) { if ($recordedName[$key]) { $recordedName[$key] } else { $objectName[$giverId] } }
-                    elseif ($gameNpcName[$giverId]) { $gameNpcName[$giverId] } elseif ($recordedName[$key]) { $recordedName[$key] } else { $cmNpcName[$giverId] }
-                $pins[$pinKey] = [pscustomobject]@{ map = $spot.UiMap; icon = 1; npc = $(if ($isObject) { 0 } else { $giverId })
-                    name = $(if ($name) { $name } else { $null }); x = $spot.X; y = $spot.Y
-                    quests = (New-Object System.Collections.Generic.List[int]); note = $null; Kind = $kind; GiverId = $giverId }
-            }
-            $pins[$pinKey].quests.Add($id)
-            $placed.Add($pins[$pinKey])
+            $pin = Get-Pin $spot.UiMap $key $spot.X $spot.Y ([pscustomobject]@{ map = $spot.UiMap; icon = 1; npc = $(if ($isObject) { 0 } else { $giverId })
+                name = $(if ($name) { $name } else { $null }); x = $spot.X; y = $spot.Y
+                quests = (New-Object System.Collections.Generic.List[int]); note = $null; Kind = $kind; GiverId = $giverId })
+            if (-not $pin.quests.Contains($id)) { $pin.quests.Add($id) }
+            $placed.Add($pin)
         }
     }
     if (-not $placed.Count) {
@@ -1204,7 +1213,7 @@ $refiledQuests = @{}
 foreach ($q in @($records.Values | Where-Object { $placelessSort[$_.category] } | Sort-Object id)) {
     $refiledQuests[$q.id] = $true
     $heading = $sortName[$q.category]
-    $zones = @($pins.Values | Where-Object { $_.quests.Contains($q.id) } | ForEach-Object { $uiMapArea[$_.map] } | Where-Object { $_ } |
+    $zones = @($pins | Where-Object { $_.quests.Contains($q.id) } | ForEach-Object { $uiMapArea[$_.map] } | Where-Object { $_ } |
         Group-Object | Sort-Object { -$_.Count }, { [int]$_.Name })
     $enderZones = @($(foreach ($npc in $creatureEnders[$q.id]) { foreach ($spawn in $enderSpawns[$npc]) {
             $spot = Convert-ToMapSpot $spawn.Map $spawn.X $spawn.Y $null $oldPinMaps[$npc] -Z $spawn.Z
@@ -1227,11 +1236,8 @@ foreach ($quest in $handZone.Keys) {
     elseif (-not $refiledQuests[$quest]) { Add-Review "hand-kept zone not used: the quest's heading is a place" $quest $handZone[$quest] $records[$quest].name }
 }
 
-foreach ($pin in $pins.Values) {
-    $onPin = @($pin.quests | ForEach-Object { $records[$_] })
-    $pin.icon = if (-not ($onPin | Where-Object { $_.type -ne 64 })) { 5 }
-        elseif (-not ($onPin | Where-Object { -not $_.profession })) { 3 }
-        elseif (-not ($onPin | Where-Object { $_.class -eq 8191 })) { 9 } else { 1 }
+foreach ($pin in $pins) {
+    $pin.icon = Get-PinQuestIcon @($pin.quests | ForEach-Object { $records[$_] })
     $pin.quests = @($pin.quests | Sort-Object)
 }
 
@@ -1266,7 +1272,7 @@ $review | Sort-Object Kind, { [int]("0" + $_.Quest) }, { "$($_.Other)" } |
     Export-Csv -Path $ReviewFile -NoTypeInformation -Encoding UTF8
 
 $questList = @($records.Values | Sort-Object id)
-$duplicates = Remove-DuplicatePins @($pins.Values | Sort-Object map, Kind, GiverId, x, y)
+$duplicates = Remove-DuplicatePins @($pins | Sort-Object map, Kind, GiverId, x, y)
 $pinList = $duplicates.Pins
 $fromBoth = @($questList | Where-Object { $cache.ContainsKey($_.id) -and $cmQuest.ContainsKey($_.id) }).Count
 $fromGame = @($questList | Where-Object { $cache.ContainsKey($_.id) -and -not $cmQuest.ContainsKey($_.id) }).Count
