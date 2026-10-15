@@ -764,7 +764,10 @@ no quest leaves the data without the user having seen it.
   build's quest cache; a quest the probe didn't ask about isn't counted, and the same build twice is
   one run). The importer imports a quest until it has missed 10 runs in a row (`-MaxMissedRuns`), and
   lists each one kept from an earlier run in the review. With no file the memory is built from the
-  `forever_quest_cache_<build>.jsonl` files in `tools\`, so keep each run's.
+  `forever_quest_cache_<build>.jsonl` files in `tools\`, so keep each run's. `Sync-QuestPvP.ps1` reads the
+  file too (since 15 October 2026), so a PvP quest kept from an earlier run keeps its tag there as well:
+  before, it read the newest cache alone and listed 98897, 98899 and 98901 (Darkspear Islands Clash, kept
+  from 70291 on 70338) as having `pvp` with no source.
 - **The guard:** the importer compares its quests with the committed `quests.jsonl` before it writes,
   and stops, writing nothing, if any would go for any reason (10 missed runs, an internal title, a change
   in CMaNGOS). The list, with ID, name and zone, is in the output and `tools\quest_removals_forever.csv`;

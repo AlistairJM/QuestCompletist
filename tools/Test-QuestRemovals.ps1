@@ -3,7 +3,8 @@ Checks QuestRemovals.ps1, ForeverAnswers.ps1 and Show-RemovedQuests.ps1 on made-
 scratch git repository): nothing in the checkout is touched and nothing is downloaded. It checks which quests count
 as removed, the decisions file, the answer memory (a run is a build's cache, a missed run counts only for a quest
 that was asked about, a run is never counted twice, an answer resets the count, the memory reads back byte for
-byte), and that Show-RemovedQuests.ps1 exits 1 for an undecided removal and for a KEEP quest that is gone.
+byte, which quests keep their last record), and that Show-RemovedQuests.ps1 exits 1 for an undecided removal and
+for a KEEP quest that is gone.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestRemovals.ps1
 
@@ -103,6 +104,12 @@ try {
     [IO.File]::WriteAllText($path, "{`"runs`":[]}`n{`"oops`":1}`n")
     $threw = $false; try { Read-AnswerMemory $path | Out-Null } catch { $threw = $_.Exception.Message -match "doesn't know" }
     Check $threw 'A6: a line it does not know is refused'
+    $carried = Get-CarriedAnswers $m (Ids 1) 11 @{} @{}
+    Equal (($carried.Keys | Sort-Object) -join ',') '2' 'A7: a quest not answered now is carried until it has missed the limit, and one answered now never is'
+    Equal $carried[2].Raw $m.Quests[2].Raw 'A7: with its last record'
+    $carried = Get-CarriedAnswers $m (Ids 1) 11 @{ 3 = $true } @{ 2 = $true }
+    Equal (($carried.Keys | Sort-Object) -join ',') '3' 'A7: KEEP carries a quest past the limit, and REMOVE lets one go'
+    Equal (Get-CarriedAnswers (New-AnswerMemory) (Ids 1) 11 @{} @{}).Count 0 'A7: an empty memory carries nothing'
 
     # --- Show-RemovedQuests.ps1 on a scratch repository ------------------------------------------
     $repo = "$Scratch\repo"
