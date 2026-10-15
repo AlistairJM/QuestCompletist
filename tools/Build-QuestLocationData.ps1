@@ -83,6 +83,7 @@ $noPinKinds = [ordered]@{
     286 = 'Capstone World Quest'
     295 = 'Prey World Quest'
     296 = 'World Quest (Short Duration)'
+    298 = 'Lair World Quest'
 }
 
 Write-Output "Loading source tables..."
