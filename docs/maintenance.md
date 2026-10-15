@@ -668,6 +668,14 @@ same, none new. The first run also found quest 43472, filed under Midsummer whil
 `PENDING` row said WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
 run takes about 20 seconds.
 
+On 15 October 2026, with the 12.1.5 API cache (12.1.5_70077), the counts were 982, 583 and 1,052 and
+the findings 15: the API now files the Candy Exchanges 92567 and 92569 under Hallow's End, and their
+`KEEP` rows held them untagged. With 12.1.5's Hallow's End quests tagged (the two exchanges, the eight
+task quests of step 6b and 18 quests new to the data), the counts are 1,004, 587 (four of the new Horde
+Candy Buckets are in TrinityCore's Hallow's End event) and 1,082 (with Broomstick Express and Specter
+Inspector, 92104 and 92455, moved from Uncategorized under the Hallow's End heading too), and the findings
+the same 13, none new.
+
 ### 2e. The retail quest cache
 
 The client keeps the server's record of every quest it has asked about in
@@ -1374,7 +1382,10 @@ The fetch reads its quest IDs from `toolsgap_quest_ids.txt`, which no tool write
 **Quests the data lacks.** `Find-MissingQuests.ps1 -Game retail` (and `-Game forever`; report only, about a minute) lists the quests the client's QuestV2, the game's quest cache or the emulator (TrinityCore, CMaNGOS) know and the data doesn't hold, and sorts them: task rows (step 6b), tracking and retired quests, internal titles, quests the emulator disables, and the rest with or without evidence that someone starts them (an emulator starter, a start point, a quest line row, an item that starts it). QuestV2 alone proves nothing: it omits almost all repeatable quests and lists tracking and retired ones. Look at the candidates, record each reviewed one in `docsplansmissing-quest-decisions.csv` (Game, Quest, Name, Decision ADD or SKIP, Reason), and add nothing without the user having seen the list. Its baseline is `docsplansmissing-quests-baseline.csv` (12 October 2026: 555 retail candidates, 130 Forever); it exits 1 on more undecided candidates than that, and `-UpdateBaseline` writes the new counts once they are explained. A quest with no title anywhere (20,358 on retail) is a hidden or tracking quest; a Candy Bucket the emulator knows but nothing places is the holiday case, which needs the user's list first.
 
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
-same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. New
+same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. That
+run covers every quest in category 0, not only the new ones, so it also files older ones it can: on
+15 October 2026 it filed 34 (the Chromie Time quests 60959 to 60971 among them), which were put
+back, as the pull request was about the new quests only. Check the diff for old rows that moved. New
 quests go at the end of `data\quests.jsonl`. Like the other scripts that write, both take `-DataDir`
 and `-AddonDir`, so they can run against a scratch copy.
 
@@ -1529,6 +1540,24 @@ old row is touched.
   player-facing rows less 7 trackers that slip past the flag); the 29 internal entries come off those.
   Forever's client has no task table (`QuestV2CliTask` is not among its 613 tables), so the step is
   retail's alone ([plans/game-parity.md](plans/game-parity.md)).
+- **The 12.1.5 run (15 October 2026, build 12.1.5.70391):** 6,258 rows; 5,740 in the data; 478 hidden
+  trackers (471 by the flag, 6 by QuestInfo 265, 1 by the title); 29 internal entries; 11 added (4 type 1,
+  6 type 4, 1 type 128), 2 of them left in category 0 (97219 and 97241, no map point). Step 1 hadn't
+  fetched the new rows' API records yet, so the tool filed them by map point, not by API area: 98390
+  went to Voidstorm (1508), where its one client point is, but its API area is Silvermoon City, where
+  98379 before it is filed, so it was moved to 1512 by hand. `Place-UncategorisedQuests.ps1` refiles
+  only category 0, so check each new row's API area once step 1 has its record. Eight are Hallow's
+  End quests (Sugar Run x3, A Haunted Home, Candy Crafting x3, Community Candy Crawl). None has a
+  namesake in the data, so the tool gave them no holiday, and they were tagged Hallow's End and filed
+  under its heading by hand, with `SET` rows in
+  [plans/quest-holiday-decisions.csv](plans/quest-holiday-decisions.csv). The evidence is Blizzard's: the
+  API's category for four of them; for all eight, world state 1963 in the task table, which only Hallow's
+  End's task quests need; and for seven, content tuning 426, whose other 24 quests of ours are all
+  tagged Hallow's End. `Audit-QuestHolidays.ps1` sees a new row's API category only once step 1 has
+  fetched its record, and the other four have none, so look for a holiday task quest with no namesake
+  by hand. Step 1d found nothing, step 2c gave 5 of the 11 a prerequisite and
+  changed no old row, and step 4 gave none of them a storyline. The quest cache has none of the 11, so
+  `Compare-QuestReputation.ps1` counts them in G.
 
 ### 7. Quests that may no longer be obtainable
 
@@ -2003,9 +2032,10 @@ one, "The user ruled" for quests the user said belong to a holiday, "Left out by
 decision" for judgment calls the user left out, "Not decided", or, on `KEEP` rows, "Checked". The rows
 of decision 10's answers keep the evidence they had while pending and add "The user's decision of 12
 October 2026 (decision 10 of open-items.md)" with the user's words and the reason: 123 `SET` rows and
-77 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0. The 18 `SET` rows of decision 35's answer
-(Call of the Scarab, #315) give the user's words and end "The user's decision of 12 October 2026
-(decision 35 of open-items.md)." The counts were recounted for every row on 12 October 2026 (#315):
+76 `KEEP` rows, the `KEEP` rows with `Cur` and `Target` both 0 (77 until 15 October 2026, when #347
+tagged the Candy Exchanges 92567 and 92569 and added a row for 93598, filed with the weekly events).
+The 18 `SET` rows of decision 35's answer (Call of the Scarab, #315) give the user's words and end
+"The user's decision of 12 October 2026 (decision 35 of open-items.md)." The counts were recounted for every row on 12 October 2026 (#315):
 25 older rows were out of date, as pins came after them (the 12 Bar Tab Barrels, the 8 "Desecrate this
 Fire!" rows, 11886, 11964, 11966 and 82672 in `Pins`, and 81561 in `PinsAllYear`). A pin added or
 removed later leaves a row's counts as they were until the next recount.
@@ -2530,8 +2560,8 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,084
-  pins for retail, and 5,097 quests and 1,699 pins for Forever.
+  or pins were meant to be added or removed. As of 15 October 2026 they're 35,573 quests and 16,084
+  pins for retail, and 5,097 quests and 1,701 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
