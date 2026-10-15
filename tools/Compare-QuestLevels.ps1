@@ -22,7 +22,8 @@ API. A new N quest is a source lost, and is listed. A quest in neither class is 
 
 A quest cache that looks partial (QuestCacheFiles.ps1: under 90% of the quests of the build before's
 cache, or of ours) is warned about, and -UpdateBaseline refuses to write from it (exit 1) unless
--AcceptPartialCache is given: its gaps would go into class N as quests no source speaks for.
+-AcceptPartialCache is given: those of its gaps that neither the API nor the task table covers would go
+into class N as "no record", and the formula would be tested on fewer quests.
 
 A full sweep runs it after step 2e, which writes the quest cache it reads, and again after Apply-
 QuestMinLevels.ps1 and after step 6 has added quests, when the baseline is rewritten once the new

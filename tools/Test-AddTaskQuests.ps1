@@ -7,8 +7,8 @@ Checks Add-TaskQuests.ps1 in a scratch folder: nothing in the checkout is touche
      profession, level, zone and category of every added row, the holiday and category its namesakes
      give it, that old rows stay byte for byte, that new ones go at the end in ID order and pass the
      record checks, that the Lua matches, that -WhatIf writes nothing and that a second run adds
-     nothing and changes no byte. Its quest cache holds 1 of the 14 quests, so the run warns that
-     it looks partial.
+     nothing and changes no byte. It reads the quest cache of the newest build by version, not the
+     last by name, and that cache holds 1 of the 14 quests, so the run warns that it looks partial.
   B  The real table (tools\QuestV2CliTask.csv and the tables beside it, in -ToolsDir) against a scratch
      copy of the checkout's data: nothing is left to add, then every 25th task quest of the data is
      taken out and the tool must bring back exactly those, once, at the end, valid, with the pins
@@ -102,7 +102,9 @@ try {
     )
     function Blob([int]$quest, [int]$map, [int]$times = 1) { return @(1..$times | ForEach-Object { [pscustomobject]@{ ID = 1; MapID = 0; UiMapID = $map; Flags = 0; NumPoints = 1; QuestID = $quest; ObjectiveIndex = 0; ObjectiveID = 0; PlayerConditionID = 0; NavigationPlayerConditionID = 0 } }) }
     Write-Csv "$tools\QuestPOIBlob.csv" @((Blob 3001 37 3) + (Blob 3001 1 1) + (Blob 3002 1) + (Blob 3009 1) + (Blob 3010 37))
-    [IO.File]::WriteAllText("$tools\retail_quest_cache_test.jsonl", '{"id":2001,"title":"Cache Quest","contentTuning":800,"sort":1}' + "`n", $script:Utf8)
+    [IO.File]::WriteAllText("$tools\retail_quest_cache_12.1.10.1.jsonl", '{"id":2001,"title":"Cache Quest","contentTuning":800,"sort":1}' + "`n", $script:Utf8)
+    [IO.File]::WriteAllText("$tools\retail_quest_cache_12.1.5.70391.jsonl", '{"id":2001,"title":"Cache Quest","contentTuning":801,"sort":1}' + "`n", $script:Utf8)
+    [IO.File]::WriteAllText("$tools\retail_quest_cache_test.jsonl", '{"id":2001,"title":"Cache Quest","contentTuning":802,"sort":1}' + "`n", $script:Utf8)
 
     $all = -1
     function Task([int]$id, [string]$title, [int]$info = 0, [int]$tuning = 0, [long]$f0 = 0, [long]$f1 = 0, [long]$classes = -1, [int]$skill = 0, [long]$lo = -1, [long]$hi = -1) {
@@ -137,7 +139,8 @@ try {
     Check ($dry.Text -match 'internal names, skipped: 2\b') "A1: two internal names"
     Check ($dry.Text -match '\[DNT\] Thing' -and $dry.Text -match 'Test Quest') "A1: and it lists them"
     Check ($dry.Text -match 'to add: 30\b' -and $dry.Text -match 'Rows to add: 30\b') "A1: 42 rows less 6, 3, 1 and 2 is 30 to add ($($dry.Text))"
-    Check ($dry.Text -match 'WARNING: retail_quest_cache_test\.jsonl looks partial, with under 90% of the quests it should hold: 1 of our 14 \(7[.,]1%\)\.') "A1: a quest cache with 1 of our 14 quests is warned about ($($dry.Text))"
+    Check ($dry.Text -match '\(quest cache retail_quest_cache_12\.1\.10\.1\.jsonl\)') "A1: the cache read is the newest build's, not 12.1.5's or the one with no build, which sort after it by name ($($dry.Text))"
+    Check ($dry.Text -match 'WARNING: retail_quest_cache_12\.1\.10\.1\.jsonl looks partial, with under 90% of the quests it should hold: 1 of our 14 \(7[.,]1%\)\.') "A1: a quest cache with 1 of our 14 quests is warned about, and not against the build before, which holds as many ($($dry.Text))"
     Equal (Get-Hash "$data\quests.jsonl") $hashes.Quests 'A1: -WhatIf leaves quests.jsonl alone'
     Equal (Get-Hash "$addon\qcQuestData.lua") $hashes.Lua 'A1: and the Lua'
 

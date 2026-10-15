@@ -410,7 +410,7 @@ try {
     $r = Invoke-Tool $dir
     Equal $r.Exit 0 'P2: a cache with 8 of the 10 quests of the build before still exits 0'
     Has $r.Text "WARNING: retail_quest_cache_$Build.jsonl looks partial, with under 90% of the quests it should hold: 8 against the 10 of retail_quest_cache_12.0.7.99999.jsonl, the build before (80.0%)." 'P2: and is warned about, with both counts'
-    Has $r.Text 'Finish the run and read the cache again (docs\maintenance.md, step 2e).' 'P2: and what to do'
+    Has $r.Text 'Ask the missing quests again, and don''t let a smaller cache replace this one (docs\maintenance.md, step 2e).' 'P2: and what to do'
     $r = Invoke-Tool $dir @{ Cache = "$dir\retail_quest_cache_12.0.7.99999.jsonl" }
     Lacks $r.Text 'looks partial' 'P2: the build before, read with -Cache, is held to no later build'
     $dir = Write-World 'fewer' (New-Base)

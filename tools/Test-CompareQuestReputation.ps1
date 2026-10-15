@@ -496,7 +496,7 @@ try {
     $r = Invoke-Tool $d
     Equal $r.Exit 0 'P2: a cache with 10 of the 12 quests of the build before still exits 0'
     HasLine $r.Text 'WARNING: retail_quest_cache_12.1.0.69933.jsonl looks partial, with under 90% of the quests it should hold: 10 against the 12 of retail_quest_cache_12.0.7.99999.jsonl, the build before (83.3%).' 'P2: and is warned about, with both counts'
-    HasLine $r.Text 'WARNING: a probe run cut short leaves a cache like this' 'P2: and why that matters'
+    HasLine $r.Text 'WARNING: a probe run cut short, or one whose quests the server refused, leaves a cache like this' 'P2: and why that matters'
     Lacks $r.Text 'FAILED' 'P2: and fails nothing'
     $r = Invoke-Tool $d @{ UpdateBaseline = $true }
     Equal $r.Exit 1 'P3: -UpdateBaseline is refused while the warning stands'

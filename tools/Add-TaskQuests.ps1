@@ -43,11 +43,11 @@ Left to the sweep's later steps, as for every quest that enters the data: prereq
 storylines (step 4), reputation (step 2), and a type that recurs, which the probe says (step 3).
 
 Reads tools\QuestV2CliTask.csv, QuestInfo.csv, SkillLine.csv, QuestPOIBlob.csv, UiMap.csv and
-ChrRaces.csv (downloaded for -Build when they are missing, or with -Refresh), and the newest
-retail_quest_cache_*.jsonl when there is one, with a warning when it looks partial (QuestCacheFiles.ps1)
-and there are quests to add. With -WhatIf nothing is written: it prints what it would add, by type
-and category, and the quests it can't place. Without it the rows go in at the end of
-data\quests.jsonl, in ID order, through AddonData.ps1.
+ChrRaces.csv (downloaded for -Build when they are missing, or with -Refresh), and the
+retail_quest_cache_<build>.jsonl of the newest build when there is one (or -Cache), with a warning
+when it looks partial (QuestCacheFiles.ps1) and there are quests to add. With -WhatIf nothing is
+written: it prints what it would add, by type and category, and the quests it can't place. Without it
+the rows go in at the end of data\quests.jsonl, in ID order, through AddonData.ps1.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -72,7 +72,8 @@ foreach ($table in 'QuestV2CliTask', 'QuestInfo', 'SkillLine', 'QuestPOIBlob', '
     }
 }
 if (-not $Cache) {
-    $Cache = [string](Get-ChildItem (Join-Path $ToolsDir 'retail_quest_cache_*.jsonl') -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1 -ExpandProperty FullName)
+    $newest = Get-QuestCacheFiles $ToolsDir | Select-Object -Last 1
+    if ($newest) { $Cache = $newest.FullName }
 }
 
 $ALL_RACES = 67108863

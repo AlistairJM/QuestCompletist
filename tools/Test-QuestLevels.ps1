@@ -453,7 +453,7 @@ $newest = Write-Cache $sizeDir 'retail_quest_cache_12.1.5.70391.jsonl' (1..89)
 $w = @(Get-QuestCacheWarning $newest)
 Equal $w.Count 2 'K2: 89 of them is warned about, in two lines'
 Equal $w[0] 'WARNING: retail_quest_cache_12.1.5.70391.jsonl looks partial, with under 90% of the quests it should hold: 89 against the 100 of retail_quest_cache_12.1.0.69933.jsonl, the build before (89.0%).' 'K2: the first names both counts and the cache of the build before'
-Equal $w[1] 'WARNING: a probe run cut short leaves a cache like this, and what it lacks reads as quests no source speaks for. Finish the run and read the cache again (docs\maintenance.md, step 2e).' 'K2: the second why it matters and what to do'
+Equal $w[1] 'WARNING: a probe run cut short, or one whose quests the server refused, leaves a cache like this, and what it lacks reads as quests no source speaks for. Ask the missing quests again, and don''t let a smaller cache replace this one (docs\maintenance.md, step 2e).' 'K2: the second why it matters and what to do'
 $null = Write-Cache $sizeDir 'retail_quest_cache_12.1.0.9.jsonl' (1..50)
 $null = Write-Cache $sizeDir 'retail_quest_cache_12.0.7.99999.jsonl' (1..50)
 $null = Write-Cache $sizeDir 'retail_quest_cache_12.1.10.1.jsonl' (1..1000)

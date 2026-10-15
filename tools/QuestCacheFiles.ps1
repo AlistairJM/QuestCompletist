@@ -5,9 +5,10 @@ step 2e for retail, step 10 for WoW: Forever), dot-sourced:
 
 Get-QuestCacheFiles lists a game's caches, the oldest build first, by version and not by text; a file whose
 name holds no build is none of them. Get-QuestCacheWarning says when the cache a tool reads looks partial.
-The cache holds only what the probe asked for, so a probe run cut short leaves one far smaller than the
+The cache holds only what the server gave the client when asked, so one can be far smaller than the
 last, and what it lacks reads as quests no source speaks for: the 12.1.5 cache of 14 October 2026 held
-26,616 quests against the 33,123 of 12.1.0's. The tools print the warning and go on;
+26,616 quests against the 33,123 of 12.1.0's, though the probe asked for all of ours (docs\maintenance.md,
+step 2e). The tools print the warning and go on;
 Compare-QuestReputation.ps1 and Compare-QuestLevels.ps1 also refuse -UpdateBaseline while it stands,
 unless -AcceptPartialCache is given.
 #>
@@ -58,5 +59,5 @@ function Get-QuestCacheWarning([string]$cacheFile, $ourIds = $null, [double]$min
     $step = if ($game -eq 'forever') { 'step 10' } else { 'step 2e' }
     return @(
         ("WARNING: {0} looks partial, with under {1:N0}% of the quests it should hold: {2}." -f (Split-Path $cacheFile -Leaf), (100 * $minShare), ($short -join ', and ')),
-        "WARNING: a probe run cut short leaves a cache like this, and what it lacks reads as quests no source speaks for. Finish the run and read the cache again (docs\maintenance.md, $step).")
+        "WARNING: a probe run cut short, or one whose quests the server refused, leaves a cache like this, and what it lacks reads as quests no source speaks for. Ask the missing quests again, and don't let a smaller cache replace this one (docs\maintenance.md, $step).")
 }
