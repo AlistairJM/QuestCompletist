@@ -1066,9 +1066,10 @@ language. The headings are chosen by hand in the script, only where the heading'
 exactly the category's name; it stops if Blizzard renames a heading or we a category. Both games'
 headings are covered, retail's text first where both have one ("Seasonal"). A rerun with no client
 changes leaves every file byte-identical. A language's table that is byte for byte its build's
-English one isn't a translation (wago serves Forever 1.60.1.70374's Italian table so): the keys
+English one isn't a translation (as wago serves Forever 1.60.1.70374's Italian one): the keys
 that take their text from it keep the file's own text, and the tool's line for that file names
-them as kept. Then run `Test-Localization.lua` (below).
+them as kept. One of those keys that the file lacks stays out, so the game shows English for it,
+and the tool names it as not added. Then run `Test-Localization.lua` (below).
 
 `Remove-ConvertedLocaleKeys.ps1` then deletes the text the client has made redundant, in both
 games. Run it with `-WhatIf` first.

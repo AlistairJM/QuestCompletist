@@ -17,9 +17,10 @@ renamed the heading, or we the category.
 A key already in a file is rewritten with the client's text, and loses its "Needs review" or
 "Requires localization" note; a key the file lacks is added in alphabetical order. Nothing else in
 the files changes. A rerun with no client changes leaves every file byte-identical. A language's
-table that is byte for byte its build's enUS one is English under that language's name (wago serves
-Forever 1.60.1.70374's itIT so), not a translation: the keys that take their text from it are kept
-as the file has them, and the tool says so.
+table that is byte for byte its build's enUS one is English under that language's name (as wago
+serves Forever 1.60.1.70374's itIT one), not a translation: the keys that take their text from it
+are kept as the file has them, and the tool says so. One of those keys that the file lacks stays
+out, so the game shows English for it, and the tool names it as not added.
 
 Reads tools\QuestSort.<locale>.csv (retail) and tools\QuestSort-<Forever build>.<locale>.csv,
 downloaded when missing or with -Refresh, once each per run.
@@ -115,6 +116,8 @@ foreach ($locale in $locales) {
     $newline = if ($raw.Contains("`r`n")) { "`r`n" } else { "`n" }
     $lines = New-Object System.Collections.Generic.List[string]
     $lines.AddRange([string[]]($raw -split "\r?\n"))
+    $notAdded = @($found.Kept | Where-Object { $k = $_; -not ($lines | Where-Object { $_ -cmatch "^\s*$k\s*=\s*`"" }) })
+    $kept = @($found.Kept | Where-Object { $notAdded -cnotcontains $_ })
     $changed = New-Object System.Collections.Generic.List[string]
     $added = New-Object System.Collections.Generic.List[string]
     foreach ($key in $texts.Keys) {
@@ -139,9 +142,10 @@ foreach ($locale in $locales) {
     }
     $total += $changed.Count + $added.Count
     "Localization.$locale.lua: $($changed.Count) changed, $($added.Count) added, $($texts.Count - $changed.Count - $added.Count) unchanged" +
-        $(if ($found.Kept.Count) { ", $($found.Kept.Count) kept" } else { '' }) +
+        $(if ($kept.Count) { ", $($kept.Count) kept" } else { '' }) +
         $(if ($changed.Count) { "; changed " + ($changed -join ', ') } else { '' }) + $(if ($added.Count) { "; added " + ($added -join ', ') } else { '' }) +
-        $(if ($found.Kept.Count) { "; kept " + ($found.Kept -join ', ') + " as the file has them (byte-identical to enUS: " + ($found.English -join ', ') + ")" } else { '' })
+        $(if ($kept.Count) { "; kept " + ($kept -join ', ') + " as the file has them (byte-identical to enUS: " + ($found.English -join ', ') + ")" } else { '' }) +
+        $(if ($notAdded.Count) { "; not added " + ($notAdded -join ', ') + " (no translation in an enUS-identical table: the game shows English" + $(if ($kept.Count) { '' } else { "; " + ($found.English -join ', ') }) + ")" } else { '' })
     if ($WhatIf -or $changed.Count + $added.Count -eq 0) { continue }
     [IO.File]::WriteAllText($path, ($lines -join $newline), (New-Object Text.UTF8Encoding $false))
 }
