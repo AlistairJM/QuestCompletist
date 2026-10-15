@@ -329,13 +329,13 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2e | The retail quest cache, read and checked against Blizzard's data | `Read-QuestCache.ps1 -Build <retail build>` → `Compare-QuestCache.ps1` | No |
 | 2i | The PvP tag, from the quest cache's kind of each quest, else the API, the task table and TrinityCore or CMaNGOS, and the hand decisions (after step 2e; Forever's comes from its importer too): `pvp` on every PvP quest, for both games; lists, and leaves alone, the quests in battlegrounds, Wintergrasp, Tol Barad and Ashran no source tags | `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf`; the same with `-Game forever` | Only the last one |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
-| 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
+| 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 or 6b adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
 | 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1`; then steps 2b, 2c, 2g and 4 again, for the quests the inserter added | A candidate file, until you apply it |
-| 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
+| 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2g, 2i, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
@@ -751,9 +751,8 @@ the game lets a character take such a quest that many levels early is not known.
 
 It writes `minLevel` only where the minimum differs from `level`, treating 0 and 1 as the same, and
 writes none for a quest on tuning 0 with no API minimum. A second run changes nothing, byte for
-byte; after step 6 has added quests (or the task quests of open-items.md decision 1 are merged) a rerun
-covers just those and any quest whose source has moved. `-WhatIf` reports the sources, the changes by
-direction (the gate lowered or raised) and examples, and writes no data (a missing ContentTuning table is still downloaded into `tools\` first); `-Check` is the same and exits 1
+byte; after step 6 or 6b has added quests a rerun covers just those and any quest whose source has
+moved. `-WhatIf` reports the sources, the changes by direction (the gate lowered or raised) and examples, and writes no data (a missing ContentTuning table is still downloaded into `tools\` first); `-Check` is the same and exits 1
 when the data isn't what the sources say, for a Test- or Audit- step to call. The run of 11 October
 2026: 1,623 quests changed, all of them a `minLevel` added (no other field of any quest, and no pin):
 1,398 from the API (1,180 lowered, 218 raised) and 225 from the client's ranges (187 lowered, 38
@@ -1418,9 +1417,9 @@ then says "no category" instead of "not in the menu" for a dungeon whose unused 
 `Add-TaskQuests.ps1` adds the quests of the client's own task table (`tools\QuestV2CliTask.csv`, step 1b)
 that `data\quests.jsonl` doesn't hold: world quests, bonus objectives, world events, Prey and Special
 Assignment quests and the like. Nothing else finds them: the pin pipeline takes a quest through a giver
-point, which a task quest has none of, and Blizzard's API can't list quests: it answers only for a
-quest it is asked about, and it knows only some task quests (on 12.1.5, 6 of the 11 new ones and
-1,306 of the 5,740 in the data).
+point, which a task quest has none of, and Blizzard's API knows only some task quests (on 12.1.5, 6 of
+the 11 new ones and 1,306 of the 5,740 in the data), so neither its quest records nor its area,
+category and type lists can find the rest.
 Run it with `-WhatIf` first: it prints the counts and the quests it can't place and writes nothing. A
 second run adds nothing and changes no byte, and no row that is there is changed or removed. It reads
 `QuestV2CliTask`, `QuestInfo`, `SkillLine`, `QuestPOIBlob`, `UiMap` and `ChrRaces` from `-ToolsDir`
@@ -1447,9 +1446,9 @@ old row is touched.
   | zone | the name of the map most of its `QuestPOIBlob` points are on, else its namesakes' | – |
   | category | a quest whose namesakes all carry one holiday takes that holiday, their category if it is one (Honor the Flame, Bar Tab Barrel) and, with no flag of its own, their commonest type; else `Place-UncategorisedQuests.ps1`; last, the category two or more namesakes share. What is left stays in category 0, Uncategorized | – |
 
-  A new row has no pin, prerequisite, storyline or reputation: pins stay out (the addon pins no world
-  quest, and the 1,425 world quests already in the data have none either), and the rest comes from the
-  steps below on their next run.
+  A new row has no pin, prerequisite, storyline, reputation, minimum level or PvP tag: pins stay out
+  (the addon pins no world quest, and the 1,425 world quests already in the data have none either), and
+  the rest comes from the steps below on their next run.
 - **What the addon does with them.** The quest list hides type 128 (world quests, weeklies) and type 4
   (dailies) by default, so only the type 1 and 64 rows show until a player unticks "Hide World and Weekly
   Quests" or "Hide Daily Quests". The new rows have no pins of their own, so the zone maps show nothing new except that six of them sit on pins that already exist: 49739 shows the Fire Marshal Jill pin that the "no data" filter used to hide, and 56802 and 56818 to 56821 join the Atolia Seapearl pin on Nazjatar. The continent icons count
@@ -1464,15 +1463,18 @@ old row is touched.
   - step 1d, which finds nothing: the profession is set;
   - step 2, `Compare-QuestReputation.ps1` and then `Apply-ReputationBackfill.ps1`, for the rewards the
     API lists. After step 6b's first run (11 October 2026, below), step 2 ran before step 1 had
-    fetched the new rows' API records, so 11378, 11382, 11386 and 57326 waited until the 12.1.5 sweep
-    for their rewards. The compare counts the new rows with a cache reward on a visible faction in
-    class E (42 on 11 October 2026) and the new rows the cache lacks in G (401): they are explained,
-    so rerun it with `-UpdateBaseline`;
+    fetched the new rows' API records, so 11378, 11382, 11386 and 57326 were still without their
+    rewards at the 12.1.5 sweep, whose compare (14 October 2026) lists them as `api-only`. The compare
+    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
+    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`;
+  - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
+    without `-WhatIf`, for the PvP tag, which it also reads from the task table: on 14 October 2026,
+    248 of the data's 5,740 task quests had a minimum level and 52 the tag;
   - step 2c (the prerequisites the client names, 112 of the new rows on 11 October 2026 and no old row)
     and step 4 (59 storylines, no old row);
   - `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf` if it lists any: placement files a
-    weekly event quest by its zone, and 93598 "Emissary of War" stayed under Silvermoon City until the
-    12.1.5 sweep;
+    weekly event quest by its zone, and 93598 "Emissary of War" was still under Silvermoon City at
+    the 12.1.5 sweep;
   - the probe and step 3, for the types that recur;
   - `Audit-QuestHolidays.ps1` and `Audit-QuestTables.ps1`, which must show nothing new.
 - **The first run (11 October 2026, build 12.1.0.69933):** 6,242 rows; 5,230 in the data; 477 hidden
@@ -2265,7 +2267,7 @@ request #42, which is closed and its branch deleted; GitHub keeps its commits. I
 probe below, which asks the same and more on both games from a dev-only addon; once the probe has run
 on retail this section goes. Until then its saved results stand.
 
-Run the probe after step 6 has added quests, then run step 3 again. On a sweep that adds nothing, the
+Run the probe after step 6 or 6b has added quests, then run step 3 again. On a sweep that adds nothing, the
 saved results are enough.
 
 1. Bring the branch back with `git fetch origin pull/42/head:tools/quest-type-probe`, check it out

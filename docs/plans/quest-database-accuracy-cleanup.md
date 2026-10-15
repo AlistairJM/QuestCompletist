@@ -9,7 +9,7 @@
 - [#16](https://github.com/AlistairJM/QuestCompletist/pull/16): 284 race fixes
 - [#17](https://github.com/AlistairJM/QuestCompletist/pull/17): 158 faction fixes
 - [#18](https://github.com/AlistairJM/QuestCompletist/pull/18): manual review, 62 of the 83 held-back quests fixed. Each decision and its reason is in `docs/plans/quest-accuracy-manual-decisions.csv`; the other 21 keep our values on purpose (listed in the PR)
-- [#19](https://github.com/AlistairJM/QuestCompletist/pull/19): world-quest batch, 325 task quests fixed from the game client's own filters (wago only, since the API 404s on task quests)
+- [#19](https://github.com/AlistairJM/QuestCompletist/pull/19): world-quest batch, 325 task quests fixed from the game client's own filters (wago only, since the API 404'd on them)
 - [#20](https://github.com/AlistairJM/QuestCompletist/pull/20): the 40 world quests #19 held back, all reviewed and fixed. Decisions and reasons are in `docs/plans/quest-accuracy-worldquest-decisions.csv`
 
 All six were produced by `tools/Apply-AccuracyFixes.ps1 -Field <class|race|faction>`, reading
@@ -116,7 +116,7 @@ tables (wago `QuestV2`/`QuestV2CliTask`) splits them into three groups. (Separat
 
 | Bucket | Quests | Wowhead spot-check (11 checked; Wowhead's bot protection then blocked further requests) |
 |---|---|---|
-| Task quests (world quests, bonus objectives) | 4,031 | 3/3 **live** (81670, 85398, 91792). The API's quest endpoint just doesn't serve task quests |
+| Task quests (world quests, bonus objectives) | 4,031 | 3/3 **live** (81670, 85398, 91792). The API's quest endpoint answered 404 for all of these in September 2026; on 12.1.5 (October 2026) it serves 1,306 of the data's 5,740 task quests |
 | Non-task, still in the client | 733 | Mixed: 3/5 **obsolete** (8346, 24760, 54079), 2/5 live (74431, 91023) |
 | Not in the client's `QuestV2` | 191 | 3/3 exist but have no quest giver: hidden tracking quests (e.g. 42467 "Legion 110 A") |
 
