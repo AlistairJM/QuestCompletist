@@ -25,8 +25,9 @@ whose source has moved. Existing `minLevel` values change only when a source say
   -Build    the retail build of the table and the quest cache; the newest retail_quest_cache_<build>.jsonl's by default
 
 Reads tools\quest_api_cache (step 1), tools\retail_quest_cache_<build>.jsonl (step 2e),
-tools\QuestV2CliTask.csv (step 1b) and tools\ContentTuning-<build>.csv. Exit 0 is a clean run, 1 a
-refused one or, with -Check, a difference.
+tools\QuestV2CliTask.csv (step 1b) and tools\ContentTuning-<build>.csv. A quest cache that looks
+partial (QuestCacheFiles.ps1) is warned about; the run goes on, and the quests it lacks keep what they
+have. Exit 0 is a clean run, 1 a refused one or, with -Check, a difference.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -48,6 +49,7 @@ $world = Get-QuestLevelWorld $ToolsDir $DataDir $Build $Refresh.IsPresent
 Write-Output ("Retail build {0}: {1:N0} quests in the data, {2:N0} API records ({3:N0} with a minimum), {4:N0} tunings in the table, tunings for {5:N0} quests ({6:N0} from the quest cache, {7:N0} more from the task table)." -f
     $world.Build, $world.Records.Count, $world.Api.Records, $world.Api.Minimum.Count, $world.Tunings.Count,
     $world.QuestTuning.ByQuest.Count, $world.QuestTuning.FromCache, $world.QuestTuning.FromTable)
+$world.CacheWarning | ForEach-Object { Write-Output $_ }
 $formula = Get-FormulaReport $world $MinAgreement $MinTested 5
 $formula.Lines | ForEach-Object { Write-Output $_ }
 if (-not $formula.Ok) {

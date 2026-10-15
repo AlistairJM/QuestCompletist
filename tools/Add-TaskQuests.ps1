@@ -44,8 +44,9 @@ storylines (step 4), reputation (step 2), and a type that recurs, which the prob
 
 Reads tools\QuestV2CliTask.csv, QuestInfo.csv, SkillLine.csv, QuestPOIBlob.csv, UiMap.csv and
 ChrRaces.csv (downloaded for -Build when they are missing, or with -Refresh), and the newest
-retail_quest_cache_*.jsonl when there is one. With -WhatIf nothing is written: it prints what it would
-add, by type and category, and the quests it can't place. Without it the rows go in at the end of
+retail_quest_cache_*.jsonl when there is one, with a warning when it looks partial (QuestCacheFiles.ps1)
+and there are quests to add. With -WhatIf nothing is written: it prints what it would add, by type
+and category, and the quests it can't place. Without it the rows go in at the end of
 data\quests.jsonl, in ID order, through AddonData.ps1.
 #>
 param(
@@ -60,6 +61,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 
 foreach ($table in 'QuestV2CliTask', 'QuestInfo', 'SkillLine', 'QuestPOIBlob', 'UiMap', 'ChrRaces') {
     $path = Join-Path $ToolsDir "$table.csv"
@@ -188,6 +190,7 @@ foreach ($row in $taskRows) {
 $cacheNote = 'no quest cache, so the level of a tuning no task quest of ours has is 0'
 if ($Cache -and (Test-Path $Cache)) {
     $cacheNote = "quest cache $(Split-Path $Cache -Leaf)"
+    Get-QuestCacheWarning $Cache $byId.Keys
     foreach ($line in [IO.File]::ReadLines($Cache)) {
         $m = [regex]::Match($line, '^\{"id":(\d+),.*?"contentTuning":(\d+)')
         if ($m.Success -and $byId.ContainsKey([int]$m.Groups[1].Value)) { Add-Level $allLevels ([int]$m.Groups[2].Value) ([int]$byId[[int]$m.Groups[1].Value].level) }

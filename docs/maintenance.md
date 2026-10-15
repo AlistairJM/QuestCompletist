@@ -477,6 +477,9 @@ when they differ, as they do in October 2026 (API `12.1.0_68914`, cache `12.1.0.
 quests may be a hotfix between them. B, E, F and G move with what a probe run asked for, so their
 quests are kept in `docs\plans\quest-reputation-cache-baseline.csv`, and each run says how many are
 new and gone against it. Once those are explained, rerun with `-UpdateBaseline` and commit the file.
+A cache that looks partial ([2e](#2e-the-retail-quest-cache)) would put the quests it lacks in G for
+no reason of the game's, so the pass warns then, and `-UpdateBaseline` refuses to write (exit 1) until
+a whole cache is read; `-AcceptPartialCache` writes it all the same.
 On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) the classes held A 10,786, B 3 (quests
 41138, 43568, 73226), C 0, D 0, E 2,043 quests with 2,986 rewards (all of them quests the API has no
 record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the cache reproduced all
@@ -651,10 +654,17 @@ run takes about 20 seconds.
 The client keeps the server's record of every quest it has asked about in
 `Cache\WDB\enUS\questcache.wdb`, and step 10 reads WoW: Forever's copy of it. Retail's holds the same
 record, in the same layout with two fields fewer, for every quest the game has been asked about
-(32,713 in October 2026). The cache holds only what was asked: the quest-type probe (`/qc typecheck`,
+(32,713 on 9 October 2026, 33,123 on 12 October). The cache holds only what was asked: the quest-type probe (`/qc typecheck`,
 see [In the game](#in-the-game)) asks for every quest in our data, so a cache from ordinary play is
 far too small, and `Compare-QuestCache.ps1` fails when fewer than 20,000 quests could be compared.
-Log out fully, so the game writes it, and copy the file from `_retail_\Cache\WDB\enUS\` to
+A probe run cut short leaves a cache that passes that check and is still partial: 12.1.5.70391's, of
+14 October 2026, held 26,616 quests against the 33,123 of 12.1.0.69933's. So every tool that reads the
+cache (steps 1d, 2, 2c, 2e, 2g, 2i and 6b; the check is in `QuestCacheFiles.ps1`) warns when it holds
+under 90% of the quests of the newest cache of an earlier build in `tools\`, or of the quests in our
+data, and names both counts. The warning changes no exit code, but steps 2 and 2g refuse
+`-UpdateBaseline` (exit 1) while it stands, unless `-AcceptPartialCache` is given. When it shows,
+finish the probe run and read the cache again before using its values. Log out fully, so the game
+writes it, and copy the file from `_retail_\Cache\WDB\enUS\` to
 `tools\retail_probe_<build number>\` (`retail_probe_69933` for build 12.1.0.69933). The comparison also
 needs the API cache (step 1), the client's task table (step 1b) and the client's `QuestV2` for the
 cache's build, which step 1b's unnumbered `QuestV2.csv` is not:
@@ -766,10 +776,14 @@ a quest no source speaks for (483 on 11 October 2026: 463 that neither the quest
 has, three whose tuning has a minimum beyond the cap (38708, and the task quests 36868 and 36869), and the
 17 on tuning 0); a new one is listed, since a source was lost, and doesn't fail. A
 quest on tuning 0 that holds a `minLevel` is class D, so one of them gaining a gate again fails the run.
-Baseline: D 0, N 483.
+Baseline: D 0, N 483. A quest cache that looks partial ([2e](#2e-the-retail-quest-cache)) would put the
+quests it lacks in class N as "no record", so both scripts warn then, and `-UpdateBaseline` refuses to
+write (exit 1) unless `-AcceptPartialCache` is given. `Apply-QuestMinLevels.ps1` still runs: a quest
+the cache lacks keeps what it has, unless the API or the task table gives it a minimum.
 Because the formula is tested against the API on every run, a new level cap, or a change in what
 `MinLevelScalingOffset` means, fails here. `Test-QuestLevels.ps1` tests all three scripts on made-up quests
-and, with the real files, on a copy of the data (177 checks).
+and, with the real files, on a copy of the data, and the partial-cache check of `QuestCacheFiles.ps1` on
+made-up caches (209 checks).
 
 ### 2h. The calendar
 
@@ -2440,6 +2454,10 @@ git diff --stat
   makes quests, API records, a quest cache and a ContentTuning table in a scratch folder (nothing downloaded),
   and with the real files in `tools\` (or `-RealToolsDir`) also applies the formula to a copy of the data. It
   must say "0 failed".
+- For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
+  partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
+  that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
+  `Test-AddTaskQuests.ps1` and `Test-SyncQuestProfessions.ps1`. Each must say "0 failed".
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".

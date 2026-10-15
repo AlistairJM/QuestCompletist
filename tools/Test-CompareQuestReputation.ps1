@@ -4,7 +4,8 @@ table and a qcQuest.lua made here, in a scratch folder: nothing in the checkout 
 (only that the baseline file the script defaults to is there) and nothing is downloaded. One world holds a quest for each way ours, the API's and the cache's rewards can
 agree or not (class A to H), with the factions in different orders, a faction listed twice and slots
 with an amount of 0; the rest changes one thing at a time: the Faction table's flags, the builds, the
-baseline file, the files that are missing, and what the run exits with. It also runs
+baseline file, a cache that looks partial (its warning, and -UpdateBaseline refused unless
+-AcceptPartialCache), the files that are missing, and what the run exits with. It also runs
 Apply-ReputationBackfill.ps1 on the CSV, to check that it leaves the cache pass's rows alone.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-CompareQuestReputation.ps1
@@ -479,6 +480,48 @@ try {
     [IO.File]::WriteAllText("$d2\baseline.csv", "`"Class`",`"QuestID`"`r`n", $utf8)
     $r = Invoke-Tool $d2
     HasLine $r.Text '  G: 3 now, 0 in the baseline; 3 new, 0 gone' 'L8: a baseline with no rows is read as empty'
+
+    # --- A cache that looks partial ----------------------------------------------------------------------------
+    $world = @{}
+    foreach ($id in 1..10) { $world[$id] = New-Quest '76=250' '76=250' '76=250' }
+    $d = Write-World 'partial-whole' $world
+    $r = Invoke-Tool $d
+    Lacks $r.Text 'looks partial' 'P1: a cache that holds every quest of ours, with no build before it, is not warned about'
+    $older = "$d\retail_quest_cache_12.0.7.99999.jsonl"
+    [IO.File]::WriteAllText($older, ((@(1..11 | ForEach-Object { '{"id":' + $_ + ',"reputation":[[76,250]]}' }) -join "`n") + "`n"), $utf8)
+    $r = Invoke-Tool $d
+    HasLine $r.Text 'Cache pass: retail_quest_cache_12.1.0.69933.jsonl holds 10 quests' 'P1: the newest cache is still the one read'
+    Lacks $r.Text 'looks partial' 'P1: and one with 10 of the 11 quests of the build before (90.9%) is not warned about'
+    [IO.File]::WriteAllText($older, ((@(1..12 | ForEach-Object { '{"id":' + $_ + ',"reputation":[[76,250]]}' }) -join "`n") + "`n"), $utf8)
+    $r = Invoke-Tool $d
+    Equal $r.Exit 0 'P2: a cache with 10 of the 12 quests of the build before still exits 0'
+    HasLine $r.Text 'WARNING: retail_quest_cache_12.1.0.69933.jsonl looks partial, with under 90% of the quests it should hold: 10 against the 12 of retail_quest_cache_12.0.7.99999.jsonl, the build before (83.3%).' 'P2: and is warned about, with both counts'
+    HasLine $r.Text 'WARNING: a probe run cut short leaves a cache like this' 'P2: and why that matters'
+    Lacks $r.Text 'FAILED' 'P2: and fails nothing'
+    $r = Invoke-Tool $d @{ UpdateBaseline = $true }
+    Equal $r.Exit 1 'P3: -UpdateBaseline is refused while the warning stands'
+    HasLine $r.Text '  Baseline not written: the cache looks partial (the warning above).' 'P3: and says so'
+    HasLine $r.Text 'FAILED: -UpdateBaseline was refused, as the quest cache looks partial.' 'P3: in a FAILED line'
+    Check (-not (Test-Path "$d\baseline.csv")) 'P3: and writes no baseline'
+    $kept = "`"Class`",`"QuestID`"`r`n`"E`",`"99`"`r`n"
+    [IO.File]::WriteAllText("$d\baseline.csv", $kept, $utf8)
+    $r = Invoke-Tool $d @{ UpdateBaseline = $true }
+    HasLine $r.Text '  E: 0 now, 1 in the baseline; 0 new, 1 gone' 'P3: a baseline that is there is still compared'
+    Equal ([IO.File]::ReadAllText("$d\baseline.csv", $utf8)) $kept 'P3: and left as it was'
+    $r = Invoke-Tool $d @{ UpdateBaseline = $true; AcceptPartialCache = $true }
+    Equal $r.Exit 0 'P4: -AcceptPartialCache lets -UpdateBaseline write all the same'
+    HasLine $r.Text '  Baseline written: 0 quests' 'P4: the baseline'
+    HasLine $r.Text 'WARNING: retail_quest_cache_12.1.0.69933.jsonl looks partial' 'P4: with the warning still shown'
+    Check ([IO.File]::ReadAllText("$d\baseline.csv", $utf8) -ne $kept) 'P4: and the file rewritten'
+    $world[11] = New-Quest '76=250' '76=250' $null
+    $world[12] = New-Quest '76=250' '76=250' $null
+    $d = Write-World 'partial-fewer' $world
+    $r = Invoke-Tool $d
+    Equal $r.Exit 0 'P5: a cache with 10 of our 12 quests still exits 0'
+    HasLine $r.Text 'WARNING: retail_quest_cache_12.1.0.69933.jsonl looks partial, with under 90% of the quests it should hold: 10 of our 12 (83.3%).' 'P5: and is warned about, with both counts'
+    $r = Invoke-Tool $d @{ UpdateBaseline = $true }
+    Equal $r.Exit 1 'P5: and -UpdateBaseline is refused'
+    Check (-not (Test-Path "$d\baseline.csv")) 'P5: writing nothing'
 
     # --- The exact build, a cache that is not JSON, the defaults ----------------------------------------------------
     $d = Write-World 'exactfaction' (New-World)

@@ -37,7 +37,10 @@ B, E, F and G move with what a probe run asked for, so their quests are kept in 
 file (-BaselineFile; -UpdateBaseline rewrites it from this run) and each run says what is new
 and gone. The run fails (exit 1) only on a class C or D quest; with -ReaderMovedAt of them or
 more it says the cache reader has moved. The three builds (API, cache, Faction table) are
-printed, with a warning when they differ.
+printed, with a warning when they differ. A cache that looks partial (QuestCacheFiles.ps1:
+under 90% of the quests of the build before's cache, or of ours) is warned about, and
+-UpdateBaseline refuses to write from it (exit 1) unless -AcceptPartialCache is given: its gaps
+would go into G as quests not in the cache.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
@@ -46,6 +49,7 @@ param(
     [string]$Cache = "",
     [string]$BaselineFile = (Join-Path $PSScriptRoot '..\docs\plans\quest-reputation-cache-baseline.csv'),
     [switch]$UpdateBaseline,
+    [switch]$AcceptPartialCache,
     [int]$ReaderMovedAt = 100,
     [int]$Examples = 5
 )
@@ -60,6 +64,7 @@ foreach ($m in [regex]::Matches($fm.Groups[1].Value, '\[(\d+)\]\s*=\s*"((?:[^"\\
 
 . "$PSScriptRoot\QuestReputation.ps1"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 
 $sideTable = Get-QuestReputation $content
 
@@ -128,9 +133,7 @@ function Get-CacheClass($oursSet, $apiSet, $cacheSet, $shown) {
 }
 
 if (-not $Cache) {
-    $newest = Get-ChildItem "$ToolsDir\retail_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
-        Where-Object { $_.BaseName -match '^retail_quest_cache_\d+\.\d+\.\d+\.\d+$' } |
-        Sort-Object { [version]($_.BaseName -replace '^retail_quest_cache_') } | Select-Object -Last 1
+    $newest = Get-QuestCacheFiles $ToolsDir | Select-Object -Last 1
     if ($newest) { $Cache = $newest.FullName }
 }
 if ($Cache) {
@@ -148,6 +151,7 @@ if ($Cache) {
 $report = New-Object System.Collections.Generic.List[string]
 $cacheRows = New-Object System.Collections.Generic.List[object]
 $cacheFailed = $false
+$refused = $false
 if (-not $Cache) {
     $report.Add("Cache pass skipped: no retail_quest_cache_<build>.jsonl under ${ToolsDir} (Read-QuestCache.ps1 -Build <retail build>, step 2e of docs\maintenance.md).")
 }
@@ -229,6 +233,8 @@ else {
         if ($distinct.Count -gt 1) { $report.Add("WARNING: the builds differ: a reward that differs below may be a hotfix between them, but hundreds would be a reader that moved.") }
         if (-not $apiBuilds) { $report.Add("WARNING: no API record was read, so the classes below hold ours and the cache only.") }
         if ($members.G.Count -eq $ours.Count) { $report.Add("WARNING: the cache holds none of our quests.") }
+        $cacheWarning = @(Get-QuestCacheWarning $Cache $ours.Keys)
+        foreach ($line in $cacheWarning) { $report.Add($line) }
         $report.Add(("  A agree: {0:N0} (of which ours lists none, the API and the cache agree: {1:N0})" -f $members.A.Count, $aApiOnly))
         $report.Add(("  B cache adds rewards on factions that are not shown: {0:N0}" -f $members.B.Count))
         $report.Add(("  C DIFFER: {0:N0}" -f $members.C.Count))
@@ -268,7 +274,11 @@ else {
                 }
             }
         }
-        if ($UpdateBaseline) {
+        if ($UpdateBaseline -and $cacheWarning.Count -and -not $AcceptPartialCache) {
+            $refused = $true
+            $report.Add("  Baseline not written: the cache looks partial (the warning above). Read a whole cache, or give -AcceptPartialCache to write it from this one all the same.")
+        }
+        elseif ($UpdateBaseline) {
             $baselineLines = New-Object System.Collections.Generic.List[string]
             $baselineLines.Add('"Class","QuestID"')
             foreach ($class in 'B', 'E', 'F', 'G') { foreach ($id in ($members[$class] | Sort-Object)) { $baselineLines.Add('"' + $class + '","' + $id + '"') } }
@@ -286,6 +296,7 @@ else {
             $cacheFailed = $true
             $report.Add("FAILED: $($members.C.Count) quests have a reward that differs and $($members.D.Count) lost theirs in the cache (Kinds cache-differ and cache-lost in the CSV).")
         }
+        if ($refused) { $report.Add("FAILED: -UpdateBaseline was refused, as the quest cache looks partial.") }
     }
     catch {
         $cacheRows.Clear()
@@ -304,4 +315,4 @@ $rows.ToArray() + $cacheRows.ToArray() | Sort-Object { [int]$_.QuestID }, Kind |
 $unknown.GetEnumerator() | Sort-Object { [int]$_.Key } | ForEach-Object { "  [$($_.Key)] $($_.Value)" }
 "Rows written: $($rows.Count + $cacheRows.Count) -> $outFile"
 $report
-if ($cacheFailed) { exit 1 }
+if ($cacheFailed -or $refused) { exit 1 }

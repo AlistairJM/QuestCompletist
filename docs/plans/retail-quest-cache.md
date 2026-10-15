@@ -432,3 +432,9 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   the API's category: Blizzard's profession heading), after players reported quests of other
   professions on the map. The 27 profession misfiles of "Sort" moved to their own headings in the same
   change, as rows of `quest-profession-decisions.csv`.
+- 2026-10-15: the 12.1.5 cache (70391, read on 14 October) held 26,616 quests against the 33,123 of
+  12.1.0.69933's, as the probe run had been cut short, and every tool that reads the cache used it without
+  a word. `QuestCacheFiles.ps1` now warns when the cache a tool reads holds under 90% of the quests of the
+  build before's cache or of ours, naming both counts, and `Compare-QuestReputation.ps1` and
+  `Compare-QuestLevels.ps1` refuse `-UpdateBaseline` while it stands, unless `-AcceptPartialCache` is
+  given (runbook step 2e).

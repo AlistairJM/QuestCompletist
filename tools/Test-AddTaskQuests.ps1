@@ -7,7 +7,8 @@ Checks Add-TaskQuests.ps1 in a scratch folder: nothing in the checkout is touche
      profession, level, zone and category of every added row, the holiday and category its namesakes
      give it, that old rows stay byte for byte, that new ones go at the end in ID order and pass the
      record checks, that the Lua matches, that -WhatIf writes nothing and that a second run adds
-     nothing and changes no byte.
+     nothing and changes no byte. Its quest cache holds 1 of the 14 quests, so the run warns that
+     it looks partial.
   B  The real table (tools\QuestV2CliTask.csv and the tables beside it, in -ToolsDir) against a scratch
      copy of the checkout's data: nothing is left to add, then every 25th task quest of the data is
      taken out and the tool must bring back exactly those, once, at the end, valid, with the pins
@@ -136,6 +137,7 @@ try {
     Check ($dry.Text -match 'internal names, skipped: 2\b') "A1: two internal names"
     Check ($dry.Text -match '\[DNT\] Thing' -and $dry.Text -match 'Test Quest') "A1: and it lists them"
     Check ($dry.Text -match 'to add: 30\b' -and $dry.Text -match 'Rows to add: 30\b') "A1: 42 rows less 6, 3, 1 and 2 is 30 to add ($($dry.Text))"
+    Check ($dry.Text -match 'WARNING: retail_quest_cache_test\.jsonl looks partial, with under 90% of the quests it should hold: 1 of our 14 \(7[.,]1%\)\.') "A1: a quest cache with 1 of our 14 quests is warned about ($($dry.Text))"
     Equal (Get-Hash "$data\quests.jsonl") $hashes.Quests 'A1: -WhatIf leaves quests.jsonl alone'
     Equal (Get-Hash "$addon\qcQuestData.lua") $hashes.Lua 'A1: and the Lua'
 
