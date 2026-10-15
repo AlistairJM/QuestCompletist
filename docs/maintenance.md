@@ -2283,14 +2283,20 @@ It began as pull request #139, which stays open as the record; its files are in
 2. Copy `tools\ForeverProbe\QCForeverProbe` from the checkout into
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\` (or `_retail_`),
    replacing any copy there, and restart the game fully.
-3. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, 4 at a
-   time (the server stops answering a burst); one that gets no answer in 5 seconds is asked once more,
-   and a quest the game already holds in full (a level above 0) isn't asked. One it holds only in part
-   is, and a rerun asks again a quest saved as cached with no level: before this rule the 12.1.5 run
-   saved 5,242 such placeholders as cached, most of them task quests, which never reached the quest
-   cache. Each answer keeps when it came (`at`, in ms from the run's start), and `/qcprobe quests 1`
-   asks one at a time, the way to tell a server that throttles from one that refuses (the 12.1.5 run
-   had 4,959 refusals at 4 in flight). It says how many minutes are left every 500
+3. Type `/qcprobe quests`. It asks about every quest that hasn't answered on this build, one at a
+   time, and at the end asks every quest the server refused once more, one at a time (the row says
+   `retried`, and the run's row counts `retried` and `recovered`). On 14 October 2026 the 12.1.5 server
+   refused 4,959 quests asked 4 at a time; asked again one at a time the next day, 2,632 of them loaded
+   (61% of the one-time quests), so a refusal at speed is not evidence on its own. What stayed refused is
+   mostly recurring content: 72% of the 3,969 world quests and weeklies asked again that were not active on
+   the 14 October map pass, against none of the 9 active ones asked (the other 280 active ones the game
+   already held). That leans towards the server answering for active content, but 28% of the inactive
+   ones still loaded, and no Blizzard source says so. `/qcprobe quests 4` still asks 4 at a
+   time. One that gets no answer in 5 seconds is asked once more, and a quest the game already holds in
+   full (a level above 0) isn't asked. One it holds only in part is, and a rerun asks again a quest saved
+   as cached with no level: before this rule the 12.1.5 run saved 5,242 such placeholders as cached, most
+   of them task quests, which never reached the quest cache. Each answer keeps when it came (`at`, in ms
+   from the run's start). It says how many minutes are left every 500
    quests; stopping it (`/qcprobe stop`) and running it again picks up where it was, across logouts. The
    first run's 6,609 took about 10 minutes on the beta, and the list is now 7,319 long. For every
    quest that loads it also saves the facts of API review recommendation 2 (whether the quest is
@@ -2306,10 +2312,15 @@ It began as pull request #139, which stays open as the record; its files are in
    (how many are trivial, how many at each difficulty, and both together); nothing else reads the
    facts yet.
    Then `/qcprobe npcs`, outside any instance,
-   as instances hide names. `/qcprobe status` says what's been gathered. On retail the quest pass
-   takes about two hours (35,023 quests when it was timed, 35,529 since step 6b, 4 at a time; the old type probe's run was 31,425 loaded and
-   3,598 refused), the NPC pass about five minutes (8,418 NPCs), and the saved variables about 17.5
-   MB, 19 MB with the two level facts; delete the addon's folder, or disable it, when you are not running it.
+   as instances hide names. `/qcprobe status` says what's been gathered. On retail a full quest pass
+   after a patch takes about two and a half hours one at a time (35,544 quests on 12.1.5; 4 at a time it
+   took 36 minutes, with the refusals above; about 4 quests a second one at a time, as the 15 October rerun of
+   10,201 took 43 minutes), and a rerun only asks what the game doesn't hold. The NPC pass takes about 37
+   minutes after a patch (8,440 NPCs on 12.1.5, nearly all named by a second look) and five when the
+   game has them, and the saved variables are about 18 MB; delete the addon's folder, or disable it,
+   when you are not running it. After the run, log out fully and copy `questcache.wdb` at once: on 15
+   October 2026 the game's copy held only that day's 5,110 quests, the 26,616 of the day before gone,
+   so each session's copy is kept and step 2e reads them together.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
    second. One run is enough. The results note the experience preset chosen once at Forever's login

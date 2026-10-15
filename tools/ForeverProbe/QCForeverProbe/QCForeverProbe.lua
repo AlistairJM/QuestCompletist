@@ -11,7 +11,9 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               A quest the game already holds in full (HaveQuestData or a title, and a
                               level above 0) is not asked; one held only in part is, and a rerun asks
                               again a quest saved as cached with no level. One that gets no answer in
-                              5 seconds is asked once more.
+                              5 seconds is asked once more, and at the end every quest the server
+                              refused is asked once more, one at a time (retried; the run's row keeps
+                              retried and recovered).
 /qcprobe npcs [in flight]     names the NPCs in the game's list (NpcIDs_*.lua): the NPC of every pin, and on Forever CMaNGOS's givers
 /qcprobe npcs all             names every NPC again
 /qcprobe maps [wait seconds]  asks the server for each map's quest offers (the storyline starts
@@ -26,7 +28,8 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
 /qcprobe stop                 stops the run in progress
 /qcprobe status               what's been gathered on this build
 /qcprobe record on|off        the recorder, on by default
-In flight defaults to 4. Run the NPC pass outside instances: they hide names.
+In flight defaults to 1 for quests (4 at a time, the 12.1.5 server refused quests it gave one at a
+time) and 4 for NPCs. Run the NPC pass outside instances: they hide names.
 
 Asking about a quest also puts the server's full record of it into the game's cache
 (Cache\WDB\enUS\questcache.wdb), which holds its zone and minimum level. Naming an NPC does the same
@@ -37,7 +40,8 @@ stood, the quest log heading of each quest you accept, and quests started from i
 
 QCForeverProbeDB holds:
   quests[id]    build, result (ok, fail, timeout, late or cached), ms, at (when the answer came, in ms
-                from the run's start; not for cached), title, level, tagID, tagName,
+                from the run's start; not for cached), retried (asked again after a refusal), title,
+                level, tagID, tagName,
                 tagElite, elite, repeatable, questType, groupSize, classification, and the
                 facts of docs/plans/game-api-review.md, recommendation 2: isTask, isWorld, taskZone
                 (task quests), accountQuest, factionGroup, important, meta, questLineID, campaignID,
@@ -79,6 +83,7 @@ QCForeverProbeDB holds:
 local ADDON_NAME, probe = ...
 
 local DEFAULT_IN_FLIGHT = 4
+local DEFAULT_QUEST_IN_FLIGHT = 1
 local REQUEST_TIMEOUT_MS = 5000
 local MAX_ATTEMPTS = 2
 local LATE_ANSWER_WAIT_MS = 10000
@@ -159,7 +164,7 @@ local function finish(stopped)
 	run = nil
 	r.ticker:Cancel()
 	local seconds = math.floor((debugprofilestop() - r.startedMs) / 1000 + 0.5)
-	local row = {kind = r.kind, build = build, locale = GetLocale(), inFlight = r.maxInFlight,
+	local row = {kind = r.kind, build = build, locale = GetLocale(), inFlight = r.requestedInFlight,
 		asked = r.total, answered = r.done, counts = r.counts, seconds = seconds, stopped = stopped or nil,
 		time = time(), character = character(), level = UnitLevel("player")}
 	for key, value in pairs(r.extra or {}) do row[key] = value end
@@ -193,6 +198,10 @@ local function tick()
 		end
 		if not next(r.timedOut) or now > r.lateWaitUntil then
 			if r.lastLook then r.lastLook() end
+			if r.beforeFinish and r.beforeFinish() then
+				r.lateWaitUntil = nil
+				return
+			end
 			finish(false)
 		end
 	end
@@ -201,7 +210,7 @@ end
 local function begin(kind, label, queue, inFlight)
 	run = {kind = kind, label = label, queue = queue, total = #queue, nextIndex = 1, inFlight = {},
 		inFlightCount = 0, timedOut = {}, lastAsked = {}, byInstance = {}, counts = {}, done = 0,
-		maxInFlight = inFlight, startedMs = debugprofilestop()}
+		maxInFlight = inFlight, requestedInFlight = inFlight, startedMs = debugprofilestop()}
 	return run
 end
 
@@ -369,7 +378,7 @@ local function startQuests(all, inFlight)
 	factCalls, found = resolveFacts()
 	refusedFacts = {}
 	r.extra = {facts = found, refusedFacts = refusedFacts, trivialRange = trivialRanges()}
-	local attempts = {}
+	local attempts, refused, retrying = {}, {}, {}
 	r.send = function(questId)
 		if haveQuestData(questId) then
 			db.quests[questId] = questFacts(questId, "cached")
@@ -387,18 +396,51 @@ local function startQuests(all, inFlight)
 			r.queue[#r.queue + 1] = questId
 			return
 		end
+		if retrying[questId] then
+			retrying[questId] = nil
+			r.timedOut[questId] = nil
+			return
+		end
 		db.quests[questId] = questFacts(questId, "timeout")
 		db.quests[questId].at = math.floor(debugprofilestop() - r.startedMs + 0.5)
 		count(r, "timeout")
 	end
+	-- A refusal at speed can be the server's load (12.1.5: 61% of one-time refusals loaded when asked
+	-- again one at a time), so every refused quest is asked once more, one at a time, before the end.
+	r.beforeFinish = function()
+		if r.extra.retried or #refused == 0 then return false end
+		r.extra.retried, r.extra.recovered = #refused, 0
+		for _, questId in ipairs(refused) do
+			retrying[questId] = true
+			attempts[questId] = 0
+			r.queue[#r.queue + 1] = questId
+		end
+		r.maxInFlight = 1
+		say(string.format("%s: asking the %d refused once more, one at a time...", r.label, #refused))
+		return true
+	end
 	r.answered = function(questId, success)
 		local started = r.inFlight[questId]
-		if started then
+		if started and retrying[questId] then
+			r.inFlight[questId] = nil
+			r.inFlightCount = r.inFlightCount - 1
+			retrying[questId] = nil
+			local ms = debugprofilestop() - started
+			if success then
+				db.quests[questId] = questFacts(questId, "ok", ms)
+				r.extra.recovered = r.extra.recovered + 1
+				recount(r, "fail", "ok")
+			end
+			local facts = db.quests[questId]
+			facts.retried, facts.ms = true, math.floor(ms + 0.5)
+			facts.at = math.floor(debugprofilestop() - r.startedMs + 0.5)
+		elseif started then
 			r.inFlight[questId] = nil
 			r.inFlightCount = r.inFlightCount - 1
 			local result = success and "ok" or "fail"
 			db.quests[questId] = questFacts(questId, result, debugprofilestop() - started)
 			db.quests[questId].at = math.floor(debugprofilestop() - r.startedMs + 0.5)
+			if result == "fail" then refused[#refused + 1] = questId end
 			count(r, result)
 		elseif r.timedOut[questId] then
 			started = r.timedOut[questId]
@@ -1044,7 +1086,7 @@ SlashCmdList.QCFOREVERPROBE = function(argument)
 			say(string.format("the %s is running. /qcprobe stop first.", run.label))
 			return
 		end
-		local inFlight = tonumber(option) or DEFAULT_IN_FLIGHT
+		local inFlight = tonumber(option) or (command == "quests" and DEFAULT_QUEST_IN_FLIGHT or DEFAULT_IN_FLIGHT)
 		if command == "quests" then startQuests(option == "all", inFlight) else startNpcs(option == "all", inFlight) end
 	elseif command == "maps" then
 		if run then

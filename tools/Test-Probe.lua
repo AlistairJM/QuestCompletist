@@ -448,7 +448,7 @@ do
 	w.S.answer[1003] = "late"
 	w.S.cached[1004] = true
 	w.boot()
-	w.slash("quests")
+	w.slash("quests 4")
 	check(w.running(), "Q1: the pass starts")
 	check(w.said("quest pass: asking about 8, 4 at a time"), "Q1: and says what it asks")
 	w.run(120)
@@ -475,7 +475,9 @@ do
 	equal(db.quests[1004].result, "cached", "Q1: one the game already had is cached")
 	equal(db.quests[1004].ms, nil, "Q1: with no time")
 	check(w.maxConcurrent <= 4, "Q1: never more than 4 in flight (" .. tostring(w.maxConcurrent) .. ")")
-	equal(w.calls.RequestLoadQuestByID, 9, "Q1: a request for each but the cached one, and a second for the two that got no answer in time")
+	equal(w.calls.RequestLoadQuestByID, 10, "Q1: a request for each but the cached one, a second for the two that got no answer in time, and one more for the refused one at the end")
+	equal(db.quests[1001].retried, true, "Q1: the refused quest was asked again")
+	check(w.said("quest pass: asking the 1 refused once more, one at a time"), "Q1: and the pass says so")
 	local run = db.runs[#db.runs]
 	equal(run.kind, "quests", "Q1: the run row is a quest run")
 	equal(run.asked, 8, "Q1: asked")
@@ -485,7 +487,9 @@ do
 	equal(run.counts.late, 1, "Q1: one late")
 	equal(run.counts.timeout, 1, "Q1: one still timed out, and the timeout turned late is not counted twice")
 	equal(run.counts.cached, 1, "Q1: one cached")
-	equal(run.inFlight, 4, "Q1: in flight, 4")
+	equal(run.inFlight, 4, "Q1: in flight, 4, as asked, though the re-ask went one at a time")
+	equal(run.retried, 1, "Q1: the run row counts the quest asked again")
+	equal(run.recovered, 0, "Q1: and none that loaded the second time")
 	equal(run.stopped, nil, "Q1: not stopped")
 	check(w.said("Finished the quest pass: 8 of 8"), "Q1: the closing line")
 	check(w.said("quest pass: asking about 8, 4 at a time"), "Q1: asked about 8 though two were asked twice")
@@ -610,6 +614,41 @@ do
 	w2.slash("quests")
 	w2.run(60)
 	equal(w2.db().quests[1000].result, "ok", "Q8: a HaveQuestData that errors is as if it said no")
+end
+
+-- Quests are asked one at a time by default, and every refusal is asked once more at the end
+do
+	local w = newWorld({questIds = quests(5), npcIds = {7001, 7002}})
+	for i = 1000, 1004 do w.S.quests[i] = {title = "Q" .. i, level = 10} end
+	w.S.sequence[1001] = {"fail", "ok"}
+	w.S.sequence[1002] = {"fail", "fail"}
+	w.S.sequence[1003] = {"fail", "never", "never"}
+	w.boot()
+	w.slash("quests")
+	check(w.said("quest pass: asking about 5, 1 at a time"), "Q10: a quest pass asks one at a time by default")
+	w.run(300)
+	local db = w.db()
+	check(w.maxConcurrent <= 1, "Q10: never more than one in flight (" .. tostring(w.maxConcurrent) .. ")")
+	equal(db.quests[1001].result, "ok", "Q10: a quest refused and then given is ok")
+	equal(db.quests[1001].retried, true, "Q10: and marked as asked again")
+	equal(db.quests[1001].title, "Q1001", "Q10: with its facts")
+	equal(db.quests[1002].result, "fail", "Q10: one refused twice stays fail")
+	equal(db.quests[1002].retried, true, "Q10: and is marked")
+	equal(db.quests[1003].result, "fail", "Q10: one whose second ask gets no answer keeps its refusal")
+	equal(db.quests[1000].retried, nil, "Q10: a quest given at once is not asked again")
+	local run = db.runs[#db.runs]
+	equal(run.retried, 3, "Q10: three asked again")
+	equal(run.recovered, 1, "Q10: one of them given")
+	equal(run.counts.ok, 3, "Q10: so three ok")
+	equal(run.counts.fail, 2, "Q10: and two refused")
+	equal(run.answered, 5, "Q10: five answered, the re-asks not counted twice")
+	equal(run.inFlight, 1, "Q10: in flight, 1")
+	equal(w.calls.RequestLoadQuestByID, 9, "Q10: five asks, three re-asks and a second try of the one that got no answer")
+	w.S.npcs[7001] = {name = "A", at = 0}
+	w.S.npcs[7002] = {name = "B", at = 0}
+	w.slash("npcs")
+	check(w.said("NPC pass: asking about 2, 4 at a time"), "Q10: the NPC pass keeps 4 at a time")
+	w.run(60)
 end
 
 -- A quest the game holds only in part (no level yet) is asked, and so is an old row saved that way
