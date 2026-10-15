@@ -1608,7 +1608,7 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
    recurring quests, with the links a hand list adds and less those it removes (below). A quest is
    also a breadcrumb of the quest its CMaNGOS `NextQuestInChain` names, unless that one needs it done:
-   the server closes it once that quest is taken or done (141 on build 70338, the summary's "closed by
+   the server closes it once that quest is taken or done (141 on builds 70338 and 70374, the summary's "closed by
    their next quest in the chain"). The summary's "Storylines:" line is a watch on the client's `QuestLine` and
    `QuestLineXQuest` tables, the only source of Forever's storylines: on builds 70205 to 70374 they had 3 and 22
    rows, so 11 of our quests were in 1 storyline. A rise in any of them means Blizzard has started to
@@ -1618,10 +1618,10 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    `RequiredCondition` that asks only for quests handed in, written as a list where it needs all of
    several quests (`[7791,7793,7794]`) or one of several (`[[994,995]]`). A negative `PrevQuestId` or
    `NextQuestId` means the quest is offered only while that one is in the log: `links.jsonl` gives it as
-   `needsInLog` (35 quests on build 70338, the "Links:" line's last number), which becomes
+   `needsInLog` (35 quests on builds 70338 and 70374, the "Links:" line's last number), which becomes
    `qcQuestNeedsInLog`. A requirement neither can hold (an aura, an area, the war effort's collections)
    is left out and listed in the review as "CMaNGOS requirement not a prerequisite" (82 conditions on
-   build 70338). A quest CMaNGOS gives no requirement takes the quest whose follow-up it is in the
+   builds 70338 and 70374). A quest CMaNGOS gives no requirement takes the quest whose follow-up it is in the
    cache, when only one names it.
    A quest with no prerequisite from CMaNGOS or the cache's follow-up links gets the quest before it in
    its quest line (the client's `QuestLineXQuest` order) when that one is handed in on the map this one
@@ -1735,7 +1735,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    rests on, as the link list's do. A quest whose only prerequisite is for some classes is for them too,
    down the chain, as the addon counts a prerequisite the character can't take as met. The summary's
    "Classes:" line counts them: 888 quests for some classes only, 1 from its items, 2 from their
-   prerequisite and 3 by hand, on build 70338 on 11 October 2026. The review list names each change
+   prerequisite and 3 by hand, on build 70338 on 11 October 2026 and again on build 70374 on 14 October.
+   The review list names each change
    ("class from the items that start it", "class from its prerequisite"), an item's class a giver makes
    moot, and a row another source already gives or contradicts.
    A giver no source has, like those of most of Forever's new quests, can be looked up by hand on
@@ -1775,10 +1776,12 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
-   run of 11 October 2026 found 6 on 2,399 prerequisites and 447 table entries (35 of them quests that
-   need another in the log), all kept in
-   `docs\plans\forever-quest-table-decisions.csv` (three prerequisites that name the other faction's
-   quest, three that name a repeatable one, one of them as one of a choice). The first run, on 9 October, also found a quest whose own
+   run of 14 October 2026 (build 70374) found 6 on 2,399 prerequisites and 447 table entries (35 of them
+   quests that need another in the log), all kept in `docs\plans\forever-quest-table-decisions.csv`: one
+   prerequisite that names the other faction's quest (3647 needs 3643), two that name another profession's
+   quest (769 and 5124, waiting for evidence), and three that name a repeatable one (3638, 4001 and 5125;
+   3638's as one of a choice). The other faction's prerequisites of 28 and 29 went with the data-sources
+   review's D7 on 13 October. The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
    previous quest). Anything new is a finding to look at before the pull request.
 9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` (see step 6), as a check. Several CMaNGOS

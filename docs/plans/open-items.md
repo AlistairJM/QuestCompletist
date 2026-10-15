@@ -324,19 +324,23 @@ again.
   combat, mounted or taxi read, on either game; the options panel's layout and `/qc report`
   ([quest-giver-recorder.md](quest-giver-recorder.md), "To try in game").
 - **The probe on both games** (`tools/ForeverProbe`): **run and read** on 9 October (retail 12.1.0.69933:
-  35,023 quests, 8,418 NPCs, 1,961 maps; the Forever beta, 70291) and 10 October (Forever, 70338); the
-  results are in `tools\retail_probe_69933\` and `tools\forever_probe_70338\`. Pin names: 10,562 of
-  10,564 retail pins and 1,503 of 1,503 Forever pins are the game's own. The map totals are those of 7
-  October (retail 439 offers; Forever none, 16 points of interest). All twelve fact functions exist on
-  both clients, `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` among them, but Forever
-  returns inert values for most (every expansion -2, no tasks, campaigns or story quests). Still open:
-  whether `GetQuestLineInfo` answers for a quest the server refused, and whether `IsAccountQuest` needs
-  loaded data. The probe now tallies every fact function on the quests it is refused (`refusedFacts` in
-  the quest run's row) and records the character and level of every run, so the next run answers both,
-  and says whether the beta's answers follow the character: copy the probe folder into the AddOns
-  folders again first, then read the file with `Read-ForeverProbe.lua <file> facts`. The next run is
-  retail's, once 12.1.5 is live (13 or 14 October): run `Get-LatestBuilds.ps1` first, then the same
-  three commands, so the 9 October results are the baseline.
+  35,023 quests, 8,418 NPCs, 1,961 maps; the Forever beta, 70291), 10 October (Forever, 70338) and 14
+  October (Forever 1.60.1.70374, a level 16 Night Elf rogue); the results are in
+  `tools\retail_probe_69933\`, `tools\forever_probe_70338\` and `tools\forever_probe_70374\`. Pin names:
+  10,562 of 10,564 retail pins and 1,503 of 1,503 Forever pins are the game's own. The map totals are
+  those of 7 October (retail 439 offers; Forever none, 16 points of interest, again on 70374, whose
+  continent geometry is 70338's). All twelve fact functions exist on both clients, `GetQuestExpansion`,
+  `IsBreadcrumbQuest` and `IsStoryQuest` among them, but Forever returns inert values for most (every
+  expansion -2, no tasks, campaigns or story quests). **Forever answered the two open questions on 14
+  October** (`refusedFacts` in the quest run's row): of the 4,279 quests the server refused,
+  `GetQuestLineInfo` and `GetQuestFactionGroup` answered none, while `IsAccountQuest` answered every one
+  without loaded data (all false), as the other ten functions did; only
+  `GetContentDifficultyQuestForPlayer` gave a value above 0. **Still open:** the same two questions on
+  retail, whose 12.1.5.70391 files (`tools\retail_probe_70391\`) are still to read with
+  `Read-ForeverProbe.lua <file> facts`, the 9 October results being the baseline; and whether the beta's
+  answers follow the character, which needs a run on another character (the 14 October run was the same
+  rogue's). Before the next run, copy the probe folder into the AddOns folders again and run
+  `Get-LatestBuilds.ps1`.
 
 ## Decisions waiting for the user
 
