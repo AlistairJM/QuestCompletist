@@ -952,8 +952,9 @@ Blizzard's API (type 41) and the client's task table (`QuestInfoID`), then the e
 hasn't answered (TrinityCore's `QuestInfoID` on retail, CMaNGOS's `Type` on Forever, the same kinds). The game's
 "not PvP" stands over an emulator that says PvP. Hand decisions, which come first, are in
 [quest-pvp-decisions.csv](plans/quest-pvp-decisions.csv): "Arena Grandmaster" (7838, Stranglethorn Vale's third
-arena quest) is PvP by the user's word, where the game has no kind for it and CMaNGOS calls it PvP. Nothing in the
-addon reads the table yet. Every sweep, with the newest cache of each game:
+arena quest) is PvP by the user's word, where the game has no kind for it and CMaNGOS calls it PvP. The addon puts the
+game's crossed swords before a PvP quest's name in the quest list and the map pins' tooltips, and draws them as
+the icon of a pin whose quests are all PvP. Every sweep, with the newest cache of each game:
 
 - `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf` when it would change anything.
 - Forever's comes from its importer (step 10), which applies the same order (cache, then CMaNGOS, decisions
@@ -1525,7 +1526,8 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   quests that need a level the character has, quests that need one it lacks, and pins greyed or not
   wrongly. It checks the opposite mistake too: the low-level filter, and the bracket and sort of the
   list (its first 16 rows in each category), must still follow the quest's own `level`, where 0 or
-  below is no level (no bracket, never low). Since step 2g retail's two levels differ for 1,627 quests,
+  below is no level (no bracket, never low). A PvP quest's row has the game's crossed swords
+  (`|A:questlog-questtypeicon-pvp:14:14|a `) before its name, after any bracket. Since step 2g retail's two levels differ for 1,627 quests,
   so both games' runs can catch a mix-up there (with the requirements filter ignoring `qcQuestMinLevel`,
   retail's run finds 2,828 problems; with the grey pins and the tooltip line ignoring it, 6,748). Made-up quests with those levels check the same, and the
   minimum level at 0, apart from the data (33 checks). The summary has one line per level and one for
