@@ -11,16 +11,16 @@ The headings are chosen by hand, in $retail and $forever below, as the other kin
 Build-CategoryClientNames.ps1: only a heading whose English is exactly the category's name. A
 heading whose English differs ("Time Rifts" for our "Time Rift", "Weekly Event" for "Weekly
 Events") is a judgement call, not a conversion, and isn't listed. A category both games have takes
-retail's text. The English heading's key must be the key listed, or the tool stops: Blizzard
-renamed the heading, or we the category.
+retail's text, or Forever's when retail's table is enUS's (below). The English heading's key must
+be the key listed, or the tool stops: Blizzard renamed the heading, or we the category.
 
 A key already in a file is rewritten with the client's text, and loses its "Needs review" or
 "Requires localization" note; a key the file lacks is added in alphabetical order. Nothing else in
 the files changes. A rerun with no client changes leaves every file byte-identical. A language's
 table that is byte for byte its build's enUS one is English under that language's name (as wago
-serves Forever 1.60.1.70374's itIT one), not a translation: the keys that take their text from it
-are kept as the file has them, and the tool says so. One of those keys that the file lacks stays
-out, so the game shows English for it, and the tool names it as not added.
+serves Forever 1.60.1.70374's itIT one), not a translation, and is skipped: a key that only such
+tables have is kept as the file has it, and the tool says so. One of those keys that the file lacks
+stays out, so the game shows English for it, and the tool names it as not added.
 
 Reads tools\QuestSort.<locale>.csv (retail) and tools\QuestSort-<Forever build>.<locale>.csv,
 downloaded when missing or with -Refresh, once each per run.
@@ -71,8 +71,8 @@ function Get-Headings([string]$locale, [string]$build, [string]$file) {
     return $tables[$path]
 }
 
-# The text for each key in one language: retail's heading, else Forever's. A key whose table is byte
-# for byte its build's enUS one is kept instead.
+# The text for each key in one language: retail's heading, else Forever's. A table byte for byte its
+# build's enUS one is skipped; a key that only such tables have is kept instead.
 function Get-Texts([string]$locale) {
     $result = [pscustomobject]@{ Texts = [ordered]@{}; Kept = New-Object System.Collections.Generic.List[string]; English = New-Object System.Collections.Generic.List[string] }
     foreach ($game in @(@{ Ids = $retail; Build = $Build; Name = 'QuestSort' }, @{ Ids = $forever; Build = $ForeverBuild; Name = "QuestSort-$ForeverBuild" })) {
@@ -80,8 +80,9 @@ function Get-Texts([string]$locale) {
         $isEnglish = $locale -ne 'enUS' -and $table.Hash -eq (Get-Headings 'enUS' $game.Build "$($game.Name).enUS.csv").Hash
         if ($isEnglish) { $result.English.Add("$($game.Name).$locale.csv") }
         foreach ($key in $game.Ids.Keys) {
-            if ($result.Texts.Contains($key) -or $result.Kept.Contains($key)) { continue }
-            if ($isEnglish) { $result.Kept.Add($key) } else { $result.Texts[$key] = $table.Names[$game.Ids[$key]] }
+            if ($result.Texts.Contains($key)) { continue }
+            if ($isEnglish) { if (-not $result.Kept.Contains($key)) { $result.Kept.Add($key) } }
+            else { [void]$result.Kept.Remove($key); $result.Texts[$key] = $table.Names[$game.Ids[$key]] }
         }
     }
     foreach ($key in @($result.Texts.Keys)) { if (-not $result.Texts[$key]) { throw "No $locale heading for $key (QuestSort ID $(if ($retail.Contains($key)) { $retail[$key] } else { $forever[$key] }))" } }
