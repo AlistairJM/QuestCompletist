@@ -1065,8 +1065,13 @@ Festival") keeps its key in the `Localization` files, and this tool writes the c
 for the heading, in each language, into those keys from the `QuestSort` table, downloaded per
 language. The headings are chosen by hand in the script, only where the heading's English is
 exactly the category's name; it stops if Blizzard renames a heading or we a category. Both games'
-headings are covered, retail's text first where both have one ("Seasonal"). A rerun with no client
-changes leaves every file byte-identical. Then run `Test-Localization.lua` (below).
+headings are covered, retail's text first where both have one ("Seasonal"), Forever's if retail's
+table is a copy of the English one. A rerun with no client changes leaves every file
+byte-identical. A language's table that is byte for byte its build's English one isn't a
+translation (as wago serves Forever 1.60.1.70374's Italian one), so the tool skips it: a key that
+only such tables have keeps the file's own text, and the tool's line for that file names it as
+kept. One of those keys that the file lacks stays out, so the game shows English for it, and the
+tool names it as not added. Then run `Test-Localization.lua` (below).
 
 `Remove-ConvertedLocaleKeys.ps1` then deletes the text the client has made redundant, in both
 games. Run it with `-WhatIf` first.
