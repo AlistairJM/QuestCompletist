@@ -12,9 +12,10 @@ The checks: the next runs and last dates, the events no entry covers by region a
 baseline (a new event, dates running out, removed or coming again, the 90-day window at days 89 to 91,
 runs passing with time, a row whose Flags or Region put it on or off region 4's calendar, an earlier run
 removed, one ID of an entry losing its dates, an event an entry now covers, an event gone from the table,
-a game not run keeping its rows, raid openings appearing, running out and lapsing beside a one-moment row
-of other Flags and an event with a longer row too) and each kind of fact in the decisions file: held,
-failing and staying so, and its outcome changing.
+a game not run keeping its rows, raid openings appearing, running out, lapsing, losing a run and moving
+to another region (beside a one-moment row of other Flags, an event with a longer row too, and an opening
+whose row leaves Flags 13 or the table, which stay findings) and each kind of fact in the decisions file:
+held, failing and staying so, and its outcome changing.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ReviewCalendar.ps1
 
@@ -439,6 +440,26 @@ try {
     Has $part 'changed retail event "The Voidspire": its dates run out on 2027-03-02, within 90 days' 'a raid opening coming within 90 days is listed there'
     Lacks $r.Text 'FINDING retail event "The Voidspire"' 'and is no finding'
     Has $r.Text 'FINDING retail event "Long Event": its dates run out on 2027-03-02, within 90 days' 'while another event running out the same day still is'
+
+    "== Raid openings: a run removed, a row moved, Flags changed, gone from the table"
+    $moved = $openings.Clone()
+    $moved[1885] = Row 1885 68 @((Pack 2027 3 9 6)) @(0) -region 2 -flags 13
+    Set-Tables $moved
+    $r = Invoke-Review
+    Check ($r.Code -eq 0) "a raid opening losing a run and moving off region 4 fails nothing (exit $($r.Code))"
+    $part = (($r.Text -split 'listed and never a finding:')[1] -split 'finding\(s\) and')[0]
+    Has $part 'changed retail event "The Voidspire": 1885: run of 2027-03-02 removed before it came' "a raid opening's run removed is listed with the raid openings"
+    Has $part 'changed retail event "The Voidspire": 1885: off region 4''s calendar by its Region (4 -> 2)' 'and so is its row moved to another region'
+    Lacks $r.Text 'FINDING retail event "The Voidspire"' 'neither is a finding'
+    $flagged = $openings.Clone()
+    $flagged[1885] = Row 1885 68 @((Pack 2027 3 2 6)) @(0) -region 4 -flags 15
+    Set-Tables $flagged
+    $r = Invoke-Review
+    Has $r.Text 'FINDING retail event "The Voidspire": 1885: off the calendar by its Flags or name (Flags 13 -> 15)' 'an opening whose row leaves Flags 13 is no raid opening, so its row leaving the calendar is a finding'
+    $gone = $openings.Clone(); $gone.Remove(1885)
+    Set-Tables $gone
+    $r = Invoke-Review
+    Has $r.Text 'FINDING retail event "The Voidspire": gone from the table, which had dates to come to 2027-03-02' 'a raid opening gone from the table is a finding'
 }
 finally {
     Remove-Item -Recurse -Force $Scratch -ErrorAction SilentlyContinue

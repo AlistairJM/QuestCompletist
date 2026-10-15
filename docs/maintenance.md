@@ -852,12 +852,13 @@ the rotating events (the weekly bonus events, Timewalking, the Darkmoon Faire) a
 an event whose dates end within 90 days may run out before the next patch; seen a sweep ahead, there is
 time to read the PTR's table and to decide.
 
-**Raid openings** are listed apart and never fail the run. The table dates each raid's opening as an
-event of its own: a row per region, named for the raid, of one moment (every `Duration` 0) and with
-`Flags` 13, so on the calendar by its Flags and name. The Unbinding of Kith'ix (HolidayNames 465, rows
-1880 to 1891) is new in 12.1.5, whose table (70391) holds 135 such rows for nine raids. No entry follows
-one and nothing is done when one appears or lapses, so every change of an event whose rows are all of
-these (new, running out within the 90 days, no date to come any more, or any other, such as a run
+**Raid openings** still in the table are listed apart and never fail the run. The table dates each
+raid's opening as an event of its own: a row per region for each of its `HolidayDescriptionID`s
+(Kith'ix: three for each of four regions), named for the raid, of one moment (every `Duration` 0) and
+with `Flags` 13, so on the calendar by its Flags and name. The Unbinding of Kith'ix (HolidayNames 465,
+rows 1880 to 1891) is new in 12.1.5, whose table (70391) holds 135 such rows for nine raids. No entry
+follows one and nothing is done when one appears or lapses, so every change of an event whose rows are
+all of these (new, running out within the 90 days, no date to come any more, or any other, such as a run
 removed or a row moved to another region) is listed as a change under "Raid openings" at the end of the
 comparison (`Test-RaidOpening` in `Review-Calendar.ps1`). An event with any other row stays as before
 (Aberrus, name 421, has a 24-hour row, 1361, beside its 19 of one moment), and so does one gone from the
@@ -955,7 +956,7 @@ game; 32 events on retail's and the PTR's calendars have no entry now), the same
 Retail's "What /qc holidays should print" lists Call of the Scarab (638) on its own line instead of under
 "Other calendar holidays".
 
-`Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (151 checks).
+`Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (157 checks).
 
 ### 2i. The PvP tag
 
