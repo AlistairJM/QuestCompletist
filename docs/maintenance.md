@@ -654,17 +654,19 @@ run takes about 20 seconds.
 The client keeps the server's record of every quest it has asked about in
 `Cache\WDB\enUS\questcache.wdb`, and step 10 reads WoW: Forever's copy of it. Retail's holds the same
 record, in the same layout with two fields fewer, for every quest the game has been asked about
-(32,713 on 9 October 2026, 33,123 on 12 October). The cache holds only what was asked: the quest-type probe (`/qc typecheck`,
-see [In the game](#in-the-game)) asks for every quest in our data, so a cache from ordinary play is
-far too small, and `Compare-QuestCache.ps1` fails when fewer than 20,000 quests could be compared.
-A probe run cut short leaves a cache that passes that check and is still partial: 12.1.5.70391's, of
-14 October 2026, held 26,616 quests against the 33,123 of 12.1.0.69933's. So every tool that reads the
-cache (steps 1d, 2, 2c, 2e, 2g, 2i and 6b; the check is in `QuestCacheFiles.ps1`) warns when it holds
-under 90% of the quests of the newest cache of an earlier build in `tools\`, or of the quests in our
-data, and names both counts. The warning changes no exit code, but steps 2 and 2g refuse
-`-UpdateBaseline` (exit 1) while it stands, unless `-AcceptPartialCache` is given. When it shows,
-finish the probe run and read the cache again before using its values. Log out fully, so the game
-writes it, and copy the file from `_retail_\Cache\WDB\enUS\` to
+(32,713 on 9 October 2026, 33,123 on 12 October). The cache holds only what was asked: the
+quest-type probe (`/qc typecheck`, see [In the game](#in-the-game)) asks for every quest in our data,
+so a cache from ordinary play is far too small, and `Compare-QuestCache.ps1` fails when fewer than
+20,000 quests could be compared. A probe run cut short leaves a cache that passes that check and is
+still partial: 12.1.5.70391's, of 14 October 2026, held 26,616 quests against the 33,123 of
+12.1.0.69933's. So the tools of steps 1d, 2, 2c, 2e, 2g, 2i and 6b (the check is in
+`QuestCacheFiles.ps1`) warn when the cache holds under 90% of the quests of the newest cache of an
+earlier build in `tools\`, or of the quests in our data, and name both counts. The warning changes
+no exit code, but steps 2 and 2g refuse `-UpdateBaseline` (exit 1) while it stands, unless
+`-AcceptPartialCache` is given. Step 6's `Find-MissingQuests.ps1` reads the cache too and does not
+warn yet, so don't run its `-UpdateBaseline` on a cache the others warn about. When the warning
+shows, finish the probe run and read the cache again before using its values. Log out fully, so the
+game writes the cache, and copy the file from `_retail_\Cache\WDB\enUS\` to
 `tools\retail_probe_<build number>\` (`retail_probe_69933` for build 12.1.0.69933). The comparison also
 needs the API cache (step 1), the client's task table (step 1b) and the client's `QuestV2` for the
 cache's build, which step 1b's unnumbered `QuestV2.csv` is not:
