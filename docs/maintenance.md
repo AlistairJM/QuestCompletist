@@ -1042,20 +1042,25 @@ says nothing. On these tables:
   whose `yearly` fact goes from holding to waiting, after 10 December the Pet Battle and Battleground
   Bonus Events, after 24 December the Delves Bonus Event and after 31 December the Midnight Dungeon
   Event, so a sweep on 1 January 2027 would list 23 findings. `weekly-every-day 4` then holds from 10
-  February 2027 and fails again from 18 February, the Harvest Festival (321, last 18 September 2027, on
-  both games) comes within the 90 days from 20 June 2027 and the Darkmoon Faire from 13 September 2027.
-  A newer table that dates these further turns each into a change instead.
+  February 2027 and fails again from 18 February; the Lunar Festival has no date to come from 17
+  February, Timewalking from 19 February and Love is in the Air from 23 February; the Harvest Festival
+  (321, last 18 September 2027, on both games) comes within the 90 days from 20 June 2027 and has no
+  date to come from 19 September, the Darkmoon Faire comes within them from 13 September 2027 and has
+  none from 13 December, and WoW's Anniversary's `yearly` fact goes from waiting to failing on 17
+  November 2027. A newer table that dates these further turns each into a change instead.
 
 A 12.1.7 PTR, 12.1.7.70424, came out on 15 October 2026 under wago.tools' `wowt` (the 12.1.5 PTR's
 builds are under `wowxptr`, the product `Get-LatestBuilds.ps1` reads for the PTR), after this sweep's
 builds were set, and the baseline's PTR rows stay 70340's. Its Holidays table dates the Arena Skirmish,
 Battleground, World Quest and Delves Bonus Events, the Midnight Dungeon Event and Timewalking into July
-and August 2027 (the Pet Battle Bonus Event still ends on 10 December 2026), adds Turbulent Timeways
-(1458, on region 4's calendar from 2 December 2026 to 27 January 2027) and a row with no name, 1895
-(Flags 15), and its HolidayNames is live's. Given as `-PtrBuild`, it makes 19 findings: Turbulent
-Timeways and 1895 new, 16 Timewalking runs removed before they came (their rows dated other weeks
-instead), and `weekly-every-day 4` holding on it, every day to 18 August 2027, whose `IfChanged` asks the
-user whether the weekly bonus event quests still stay untagged.
+and August 2027 (the Pet Battle Bonus Event still ends on 10 December 2026), dates Turbulent Timeways
+(1458, whose last run was 1 July to 12 August 2026) again, on region 4's calendar from 2 December 2026
+to 27 January 2027, gives the nameless 651 and 653 a run in January 2027 (19 to 28 January), adds a
+row with no name, 1895 (Flags 15), and its HolidayNames is live's. Given as `-PtrBuild` against this
+baseline, it makes 21 findings: Turbulent Timeways, 1895, 651 and 653 new, 16 Timewalking runs removed
+before they came (their rows dated other weeks instead), and `weekly-every-day 4` holding on it, every
+day to 18 August 2027, whose `IfChanged` asks the user whether the weekly bonus event quests still stay
+untagged.
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (157 checks).
 
