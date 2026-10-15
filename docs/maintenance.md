@@ -318,8 +318,8 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | # | Area | Scripts, in order | Edits the addon? |
 |---|---|---|---|
 | 0 | Everything is the newest version: clients, probe lists and results, tables, API docs, databases | `Get-LatestBuilds.ps1` ([Before a sweep](#before-a-sweep), item 1) | No |
-| 1 | Faction, race and class | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
-| 1b | Second source for race and class, and the task-quest tables 1d and 2c read | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
+| 1b | Second source for race and class, and the task-quest tables 1d and 2c read. Run it before step 1 and let it finish: the audit reads its `quest_wago_requirements.csv` when it starts | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
+| 1 | Faction, race and class (after step 1b) | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 1d | Professions (after steps 1b and 2e, whose tables and quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
@@ -333,9 +333,9 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
-| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Refresh` → `Add-ZoneTableMaps.ps1` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Refresh` → `Sync-QuestSortNames.ps1 -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
-| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1` | A candidate file, until you apply it |
-| 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1d, 2c and 4 again, for the new rows | The applying run |
+| 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
+| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1`; then steps 2b, 2c, 2g and 4 again, for the quests the inserter added | A candidate file, until you apply it |
+| 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
@@ -371,6 +371,11 @@ task quests' races and classes (`QuestV2CliTask`), the conditions on a quest's s
 (`ItemSparse`: 36 quests on build 12.1.0.69933, and the 25 we have agree with ours). WoW: Forever's
 importer reads the same item columns (step 10).
 
+So run step 1b first, and start the audit only when it has finished. The audit reads
+`quest_wago_requirements.csv` once, when it starts, and a 1b run beside it leaves the audit on the
+old file: on 14 October 2026 the two ran together, and the audit was run again from the cache it had
+filled.
+
 A class list that names Adventurer or Traveler (non-class entries) is read without them, not as "all classes" (13 October 2026: 21 fixes, and KEEP rows for the 175 lists that are wider than ours only because they predate Evoker, start in Acherus or belong to a class hall).
 
 Review before applying anything. Two lessons from the last cleanup:
@@ -390,7 +395,7 @@ KEPT rather than raising it again, unless our value changes.
 `Sync-QuestProfessions.ps1` gives a quest the profession it needs, so "Hide Other Profession Quests"
 hides a Mining quest from a character without Mining. Three passes each read one kind of Blizzard
 data:
-- **Task quests** (world quests, bonus objectives, callings), which the API doesn't serve: two columns
+- **Task quests** (world quests, bonus objectives, callings), which the API mostly doesn't serve: two columns
   of the client's `QuestV2CliTask` that agree wherever both speak, the skill the quest asks for, in
   the expansion's own line of the profession (its `SkillLine` row names the base profession), and the
   profession of its quest type (`QuestInfo`).
@@ -1034,26 +1039,30 @@ the `fact <quest> questLineID <id>` lines) with each quest's `storyline`.
 
 ### 5. Zone table and category names from the client
 
-`Build-CategoryUiMapIDs.ps1 -Refresh` downloads the game's map table (`UiMap.csv`) for the pinned
-build and maps quest categories to game maps, so the client supplies their names in every language.
+`Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` downloads the game's map table
+(`UiMap.csv`) for that build and maps quest categories to game maps, so the client supplies their
+names in every language. Pass `-Build` wherever this step downloads: with `-Refresh` and no `-Build`,
+a tool downloads the tables of the build it has as its default, which after a patch is the one before.
 
-Then run `Add-ZoneTableMaps.ps1 -WhatIf`, then without `-WhatIf`. It adds the maps missing from
-`qcAreaIDToCategoryID`, which turns the map you're on into a quest category. The addon switches the
-quest list through it when you enter a zone, and `Place-UncategorisedQuests.ps1` files quests by it.
-Nothing else maintains it, so new dungeons and new versions of a zone's map drift out of it. A map
-is added when a category is named by it, when it has the same name and parent as a map already
-listed (a dungeon's other floors), when it's in the client's map group (`UiMapGroupMember`, the
-floor selector's list, downloaded for `-Build`) of a map already listed (floors with names of their
-own, such as Black Temple's Karabor Sewers), or when its name is exactly that of one category with
-no map yet. It never adds continent-level maps, never gives a map to a category with no quests,
-and never changes an existing entry. A floor it leaves out because its name is another category's
-(The Stockade, in Stormwind City's group) is listed, for adding by hand if that's wrong. Run
-`Build-CategoryUiMapIDs.ps1` again afterwards, without `-Refresh`, so it sees the new maps.
+Then run `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh -WhatIf`, then without `-WhatIf`.
+It adds the maps missing from `qcAreaIDToCategoryID`, which turns the map you're on into a quest
+category. The addon switches the quest list through it when you enter a zone, and
+`Place-UncategorisedQuests.ps1` files quests by it. Nothing else maintains it, so new dungeons and
+new versions of a zone's map drift out of it. A map is added when a category is named by it, when
+it has the same name and parent as a map already listed (a dungeon's other floors), when it's in
+the client's map group (`UiMapGroupMember`, the floor selector's list, downloaded for `-Build`) of
+a map already listed (floors with names of their own, such as Black Temple's Karabor Sewers), or
+when its name is exactly that of one category with no map yet. It never adds continent-level maps,
+never gives a map to a category with no quests, and never changes an existing entry. A floor it
+leaves out because its name is another category's (The Stockade, in Stormwind City's group) is
+listed, for adding by hand if that's wrong. Run `Build-CategoryUiMapIDs.ps1` again afterwards,
+without `-Refresh`, so it sees the new maps.
 
-Then run `Build-CategoryClientNames.ps1 -Refresh`. It names the categories that aren't maps from
-other client tables: classes, professions, covenants, dungeons, achievement categories (the world
-events), factions, Blizzard's UI text and area names. A rerun with no client changes leaves
-`qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support") stay ours.
+Then run `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh`. It names the categories
+that aren't maps from other client tables: classes, professions, covenants, dungeons, achievement
+categories (the world events), factions, Blizzard's UI text and area names. A rerun with no client
+changes leaves `qcQuest.lua` byte-identical. Names we made up ("Bfa Unknown", "Garrison Support")
+stay ours.
 The same tool writes `clientName` into `qcMenu.lua` for the menu headings it lists (continents,
 expansions, "Battlegrounds", "Professions" and so on), chosen by hand.
 
@@ -1160,8 +1169,9 @@ geometry of the continent maps as well, read with `tools\Report-ContinentGeometr
 baseline by `tools\Compare-ContinentGeometry.lua`, step 2f). Its offers
 are the game's own start positions, to compare with the pins: `tools\Report-MapOffers.lua` lists the
 quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
-run were within 10 yards of point 32; the pins are now within 1.5 points of 253 of them and more than
-5 points from 1.
+run were within 10 yards of point 32. On the 12.1.5 pass (14 October 2026) the pins were within 1.5
+points of 243 of its 412 offers and more than 5 points from 1; Eversong Woods (map 2395) answered no
+offers that run.
 
 - An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
   October 2026, when the user chose that a quest with a start point in the client's data keeps it
@@ -1321,6 +1331,11 @@ same data. It lists any new quest it couldn't place; those stay in category 0, U
 quests go at the end of `data\quests.jsonl`. Like the other scripts that write, both take `-DataDir`
 and `-AddonDir`, so they can run against a scratch copy.
 
+Once the inserter has added quests, run steps 2b and 2c again for them: 2b checks the tables kept
+by hand and the prerequisites against what the API says of them, and 2c gives them their
+prerequisites. Then run steps 2g and 4, for their minimum levels and storylines, and the probe and
+step 3, for their types ([The sweep](#the-sweep)).
+
 `Place-UncategorisedQuests.ps1` also works on its own, on every quest without a category or in a
 category that isn't defined. Run it with `-WhatIf` first. It files each quest by the first of these
 that gives an answer:
@@ -1400,12 +1415,14 @@ then says "no category" instead of "not in the menu" for a dungeon whose unused 
 `Add-TaskQuests.ps1` adds the quests of the client's own task table (`tools\QuestV2CliTask.csv`, step 1b)
 that `data\quests.jsonl` doesn't hold: world quests, bonus objectives, world events, Prey and Special
 Assignment quests and the like. Nothing else finds them: the pin pipeline takes a quest through a giver
-point, which a task quest has none of, and Blizzard's API never serves one. Run it with `-WhatIf` first:
-it prints the counts and the quests it can't place and writes nothing. A second run adds nothing and
-changes no byte, and no row that is there is changed or removed. It reads `QuestV2CliTask`, `QuestInfo`,
-`SkillLine`, `QuestPOIBlob`, `UiMap` and `ChrRaces` from `-ToolsDir` (downloaded for `-Build` when missing
-or with `-Refresh`) and the newest `retail_quest_cache_*.jsonl`, and files the new rows through a scratch
-copy of the data and `Place-UncategorisedQuests.ps1`, so no old row is touched.
+point, which a task quest has none of, and Blizzard's API answers only for a quest it is asked about,
+and for some task quests only (on 12.1.5, 6 of the 11 new ones and 1,306 of the 5,740 in the data).
+Run it with `-WhatIf` first: it prints the counts and the quests it can't place and writes nothing. A
+second run adds nothing and changes no byte, and no row that is there is changed or removed. It reads
+`QuestV2CliTask`, `QuestInfo`, `SkillLine`, `QuestPOIBlob`, `UiMap` and `ChrRaces` from `-ToolsDir`
+(downloaded for `-Build` when missing or with `-Refresh`) and the newest `retail_quest_cache_*.jsonl`,
+and files the new rows through a scratch copy of the data and `Place-UncategorisedQuests.ps1`, so no
+old row is touched.
 
 - **Skipped, in this order:** a row already in the data (even if the client names it a tracker or has
   renamed it); a hidden tracker, a quest the game keeps out of the quest log (`Flags_0` has 0x400, the
@@ -1437,12 +1454,23 @@ copy of the data and `Place-UncategorisedQuests.ps1`, so no old row is touched.
   under Miscellaneous, so a quest it holds can be browsed to, and every search finds every new quest.
   `Test-QuestReachability.lua` (step 9) must still say 0 quests never shown and 0 in categories the list
   can't browse to.
-- **Afterwards,** run step 1d (it finds nothing: the profession is set), step 2c (the prerequisites the
-  client names, 112 of the new rows on 11 October 2026 and no old row) and step 4 (59 storylines, no old row),
-  then the probe and step 3 for the types that recur, and `Audit-QuestHolidays.ps1` and
-  `Audit-QuestTables.ps1`, which must show nothing new. `Compare-QuestReputation.ps1` counts the new
-  rows with a cache reward on a visible faction in class E (42) and the new rows the cache lacks in G
-  (401): they are explained, so rerun it with `-UpdateBaseline`.
+- **Afterwards,** run these for the new rows, in this order:
+  - step 1, whose audit fetches into the cache the API's record of each new row the API knows, and
+    checks their faction, race and class;
+  - step 1d, which finds nothing: the profession is set;
+  - step 2, `Compare-QuestReputation.ps1` and then `Apply-ReputationBackfill.ps1`, for the rewards the
+    API lists. After this step's first run (below), step 2 ran before step 1 had fetched the new rows,
+    so 11378, 11382, 11386 and 57326 waited until the 12.1.5 sweep for their rewards. The compare
+    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
+    and the new rows the cache lacks in G (401): they are explained, so rerun it with
+    `-UpdateBaseline`;
+  - step 2c (the prerequisites the client names, 112 of the new rows on 11 October 2026 and no old row)
+    and step 4 (59 storylines, no old row);
+  - `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf` if it lists any: placement files a
+    weekly event quest by its zone, and 93598 "Emissary of War" stayed under Silvermoon City until the
+    12.1.5 sweep;
+  - the probe and step 3, for the types that recur;
+  - `Audit-QuestHolidays.ps1` and `Audit-QuestTables.ps1`, which must show nothing new.
 - **The first run (11 October 2026, build 12.1.0.69933):** 6,242 rows; 5,230 in the data; 477 hidden
   trackers (470 by the flag, 6 more by QuestInfo 265 and 1 more by the title); 29 internal entries;
   506 added (202 type 1, 7 type 64, 37 type 4, 260 type 128), 41 of them left in category 0 because the
@@ -2317,8 +2345,8 @@ It began as pull request #139, which stays open as the record; its files are in
    a check stays in the sweep while it finds nothing, as the client's files and the game's API can
    start serving more at any build (decided 7 October 2026), and a change in its totals is a
    finding to plan. It works on retail too, and the retail sweep takes it as well: copy the folder
-   into `_retail_`'s AddOns and type `/qcprobe maps 1`. Retail's 1,961 maps took five minutes
-   (7 October 2026). Read it with `tools\Report-MapOffers.lua <saved variables> QuestCompletist` and
+   into `_retail_`'s AddOns and type `/qcprobe maps 1`. Retail's 1,967 maps took 314 seconds
+   (12.1.5, 14 October 2026). Read it with `tools\Report-MapOffers.lua <saved variables> QuestCompletist` and
    compare the totals with the baseline in game-api-review.md, "Map-offers probe: retail run"; the
    offers and log quests depend on the character, so use a similar one.
    The map pass ends by taking the **geometry** (the zone icons planned in
@@ -2352,7 +2380,9 @@ It began as pull request #139, which stays open as the record; its files are in
    the baseline, which is a pass that stopped early), and commit the baseline. Names are compared as the
    client gives them, so take the dump on an English client, and a zone gated by a player condition
    (Quel'Thalas on Eastern Kingdoms) can come or go with the character: a difference there may be the
-   character, not the game. 12.1.5's six new maps will be the first differences on retail.
+   character, not the game. On retail 12.1.5 (14 October 2026) the compare was clean: none of the
+   six new maps is a child of a continent map (they sit under Eversong Woods and The Underbelly, or
+   have no parent).
 4. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
