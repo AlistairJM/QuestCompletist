@@ -344,7 +344,7 @@ the player's language, isWarCampaign), `GetChapterIDs`, `GetCampaignChapterInfo`
 description, rewardQuestID), `GetCurrentChapterID`, `GetState`, `GetFailureReason`,
 `GetAvailableCampaigns`, `SortAsNormalQuest`. A campaign is the grouping above storylines. Use:
 probe, the campaign of every quest (the client's campaign tables are the offline side: the
-client-tables review counts 145 campaigns holding 740 of our 1,474 storylines); addon, "Campaign: X"
+client-tables review counts 145 campaigns holding 527 of our 1,476 storylines); addon, "Campaign: X"
 in the player's language. Retail only in practice.
 
 ### C_ContentTracking (18 functions, 5 events, both games)
@@ -943,8 +943,8 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   the client gives them no map point). The 7 trackers that slip past the flag are caught, as the retail run
   of 7 October said they would be. Retail's data is 35,529 quests; `qcQuestData.lua` grew from 2,373,371 to
   2,405,155 bytes (13.34 to 13.48 MB loaded under Lua 5.1, 57 to 64 ms). Retail alone, by nature
-  ([game-parity.md](game-parity.md)). Steps 2c (112 new rows get a prerequisite, no old row) and 4 (59 storylines,
-  no old row) follow in their own pull requests.
+  ([game-parity.md](game-parity.md)). Step 2c gave 112 of the new rows a prerequisite and no old row (#319);
+  step 4 gave 59 of them a storyline and no old row at the 12.1.5 sweep (15 October 2026).
 - 2026-10-11: the task quests that are not world quests got pins (open-items.md decision 2, approved
   by the user; [quest-location-data-pipeline.md](quest-location-data-pipeline.md), last section). Of the 4,082
   task quests in the data with a start and no pin, 814 got one: 737 of the 758 of kind 0, Combat Ally,

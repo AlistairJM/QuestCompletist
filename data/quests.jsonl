@@ -35030,7 +35030,7 @@
 {"id":11861,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":256}
 {"id":36807,"name":"Assault on the Heart of Shattrath","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":2,"race":61658034,"class":8191}
 {"id":36809,"name":"Assault on the Heart of Shattrath","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":36811,"name":"Retake Faronaar","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[[36920,40815]]}
+{"id":36811,"name":"Retake Faronaar","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5747,"prereq":[[36920,40815]]}
 {"id":36820,"name":"Assault on the Gorian Proving Grounds","level":40,"zone":"Garrison Support","category":290,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":36821,"name":"Assault on the Gorian Proving Grounds","level":40,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191}
 {"id":36860,"name":"Assault on Lost Veil Anzu","level":40,"zone":"Garrison Support","category":290,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -35086,7 +35086,7 @@
 {"id":47876,"name":"Sholoth: Slave Pits","level":45,"zone":"","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":48181,"name":"Nooooope","level":10,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191}
 {"id":48474,"name":"Crypt Keepers","level":10,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191}
-{"id":48525,"name":"Break Them to Splinters","level":10,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191,"prereq":48519}
+{"id":48525,"name":"Break Them to Splinters","level":10,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":383,"prereq":48519}
 {"id":48680,"name":"Not the Bees!","level":10,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191,"prereq":48678}
 {"id":48725,"name":"Venomtail Skyfin","level":45,"zone":"Eredath","category":1044,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":48728,"name":"Umbraliss","level":45,"zone":"Eredath","category":1044,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -35255,10 +35255,10 @@
 {"id":91508,"name":"Tale of Rootways and Wardens","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91509,"name":"The Tale of a Stone Falls from the Sky","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":91644,"name":"Windy Hills","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":91799,"name":"Trial of Flight","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":91807,"name":"Breaking Branches","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":91809,"name":"Sea Speed","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":92195,"name":"Come On Down","level":90,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":91799,"name":"Trial of Flight","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5978}
+{"id":91807,"name":"Breaking Branches","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5978}
+{"id":91809,"name":"Sea Speed","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5978}
+{"id":92195,"name":"Come On Down","level":90,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5986}
 {"id":92555,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":92556,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":92557,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":256}
@@ -35266,20 +35266,20 @@
 {"id":92559,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":93578,"name":"Where Shadows Gather","level":80,"zone":"Slayer's Rise","category":1506,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93598,"name":"Emissary of War","level":90,"zone":"Silvermoon City","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93648,"name":"Gnarly Skullduggery","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93649,"name":"Got the Gall","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93664,"name":"Rotten Fish","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":93648,"name":"Gnarly Skullduggery","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
+{"id":93649,"name":"Got the Gall","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
+{"id":93664,"name":"Rotten Fish","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
 {"id":93666,"name":"Return to the Sly Stew","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":93669,"name":"Curse of Greed","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93670,"name":"How 'Bout Them Apples?","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93671,"name":"A Tight Squeeze","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93672,"name":"Blade to Rest","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":93669,"name":"Curse of Greed","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
+{"id":93670,"name":"How 'Bout Them Apples?","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
+{"id":93671,"name":"A Tight Squeeze","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
+{"id":93672,"name":"Blade to Rest","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
 {"id":94385,"name":"Void Assaults: Eversong Woods","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":94381}
 {"id":94386,"name":"Void Assaults: Zul'Aman","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":94381}
-{"id":94571,"name":"Ashes of History","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94572,"name":"Shell the Future","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94573,"name":"The Floor is Larvae","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94574,"name":"Egg Thief","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":94571,"name":"Ashes of History","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":94572,"name":"Shell the Future","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":94573,"name":"The Floor is Larvae","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":94574,"name":"Egg Thief","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":94575,"name":"Snail Mail - Peacebloom","level":0,"zone":"Founder's Point","category":1501,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94583,"name":"Snail Mail - Silverleaf","level":0,"zone":"Founder's Point","category":1501,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94584,"name":"Snail Mail - Black Lotus","level":0,"zone":"Founder's Point","category":1501,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -35306,8 +35306,8 @@
 {"id":94605,"name":"Snail Mail - Freshly Manured Field","level":0,"zone":"Founder's Point","category":1501,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94606,"name":"Snail Mail - Peony","level":0,"zone":"Founder's Point","category":1501,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94607,"name":"Snail Mail - Kafa","level":0,"zone":"Founder's Point","category":1501,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":94611,"name":"Predators and Prey","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94612,"name":"Claws for Celebration","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":94611,"name":"Predators and Prey","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":94612,"name":"Claws for Celebration","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":94622,"name":"Work It","level":0,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":4096}
 {"id":94630,"name":"Work It","level":0,"zone":"Eversong Woods","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":4096}
 {"id":94635,"name":"Work It","level":0,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":4096}
@@ -35350,11 +35350,11 @@
 {"id":94804,"name":"A Collection of Rot","level":90,"zone":"The Coiled Isle","category":1513,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":94805,"name":"The New Hoard, Poached","level":90,"zone":"The Coiled Isle","category":1513,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":94806,"name":"Wriggling and Wet","level":90,"zone":"The Coiled Isle","category":1513,"type":4,"faction":3,"race":67108863,"class":8191}
-{"id":94876,"name":"Show Some Backbone","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94967,"name":"Ki'clak Snack Attack","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94996,"name":"Gaze of the Dead","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":94876,"name":"Show Some Backbone","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":94967,"name":"Ki'clak Snack Attack","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":94996,"name":"Gaze of the Dead","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95009,"name":"Doing the Dash","level":0,"zone":"Dornogal","category":1403,"type":1,"faction":2,"race":61658034,"class":8191}
-{"id":95253,"name":"Shocking Appetites","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95253,"name":"Shocking Appetites","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95268,"name":"New Tools, New Heights","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":94675}
 {"id":95269,"name":"Feeding the Nilhammer","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":95268}
 {"id":95271,"name":"The Ascendant Nilhammer","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -35362,7 +35362,7 @@
 {"id":95290,"name":"Nebulous Voidcores: Voidlight Marl","level":90,"zone":"Voidstorm","category":1508,"type":4,"faction":3,"race":67108863,"class":8191,"prereq":94675}
 {"id":95304,"name":"Nebulous Voidcores: Veteran Dawncrest","level":90,"zone":"Voidstorm","category":1508,"type":4,"faction":3,"race":67108863,"class":8191,"prereq":94675}
 {"id":95373,"name":"A Nebulous Endeavour","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":97981}
-{"id":95381,"name":"Fire in the Sky","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95381,"name":"Fire in the Sky","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95392,"name":"One Friend is Plenty","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":95393,"name":"Caver Savior","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":95394,"name":"Aberration Liberation","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
@@ -35376,15 +35376,15 @@
 {"id":95402,"name":"Ignoble Gas Collector","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":95403,"name":"A Lingering Echo","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":95404,"name":"Freeze Range Eggs","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
-{"id":95429,"name":"Swift of Foot","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95448,"name":"The Dose Makes the Poison","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95449,"name":"Snakes in the Grass","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95451,"name":"Who Ordered the Bag of Snakes?","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95453,"name":"Tortollan Repatriation","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95484,"name":"Truffle Scuffle","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95513,"name":"Rattlin' the Reptiles","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95429,"name":"Swift of Foot","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95448,"name":"The Dose Makes the Poison","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95449,"name":"Snakes in the Grass","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95451,"name":"Who Ordered the Bag of Snakes?","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95453,"name":"Tortollan Repatriation","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95484,"name":"Truffle Scuffle","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95513,"name":"Rattlin' the Reptiles","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95520,"name":"Purging the Vaults","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":98388}
-{"id":95529,"name":"Spearin' Sky Snakes","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95529,"name":"Spearin' Sky Snakes","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95549,"name":"Raising Magical Alarms","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95550,"name":"Thin Their Ranks","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95552,"name":"Dark Obelisk Investigation","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -35395,30 +35395,30 @@
 {"id":95580,"name":"Temple Patrol: Slay the Restless","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95598,"name":"Temple Patrol: Slay Children of Ula'tek","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95614,"name":"Temple Patrol: Siphon Venom","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95662,"name":"A Suspicious Stew","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95794,"name":"De-cryption Process","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95807,"name":"Over Easy","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95662,"name":"A Suspicious Stew","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95794,"name":"De-cryption Process","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95807,"name":"Over Easy","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95815,"name":"Downhill Jam","level":80,"zone":"Val","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95906,"name":"Temple Patrol: Scavenged Weapons","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95918,"name":"Special Assignment: Wraith Wrath","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95921,"name":"Special Assignment: Demand and Supply","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95922,"name":"Special Assignment: Face the Swarm","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95923,"name":"Ruin Runner Rush","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95931,"name":"Open Sea Fishing","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384,"prereq":96113}
+{"id":95918,"name":"Special Assignment: Wraith Wrath","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95921,"name":"Special Assignment: Demand and Supply","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95922,"name":"Special Assignment: Face the Swarm","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95923,"name":"Ruin Runner Rush","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
+{"id":95931,"name":"Open Sea Fishing","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384,"storyline":6228,"prereq":96113}
 {"id":95933,"name":"Traces in the Dark","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95942,"name":"Prey: Venom Ambush","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95942,"name":"Prey: Venom Ambush","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":95952,"name":"Temple Patrol: Breath and Bile","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95953,"name":"Temple Patrol: Congealed Venom","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95962,"name":"Temple Patrol: Vengeance for the Dead","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95972,"name":"Temple Patrol: Ash to Ash","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95974,"name":"Prey: Abandoned Camp","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95974,"name":"Prey: Abandoned Camp","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":95985,"name":"Temple Patrol: Calming the Dead","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95987,"name":"Temple Patrol: Laid to Rest","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95989,"name":"Prey: Venomblade Burrows","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":95990,"name":"Slithering Heights","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":95989,"name":"Prey: Venomblade Burrows","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":95990,"name":"Slithering Heights","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":96000,"name":"Skiff Joyride","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96017,"name":"Temple Patrol: Dragged Below","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":96066,"name":"Slithering Surveyor","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":96066,"name":"Slithering Surveyor","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":96210,"name":"Scrubbing Troubles","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96217,"name":"Sporadic Power Drain","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96267,"name":"Ancestral Gems","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":98388}
@@ -35432,7 +35432,7 @@
 {"id":96293,"name":"Mush-Vroom!","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96295,"name":"A Pertinent Punishment","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":96305,"name":"The Innocent Essence","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96271}
-{"id":96329,"name":"Hexes and Hoaxes","level":90,"zone":"Tomb of the Lost Priest","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":96329,"name":"Hexes and Hoaxes","level":90,"zone":"Tomb of the Lost Priest","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":96349,"name":"Ancestral Gems","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
 {"id":96352,"name":"Dark Charms","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
 {"id":96354,"name":"A Balance Paid in Blood","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
@@ -35451,25 +35451,25 @@
 {"id":96547,"name":"Weaken Their Forces","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96548,"name":"High Spore","level":80,"zone":"Naigtal","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96557,"name":"Flying Debris","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
-{"id":96588,"name":"Prey: Venom Ambush","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96589,"name":"Prey: Venom Ambush","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96590,"name":"Prey: Venom Ambush","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96591,"name":"Prey: Venom Ambush","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96592,"name":"Prey: Venomblade Burrows","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96593,"name":"Prey: Venomblade Burrows","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96594,"name":"Prey: Venomblade Burrows","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96595,"name":"Prey: Venomblade Burrows","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96596,"name":"Prey: Abandoned Camp","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96597,"name":"Prey: Abandoned Camp","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96598,"name":"Prey: Abandoned Camp","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":96599,"name":"Prey: Abandoned Camp","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":96588,"name":"Prey: Venom Ambush","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96589,"name":"Prey: Venom Ambush","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96590,"name":"Prey: Venom Ambush","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96591,"name":"Prey: Venom Ambush","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96592,"name":"Prey: Venomblade Burrows","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96593,"name":"Prey: Venomblade Burrows","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96594,"name":"Prey: Venomblade Burrows","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96595,"name":"Prey: Venomblade Burrows","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96596,"name":"Prey: Abandoned Camp","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96597,"name":"Prey: Abandoned Camp","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96598,"name":"Prey: Abandoned Camp","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96599,"name":"Prey: Abandoned Camp","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":96600,"name":"Crypt Culling","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96611,"name":"Storm Mitigation","level":80,"zone":"Val","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":96614,"name":"Forged Through Fire","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":96617,"name":"Storm Mitigation","level":80,"zone":"Val","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":96618,"name":"Storm Mitigation","level":80,"zone":"Val","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":96623,"name":"Capsized Compost","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
-{"id":96625,"name":"Spectral Gladiators","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":96625,"name":"Spectral Gladiators","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"pvp":1,"storyline":6228}
 {"id":96633,"name":"Equipment Seminar","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":96635,"name":"Upgrade Practicum","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96633}
 {"id":96637,"name":"Veteran Symposium","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96635}
