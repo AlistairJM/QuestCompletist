@@ -390,6 +390,26 @@ To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-d
 `Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
 KEPT rather than raising it again, unless our value changes.
 
+### 1c. Quest names
+
+`Sync-QuestNamesFromApi.ps1` gives each quest the title of its record in `tools\quest_api_cache`,
+which step 1's audit fills, and rebuilds `qcQuestData.lua`. The title is copied exactly, odd spacing
+included, as the game shows it. The game shows its own title once a quest's data has loaded, so ours
+matters for English search and until then. `-WhatIf` lists the changes without making them. A quest
+the API doesn't serve (a `.404` file in the cache), or one the cache has no record of yet, keeps its
+name. From a worktree, point `-ToolsDir` at the main checkout's `tools\`.
+
+On 15 October 2026 (retail 12.1.5.70391, with the API cache of 14 October, whose records come from
+the API's 12.1.5_70077 namespace) it checked 30,185 quests and renamed 5, each a title Blizzard changed
+in 12.1.5 (the API's 12.1.0 records had our old names): 84773 Crystallized Celebration Crate, 88942
+The Elves Are Going to War, 92450 Growing Up Is Hard, 94450 Twenty-Five Percent Completed and 94452
+Seventy-Five Percent Completed. 5,359 quests were API 404s and kept their names, and the 29 quests
+#347 added had no record in the cache yet. A second run changes nothing.
+
+For the quests the API doesn't serve, the user decided (decision 10e of the 12.1.5 sweep) that this
+step falls back to the title in the newest retail quest cache (step 2e). That fallback comes in a
+later pull request; until then those quests keep the names they have.
+
 ### 1d. Professions
 
 `Sync-QuestProfessions.ps1` gives a quest the profession it needs, so "Hide Other Profession Quests"
