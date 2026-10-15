@@ -606,7 +606,7 @@
 {"id":635,"name":"Crystal in the Mountains","level":35,"zone":"Arathi Highlands","category":45,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":637,"name":"Sully Balloo's Letter","level":30,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":25}
 {"id":638,"name":"Trollbane","level":37,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":32}
-{"id":639,"name":"Sigil of Strom","level":37,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":0,"class":8191,"minLevel":32}
+{"id":639,"name":"Sigil of Strom","level":37,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":32}
 {"id":640,"name":"The Broken Sigil","level":40,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":0,"class":8191,"prereq":639,"minLevel":32}
 {"id":641,"name":"Sigil of Thoradin","level":40,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":0,"class":8191,"prereq":640,"minLevel":32}
 {"id":642,"name":"The Princess Trapped","level":37,"zone":"Arathi Highlands","category":45,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
@@ -655,7 +655,7 @@
 {"id":685,"name":"WANTED: Otto and Falconcrest","level":40,"zone":"Arathi Highlands","category":45,"type":1,"faction":1,"race":0,"class":8191,"minLevel":30}
 {"id":686,"name":"A King's Tribute","level":30,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"prereq":683,"minLevel":25}
 {"id":687,"name":"Theldurin the Lost","level":40,"zone":"Arathi Highlands","category":45,"type":1,"faction":3,"race":0,"class":8191,"prereq":[[653,688]],"minLevel":30}
-{"id":688,"name":"Myzrael's Allies","level":40,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":0,"class":8191,"prereq":652,"minLevel":30}
+{"id":688,"name":"Myzrael's Allies","level":40,"zone":"Arathi Highlands","category":45,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":652,"minLevel":30}
 {"id":689,"name":"A King's Tribute","level":31,"zone":"Ironforge","category":1537,"type":1,"faction":1,"race":0,"class":8191,"prereq":686,"minLevel":25}
 {"id":690,"name":"Malin's Request","level":32,"zone":"Stormwind City","category":1519,"type":1,"faction":1,"race":0,"class":8191,"minLevel":30}
 {"id":691,"name":"Worth Its Weight in Gold","level":36,"zone":"Arathi Highlands","category":45,"type":1,"faction":1,"race":0,"class":8191,"minLevel":30}
@@ -1229,7 +1229,7 @@
 {"id":1422,"name":"Threat From the Sea","level":45,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":699,"minLevel":35}
 {"id":1423,"name":"The Lost Supplies","level":40,"zone":"Swamp of Sorrows","category":8,"type":2,"faction":1,"race":67108941,"class":8191,"minLevel":30}
 {"id":1424,"name":"Pool of Tears","level":43,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"minLevel":38}
-{"id":1425,"name":"Deliver the Shipment","level":42,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":1,"race":0,"class":8191,"prereq":1398,"minLevel":30}
+{"id":1425,"name":"Deliver the First Shipment","level":42,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":1,"race":0,"class":8191,"prereq":1398,"minLevel":30}
 {"id":1426,"name":"Threat From the Sea","level":43,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":1422,"minLevel":35}
 {"id":1427,"name":"Threat From the Sea","level":43,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":1426,"minLevel":35}
 {"id":1428,"name":"Continued Threat","level":45,"zone":"Swamp of Sorrows","category":8,"type":1,"faction":2,"race":0,"class":8191,"prereq":1427,"minLevel":35}
@@ -4382,6 +4382,7 @@
 {"id":92860,"name":"In Service of Zephras","level":12,"zone":"Zephras Isle","category":16593,"type":1,"faction":1,"race":67108941,"class":8191,"prereq":92834,"minLevel":6}
 {"id":92867,"name":"Ground to Keep","level":39,"zone":"Arathi Highlands","category":45,"type":1,"faction":3,"race":0,"class":8191,"minLevel":32}
 {"id":92871,"name":"In Service of Zephras","level":11,"zone":"Zephras Isle","category":16593,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":6}
+{"id":92872,"name":"Dutiful Steps","level":38,"zone":"Arathi Highlands","category":45,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":32}
 {"id":92873,"name":"Proof of Concept","level":41,"zone":"Shen'dralas","category":16651,"type":1,"faction":3,"race":0,"class":8191,"prereq":92847,"minLevel":35}
 {"id":92880,"name":"Return to Valanaar","level":11,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"minLevel":6}
 {"id":92881,"name":"The High Elder's Request","level":11,"zone":"Zephras Isle","category":16593,"type":1,"faction":3,"race":0,"class":8191,"minLevel":6}
@@ -4725,6 +4726,9 @@
 {"id":95774,"name":"Her Name Is Olgra","level":20,"zone":"The Barrens","category":17,"type":1,"faction":2,"race":67109042,"class":8191,"prereq":4921,"minLevel":14}
 {"id":95775,"name":"The Drowned City","level":40,"zone":"","category":0,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":30}
 {"id":95776,"name":"The Only Good Brinescale...","level":38,"zone":"","category":0,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":30}
+{"id":95786,"name":"An Acquaintance in Southshore","level":40,"zone":"Stranglethorn Vale","category":33,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":30}
+{"id":95787,"name":"Take Two With Water","level":40,"zone":"","category":0,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":30}
+{"id":95788,"name":"Magics of the Drowned City","level":40,"zone":"","category":0,"type":1,"faction":1,"race":67108941,"class":8191,"minLevel":30}
 {"id":95795,"name":"Fallen in the Fen","level":31,"zone":"Excavation Site: Wetlands","category":16732,"type":1,"faction":3,"race":0,"class":8191,"minLevel":24}
 {"id":95803,"name":"A Token of Good Faith","level":12,"zone":"Paladin","category":-141,"type":1,"faction":2,"race":16,"class":2,"minLevel":9}
 {"id":95805,"name":"Grace of An'she and Mu'sha","level":4,"zone":"Mulgore","category":215,"type":1,"faction":2,"race":67109042,"class":8191,"minLevel":1}
@@ -5045,11 +5049,15 @@
 {"id":98891,"name":"Conflict at Darkspear Islands","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":50}
 {"id":98893,"name":"Conflict at Darkspear Islands","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1}
 {"id":98895,"name":"Darkspear Islands Clash","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
-{"id":98897,"name":"Darkspear Islands Clash","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":40}
-{"id":98899,"name":"Darkspear Islands Clash","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":50}
-{"id":98901,"name":"Darkspear Islands Clash","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191}
+{"id":98897,"name":"Darkspear Islands Clash","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":98899,"name":"Darkspear Islands Clash","level":59,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":50}
+{"id":98901,"name":"Darkspear Islands Clash","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1}
 {"id":98903,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":98904,"name":"The Battle for Darkspear Islands!","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":98905,"name":"The Battle for Darkspear Islands!","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":50}
 {"id":98906,"name":"The Battle for Darkspear Islands!","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":30}
+{"id":98907,"name":"The Battle for Darkspear Islands!","level":49,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":40}
+{"id":98908,"name":"The Battle for Darkspear Islands!","level":60,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"pvp":1,"minLevel":50}
 {"id":98910,"name":"Darkspear's Basic Care Package","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":98913,"name":"Theramore Basic Care Package","level":39,"zone":"Darkspear Islands","category":16606,"type":1,"faction":3,"race":0,"class":8191,"minLevel":30}
 {"id":98977,"name":"Mossheart the Elder","level":60,"zone":"Lunar Festival","category":-366,"type":64,"faction":3,"race":0,"class":8191,"holiday":128,"minLevel":1}
