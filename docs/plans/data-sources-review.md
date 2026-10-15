@@ -473,6 +473,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-13: the 15 Midnight Candy Buckets (97142-97213) are in the data, on the user's word (PR after #327); retail has 35,544 quests. The older buckets and the Ahune, Headless Horseman and gift quests are still undecided. The step-6 rules ask for a retail quest-type probe after quests are added (maintenance.md): the buckets are one-time holiday quests like the 265 already there.
 
+- 2026-10-15: Hallow's End for 12.1.5, on the user's word (the 12.1.5 sweep's item 8, option A). 18 quests that the 12.1.5 API files under Hallow's End are in the data, with no pins: nine candy dailies (92535-92537, 93401, 95822, 95825, 95827-95829), the Drustvar and Duskwood Candy Exchanges (92568, 92570), the Alliance-only Midnight bucket 97211 and six Horde-only buckets (12391, 12393, 12946, 13468, 28959, 54709). Step 6b's eight Hallow's End task quests and the Candy Exchanges 92567 and 92569 are tagged too, all under the Hallow's End heading; retail has 35,573 quests. The buckets 12346 (retired) and 28997, and the Ahune, Headless Horseman and gift quests, are still undecided.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

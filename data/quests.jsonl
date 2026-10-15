@@ -34557,8 +34557,8 @@
 {"id":92554,"name":"Addition of Anguish","level":90,"zone":"Silvermoon City","category":1512,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":92560,"name":"Lu'ashal","level":90,"zone":"Eversong Woods","category":74,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":92566,"name":"Armies of Darkness","level":80,"zone":"Slayer's Rise","category":1506,"type":128,"faction":1,"race":64175181,"class":8191}
-{"id":92567,"name":"Drustvar Candy Exchange","level":10,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
-{"id":92569,"name":"Felwood Candy Exchange","level":10,"zone":"Eastern Kingdoms","category":0,"type":2,"faction":3,"race":67108863,"class":8191}
+{"id":92567,"name":"Drustvar Candy Exchange","level":10,"zone":"Hallow's End","category":90,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92569,"name":"Felwood Candy Exchange","level":10,"zone":"Hallow's End","category":90,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":92571,"name":"Armies of Darkness","level":80,"zone":"Slayer's Rise","category":1506,"type":128,"faction":2,"race":61658034,"class":8191}
 {"id":92572,"name":"Furniture Favor","level":10,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92576,"name":"Dominating The Domanaar","level":80,"zone":"Voidstorm","category":1508,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -35265,7 +35265,7 @@
 {"id":92558,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":92559,"name":"Honor the Flame","level":1,"zone":"Midsummer","category":133,"type":64,"faction":3,"race":67108863,"class":8191,"holiday":256}
 {"id":93578,"name":"Where Shadows Gather","level":80,"zone":"Slayer's Rise","category":1506,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93598,"name":"Emissary of War","level":90,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":93598,"name":"Emissary of War","level":90,"zone":"Silvermoon City","category":1735,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93648,"name":"Gnarly Skullduggery","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93649,"name":"Got the Gall","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93664,"name":"Rotten Fish","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191}
@@ -35542,3 +35542,32 @@
 {"id":97210,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":97212,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
 {"id":97213,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92498,"name":"Sugar Run","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":93400,"name":"Sugar Run","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":93898,"name":"A Haunted Home","level":1,"zone":"Hallow's End","category":90,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":95826,"name":"Sugar Run","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":97219,"name":"Candy Crafting","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16,"prereq":92498}
+{"id":97241,"name":"Voices of Stone","level":0,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":98379,"name":"Ancient Depths, Ancient Venom","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":97981}
+{"id":98390,"name":"Ascending with Venomstones","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":98379}
+{"id":98421,"name":"Candy Crafting","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16,"prereq":93400}
+{"id":98422,"name":"Candy Crafting","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16,"prereq":95826}
+{"id":98801,"name":"Community Candy Crawl","level":0,"zone":"Hallow's End","category":90,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92535,"name":"Witchbane Truffles","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92536,"name":"Bewitched Berry Bites","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92537,"name":"Hexed Honeycombs","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":93401,"name":"Howling Honey Drops","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":95822,"name":"Twisted Vine Licorice","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":95825,"name":"Blighted Core Caramels","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":95827,"name":"Blighted Bloom Bites","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":95828,"name":"Felroot Crunch","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":95829,"name":"Rotleaf Wafers","level":1,"zone":"Hallow's End","category":90,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92568,"name":"Drustvar Candy Exchange","level":10,"zone":"Hallow's End","category":90,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":92570,"name":"Duskwood Candy Exchange","level":10,"zone":"Hallow's End","category":90,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":16}
+{"id":97211,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":1,"faction":1,"race":64175181,"class":8191,"holiday":16}
+{"id":12391,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}
+{"id":12393,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}
+{"id":12946,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}
+{"id":13468,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}
+{"id":28959,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}
+{"id":54709,"name":"Candy Bucket","level":10,"zone":"Hallow's End","category":90,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":16}

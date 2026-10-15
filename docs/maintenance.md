@@ -646,6 +646,12 @@ same, none new. The first run also found quest 43472, filed under Midsummer whil
 `PENDING` row said WoW Anniversary; it now sits under Seasonal like its sibling 43461. The
 run takes about 20 seconds.
 
+On 15 October 2026, with the 12.1.5 API cache (12.1.5_70077), the counts were 982, 583 and 1,052 and
+the findings 15: the API now files the Candy Exchanges 92567 and 92569 under Hallow's End, and their
+`KEEP` rows held them untagged. With 12.1.5's Hallow's End quests tagged (the two exchanges, the eight
+task quests of step 6b and 18 quests new to the data), the counts are 1,004, 587 (four of the new Horde
+Candy Buckets are in TrinityCore's Hallow's End event) and 1,080, and the findings the same 13, none new.
+
 ### 2e. The retail quest cache
 
 The client keeps the server's record of every quest it has asked about in
@@ -1312,12 +1318,15 @@ Quests that appear in the pin data but are missing from the database are fetched
 keeps each API response in `tools\quest_api_cache`, and the inserter refuses any quest that's
 already in the database.
 
-The fetch reads its quest IDs from `toolsgap_quest_ids.txt`, which no tool writes: make it from the quests the pin data names and the data lacks, or from the candidates of `Find-MissingQuests.ps1` the user has said to add (below). A quest the Blizzard API has no record of (a 404) is dropped, so a quest only the client or an emulator knows (a new holiday quest, say) goes in through the cache or the probe and a decisions row instead.
+The fetch reads its quest IDs from `tools\gap_quest_ids.txt`, which no tool writes: make it from the quests the pin data names and the data lacks, or from the candidates of `Find-MissingQuests.ps1` the user has said to add (below). A quest the Blizzard API has no record of (a 404) is dropped, so a quest only the client or an emulator knows (a new holiday quest, say) goes in through the cache or the probe and a decisions row instead.
 
-**Quests the data lacks.** `Find-MissingQuests.ps1 -Game retail` (and `-Game forever`; report only, about a minute) lists the quests the client's QuestV2, the game's quest cache or the emulator (TrinityCore, CMaNGOS) know and the data doesn't hold, and sorts them: task rows (step 6b), tracking and retired quests, internal titles, quests the emulator disables, and the rest with or without evidence that someone starts them (an emulator starter, a start point, a quest line row, an item that starts it). QuestV2 alone proves nothing: it omits almost all repeatable quests and lists tracking and retired ones. Look at the candidates, record each reviewed one in `docsplansmissing-quest-decisions.csv` (Game, Quest, Name, Decision ADD or SKIP, Reason), and add nothing without the user having seen the list. Its baseline is `docsplansmissing-quests-baseline.csv` (12 October 2026: 555 retail candidates, 130 Forever); it exits 1 on more undecided candidates than that, and `-UpdateBaseline` writes the new counts once they are explained. A quest with no title anywhere (20,358 on retail) is a hidden or tracking quest; a Candy Bucket the emulator knows but nothing places is the holiday case, which needs the user's list first.
+**Quests the data lacks.** `Find-MissingQuests.ps1 -Game retail` (and `-Game forever`; report only, about a minute) lists the quests the client's QuestV2, the game's quest cache or the emulator (TrinityCore, CMaNGOS) know and the data doesn't hold, and sorts them: task rows (step 6b), tracking and retired quests, internal titles, quests the emulator disables, and the rest with or without evidence that someone starts them (an emulator starter, a start point, a quest line row, an item that starts it). QuestV2 alone proves nothing: it omits almost all repeatable quests and lists tracking and retired ones. Look at the candidates, record each reviewed one in `docs\plans\missing-quest-decisions.csv` (Game, Quest, Name, Decision ADD or SKIP, Reason), and add nothing without the user having seen the list. Its baseline is `docs\plans\missing-quests-baseline.csv` (12 October 2026: 555 retail candidates, 130 Forever); it exits 1 on more undecided candidates than that, and `-UpdateBaseline` writes the new counts once they are explained. A quest with no title anywhere (20,358 on retail) is a hidden or tracking quest; a Candy Bucket the emulator knows but nothing places is the holiday case, which needs the user's list first.
 
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
-same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. New
+same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. That
+run covers every quest in category 0, not only the new ones, so it also files older ones it can: on
+15 October 2026 it filed 34 (the Chromie Time quests 60959 to 60971 among them), which were put
+back, as the pull request was about the new quests only. Check the diff for old rows that moved. New
 quests go at the end of `data\quests.jsonl`. Like the other scripts that write, both take `-DataDir`
 and `-AddonDir`, so they can run against a scratch copy.
 
@@ -1450,6 +1459,20 @@ copy of the data and `Place-UncategorisedQuests.ps1`, so no old row is touched.
   player-facing rows less 7 trackers that slip past the flag); the 29 internal entries come off those.
   Forever's client has no task table (`QuestV2CliTask` is not among its 613 tables), so the step is
   retail's alone ([plans/game-parity.md](plans/game-parity.md)).
+- **The 12.1.5 run (15 October 2026, build 12.1.5.70391):** 6,258 rows; 5,740 in the data; 478 hidden
+  trackers (471 by the flag, 6 by QuestInfo 265, 1 by the title); 29 internal entries; 11 added (4 type 1,
+  6 type 4, 1 type 128), 2 of them left in category 0 (97219 and 97241, no map point). Eight are Hallow's
+  End quests (Sugar Run x3, A Haunted Home, Candy Crafting x3, Community Candy Crawl). None has a
+  namesake in the data, so the tool gave them no holiday, and they were tagged Hallow's End and filed
+  under its heading by hand, with `SET` rows in
+  [plans/quest-holiday-decisions.csv](plans/quest-holiday-decisions.csv). The evidence is Blizzard's: the
+  API's category for four of them; for all eight, world state 1963 in the task table, which only Hallow's
+  End's task quests need; and for seven, content tuning 426, whose other 24 quests of ours are all
+  tagged Hallow's End. `Audit-QuestHolidays.ps1` sees a new row's API category only once step 1 has
+  fetched its record, and the other four have none, so look for a holiday task quest with no namesake
+  by hand. Step 1d found nothing, step 2c gave 5 of the 11 a prerequisite and
+  changed no old row, and step 4 gave none of them a storyline. The quest cache has none of the 11, so
+  `Compare-QuestReputation.ps1` counts them in G.
 
 ### 7. Quests that may no longer be obtainable
 
@@ -2419,8 +2442,8 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 12 October 2026 they're 35,529 quests and 16,084
-  pins for retail, and 5,097 quests and 1,699 pins for Forever.
+  or pins were meant to be added or removed. As of 15 October 2026 they're 35,573 quests and 16,084
+  pins for retail, and 5,097 quests and 1,701 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
