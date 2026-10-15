@@ -291,9 +291,10 @@ What else changed:
   stays at 111: `Build-CategoryClientNames.ps1` only names categories that hold quests, so it never had
   a row for one of the 82. `qcAreaIDToCategoryID` (1,109 keys then, 1,111 since the 12.1.5 sweep added
   2162 and 2605 on 15 October 2026) and `qcMenu.lua` named none of them and are as they were. A Lua
-  dump of retail's menu before and after is identical (557 items), a dump of `qcQuestCategories` shows exactly the 82 rows gone and the other 481 in their old order, and
-  `data\quests.jsonl` and the generated Lua data files are byte for byte what they were: the 480
-  categories that hold quests are the same.
+  dump of retail's menu before and after is identical (557 items), a dump of `qcQuestCategories` shows
+  exactly the 82 rows gone and the other 481 in their old order, and `data\quests.jsonl` and the
+  generated Lua data files are byte for byte what they were: the 480 categories that hold quests are
+  the same.
 - Locale files: 12 keys go from all 11 (`THEBARRENS` is in English only), 122 lines: `DHARBANDAR`,
   `EARTHEN`, `MOURNINGRISE`, `NEIGHBORHOOD`, `SIEGEOFZULDAZAR`, `SKETTIS`, `SPIREOFLIGHT`,
   `STORMSHIELDSTRONGHOLD`, `STRANGLETHORNVALE`, `THEBARRENS`, `WARSPEAROUTPOST` and

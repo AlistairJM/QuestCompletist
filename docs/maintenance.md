@@ -1081,10 +1081,14 @@ player's language) when the game's quest line for the quest is the quest's `stor
 in `qcQuestLines` otherwise. So the rule above, the smallest quest line a quest is in, decides how
 often the game's name is used: 98.1% on the 15 October 2026 retail probe of 12.1.5.70391 (15,979 of
 the 16,293 storylined quests it gave a quest line for; it gave none for the other 716 of the 17,009),
-97.9% on the 9 October one (16,391 of 16,737), 11 of 11 on Forever's. The rest are quests in two quest
-lines, where the game names the larger. To measure it again, compare the probe's `questLineID` facts
-(`Read-ForeverProbe.lua <file> facts`, the `fact <quest> questLineID <id>` lines) with each quest's
-`storyline`.
+97.9% on the 9 October one (16,391 of 16,737), 11 of 11 on Forever's. Of the other 314 on 12.1.5, the
+game names a line with more of our quests for 244; one with as many for 45, where the tool takes the
+lower ID (17 of them are in 1108 "Through the Shattered Sky", where the game names 1267 "Maw Intro");
+and an internal line the tool skips for 25 (11 in the "Catch Up: War Within: Wrapper" lines, 6 in
+"[PH] 12.1 Max Level Campaign Chp 1", 6 in `[DNT]` lines, 2 in test lines). To measure it again,
+compare the probe's `questLineID` facts (`Read-ForeverProbe.lua <file> facts`, the `fact <quest>
+questLineID <id>` lines) with each quest's `storyline`, sizing each line by its quests in our data, as
+the tool does.
 
 The 12.1.5 run (15 October 2026, build 12.1.5.70391): 1,563 quest lines with player-facing names
 (131 internal skipped), 1,476 written to `qcQuestLines` (1,474 before); 17,009 quests with a storyline
@@ -1170,9 +1174,9 @@ compare a sweep with:
   category 16, area 16, skill 16, class 12, format 11, string 8, faction 6, covenant 4, map 3), 31
   categories with quests still named by our own text, 25 menu headings named by the client (26
   lines). `qcQuest.lua` and `qcMenu.lua` were left as they were.
-- `Sync-QuestSortNames.ps1`: 0 keys changed or added, 31 unchanged in each file. Italian kept its 5
-  Forever keys (AHNQIRAJWAR, CAMPING, INVASION, LUNARFESTIVAL, MIDSUMMER) as the file has them,
-  Forever's Italian table being its English one.
+- `Sync-QuestSortNames.ps1`: 0 keys changed or added; 31 unchanged in each file except Italian's,
+  which has 26 unchanged and 5 kept (AHNQIRAJWAR, CAMPING, INVASION, LUNARFESTIVAL, MIDSUMMER) as the
+  file has them, Forever's Italian table being its English one.
 - `Remove-ConvertedLocaleKeys.ps1 -WhatIf`: 0 lines, with 29 keys kept in English only for the
   headings the client names. `Test-Localization.lua`: 162 keys of English's own, 133 of each other
   language's, no problems.
