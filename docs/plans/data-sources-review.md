@@ -473,6 +473,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-13: the 15 Midnight Candy Buckets (97142-97213) are in the data, on the user's word (PR after #327); retail has 35,544 quests. The older buckets and the Ahune, Headless Horseman and gift quests are still undecided. The step-6 rules ask for a retail quest-type probe after quests are added (maintenance.md): the buckets are one-time holiday quests like the 265 already there.
 
+- 2026-10-15: `Find-MissingQuests.ps1` also counts the quests only QuestPOIBlob or a pin names (95808, 95811, 95812 and 95813 on retail, all untitled), takes titles from the API cache, files 162 more retail quests under internal titles (the `LFGDungeons - ` rows, Midnight's level-bracket placeholders, Prey targets, `(POC)`, `TO DEPRECATE`), and reads another quest line table when the newest build's is missing (on Forever 11 untitled quests gain a quest line). Retail has 565 candidates, the 10 above the baseline all quest line rows; the baseline waits for the user's review.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

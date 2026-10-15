@@ -1,19 +1,25 @@
 <#
-Report-only (step 6, "Quests the data lacks"). Lists the quests that a game's client, quest cache or emulator know
-and the data doesn't hold, and says which look like quests a player can take. It changes no data.
+Report-only (step 6, "Quests the data lacks"). Lists the quests that a game's client, quest cache, emulator or pins
+know and the data doesn't hold, and says which look like quests a player can take. It changes no data.
 
-Retail: data\quests.jsonl against the client's QuestV2 (live build and, when present, the PTR's), the quest cache
-(tools\retail_quest_cache_<build>.jsonl, step 2e), TrinityCore's quest_template and the client's task table.
-WoW: Forever: data\forever\quests.jsonl against its QuestV2, its quest cache and CMaNGOS's quest_template.
+Retail: data\quests.jsonl against the client's QuestV2 (live build and, when present, the PTR's) and QuestPOIBlob,
+the newest quest cache (tools\retail_quest_cache_<build>.jsonl, step 2e), TrinityCore's quest_template, the
+client's task table and the quests the pins name. Titles come from the cache, then Blizzard's API
+(tools\quest_api_cache, step 1), then the task table, then TrinityCore.
+WoW: Forever: data\forever\quests.jsonl against its QuestV2 and QuestPOIBlob, its newest quest cache, CMaNGOS's
+quest_template and its pins.
 QuestV2 proves nothing alone (it omits almost all repeatable quests, and lists tracking and retired ones), so a
 quest is a candidate only with evidence that someone gives it or starts it, and none of the reasons to leave it out.
 
 A quest the tool leaves out says why, in the first of these that holds: a task row (retail's task quests have
 their own step, 6b), the server's tracking flag (0x400), its internal-build flag (FlagsEx 0x20000), the
-retired flag (0x4000), a title that names a placeholder or a test, no title, a disables row in the emulator
+retired flag (0x4000), a title that marks it as internal (placeholders, tests, proofs of concept, dungeon
+finder rows and the like), no title, a disables row in the emulator
 (TrinityCore's sourceType 1), a quest type of 1 in the cache. A candidate has at least one of: an emulator
 starter (a creature or an object), a start point (point 32 in the client's QuestPOIBlob, or in
-TrinityCore's quest_poi), a quest line row (retail), an item that starts it (ItemSparse StartQuestID).
+TrinityCore's quest_poi), a quest line row (QuestLineXQuest-<newest QuestV2 build>.csv; on retail, failing that,
+the unnumbered QuestLineXQuest.csv, and on Forever its newest numbered one), an item that starts it (ItemSparse
+StartQuestID).
 Anything else is "noEvidence".
 
 Decisions already taken are in docs\plans\missing-quest-decisions.csv (Game, Quest, Name, Decision, Reason):
@@ -64,6 +70,8 @@ function Read-Dump([string]$file, [string]$table, [string]$columns) {
 
 $ours = @{}
 foreach ($q in (Read-QuestData $DataDir)) { $ours[[int]$q.id] = $q }
+$pinned = @{}
+foreach ($pin in (Read-PinData $DataDir)) { foreach ($q in $pin.quests) { $pinned[[int]$q] = $true } }
 
 # Client: QuestV2, and the PTR's when it is newer than the live build's.
 $clientBuilds = @(Newest-Build 'QuestV2-*.csv' 'QuestV2' | Where-Object { if ($Game -eq 'forever') { $_ -like '1.*' } else { $_ -like '12.*' } })
@@ -82,6 +90,15 @@ if ($cacheFile) {
         if ($line -match '^\{"id":(\d+),') { $cache[[int]$Matches[1]] = $line | ConvertFrom-Json }
     }
 } else { Write-Output "No quest cache for $Game in ${ToolsDir}: its titles and flags are missing." }
+
+# Blizzard's API (retail): the current cache folder only, not the dated copies beside it.
+$apiDir = Join-Path $ToolsDir 'quest_api_cache'
+$apiHas = @{}
+if ($Game -eq 'retail') {
+    if (Test-Path $apiDir) {
+        foreach ($f in [IO.Directory]::EnumerateFiles($apiDir, '*.json')) { $n = [IO.Path]::GetFileNameWithoutExtension($f); if ($n -match '^\d+$') { $apiHas[[int]$n] = $true } }
+    } else { Write-Output "No quest_api_cache in ${ToolsDir}: the API's titles are missing." }
+}
 
 # Task rows (retail): their own step.
 $task = @{}
@@ -114,15 +131,24 @@ if ($Game -eq 'retail') {
 if ($tempSql) { Remove-Item $tempSql -ErrorAction SilentlyContinue }
 
 # Client evidence: start points, quest lines, items that start a quest.
-$clientStart32 = @{}
+$clientStart32 = @{}; $clientPoi = @{}
 foreach ($file in (Get-ChildItem (Join-Path $ToolsDir 'QuestPOIBlob*.csv') -ErrorAction SilentlyContinue)) {
     $isForever = $file.Name -match '-1\.\d'
     if (($Game -eq 'forever') -ne $isForever) { continue }
-    foreach ($row in (Import-Csv $file.FullName)) { if ($row.ObjectiveIndex -eq '32') { $clientStart32[[int]$row.QuestID] = $true } }
+    foreach ($row in (Import-Csv $file.FullName)) { $clientPoi[[int]$row.QuestID] = $true; if ($row.ObjectiveIndex -eq '32') { $clientStart32[[int]$row.QuestID] = $true } }
 }
 $questLine = @{}
 $lineFile = Join-Path $ToolsDir "QuestLineXQuest-$latest.csv"
-if (Test-Path $lineFile) { foreach ($row in (Import-Csv $lineFile)) { $questLine[[int]$row.QuestID] = [int]$row.QuestLineID } }
+if (-not (Test-Path $lineFile)) {
+    # The unnumbered table is retail's (step 7 downloads it); Forever's tools write only numbered ones.
+    $lineFile = if ($Game -eq 'retail') { Join-Path $ToolsDir 'QuestLineXQuest.csv' } else {
+        $lineBuilds = @(Newest-Build 'QuestLineXQuest-*.csv' 'QuestLineXQuest' | Where-Object { $_ -like '1.*' -and [version]$_ -le [version]$latest })
+        if ($lineBuilds.Count) { Join-Path $ToolsDir "QuestLineXQuest-$($lineBuilds[-1]).csv" } else { '' }
+    }
+    if ($lineFile -and (Test-Path $lineFile)) { Write-Output "No QuestLineXQuest-$latest.csv: quest lines from $(Split-Path $lineFile -Leaf)." }
+    else { Write-Output "No QuestLineXQuest table for $Game in ${ToolsDir}: quest line evidence is missing."; $lineFile = '' }
+}
+if ($lineFile) { foreach ($row in (Import-Csv $lineFile)) { $questLine[[int]$row.QuestID] = [int]$row.QuestLineID } }
 $itemStart = @{}
 $itemFile = if ($Game -eq 'retail') { Join-Path $ToolsDir 'ItemSparse.csv' } else { Join-Path $ToolsDir "ItemSparse-$latest.csv" }
 if (Test-Path $itemFile) { foreach ($row in (Import-Csv $itemFile)) { if ([int]$row.StartQuestID) { $itemStart[[int]$row.StartQuestID] = $true } } }
@@ -138,16 +164,17 @@ if (Test-Path $DecisionsFile) {
     }
 }
 
-$internal = '^<|UNUSED|\[DNT\]|\(DNT\)|\[PH\]|^ZZ|\bNYI\b|DEPRECATED|\bTEST\b|test quest|do not use|\(NOT USED\)|REUSE|^Tracking Quest$|\bTBD\b|placeholder'
+$internal = '^<|UNUSED|\[DNT\]|\(DNT\)|\[PH\]|\(POC\)|^ZZ|\bNYI\b|DEPRECATED|\bTO DEPRECATE\b|\bTEST\b|test quest|do not use|\(NOT USED\)|REUSE|^Tracking Quest$|\bTBD\b|placeholder|^Midnight \([\d-]+\) E\b|^LFGDungeons - |^Prey: Target \d+'
 $known = @{}
-foreach ($set in $clientKnown.Keys, $cache.Keys, $em.Keys) { foreach ($id in $set) { $known[[int]$id] = $true } }
+foreach ($set in $clientKnown.Keys, $clientPoi.Keys, $cache.Keys, $em.Keys, $pinned.Keys) { foreach ($id in $set) { if ([int]$id -gt 0) { $known[[int]$id] = $true } } }
 if ($Game -eq 'retail') { foreach ($id in $task.Keys) { $known[[int]$id] = $true } }
 
 $rows = New-Object System.Collections.Generic.List[object]
 foreach ($id in ($known.Keys | Sort-Object)) {
     if ($ours.ContainsKey($id)) { continue }
     $c = $cache[$id]; $e = $em[$id]
-    $title = if ($c -and $c.title) { [string]$c.title } elseif ($task.ContainsKey($id) -and $task[$id]) { [string]$task[$id] } elseif ($e) { [string]$e.Title } else { '' }
+    $apiTitle = if ($apiHas.ContainsKey($id)) { [string]([IO.File]::ReadAllText((Join-Path $apiDir "$id.json"), [Text.Encoding]::UTF8) | ConvertFrom-Json).title } else { '' }
+    $title = if ($c -and $c.title) { [string]$c.title } elseif ($apiTitle) { $apiTitle } elseif ($task.ContainsKey($id) -and $task[$id]) { [string]$task[$id] } elseif ($e) { [string]$e.Title } else { '' }
     $flags = if ($c) { [uint32]$(if ($null -ne $c.flags) { $c.flags } else { 0 }) } elseif ($e) { $e.Flags } else { [uint32]0 }
     $flagsEx = if ($c) { [uint32]$(if ($null -ne $c.flagsEx) { $c.flagsEx } else { 0 }) } elseif ($e) { $e.FlagsEx } else { [uint32]0 }
     $evidence = New-Object System.Collections.Generic.List[string]
@@ -170,13 +197,13 @@ foreach ($id in ($known.Keys | Sort-Object)) {
         else { 'noEvidence' }
     $rows.Add([pscustomobject]@{
         Quest = $id; Kind = $kind; Name = $title; Evidence = ($evidence -join '+')
-        Sources = (@(if ($clientKnown.ContainsKey($id)) { "QuestV2($($clientKnown[$id]))" }; if ($c) { 'cache' }; if ($e) { 'emulator' }) -join '+')
+        Sources = (@(if ($clientKnown.ContainsKey($id)) { "QuestV2($($clientKnown[$id]))" }; if ($clientPoi.ContainsKey($id)) { 'QuestPOIBlob' }; if ($c) { 'cache' }; if ($apiHas.ContainsKey($id)) { 'api' }; if ($e) { 'emulator' }; if ($pinned.ContainsKey($id)) { 'pin' }) -join '+')
         Decision = if ($decided.ContainsKey($id)) { $decided[$id].Decision } else { '' }
     })
 }
 $rows | Export-Csv -Path $OutFile -NoTypeInformation -Encoding UTF8
 
-Write-Output ("{0}: {1} quests in the data; {2} known to the client, its cache or the emulator and not in the data (client build {3})." -f $Game, $ours.Count, $rows.Count, $latest)
+Write-Output ("{0}: {1} quests in the data; {2} known to the client, its cache, the emulator or the pins and not in the data (client build {3})." -f $Game, $ours.Count, $rows.Count, $latest)
 foreach ($g in ($rows | Group-Object Kind | Sort-Object Name)) { Write-Output ("  {0}: {1}" -f $g.Name, $g.Count) }
 $undecided = @($rows | Where-Object { $_.Kind -eq 'candidate' -and -not $_.Decision })
 $decidedCandidates = @($rows | Where-Object { $_.Kind -eq 'candidate' -and $_.Decision })
