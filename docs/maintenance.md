@@ -2792,7 +2792,8 @@ git diff --stat
   folder: three quests at one spot with no giver share a pin, the icon of a spot whose quests bring
   different ones, the 1.5-point edge, and a giver found for one quest from the client's giver table and from
   the recorder taking that quest to its own pin while the other two stay on the nameless one, through a
-  rebuild). It must say "0 failed"; `-Tools` runs it on another copy of the tools, to see what fails
+  rebuild, and two nameless pins on one point each giving the client's giver only their own quest). It
+  must say "0 failed"; `-Tools` runs it on another copy of the tools, to see what fails
   there. Also run `Test-ForeverImport.ps1` and `Test-RecordedGivers.ps1`, as both games use the rules,
   and the pin pipeline (step 6) on scratch copies before and after, comparing the candidates' pins.
 - For changes to `Read-ApiDocs.lua` or `Compare-ApiDocs.ps1`, run

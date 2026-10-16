@@ -407,13 +407,15 @@ $newPins = New-Object System.Collections.Generic.List[object]
 $movedLines = New-Object System.Collections.Generic.List[string]
 $splitLines = New-Object System.Collections.Generic.List[string]
 $emptied = New-Object System.Collections.Generic.HashSet[object]
-$moveGroups = [ordered]@{}
+# Grouped by the pin itself, not its place: two nameless pins can stand on one point.
+$moveGroups = New-Object System.Collections.Generic.List[object]
 foreach ($m in $moves) {
-    $key = "$(Get-PlaceKey $m.Pin.map $m.Pin.x $m.Pin.y)|$($m.Pin.npc)|$($m.Giver)"
-    if (-not $moveGroups.Contains($key)) { $moveGroups[$key] = @{ Pin = $m.Pin; Giver = $m.Giver; Items = New-Object System.Collections.Generic.List[object] } }
-    $moveGroups[$key].Items.Add($m)
+    $group = $null
+    foreach ($g in $moveGroups) { if ([object]::ReferenceEquals($g.Pin, $m.Pin) -and "$($g.Giver)" -eq "$($m.Giver)") { $group = $g; break } }
+    if (-not $group) { $group = @{ Pin = $m.Pin; Giver = $m.Giver; Items = New-Object System.Collections.Generic.List[object] }; $moveGroups.Add($group) }
+    $group.Items.Add($m)
 }
-foreach ($group in $moveGroups.Values) {
+foreach ($group in $moveGroups) {
     $pin = $group.Pin; $giver = $group.Giver
     $questList = @($group.Items | ForEach-Object { [int]$_.Quest } | Sort-Object -Unique)
     $place = Describe-Pin $pin

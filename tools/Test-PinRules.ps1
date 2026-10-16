@@ -5,7 +5,8 @@ the pipeline (Parse-ExistingPinDB.ps1 and Assemble-PinDB.ps1 -Apply) builds the 
 quests at one spot with no giver share one nameless pin, a pin's icon comes from its quests when they bring different
 ones, and the spot is 1.5 map points, no more. Then a giver turns up for one quest of a spot, from the client's giver
 table (Apply-ClientQuestGivers.ps1) and from the recorder (Import-RecordedGivers.ps1): the quest moves to a pin of
-its giver, the other two stay together on the nameless pin, which nobody renames, and a rebuild keeps it so.
+its giver, the other two stay together on the nameless pin, which nobody renames, and a rebuild keeps it so. Last,
+two nameless pins on one point each give the client's giver only the quest that pin holds.
 Test-ForeverImport.ps1 checks the same on WoW: Forever's importer.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-PinRules.ps1
@@ -181,7 +182,7 @@ function Describe($pin) {
     $who = if ($pin.npc) { "$($pin.npc) $($pin.name)" } elseif ($null -ne $pin.name) { $pin.name } else { 'nobody' }
     return "$who at $(([decimal]$pin.x).ToString('0.##', $script:Invariant)),$(([decimal]$pin.y).ToString('0.##', $script:Invariant)) icon $($pin.icon): $(@($pin.quests) -join ',')"
 }
-function Describe-Quest($pins, [int]$quest) { return ((Pins-Of $pins $quest | ForEach-Object { Describe $_ }) -join '; ') }
+function Describe-Quest($pins, [int]$quest) { $of = Pins-Of $pins $quest; return (($of | ForEach-Object { Describe $_ }) -join '; ') }
 
 try {
     # ---------- A: the pipeline, one pin per spot ----------
@@ -238,6 +239,20 @@ try {
     $rebuilt = [IO.File]::ReadAllText("$w\data\pins.jsonl")
     $r = Invoke-Pipeline $w
     Equal ([IO.File]::ReadAllText("$w\data\pins.jsonl")) $rebuilt 'C7: a second rebuild writes the pins byte for byte as the first'
+
+    # ---------- D: two nameless pins on one point, each with a quest of one giver ----------
+    $w = New-World 'pair'
+    [IO.File]::WriteAllText("$w\data\pins.jsonl", ((@(
+        '{"map":37,"icon":1,"x":80,"y":80,"quests":[1006,1014]}'
+        '{"map":37,"icon":1,"x":80,"y":80,"quests":[1015,1018]}'
+    ) -join "`n") + "`n"))
+    $null = Invoke-AddonDataBuild -DataDir "$w\data" -AddonDir "$w\addon"
+    Write-Givers $w
+    $r = Invoke-ClientGivers $w
+    Equal $r.Exit 0 "D1: Apply-ClientQuestGivers.ps1 runs ($($r.Text))"
+    $pins = Get-Pins $w
+    Equal ((Describe-Quest $pins 1014) + ' | ' + (Describe-Quest $pins 1015)) '7004 Pair Giver at 80,80 icon 1: 1014,1015 | 7004 Pair Giver at 80,80 icon 1: 1014,1015' 'D2: the giver''s quests of both pins move to one pin of it'
+    Equal ((Describe-Quest $pins 1006) + ' | ' + (Describe-Quest $pins 1018)) 'nobody at 80,80 icon 1: 1006 | nobody at 80,80 icon 1: 1018' 'D3: and each nameless pin gives up only its own quest'
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }
