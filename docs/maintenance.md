@@ -1508,8 +1508,9 @@ the icon of a pin whose quests are all PvP. Every sweep, with the newest cache o
 `Apply-QuestScaling.ps1` gives each retail quest that scales the level it stops scaling at, in its
 `maxLevel` field, which the build writes to `qcQuestMaxLevel`. The list's bracket, its sort and the
 low-level filter (the list's and the map's) then read the level the game scales the quest to for a
-character outside Chromie Time: its level, raised to the quest's minimum (`minLevel`, else `level`) and
-held down at `maxLevel`. A quest with no `maxLevel` reads its own level, as before ([the data
+character with the probe character's redirect bits (outside Chromie Time and an Endeavor's zones; below,
+"Not the redirects"): its level, raised to the quest's minimum (`minLevel`, else `level`) and held down
+at `maxLevel`. A quest with no `maxLevel` reads its own level, as before ([the data
 files](#the-quest-and-pin-data-files)). This is open-items.md row 9, option C, taken on 16 October 2026,
 API review recommendation 4. It is retail's: Forever's quests don't scale (its probe of 14 October 2026, a
 level 16 character on 1.60.1.70374, gave each of the 2,964 quests of ours it loaded its stored level, and
@@ -1563,10 +1564,10 @@ It refuses, writing nothing, when a quest run of the probe's build was made belo
 level (a row keeps only its last answer, so any of the build's quest runs may have given it; the cap is
 90 for 12.x builds, `$RetailLevelCaps` in `QuestScaling.ps1`, or `-Cap`), when the probe's build is not
 the quest cache's (`-Build`), and unless at least 99% of at least 20,000 usable probed quests sit on
-tunings that agree (`-MinAgreement`, `-MinProbed`). `-WhatIf` reports and writes nothing; `-Check` is
-the same and exits 1 when the data isn't what the sources say (a `maxLevel`, a `tuning` or
-`tunings.jsonl`) or the redirect table has a `RedirectEnum` its baseline lacks. A second run changes
-nothing.
+tunings that agree (`-MinAgreement`, `-MinProbed`). `-WhatIf` reports and writes nothing, so it takes no
+`-UpdateBaseline`; `-Check` is the same and exits 1 when the data isn't what the sources say (a
+`maxLevel`, a `tuning` or `tunings.jsonl`) or the redirect table has a `RedirectEnum` its baseline lacks.
+A second run changes nothing.
 
 After the changes it compares the addon's low-level rule with the game's own answer, for every quest
 of ours the probe asked `IsQuestTrivial` about, at the probe's level and trivial range: how many it hid,
@@ -1645,16 +1646,28 @@ or the data has moved.
   `ok` or `cached` with a level above 0, at its tuning's one level (a late answer doesn't count). They are
   taken in this order: a quest of ours, in `QuestV2` of the probe's build, not flagged in
   `unavailable-quest-decisions.csv`, one-time rather than recurring (`qcRecurringTypes`), open to both
-  factions (no retail probe run has had a Horde character), then the lowest ID. A tuning no row names gets
-  no record: every character gets its own range there, which `maxLevel` holds. The build writes
-  `qcTuningSample` from the records and `qcQuestTuning` for the quests on their tunings.
+  factions (no retail probe run has had a Horde character), then the lowest ID. A sample `tunings.jsonl`
+  already holds stays while the newest probe still loads it at its tuning's one level, unless a quest of a
+  better kind in that order is there to take its place, and a tuning with fewer than `-Samples` is topped
+  up in the same order: players' clients may hold a stored sample already, and the map reads only samples
+  the client holds ([quest-scaling-redirects.md](plans/quest-scaling-redirects.md), the performance rule).
+  A tuning no row names gets no record: every character gets its own range there, which `maxLevel` holds.
+  The build writes `qcTuningSample` from the records and `qcQuestTuning` for the quests on their tunings.
 - **The checks.** A stored sample the newest probe no longer loads, no longer gives its tuning's one level,
-  or whose quest moved tuning is listed and replaced, and fails `-Check` until the run has written it. The
-  redirect table is compared with `plans\quest-scaling-redirects-baseline.csv` (`-BaselineFile`): its rows
-  per `RedirectEnum`, the values gone and those with another row count are listed, and a value the baseline
-  lacks is flagged `[NEW]` and fails `-Check`, as a redirect no sweep has read. Look at which tunings it moves
-  and whether the samples cover them, then `-UpdateBaseline` writes the baseline from the run's table (not
-  with `-Check`). With no baseline file every value counts as new.
+  or whose quest moved tuning is listed and replaced, and fails `-Check` until the run has written it; one
+  that gives way to a better kind, or to a lower `-Samples`, is listed with why. A sampled tuning whose
+  level moved is listed with its levels before and now and its `RedirectEnum` values: many at once can mean
+  the probe's character had other redirect bits than the last run's ([In the game](#in-the-game), step 3),
+  so check them before applying. The redirect table is compared with
+  `plans\quest-scaling-redirects-baseline.csv` (`-BaselineFile`): its rows per `RedirectEnum`, the values
+  gone and those with another row count are listed, and a value the baseline lacks is flagged `[NEW]` and
+  fails `-Check`, as a redirect no sweep has read. Look at which tunings it moves and whether the samples
+  cover them, then `-UpdateBaseline` writes the baseline from the run's table (not with `-Check` or
+  `-WhatIf`). With no baseline file every value counts as new. The run also counts the keys of
+  `qcQuestMaxLevel` and `qcQuestTuning` against 32,768, above which Lua 5.1 doubles a table's hash part,
+  about 1 MB more loaded ([load-and-memory.md](plans/load-and-memory.md)); a table over it is flagged
+  `[OVER]`, which doesn't fail `-Check`: it costs memory, not correctness, so the sweep decides whether
+  to take it.
 
 The run of 16 October 2026 (12.1.5.70391; the 15 October probe, the joined quest cache, the task table):
 **33,250 quests got a `tuning`**, 29,811 from the cache and 3,439 from the task table; 16 are on tuning 0
@@ -1668,12 +1681,23 @@ find nothing to change, and no quest left the data. Baseline: 2,564 rows, 39 `Re
 tunings redirected; by value 0 (638), 1 (63), 2 (3), 3 (34), 4 (6), 5 (165), 6 (17), 7 (1), 8 (1), 9 (13),
 10 (3), 11 (41), 12 (67), 13 (498), 14 (29), 15 (2), 16 to 20 (4 each), 21 to 25 (3 each), 26 and 27 (2
 each), 28 and 29 (1 each), 30 (105), 31 (3), 32 (19), 33 (35), 34 (772), 35 (3), 38 (1), 39 (2) and 40 (2).
+The tables' keys: `qcQuestMaxLevel` 27,637 and `qcQuestTuning` 28,680, 5,131 and 4,088 under 32,768.
+
+Samples kept, measured on a scratch copy of the data, applied first with the 14 October probe file (518
+tunings with samples) and then with the 15 October one: before stored samples were kept, the second run
+changed the samples of 57 tunings, though none was stale. With them kept, 19 tunings are added and 20
+change: 14 that had fewer than three get more, and 6 samples give way to a better kind: five quests of one
+faction to a quest of both (2039 to 301, 743 to 764, 38427 to 39299, 53939 to 53945, 65444 to 66074), and
+the recurring 70011 to the one-time 72254. No stored sample is dropped for a lower ID alone.
 
 The tables cost memory: `qcQuestMaxLevel` took `qcQuestData.lua` from 2,461,508 to 2,819,637 bytes and,
 loaded alone under Lua 5.1 (32-bit), from 9,381 to 10,405 KB; `qcQuestTuning` and `qcTuningSample` take it
 from 2,822,865 to 3,239,164 bytes and from 10,434.2 to 11,529.4 KB (all 33,250 tunings would take 12,553.4
-KB, as more than 32,768 keys double the hash part); [load-and-memory.md](plans/load-and-memory.md) has the
-figures. `Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
+KB, as more than 32,768 keys double the hash part). `qcQuestTuning` has 4,088 keys of room before that
+step, and would have 558 if it held the 3,530 quests that scale on unredirected tunings too (32,210 keys, a
+choice for the second pull request); a sweep that gives a few thousand more quests a sampled tuning, such
+as a new expansion's, would cross it. [load-and-memory.md](plans/load-and-memory.md) has the figures.
+`Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
 
 ### 2k. Quests on one completion switch
 
@@ -3465,8 +3489,12 @@ It began as pull request #139, which stays open as the record; its files are in
    quest's answer came from. The answers also depend on the character's redirect bits
    ([quest-scaling-redirects.md](plans/quest-scaling-redirects.md)): the 15 October 2026 run was made in a
    Midnight zone, with bits 1, 5, 14 and 33, and the same character read 90 in Nazmir for quests whose
-   tuning a bit-34 row names, which step 2j would take as their ceilings. Run it where that one was.
-   Then `/qcprobe npcs`, outside any instance,
+   tuning a bit-34 row names, which step 2j would take as their ceilings. So before the pass, stand where
+   it will run and type the `/run` line of [the 16 October readings](plans/quest-scaling-redirects.md#the-readings-of-16-october-2026),
+   and start it only when 11 reads 30 and 78642 reads 80, the levels of the 15 October run's bits (bit 34
+   off). Another level means the character has other bits there (on 16 October, bit 34 in Nazmir, where
+   an Endeavor was active): move, and check again. Step 2j lists the sampled tunings whose level moved,
+   which a pass made with other bits would show. Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered. The probe also saves each
    character's completed quests as the game gives them, not as Quest Completist ticks them, at every
    login, reload and logout (`/qcprobe completed` does it at once), keyed by the character's GUID and
@@ -3648,7 +3676,7 @@ git diff --stat
   unavailable decisions in a scratch folder (nothing downloaded), and with the real files in `tools\` (or
   `-RealToolsDir`) also applies the tool to a copy of the data with every `maxLevel` and `tuning` taken out
   and no `tunings.jsonl`, downloading the redirect table and `QuestV2` into that folder if it lacks them. It
-  must say "0 failed" (308 checks, 320 with the real files, 16 October 2026), and its last line says whether
+  must say "0 failed" (332 checks, 344 with the real files, 16 October 2026), and its last line says whether
   the result is the checkout's data and whether the redirect table has a `RedirectEnum` the baseline lacks.
   A change to how the list or the low-level filter reads a level is checked by `Test-QuestReachability.lua`
   on both TOCs (step 9).

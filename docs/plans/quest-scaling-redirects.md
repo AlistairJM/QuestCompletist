@@ -114,31 +114,44 @@ from the 12.1.5.70391 sources:
   627 has only it and 42904, which `QuestV2` lacks. The faction step is there because the probe's Alliance
   character loaded the other faction's quests about as often as its own (5,519 of the 6,589 Horde-only
   quests it asked, 5,828 of the 6,739 Alliance-only ones), but no retail probe run has had a Horde
-  character, so a quest of both factions is the one the evidence covers for every character.
+  character, so a quest of both factions is the one the evidence covers for every character. A later run
+  keeps a stored sample while the newest probe still loads it at its tuning's level, unless a quest of a
+  better kind in that order can take its place, and only tops a tuning up: the map reads only samples the
+  client holds, and players' clients may hold the stored ones already.
 - **Why `qcQuestTuning` holds 28,680 quests and not all 33,250.** The other 4,570 are on the 240 tunings no
   redirect names (4,559) or on the 6 with no samples (11): no sample can say more about their level than the
   stored one does, and they keep their tuning in the data. Leaving them out keeps the table under 32,768
-  keys. Measured on `qcQuestData.lua` alone (Lua 5.1 on this PC, 32-bit, `dofile` in a fresh state, memory
-  after two full collections): 10,434.2 KB before, 11,529.4 KB with this pull request (+1,095.2 KB), and
-  12,553.4 KB with all 33,250 (+2,119.2 KB), as 33,250 keys take a hash part of 65,536 slots. The file grows
-  from 2,822,865 to 3,239,164 bytes. Forever's gains two empty tables (41 bytes) and loads to the same size.
+  keys, with 4,088 to spare: a sweep that gives a few thousand more quests a sampled tuning, such as a new
+  expansion's, would cross it, and step 2j prints the count against it. Measured on `qcQuestData.lua` alone
+  (Lua 5.1 on this PC, 32-bit, `dofile` in a fresh state, memory after two full collections): 10,434.2 KB
+  before, 11,529.4 KB with this pull request (+1,095.2 KB), and 12,553.4 KB with all 33,250 (+2,119.2 KB),
+  as 33,250 keys take a hash part of 65,536 slots. The file grows from 2,822,865 to 3,239,164 bytes. Forever's gains two empty tables (41 bytes) and loads to the same size.
 - **`maxLevel` stays as it is**, the fallback. It is the per-tuning level without loss: for every one of the
   35,654 quests, `maxLevel` is its tuning's level where that is above the quest's minimum and is missing
   otherwise, and no quest has a `maxLevel` without a tuning. Replacing `qcQuestMaxLevel` (27,637 keys, a
   32,768-slot table) by a level per tuning would save about 1 MB, but needs the addon to read it, which this
   pull request doesn't change, and `qcQuestTuning` to hold the 3,530 quests that scale on unredirected
-  tunings too: 32,210 in all, still under 32,768 keys. That is a choice for the second pull request.
+  tunings too: 32,210 in all, still under 32,768 keys but with only 558 to spare. That is a choice for the
+  second pull request.
 
 ## The sweep's checks
 
 Step 2j now also writes the tunings and the samples, and checks them: `-Check` exits 1 when a quest's
 `tuning` or `tunings.jsonl` isn't what the sources say, which includes a stored sample the newest probe no
 longer loads, or no longer gives its tuning's one level, or that moved to another tuning (each is listed,
-and the applying run replaces it). It compares the redirect table with its baseline: the rows per
-`RedirectEnum`, the values gone and those with another row count are reported, and a value the baseline
-lacks fails `-Check`, because it is a redirect no sweep has read. Look at the tunings it names, then
-`-UpdateBaseline` takes it in. `-Game forever` fails if Forever's data holds a `tuning` or a `tunings.jsonl`.
-The run is idempotent: a second one changes nothing.
+and the applying run replaces it). A stored sample that is still valid is kept, so a fuller probe only
+adds samples, except where one gives way to a better kind or to a lower `-Samples` (listed with why).
+Applied with the 14 October probe file and then the 15 October one, 19 tunings were added and 20
+changed: 14 topped up, and 6 samples gave way to a quest open to both factions or one-time; before
+stored samples were kept, 57 changed, though none was stale. A sampled tuning whose level moved is listed,
+as many at once can mean the probe's character had other bits; so before a quest pass, the `/run` line
+above should read 30 for 11 and 80 for 78642 where the probe stands. It compares the redirect table
+with its baseline: the rows per `RedirectEnum`, the values gone and those with another row count are
+reported, and a value the baseline lacks fails `-Check`, because it is a redirect no sweep has read. Look
+at the tunings it names, then `-UpdateBaseline` takes it in (not with `-Check` or `-WhatIf`, which write
+nothing). It counts the keys of `qcQuestMaxLevel` and `qcQuestTuning` against 32,768 and flags a table
+over it. `-Game forever` fails if Forever's data holds a `tuning` or a `tunings.jsonl`. The run is
+idempotent: a second one changes nothing.
 
 ## What the second pull request does
 
