@@ -1,5 +1,10 @@
 # Client tables review
 
+> **Superseded in part (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) goes through every table
+> and column of retail, Forever and Era. Where the two disagree on a count, the audit's is newer (12.1.5.70391); its
+> "Corrections to earlier documents" lists them (BreadCrumbID 12, QuestV2CliTask 6,258 rows, UiMapGroupMember's one
+> missing floor, ParagonReputation's types, and others). The recommendations below are unchanged.
+
 ## Goal
 
 The game client's own tables (wago.tools' CSV exports of its DB2 files, pinned to a build) feed

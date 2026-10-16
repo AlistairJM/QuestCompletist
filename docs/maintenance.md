@@ -226,7 +226,13 @@ then every tool refuses to save.
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
-   were chosen as each need came up.
+   were chosen as each need came up. The audit of every table and every column of all three clients (14 October
+   2026) is [plans/client-tables-audit.md](plans/client-tables-audit.md); its baseline is
+   `plans\client-tables-audit\catalogue-<game>-*.csv`, made by `tools\Audit-ClientTables.ps1 -Game <retail|forever|era>
+   -Build <build> -Download` (the downloads, one request at a time, take the better part of an hour per game; the measuring about two minutes). Rerun it with the newest
+   builds and compare the new `tables`, `fks` and `refs` files with the baseline: a table or column that appeared, a
+   flag bit that is now set (the audit's [bits.csv](plans/client-tables-audit/bits.csv) names the ones decoded), or a
+   foreign key whose resolve rate fell is a finding, as a column change is above.
 
    Then check the game's Lua API the same way:
    ```powershell
