@@ -662,13 +662,13 @@ A 10,269, B the same 3, C 0, D 0, E 738 quests with 1,028 rewards (all quests th
 of), F 151, G 5,781 and H 19, and the cache reproduced all 11,093 of the API's rewards on the
 quests it holds. Against the same run on the data before the 33 quests, G has the 32 of them the
 cache lacks and H one fewer: 98831 The Labyrinth, the one it holds, is now ours and has no reward.
-The baseline file stays as it was, as the cache is still partial.
+The baseline file stayed as it was then; it was rewritten later that day (below).
 
 On 16 October 2026 the pass read the joined 12.1.5 cache (step 2e: the game's copies of 14 and 15
 October read together), with the API cache, which by then had answers for the 29 quests (24
 records, and 5 the API does not know; 5,364 of our quests have no record), and the Faction table of
-12.1.5.70391. The cache holds
-29,844 quests, 29,825 of our 35,606 (83.8%, with the 33 story quests), so it is still warned about
+12.1.5.70391. The cache holds 29,844 quests, 29,825 of our 35,606 (83.8%, with the 33 story
+quests), so it is still warned about
 as partial; it will not get fuller this sweep. C and D were 0, B the same 3 quests, and the cache reproduced all 11,093 of
 the API's rewards on the quests it holds. E held 738 quests with 1,028 rewards, all of them quests
 the API has no record of, none with a hidden faction among its rewards, and `-CacheOnly` wrote all
