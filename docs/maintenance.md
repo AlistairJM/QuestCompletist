@@ -611,9 +611,9 @@ with `-WhatIf` first to see what it would change.
   isn't one either: the game offers the quest to a character who skipped it (129 left out). 1,384 quests on
   12 October 2026. A board quest (Hero's Call, Warchief's Command) is a breadcrumb into the quest its follow-up names: it has a row in `qcBreadcrumbQuests`, so it is never taken. Where the cache names several lead-ins and TrinityCore repeats only some, the quest is left out and listed ("Left out as the cache names more lead-ins than TrinityCore repeats"; 14 on 13 October 2026). A follow-up
   TrinityCore doesn't repeat is often a re-offer, so it isn't taken ([plans/retail-quest-cache.md](plans/retail-quest-cache.md),
-  "Next quest"). Run step 2e on the fullest copy of the build's cache first: the game's own
-  `Cache\WDB\enUS\questcache.wdb` is newer than the probe's copy after any play, but can hold only that
-  session's quests ([In the game](#in-the-game), step 3).
+  "Next quest"). Run step 2e first, with every session's copy of the build's cache in its probe folder:
+  the game's own `Cache\WDB\enUS\questcache.wdb` is newer than the probe's copy after any play, but can
+  hold only that session's quests, and step 2e joins the copies ([In the game](#in-the-game), step 3).
 - **A one-time quest never gets a daily, weekly or repeatable requirement,** and a choice that
   offers one is left out whole. A recurring quest keeps one only where Blizzard's API or the client's
   task tables name it, as in a chain of world quests, which the game knows within the day or week;
@@ -692,7 +692,8 @@ the same 13, none new.
 The client keeps the server's record of every quest it has asked about in
 `Cache\WDB\enUS\questcache.wdb`, and step 10 reads WoW: Forever's copy of it. Retail's holds the same
 record, in the same layout with two fields fewer, for every quest the game has been asked about
-(32,713 on 9 October 2026, 33,123 on 12 October). The cache holds only what was asked: the
+(32,713 on 9 October 2026, 33,123 on 12 October; 29,844 for 12.1.5.70391 on 16 October, from two
+copies). The cache holds only what was asked: the
 quest-type probe (`/qc typecheck`, see [In the game](#in-the-game)) asks for every quest in our data,
 so a cache from ordinary play is far too small, and `Compare-QuestCache.ps1` fails when fewer than
 20,000 quests could be compared. A cache can pass that check and still be partial: 12.1.5.70391's,
@@ -705,10 +706,12 @@ earlier build in `tools\`, or of the quests in our data, and name both counts. T
 no exit code, but steps 2 and 2g refuse `-UpdateBaseline` (exit 1) while it stands, unless
 `-AcceptPartialCache` is given. Step 6's `Find-MissingQuests.ps1` reads the cache too and does not
 warn yet, so don't run its `-UpdateBaseline` on a cache the others warn about. When the warning
-shows, ask the missing quests again before using the cache's values, and don't read the newest
-`questcache.wdb` over a larger cache: on 15 October 2026 the game's copy held only that session's
-quests. Log out fully, so the game writes the cache, and copy the file from `_retail_\Cache\WDB\enUS\` to
-`tools\retail_probe_<build number>\` (`retail_probe_69933` for build 12.1.0.69933). The comparison also
+shows, ask the missing quests again before using the cache's values. The game's copy can hold only
+the last session's quests (on 15 October 2026 it held that day's 5,110, the 26,616 of the day before
+gone), so log out fully after each session, which makes the game write the cache, and copy the file from
+`_retail_\Cache\WDB\enUS\` to `tools\retail_probe_<build number>\` (`retail_probe_69933` for build
+12.1.0.69933), each session's copy under its own name (as `questcache.2026-10-14-1208.wdb`; the latest
+may stay `questcache.wdb`). The reader joins every copy of the build in that folder. The comparison also
 needs the API cache (step 1), the client's task table (step 1b) and the client's `QuestV2` for the
 cache's build, which step 1b's unnumbered `QuestV2.csv` is not:
 
@@ -721,6 +724,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestCache.ps1
 Without that file the run still exits 0 but skips the repeatable check, and its closing line says so.
 The reader fetches the `ChrRaces` and `QuestFactionReward` tables for the build from wago.tools when
 `tools\` lacks them.
+
+By default the reader reads every `questcache*.wdb` of the build in the `tools\retail_probe_*` folder
+that holds the newest of them; `-CacheFile` names the copies instead (comma-separated, wildcards
+allowed). In the folder, a copy of another build is left out, and the run says so; a named one stops
+the run, as do copies of two locales. A quest in several copies takes the newest file's record, by
+write time. The run says for each file how many quests it gave, how many no older copy held, and how
+many of the rest read differently from an older copy. On 16 October 2026 the two copies of 12.1.5.70391,
+`questcache.2026-10-14-1208.wdb` (26,616 quests) and the `questcache.wdb` of 15 October (5,110: 3,228
+new, and the 1,882 an older copy held read the same), gave 29,844 quests. What the 14 October copy alone
+gave is kept as `tools\retail_probe_70391\retail_quest_cache_12.1.5.70391.2026-10-14.jsonl`, not in
+`tools\` itself, where step 6's `Find-MissingQuests.ps1` reads each `retail_quest_cache_*.jsonl` name as
+a build and stops on one that isn't.
 
 The reader (about 30 seconds) writes `tools\retail_quest_cache_<build>.jsonl`, one quest per line:
 its title, content tuning, sort (the zone, or a negative number for a heading such as a class or a
@@ -738,7 +753,14 @@ On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) nothing differed:
 quests, sort for 28,614, daily, weekly, recurs and repeatable for 28,985 each, faction for 9,273 and
 races for 728, 11,690 reputation rewards, one level range for each of 741 content tunings over 28,983
 quests, quest info for 1,830 quests against the API and 4,125 against the task table, which also
-agreed on content tuning and start item for those 4,125. If it fails, don't use the cache's values
+agreed on content tuning and start item for those 4,125. On 16 October 2026 (the joined cache of
+12.1.5.70391, API cache 12.1.5_70077) nothing differed either, over fewer quests: titles, daily,
+weekly, recurs and repeatable for 27,847 each, sort for 27,516, faction for 9,019 and races for 567,
+11,093 reputation rewards, one level range per content tuning over 27,845 quests, quest info for 1,779
+quests against the API and 2,311 against the task table, which also agreed on content tuning and start
+item for those 2,311. The partial-cache warning still shows, for our quests only: the cache holds
+29,824 of our 35,573 (83.8%), while its 29,844 quests are 90.1% of 12.1.0.69933's 33,123, just over
+the 90% the other half asks for. If it fails, don't use the cache's values
 that sweep: check that the cache, the API cache and the task table are from the builds you think,
 then rerun the reader's record walk and look at the first differing quests with both values.
 
@@ -2485,9 +2507,9 @@ It began as pull request #139, which stays open as the record; its files are in
    of them (8,418 in 513 s on 12.1.0), about 7 on Forever (1,513 on 70374), and the saved variables are
    about 18 MB; delete the addon's folder, or disable it, when you are not running it. After the run,
    log out fully and copy `questcache.wdb` at once: on 15 October 2026 the game's copy held only that
-   day's 5,110 quests, the 26,616 of the day before gone. Step 2e reads one copy (by default the newest
-   file named `questcache.wdb` under `tools\retail_probe_*`), so keep each session's copy under its own
-   name, as `questcache.2026-10-14-1208.wdb`, and give step 2e the fullest with `-CacheFile`.
+   day's 5,110 quests, the 26,616 of the day before gone. Keep each session's copy under its own name
+   in `tools\retail_probe_<build number>\`, as `questcache.2026-10-14-1208.wdb`: step 2e reads every
+   copy of the build there together, each quest from the newest file that holds it.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
    second. One run is enough. The results note the experience preset chosen once at Forever's login
