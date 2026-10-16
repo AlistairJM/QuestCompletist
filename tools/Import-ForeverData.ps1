@@ -547,12 +547,13 @@ foreach ($row in Import-Csv $LinkFile) {
             if ($handLinks.ContainsKey($pair) -or $handUnlinks.ContainsKey($pair)) { throw "$LinkFile lists the link between quests $quest and $other twice." }
             if ($row.Decision -eq 'ADD') { $handLinks[$pair] = @($quest, $other) } else { $handUnlinks[$pair] = @($quest, $other) }
         }
+        { $_ -in 'exclusive SKIP', 'exclusive KEEP' } { }
         'breadcrumb ADD' {
             if ($handBreadcrumbs.ContainsKey("$quest|$other")) { throw "$LinkFile makes quest $other a breadcrumb of quest $quest twice." }
             $handBreadcrumbs["$quest|$other"] = @($quest, $other)
         }
         default {
-            throw "$LinkFile gives quest $quest the link '$($row.Link)' with the decision '$($row.Decision)': a prereq is SET or REMOVEd, an exclusive ADDed or REMOVEd, a breadcrumb ADDed."
+            throw "$LinkFile gives quest $quest the link '$($row.Link)' with the decision '$($row.Decision)': a prereq is SET or REMOVEd, an exclusive ADDed, REMOVEd, SKIPped or KEPT (step 2k's), a breadcrumb ADDed."
         }
     }
 }

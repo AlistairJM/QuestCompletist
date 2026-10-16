@@ -370,6 +370,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 or 6b adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
 | 2j | Scaling quests' levels: the level each content tuning scales to at the level cap, from the retail probe's quest pass at the cap, in `qcQuestMaxLevel`; each quest's tuning, and the samples of each tuning a redirect can move (`data\tunings.jsonl`, `qcQuestTuning`, `qcTuningSample`); the redirect table against its baseline (after the probe, step 2e and step 2g; again after step 6 or 6b adds quests) | `Apply-QuestScaling.ps1 -WhatIf`, then without `-WhatIf`; `-UpdateBaseline` once a new `RedirectEnum` has been looked at | Only the applying run (`-UpdateBaseline` writes the baseline) |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
+| 2k | "Only one of these" links, both games: quests on one completion switch that we don't link, links Blizzard moved off one switch, and linked pairs the game says one character did both of (after the probe's logins) | `Sync-SharedSlotLinks.ps1 -Game retail -Build <retail build>`, decide in `docs\plans\quest-link-decisions.csv`, then `-Apply`; `-Game forever -Build <Forever build>`, decide in `forever-quest-link-decisions.csv`, which step 10 applies | Yes (retail `-Apply`) |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -1673,6 +1674,56 @@ loaded alone under Lua 5.1 (32-bit), from 9,381 to 10,405 KB; `qcQuestTuning` an
 from 2,822,865 to 3,239,164 bytes and from 10,434.2 to 11,529.4 KB (all 33,250 tunings would take 12,553.4
 KB, as more than 32,768 keys double the hash part); [load-and-memory.md](plans/load-and-memory.md) has the
 figures. `Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
+
+### 2k. Quests on one completion switch
+
+Both games, every sweep, after the probe's logins. The client's `QuestV2.UniqueBitFlag` is each quest's
+switch in the character's completed-quest record (TrinityCore's `Player::SetQuestCompletedBit`), and quests on one
+switch are completed together: once one is done, the game reports all of them done. On 16 October 2026 every one of
+the 780 shared-switch groups a retail character (Kranaa, 12,332 quests) had touched, and the 16 of two Forever
+characters, was reported whole, the other faction's quests included; none in part. So quests of different names on
+one switch that one character could be offered are "only one of these", and the "only one of these" warning in the
+quest window should name them. The game's own completed list already ticks them together, so the links add the
+warning, not the tick. A link on two switches is not wrong for that: the server also shuts quests out by rules the
+client never gets (on 16 October, 104 of retail's 194 links and 51 of Forever's 311 were on two switches). What does
+prove a link wrong is the game saying one character completed both, which the probe's saved completed lists show.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-SharedSlotLinks.ps1 -Game retail -Build <retail build>
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-SharedSlotLinks.ps1 -Game forever -Build <Forever build>
+```
+
+It reads the build's `QuestV2` (cached as `tools\QuestV2-<build>.csv`), the game's quests and links
+(`qcMutuallyExclusive` and `qcBreadcrumbQuests` in `qcQuest.lua`; Forever's `data\forever\links.jsonl`), the
+link decisions, and the newest `tools\<game>_probe_*` results, and writes `tools\shared_slot_links_<game>.csv`. A
+pair counts when both quests are ours, neither is daily, weekly or repeatable, their names differ and their
+faction, class and race limits overlap. Each finding wants an `exclusive` row in the game's link-decisions file
+(retail `docs\plans\quest-link-decisions.csv`, Forever `docs\plans\forever-quest-link-decisions.csv`, the columns
+of the other link decisions):
+
+- **one switch, not linked:** ADD it, or SKIP it. A SKIP covers every pair its rows join, so a chain of rows
+  skips a group.
+- **added for one switch, no longer on one:** Blizzard moved them apart. REMOVE it, or KEEP it.
+- **linked, but the game says one character did both:** REMOVE it, or KEEP it with the reason.
+- **decided ADD, not yet in the table** and **decided REMOVE, still in the table:** on retail, run it again with
+  `-Apply`, which writes `qcMutuallyExclusive` (a hand entry keeps its line and gains the quest; a quest with no
+  hand entry goes in the section after the marker comment, which is written afresh each time) and puts a removed
+  pair's quests in `qcFormerlyExclusive`. On Forever, step 10's importer applies the rows.
+
+Show the user the findings before deciding them. It also counts the links one switch confirms, those on two
+switches, and the breadcrumb links whose quests share one. Exit 0: nothing to decide or write.
+`Test-SyncSharedSlotLinks.ps1` tests it on made-up quests and a made-up `qcQuest.lua`, and `Test-Probe.lua` the
+probe's saving of the completed lists.
+
+First run, 16 October 2026 (retail 12.1.5.70391, Forever 1.60.1.70425): retail had 1,546 switches holding two or
+more of our non-recurring quests and 692 pairs that could be "only one of these"; 42 were linked already (26 as
+"only one of these", 16 as breadcrumbs) and 650 were not. The user took 145 pairs in 62 groups (ADD: choices such as
+the Aldor and the Scryers, and the alternative lead-ins to one place, among them the Hero's Call and Warchief's Command
+boards beside the older breadcrumb) and skipped 502 (71 SKIP rows: one version per class, race or covenant, which
+our limits make look like choices; paragon caches and weekly meta quests typed one-time; a quest named "Unused").
+The Gilneas trio (14402, 14405, 14463), unlinked in data-sources-review D2, is on one switch and stays a finding
+until decided (open-items). Retail's links went from 194 to 339, 235 on one switch. Forever had 6 pairs, all
+breadcrumb links already: no finding. No probe results held completed lists yet.
 
 ### 3. Quest types
 
@@ -3416,7 +3467,10 @@ It began as pull request #139, which stays open as the record; its files are in
    Midnight zone, with bits 1, 5, 14 and 33, and the same character read 90 in Nazmir for quests whose
    tuning a bit-34 row names, which step 2j would take as their ceilings. Run it where that one was.
    Then `/qcprobe npcs`, outside any instance,
-   as instances hide names. `/qcprobe status` says what's been gathered. On retail a full quest pass
+   as instances hide names. `/qcprobe status` says what's been gathered. The probe also saves each
+   character's completed quests as the game gives them, not as Quest Completist ticks them, at every
+   login, reload and logout (`/qcprobe completed` does it at once), keyed by the character's GUID and
+   never its name: log in once with the probe on, on every character you play, before step 2k. On retail a full quest pass
    after a patch takes about two and a half hours one at a time (35,544 quests on 12.1.5; 4 at a time it
    took 36 minutes, with the refusals above; about 4 quests a second one at a time, as the 15 October rerun of
    10,201 took 43 minutes), asking its refusals again adds about 25 (that rerun refused 5,721), and a

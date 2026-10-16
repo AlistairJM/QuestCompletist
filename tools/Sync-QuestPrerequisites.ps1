@@ -424,7 +424,8 @@ foreach ($id in $quests.Keys) {
 $decided = @{}
 foreach ($row in @(Import-Csv $DecisionsFile -Encoding UTF8)) {
     if ($row.Quest -notmatch '^\d+$' -or $row.Other -notmatch '^\d+$') { throw "$DecisionsFile has a row whose quests, '$($row.Quest)' and '$($row.Other)', aren't both numbers." }
-    if ("$($row.Link) $($row.Decision)" -ne 'prereq SET') { throw "$DecisionsFile gives quest $($row.Quest) the link '$($row.Link)' with the decision '$($row.Decision)': only prereq SET rows are read." }
+    if ($row.Link -eq 'exclusive') { continue }
+    if ("$($row.Link) $($row.Decision)" -ne 'prereq SET') { throw "$DecisionsFile gives quest $($row.Quest) the link '$($row.Link)' with the decision '$($row.Decision)': only prereq SET rows are read here (exclusive rows are step 2k's)." }
     $quest = [int]$row.Quest; $other = [int]$row.Other
     if ($quest -eq $other) { throw "$DecisionsFile makes quest $quest require itself." }
     if ($decided[$quest] -contains $other) { throw "$DecisionsFile gives quest $quest the prerequisite $other twice." }
