@@ -1703,7 +1703,7 @@ so that `qcQuestMaxLevel` could give way to a level per tuning; the addon code k
 it is, for the room. A sweep that gives a few thousand more quests a sampled tuning, such as a new
 expansion's, would cross it. [load-and-memory.md](plans/load-and-memory.md) has the figures.
 
-**How the addon reads the samples** (`qcTuning` in `qcCore.lua`, option E's second pull request). A quest
+**How the addon reads the samples** (`qcTuning` in `qcCore.lua`, option E's second pull request, #382). A quest
 in `qcQuestTuning` reads the level `C_QuestLog.GetQuestDifficultyLevel` gives for the first sample of its
 tuning that gives one above 0 (a secret value counts as none): the level of every quest on that tuning
 for this character now, as TrinityCore's `Player::GetQuestLevel` takes it from the tuning alone. With

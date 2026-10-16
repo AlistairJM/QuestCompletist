@@ -10,7 +10,7 @@ the game's own level from, at run time, with the stored ceilings as the fallback
 
 1. **Data and tools** (#378): each quest's `tuning`, `data\tunings.jsonl` with the samples, the Lua
    tables `qcQuestTuning` and `qcTuningSample`, and step 2j's checks.
-2. **Addon code** (stacked on it, below): the list, the map and the continent icons read a sample's
+2. **Addon code** (#382, stacked on it, below): the list, the map and the continent icons read a sample's
    level, under the performance rule below, checked offline by `Test-QuestScaling.lua`; one short check
    in game is left (open-items.md, "To try in game").
 
@@ -156,7 +156,7 @@ idempotent: a second one changes nothing.
 
 ## What the second pull request does
 
-The addon code (`qcTuning` in `qcCore.lua`; [maintenance.md](../maintenance.md#2j-scaling-quests-levels),
+The addon code (#382, `qcTuning` in `qcCore.lua`; [maintenance.md](../maintenance.md#2j-scaling-quests-levels),
 "How the addon reads the samples"), under the rule above:
 
 - **The level.** A quest in `qcQuestTuning` reads `C_QuestLog.GetQuestDifficultyLevel` of the first sample of
