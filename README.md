@@ -1,6 +1,6 @@
 # Quest Completist
 
-See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places over 16,000 quest-giver pins on your world map.
+See which quests you've completed and which you still have left, for every zone, dungeon, class, profession and holiday in the game. On Retail, Quest Completist knows over 35,000 quests and places over 13,000 quest-giver pins on your world map.
 
 Type **/qc** (or **/questc**) to open it, click its minimap button, or set a key binding.
 
@@ -20,7 +20,7 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 - A running total for each category, like *142/180 Complete (78%)*.
 - The list follows you as you travel, switching to the zone you're in, without losing your search or a category you're browsing.
 - Category and quest names, and the addon's own tooltips, options and messages, show in your game's language. Search finds a quest by its name in your language or in English.
-- Sort by level or alphabetically.
+- Sort by level or alphabetically. A quest that scales with you shows the level it scales to for you.
 
 **Clear icons at a glance**
 

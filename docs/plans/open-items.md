@@ -578,10 +578,10 @@ again.
 
 ## Code to finish
 
-- **README** says retail has "over 16,000" quest-giver pins; since the nameless pins went one per spot
-  (16 October 2026) retail has 13,557 (13,547 before the second gap run's quests got their pins, the same
-  day), so the next release pull request makes it "over 13,000". Check the
-  pin and quest counts of both games at each release.
+- **README** says retail has "over 35,000" quests and "over 13,000" quest-giver pins (35,630 and 13,557
+  at 113.4; 113.4's release pull request took it down from "over 16,000" after the nameless pins went one
+  per spot), and Forever "around 5,100" and "around 1,700" (5,105 and 1,706). Check the pin and quest
+  counts of both games at each release.
 
 ## The agreed order of work
 
