@@ -238,6 +238,7 @@ try {
     } else {
         $real = "$Scratch\real"; New-Folder "$real\data"
         Copy-Item "$DataSource\quests.jsonl", "$DataSource\pins.jsonl" "$real\data"
+        if (Test-Path "$DataSource\startitems.jsonl") { Copy-Item "$DataSource\startitems.jsonl" "$real\data" }
         Copy-Addon "$real\addon" 'qcCore.lua', 'qcQuest.lua', 'qcMenu.lua', 'qcPinDB.lua', 'qcQuestData.lua'
         Assert-Sound 'B0' "$real\data" "$real\addon"
         $hashes = @{ Quests = Get-Hash "$real\data\quests.jsonl"; Lua = Get-Hash "$real\addon\qcQuestData.lua" }

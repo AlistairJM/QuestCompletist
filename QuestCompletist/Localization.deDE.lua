@@ -98,6 +98,7 @@ qcLocalize = setmetatable({
 	RANKLEVEL = "Rang %d", -- Needs review
 	QUESTGIVER = "Questgeber:", -- Needs review
 	NOQUESTGIVER = "Unbekannt, oder automatisch angenommene Quest", -- Needs review
+	STARTSFROM = "Beginnt mit:", -- Needs review
 	REPAMOUNT = "%d Ruf", -- Needs review
 	NEWDATAINTRO = "Quest Completist kannte die folgenden Informationen noch nicht. Bitte hilf, das Addon genauer zu machen, indem du sie auf CurseForge meldest.", -- Needs review
 	NEWDATAQUEST = " - Die Quest fehlt in der Datenbank.", -- Needs review

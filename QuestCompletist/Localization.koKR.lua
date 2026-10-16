@@ -98,6 +98,7 @@ qcLocalize = setmetatable({
 	RANKLEVEL = "%d등급", -- Needs review
 	QUESTGIVER = "퀘스트 제공자:", -- Needs review
 	NOQUESTGIVER = "알 수 없음 또는 자동 수락 퀘스트", -- Needs review
+	STARTSFROM = "시작 아이템:", -- Needs review
 	REPAMOUNT = "평판 %d", -- Needs review
 	NEWDATAINTRO = "Quest Completist가 다음 정보를 알지 못했습니다. CurseForge에 알려 주시면 애드온의 정확도를 높이는 데 도움이 됩니다.", -- Needs review
 	NEWDATAQUEST = " - 데이터베이스에 없는 퀘스트입니다.", -- Needs review

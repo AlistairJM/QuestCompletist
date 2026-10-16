@@ -77,6 +77,12 @@ categories, the zone table, reputation rewards, storylines and so on).
 - `data\pins.jsonl`, one pin per line:
   `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
   `npc` is left out when it's 0, and `name` and `note` when the pin has none.
+- `data\startitems.jsonl` (and `data\forever\startitems.jsonl`), one item that starts a quest per line,
+  written only by `Sync-QuestStartItems.ps1` (step 6e):
+  `{"item":32385,"quest":11002,"side":1,"level":27}`. `side` (1 Alliance, 2 Horde), `level`, `skill` and
+  `skillRank`, `rep` and `repRank` (0 Hated to 7 Exalted) and `races` (ChrRaces IDs) are what the item itself
+  requires, each left out when the item has none. It becomes `qcQuestStartItems` at the end of
+  `qcQuestData.lua`; an item whose quest has left `quests.jsonl` is left out of it until step 6e drops it.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -367,10 +373,11 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2g, 2j, 2i, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
+| 6e | The items that start quests, both games, and the quests whose faction their items contradict (after 6 and 6b add quests; Forever's in step 10) | `Sync-QuestStartItems.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -2411,6 +2418,41 @@ the newest build, and files the new rows through a scratch copy of the data and
   by hand. Step 1d found nothing, step 2c gave 5 of the 11 a prerequisite and
   changed no old row, and step 4 gave none of them a storyline. The quest cache has none of the 11, so
   `Compare-QuestReputation.ps1` counts them in G.
+
+### 6e. The items that start quests
+
+Both games, every sweep: retail after steps 6 and 6b have added quests, Forever in step 10 after
+`Build-AddonData.ps1`. A quest that starts from an item has no giver and no pin; the quest list's tooltip says
+"Starts From: <item>" under the giver line, named by the game in the player's language, and below it what the item
+itself requires, in the game's own words: its side, when it isn't the character's and the quest isn't the
+character's side's either; its level, when above the quest's minimum; its profession, its reputation and its races.
+That is information only and hides nothing: whether an item's requirement stops the quest starting is unproven
+(open-items row 19; [plans/client-tables-audit.md](plans/client-tables-audit.md), opportunity 2).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestStartItems.ps1 -Game retail -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>
+```
+
+It reads the build's `ItemSparse` and `ChrRaces` (downloaded into `tools\` as `<table>-<build>.csv` when missing):
+every item whose `StartQuestID` is one of our quests, with its faction flag (`Flags_1` 0x1 Horde, 0x2 Alliance),
+`RequiredLevel`, `RequiredSkill` and `RequiredSkillRank`, `MinFactionID` and `MinReputation`, and its races
+(`AllowableRaces_0/_1` on retail, `AllowableRace_0/_1` on Forever, two words of the race mask over
+`ChrRaces.PlayableRaceBit`), where races that are exactly one side's playable ones make the item that side's. It writes
+`startitems.jsonl` and rebuilds the Lua, and says what changed. It also lists the quests whose start items are all
+for one side while the data gives the quest another faction: a finding to decide, since the quest's own data may be
+the wrong one. A quest whose own record in the newest `tools\<game>_quest_cache_*.jsonl` names the data's faction
+isn't listed: the server's record wins (Forever's 79358, whose item's races are the Horde's, is Alliance in its
+record). The start-item quests the data lacks are step 6's (`Find-MissingQuests.ps1`, kind `candidate` with
+evidence `startItem`). `Test-SyncQuestStartItems.ps1` tests the reading and the data file, and
+`Test-QuestTooltip.lua` (both TOCs) the line.
+
+First run, 16 October 2026: retail 12.1.5.70391, 1,459 items for 1,431 of our 35,654 quests (175 with a side, 577 a
+level, 41 a profession, 16 a reputation, none a race list); Forever 1.60.1.70425, 413 items for 408 of 5,105 quests
+(4 sides, 386 levels, 3 professions, 3 reputations). It found four retail quests whose items contradicted the data,
+each one of a pair Blizzard split by faction, and the user set them (11002 and 38194 Alliance, 38202 and 56071
+Horde; the reasons are in `quest-accuracy-manual-decisions.csv`): the API and the quests' own records name no
+faction for them, so step 1 leaves them be. 324 retail and 139 Forever items start quests we lack.
 
 ### 7. Quests that may no longer be obtainable
 

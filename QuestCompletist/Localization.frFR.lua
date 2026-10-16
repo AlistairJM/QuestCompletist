@@ -97,6 +97,7 @@ qcLocalize = setmetatable({
 	RANKLEVEL = "Rang %d", -- Needs review
 	QUESTGIVER = "Donneur de quête :", -- Needs review
 	NOQUESTGIVER = "Inconnu, ou quête acceptée automatiquement", -- Needs review
+	STARTSFROM = "Commence avec :", -- Needs review
 	REPAMOUNT = "%d de réputation", -- Needs review
 	NEWDATAINTRO = "Quest Completist ignorait les informations suivantes. Aidez à améliorer la précision de l'addon en les signalant sur CurseForge.", -- Needs review
 	NEWDATAQUEST = " - La quête n'existe pas dans la base de données.", -- Needs review
