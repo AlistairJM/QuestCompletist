@@ -171,11 +171,19 @@ then every tool refuses to save.
    - **Forever's product** is `wow_classic_beta` during its beta, retail's `wow`. After Forever's
      launch on 4 November 2026 find which product carries it in <https://wago.tools/api/builds>
      and edit `$GameProducts` in `tools\LatestBuilds.ps1`.
+   - **The retail PTR** is listed by wago.tools under two products, `wowt` and `wowxptr`
+     (`$RetailPtrProducts` in `tools\LatestBuilds.ps1`). The check takes the newer of the two products'
+     newest builds, by version and then build, and its "retail PTR" row names the product it came from.
+     The 12.1.5 PTR was on `wowxptr` (70340 on 12 October 2026), and a 12.1.7 PTR, 12.1.7.70424, is on
+     `wowt` since 15 October 2026, which the check missed while it read `wowxptr` alone (until
+     16 October 2026). That build, or a newer one the check names, is `Review-Calendar.ps1`'s
+     `-PtrBuild` at the next sweep (step 2h), not 12.1.5's.
    - `Test-LatestBuilds.ps1` checks the script on a made-up game folder and made-up newest versions.
 2. **Pin the builds.** Scripts that take `-Build` should be given their game's current build:
    retail's for steps 1 to 9, Forever's for step 10, and both games' for steps 2b and 2h, which read
    both games' tables: `Compare-ClientTables.ps1` takes `-Build` and `-ForeverBuild`, and
-   `Review-Calendar.ps1` `-Build`, `-PtrBuild` (the retail PTR's, when there is one) and `-ForeverBuild`.
+   `Review-Calendar.ps1` `-Build`, `-PtrBuild` (the retail PTR's, when there is one: the build item 1's
+   "retail PTR" row names) and `-ForeverBuild`.
    The Forever tools (`Read-QuestCache.ps1`,
    `Import-ForeverData.ps1`, `Build-ForeverMenu.ps1`, `Import-RecordedGivers.ps1` and
    `Sync-QuestSortNames.ps1`'s `-ForeverBuild`) take the build of the newest `tools\forever_probe_<revision>`
