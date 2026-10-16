@@ -316,13 +316,23 @@ ours all failed to load in the probe of 29 September, so the cache, which holds 
 for, can neither keep nor remove them. Titles: for the 28,985 quests the API has, data, API and cache
 agree on every one; the 34 that differ are quests the API has no record of, where TrinityCore agrees
 with the cache for 32 (our names are stale), and four carry a `[DEPRECATED]` prefix in the cache that
-ours strips.
+ours strips. (Those were 12.1.0.69933's counts; 12.1.5's are below.)
 
 On 12.1.5.70391 (16 October 2026, the data of master cea4322: 35,573 quests) the two copies of the
 cache, of 14 and 15 October, read together hold 29,844 quests: 29,824 of ours (83.8%) and 20 that are
 not ours. The 14 October copy alone held 26,598 of ours (74.8%). Of the 5,749 of ours the two lack,
 3,467 were in 12.1.0.69933's cache. Of that cache's 33,123 quests, 3,488 are in neither copy, and the
 copies hold 209 it lacked.
+
+Titles on 12.1.5.70391 (16 October 2026, with the API cache of the 12.1.5_70077 namespace): the API
+and the cache agree on the title of every one of the 27,847 quests of ours both have. Step 1c of
+[maintenance.md](../maintenance.md) now takes the cache's title for a quest the API doesn't serve
+(decision 10e of the 12.1.5 sweep), and the client's task table's for one the cache lacks too. The
+cache titles 1,977 of the 5,364 quests the API doesn't serve, and the first run renamed 19 of them;
+the task table renamed 15 more. Ours now differ from the cache only on the four Sunstrider Isle
+quests 8330, 8336, 8345 and 8346, whose titles carry the `[DEPRECATED]` prefix, which step 1c never
+takes. Their availability was decided on evidence instead, with `KEEP` rows in
+`unavailable-quest-decisions.csv` ([unavailable-quests.md](unavailable-quests.md)).
 
 ## Corrections to earlier notes
 
@@ -456,3 +466,6 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   29,844 quests (the 1,882 in both read the same), and step 2e's check found no difference on any field
   it compares (above, "Checked against Blizzard's data"). The partial-cache warning still shows, for our
   quests only (83.8% of ours, while the 29,844 are 90.1% of the build before's 33,123).
+- 2026-10-16: step 1c (`Sync-QuestNamesFromApi.ps1`) reads the cache's titles for the quests the API
+  doesn't serve, and the task table's after them, by decision 10e of the 12.1.5 sweep; a
+  `[DEPRECATED]` title is never taken (above, "Coverage and titles"). 34 quests renamed.
