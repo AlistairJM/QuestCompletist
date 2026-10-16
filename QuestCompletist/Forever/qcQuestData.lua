@@ -12397,3 +12397,7 @@ qcQuestMinLevel={
 }
 qcQuestMaxLevel={
 }
+qcQuestTuning={
+}
+qcTuningSample={
+}
