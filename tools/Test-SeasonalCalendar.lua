@@ -20,7 +20,9 @@ the calendar didn't serve when it was checked in game on 11 October 2026 (and so
 follow any cup's row (the Kalimdor Cup, 1395, and the Northrend Cup, 1429), and to The Great
 Gnomeregan Run (696) and Dastardly Duos, whose pins must follow any of its three rows (the stand-in
 calendar has no regions; 1689 is region 4's and 1599 another region's), and to Call of the Scarab
-(638), whose turn-ins' pins must show only while it runs.
+(638), whose turn-ins' pins must show only while it runs. On retail, 95009 "Doing the Dash" must show
+on its first pin only while the Darkspear Dash (1793) runs; its pins also hold other holidays' quests,
+so that pin is found by the quest.
 
 /qc holidays must list each ID of an entry that the calendar has in its 12 months, soonest first and
 once each, so a sweep can confirm every ID in game: Hallow's End's 324 and 1405, the Darkmoon Faire's
@@ -92,6 +94,8 @@ local CUPS = "Skyriding Cups"
 local GNOMEREGAN_RUN = "The Great Gnomeregan Run"
 local DUOS = "Dastardly Duos"
 local SCARAB = "Call of the Scarab"
+local DASH = "Darkspear Dash"
+local DASH_QUEST = 95009
 local RAID_LOCKOUT = {calendarType = "RAID_LOCKOUT", eventID = 0, title = "Molten Core", startTime = at(10, 14, 0),
 	endTime = at(10, 14, 0), cvar = "calendarShowLockouts"}
 local function withLockout(events)
@@ -316,9 +320,16 @@ return {Holidays = qcHolidays, Print = qcPrintHolidays,
 			if pin[6][1] == GUEST_RELATIONS and not ctx.pins.guestRelations then
 				ctx.pins.guestRelations = {mapId = mapId, questId = pin[6][1], name = pin[3]}
 			end
+			for _, questId in ipairs(pin[6]) do
+				if questId == DASH_QUEST and not ctx.pins[DASH] then
+					ctx.pins[DASH] = {mapId = mapId, questId = questId, name = pin[3]}
+				end
+			end
 		end
 	end
 	assert(ctx.pins.guestRelations or not env.qcQuestDatabase[GUEST_RELATIONS], "no pin of quest " .. GUEST_RELATIONS .. " in the data")
+	assert(flags[DASH], "qcHolidays has no entry named " .. DASH)
+	assert(ctx.pins[DASH] or not env.qcQuestDatabase[DASH_QUEST], "no pin of quest " .. DASH_QUEST .. " in the data")
 	ctx.pin = ctx.pins["Lunar Festival"]
 	return ctx
 end
@@ -606,6 +617,8 @@ for _, entry in ipairs({
 		holiday(1689, DUOS, at(10, 6, 8), at(10, 20, 8)), holiday(1599, DUOS, at(10, 5, 8), at(10, 19, 8))}},
 	{name = SCARAB, title = "Call of the Scarab: its turn-ins' pins show only while row 638 runs", running = {
 		holiday(638, SCARAB, at(10, 9, 0), at(10, 12, 0))}},
+	{name = DASH, title = "Darkspear Dash: 95009 shows on its pin only while row 1793 runs", running = {
+		holiday(1793, DASH, at(10, 9, 0), at(10, 11, 0))}},
 }) do
 	print(entry.title)
 	if not first.pins[entry.name] then

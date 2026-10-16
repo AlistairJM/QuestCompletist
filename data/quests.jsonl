@@ -35353,7 +35353,8 @@
 {"id":94876,"name":"Show Some Backbone","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":94967,"name":"Ki'clak Snack Attack","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":94996,"name":"Gaze of the Dead","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
-{"id":95009,"name":"Doing the Dash","level":0,"zone":"Dornogal","category":1403,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90}
+{"id":95009,"name":"Doing the Dash","level":0,"zone":"Dornogal","category":1403,"type":1,"faction":2,"race":61658034,"class":8191,"holiday":16777216,"maxLevel":90}
+{"id":94954,"name":"Darkspear Dash","level":1,"zone":"Seasonal","category":173,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":16777216}
 {"id":95253,"name":"Shocking Appetites","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95268,"name":"New Tools, New Heights","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":94675}
 {"id":95269,"name":"Feeding the Nilhammer","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":95268}

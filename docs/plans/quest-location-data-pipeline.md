@@ -1031,6 +1031,9 @@ scratch folder.
   world state expression 50704; and Wowhead (read 16 October 2026) links it to the 27 June 2026 news post on
   the new microholiday. `data\quests.jsonl` gives it no holiday and `qcHolidays` has no Darkspear Dash, so
   the seasonal filter never hides these pins. The fix is a quest-data change, open-items row 43.
+  Fixed later on 16 October 2026 (#PRNUM): `qcHolidays` has a Darkspear Dash entry on 1793 and 95009 has
+  its holiday, so the five pins (whose other quests are all tagged) draw only while one of their
+  holidays runs, 95009 only during the Darkspear Dash; no pin data changed.
 - **Checks.** `Build-AddonData.ps1 -Check` (retail 35,606 quests and 13,547 pins, Forever unchanged),
   `Show-RemovedQuests.ps1` for both games (none), the syntax check, and against master: the reachability
   report for both games (retail: the pin counts, 16,084 and 14,416 once identical pins at one spot count as

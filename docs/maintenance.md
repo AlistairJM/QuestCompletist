@@ -930,7 +930,10 @@ to date: the 12.1.5 API files all 30 Bar Tab Barrels of our data under Brewfest 
 count or finding. On 16 October 2026, with the 24 records step 1 fetched for #347's quests and the
 33 story quests step 6 added (none of them in a holiday's category, event or heading), the counts are
 the same 1,004, 587 and 1,082, and the findings the same 13, none new. So they are, in the same file,
-with the 22 of step 6's second gap run that day.
+with the 22 of step 6's second gap run that day. Later that day the Darkspear Dash's entry came in
+(#PRNUM, [Holidays](#holidays)), with its two quests tagged, 95009 and 94954 (whose API record step 1's
+cache gained when step 6 fetched it): 1,349 quests tagged, 25 holidays and 495 decision rows, and the
+counts and the 13 findings the same, none new, as no signal names the event.
 
 ### 2e. The retail quest cache
 
@@ -1362,6 +1365,21 @@ baseline, it makes 21 findings: Turbulent Timeways, 1895, 651 and 653 new, 16 Ti
 before they came (their rows dated other weeks instead), and `weekly-every-day 4` holding on it, every
 day to 18 August 2027, whose `IfChanged` asks the user whether the weekly bonus event quests still stay
 untagged.
+
+Later on 16 October 2026 the Darkspear Dash's entry came in (#PRNUM, [Holidays](#holidays)), with a
+decision of two facts in the decisions file: `dated 1793`, and `served 1793`, seen on 11 October 2026
+under "Other calendar holidays". Run again on the same tables (70391, 70340 and 70374), the review gave
+no finding and 5 changes: the entry new on each game, dated to come on retail and on the PTR (to 29
+July 2030) and with no date on Forever, whose table lacks the row, and its event, 1793, "now covered by
+the entry" on retail and on the PTR; the two `dated 1793` outcomes were new. With `-UpdateBaseline` the
+baseline holds 187 rows (25 entries for each game; 31 events on retail's and the PTR's calendars have no
+entry now), the same 371 in the rows file (1793's on retail and on the PTR now an entry's) and 36 fact
+outcomes, and a run after it says nothing. Of the decisions file's 32 rows, 27 facts hold or were seen,
+one fails and three are open. Retail's "What /qc holidays should print" lists Darkspear Dash (1793), 26
+to 28 June 2027, on its own line instead of under "Other calendar holidays". Given the 12.1.7 PTR
+(70424) and Forever's newest beta build (1.60.1.70425, whose Holidays table is 70374's) instead, the
+review against the new baseline still makes the 21 findings above and no other: 70424's row 1793 is
+live's, and its `dated 1793` holds there too.
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (157 checks).
 
@@ -2716,7 +2734,8 @@ were tagged that day (six and the one pinned), and the Scourge Invasion and the 
 whose 11 and 43 retail quests (none pinned) were tagged with them that day; the 57 Guest Relations
 quests took WoW's Anniversary, which now has 76 quests, 52 of them pinned. Later that day (#315)
 Call of the Scarab joined them, with its 18 quests (the 16 turn-ins pinned), and left "Other calendar
-holidays". Each entry's line is the soonest event of any of its IDs, under that event's own name and ID, and under
+holidays". Since 16 October 2026 (#PRNUM) the Darkspear Dash has too, with its two quests (95009 on five
+pins), so it should leave "Other calendar holidays" as well. Each entry's line is the soonest event of any of its IDs, under that event's own name and ID, and under
 it a line for each other ID of the entry that the calendar has in its 12 months, soonest first, so
 each ID can be confirmed in game (Hallow's End's 324 and 1405, Love is in the Air's 423 and 335, the
 Darkmoon Faire's 479, 263 and 264, Hearthstone's 10th Anniversary's 1462 and 1578, the Skyriding Cups' four). Until 12
@@ -2920,6 +2939,29 @@ meat turn-ins that wake the colossi and 14 world quests, are untagged until the 
 ([open-items.md](plans/open-items.md), decision 39). Forever's tables have no row 638 and its data none
 of these quests, so step 2b lists the entry as not on Forever's calendar, which is no finding.
 
+The Darkspear Dash has an entry of its own since 16 October 2026 (#PRNUM, taken on the recommendation
+the user delegated, [open-items.md](plans/open-items.md) decision 43): flag 16777216 on row 1793
+(HolidayNames 458), the only row of its name, 48 hours each June under the Holidays filter
+(`CalendarFilterType` 255, as for the Trial of Style, the Moonkin Festival and The Great Gnomeregan Run),
+with a `Region` mask (2031) that holds region 4. The tables of 12.1.0.69933, 12.1.5.70391 and the 12.1.7
+PTR's 70424 date it from 26 June 2027 to 2030. `/qc holidays` on retail listed it under "Other calendar
+holidays" on 11 October 2026 and should now list it as the entry. It is a Horde race from the Echo Isles
+to Silvermoon City, with two Horde quests: 95009 "Doing the Dash", a task quest step 6b added on 11
+October 2026, which sends the player to Kalaya on the Echo Isles and stands on five nameless pins since
+16 October (four in Dornogal, one in Silvermoon City), and the race itself, 94954 "Darkspear Dash",
+which the data lacked until the entry came in (step 6's gap route, an `ADD` row in
+`missing-quest-decisions.csv`; no pin, as nothing places it). The other quests on 95009's five pins are
+all tagged, so out of season those pins show only while Pilgrim's Bounty, Hallow's End, WoW's
+Anniversary or the Trial of Style runs. 95009 stays under Dornogal and 94954 is filed under Seasonal,
+the heading named like the general category Blizzard's API files both under; nothing names a Darkspear
+Dash heading. No signal of step 2d names the event (the API's "Seasonal" names no holiday, TrinityCore
+has no event with either quest, and neither heading is a holiday's), so it checks them through their
+`SET` rows; step 2b matches the entry by its own name. TrinityCore has no start for either quest (no
+starter and no POI row), so step 6's TrinityCore placement, which skips tagged quests, had nothing to
+place for them anyway; the client's five points place 95009 as before. Forever's tables (70374's, and the newest beta
+build's, 1.60.1.70425) have no row 1793 and its data none of these quests, so step 2b lists the entry as
+not on Forever's calendar, which is no finding, and the importer's table of Holidays IDs is left as it is.
+
 Retail's calendar on 11 October 2026, as `/qc holidays` listed it on the user's realm (whose
 per-region rows are region 4's): every holiday our quests have was dated in the next 12 months
 except Hearthstone's 10th Anniversary, as expected. Brewfest (372) 2027-09-20 to 2027-10-06,
@@ -2949,6 +2991,14 @@ Darkmoon Faire to 8 November 00:00, the end of the 7th). The IDs that decisions 
 facts in `docs\plans\calendar-decisions.csv`, with the day they were seen: 1808, 1395, 1400, 638 and
 696 seen, 1587 dated and not listed. A sweep's `/qc holidays` is set beside the review's list the same
 way, on both games.
+
+On 16 October 2026 (#PRNUM) the Darkspear Dash (1793) left that list for an entry of its own (above), and
+1793 joined the seen facts. The rest of the list was checked against the 583 quests the data gained
+after 10 October 2026 (the task quests of step 6b, 12.1.5's Hallow's End and story quests and the
+others) and 94954: by name, by Blizzard's API category and text, and by TrinityCore's events, none ties
+to one of those events but Emissary of War (93598, a level 90 weekly dungeon quest the API files under
+Weekly Event, in the data since 15 October), one of the weekly bonus events' quests, which stay untagged
+by the user's decision of 12 October 2026 (its `KEEP` row); its text names no event.
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
@@ -3305,8 +3355,9 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 16 October 2026 they're 35,628 quests and 13,547
-  pins for retail (16,084 before the nameless pins went one per spot), and 5,105 quests and 1,706 pins
+  or pins were meant to be added or removed. As of 16 October 2026 they're 35,629 quests (with the
+  Darkspear Dash's 94954) and 13,547 pins for retail (16,084 before the nameless pins went one per
+  spot), and 5,105 quests and 1,706 pins
   for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
