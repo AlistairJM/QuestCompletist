@@ -315,15 +315,20 @@ again.
 - **The calendar, every sweep (step 2h of [maintenance.md](../maintenance.md)), both games:** one
   `/qc holidays` per game, a screenshot or a paste, set beside what `Review-Calendar.ps1` says it should
   print. The first comparison is retail's list of 11 October 2026, which the review reproduces exactly;
-  Forever's full list hasn't been seen yet (the check of 11 October noted Winter Veil, 141, and the
-  absence of 1879, Children's Week and the Darkmoon Faire only), so its first full paste is the next
-  sweep's. The 12.1.5 sweep's two are still to do (16 October 2026): set each beside the "What /qc
+  Forever's full list wasn't seen then (the check of 11 October noted Winter Veil, 141, and the
+  absence of 1879, Children's Week and the Darkmoon Faire only), so its first full paste was left to the
+  next sweep. The 12.1.5 sweep's two are still to do (16 October 2026): set each beside the "What /qc
   holidays should print" of a `Review-Calendar.ps1` run of the same day (maintenance.md, step 2h).
   Retail's was run on 16 October 2026, on 113.2's code (the main checkout the game loads was on another
   branch): its 63 lines match the review line for line once the review prints midnight runs as the game
-  does (00:01 to 23:59, maintenance.md, "In the game"). Left: Forever's, and retail's again once the game
-  loads 113.4, where the Darkspear Dash moves up among the holidays quests follow, 2027-06-26 00:01 to
-  2027-06-27 23:59.
+  does (00:01 to 23:59, maintenance.md, "In the game"). **Done the same day** on 113.4's code (master
+  49f8b55, the main checkout moved there): retail's 63 lines match the review line for line, the Darkspear
+  Dash (1793) now among the holidays quests follow, 2027-06-26 00:01 to 2027-06-27 23:59; and Forever's
+  first full list, on beta build 1.60.1.70425, matches its 17 lines line for line (Hallow's End
+  2026-10-18 04:00 to 2026-11-02 04:00, the Stranglethorn Fishing Extravaganza on 2026-10-18, Children's
+  Week, the Darkmoon Faire, the Scourge Invasion and the Ahn'Qiraj War Effort not on the calendar, and
+  Noblegarden and three Call to Arms rows, 1840 to 1842, under "Other calendar holidays"). The review of
+  that build found nothing against the baseline and changed no decision's outcome.
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When

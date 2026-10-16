@@ -3255,7 +3255,9 @@ the review, and differed only in the times of the six events the table starts at
 Faire, Moonkin Festival, the two cups, The Great Gnomeregan Run and Call of the Scarab), which the game
 shows from 00:01 to 23:59; since then the review prints them that way, and that run's 63 lines match it
 line for line. Run the review with `-AddonDir` on the code the game loaded (the main checkout's
-`QuestCompletist\`, through the AddOns junction) when that isn't the branch the review runs from.
+`QuestCompletist\`, through the AddOns junction) when that isn't the branch the review runs from. Later
+that day both games ran 113.4's code: retail's 63 lines and Forever's first full list, 17 lines on beta
+build 1.60.1.70425, each matched the review line for line.
 
 **Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It's pull
 request #42, which is closed and its branch deleted; GitHub keeps its commits. It is superseded by the
