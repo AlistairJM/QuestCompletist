@@ -940,9 +940,10 @@ The tables answer these, each `holds`, `waits` or `fails`:
 - `weekly-every-day <region>`: some weekly bonus event is on that region's calendar, by its name, Flags
   and Region, every day from today to the last day the table dates one there; it fails on a day with
   none, and when none is dated to come. Its outcome can also turn with time alone, as the days with
-  none pass or the last dated run ends: on the 12.1.0 tables it fails today (no weekly event on 7 to 19
-  January and 28 January to 9 February 2027), holds from 10 February (only Timewalking 1583, 10 to 17
-  February, is left) and fails again from 18 February (none dated to come). Such a turn is a finding
+  none pass or the last dated run ends: on the 12.1.5 tables (live's 70391 and the PTR's 70340, which
+  date the weekly events as 12.1.0's did) it fails today (no weekly event on 7 to 19 January and 28
+  January to 9 February 2027), holds from 10 February (only Timewalking 1583, 10 to 17 February, is
+  left) and fails again from 18 February (none dated to come). Such a turn is a finding
   like the others: read it, then `-UpdateBaseline`. The weekly bonus events are taken by name (`$WeeklyEventPattern`
   in `Review-Calendar.ps1`): the Battleground, Arena Skirmish, Pet Battle, World Quest, Delves and
   Apexis Bonus Events and the Timewalking, Midnight and older Dungeon Events, whatever calendar filter
@@ -974,23 +975,11 @@ whether the Guest Relations quests are offered while WoW's Anniversary runs, and
 Eve quests 8860 and 8861 follow Fireworks Celebration (658). The one that fails is
 `weekly-every-day 4`, on live and on the PTR (below). Run as of 11 October 2026, its list for retail is
 the user's `/qc holidays` of that day ([Holidays](#holidays)): the same 58 IDs, and for each entry the
-same days. It said:
-- **Running out within 90 days, on live:** the Darkmoon Faire (479, last 13 December 2026; the PTR dates
-  it to 12 December 2027), WoW's Anniversary (1808, 8 December 2026; neither table has next year's row
-  yet), and the weekly events: the Arena Skirmish (19 November), World Quest (3 December), Pet Battle
-  and Battleground (10 December) and Delves (24 December) Bonus Events and the Midnight Dungeon Event (31
-  December 2026), which the PTR doesn't extend. Timewalking runs to 18 February 2027. On region 4's
-  calendar some weekly bonus event runs every day to 6 January 2027, and then none from 7 to 19 January
-  and from 28 January to 9 February, between the Timewalking runs of 20 to 27 January (1720) and 10 to 17
-  February (1583, the last), so `weekly-every-day 4` fails.
-- **No date to come:** Hearthstone's 10th Anniversary on retail (2024 only); on Forever, Children's Week
-  (2023 to 2025) and the Darkmoon Faire (263 and 264 hold no date at all).
-- **On the calendar with no entry:** 34 events on retail, the same on the PTR, among them Call of the
-  Scarab (638), The Great Gnomeregan Run (696), the bonus and dungeon events, Timewalking and eleven PvP
-  brawls; on Forever the three Calls to Arms (1840 to 1842). Dated in region 4 and off the calendar: the
-  plain-named "WoW's Anniversary" (1587, Flags 3) and ten rows with no name on retail, four with no name on
-  Forever, 1879 among them.
-- **The PTR** differs from live only in the Darkmoon Faire's last date.
+same days. Live's table (12.1.0) then dated the Darkmoon Faire (479) to 13 December 2026, within the 90
+days, and the PTR's to 12 December 2027, the one line in which the two differed; 34 events on the
+calendar had no entry, Call of the Scarab (638) and The Great Gnomeregan Run (696) among them, and ten
+rows with no name were dated in region 4 off the calendar. What the tables say now is under the sweep of
+16 October 2026, below.
 
 Later that day decision 10's answers added two entries (#314). Run again on the same tables, the review
 gave no finding and listed 8 changes: Dastardly Duos a new entry with no date to come on each game (it
@@ -1013,6 +1002,65 @@ game; 32 events on retail's and the PTR's calendars have no entry now), the same
 (638's on retail and on the PTR now an entry's) and 34 fact outcomes, and a run after it says nothing.
 Retail's "What /qc holidays should print" lists Call of the Scarab (638) on its own line instead of under
 "Other calendar holidays".
+
+The sweep of 16 October 2026, three days after 12.1.5 went live (retail 12.1.5.70391, the PTR's
+12.1.5.70340 and Forever 1.60.1.70374), gave no finding and 6 changes. Live's Holidays table changes one
+row of 12.1.0's and adds twelve, and the PTR's is the same file, as is each one's HolidayNames: it dates
+the Darkmoon Faire (479) monthly through the run of 5 to 12 December 2027 (12 more runs, from 3 January
+2027; its last date 13 December 2026 -> 12 December 2027, no longer within the 90 days), and adds The
+Unbinding of Kith'ix, a raid opening (above). It extends no weekly bonus event and no Timewalking, and
+names no 23rd anniversary. Kith'ix's twelve rows are dated 13 to 15 October 2026 (region 4's on 14
+October at 06:00), so on 16 October the event has no date to come and, never in the baseline, isn't
+listed at all; the run of 15 October had listed it as a raid opening. The other changes are two rows
+with no name and off the calendar, 651 and 653, whose last runs ended on 14 and 15 October ("has no date
+to come any more"), on live and on the PTR. Forever's table is 70338's, unchanged. No decision moved:
+the same 25 facts hold or were seen, `weekly-every-day 4` fails on the same days as on 12.1.0, and the
+same three are open. With `-UpdateBaseline` the baseline holds 186 rows (651 and 653 gone, on live and
+on the PTR), 371 in the rows file (479's runs to come extended; the passed Timewalking rows 643, 652,
+654 and 656 and the nameless 651 and 653 gone, on each) and the same 34 fact outcomes, and a run after it
+says nothing. On these tables:
+- **Running out within 90 days, on live and on the PTR:** WoW's Anniversary (1808, 8 December 2026; no
+  table has next year's row yet) and the weekly events: the Arena Skirmish (19 November), World Quest (3
+  December), Pet Battle and Battleground (10 December) and Delves (24 December) Bonus Events and the
+  Midnight Dungeon Event (31 December 2026). Timewalking runs to 18 February 2027 and the Darkmoon Faire
+  to 12 December 2027. On region 4's calendar some weekly bonus event runs every day to 6 January 2027,
+  and then none from 7 to 19 January and from 28 January to 9 February, between the Timewalking runs of
+  20 to 27 January (1720) and 10 to 17 February (1583, the last), so `weekly-every-day 4` fails.
+- **No date to come:** Hearthstone's 10th Anniversary (2024 only) and Dastardly Duos (2025 only) on
+  retail; on Forever, Children's Week (2023 to 2025) and the Darkmoon Faire (263 and 264 hold no date at
+  all).
+- **On the calendar with no entry:** 32 events on retail, the same on the PTR, among them the bonus and
+  dungeon events, Timewalking and eleven PvP brawls; on Forever the three Calls to Arms (1840 to 1842).
+  Dated in region 4 and off the calendar: the plain-named "WoW's Anniversary" (1587, Flags 3) and nine
+  rows with no name on retail, four with no name on Forever, 1879 among them.
+- **Findings time alone brings,** on these tables (each seen by a run with a later `-Today` against this
+  baseline): from 18 November 2026 the Lunar Festival (327, last 16 February 2027) comes within the 90
+  days, on all three tables; from 20 November the Arena Skirmish Bonus Event has no date to come and
+  Timewalking (last 18 February 2027) comes within the 90 days; from 24 November so does Love is in the
+  Air (423, last 22 February 2027), on live and on the PTR (Forever's 335 is dated every year); after 3
+  December the World Quest Bonus Event has no date to come, after 8 December WoW's Anniversary (1808),
+  whose `yearly` fact goes from holding to waiting, after 10 December the Pet Battle and Battleground
+  Bonus Events, after 24 December the Delves Bonus Event and after 31 December the Midnight Dungeon
+  Event, so a sweep on 1 January 2027 would list 23 findings. `weekly-every-day 4` then holds from 10
+  February 2027 and fails again from 18 February; the Lunar Festival has no date to come from 17
+  February, Timewalking from 19 February and Love is in the Air from 23 February; the Harvest Festival
+  (321, last 18 September 2027, on both games) comes within the 90 days from 20 June 2027 and has no
+  date to come from 19 September, the Darkmoon Faire comes within them from 13 September 2027 and has
+  none from 13 December, and WoW's Anniversary's `yearly` fact goes from waiting to failing on 17
+  November 2027. A newer table that dates these further turns each into a change instead.
+
+A 12.1.7 PTR, 12.1.7.70424, came out on 15 October 2026 under wago.tools' `wowt` (the 12.1.5 PTR's
+builds are under `wowxptr`, the product `Get-LatestBuilds.ps1` reads for the PTR), after this sweep's
+builds were set, and the baseline's PTR rows stay 70340's. Its Holidays table dates the Arena Skirmish,
+Battleground, World Quest and Delves Bonus Events, the Midnight Dungeon Event and Timewalking into July
+and August 2027 (the Pet Battle Bonus Event still ends on 10 December 2026), dates Turbulent Timeways
+(1458, whose last run was 1 July to 12 August 2026) again, on region 4's calendar from 2 December 2026
+to 27 January 2027, gives the nameless 651 and 653 a run in January 2027 (19 to 28 January), adds a
+row with no name, 1895 (Flags 15), and its HolidayNames is live's. Given as `-PtrBuild` against this
+baseline, it makes 21 findings: Turbulent Timeways, 1895, 651 and 653 new, 16 Timewalking runs removed
+before they came (their rows dated other weeks instead), and `weekly-every-day 4` holding on it, every
+day to 18 August 2027, whose `IfChanged` asks the user whether the weekly bonus event quests still stay
+untagged.
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (157 checks).
 
@@ -2121,8 +2169,8 @@ but retail's Holidays table has no such row, so a retail quest tagged with it wo
 good, and its seven retail quests stay untagged for that reason (`KEEP` rows, the user's decision of
 12 October 2026).
 
-Forever's calendar, in build 70338's Holidays table (dates decoded by hand at first, by step 2h's
-review every sweep since 12 October 2026): Children's Week (201)
+Forever's calendar, in its Holidays table (the same in builds 70245, 70291, 70338 and 70374; dates
+decoded by hand at first, by step 2h's review every sweep since 12 October 2026): Children's Week (201)
 has dates only in 2023, 2024 and 2025, so the calendar has none to show and its pins stay hidden
 until the game dates it again (the two matron quests, 172 and 1468, hold the only two). Winter
 Veil (141) is dated from 15 December for 18 days, and `/qc holidays` on the beta showed it so on 11 October 2026 (15 December to 2 January). A row with no name, 1879, is dated from 15
@@ -2165,8 +2213,9 @@ Flags still keep them off (`calendar-decisions.csv`, with 1587's absence from th
 After 8 December 2026, when 1808's run ends, the entry has no date to come until next year's row is in
 the table: step 2h's `yearly WoW's Anniversary` fact then goes from holding to waiting (a finding at that
 sweep), is listed as waiting every sweep after, and fails if no later row is in the table by 17 November
-2027, a year after 1808 began (`calendar-decisions.csv`). The 12.1.5 PTR's table
-(70077) has no 23rd row yet (11 October 2026). Since 12 October 2026 (#314, the user's answer to
+2027, a year after 1808 began (`calendar-decisions.csv`). On 16 October 2026 no table has a 23rd row
+or name yet: not 12.1.5 live's (70391), the 12.1.5 PTR's (70340) or the 12.1.7 PTR's (70424), whose
+HolidayNames are the same file. Since 12 October 2026 (#314, the user's answer to
 decision 10) the entry also holds the 20th anniversary's 57 Guest Relations quests (83794 to 85574;
 44 of them pinned, most in Tanaris near the Caverns of Time), which Blizzard's API files
 under its category Secrets of Azeroth (646); the client's rows of that name (1396, 1398 and 1399) are
@@ -2174,9 +2223,9 @@ another event, of 2023, with no date to come. Step 2d reads that category as thi
 in `Audit-QuestHolidays.ps1` (it holds no other quest of ours); no API category, TrinityCore event or
 heading names the entry's other 19 quests. Whether later anniversaries still offer the Guest Relations
 quests is open (an `ask` fact in `calendar-decisions.csv`): if they don't, their pins show while the
-anniversary runs for quests nobody can take. Forever's Holidays tables (70245, 70291 and 70338)
-have no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not on
-Forever's calendar, which is no finding.
+anniversary runs for quests nobody can take. Forever's Holidays table (the same in 70245, 70291, 70338
+and 70374) has no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not
+on Forever's calendar, which is no finding.
 
 The Skyriding Cups are one entry with one flag (the user's decision of 11 October 2026; named after
 the client's "Skyriding Races" on 12 October, as no table names the four cups together) for four
@@ -2196,13 +2245,14 @@ holidays": the next cup, and on a line below it each other cup the calendar has 
 (on 12 October 2026, the Kalimdor Cup and then the Eastern Kingdoms Cup). Step 2b matches the entry to every row named
 "<Region> Cup" (`$HolidayRowPatterns`); on 12 October 2026 that took in only the six cups' names in retail
 12.1.0.69933's and the 12.1.5 PTR's (70077) HolidayNames: the four above, the Pandaria Cup (432)
-and the Broken Isles Cup (433), which have no Holidays row in either build. A cup's row that runs
-today or later and isn't in the entry is a finding; until its ID is added, the cups' pins stay
-hidden while only that cup runs, and `/qc holidays` lists it under "Other calendar holidays". Step
+and the Broken Isles Cup (433), which have no Holidays row in either build, nor on 16 October 2026 in
+12.1.5 live's (70391) or the PTR's (70340), whose only new name is The Unbinding of Kith'ix. A cup's
+row that runs today or later and isn't in the entry is a finding; until its ID is added, the cups' pins
+stay hidden while only that cup runs, and `/qc holidays` lists it under "Other calendar holidays". Step
 2d reads the API's cup categories (all six) and our heading "Northrend Cup" as this entry through
-aliases in `Audit-QuestHolidays.ps1`, so a new cup's quests show up there untagged. Forever's
-Holidays tables (70245, 70291 and 70338) have no cup and its data no cup quest, so step 2b lists
-the entry as not on Forever's calendar, which is no finding.
+aliases in `Audit-QuestHolidays.ps1`, so a new cup's quests show up there untagged. Forever's Holidays
+table (the same in 70245, 70291, 70338 and 70374) has no cup and its data no cup quest, so step 2b
+lists the entry as not on Forever's calendar, which is no finding.
 
 Dastardly Duos and The Great Gnomeregan Run have entries of their own since 12 October 2026 (#314, the
 user's answers to decision 10), each on the rows of its own name, which step 2b checks by that name.
