@@ -250,6 +250,7 @@ $otherId = New-Object System.Collections.Generic.List[object]
 $idlessFar = New-Object System.Collections.Generic.List[object]
 $moves = New-Object System.Collections.Generic.List[object]
 $fills = @{}
+$fillOrder = New-Object System.Collections.Generic.List[object]
 $pinless = New-Object System.Collections.Generic.List[object]
 foreach ($questId in ($spawnsOfQuest.Keys | Sort-Object { [int]$_ })) {
     $spawns = $spawnsOfQuest[$questId]
@@ -287,7 +288,7 @@ foreach ($questId in ($spawnsOfQuest.Keys | Sort-Object { [int]$_ })) {
         $n = Find-NearestSpawn $spawns $pin
         $contradicted = $n -and $starters.ContainsKey($questId) -and -not $starters[$questId].Contains([string]$n.Giver)
         if ($n -and $n.Distance -le $nearPin -and -not $contradicted) {
-            if (-not $fills.ContainsKey($pin)) { $fills[$pin] = New-Object System.Collections.Generic.List[object] }
+            if (-not $fills.ContainsKey($pin)) { $fills[$pin] = New-Object System.Collections.Generic.List[object]; $fillOrder.Add($pin) }
             $fills[$pin].Add(@{ Quest = $questId; Giver = $n.Giver; Distance = $n.Distance; Source = "the client's table" })
         } else {
             $where = if ($n) { "nearest spawn $([math]::Round($n.Distance, 1)) points away" } else { "no spawn on the pin's map" }
@@ -339,7 +340,7 @@ foreach ($row in $moveDecisions) {
     if (-not $creatureName.ContainsKey([string]$giver)) { throw "${DecisionsFile}: NPC $giver has no name in the database (quest $qid)" }
     if ($row.Decision -eq 'FILL') {
         if ($found.npc) { continue }
-        if (-not $fills.ContainsKey($found)) { $fills[$found] = New-Object System.Collections.Generic.List[object] }
+        if (-not $fills.ContainsKey($found)) { $fills[$found] = New-Object System.Collections.Generic.List[object]; $fillOrder.Add($found) }
         $fills[$found].Add(@{ Quest = [string]$qid; Giver = $giver; Distance = 0.0; Source = 'a decision' })
         continue
     }
@@ -352,7 +353,7 @@ $filled = New-Object System.Collections.Generic.List[string]
 $fillConflicts = New-Object System.Collections.Generic.List[string]
 $fillNameless = New-Object System.Collections.Generic.List[string]
 $fillRenamed = New-Object System.Collections.Generic.List[object]
-foreach ($pin in @($fills.Keys)) {
+foreach ($pin in $fillOrder) {
     $matches = $fills[$pin]
     $giverIds = @($matches | ForEach-Object { $_.Giver } | Sort-Object -Unique)
     $place = Describe-Pin $pin

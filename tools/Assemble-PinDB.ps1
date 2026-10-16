@@ -275,10 +275,10 @@ if ($Apply) {
     Write-Output "Applied to the pins."
 }
 
-$borrowedCount = ($enriched | Where-Object { $_.IdentitySource -eq "pin" }).Count
-$proximityCount = ($enriched | Where-Object { $_.IdentitySource -eq "neighbour" }).Count
-$giverSpawnCount = ($enriched | Where-Object { $_.IdentitySource -eq "emulator" }).Count
-$inferredCount = ($enriched | Where-Object { $_.IdentitySource -eq "none" }).Count
+$borrowedCount = @($enriched | Where-Object { $_.IdentitySource -eq "pin" }).Count
+$proximityCount = @($enriched | Where-Object { $_.IdentitySource -eq "neighbour" }).Count
+$giverSpawnCount = @($enriched | Where-Object { $_.IdentitySource -eq "emulator" }).Count
+$inferredCount = @($enriched | Where-Object { $_.IdentitySource -eq "none" }).Count
 Write-Output "Identity borrowed from existing data (exact quest match): $borrowedCount"
 Write-Output "Identity from a starter's spawn at the start point: $giverSpawnCount"
 Write-Output "Identity resolved via proximity match (same map, nearby known NPC): $proximityCount"
