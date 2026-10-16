@@ -1125,3 +1125,21 @@ again, and it was the same), and TrinityCore 1210.26091. Every step ran with `-T
   round's but for the quest count, and the after-steps' `-WhatIf` reports were the same (step 6c on the table
   downloaded above). `Build-AddonData.ps1 -Check` gives 35,630 quests and 13,557 pins; against that master the
   reachability report, the tooltips and the continent icons differ in the same lines as above.
+
+### A round for the noTitle API scan's quests (16 October 2026)
+
+Branch `data/notitle-api-scan-12-1-5`, on master 310a4b7, with the 24 quests of maintenance.md's "The noTitle API
+scan" added. The same inputs as above (the main checkout's 12.1.5.70391 tables and TrinityCore 1210.26091), every
+step with `-ToolsDir` on a scratch folder; a round on master's own data first wrote master's `data\pins.jsonl` byte
+for byte.
+
+- **The run.** The location step reads 35,654 quests and writes the same 19,926 rows: none of the 24 has a point in
+  `QuestPOIBlob`. TrinityCore has a start point for 5 of them, which it holds: 93701 and 93707 as profession quests
+  (step 1d gave them Herbalism and Mining), 84688, 93582 and 93642 in a system category (World PvP), so its "not in
+  our data" count went from 2,500 to 2,495 and its holiday or profession and system category counts up by 2 and 3.
+  Its review file holds the same 152 quests. Join: 0 locations with no pin, 0 `MAP_ID_DRIFT` rows. Assemble wrote a
+  candidate byte for byte `data\pins.jsonl`, so nothing was applied: 13,557 pins.
+- **No giver to name:** the client's giver table (`CollectableSourceQuestSparse`) has no row for any of the 24, and
+  TrinityCore's `creature_queststarter` and `gameobject_queststarter` none, so the after-steps had nothing to fill or
+  move and were not run again.
+- **Still without a pin:** all 24, as no source places them.

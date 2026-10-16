@@ -430,6 +430,9 @@ moves against the old baseline):
 Later that day step 6's second gap run added 22 quests, none of them in the cache, and the baseline was
 rewritten again the same way: G is 5,803 (768 with a reward row of ours, 27588's from the API among them),
 the 22 new rows added to it; every other class is as above, on 29,825 of our 35,628 quests (83.7%).
+Later still, after step 6's noTitle API scan added 24 more, none of them in the cache, it was rewritten
+once more: G is 5,829 (769 with a reward row of ours, 54979's from the API among them), with the 24 and
+#368's 94954 and 95012 added; every other class is as above, on 29,825 of our 35,654 quests (83.7%).
 
 ## Checks to build
 

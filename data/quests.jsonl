@@ -33945,7 +33945,7 @@
 {"id":90569,"name":"Back in the Bag","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5935,"prereq":90540,"maxLevel":90}
 {"id":90570,"name":"To the Ruins of Deatholme","level":90,"zone":"Eversong Woods","category":1511,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":5908,"prereq":90549}
 {"id":90571,"name":"The Lay of the Beast","level":88,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5730,"prereq":86510,"maxLevel":90}
-{"id":90573,"name":"Fortify the Runestones: Magisters","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841,"prereq":89285,"maxLevel":90}
+{"id":90573,"name":"Fortify the Runestones: Magisters","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841,"maxLevel":90}
 {"id":90574,"name":"Fortify the Runestones: Blood Knights","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841,"maxLevel":90}
 {"id":90575,"name":"Fortify the Runestones: Farstriders","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841,"maxLevel":90}
 {"id":90576,"name":"Fortify the Runestones: Shades of the Row","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841,"maxLevel":90}
@@ -35628,3 +35628,27 @@
 {"id":95022,"name":"Prey: Kursak the Coiled (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}
 {"id":95023,"name":"Prey: Batani the Scaled (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}
 {"id":95024,"name":"Prey: Kadani the Claw (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}
+{"id":93701,"name":"Brittle and Brilliant","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":93707,"name":"It's Called Silvermoon","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":93582,"name":"Against Overwhelming Odds","level":90,"zone":"","category":1095,"type":128,"faction":2,"race":67108863,"class":8191}
+{"id":93642,"name":"Against Overwhelming Odds","level":90,"zone":"","category":1095,"type":128,"faction":2,"race":67108863,"class":8191}
+{"id":96709,"name":"The Nexus-Captain (Heroic)","level":90,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":96711,"name":"Imperator Pertinax (Heroic)","level":90,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97521,"name":"A Turtle Bade It to the Water","level":25,"zone":"","category":0,"type":4,"faction":3,"race":67108863,"class":8191}
+{"id":98311,"name":"Week 3 of 3: Interrupts and Dispels","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":98483,"name":"Accolades for the Venomous Contender","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":89285,"name":"Saltheril's Favor","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841}
+{"id":89307,"name":"Saltheril's Favor","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841}
+{"id":89311,"name":"Saltheril's Favor","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841}
+{"id":89314,"name":"Saltheril's Favor","level":80,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5841}
+{"id":96960,"name":"Watering Hole","level":1,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97673,"name":"A Trove of Voidlight Marl","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":98234,"name":"Week 1 of 3: Gladiator's Distinction","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":98295,"name":"Week 2 of 3: Crowd Control","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"pvp":1}
+{"id":96473,"name":"Imperator Pertinax","level":80,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97670,"name":"A Handful of Voidlight Marl","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97672,"name":"A Cluster of Voidlight Marl","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":96936,"name":"Accolades for the Umbral Contender","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":54979,"name":"Against Overwhelming Odds","level":50,"zone":"","category":1095,"type":128,"faction":2,"race":67108863,"class":8191,"pvp":1}
+{"id":84688,"name":"Against Overwhelming Odds","level":80,"zone":"","category":1095,"type":128,"faction":2,"race":67108863,"class":8191,"pvp":1}
+{"id":98406,"name":"A Curated Gift","level":1,"zone":"","category":1505,"type":128,"faction":3,"race":67108863,"class":8191}
