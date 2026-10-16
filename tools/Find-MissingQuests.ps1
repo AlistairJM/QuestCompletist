@@ -4,10 +4,12 @@ know and the data doesn't hold, and says which look like quests a player can tak
 
 Retail: data\quests.jsonl against the client's QuestV2 (live build and, when present, the PTR's) and QuestPOIBlob,
 the newest quest cache (tools\retail_quest_cache_<build>.jsonl, step 2e), TrinityCore's quest_template, the
-client's task table and the quests the pins name. Titles come from the cache, then Blizzard's API
-(tools\quest_api_cache, step 1), then the task table, then TrinityCore.
-WoW: Forever: data\forever\quests.jsonl against its QuestV2 and QuestPOIBlob, its newest quest cache, CMaNGOS's
-quest_template and its pins.
+client's task table and the quests the pins name. Titles come from the newest cache, then Blizzard's API
+(tools\quest_api_cache, step 1), then the task table, then the older caches in tools\ (newest first), then
+TrinityCore. An older cache gives only a title, and only where no current source has one: the flags and the
+quest type come from the newest.
+WoW: Forever: data\forever\quests.jsonl against its QuestV2 and QuestPOIBlob, its quest caches (read the same
+way), CMaNGOS's quest_template and its pins.
 QuestV2 proves nothing alone (it omits almost all repeatable quests, and lists tracking and retired ones), so a
 quest is a candidate only with evidence that someone gives it or starts it, and none of the reasons to leave it out.
 
@@ -49,6 +51,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 if (-not $DataDir) { $DataDir = if ($Game -eq 'forever') { Join-Path $PSScriptRoot '..\data\forever' } else { Join-Path $PSScriptRoot '..\data' } }
 if (-not $OutFile) { $OutFile = Join-Path $ToolsDir "missing_quests_$Game.csv" }
 
@@ -96,14 +99,28 @@ $clientKnown = @{}
 foreach ($b in $clientBuilds) { foreach ($id in (Read-Ids (Join-Path $ToolsDir "QuestV2-$b.csv")).Keys) { if (-not $clientKnown.ContainsKey($id)) { $clientKnown[$id] = $b } } }
 $latest = $clientBuilds[-1]
 
-# The quest cache of the game.
-$cacheFile = Get-ChildItem (Join-Path $ToolsDir $(if ($Game -eq 'forever') { 'forever_quest_cache_*.jsonl' } else { 'retail_quest_cache_*.jsonl' })) -ErrorAction SilentlyContinue |
-    Sort-Object { [version]($_.Name -replace '^.*_cache_(.*)\.jsonl$', '$1') } | Select-Object -Last 1
+# The quest caches of the game: the newest for everything, the older builds' for titles only.
+function Get-CacheBuild($file) { return $file.BaseName -replace '^.*_quest_cache_', '' }
+$cacheFiles = @(Get-QuestCacheFiles $ToolsDir $Game)
+[array]::Reverse($cacheFiles)
 $cache = @{}
-if ($cacheFile) {
-    foreach ($line in [IO.File]::ReadLines($cacheFile.FullName)) {
+$olderTitle = @{}
+if ($cacheFiles.Count) {
+    foreach ($line in [IO.File]::ReadLines($cacheFiles[0].FullName)) {
         if ($line -match '^\{"id":(\d+),') { $cache[[int]$Matches[1]] = $line | ConvertFrom-Json }
     }
+    foreach ($file in ($cacheFiles | Select-Object -Skip 1)) {
+        $build = Get-CacheBuild $file
+        foreach ($line in [IO.File]::ReadLines($file.FullName)) {
+            if ($line -notmatch '^\{"id":(\d+),') { continue }
+            $id = [int]$Matches[1]
+            if ($cache.ContainsKey($id) -or $olderTitle.ContainsKey($id) -or $ours.ContainsKey($id)) { continue }
+            $title = [string]($line | ConvertFrom-Json).title
+            if ($title) { $olderTitle[$id] = [pscustomobject]@{ Title = $title; Build = $build } }
+        }
+    }
+    $older = if ($cacheFiles.Count -gt 1) { "; for titles only, $((@($cacheFiles | Select-Object -Skip 1 | ForEach-Object { Get-CacheBuild $_ })) -join ', '), which title $($olderTitle.Count) quests the newest lacks" } else { '' }
+    Write-Output "Quest cache: $(Get-CacheBuild $cacheFiles[0])$older."
 } else { Write-Output "No quest cache for $Game in ${ToolsDir}: its titles and flags are missing." }
 
 # Blizzard's API (retail): the current cache folder only, not the dated copies beside it.
@@ -182,7 +199,8 @@ foreach ($id in ($known.Keys | Sort-Object)) {
     if ($ours.ContainsKey($id)) { continue }
     $c = $cache[$id]; $e = $em[$id]
     $apiTitle = if ($apiHas.ContainsKey($id)) { [string]([IO.File]::ReadAllText((Join-Path $apiDir "$id.json"), [Text.Encoding]::UTF8) | ConvertFrom-Json).title } else { '' }
-    $title = if ($c -and $c.title) { [string]$c.title } elseif ($apiTitle) { $apiTitle } elseif ($task.ContainsKey($id) -and $task[$id]) { [string]$task[$id] } elseif ($e) { [string]$e.Title } else { '' }
+    $o = $olderTitle[$id]
+    $title = if ($c -and $c.title) { [string]$c.title } elseif ($apiTitle) { $apiTitle } elseif ($task.ContainsKey($id) -and $task[$id]) { [string]$task[$id] } elseif ($o) { $o.Title } elseif ($e) { [string]$e.Title } else { '' }
     $flags = if ($c) { [uint32]$(if ($null -ne $c.flags) { $c.flags } else { 0 }) } elseif ($e) { $e.Flags } else { [uint32]0 }
     $flagsEx = if ($c) { [uint32]$(if ($null -ne $c.flagsEx) { $c.flagsEx } else { 0 }) } elseif ($e) { $e.FlagsEx } else { [uint32]0 }
     $evidence = New-Object System.Collections.Generic.List[string]
@@ -205,7 +223,7 @@ foreach ($id in ($known.Keys | Sort-Object)) {
         else { 'noEvidence' }
     $rows.Add([pscustomobject]@{
         Quest = $id; Kind = $kind; Name = $title; Evidence = ($evidence -join '+')
-        Sources = (@(if ($clientKnown.ContainsKey($id)) { "QuestV2($($clientKnown[$id]))" }; if ($clientPoi.ContainsKey($id)) { 'QuestPOIBlob' }; if ($c) { 'cache' }; if ($apiHas.ContainsKey($id)) { 'api' }; if ($e) { 'emulator' }; if ($pinned.ContainsKey($id)) { 'pin' }) -join '+')
+        Sources = (@(if ($clientKnown.ContainsKey($id)) { "QuestV2($($clientKnown[$id]))" }; if ($clientPoi.ContainsKey($id)) { 'QuestPOIBlob' }; if ($c) { 'cache' }; if ($o) { "cache($($o.Build))" }; if ($apiHas.ContainsKey($id)) { 'api' }; if ($e) { 'emulator' }; if ($pinned.ContainsKey($id)) { 'pin' }) -join '+')
         Decision = if ($decided.ContainsKey($id)) { $decided[$id].Decision } else { '' }
     })
 }

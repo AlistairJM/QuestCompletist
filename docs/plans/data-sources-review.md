@@ -498,6 +498,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-16: recommendation 37's second 12.1.5 gap run, on the rule the user delegated (add a quest when 12.1.5's `QuestV2` lists it, the API serves a player-facing record and nothing marks it removed; for older content, its quest line's other quests in the data and none flagged unavailable). 22 quests are in the data, with no pins: 90745, the four Nightmare Prey quests 95021 to 95024 and 17 with only a client start point, 93420 Lor'themar's Judgement among them; six got `SKIP` rows (30173, 31694, 96029, 96307 and 96492, which the API doesn't serve, and the internal 96070). Retail has 35,628 quests, and its missing-quests baseline is rewritten: 533 undecided candidates (maintenance.md, step 6, "The second 12.1.5 gap run").
 
+- 2026-10-16: recommendation 37's noTitle API scan, on the recommendations the user delegated. The API had never been asked about the 20,305 `QuestV2` 12.1.5 quests `Find-MissingQuests.ps1` had untitled; it serves 315. Checked against TrinityCore and Wowhead's tooltip endpoint, 24 are in the data (no pins), 286 have `SKIP` rows and 15 wait for the user (open-items.md, row 44); the answers stay in `tools\quest_api_cache`, each sweep asks about the report's new untitled quests, and the report reads every quest cache of the game for titles (both games: on Forever the older caches title 8 quests, all internal titles). Retail has 35,654 quests and a missing-quests baseline of 542 undecided candidates (maintenance.md, step 6, "The noTitle API scan").
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
