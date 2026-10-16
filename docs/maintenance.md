@@ -1828,7 +1828,8 @@ and it never changes the icon of a pin it joins. A quest the client places (a po
 yet is named the same way, by the starters TrinityCore lists for it, instead of taking the name of
 whichever known NPC stands within 1.5 points. Once a quest has a pin, the next run leaves it
 out of the CSV and its pin stays, so a rerun's CSV is shorter by these quests and Join's "No
-existing pin at all" count is the number of new quests to review (1,453 in October 2026). To take a
+existing pin at all" count is the number of new quests to review (1,453 in October 2026; 18 locations of
+17 quests on 16 October 2026, the second gap run's, below). To take a
 pin away, flag the quest unavailable, or take it off its pin in `data\pins.jsonl`.
 
 A start goes on the map its own row names, the client's or TrinityCore's, even when it lies within a
@@ -1900,6 +1901,19 @@ on 16 October 2026 six pairs did, five at the coordinates they had before and on
 Silvermoon City, 0.37 apart, whose starts are 1.69 apart); no two pins of one NPC did. Compare the pairs
 after each run (the plan's "Applied" lists them).
 
+Later on 16 October 2026 a rerun on the same inputs placed the 17 quests of the second gap run that have a
+start point in the client's data (below, "The second 12.1.5 gap run"): 18 placements (53566 starts on two
+maps), with 10 new nameless pins, so 13,557 pins (10,588 with an NPC ID, 337 with only a name, 2,632 with
+neither) and 25,981 quests with a pin. Of the sources that can name a giver, only TrinityCore names one for
+them: a spawn of its starter of 27588 Signal the Attack, Kurdran Wildhammer, stands within 1.5 points of the
+start, so the quest joined his pin in the Twilight Highlands. The client's giver table has no row for any of the 17, TrinityCore lists no
+other starter (creature or object), and the recorder has none, so the other 16 are nameless: 41630, 43933,
+88930 and 53566's Stormwind City start joined nameless spots that were there, and the rest are on the 10
+new pins (45099, 45112 and 45133 share one, as do 41790 and 41792). Every other line of `data\pins.jsonl` is the
+same; one moved, as the order goes by a pin's lowest quest ID (Stormwind's spot that took 53566). The six
+close pairs above are the same six, and none of the 17 is a world quest or a holiday's. 90745 and the four
+Prey quests stay without a pin: no source has a start for them. The plan's "Applied" has the details.
+
 Before `-Apply`, read the rows of `quest_locations_joined.csv` whose `DriftStatus` is `MAP_ID_DRIFT`
 and whose `NpcId` is not 0: the quest starts on a map where it has no pin, and the run gives it the NPC
 of its pin on another map (the carry-over takes the quest's first pin when none is on the same map;
@@ -1910,11 +1924,12 @@ and by a decision row, which reruns keep (the carry-over then finds the quest's 
 no source names a giver for there, joined those spots' nameless pins, and their Goblin Commoner pins in
 Netherstorm and the Storm Peaks were put back; 95187 "All Along the Watchtowers" went to Lor'themar
 Theron's pin, at its start point, by a `MOVE` row in `pin-giver-decisions.csv` (step 6c). The plan has
-the evidence.
+the evidence. The rerun for the second gap run's quests, later that day, had no `MAP_ID_DRIFT` rows.
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
-12.1.5.70391 locations were last applied on 16 October 2026, and a third round on them changed no byte
-(see the pipeline plan, "October 2026, one pin per spot"). So whatever a rerun changes comes from new
+12.1.5.70391 locations were last applied on 16 October 2026, with the pins of the second gap run's quests,
+and a second round on them changed no byte (see the pipeline plan, "October 2026, one pin per spot"). So
+whatever a rerun changes comes from new
 client data or a change made since, and is for review before `-Apply`.
 
 After `-Apply`, run `Apply-PinNpcIds.ps1 -WhatIf`. A row in `pin-npc-id-decisions.csv` whose pin
@@ -2040,7 +2055,8 @@ starts), the probe's file 164 records (80 givers, 88 spots, 99 offers, 58 turn-i
 build 70338 or earlier. Retail's file held 0 records again, so retail's pins did not change. The `-WhatIf`
 run of 16 October 2026, after the per-spot pins, read the same files with the same counts (retail's own
 file 0 records, its two probe files one quest record each and no giver), left the ledger as it was (retail
-0 rows, Forever 326) and filled, moved and added nothing.
+0 rows, Forever 326) and filled, moved and added nothing; the run after the pins of the second gap run's
+quests, later that day, gave the same.
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -2081,7 +2097,7 @@ Each was checked first against the client's QuestV2 (12.1.5.70391 lists 29; the 
 - **22 added:** 90745 The Empty Cradle (the last step of line 5929, the quest line row its only evidence); the four Nightmare Prey quests 95021 to 95024 (line 5945, weekly in the API, so type 128 like the line's other Nightmare quests); and 17 with a client start point: 27588 Signal the Attack (Alliance, Twilight Highlands), 39818 Champion: Nazgrim, 43933 Champion: Delas Moonfang and 46059 Champion: Tess Greymane (Legion class hall campaigns), 41628 Eyes of the Dragon and 41630 Unleashing Judgment (Priest artifact), 41790 and 41792 The First and Third Trials of Ursol (Druid artifact), 45099 Hot On The Trail and 45112 and 45133 Signs of Madness (Druid and Rogue), 41030 Sigil Reclamation (Suramar), 48962 Telogrus Rift and 53566 Dark Iron Dwarves (allied race recruitment), 63506 Mecha Gone (Ardenweald), 88930 Drained Mana (Midnight's lead-in) and 93420 Lor'themar's Judgement (The Coiled Isle). Of the 17, 45099, 45133 and 63506 were untitled in the report (TrinityCore has no row for them) until their API records were fetched.
 - **6 left out:** 30173 War Pigs! and 31694 Hisingen Blues (API 404, and their only line is 863 "Francesco Test Quest Line"); the Special Assignments 96029, 96307 and 96492 (API 404, not in the client's task table, line 6228 their only evidence); and 96070, an internal `(POC)` housing title, which the report counts as an internal title, not a candidate.
 
-The inserter, with the scratch gap list, filed 20 of the 22: 5 by API area, 11 by their client map points and the four Prey quests by name, each beside another quest of its line but 39818, which its map points put under 1001 Azsuna (most of its line is under 1021 Acherus, by their pins). It left 41628 and 53566 in category 0 (no API area, map points in two zones), and they were filed by hand where a start point of theirs is and quests of their line are: 41628 under 59 Dragonblight (with 41626 and 41627), 53566 under 194 Stormwind City (with 4 of its line's other 5). Placement filed no old quest (a `-WhatIf` run on master's data places none of the 779). The four Prey quests were given type 128 by hand; the inserter types every row 1. Then steps 1, 1c, 1d, 2, 2b, 2c (and 2b again), 2d, 2g, 2i, 4, 2j and 7 ran for the new rows, with their results under each step. Steps 2 (27588's reputation), 2c (90806 for 88930 and 93420) and 4 (22 storylines) changed the new rows, and no step changed an old row: step 2c's 4 changes to old rows, which master's run lists too, were left out (step 2c). `File-WeeklyEventQuests.ps1` and `Remove-EmptyMenuEntries.ps1` find nothing, `Show-RemovedQuests.ps1` lists no quest, and `Test-QuestReachability.lua` gives master's summary (35,628 quests). `Find-MissingQuests.ps1` then counts 533 undecided retail candidates, 6 decided (52991 and five of the six above) and the 88 `ADD` rows all in the data, and `-UpdateBaseline` wrote the counts above, so the step exits 0. The probe has never asked the 22 either, so the probe and step 3 are the next sweep's for them too ([In the game](#in-the-game)). None of them has a pin: 17 have a client start point (27588, 39818, 41030, 41628, 41630, 41790, 41792, 43933, 45099, 45112, 45133, 46059, 48962, 53566 at two, 63506, 88930 and 93420), for the next run of the pin pipeline to place, as it does a quest of ours with a point 32; 90745 and the four Prey quests have none.
+The inserter, with the scratch gap list, filed 20 of the 22: 5 by API area, 11 by their client map points and the four Prey quests by name, each beside another quest of its line but 39818, which its map points put under 1001 Azsuna (most of its line is under 1021 Acherus, by their pins). It left 41628 and 53566 in category 0 (no API area, map points in two zones), and they were filed by hand where a start point of theirs is and quests of their line are: 41628 under 59 Dragonblight (with 41626 and 41627), 53566 under 194 Stormwind City (with 4 of its line's other 5). Placement filed no old quest (a `-WhatIf` run on master's data places none of the 779). The four Prey quests were given type 128 by hand; the inserter types every row 1. Then steps 1, 1c, 1d, 2, 2b, 2c (and 2b again), 2d, 2g, 2i, 4, 2j and 7 ran for the new rows, with their results under each step. Steps 2 (27588's reputation), 2c (90806 for 88930 and 93420) and 4 (22 storylines) changed the new rows, and no step changed an old row: step 2c's 4 changes to old rows, which master's run lists too, were left out (step 2c). `File-WeeklyEventQuests.ps1` and `Remove-EmptyMenuEntries.ps1` find nothing, `Show-RemovedQuests.ps1` lists no quest, and `Test-QuestReachability.lua` gives master's summary (35,628 quests). `Find-MissingQuests.ps1` then counts 533 undecided retail candidates, 6 decided (52991 and five of the six above) and the 88 `ADD` rows all in the data, and `-UpdateBaseline` wrote the counts above, so the step exits 0. The probe has never asked the 22 either, so the probe and step 3 are the next sweep's for them too ([In the game](#in-the-game)). None of them has a pin: 17 have a client start point (27588, 39818, 41030, 41628, 41630, 41790, 41792, 43933, 45099, 45112, 45133, 46059, 48962, 53566 at two, 63506, 88930 and 93420), for the next run of the pin pipeline to place, as it does a quest of ours with a point 32; 90745 and the four Prey quests have none. That run came later on 16 October 2026 and placed the 17 at their starts (above, after "The rule went into `data\pins.jsonl`").
 
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
 same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. That
@@ -3384,9 +3400,9 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of 16 October 2026 they're 35,630 quests (with the
-  Darkspear Dash's 94954 and the Gnomeregan Run's 95012) and 13,547 pins for retail (16,084 before the nameless pins went one per
-  spot), and 5,105 quests and 1,706 pins
-  for Forever.
+  Darkspear Dash's 94954 and the Gnomeregan Run's 95012) and 13,557 pins for retail (16,084 before
+  the nameless pins went one per spot, 13,547 before the second gap run's quests got theirs), and
+  5,105 quests and 1,706 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.

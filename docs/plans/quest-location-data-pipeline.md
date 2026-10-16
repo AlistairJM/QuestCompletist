@@ -1049,3 +1049,79 @@ scratch folder.
   fourth round of the pipeline changed no byte, the after-steps and the tests above gave the same, and the
   reachability report, the continent icons and the tooltips against that master differ in the same lines
   only. Not tried in game.
+
+### Applied again, for the second gap run's quests (16 October 2026)
+
+Branch `data/pins-new-quests-12-1-5`, on master a7fed31 (the per-spot pins above, and the 22 quests of
+maintenance.md's "The second 12.1.5 gap run"). The same inputs as above: the 12.1.5.70391 tables, byte for byte
+the main checkout's and the ones downloaded for the run above (step 6c's `-Refresh` downloaded its giver table
+again, and it was the same), and TrinityCore 1210.26091. Every step ran with `-ToolsDir` on a scratch folder.
+
+- **The run.** The location step: 19,926 rows, 18 more than the fourth round above, all of them client start
+  points of the 17 new quests that have one (17,641 quests at their start, 1,747 of them with no point -1 and 17
+  of those with no pin yet; 433 at their own point). TrinityCore placed none, and its review file holds the
+  same 152 quests in 156 rows. Join: 18 locations of quests with no pin, no `MAP_ID_DRIFT` row, none more than 5
+  points from its quest's pin. Assemble: 28,908 rows with 8,982 old pairs kept (as in the fourth round above;
+  8,979 in its first), 13,569 groups, 13,557 pins once 12 groups that land on one spot merge; no spot's quests
+  bring different icons.
+- **Who names the pins.** 27588 Signal the Attack: a spawn of TrinityCore's starter, Kurdran Wildhammer
+  (45668), stands within 1.5 points of its start in the Twilight Highlands (241 at 43.36,57.35), so it joined
+  his pin at 43.4,57.33, which holds 27498, the other quest of that name. No source names a giver for the
+  other 16: the client's giver table has no row for any of the 22 new quests, TrinityCore's
+  `creature_queststarter` has a row only for 27588 (45668) and `gameobject_queststarter` none (its
+  `quest_template` has 19 of the 22, not 45099, 45133 and 63506), and retail's recorder ledger has 0 rows. They
+  are nameless:
+  - on nameless spots that were there: 43933 Champion: Delas Moonfang (Light's Hope Chapel, 24, with 42851 and
+    49812, 1.35 points from its start), 41630 Unleashing Judgment (Borean Tundra, 114, with 41629, 1.46), 88930
+    Drained Mana (Suramar, 680, with 88919 and 88929, at its start) and 53566 Dark Iron Dwarves' start in
+    Stormwind City (84, with 75890, 95215 and 78068, 0.34);
+  - on 10 new pins at their starts: 63506 Mecha Gone (Elwynn Forest, 37 at 32.45,54.84, the client's only start
+    for it, though the API's area for it is Ardenweald), 45099 Hot On The Trail with 45112 and 45133 Signs of
+    Madness (Tanaris, 71, one pin at 45099's start, the other two 0.31 points from it), 48962 Telogrus Rift
+    (Ghostlands, 95), 41628 Eyes of the Dragon (Dragonblight, 115), 41790 and 41792 The First and Third Trials of
+    Ursol (Grizzly Hills, 116, one point), 46059 Champion: Tess Greymane (Dalaran, 626), 39818 Champion: Nazgrim
+    (Azsuna, 630), 41030 Sigil Reclamation (Suramar, 680), 53566's second start (Blackrock Depths, 1159) and
+    93420 Lor'themar's Judgement (The Coiled Isle, 2512).
+- **Nothing else changed.** Against master's pins, 13,542 lines are the same; the 5 that changed each gained one
+  of these quests (Kurdran Wildhammer's pin and the four nameless spots), and 10 are new. Stormwind's spot moved
+  up the file, as its lowest quest ID is now 53566. No placement moved or went and no quest lost a pin:
+  placements 28,216 to 28,234, quests with a pin 25,964 to 25,981. The 23 location rows more than 1.5 points from
+  their quest's pin are the same 23, the nameless pairs closer than 1.5 points the same six, and no two pins of
+  one NPC stand closer than that.
+- **Calendar and kinds.** None of the 17 is in the client's task table, so none is a world quest or is gated
+  like 95009 above; none has a holiday tag, none is in TrinityCore's event tables (`game_event_creature_quest`,
+  `game_event_gameobject_quest`, `game_event_seasonal_questrelation`), and none is flagged unavailable. Their
+  pins draw all year, as the quests are not seasonal.
+- **Still without a pin:** 90745 The Empty Cradle and the Nightmare Prey quests 95021 to 95024. The client lists
+  no start point for them (no point 32 or -1; the Prey quests have only objective points), TrinityCore's
+  `quest_poi` has no row for them, and no source names a giver.
+- **The after-steps.** `Apply-PinNpcIds.ps1 -WhatIf`: all 197 rows find their pin, nothing to change.
+  `Remove-DuplicatePinQuests.ps1 -WhatIf`: nothing to take off, the same 13 left alone. Step 6c (`-Refresh
+  -WhatIf`): 2,054 quests agree with the table, nothing to change, the 16 cases for review the same and none new
+  (two lines of the report now come in the other order). `Fill-PinNpcIds.ps1 -WhatIf`: no pin to fill (200 at
+  objects, 8 at creatures of other names, 129 not in the dump). Step 6d (`-WhatIf`, on copies of the recorder and
+  probe files): the counts of the run above, nothing filled, moved or added. A second round of the pipeline
+  wrote the pins byte for byte.
+- **Two tool fixes.** `Test-PinRules.ps1` failed its D2 check here with master's tools (48 passed, 1 failed, on
+  every run, and the same with the tools of the run above): `Apply-ClientQuestGivers.ps1` went through the pins
+  to fill in the order of a hashtable keyed by the pin objects, which is not the order it found them in and is
+  not fixed (the run above passed D2 with the same tools), so when two nameless pins on one point each give a
+  quest to one giver, the giver's pin listed the two in either order. It now goes through them in the order it found them (by quest ID, then the decision rows), and D2
+  passes on every run (49 passed). On the real data step 6c fills and moves nothing, with either tool, and its
+  report is the same. `Assemble-PinDB.ps1` printed an empty count where one location took its giver from a
+  starter's spawn (Windows PowerShell gives a single object no `Count`); it prints 1 now. With both fixes, the
+  run from master's pins writes these pins byte for byte.
+- **Checks.** `Build-AddonData.ps1 -Check` (retail 35,628 quests and 13,557 pins, Forever unchanged),
+  `Show-RemovedQuests.ps1` for both games (none), the syntax check, and against master: the reachability report
+  for both games (retail: the pin counts 13,547 to 13,557, every other line the same; Forever's the same),
+  `Test-MapTooltip.lua` for both (the recorded tooltips the same; retail's stacks 2,505 to 2,507, still 271 with
+  a nameless first pin), `Test-ContinentPins.lua` for both (the same but for its timings), the map pass report
+  (the same), `Test-PinRules.ps1` (49), `Test-QuestLocationKinds.ps1` (21), `Test-ForeverImport.ps1` (125),
+  `Test-RecordedGivers.ps1` (298), `Test-RecordedGivers.lua` (366) and `Test-ForeverChecks.ps1` (53). Not tried
+  in game.
+- **After master's #368 merged in** (the same day): it added 94954 and 95012, which have no point in
+  `QuestPOIBlob`, no row in the client's giver table and no TrinityCore starter or `quest_poi` row. One round of
+  the pipeline on the merged data wrote `data\pins.jsonl` and `qcPinDB.lua` byte for byte, its logs the third
+  round's but for the quest count, and the after-steps' `-WhatIf` reports were the same (step 6c on the table
+  downloaded above). `Build-AddonData.ps1 -Check` gives 35,630 quests and 13,557 pins; against that master the
+  reachability report, the tooltips and the continent icons differ in the same lines as above.

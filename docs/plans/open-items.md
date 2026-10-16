@@ -68,8 +68,10 @@ taken. What is left, in one place:
   Blues (a test quest line, API 404), three Special Assignments (API 404) and the internal 96070. 41628 and
   53566 were filed by hand, where placement couldn't. Retail's missing-quests baseline (533 candidates),
   step 2g's (D 0, N 525) and step 2's cache baseline were rewritten, the last two with `-AcceptPartialCache`,
-  as the cache will not get fuller this sweep (maintenance.md, steps 6, 2g and 2). Left from it: pins for the
-  17 with a start point (the next pin pipeline run) and the probe and step 3 (below, "To try in game"). The 4
+  as the cache will not get fuller this sweep (maintenance.md, steps 6, 2g and 2). The 17 with a start point got
+  their pins later on 16 October 2026 (branch `data/pins-new-quests-12-1-5`: a rerun of the pin pipeline; 27588
+  on Kurdran Wildhammer's pin, the other 16 nameless, as no source names their giver; 13,557 pins;
+  maintenance.md, step 6). Left from it: the probe and step 3 (below, "To try in game"). The 4
   changes step 2c listed on master for the quests #361 retyped as weekly: **done on 16 October 2026** (branch
   `data/prereqs-after-weekly-retypes-12-1-5`): no Blizzard source names them, so 89057, 89192, 85465 and 86342
   no longer need another weekly quest of line 5704, and step 2c is idempotent again (maintenance.md, step 2c).
@@ -562,7 +564,8 @@ again.
 ## Code to finish
 
 - **README** says retail has "over 16,000" quest-giver pins; since the nameless pins went one per spot
-  (16 October 2026) retail has 13,547, so the next release pull request makes it "over 13,000". Check the
+  (16 October 2026) retail has 13,557 (13,547 before the second gap run's quests got their pins, the same
+  day), so the next release pull request makes it "over 13,000". Check the
   pin and quest counts of both games at each release.
 
 ## The agreed order of work
