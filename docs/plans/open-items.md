@@ -140,6 +140,14 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
+- **The map freezing on a zone's first open** (16 October 2026, `fix/map-freeze-npc-prefetch`, untried in game;
+  retail, a few minutes). Players reported the game freezing for minutes the first time they opened a Battle for
+  Azeroth or Dragonflight zone's map; the branch stops the addon asking for every giver's name when a map opens
+  ([localized-npc-names.md](localized-npc-names.md), decision 2). Your creature cache already holds every pin NPC
+  from the October probe runs, which is why it never froze for you, so first quit WoW and rename
+  `_retail_\Cache\WDB\enUS\creaturecache.wdb` (and `deDE`'s). On master, open Zuldazar's map: it should freeze.
+  On the branch, open Waking Shores' map, not opened since the rename: it shouldn't, and a hovered pin should
+  show its giver's name.
 - **The quest tooltip's storyline name and "Type:" row** (built 11 October 2026, untried, both games; one line each):
   hover one quest in the list and read the Storyline and Type lines. Retail: 10257 "Capturing the Keystone"
   (Netherstorm) should show "Type: Dungeon" and its storyline's name in your language. Forever: 19 "Tharil'zun"

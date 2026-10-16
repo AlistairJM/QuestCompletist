@@ -39,7 +39,9 @@ in phase 1):
   tooltip data; the first line's `leftText` is its name in the client's language.
 - For a creature the client hasn't cached, it returns nothing, then the game fires one
   `TOOLTIP_DATA_UPDATE` when the name arrives. With nothing returned there's no `dataInstanceID` to
-  match the event to, so on any update event the addon re-checks the NPCs it's waiting for.
+  match the event to, so on any update event the addon re-checks the NPCs it's waiting for. The
+  name often can't be read yet at that event (most of the phase 1 events found none; the next
+  event did), so since 16 October 2026 the addon also re-checks every 0.25 s while it waits.
 - `GetHyperlink` is marked `SecretArguments = "AllowedWhenUntainted"`. Our argument is a plain string
   we build, so that shouldn't matter; the German runs check combat and instances.
 - The client keeps creature data on disk per language (`Cache\WDB\<locale>\creaturecache.wdb`), like
@@ -220,11 +222,13 @@ that pin's ID, applied, and their Note says which pin it came from.
    session's name for that NPC if it has one; else the name from `GetHyperlink` if the client has
    it; else start a request and return the stored English name.
 2. **Requests:** asking for an uncached creature is itself the request, so a hovered pin, the quest
-   tooltip and a TomTom click ask straight away. Only an opened map's pins wait in a queue: up to 16
-   in flight (phase 1 saw no throttling), the map opened last first. On any `TOOLTIP_DATA_UPDATE`,
-   the NPCs being waited for are re-checked. A 5 s timeout frees a request's slot; an NPC that timed
-   out isn't asked again that session (the probe saw no failures that a retry would have fixed). A
-   name is kept for the session. Nothing is saved: the client's cache keeps names between sessions.
+   tooltip and a TomTom click ask straight away. On any `TOOLTIP_DATA_UPDATE`, and every 0.25 s
+   while any is awaited, the NPCs being waited for are re-checked. A 5 s timeout frees a request's
+   slot; an NPC that timed out isn't asked again that session (the probe saw no failures that a
+   retry would have fixed). A name is kept for the session. Nothing is saved: the client's cache
+   keeps names between sessions. Until 16 October 2026 an opened map's pins waited in a queue too,
+   up to 16 in flight, the map opened last first (decision 2, since reversed); now only names wanted
+   inside an instance wait there, for the player to leave.
 3. **Instances:** a secret value (`issecretvalue`) counts as no name, and nothing is requested or
    retried while `IsInInstance()`; NPCs without a name are tried again after leaving. So inside an
    instance, pins show names learned earlier in the session, and English otherwise.
@@ -233,8 +237,9 @@ that pin's ID, applied, and their Note says which pin it came from.
 5. **Use it at all three sites in the table above.** The pin tooltip keeps grouping stacked pins by
    the name shown. The TomTom waypoint uses whatever name is known when it's clicked, since a
    waypoint's title can't change afterwards.
-6. **What gets requested:** the NPCs on the drawn pins when the map shows a map (decision 2), and
-   the NPCs in a tooltip when it opens (the quest tooltip's giver line isn't on the map).
+6. **What gets requested:** the NPCs in a tooltip when it opens (a hovered pin's givers, and the
+   quest tooltip's giver line, which isn't on the map) and a waypoint's. Until 16 October 2026 the
+   NPCs on the drawn pins were asked for too, when the map showed a map (decision 2, since reversed).
 7. **Test harness:** `Test-QuestReachability.lua` needs a `C_TooltipInfo` stand-in that returns
    nothing, or its dummy table ends up used as a name.
 
@@ -265,6 +270,14 @@ inside an instance either; this covers them.) Then switch back to English.
    pins the player may never hover, but a busy map has at most ~140 NPCs (Isle of Dorn 136, Dornogal
    106). At 16 in flight the server answered about 84 requests a second, so an uncached busy map
    takes about 2 s, and most names are there by the time the player hovers a pin.
+   **Reversed on 16 October 2026:** players on CurseForge reported the game freezing for up to three
+   minutes the first time they opened a Battle for Azeroth or Dragonflight zone's map, never again
+   for that zone, even after a relog; 109.97, which asked for no names, didn't. The only thing the
+   addon does on a zone's first open that outlasts a relog is filling the client's creature cache,
+   and the reported zones' pins name the most givers (Zuldazar 160, Waking Shores 153, Azure Span
+   148, Ohn'ahran Plains 139; the ID backfill of 7 October took maps past the ~140 above). The
+   author's cache held every pin NPC from the phase 1 runs, so the freeze never showed for them.
+   Names are now asked for only when a tooltip or waypoint shows them (Status, 16 October 2026).
 3. **Correct IDs rather than add a lookup table** (see "Dropped").
 
 ## Out of scope
@@ -321,3 +334,11 @@ inside an instance either; this covers them.) Then switch back to English.
   client's giver are listed in `tools\client-giver-report.txt` for review, 47 of them within 1.5
   points of a spawn, so the same spot under another ID of the character. Next: those 76 through
   the decisions file.
+- 2026-10-16: decision 2 reversed (see Decisions) on `fix/map-freeze-npc-prefetch`: opening a map
+  asks for no names, a tooltip or waypoint asks for its own, and names still awaited are re-checked
+  every 0.25 s as well as on each update event. The new `tools/Test-NpcNames.lua` plays it on a
+  clock of its own against a game that answers 0.1 s later: opening Zuldazar asks for no names
+  (master, under the same game: 2,600 lookups), a hovered giver is named whether the name can be
+  read at the update event or only after it, a giver the game never names is looked at about four
+  times a second until the timeout and then left, and a giver hovered inside an instance is asked
+  for after leaving. The freeze's cause isn't proven in game yet: open-items.md, "To try in game".
