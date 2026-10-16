@@ -204,6 +204,8 @@ qcAreaIDToCategoryID={
 [2190]=1723,[2191]=1723,[2192]=1723,[2193]=1723,[2194]=1723,[2195]=1723,[2196]=1723,[2197]=1723,	-- Dawn of the Infinite
 [2162]=7,	-- Alterac Valley
 [2605]=1512,	-- Silvermoon City
+[2647]=1515,[2648]=1515,[2671]=1515,	-- The Labyrinth of Kindo'jan
+[2669]=1752,[2670]=1752,	-- The Unbinding of Kith'ix
 }	
 
 qcQuestCategories={
@@ -320,8 +322,8 @@ qcQuestCategories={
 {1509,"West Sanctum"},
 {1510,"Zul'Aman"},
 {1511,"Eversong Woods"},
-{1512,"Silvermoon City"},{1513,"The Coiled Isle"},{1514,"Prey"},
-{1702,"De Other Side"},{1703,"Theater of Pain"},{1704,"Sanguine Depths"},{1706,"Plaguefall"},{1707,"The Necrotic Wake"},{1708,"Halls of Atonement"},{1710,"Castle Nathria"},{1711,"Sanctum of Domination"},{1712,"Sepulcher of the First Ones"},{1713,"Algeth'ar Academy"},{1714,"Vault of the Incarnates"},{1715,"Brackenhide Hollow"},{1716,"Aberrus, the Shadowed Crucible"},{1717,"Halls of Infusion"},{1718,"Neltharus"},{1719,"Ruby Life Pools"},{1720,"The Azure Vault"},{1721,"The Nokhud Offensive"},{1723,"Dawn of the Infinite"},{1725,"Cinderbrew Meadery"},{1729,"Priory of the Sacred Flame"},{1730,"The Dawnbreaker"},{1732,"Eco-Dome Al'dani"},{1733,"Liberation of Undermine"},{1734,"Manaforge Omega"},{1735,"Weekly Events"},{1736,"The Violet Hold"},{1737,"Temple of Ahn'Qiraj"},{1738,"The Eye"},{1739,"Dire Maul - Warpwood Quarter"},{1740,"Dire Maul - Gordok Commons"},{1741,"Stratholme - Service Entrance"},{1742,"Windrunner Spire"},{1743,"Magisters' Terrace"},{1744,"Murder Row"},{1745,"The Voidspire"},{1746,"The Blinding Vale"},{1747,"Den of Nalorakk"},{1748,"Voidscar Arena"},{1749,"The Dreamrift"},{1750,"Maisara Caverns"},{1751,"Nexus-Point Xenas"},
+{1512,"Silvermoon City"},{1513,"The Coiled Isle"},{1514,"Prey"},{1515,"The Labyrinth of Kindo'jan"},
+{1702,"De Other Side"},{1703,"Theater of Pain"},{1704,"Sanguine Depths"},{1706,"Plaguefall"},{1707,"The Necrotic Wake"},{1708,"Halls of Atonement"},{1710,"Castle Nathria"},{1711,"Sanctum of Domination"},{1712,"Sepulcher of the First Ones"},{1713,"Algeth'ar Academy"},{1714,"Vault of the Incarnates"},{1715,"Brackenhide Hollow"},{1716,"Aberrus, the Shadowed Crucible"},{1717,"Halls of Infusion"},{1718,"Neltharus"},{1719,"Ruby Life Pools"},{1720,"The Azure Vault"},{1721,"The Nokhud Offensive"},{1723,"Dawn of the Infinite"},{1725,"Cinderbrew Meadery"},{1729,"Priory of the Sacred Flame"},{1730,"The Dawnbreaker"},{1732,"Eco-Dome Al'dani"},{1733,"Liberation of Undermine"},{1734,"Manaforge Omega"},{1735,"Weekly Events"},{1736,"The Violet Hold"},{1737,"Temple of Ahn'Qiraj"},{1738,"The Eye"},{1739,"Dire Maul - Warpwood Quarter"},{1740,"Dire Maul - Gordok Commons"},{1741,"Stratholme - Service Entrance"},{1742,"Windrunner Spire"},{1743,"Magisters' Terrace"},{1744,"Murder Row"},{1745,"The Voidspire"},{1746,"The Blinding Vale"},{1747,"Den of Nalorakk"},{1748,"Voidscar Arena"},{1749,"The Dreamrift"},{1750,"Maisara Caverns"},{1751,"Nexus-Point Xenas"},{1752,"The Unbinding of Kith'ix"},
 }
 
 qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name the category
@@ -630,6 +632,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1511]=2395,	-- Eversong Woods
 	[1512]=2393,	-- Silvermoon City
 	[1513]=2512,	-- The Coiled Isle
+	[1515]=2647,	-- The Labyrinth of Kindo'jan
 	[1702]=1677,	-- De Other Side
 	[1703]=1683,	-- Theater of Pain
 	[1704]=1675,	-- Sanguine Depths
@@ -663,6 +666,7 @@ qcCategoryUiMapID = {  -- CategoryId -> UiMapId, for C_Map.GetMapInfo to name th
 	[1748]=2572,	-- Voidscar Arena
 	[1749]=2531,	-- The Dreamrift
 	[1750]=2501,	-- Maisara Caverns
+	[1752]=2669,	-- The Unbinding of Kith'ix
 }
 
 qcCategoryClientName = {  -- CategoryId -> where the client names it other than by map; see qcClientCategoryName
@@ -13652,12 +13656,15 @@ qcQuestLines = {
 	[6209]={name="Legends of the Haranir",quests={92716,92719,92720,92721,92722,92724,92725}},
 	[6213]={name="Welcome to the Waking Shore",quests={91466,91467}},
 	[6214]={name="Welcome to the Waking Shore",quests={91691,91695}},
+	[6221]={name="Sins of the Past",quests={95187,95190,95191,95192,95193,95197,95199,95200,95203,95206,95208,95209,95210,96707,95211,98831,98832,98833,98834,98836}},
 	[6223]={name="Hope in The Darkest Corners",quests={95468}},
 	[6224]={name="Something Vile This Way Comes",quests={93575}},
 	[6227]={name="The Honored Med'jai",quests={95521,95522,95523,95524,95954,95525}},
 	[6228]={name="The Coiled Isle - World Quests/Repeatables",quests={93648,93649,93664,93669,94573,93670,93671,93672,94571,94572,94574,94611,94612,94876,94967,94996,95253,95381,95429,95448,95449,95451,95453,95484,95513,95529,95662,95794,95918,95807,95921,95922,95923,95931,96625,96329,95990,96066}},
 	[6229]={name="An Island of Fangs",quests={98218,92916,92917,92919,93265,92921,93263,93266,92920,92924,95804,93019,95564,93018,93022,93023,93024}},
 	[6232]={name="The Battle for Atal'Utek",quests={93417,93419,93418,98388,97640,98515,98428}},
+	[6233]={name="What Slept Below",quests={95533}},
+	[6245]={name="To the Faithful",quests={95811,95808,95812,95813}},
 	[6264]={name="Somethin' Bad Inside",quests={96089,96090,96091,96092,96093,96094,96095,96096,96097,96098,96099}},
 	[6270]={name="Void Assaults",quests={94380,94381,96080,94382,94383}},
 	[6271]={name="Tokka's Crew",quests={96110,98343,96111,96112,96113}},
@@ -13671,12 +13678,14 @@ qcQuestLines = {
 	[6296]={name="Prey: Isle of Fangs",quests={96004,96466,96474,96503,96532,96525}},
 	[6297]={name="A Dance with Domanaar",quests={97034,97035,97036}},
 	[6300]={name="The Hal'hadar Files",quests={96567,96568,96569,96570,96571,96572,96573,96574,96575,96576,96577,96578}},
+	[6301]={name="Into the Labyrinth",quests={98831,98832,98833,98834,98836}},
 	[6302]={name="Living Legend",quests={96523,96539,96540,96541,96543,96544,96545,96546}},
 	[6307]={name="The Empowered Folio",quests={96410,96441,96442,96443,96444}},
 	[6309]={name="Assault and Strike Back: Val",quests={96048,96049,96703,96708,96051,96053,97071}},
 	[6310]={name="Assault and Strike Back: Naigtal",quests={96048,96049,96703,96708,96052,96054,97072}},
 	[6329]={name="A Bond of Brothers",quests={94936,94937,94941}},
 	[6352]={name="The Vaults of Atal'UTek",quests={98388,97640,98428}},
+	[6385]={name="The Labyrinth of Kindo'jan",quests={98951,98963,98962,98961,98960,98959}},
 }
 
 qcBreadcrumbQuests = { --Done First second unavailable --
