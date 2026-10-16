@@ -184,7 +184,12 @@ none of ours, and 3 with an extra faction (41138, 43568, 73226):
   "no per-quest source" was about the client's tables, which still hold. **Decision for the user:**
   backfill the 2,043. The open question is whether the record's template amount is what the game
   awards for a world quest, so spot-check in game first (54538, 51630, 70655, 61783, one type 1
-  quest). `qcFactions` needs one entry, 2574.
+  quest). `qcFactions` needs one entry, 2574. **Done for the 12.1.5 cache, 16 October 2026**, by
+  the user's decision 11b of the 12.1.5 sweep (option B: the newest cache only, with no check in
+  game, as the cache gives the API's figure for every reward both list): the joined 12.1.5 cache
+  holds 738 such quests (1,028 rewards), and `Apply-ReputationBackfill.ps1 -CacheOnly` wrote them
+  all, with 2574 Dream Wardens added to `qcFactions` ("Checks built", below). Of the four spot
+  checks, only 70655 is among them; the cache lacks 54538, 51630 and 61783.
 - The other 156 quests (154 the API has a record of but lists none of these rewards for): 158 rewards,
   157 on 17 factions the API never lists (16 flagged hidden, such as the `GarInvasion` ones, and 1833,
   whose one reward is 42,999), and 2557 on quest 73226, which has 2511 of ours; 2557 is not in the
@@ -319,13 +324,24 @@ ours all failed to load in the probe of 29 September, so the cache, which holds 
 for, can neither keep nor remove them. Titles: for the 28,985 quests the API has, data, API and cache
 agree on every one; the 34 that differ are quests the API has no record of, where TrinityCore agrees
 with the cache for 32 (our names are stale), and four carry a `[DEPRECATED]` prefix in the cache that
-ours strips.
+ours strips. (Those were 12.1.0.69933's counts; 12.1.5's are below.)
 
 On 12.1.5.70391 (16 October 2026, the data of master cea4322: 35,573 quests) the two copies of the
 cache, of 14 and 15 October, read together hold 29,844 quests: 29,824 of ours (83.8%) and 20 that are
 not ours. The 14 October copy alone held 26,598 of ours (74.8%). Of the 5,749 of ours the two lack,
 3,467 were in 12.1.0.69933's cache. Of that cache's 33,123 quests, 3,488 are in neither copy, and the
 copies hold 209 it lacked.
+
+Titles on 12.1.5.70391 (16 October 2026, with the API cache of the 12.1.5_70077 namespace): the API
+and the cache agree on the title of every one of the 27,848 quests of ours both have (35,606 quests,
+with step 6's story quests). Step 1c of
+[maintenance.md](../maintenance.md) now takes the cache's title for a quest the API doesn't serve
+(decision 10e of the 12.1.5 sweep), and the client's task table's for one the cache lacks too. The
+cache titles 1,977 of the 5,364 quests the API doesn't serve, and the first run renamed 19 of them;
+the task table renamed 15 more. Ours now differ from the cache only on the four Sunstrider Isle
+quests 8330, 8336, 8345 and 8346, whose titles carry the `[DEPRECATED]` prefix, which step 1c never
+takes. Their availability was decided on evidence instead, with `KEEP` rows in
+`unavailable-quest-decisions.csv` ([unavailable-quests.md](unavailable-quests.md)).
 
 ## Corrections to earlier notes
 
@@ -356,7 +372,14 @@ faction (backfill candidates); F cache only, on factions that are not shown; G n
 the cache's own extras (quests not in our data, empty-amount slots, a faction in two slots). It fails
 (exit 1) on a class C or D quest, and says the reader looks moved at 100 C quests or more. Its rows
 go in `quest_reputation_compare.csv` with the Kinds `cache-more`, `cache-differ`, `cache-lost`,
-`cache-only` and `cache-hidden`, which `Apply-ReputationBackfill.ps1` skips.
+`cache-only` and `cache-hidden`, the cache's rewards on shown factions in the `CacheShown`
+column and the cache's build in `CacheBuild`. `Apply-ReputationBackfill.ps1` skips them, except
+that `-CacheOnly` (16 October 2026) writes the `cache-only` rows of the quests the API has no record
+of, their shown rewards only, and adds a faction they name that `qcFactions` lacks. It refuses a
+CSV made from another build's cache than the newest, and one with a `cache-differ` or `cache-lost`
+row whose cache record gives other rewards than the API's or has no API record to be checked
+against. A C or D row whose cache gives the API's rewards is only ours out of date, and the API's
+own row corrects it in the same run.
 
 A faction counts as **shown** when the Faction table lists it, its `ReputationIndex` is 0 or more and
 `ReputationFlags_0` lacks bit 4 (value 4, hidden). The index matters for one quest: 1833 (Uncrowned)
@@ -383,8 +406,26 @@ are new and gone against it; `-UpdateBaseline` rewrites the file once they are e
 | | 19,587 with nothing listed anywhere | |
 | | 11,690 of the API's 11,690 rewards reproduced | |
 
-Nothing was backfilled: whether to is decision 2 below, and the quests are the `cache-only` rows of
-the CSV and the E rows of the baseline file.
+Nothing was backfilled then: whether to was decision 2 below.
+
+On 16 October 2026 (the joined cache of 12.1.5.70391, API cache 12.1.5_70077, Faction table
+12.1.5.70391) the 738 E quests of that cache, with 1,028 rewards, were written by
+`Apply-ReputationBackfill.ps1 -CacheOnly` (decision 2, below), and the baseline file was rewritten
+after it with `-AcceptPartialCache`, as that cache holds only 29,825 of our 35,606 quests (83.8%,
+with step 6's 33 story quests) and will not get fuller this sweep (maintenance.md, step 2, has the
+moves against the old baseline):
+
+| Class | Quests | Note |
+|---|---|---|
+| A | 11,007 | 738 of them written that day from the cache |
+| B | 3 | the same three |
+| C, D | 0, 0 | |
+| E | 0 | before the backfill 738, all of them quests the API has no record of, none with a hidden faction among its rewards |
+| F | 151 | |
+| G | 5,781, 767 with a reward row of ours | 1,439 of them were E on 12.1.0 and keep no reward until a cache holds them; 32 are story quests the cache lacks |
+| H | 19 quests only in the cache (1 with a reward), 0 empty-amount slots, 0 factions in two slots | |
+| | 18,664 with nothing listed anywhere | |
+| | 11,093 of the API's 11,093 rewards reproduced | |
 
 ## Checks to build
 
@@ -406,7 +447,10 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
 
 1. ~~Retail's gate level from the tuning (Level, above)~~: **done**, option C, 11 October 2026
    (open-items.md rows 14 and 8; row 8 is not taken).
-2. Backfill of the 2,043 quests' reputation from the cache, after a few checks in game.
+2. ~~Backfill of the 2,043 quests' reputation from the cache, after a few checks in game~~:
+   **done for the 12.1.5 cache**, 16 October 2026, by the user's decision 11b of the 12.1.5 sweep
+   (option B: from the newest cache only, with no check in game): 738 quests, 1,028 rewards
+   (open-items.md row 15).
 3. The type changes of Recurrence and flags.
 4. The race changes of Races: the two contradictions and the 19 stale masks recommended, the 49
    narrowings a call.
@@ -459,3 +503,13 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   29,844 quests (the 1,882 in both read the same), and step 2e's check found no difference on any field
   it compares (above, "Checked against Blizzard's data"). The partial-cache warning still shows, for our
   quests only (83.8% of ours, while the 29,844 are 90.1% of the build before's 33,123).
+- 2026-10-16: step 1c (`Sync-QuestNamesFromApi.ps1`) reads the cache's titles for the quests the API
+  doesn't serve, and the task table's after them, by decision 10e of the 12.1.5 sweep; a
+  `[DEPRECATED]` title is never taken (above, "Coverage and titles"). 34 quests renamed.
+- 2026-10-16 (later): decision 2 taken for the 12.1.5 cache, on the user's decision 11b of the 12.1.5
+  sweep (option B). `Apply-ReputationBackfill.ps1 -CacheOnly` wrote the 738 class E quests (1,028
+  rewards; the cache reproduced all 11,093 of the API's rewards on the quests it holds) and added 2574
+  Dream Wardens to `qcFactions`; `Compare-QuestReputation.ps1` writes the shown rewards it reads in a
+  new `CacheShown` column, and the cache's build in `CacheBuild`, which `-CacheOnly` checks is the
+  newest. The reputation baseline was rewritten on this cache with
+  `-AcceptPartialCache` (above, "Checks built").
