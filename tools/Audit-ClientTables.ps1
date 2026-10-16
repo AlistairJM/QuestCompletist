@@ -52,7 +52,7 @@ if ($Download) {
     }
 }
 
-Add-Type -TypeDefinition @'
+if (-not ('CsvAudit' -as [type])) { Add-Type -TypeDefinition @'
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -222,7 +222,7 @@ public static class CsvAudit {
         }
     }
 }
-'@
+'@ }
 
 function Get-Dbd([string]$table) {
     $file = Join-Path $DbdDir "$table.dbd"

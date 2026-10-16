@@ -190,7 +190,8 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 
 ### Phase 2: the cache reader (5 October 2026)
 
-`tools/Read-QuestCache.ps1` reads `questcache.wdb` into
+`tools/Read-QuestCache.ps1` reads `questcache.wdb` (since 16 October 2026 every copy of the build in
+the probe folder together, as [maintenance.md](../maintenance.md) step 2e describes) into
 `tools/forever_quest_cache_<build>.jsonl`, one quest per line:
 - **Always:** id, title, level, minLevel, sort (the zone, or a negative QuestSort for class,
   profession and holiday quests) and questType. Retail's lines carry contentTuning instead of level
@@ -764,7 +765,10 @@ no quest leaves the data without the user having seen it.
   build's quest cache; a quest the probe didn't ask about isn't counted, and the same build twice is
   one run). The importer imports a quest until it has missed 10 runs in a row (`-MaxMissedRuns`), and
   lists each one kept from an earlier run in the review. With no file the memory is built from the
-  `forever_quest_cache_<build>.jsonl` files in `tools\`, so keep each run's.
+  `forever_quest_cache_<build>.jsonl` files in `tools\`, so keep each run's. `Sync-QuestPvP.ps1` reads the
+  file too (since 15 October 2026), so a PvP quest kept from an earlier run keeps its tag there as well:
+  before, it read the newest cache alone and listed 98897, 98899 and 98901 (Darkspear Islands Clash, kept
+  from 70291 on 70338) as having `pvp` with no source.
 - **The guard:** the importer compares its quests with the committed `quests.jsonl` before it writes,
   and stops, writing nothing, if any would go for any reason (10 missed runs, an internal title, a change
   in CMaNGOS). The list, with ID, name and zone, is in the output and `tools\quest_removals_forever.csv`;
@@ -932,9 +936,9 @@ further than 3 points, so no pin is counted as removed and added.
   player stood beside the NPC. One is over a point: Darcy (map 1433, 21.53,44.3 to 21.6,45.4, 1.10), the
   review's only "recorded spot far from CMaNGOS" row. She walks: CMaNGOS gives her a 16-point path in Lakeshire
   (`MovementType` 2, about 1.4 points end to end), her spawn is one end of it, and the recorded place is 0.11
-  from the point where she waits longest, 32 seconds ([open-items.md](open-items.md), decision 38, asks whether
-  such a place should still win). The largest ten, in map points: Darcy 1.10, Beached Sea
-  Creature 0.36 and 0.27, Guard Parker 0.26, Beached Sea Turtle 0.23 and 0.12, then Terenthis, Gubber Blump,
+  from the point where she waits longest, 32 seconds ([open-items.md](open-items.md), decision 38, taken on 12
+  October: such a place still wins, and her pin moved there with the import of 14 October). The largest ten, in
+  map points: Darcy 1.10, Beached Sea Creature 0.36 and 0.27, Guard Parker 0.26, Beached Sea Turtle 0.23 and 0.12, then Terenthis, Gubber Blump,
   Wizbang Cranktoggle and Sentinel Glynda Nal'Shea at 0.10 each. The other 4 (2 in setup 2) are givers the
   ledger had, whose pin sat on one row of a cluster of rows 0.1 apart and now moves to the row with more visits
   (Terenthis, Gubber Blump, Wizbang Cranktoggle, Sentinel Glynda Nal'Shea; in setup 2 Glynda and Thundris
@@ -1537,3 +1541,25 @@ on scratch copies, with each merge since the last change to the pins (#267) impo
   `Test-ForeverImport.ps1` checks it (111 checks). The pins are regenerated after the user's review: 21 move by
   0.02 to 0.36 to the addon's recorded places and Trek to Ashenvale gets one, 1,699 pins. See "A rerun of the import".
 - 2026-10-13: data-sources review D7, D18, D19 (docs/plans/data-sources-review.md). `forever-quest-givers.csv` has a Decision column (ADD, the default, or REMOVE); rows swap the givers of 26 and 27, and `forever-quest-link-decisions.csv` makes 28 need 27 and 29 need 26 (the cache's chain; the two KEEP rows for them are gone). The importer reads `creature_spawn_entry` and `gameobject_spawn_entry` (7281 and 7302 get pins, 1,701 pins), counts a spawn in the events of several holidays as no evidence (review row; no output change), and no longer closes a lead-in with a quest of the other faction. Section K of `Test-ForeverImport.ps1` (115 checks). Links, prerequisites and the other summary lines are as on 11 October.
+- 2026-10-14: step 10 on beta build 1.60.1.70374, for the 12.1.5 sweep. Its client tables are the same as 70338's.
+  The beta answered 3,041 quests, 106 more than on 70338, and the map pass still found no offers. **8 new quests**,
+  all known only to the game and with no giver yet: Dutiful Steps (92872), An Acquaintance in Southshore (95786),
+  Take Two With Water (95787), Magics of the Drowned City (95788) and four "The Battle for Darkspear Islands!"
+  (98904, 98905, 98907, 98908, PvP). That makes 5,105 quests, and none was removed. The game's answers also
+  tag the three Darkspear Islands Clash quests PvP (183 PvP quests in all), give Sigil of Strom (639) and
+  Myzrael's Allies (688) the Horde races, and rename 1425 to "Deliver the First Shipment". Reputation has 21 more
+  rows (2,354 on 1,871 quests) and 4,202 quests have a minimum level. Step 6d took the recorders' newer notes into
+  the ledger (231 to 326 Forever rows; every note is of build 70338 or earlier). **31 pin changes** (1,701 to 1,706
+  pins): 21 givers new to the ledger move to their recorded places, Darcy by 1.1 map points and the others by 0.02
+  to 0.26; 4 givers the ledger had move 0.1 to 0.14 to the row seen more often (Thundris Windweaver back to
+  37.4,40.1), and Gubber Blump, whose two rows now tie at 6 visits, to the lower one (36.1,44.9); and 5 pins are
+  new, for 91723, 91725, 91732 and 91733 (four givers in Elwynn Forest) and 95999 (the Wanted: Incinerator
+  Gar'im poster in Redridge Mountains). 98581, 109 and 1097 join the pins of the givers seen offering them. The user
+  accepted all of it, Darcy's move too: decision 38 stands as taken on 12 October, so the recorded place wins
+  (open-items.md). Checks: `Build-AddonData.ps1 -Check` up to date, `Show-RemovedQuests.ps1 -Game forever` lists
+  none, the table audit 6 findings and none new, item 9 takes nothing off, `Test-ForeverChecks.ps1` 43 and
+  `Test-ForeverImport.ps1` 115 checks with 0 failed, and `Test-Completions.lua` passes on both TOCs. The
+  reachability check is all zeros apart from the 81 event pins, as before, and its "bracket" lines (53 at each
+  level, 46 on master). Those fail because the test doesn't expect the list's PvP mark, which #336 fixes; with
+  that pull request's test, they read 0 too.
+- 2026-10-16: the pin rules both games share move into `tools\PinRules.ps1` (open-items row 7, game-parity recommendation 11). The importer groups its pins by it: a giver's at its places, as before, and the start points of quests with no giver one pin per 1.5-point spot instead of one per point, each pin's icon from its quests and a giver pin's name the game's, else the recorder's, else CMaNGOS's, as before. On build 70374 it writes every data file byte for byte as committed, and on 70338 every file as master's importer does (`pins.jsonl` as it was committed for 70338): the 11 quests pinned at their start stand on 4 pins, no two within 1.5 points. Section L of `Test-ForeverImport.ps1` (125 checks) checks the spot, its icon, the 1.5-point edge, and a quest whose giver the recorder meets later leaving the spot for the giver's pin while the others stay.

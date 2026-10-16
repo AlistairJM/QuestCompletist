@@ -118,7 +118,7 @@ on 7 October 2026.
 | UiMapGroupMember (with UiMapGroup) | 836 / – | The floors of each multi-floor map, with their names | 9 groups are partly in the zone table and 28 of their floors aren't: Black Temple's 7, Dawn of the Infinite's 8, Firelands' 2, Mardum's 2, the Exodar's 3, the Stockade, Greymane Manor's main floor and Tazavesh's Aggramar's Vault | **Use:** a rule for `Add-ZoneTableMaps.ps1` (step 5) |
 | Holidays, HolidayNames | 799, 160 / 22, 16 | Every calendar holiday with its name, dates and durations | Every ID in `qcHolidays` is there under its name; Hallow's End's second ID, 1405, is the kind of thing that has been found by hand in game. Forever's 22 rows include four new ones ("Call to Arms: Darkspear Islands") and still neither the Scourge Invasion nor the Ahn'Qiraj War Effort | **Use:** an offline check of `qcHolidays` in step 2b |
 | QuestV2CliTask (the columns above) | 6,242 / – | The task quests | Skill levels for 410 world quests that have no profession in our data; prerequisites for 2,114 task quests | **Used:** the profession of 410 quests and prerequisites for 850, steps 1d and 2c (Status); the skill level waits for [game-parity.md](game-parity.md) |
-| Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 740 of our 1,474 storylines and 5,946 quests. The game gives a quest's campaign at runtime | **Used:** the campaign line in the tooltip (Status); campaigns in the menu wait, and none of it is data the addon lacked |
+| Campaign, CampaignXQuestLine, CampaignXCondition | 181, 809, 258 / – | Campaigns (titles, localized), their quest lines in chapter order, and the conditions between chapters | 145 campaigns hold 527 of our 1,476 storylines, which are the storyline of 5,153 of our quests (15 October 2026, 12.1.5.70391's tables; 12.1.0.69933's give the same 145 and 527). 740 rows of CampaignXQuestLine name one of the 527, which this table counted as 740 storylines until then. The game gives a quest's campaign at runtime | **Used:** the campaign line in the tooltip (Status); campaigns in the menu wait, and none of it is data the addon lacked |
 | ContentTuning (with ContentTuningXExpected, XDifficulty, XLabel, ConditionalContentTuning, GlobalGameContentTuning) | 2,929 / 100 | Level ranges and scaling | The client tables give a ContentTuningID only to task quests, areas and maps, but retail's quest cache gives one to every quest it holds; the API gives a range for 30,066 of our 35,023 quests, and `C_Map.GetMapLevels` a map's | **Yes, since 11 October 2026:** `ContentTuning-<build>.csv` (4 of its columns) gives the minimum level of the 4,476 quests the API has no record of, in retail's `qcQuestMinLevel` (`Apply-QuestMinLevels.ps1`, `Compare-QuestLevels.ps1`; [retail-quest-cache.md](retail-quest-cache.md), "Level"). The other tables of the family stay unused |
 | AdventureMapPOI | 514 / – | Points on the Legion, Battle for Azeroth and Torghast adventure maps | 500 name a quest, 475 ours, 30 with a pin. 420 are 12.1's Prey hunts, with no position; the 25 others are placed at the zone chosen, not at a giver | No |
 | QuestHub | 107 / – | A quest's hub, as an AreaPOI | 104 ours, 97 with a pin | No |
@@ -202,7 +202,10 @@ maximum would fix that; it isn't a table question. (Forever's `level` is the que
 which that filter suits; its minimum is in `qcQuestMinLevel`, which the tooltip and the
 requirements filter read.) **Update, 11 October 2026:** the user took option C: the table is now used
 for the minimum, so retail keeps its `level` and holds the true minimum in `qcQuestMinLevel` too; the
-maximum is still not used (open-items.md decision 9).
+maximum is still not used (open-items.md decision 9). **Update, 16 October 2026:** decision 9 taken; the
+maximum is used, but read from the probe at the level cap rather than this table, whose own maximum is
+below the game's for 105 of the 771 tunings the game answered for, and for 53 even with an
+`AllowedMaxOffset` of 255 read as no cap (maintenance.md, step 2j).
 
 ## Decisions
 
@@ -228,7 +231,9 @@ maximum is still not used (open-items.md decision 9).
   names "<Region> Cup". Dastardly Duos (1599, 1673, 1689) and The Great Gnomeregan Run (696),
   entries since 12 October 2026 (#314), and Call of the Scarab (638, #315, the same day) are
   matched by their own names; with them, of 24 holidays 22 match on retail 12.1.0.69933 and
-  Forever 1.60.1.70338, and the other two are the Forever events with no row.
+  Forever 1.60.1.70338, and the other two are the Forever events with no row. The Darkspear Dash
+  (1793, #368, 16 October 2026) is matched by its own name too: of 25 holidays 23 match on retail
+  12.1.5.70391 and Forever 1.60.1.70425.
 - 2026-10-07: floors from UiMapGroupMember (recommendation 3), a rule in `Add-ZoneTableMaps.ps1`
   (#206): 25 floors joined the zone table (Black Temple's 7, Dawn of the Infinite's 8,
   Amirdrassil's 3 boughs, the Exodar's 3, Mardum's 2, Greymane Manor's main floor, Tazavesh's

@@ -12,8 +12,10 @@ The checks: the next runs and last dates, the events no entry covers by region a
 baseline (a new event, dates running out, removed or coming again, the 90-day window at days 89 to 91,
 runs passing with time, a row whose Flags or Region put it on or off region 4's calendar, an earlier run
 removed, one ID of an entry losing its dates, an event an entry now covers, an event gone from the table,
-a game not run keeping its rows) and each kind of fact in the decisions file: held, failing and staying
-so, and its outcome changing.
+a game not run keeping its rows, raid openings appearing, running out, lapsing, losing a run and moving
+to another region (beside a one-moment row of other Flags, an event with a longer row too, and an opening
+whose row leaves Flags 13 or the table, which stay findings) and each kind of fact in the decisions file:
+held, failing and staying so, and its outcome changing.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ReviewCalendar.ps1
 
@@ -68,7 +70,8 @@ function Row([int]$id, [int]$nameId, [long[]]$dates, [int[]]$durations, [int]$re
 $Names = @{ 7 = 'Brewfest'; 13 = "Children's Week"; 40 = 'Old Faire Days'; 41 = "WoW's 22nd Anniversary"; 42 = "WoW's Anniversary"
     43 = "WoW's 23rd Anniversary"; 50 = 'Call of the Scarab'; 51 = 'Pet Battle Bonus Event'; 52 = 'PvP Brawl: Test Brawl'; 53 = 'Lost Event'
     54 = 'Long Event'; 55 = 'Bonus Twin'; 56 = 'Thousand Boat Bash'; 57 = 'Far Event'; 14 = 'Feast of Winter Veil'; 60 = 'Day of the Dead'
-    61 = "Hallow's End"; 62 = 'Love is in the Air'; 63 = 'Kalimdor Cup'; 64 = 'Outland Cup'; 65 = 'Timewalking Dungeon Event' }
+    61 = "Hallow's End"; 62 = 'Love is in the Air'; 63 = 'Kalimdor Cup'; 64 = 'Outland Cup'; 65 = 'Timewalking Dungeon Event'
+    66 = 'The Dreamrift'; 67 = 'Hidden Moment'; 68 = 'The Voidspire'; 69 = 'Twin Opening' }
 
 function Get-RetailRows {
     $weeks = @(for ($w = 0; $w -lt 5; $w++) { $day = (Get-Date '2026-10-07').AddDays(7 * $w); Pack $day.Year $day.Month $day.Day 6 })
@@ -209,6 +212,10 @@ try {
     $preview = ($r.Text -split '== What /qc holidays should print on retail')[1] -split '== ' | Select-Object -First 1
     Has $preview "  Brewfest (372): 2027-09-20 07:00 to 2027-10-06 07:00" 'the preview lists an entry in use with its run'
     Has $preview "  Children's Week: not on the calendar in the next 12 months" 'an entry in use with no run in the 12 months says so'
+    Has $preview "  Old Faire Days (500): 2026-11-01 00:01 to 2026-11-07 23:59" 'a run the table starts and ends at midnight shows 00:01 to 23:59 the day before, as the game prints it'
+    Has $preview "  Kalimdor Cup (1395): 2027-02-23 00:01 to 2027-03-08 23:59" "so does a cup's"
+    Lacks $preview '00:00' 'no run in the preview starts or ends at 00:00'
+    Has $r.Text 'Old Fair: next 2026-11-01 00:00 to 2026-11-08 00:00 (500)' "the entries' list keeps the table's times"
     Has $preview "  Love is in the Air (423): 2027-02-08 10:00 to 2027-02-22 10:00`r`n    Love is in the Air (335): 2027-02-11 06:00 to 2027-02-16 06:00" "an entry's other ID in the 12 months is on a line below"
     Has $preview "  Hallow's End (324): 2026-10-19 10:00 to 2026-11-02 11:00`r`n  Love" "an entry's ID for other regions is not listed"
     Lacks $preview 'Feast of Winter Veil' 'an entry no quest of the game has is left out, as qcPrintHolidays does'
@@ -402,6 +409,61 @@ try {
     $after = @($Baseline, $BaselineRows, $BaselineFacts | ForEach-Object { (& $keep $_) -join ';' })
     for ($i = 0; $i -lt 3; $i++) { Check ($before[$i] -and $before[$i] -eq $after[$i]) "the PTR's and Forever's rows stay in each baseline file ($i) when only retail is run" }
     Has $r.Text 'skipped  forever: hidden 1879 (no table of that game given)' "a fact of a game not run is skipped"
+
+    "== Raid openings: new, running out, lapsing"
+    $openings = Get-RetailRows
+    $openings[1880] = Row 1880 66 @((Pack 2026 10 13 6)) @(0) -region 4 -flags 13
+    $openings[1881] = Row 1881 66 @((Pack 2026 10 13 22)) @(0) -region 2 -flags 13
+    $openings[1885] = Row 1885 68 @((Pack 2027 3 2 6)) @(0) -region 4 -flags 13
+    $lookalikes = $openings.Clone()
+    $lookalikes[1890] = Row 1890 67 @((Pack 2026 10 20 6)) @(0) -region 4 -flags 15
+    $lookalikes[1891] = Row 1891 69 @((Pack 2026 10 21 6)) @(0) -region 4 -flags 13
+    $lookalikes[1892] = Row 1892 69 @((Pack 2026 10 21 6)) @(24) -region 4 -flags 13
+    Set-Tables $lookalikes
+    $r = Invoke-Review
+    $part = (($r.Text -split 'Raid openings \(events of named rows of one moment, Flags 13\), listed and never a finding:')[1] -split 'finding\(s\) and')[0]
+    Has $part 'changed retail event "The Dreamrift": new, dated to come (last 2026-10-13)' 'a new raid opening is listed in a part of its own'
+    Has $part 'changed ptr event "The Dreamrift": new, dated to come (last 2026-10-13)' 'on the PTR too'
+    Has $part 'changed retail event "The Voidspire": new, dated to come (last 2027-03-02)' 'and so is one dated months ahead'
+    Lacks $r.Text 'FINDING retail event "The Dreamrift"' 'a new raid opening is no finding'
+    Has $r.Text 'The Dreamrift (1880; 1 more for other regions): next 2026-10-13 06:00 to 2026-10-13 06:00; last 2026-10-13, within 90 days' 'and is still listed among the events on the calendar'
+    Has $r.Text 'FINDING retail event "Hidden Moment": new, dated to come (last 2026-10-20), not on the calendar by its Flags or name' 'a row of one moment with other Flags is no raid opening'
+    Has $r.Text 'FINDING retail event "Twin Opening": new, dated to come (last 2026-10-22)' 'nor an event with a longer row beside its one moment'
+    Check (-not $part.Contains('Hidden Moment') -and -not $part.Contains('Twin Opening')) 'which both stay out of the raid openings'
+    Has $r.Text '4 finding(s) and 4 other change(s) against the baseline.' 'the raid openings count as changes'
+    Set-Tables $openings
+    $r = Invoke-Review -Update
+    Check ($r.Code -eq 0) "new raid openings alone fail nothing (exit $($r.Code))"
+    $r = Invoke-Review -today '2026-10-14'
+    Check ($r.Code -eq 0) "a raid opening lapsing fails nothing (exit $($r.Code))"
+    $part = (($r.Text -split 'listed and never a finding:')[1] -split 'finding\(s\) and')[0]
+    Has $part 'changed retail event "The Dreamrift": has no date to come any more (last 2026-10-13)' 'a raid opening that has lapsed is listed with the raid openings'
+    Has $r.Text '0 finding(s) and 2 other change(s) against the baseline.' 'on live and the PTR, and nothing else'
+    $r = Invoke-Review -today '2026-12-03'
+    $part = (($r.Text -split 'listed and never a finding:')[1] -split 'finding\(s\) and')[0]
+    Has $part 'changed retail event "The Voidspire": its dates run out on 2027-03-02, within 90 days' 'a raid opening coming within 90 days is listed there'
+    Lacks $r.Text 'FINDING retail event "The Voidspire"' 'and is no finding'
+    Has $r.Text 'FINDING retail event "Long Event": its dates run out on 2027-03-02, within 90 days' 'while another event running out the same day still is'
+
+    "== Raid openings: a run removed, a row moved, Flags changed, gone from the table"
+    $moved = $openings.Clone()
+    $moved[1885] = Row 1885 68 @((Pack 2027 3 9 6)) @(0) -region 2 -flags 13
+    Set-Tables $moved
+    $r = Invoke-Review
+    Check ($r.Code -eq 0) "a raid opening losing a run and moving off region 4 fails nothing (exit $($r.Code))"
+    $part = (($r.Text -split 'listed and never a finding:')[1] -split 'finding\(s\) and')[0]
+    Has $part 'changed retail event "The Voidspire": 1885: run of 2027-03-02 removed before it came' "a raid opening's run removed is listed with the raid openings"
+    Has $part 'changed retail event "The Voidspire": 1885: off region 4''s calendar by its Region (4 -> 2)' 'and so is its row moved to another region'
+    Lacks $r.Text 'FINDING retail event "The Voidspire"' 'neither is a finding'
+    $flagged = $openings.Clone()
+    $flagged[1885] = Row 1885 68 @((Pack 2027 3 2 6)) @(0) -region 4 -flags 15
+    Set-Tables $flagged
+    $r = Invoke-Review
+    Has $r.Text 'FINDING retail event "The Voidspire": 1885: off the calendar by its Flags or name (Flags 13 -> 15)' 'an opening whose row leaves Flags 13 is no raid opening, so its row leaving the calendar is a finding'
+    $gone = $openings.Clone(); $gone.Remove(1885)
+    Set-Tables $gone
+    $r = Invoke-Review
+    Has $r.Text 'FINDING retail event "The Voidspire": gone from the table, which had dates to come to 2027-03-02' 'a raid opening gone from the table is a finding'
 }
 finally {
     Remove-Item -Recurse -Force $Scratch -ErrorAction SilentlyContinue

@@ -23,7 +23,10 @@ For each such quest in data\quests.jsonl, against data\pins.jsonl:
     giver there. A pin with no name needs the giver's name too, from TrinityCore's database (as
     Fill-PinNpcIds.ps1 reads it): without one it's only reported, because the addon reads a nameless
     pin with an ID as a quest the player gives themselves. A named pin keeps its name, and is reported
-    instead when the database names the giver differently.
+    instead when the database names the giver differently. A pin with no name holds what starts at its
+    spot (PinRules.ps1), so it takes the giver only when the giver has every quest on it; otherwise the
+    quests the giver is found for move to the giver's pin, its pin within 1.5 points or a new one at the
+    nameless pin's place, and the others stay. A quest two givers are found for stays, and is reported.
   - A quest with no pin gets one at the giver's spawn, on the smallest zone map (UiMap type 3,
     else the smallest dungeon or micro map) of its instance whose region holds the spawn, with the
     giver's name from TrinityCore. A giver's quests within 1.5 points of each other share the pin,
@@ -54,7 +57,7 @@ param(
     [string]$ToolsDir = $PSScriptRoot,
     [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$AddonDir = (Join-Path $PSScriptRoot '..\QuestCompletist'),
-    [string]$Build = "12.1.0.69933",
+    [string]$Build = "12.1.5.70391",
     [string]$TdbFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [string]$ReportFile = (Join-Path $PSScriptRoot 'client-giver-report.txt'),
@@ -65,8 +68,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\PinRules.ps1"
 
-$sameSpot = 1.5
+$sameSpot = $PinSameSpot
 $farFromPin = 3
 $nearPin = 3
 
@@ -246,6 +250,7 @@ $otherId = New-Object System.Collections.Generic.List[object]
 $idlessFar = New-Object System.Collections.Generic.List[object]
 $moves = New-Object System.Collections.Generic.List[object]
 $fills = @{}
+$fillOrder = New-Object System.Collections.Generic.List[object]
 $pinless = New-Object System.Collections.Generic.List[object]
 foreach ($questId in ($spawnsOfQuest.Keys | Sort-Object { [int]$_ })) {
     $spawns = $spawnsOfQuest[$questId]
@@ -283,8 +288,8 @@ foreach ($questId in ($spawnsOfQuest.Keys | Sort-Object { [int]$_ })) {
         $n = Find-NearestSpawn $spawns $pin
         $contradicted = $n -and $starters.ContainsKey($questId) -and -not $starters[$questId].Contains([string]$n.Giver)
         if ($n -and $n.Distance -le $nearPin -and -not $contradicted) {
-            if (-not $fills.ContainsKey($pin)) { $fills[$pin] = New-Object System.Collections.Generic.List[object] }
-            $fills[$pin].Add(@{ Quest = $questId; Giver = $n.Giver; Distance = $n.Distance })
+            if (-not $fills.ContainsKey($pin)) { $fills[$pin] = New-Object System.Collections.Generic.List[object]; $fillOrder.Add($pin) }
+            $fills[$pin].Add(@{ Quest = $questId; Giver = $n.Giver; Distance = $n.Distance; Source = "the client's table" })
         } else {
             $where = if ($n) { "nearest spawn $([math]::Round($n.Distance, 1)) points away" } else { "no spawn on the pin's map" }
             if ($contradicted) { $where += ", and TrinityCore names another starter" }
@@ -335,8 +340,8 @@ foreach ($row in $moveDecisions) {
     if (-not $creatureName.ContainsKey([string]$giver)) { throw "${DecisionsFile}: NPC $giver has no name in the database (quest $qid)" }
     if ($row.Decision -eq 'FILL') {
         if ($found.npc) { continue }
-        if (-not $fills.ContainsKey($found)) { $fills[$found] = New-Object System.Collections.Generic.List[object] }
-        $fills[$found].Add(@{ Quest = [string]$qid; Giver = $giver; Distance = 0.0 })
+        if (-not $fills.ContainsKey($found)) { $fills[$found] = New-Object System.Collections.Generic.List[object]; $fillOrder.Add($found) }
+        $fills[$found].Add(@{ Quest = [string]$qid; Giver = $giver; Distance = 0.0; Source = 'a decision' })
         continue
     }
     $already = $false
@@ -348,10 +353,34 @@ $filled = New-Object System.Collections.Generic.List[string]
 $fillConflicts = New-Object System.Collections.Generic.List[string]
 $fillNameless = New-Object System.Collections.Generic.List[string]
 $fillRenamed = New-Object System.Collections.Generic.List[object]
-foreach ($pin in @($fills.Keys)) {
+foreach ($pin in $fillOrder) {
     $matches = $fills[$pin]
     $giverIds = @($matches | ForEach-Object { $_.Giver } | Sort-Object -Unique)
     $place = Describe-Pin $pin
+    if ($null -eq $pin.name) {
+        # A nameless pin holds what starts at its spot: a giver takes the pin only when it has every quest on it,
+        # and otherwise takes the quests it is found for to its own pin, with the moves below.
+        $claims = [ordered]@{}
+        foreach ($giver in $giverIds) { $claims.Add($giver, @($matches | Where-Object { $_.Giver -eq $giver } | ForEach-Object { [int]$_.Quest })) }
+        $split = Split-NamelessPin $pin.quests $claims
+        if ($split.Disputed.Count) {
+            $fillConflicts.Add("${place}: its quests name different givers there, " + (($matches | Where-Object { $split.Disputed -contains [int]$_.Quest } | ForEach-Object { "$(Describe-Giver $_.Giver) for $($_.Quest)" }) -join '; '))
+        }
+        $givers = if ($null -ne $split.Fill) { @($split.Fill) } else { @($split.Moves.Keys) }
+        foreach ($giver in $givers) {
+            $mine = @($matches | Where-Object { $_.Giver -eq $giver -and $split.Disputed -notcontains [int]$_.Quest })
+            $name = $creatureName[[string]$giver]
+            if (-not $name) { $fillNameless.Add("${place}: giver $giver has no name in the database (quests $(($mine | ForEach-Object { $_.Quest }) -join ', '))"); continue }
+            if ($null -eq $split.Fill) {
+                foreach ($m in $mine) { $moves.Add(@{ Quest = [string]$m.Quest; Pin = $pin; Giver = $giver; Distance = $m.Distance; Source = $m.Source }) }
+                continue
+            }
+            Set-RecordField $pin 'name' $name
+            Set-RecordField $pin 'npc' $giver
+            $filled.Add("$place -> $(Describe-Giver $giver), $(($mine | ForEach-Object { "$($_.Quest) at $([math]::Round($_.Distance, 1))" }) -join ', ') points")
+        }
+        continue
+    }
     if ($giverIds.Count -gt 1) {
         $fillConflicts.Add("${place}: its quests name different givers there, " + (($matches | ForEach-Object { "$(Describe-Giver $_.Giver) for $($_.Quest)" }) -join '; '))
         continue
@@ -373,39 +402,38 @@ $pinsByMap = @{}
 foreach ($pin in $pins) { if (-not $pinsByMap.ContainsKey([int]$pin.map)) { $pinsByMap[[int]$pin.map] = New-Object System.Collections.Generic.List[object] }; $pinsByMap[[int]$pin.map].Add($pin) }
 $newPins = New-Object System.Collections.Generic.List[object]
 
-# Moves: a quest leaves the pin that took a neighbour's identity for a pin of the giver at the same spot,
-# an existing pin of that giver within 1.5 points or a new one at the old pin's place. A pin left with
-# no quest goes.
+# Moves: a quest leaves the pin that took a neighbour's identity, or a nameless pin it shares with quests of
+# other givers or none, for a pin of the giver at the same spot, an existing pin of that giver within 1.5
+# points or a new one at the old pin's place. A pin left with no quest goes.
 $movedLines = New-Object System.Collections.Generic.List[string]
+$splitLines = New-Object System.Collections.Generic.List[string]
 $emptied = New-Object System.Collections.Generic.HashSet[object]
-$moveGroups = [ordered]@{}
+# Grouped by the pin itself, not its place: two nameless pins can stand on one point.
+$moveGroups = New-Object System.Collections.Generic.List[object]
 foreach ($m in $moves) {
-    $key = "$(Get-PlaceKey $m.Pin.map $m.Pin.x $m.Pin.y)|$($m.Pin.npc)|$($m.Giver)"
-    if (-not $moveGroups.Contains($key)) { $moveGroups[$key] = @{ Pin = $m.Pin; Giver = $m.Giver; Items = New-Object System.Collections.Generic.List[object] } }
-    $moveGroups[$key].Items.Add($m)
+    $group = $null
+    foreach ($g in $moveGroups) { if ([object]::ReferenceEquals($g.Pin, $m.Pin) -and "$($g.Giver)" -eq "$($m.Giver)") { $group = $g; break } }
+    if (-not $group) { $group = @{ Pin = $m.Pin; Giver = $m.Giver; Items = New-Object System.Collections.Generic.List[object] }; $moveGroups.Add($group) }
+    $group.Items.Add($m)
 }
-foreach ($group in $moveGroups.Values) {
+foreach ($group in $moveGroups) {
     $pin = $group.Pin; $giver = $group.Giver
     $questList = @($group.Items | ForEach-Object { [int]$_.Quest } | Sort-Object -Unique)
     $place = Describe-Pin $pin
     Set-RecordField $pin 'quests' ([int[]]@($pin.quests | Where-Object { $questList -notcontains [int]$_ }))
     if (@($pin.quests).Count -eq 0) { [void]$emptied.Add($pin) }
-    $target = $null
-    foreach ($candidate in $pinsByMap[[int]$pin.map]) {
-        if ($candidate -ne $pin -and $candidate.npc -and [int]$candidate.npc -eq $giver -and (Get-Distance $candidate.x $candidate.y $pin.x $pin.y) -le $sameSpot) { $target = $candidate; break }
-    }
+    $target = Find-GiverPin $pinsByMap[[int]$pin.map] $pin $giver $null
+    $joinedPin = $null -ne $target
     if ($target) {
         Set-RecordField $target 'quests' ([int[]]@(@($target.quests) + @($questList | Where-Object { @($target.quests) -notcontains $_ })))
     } else {
-        $target = [pscustomobject][ordered]@{
-            map = [int]$pin.map; icon = $pin.icon; npc = [int]$giver; name = $creatureName[[string]$giver]
-            x = $pin.x; y = $pin.y; quests = [int[]]$questList; note = $null
-        }
+        $target = New-GiverPin $pin $giver $creatureName[[string]$giver] $questList
         $newPins.Add($target)
         $pinsByMap[[int]$pin.map].Add($target)
     }
     $detail = ($group.Items | ForEach-Object { "$(Describe-Quest ([string]$_.Quest)) ($($_.Source)$(if ($_.Source -ne 'a decision') { ", $([math]::Round($_.Distance, 1)) points" }))" }) -join ', '
-    $movedLines.Add("$place -> $(Describe-Giver $giver): $detail")
+    if ($pin.npc) { $movedLines.Add("$place -> $(Describe-Giver $giver): $detail") }
+    else { $splitLines.Add("$place -> $(Describe-Giver $giver)$(if ($joinedPin) { ", its pin at $($target.x),$($target.y)" }): $detail") }
 }
 
 # New pins: a giver's spawns within 1.5 points of each other on one map share a pin, and join an
@@ -480,6 +508,9 @@ $report.Add("")
 $report.Add("$($filled.Count) pins with no NPC ID take the client's giver, standing within $nearPin points:")
 foreach ($line in $filled) { $report.Add("  $line") }
 $report.Add("")
+$report.Add("$($splitLines.Count) givers take quests off a nameless pin to a pin of their own, standing within $nearPin points; the nameless pin keeps its other quests, and no name:")
+foreach ($line in $splitLines) { $report.Add("  $line") }
+$report.Add("")
 $report.Add("$($fillNameless.Count) nameless pins would take a giver the database doesn't name (look up by hand):")
 foreach ($line in $fillNameless) { $report.Add("  $line") }
 $report.Add("")
@@ -509,7 +540,7 @@ foreach ($line in $offMap) { $report.Add("  $line") }
 
 $unplaced = @(($otherId + $idlessFar + $fillRenamed) | Where-Object { -not $decided.Contains($_.Key) })
 $unplacedNew = @($unplaced | Where-Object { -not $kept.ContainsKey($_.Key) }).Count
-Write-Output "$agree quests agree with the client ($($agreeFar.Count) pins far from every spawn); $($filled.Count) pins get an ID; $($movedLines.Count) pins give quests to the giver at the same spot ($($emptied.Count) pins left empty go); $($added.Count) pins added and $($joined.Count) joined for quests without one; $($unplaced.Count) quests or pins left to review, $unplacedNew of them new."
+Write-Output "$agree quests agree with the client ($($agreeFar.Count) pins far from every spawn); $($filled.Count) pins get an ID; $($movedLines.Count) pins give quests to the giver at the same spot and $($splitLines.Count) givers take quests off a nameless pin ($($emptied.Count) pins left empty go); $($added.Count) pins added and $($joined.Count) joined for quests without one; $($unplaced.Count) quests or pins left to review, $unplacedNew of them new."
 Write-Output "Report: $ReportFile"
 if ($WhatIf) { Write-Output "WhatIf: nothing changed."; exit 0 }
-if ($filled.Count + $added.Count + $joined.Count + $movedLines.Count -gt 0) { Save-PinData $ordered $DataDir $AddonDir }
+if ($filled.Count + $added.Count + $joined.Count + $movedLines.Count + $splitLines.Count -gt 0) { Save-PinData $ordered $DataDir $AddonDir }

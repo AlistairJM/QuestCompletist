@@ -3,7 +3,10 @@ Gives quests the game calls PvP the `pvp` field of the data files (qcQuestPvP in
 games. Each quest is decided by the first source that has an answer for it, in this order:
   1 the game's quest cache (questInfo, step 2e): the game's own kind of the quest
       retail   41 PvP, 113 PvP World Quest, 255 War Mode PvP, 256 PvP Conquest, 278 PvP Elite World Quest
-      forever  41 PvP (the only PvP kind its client has)
+      forever  41 PvP (the only PvP kind its client has). A quest the beta didn't answer on the newest build
+               takes its last record from the answer memory (-AnswerFile, data\forever\answers.jsonl) when
+               the importer keeps it: Get-CarriedAnswers in ForeverAnswers.ps1, with -MaxMissedRuns and
+               -RemovalDecisionsFile as the importer has them.
   2 retail: Blizzard's API (tools\quest_api_cache, step 1), its quest type 41, the same kind as the cache's
   3 retail: the client's task table (QuestV2CliTask.csv, step 1b), its QuestInfoID, for task quests
   4 the emulator, for a quest the game hasn't answered: TrinityCore's QuestInfoID (retail), CMaNGOS's Type
@@ -22,10 +25,14 @@ Only sets the field. A quest with pvp that no source calls PvP is listed and lef
 for a look and no more, the quests in the places PvP happens (battlegrounds, Wintergrasp, Tol Barad, Ashran)
 that no source tags: a judgement of ours, not the data's.
 
-Reads tools\<game>_quest_cache_<build>.jsonl (the newest unless -Build is given), the API cache, the task
-table, TrinityCore's tools\tdb\TDB_full_world_*.sql or CMaNGOS's tools\ClassicDB_*.sql.gz; a source that is
-missing is named and skipped. Safe to rerun: a second run changes nothing. With -WhatIf it only reports;
-otherwise it saves through AddonData.ps1, which rebuilds the Lua.
+Reads tools\<game>_quest_cache_<build>.jsonl (the newest unless -Build is given), Forever's answer memory as
+the importer last wrote it, the API cache, the task table, TrinityCore's tools\tdb\TDB_full_world_*.sql or
+CMaNGOS's tools\ClassicDB_*.sql.gz; a source that is missing is named and skipped (unlike the importer, it
+doesn't make a missing answer memory from the caches). Run it on Forever after the importer (step 10): when
+the memory's last run isn't the cache's build, it says so. A quest cache that looks partial
+(QuestCacheFiles.ps1) is warned about: retail's against the build before's and our data, Forever's against
+the build before's alone, as it holds only what the beta has answered. Safe to rerun: a second run changes
+nothing. With -WhatIf it only reports; otherwise it saves through AddonData.ps1, which rebuilds the Lua.
 #>
 param(
     [ValidateSet('retail', 'forever')]
@@ -35,6 +42,9 @@ param(
     [string]$AddonDir = '',
     [string]$Build = '',
     [string]$DecisionsFile = (Join-Path $PSScriptRoot '..\docs\plans\quest-pvp-decisions.csv'),
+    [string]$AnswerFile = '',
+    [int]$MaxMissedRuns = 10,
+    [string]$RemovalDecisionsFile = (Join-Path $PSScriptRoot '..\docs\plans\quest-removal-decisions.csv'),
     [string]$TdbFile = '',
     [string]$CmangosDump = '',
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
@@ -43,6 +53,9 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\ForeverAnswers.ps1"
+. "$PSScriptRoot\QuestRemovals.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot $(if ($Game -eq 'forever') { '..\data\forever' } else { '..\data' }) }
 if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot $(if ($Game -eq 'forever') { '..\QuestCompletist\Forever' } else { '..\QuestCompletist' }) }
 
@@ -60,9 +73,7 @@ function Read-Dump([string]$file, [string]$table, [string]$columns) {
 }
 
 if (-not $Build) {
-    $newest = Get-ChildItem "$ToolsDir\${Game}_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
-        Where-Object { $_.BaseName -match "^${Game}_quest_cache_\d+\.\d+\.\d+\.\d+$" } |
-        Sort-Object { [version]($_.BaseName -replace "^${Game}_quest_cache_") } | Select-Object -Last 1
+    $newest = Get-QuestCacheFiles $ToolsDir $Game | Select-Object -Last 1
     if (-not $newest) { throw "No ${Game}_quest_cache_<build>.jsonl under ${ToolsDir}: run Read-QuestCache.ps1 first, or give -Build." }
     $Build = $newest.BaseName -replace "^${Game}_quest_cache_"
 }
@@ -70,14 +81,33 @@ $cacheFile = Join-Path $ToolsDir "${Game}_quest_cache_$Build.jsonl"
 if (-not (Test-Path $cacheFile)) { throw "There's no $cacheFile." }
 
 # Each source's answer: a hashtable of quest ID to the kind it names (0 for none).
+function Get-Kind($record) { if ($null -ne $record.questInfo) { [int]$record.questInfo } else { 0 } }
 $cache = @{}
 foreach ($line in [IO.File]::ReadLines($cacheFile)) {
     $line = $line.Trim().TrimEnd(',')
     if ($line -notmatch '^\{"id":(\d+)') { continue }
     $record = $line | ConvertFrom-Json
-    $cache[[int]$record.id] = if ($null -ne $record.questInfo) { [int]$record.questInfo } else { 0 }
+    $cache[[int]$record.id] = Get-Kind $record
 }
+$answeredNow = $cache.Count
 $skipped = @()
+$memoryNote = ''
+if ($Game -eq 'forever') {
+    if (-not $AnswerFile) { $AnswerFile = Join-Path $DataDir 'answers.jsonl' }
+    if (-not (Test-Path -LiteralPath $AnswerFile)) { $skipped += "Forever's answer memory ($AnswerFile)" }
+    $keep = @{}; $removeOk = @{}
+    foreach ($d in (Read-RemovalDecisions $RemovalDecisionsFile 'forever')) {
+        if ($d.Decision -eq 'KEEP') { $keep[$d.Quest] = $true } else { $removeOk[$d.Quest] = $true }
+    }
+    $memory = Read-AnswerMemory $AnswerFile
+    $lastRun = if ($memory.Runs.Count) { $memory.Runs[$memory.Runs.Count - 1] } else { $Build }
+    if ($lastRun -ne $Build) {
+        $memoryNote = "The answer memory's last run is $lastRun, not ${Build}, so what it keeps may not be what the importer keeps on ${Build}: " +
+            $(if ([version]$lastRun -lt [version]$Build) { 'run the importer (step 10) first.' } else { 'its records can come from a later build.' })
+    }
+    $carried = Get-CarriedAnswers $memory $cache $MaxMissedRuns $keep $removeOk
+    foreach ($id in $carried.Keys) { $cache[$id] = Get-Kind ($carried[$id].Raw | ConvertFrom-Json) }
+}
 $api = @{}; $task = @{}; $emulator = @{}; $emulatorName = ''
 if ($Game -eq 'retail') {
     $apiDir = Join-Path $ToolsDir 'quest_api_cache'
@@ -149,7 +179,9 @@ foreach ($q in $records) {
     }
 }
 
-"Build $Build ($Game): the game's cache has $($cache.Count) quests; no source answers for $unanswered of ours."
+"Build $Build ($Game): the game's cache has $answeredNow quests" + $(if ($Game -eq 'forever') { ", and the answer memory $($carried.Count) more it answered on an earlier build" } else { '' }) + "; no source answers for $unanswered of ours."
+if ($memoryNote) { $memoryNote }
+Get-QuestCacheWarning $cacheFile $(if ($Game -eq 'retail') { $inData.Keys })
 "Read: " + (($sources | Where-Object { $_.Name } | ForEach-Object { "$($_.Name) $($_.Answers.Count)" }) -join ', ') + $(if ($skipped.Count) { ". Not found, skipped: " + ($skipped -join ', ') } else { '' }) + '.'
 "PvP kinds: " + (($pvpKinds | ForEach-Object { "$_ $($kindName[$_])" }) -join ', ') + "."
 "{0} quests get pvp ({1}), {2} already have it." -f $changes.Count, (($bySource.Keys | ForEach-Object { "$_ $($bySource[$_])" }) -join ', '), $same

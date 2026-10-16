@@ -649,10 +649,11 @@ is pinned like the 758, callings stay out until it is known whether the game sti
   differ from the request: the lists leave 16 quests out, 11 Threat Wrappers (268, the "Assault:"
   quests) and 5 Bonus Objectives with Completion Toast (283), which are not named "World Quest"; and
   21 of the 758 have a start point outside every region of their map, so only 737 can be placed.
-- **The table.** 42 kinds: the 38 `QuestInfo` rows named "World Quest" (109 to 152, 259, 260, 278,
-  286, 295, 296), Hidden Quest 265, Threat Wrapper 268, Calling Quest 271 and Bonus Objective with
-  Completion Toast 283. Dragonrider Racing 281 was the 43rd until the user's call of 11 October 2026;
-  its line is gone, so racing is placed. It is listed, not read from `QuestInfo.csv`, so
+- **The table.** 43 kinds: the 39 `QuestInfo` rows named "World Quest" (109 to 152, 259, 260, 278,
+  286, 295, 296, and 298 Lair World Quest, which 12.1.5 added), Hidden Quest 265, Threat Wrapper 268,
+  Calling Quest 271 and Bonus Objective with Completion Toast 283. Dragonrider Racing 281 was in it too
+  until the user's call of 11 October 2026; its line is gone, so racing is placed. Important Quest (Raid)
+  297, also new in 12.1.5, is not a world quest kind and is placed. The table is listed, not read from `QuestInfo.csv`, so
   a name change or a kind a new build adds cannot change what is pinned unseen; the run stops
   with a message at a `QuestInfo` named World Quest that the table lacks, and a task kind that
   `QuestInfo.csv` has no row for is placed. 268 and 283 are in it to match the 758 the user
@@ -827,7 +828,318 @@ holds them, and `Import-RecordedGivers.ps1` no longer counts Landfall among the 
   none of them Landfall's (202 places; kind 0 77, World Event 82 52, Group 1 20, Important Quest 282 12,
   World Boss 289 5, Meta Quest 284 4, Heroic 85 2, Dungeon 81 2, Raid 62 1): 186 new pins, and 11382
   and 11386 join Wind Trader Zhareem's pin. That is not this decision, so every round here left those
-  175 quests' rows out of `quest_locations.csv` after the location step (decision 40 of open-items.md).
+  175 quests' rows out of `quest_locations.csv` after the location step (decision 40 of open-items.md; they
+  were pinned on 16 October 2026, "One pin per spot", "Applied").
   So filtered, a round with master's scripts changed no byte, a round with the hold gone changed
   `Assemble-PinDB.ps1`'s result alone, and the next round, and one on the checkout's own files, changed
   nothing. Step 6d (`-WhatIf`) fills and adds nothing.
+
+## October 2026, one pin per spot
+
+*The user, 13 October 2026: pins that name nobody are one pin per spot in both games, with every quest
+of the spot on it, and a quest that later gets a proper giver leaves the shared pin for its giver's
+(open-items row 7, game-parity recommendation 11). 15 October, for the 12.1.5 sweep: the spot is 1.5
+map points, row 37's one radius; retail keeps its carry-over layer (the old pairs kept, the positions
+reused, the names borrowed), and the grouping rule and the order a pin's giver is chosen in become one
+module both games call, as `DuplicatePins.ps1` is. The one real difference stays: retail places a
+quest at the client's start point, Forever at its giver.*
+
+- **The module.** `tools\PinRules.ps1`, dot-sourced by `Assemble-PinDB.ps1`, `Import-ForeverData.ps1`,
+  `Apply-ClientQuestGivers.ps1` and `RecordedGivers.ps1`: `$PinSameSpot` (1.5, which is also the
+  recorder's place radius now), `$PinIdentityOrder` with `Select-PinIdentity` (the quest's existing
+  pin, the game's own name, the recorder, the emulator's starter there, a known neighbour that starts
+  the quest), the grouping (`Get-PinGiverKey`, `Find-PinGroup`, `Add-PinGroup`), the icon from a pin's
+  quests (`Get-PinQuestIcon`, Forever's rule: seasonal, profession or class when every quest is one,
+  else normal), and what a nameless pin does once a giver of some of its quests is known
+  (`Split-NamelessPin`, `Find-GiverPin`, `New-GiverPin`).
+- **Retail's grouping.** Before, a row that named nobody joined a group of its own quest within 1.5
+  points, so every nameless pin held one quest (5,159 of 5,159 on 12 October), and a row with a name
+  but no ID that found no group of its name fell back to that quest group. Now a row joins the group
+  of its giver (its NPC ID, else its name) or, naming nobody, the nameless group of its spot whose
+  first row stands nearest it within 1.5 points; distances are measured on the decimals, so exactly
+  1.5 joins. After positions are reused, two groups of one giver, or two that name nobody, at the
+  same coordinates become one pin (it was NPC groups only). A nameless spot whose rows bring different
+  icons takes its quests' icon. The order a row's giver is chosen in is the one the tool had, now read
+  from the module, and it keeps one quirk: a row named after a starter's spawn keeps the normal icon
+  even for a profession quest.
+- **Forever's grouping.** The importer's pins went by an exact key (map, giver, point), so start
+  points merged only at one point. They now go by the module: a giver's places as before (they are
+  1.5 points apart or more already), and the start points of quests with no giver one pin per spot.
+- **The fill tools.** Steps 6c and 6d named a whole nameless pin after the giver found for one of its
+  quests, which was right while a nameless pin held one quest and is not on a shared spot: on a scratch
+  copy of the per-spot pins, master's 6c named the three quests of a spot after one quest's giver, and
+  6d the same. Both now fill a nameless pin only when one giver has every quest on it; otherwise the
+  quests the giver is found for move to its pin within 1.5 points, or to a new pin of the giver at the
+  nameless pin's place (with its icon), the rest stay on the nameless pin, and a quest two givers are
+  found for stays and is listed. 6d's safety check lets a quest leave a pin only in such a move. The
+  Stormheim spot that raised it (map 634, quests 39591, 39592, 39594, 39595 and 39597, at 46.89,44.56
+  in the 12.1.5 candidate) is not reached by 6c on today's data either way: 39597 also stands on Havi's
+  pin, and 6c fills a nameless pin only for quests with no NPC pin. Forever needed no change here: it
+  places every quest at its givers on each import, so a quest whose giver turns up leaves the spot.
+- **On the 12.1.5 tables** (12.1.5.70391, TrinityCore 1210.26091, 16 October 2026; the baseline): the
+  location step gives 19,904 rows, 28,883 with the 8,979 old pairs kept. Master's tools make 16,294
+  pins of them (10,593 with an NPC ID, 337 with only a name, 5,364 nameless), the module 13,549 (10,593,
+  337 and 2,619): 2,745 nameless pins merge, every pin with an ID or a name is the same line, and the
+  quests with a pin are 25,960 both times. 7 quests whose starts straddle two spots sit on two nameless
+  pins close by and 2 quests with several pins on a map have one fewer (28,203 placements to 28,208).
+  Of the placements 26,735 stay where they were, 747 move up to 0.5 points, 703 0.5 to 1.5 and 16 1.5
+  to 2.14, the last because the reused coordinates of a spot can be 1.5 points from its first row. 8
+  spots bring different icons and take their quests': the profession icon for the 3 whose quests all
+  need a profession, the normal one for the other 5; for 3 of the 8 that is another icon than their
+  first pin's. The dry run of 14 October (on master 82e302b) is the same rule:
+  run on today's inputs, its switch writes this candidate byte for byte but for those 3 icons. A
+  rebuild on the candidate's own output writes it byte for byte. Step 6c `-WhatIf` on the candidate
+  changes no pin, with master's tools or these (2,054 quests agree with the client's giver table), and
+  no row of `pin-npc-id-decisions.csv` or `pin-giver-decisions.csv` loses the pin at its place.
+- **On Forever** the import of builds 70338 and 70374 writes `pins.jsonl` as committed: its 4 nameless
+  pins hold the 11 quests pinned at their start, each pin's at one point, none within 1.5 points of
+  another.
+- **Checks.** `Test-PinRules.ps1` (46 checks: the rules, then the pipeline, 6c and 6d on a scratch
+  world, through a rebuild; 13 of them fail with master's tools), `Test-ForeverImport.ps1` (125, its
+  section L new; 5 of L's 10 fail with master's importer, which already moved a quest to a giver found
+  later), `Test-RecordedGivers.ps1` (298, E32 and E43
+  now expecting two givers on one nameless pin to take their quests, or to be listed for their want of
+  a name), and the reachability report, unchanged as no data changed.
+- **The 12.1.5 story quests** went into the data on 16 October 2026 (maintenance.md, step 6, "The 12.1.5 gap
+  run") with the pins as they were, so the baseline above moves. On their data, with the same tables and
+  the module, the four steps (not applied) make 13,564 groups, 13,552 pins once the 12 that land on one spot
+  merge, and keep 28,887 location rows. Of the 33 story quests, 17 move to their start points in the
+  client's data, 10 stay where they are (the six of line 6385 now one nameless pin), 95811, 95813, 98833
+  and 98834 get their first pins, and 99306 and 99312 none.
+
+### Applied (16 October 2026)
+
+Branch `data/pins-12-1-5`, on master 3d09249. The 12.1.5.70391 tables were downloaded again from wago.tools
+for the run (`QuestPOIBlob`, `QuestPOIPoint`, `UiMapAssignment`, `UiMap`, `QuestV2CliTask`, `QuestV2`,
+`QuestInfo`, `CollectableSourceQuestSparse`), each byte for byte the main checkout's; TrinityCore 1210.26091,
+the newest by `Get-LatestBuilds.ps1` that day, as was the retail client. Every step ran with `-ToolsDir` on a
+scratch folder.
+
+- **The run.** The location step: 19,908 rows (17,624 quests at their start, 433 at their own point), none
+  from TrinityCore (every quest its rules would place has a pin already), 152 quests in its review file. Join: 225
+  locations of quests with no pin, 21 on a map where the quest has none, 4 more than 5 points from the
+  quest's pin. Assemble: 28,887 rows with the 8,979 old pairs kept, 13,552 pins. The rule of a pin per
+  nameless quest (Assemble from before 80f5325) makes 16,298 from the same inputs: 2,746 of its 5,368
+  nameless pins merge, leaving 2,622, and its 10,593 pins with an NPC ID and 337 with only a name are line
+  for line the same.
+- **What the rule moves** (against a pin per quest, same inputs): 26,738 placements stay where they were,
+  749 move up to 0.5 points, 702 0.5 to 1.5, and 16 1.5 to 2.14, as a spot's reused coordinates can be 1.5
+  points from its first row: 26922 (map 22), 27750, 27929, 28041, 28043 and 28123 (241, the four at 53.3,42.7
+  2.14 and 1.57 points from their starts), 39665 (539), 42445 (634), 49228 and 49260 (895), 52774 (1157),
+  60351 (85), 61541 (1565), 64720 (1970), 94600 (2352) and 96540 (2437). 7 quests whose starts straddle two
+  spots sit on two nameless pins (64228, 64579, 64723, 65142, 65226 and 65749 on 1970, 64962 on 2031) and 2
+  quests with several pins on one map have one fewer (34692 on 582, 65727 on 1970).
+- **The 8 spots whose quests bring different icons** take their quests' icon: the profession icon where
+  every quest needs a profession (map 862 at 55.68,40.65; 1165 at 46.91,38.01 and 42.33,39.72), else the
+  normal one (204 at 54.78,72.65; 554 at 24.53,52.21; 630 at 63.83,30.3; 1165 at 45.17,40.57; 1462 at
+  37.04,47.18). Against the pin that stood at each place before, 3 went from normal to profession, 3 from
+  profession to normal (630, 1165 at 45.17,40.57 and 1462) and 2 kept theirs.
+- **The quests the run pins for the first time: 188.** 184 task quests with a start and no pin (kind 0 83,
+  World Event 52, Group 20, Important Quest 14, Meta Quest 6, World Boss 4, Heroic 2, Dungeon 2, Raid 1): 174
+  that step 6b added on 11 October, held since the Landfall round (the 175th it held, 97128, is a Lair World
+  Quest in 12.1.5's task table, which `$noPinKinds` holds), 98379 and 98390 that its 12.1.5 run added
+  (Important Quest, a kind row 2 of open-items.md approved), and 8 Hallow's End quests (92104, 92455, 92498,
+  93400, 93898, 95826, 98421, 98422; 92104 and 92455 were in the data before and have their first client
+  starts in 12.1.5). That is decision 40 of open-items.md, taken by the user for the 12.1.5 sweep (decision
+  5), World Event included; the Hallow's End quests follow the calendar. Two Hallow's End task quests stay
+  without: 97219 has no start, 98801 is a world quest. And the four story quests above. 11382 and 11386 join
+  Wind Trader Zhareem's pin, as TrinityCore's starter stands at their start.
+- **A name carried from another map, three times.** Join's rows with `MAP_ID_DRIFT` and an NPC: the
+  quest starts on a map where it has no pin, and `Get-NearestExistingPin` returns its first pin on any map
+  (data-sources-review.md, D10). The old pairs of that NPC then count as covered and are not kept.
+  - 14022 and 14036 "Pilgrim's Bounty". 12.1.0.69933's client lists no start for them; 12.1.5.70391 lists
+    four in Dornogal (2339 at 31.41,55.86, 46.08,55, 55.56,61.14 and 56.84,28.64) and one in Silvermoon City
+    (2393 at 51.12,76.38), the points where 93898 A Haunted Home, 95009 Doing the Dash and 76361 Fashion Week
+    start too. The run named five new pins Goblin Commoner (20102), from their Netherstorm pin, and so dropped
+    them from the Goblin Commoner pins in Netherstorm (109 at 33.8,64) and the Storm Peaks (120 at 40.6,84.4).
+    No source names a giver at the new points: the client's giver table has no row for either quest,
+    TrinityCore has no starter for either (creature or object), no spawn of a creature that starts any
+    quest stands within 1.5 points of a Dornogal point, and no spawn at all within 1.5 points of the
+    Silvermoon point (51.12,76.38, or the pin's 51.48,75.68); the API has no giver field, and retail's
+    recorder has nothing. Spawns of creatures that start no quest do stand near three of the Dornogal
+    points: Oathsworn Peacekeeper (219014) 0.50 points from 46.08,55, Oathsworn Citizen (219151) 0.46 from
+    55.56,61.14 and Soaking Resident (219182) 0.33 from 56.84,28.64, among others; near 31.41,55.86 only
+    spawns of another instance fall inside the map's box. Wowhead's pages (read 16 October 2026) list the race commoners and the Goblin
+    Commoner as the starters of both, with Netherstorm and the Storm Peaks among the places, and neither
+    Dornogal nor Midnight's Silvermoon City (14036's names the Burning Crusade one). Decided on the
+    recommendation the user delegated (no NPC carried across maps): the new
+    places are nameless and joined the nameless pins of those spots, where the tools put them without the
+    borrow (2339 at 45.51,55.57 with 82672, and the three other Dornogal pins of 93898; 2393 at 51.48,75.68
+    with 82672); and the Netherstorm and Storm Peaks placements stay, as old pairs the client has never
+    listed a start for, which the run keeps for any other quest. Both by hand in `data\pins.jsonl`: no
+    decision file clears a name (`pin-npc-id-decisions.csv`'s `NAME` needs a new name and its `ID` keeps the
+    name; `pin-giver-decisions.csv` moves and fills), and changing line 48 alone is recommendation 31's
+    change, which would keep every such old pair and needs its review list. The Holiday Enthusiasts' pins
+    stand at the same points (76361 among their quests): whether one offers Pilgrim's Bounty is for the
+    game, in late November. 14022's Dwarf Commoner pin in Ironforge (516) stays as it was.
+  - 95187 "All Along the Watchtowers". The run named its two Silvermoon City starts (45.46,70.34 and
+    45.78,70.12) after Lady Liadrin, from its old pin in Eversong Woods, which stood at its point -1. Wowhead
+    has Lor'themar Theron start it and Lady Liadrin end it; his pin (235787) is at 45.46,70.34, where 95533
+    starts too. A `MOVE` row in `pin-giver-decisions.csv` took it there in step 6c. The client's giver table
+    and TrinityCore name no giver for it.
+  A rerun keeps all three: the carry-over now finds each quest's pin on the same map.
+- **Other start moves.** The client's start rows of our quests on 12.1.0.69933 against 12.1.5.70391 (the
+  location step run on each build's tables): 45 quests differ. 43 had no row in 12.1.0: 14022, 14036, the 31
+  story quests with a start, the 8 Hallow's End quests and 98379 and 98390. 82672 "Another Timely Invitation"
+  gained a start in Silvermoon City (2393 at 51.48,75.68), where it now has a pin (with 93898, 94622 and
+  95009, and 14022 and 14036, on its own point); of its four other pins, Stormwind's (84) and Orgrimmar's
+  (85) joined nameless spots 1.3 points from its starts and the other two stand as they did. 97128 lost its
+  row only because 12.1.5's task table makes it a Lair World Quest, which `$noPinKinds` holds; it had no pin.
+  No other quest's start moved. The 17 story quests that moved went to their start from pins placed before
+  12.1.5 was live, most of them at the quest's point -1: 95187 (Eversong Woods to Silvermoon City),
+  95190, 95191 and 95192 (2.14 points), 95197 (2437 to 2395), 95199 (1.1), 95203 (2512 to 2437), 95206 and
+  95208 (7.9), 95209 (3.7), 95210 (2509 to 2512), 95211 (off 2509 and 2669, 25.3 points on 2613), 95812 (58.4
+  points on 2393), 96707 (2613 to 2509), 98831 (2395 to 2512 and 2536), 98832 (2647 to 2395) and 98836 (2512
+  to 2395).
+- **The after-steps.** `Apply-PinNpcIds.ps1 -WhatIf`: all 197 rows find their pin, nothing to change, so no
+  row was repointed or deleted. `Remove-DuplicatePinQuests.ps1 -WhatIf`: nothing to take off, the same 13 left
+  alone as on master. Step 6c (`-Refresh`): the 12.1.5 table is byte for byte the one held; 2,054 quests
+  agree with it, as on master, the 16 cases for review are the same and none is new, and the only change is
+  the `MOVE` row. The 73 older rows of `pin-giver-decisions.csv` all still find their quest at their place.
+  `Fill-PinNpcIds.ps1`: no pin to fill (200 at objects, 8 at creatures of other names, 129 not in the dump, as
+  on master). Step 6d (`-WhatIf`, on copies of the recorder and probe files): retail's own file 0 records,
+  its two probe files one quest record each and no giver, the ledger unchanged (retail 0 rows, Forever 326);
+  nothing filled, moved or added. The pipeline was then run again: the second round changed only the order
+  of Lor'themar Theron's quests, and the third changed no byte.
+- **Result.** 16,084 pins to 13,547: 10,588 with an NPC ID (10,585 lines the same; Wind Trader Zhareem's
+  gained 11382 and 11386, Lady Liadrin's in Eversong lost 95187 and Lor'themar Theron's in Silvermoon gained
+  it), 337 with only a name (all the same) and 2,622 with neither (5,159 before). Quests with a pin 25,776 to
+  25,964, placements 27,990 to 28,216; no quest lost its last pin. Of the placements on a map that has the
+  quest before and after, 26,565 stand where they did, 713 moved up to 0.5 points, 677 0.5 to 1.5, 19 1.5 to
+  5 and 4 more than 5 (15 of the 16 above, and 8 story quests); 12 went (one each of 34692 and 65727, which
+  keep other pins on their maps, and 10 of story quests on maps they no longer start on) and 238 are new
+  (211 for the 188 quests, 10 for 14022 and 14036, 1 for 82672, 7 for the
+  quests that straddle two spots, 9 for story quests on their new maps). 23 location rows stand more than
+  1.5 points from their quest's pin, 2.14 at most: 17 on NPC pins whose coordinates were reused before, and
+  6 of nameless spots.
+- **Nameless pins closer than 1.5 points: 6 pairs.** No two pins of one NPC on a map stand closer than
+  1.5 points. Six pairs of nameless pins do, because each spot keeps an old pin's coordinates and the
+  grouping keeps the two spots apart. Five pairs stood at the same coordinates on master: map 22 at
+  47.83,63.13 (26925) and 47.83,62.78 (27084, 27086, 27087), 0.35 apart; 379 at 61.58,80.2 and 62.69,80.73,
+  1.23; 745 at 44.95,37.35 (42158) and 43.61,36.78 (54919, 54920), 1.46; 2024 at 70.28,24.94 (66192, 69861)
+  and 71.29,24.63 (70427), 1.06; and 2031 at 53.98,45.45 (64728, 64962) and 52.6,45.71 (64731), 1.40, the
+  straddle of 64962 above. One pair is new: on 2393, 95808 at 31.95,69.64 and 95812 at 31.95,69.27, 0.37
+  apart. Their client starts (30.6,70.29 and 31.95,69.27) are 1.69 apart, so they are two spots, and
+  95808's pin kept its old coordinates, 1.498 points from its start. No data was changed for them: a hand
+  merge would be split again by the next run. A `PinRules.ps1` change that merges nameless spots whose
+  pins land within 1.5 points would close them; it waits for the user.
+- **95009 "Doing the Dash" draws all year for Horde until it has a holiday.** One of the task quests of
+  decision 5, it got its first pins at the five Dornogal and Silvermoon City spots above (2339 at
+  31.41,55.86, 45.51,55.57, 55.56,61.14 and 56.84,28.64; 2393 at 51.48,75.68). It belongs to the Darkspear
+  Dash: the client's Holidays row 1793 is "Darkspear Dash" (HolidayNames 458) in 12.1.0.69933 and
+  12.1.5.70391, next dated 26 June 2027 (`calendar-baseline-rows.csv`); `QuestV2CliTask` gates the quest by
+  world state expression 50704; and Wowhead (read 16 October 2026) links it to the 27 June 2026 news post on
+  the new microholiday. `data\quests.jsonl` gives it no holiday and `qcHolidays` has no Darkspear Dash, so
+  the seasonal filter never hides these pins. The fix is a quest-data change, open-items row 43.
+  Fixed later on 16 October 2026 (#368): `qcHolidays` has a Darkspear Dash entry on 1793 and 95009 has
+  its holiday, so the five pins (whose other quests are all tagged) draw only while one of their
+  holidays runs, 95009 only during the Darkspear Dash; no pin data changed.
+- **Checks.** `Build-AddonData.ps1 -Check` (retail 35,606 quests and 13,547 pins, Forever unchanged),
+  `Show-RemovedQuests.ps1` for both games (none), the syntax check, and against master: the reachability
+  report for both games (retail: the pin counts, 16,084 and 14,416 once identical pins at one spot count as
+  one, to 13,547 and 13,547, and the pins hidden from every character, all "no data" pins, 80 to 74, as 6
+  nameless no-data pins joined spots with quests in the data; 0 quests never shown or hidden, the level and
+  empty-list checks 0; Forever's report the same), `Test-ContinentPins.lua` for both (output the same),
+  `Test-MapTooltip.lua` for both (the recorded tooltips the same; retail's stacks 3,218 with 293 nameless
+  first pins to 2,505 with 271), `Test-PinRules.ps1` (49 passed), `Test-ForeverImport.ps1` (125),
+  `Test-RecordedGivers.ps1` (298), `Test-RecordedGivers.lua` (366), `Test-QuestLocationKinds.ps1` (21) and
+  `Test-ForeverChecks.ps1` (53). The retail map pass of 14 October against the pins: 244 of 412 offers within
+  1.5 points (243 before; 98831 now has its pin on The Coiled Isle), 1 more than 5 (82125), 163 on other maps
+  only, 4 with none. With master's #360 to #364 (names, retypes, reputation, scaling levels) merged in, a
+  fourth round of the pipeline changed no byte, the after-steps and the tests above gave the same, and the
+  reachability report, the continent icons and the tooltips against that master differ in the same lines
+  only. Not tried in game.
+
+### Applied again, for the second gap run's quests (16 October 2026)
+
+Branch `data/pins-new-quests-12-1-5`, on master a7fed31 (the per-spot pins above, and the 22 quests of
+maintenance.md's "The second 12.1.5 gap run"). The same inputs as above: the 12.1.5.70391 tables, byte for byte
+the main checkout's and the ones downloaded for the run above (step 6c's `-Refresh` downloaded its giver table
+again, and it was the same), and TrinityCore 1210.26091. Every step ran with `-ToolsDir` on a scratch folder.
+
+- **The run.** The location step: 19,926 rows, 18 more than the fourth round above, all of them client start
+  points of the 17 new quests that have one (17,641 quests at their start, 1,747 of them with no point -1 and 17
+  of those with no pin yet; 433 at their own point). TrinityCore placed none, and its review file holds the
+  same 152 quests in 156 rows. Join: 18 locations of quests with no pin, no `MAP_ID_DRIFT` row, none more than 5
+  points from its quest's pin. Assemble: 28,908 rows with 8,982 old pairs kept (as in the fourth round above;
+  8,979 in its first), 13,569 groups, 13,557 pins once 12 groups that land on one spot merge; no spot's quests
+  bring different icons.
+- **Who names the pins.** 27588 Signal the Attack: a spawn of TrinityCore's starter, Kurdran Wildhammer
+  (45668), stands within 1.5 points of its start in the Twilight Highlands (241 at 43.36,57.35), so it joined
+  his pin at 43.4,57.33, which holds 27498, the other quest of that name. No source names a giver for the
+  other 16: the client's giver table has no row for any of the 22 new quests, TrinityCore's
+  `creature_queststarter` has a row only for 27588 (45668) and `gameobject_queststarter` none (its
+  `quest_template` has 19 of the 22, not 45099, 45133 and 63506), and retail's recorder ledger has 0 rows. They
+  are nameless:
+  - on nameless spots that were there: 43933 Champion: Delas Moonfang (Light's Hope Chapel, 24, with 42851 and
+    49812, 1.35 points from its start), 41630 Unleashing Judgment (Borean Tundra, 114, with 41629, 1.46), 88930
+    Drained Mana (Suramar, 680, with 88919 and 88929, at its start) and 53566 Dark Iron Dwarves' start in
+    Stormwind City (84, with 75890, 95215 and 78068, 0.34);
+  - on 10 new pins at their starts: 63506 Mecha Gone (Elwynn Forest, 37 at 32.45,54.84, the client's only start
+    for it, though the API's area for it is Ardenweald), 45099 Hot On The Trail with 45112 and 45133 Signs of
+    Madness (Tanaris, 71, one pin at 45099's start, the other two 0.31 points from it), 48962 Telogrus Rift
+    (Ghostlands, 95), 41628 Eyes of the Dragon (Dragonblight, 115), 41790 and 41792 The First and Third Trials of
+    Ursol (Grizzly Hills, 116, one point), 46059 Champion: Tess Greymane (Dalaran, 626), 39818 Champion: Nazgrim
+    (Azsuna, 630), 41030 Sigil Reclamation (Suramar, 680), 53566's second start (Blackrock Depths, 1159) and
+    93420 Lor'themar's Judgement (The Coiled Isle, 2512).
+- **Nothing else changed.** Against master's pins, 13,542 lines are the same; the 5 that changed each gained one
+  of these quests (Kurdran Wildhammer's pin and the four nameless spots), and 10 are new. Stormwind's spot moved
+  up the file, as its lowest quest ID is now 53566. No placement moved or went and no quest lost a pin:
+  placements 28,216 to 28,234, quests with a pin 25,964 to 25,981. The 23 location rows more than 1.5 points from
+  their quest's pin are the same 23, the nameless pairs closer than 1.5 points the same six, and no two pins of
+  one NPC stand closer than that.
+- **Calendar and kinds.** None of the 17 is in the client's task table, so none is a world quest or is gated
+  like 95009 above; none has a holiday tag, none is in TrinityCore's event tables (`game_event_creature_quest`,
+  `game_event_gameobject_quest`, `game_event_seasonal_questrelation`), and none is flagged unavailable. Their
+  pins draw all year, as the quests are not seasonal.
+- **Still without a pin:** 90745 The Empty Cradle and the Nightmare Prey quests 95021 to 95024. The client lists
+  no start point for them (no point 32 or -1; the Prey quests have only objective points), TrinityCore's
+  `quest_poi` has no row for them, and no source names a giver.
+- **The after-steps.** `Apply-PinNpcIds.ps1 -WhatIf`: all 197 rows find their pin, nothing to change.
+  `Remove-DuplicatePinQuests.ps1 -WhatIf`: nothing to take off, the same 13 left alone. Step 6c (`-Refresh
+  -WhatIf`): 2,054 quests agree with the table, nothing to change, the 16 cases for review the same and none new
+  (two lines of the report now come in the other order). `Fill-PinNpcIds.ps1 -WhatIf`: no pin to fill (200 at
+  objects, 8 at creatures of other names, 129 not in the dump). Step 6d (`-WhatIf`, on copies of the recorder and
+  probe files): the counts of the run above, nothing filled, moved or added. A second round of the pipeline
+  wrote the pins byte for byte.
+- **Two tool fixes.** `Test-PinRules.ps1` failed its D2 check here with master's tools (48 passed, 1 failed, on
+  every run, and the same with the tools of the run above): `Apply-ClientQuestGivers.ps1` went through the pins
+  to fill in the order of a hashtable keyed by the pin objects, which is not the order it found them in and is
+  not fixed (the run above passed D2 with the same tools), so when two nameless pins on one point each give a
+  quest to one giver, the giver's pin listed the two in either order. It now goes through them in the order it found them (by quest ID, then the decision rows), and D2
+  passes on every run (49 passed). On the real data step 6c fills and moves nothing, with either tool, and its
+  report is the same. `Assemble-PinDB.ps1` printed an empty count where one location took its giver from a
+  starter's spawn (Windows PowerShell gives a single object no `Count`); it prints 1 now. With both fixes, the
+  run from master's pins writes these pins byte for byte.
+- **Checks.** `Build-AddonData.ps1 -Check` (retail 35,628 quests and 13,557 pins, Forever unchanged),
+  `Show-RemovedQuests.ps1` for both games (none), the syntax check, and against master: the reachability report
+  for both games (retail: the pin counts 13,547 to 13,557, every other line the same; Forever's the same),
+  `Test-MapTooltip.lua` for both (the recorded tooltips the same; retail's stacks 2,505 to 2,507, still 271 with
+  a nameless first pin), `Test-ContinentPins.lua` for both (the same but for its timings), the map pass report
+  (the same), `Test-PinRules.ps1` (49), `Test-QuestLocationKinds.ps1` (21), `Test-ForeverImport.ps1` (125),
+  `Test-RecordedGivers.ps1` (298), `Test-RecordedGivers.lua` (366) and `Test-ForeverChecks.ps1` (53). Not tried
+  in game.
+- **After master's #368 merged in** (the same day): it added 94954 and 95012, which have no point in
+  `QuestPOIBlob`, no row in the client's giver table and no TrinityCore starter or `quest_poi` row. One round of
+  the pipeline on the merged data wrote `data\pins.jsonl` and `qcPinDB.lua` byte for byte, its logs the third
+  round's but for the quest count, and the after-steps' `-WhatIf` reports were the same (step 6c on the table
+  downloaded above). `Build-AddonData.ps1 -Check` gives 35,630 quests and 13,557 pins; against that master the
+  reachability report, the tooltips and the continent icons differ in the same lines as above.
+
+### A round for the noTitle API scan's quests (16 October 2026)
+
+Branch `data/notitle-api-scan-12-1-5`, on master 310a4b7, with the 24 quests of maintenance.md's "The noTitle API
+scan" added. The same inputs as above (the main checkout's 12.1.5.70391 tables and TrinityCore 1210.26091), every
+step with `-ToolsDir` on a scratch folder; a round on master's own data first wrote master's `data\pins.jsonl` byte
+for byte.
+
+- **The run.** The location step reads 35,654 quests and writes the same 19,926 rows: none of the 24 has a point in
+  `QuestPOIBlob`. TrinityCore has a start point for 5 of them, which it holds: 93701 and 93707 as profession quests
+  (step 1d gave them Herbalism and Mining), 84688, 93582 and 93642 in a system category (World PvP), so its "not in
+  our data" count went from 2,500 to 2,495 and its holiday or profession and system category counts up by 2 and 3.
+  Its review file holds the same 152 quests. Join: 0 locations with no pin, 0 `MAP_ID_DRIFT` rows. Assemble wrote a
+  candidate byte for byte `data\pins.jsonl`, so nothing was applied: 13,557 pins.
+- **No giver to name:** the client's giver table (`CollectableSourceQuestSparse`) has no row for any of the 24, and
+  TrinityCore's `creature_queststarter` and `gameobject_queststarter` none, so the after-steps had nothing to fill or
+  move and were not run again.
+- **Still without a pin:** all 24, as no source places them.

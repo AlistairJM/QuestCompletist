@@ -94,6 +94,19 @@ data alone can't sort into obsolete and live. The client could give names but no
 Adding them would put a couple of hundred probably obsolete quests into lists and pins, so they
 join the phase 5 review instead. The 110 pins stay hidden by "hide quests with no data".
 
+**The pass after 12.1.5 went live: done on 16 October 2026,** through step 6's gap route (the 12.1.5
+sweep's decision 9; `maintenance.md`, step 6, "The 12.1.5 gap run"). 27 quests that sat on no-data
+pins went into the data, 95211, 96707 and 98836 among them. The reachability report's pins hidden
+from every character by the identity filters went from 98 to 80: the 18 that left were "hidden by: no
+data" pins of these quests. Their pins moved to the quests' 12.1.5 start points with the per-spot pins
+of the same day (quest-location-data-pipeline.md, "October 2026, one pin per spot", "Applied"): 9 of
+them left a map they no longer start on, 8 moved on their map, 10 stayed. In the same change nameless
+pins became one per spot, which merged no-data pins too: the pins whose every quest is missing from the
+data went from 125 to 74, and 6 nameless spots now hold quests with and without data, the missing ones
+being 39687 (map 678), 43825, 43887, 46131 and 46150 (717), 43466 (735), 49228 (895), 57944, 58119, 58217
+and 58684 (1536) and 79988 (2024). The report's hidden pins went from 80 to 74. The quest IDs on pins
+without data are still 234, and none of them gained data.
+
 ### 3. A placement rule from the client's map points (tool change, then data)
 
 - Add a rule to `Place-UncategorisedQuests.ps1` after "pin's map". It uses the maps of a quest's
@@ -245,3 +258,4 @@ stays unflagged.
 - 2026-09-30: measured and planned, decisions agreed. Phase 1 in #105 (corrected above: 5 dead IDs, no dead pins). Phase 2 skipped (all 227 unknown to the API; see above). Phase 3 in #107. Phase 4 on `feat/unavailable-quests` (183 flagged). Next: phase 5, the review with the user.
 - 2026-10-05: phase 5, the review with the user, in #154: 183 more flagged, and 148 of phase 4's 183 unflagged, because the client's `QuestV2` never lists repeatable quests, so missing from it wasn't evidence. 218 flagged in all and 447 kept, each decision in `unavailable-quest-decisions.csv`. See `unavailable-quests.md`.
 - 2026-10-06: the Legendary category filed by zone, 41 quests by their pins and 17 by hand (#193). See "Found later".
+- 2026-10-16: the 12.1.5 story quests' pins at their start points, and the no-data pins merged one per spot with the other nameless pins (125 to 74 pins with no quest in the data). See phase 2.

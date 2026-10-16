@@ -22,7 +22,7 @@ local qcNewDataAlertTooltip = nil
 local qcMutuallyExclusiveAlertTooltip = nil
 
 --[[ Constants ]]--
-local QCADDON_VERSION = "113.2"
+local QCADDON_VERSION = "113.4"
 local QCADDON_CHAT_TITLE = "|CFF9482C9Quest Completist:|r "
 
 
@@ -220,6 +220,7 @@ local qcHolidays = {
 	{flag=2097152, name="Dastardly Duos", eventIDs={1599, 1673, 1689}},
 	{flag=4194304, name="The Great Gnomeregan Run", eventIDs={696}},
 	{flag=8388608, name="Call of the Scarab", eventIDs={638}},
+	{flag=16777216, name="Darkspear Dash", eventIDs={1793}},
 }
 -- Blizzard's calendar window filters nothing itself: a checkbox sets one of these CVars and the window
 -- redraws from the same day lists, so the game must leave an unticked filter's events out of them.
@@ -594,8 +595,9 @@ local qcCategoryIndex = nil
 local qcQuestNameUpperCache = nil
 
 -- A quest's row in qcQuestDatabase (qcQuestData.lua) is {name, level, category, type, faction, race,
--- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So is
--- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that.
+-- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So are
+-- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that, and
+-- qcQuestMaxLevel, the level a scaling quest stops scaling at.
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
     for questId, e in pairs(qcQuestDatabase) do
@@ -805,6 +807,15 @@ local function qcHides(view, key)
 	return qcSettings["QC_" .. view .. "_HIDE_" .. key] == 1
 end
 
+-- The level the list shows, sorts by and the low-level filter reads: the quest's own, or for a quest that
+-- scales (qcQuestMaxLevel) the character's, raised to its minimum and held down at the level it stops
+-- scaling at, as the game scales it. May be nil for a quest with no level.
+local function qcShownQuestLevel(questId, e, playerLevel)
+	local ceiling = qcQuestMaxLevel[questId]
+	if not ceiling then return e[2] end
+	return math.max(qcQuestMinLevel[questId] or e[2] or 0, math.min(playerLevel, ceiling))
+end
+
 -- Every quest filter that reads only the quest's data, not whether it's done.
 local function qcBuildQuestFilter(view)
 	local BitBand = bit.band
@@ -815,9 +826,10 @@ local function qcBuildQuestFilter(view)
 	if qcHides(view, "REPEATABLEQUEST") then hiddenTypes = hiddenTypes + 2 end
 	if qcHides(view, "WORLDQUEST") then hiddenTypes = hiddenTypes + 128 end
 
-	local greenCutoff
+	local greenCutoff, playerLevel
 	if qcHides(view, "LOWLEVEL") then
-		greenCutoff = UnitLevel("player") - UnitQuestTrivialLevelRange("player")
+		playerLevel = UnitLevel("player")
+		greenCutoff = playerLevel - UnitQuestTrivialLevelRange("player")
 	end
 
 	local professionBitmask
@@ -847,7 +859,10 @@ local function qcBuildQuestFilter(view)
 	local professions, covenants = qcQuestProfession, qcQuestCovenant
 	return function(questId, e)
 		if (BitBand(e[4], hiddenTypes) ~= 0) then return false end
-		if greenCutoff and (e[2] or 0) > 0 and e[2] < greenCutoff then return false end
+		if greenCutoff then
+			local level = qcShownQuestLevel(questId, e, playerLevel) or 0
+			if level > 0 and level < greenCutoff then return false end
+		end
 		local profession = professions[questId]
 		if professionBitmask and profession and BitBand(profession, professionBitmask) == 0 then return false end
 		if factionFlag and not qcMaskAllows(e[5], factionFlag) then return false end
@@ -1051,16 +1066,23 @@ local function qcGetCategoryQuests(categoryId, searchText)
 
     -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
 	-- leaving the list empty. Names are the ones shown now; names that load later don't re-sort the
-	-- list until it's next rebuilt, so rows don't jump while being read.
-	local sortName, sortLevel = {}, {}
+	-- list until it's next rebuilt, so rows don't jump while being read. The order is by the level
+	-- shown, so the brackets read in order; among quests shown at one level, a zone's scaling quests
+	-- keep the order of their own levels, the order a quest that doesn't scale has always had.
+	local playerLevel = UnitLevel("player")
+	local sortName, sortLevel, ownLevel = {}, {}, {}
 	for _, questId in ipairs(qcCategoryQuests) do
 		local e = qcQuestDatabase[questId]
 		sortName[questId] = qcClientQuestName(questId) or e[1]
-		sortLevel[questId] = e[2] or 0
+		sortLevel[questId] = qcShownQuestLevel(questId, e, playerLevel) or 0
+		ownLevel[questId] = e[2] or 0
 	end
 	local function byLevel(a,b)
 		local levelA, levelB = sortLevel[a], sortLevel[b]
-		return (levelA<levelB or (levelA == levelB and sortName[a]<sortName[b]))
+		if levelA ~= levelB then return levelA < levelB end
+		local ownA, ownB = ownLevel[a], ownLevel[b]
+		if ownA ~= ownB then return ownA < ownB end
+		return sortName[a] < sortName[b]
 	end
 	if (qcSettings.SORT == 1) then
 		tableSort(qcCategoryQuests,byLevel)
@@ -1230,6 +1252,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			qcShowHiddenQuests()
 		end
 	end
+	local playerLevel = UnitLevel("player")
 	for i = 1, 16 do
 		local offset = ((i + startIndex) - 1)
 		local questRecord = _G["qcMenuButton" .. i]
@@ -1240,7 +1263,8 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			local questFaction = e[5]
 			local questName = qcQuestName(questId)
 			local shownName = qcPvpMark(questId) .. questName
-			questRecord.QuestName:SetText((e[2] or 0) > 0 and stringFormat("[%d] %s",e[2],shownName) or shownName)
+			local level = qcShownQuestLevel(questId, e, playerLevel) or 0
+			questRecord.QuestName:SetText(level > 0 and stringFormat("[%d] %s",level,shownName) or shownName)
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
@@ -1413,8 +1437,11 @@ end
 -- cached, the reply is empty and TOOLTIP_DATA_UPDATE fires when the name arrives; an empty reply has
 -- no ID to match that event to, so every name still awaited is checked again. Inside an instance the
 -- game hides creature names, so nothing is asked there. A pin with no NPC ID keeps its stored name.
+-- Names are asked for when something shows them, never for a whole map: a large map's pins name up
+-- to 160 givers, most of them never hovered, and asking for them all took thousands of lookups.
 local QC_MAX_NPC_LOADS = 16
 local QC_NPC_LOAD_TIMEOUT = 5
+local QC_NPC_RECHECK_DELAY = 0.25
 
 local qcNpcNames = {}
 -- A creature's subtitle, such as "Innkeeper": the tooltip line after its name, unless that line is
@@ -1427,6 +1454,7 @@ local qcNpcLoadInFlight = {}
 local qcNpcLoadInFlightCount = 0
 local qcNpcLoadTried = {}
 local qcNpcLoadScheduled = false
+local qcNpcRecheckScheduled = false
 -- NPCs whose names an open tooltip is still waiting for.
 local qcNpcTooltipWaiting = {}
 local qcNpcMapTooltipWaiting = {}
@@ -1453,7 +1481,18 @@ local function qcNpcNameArrived(npcId)
 	qcScheduleNameRedraw()
 end
 
-local qcSendNpcLoads
+local qcSendNpcLoads, qcNpcDataUpdated
+
+-- The update event usually comes a moment before the name can be read, and with no other name
+-- loading no later event would bring it, so names still awaited are also looked at again shortly.
+local function qcScheduleNpcRecheck()
+	if qcNpcRecheckScheduled or qcNpcLoadInFlightCount == 0 then return end
+	qcNpcRecheckScheduled = true
+	C_Timer.After(QC_NPC_RECHECK_DELAY, function()
+		qcNpcRecheckScheduled = false
+		qcNpcDataUpdated()
+	end)
+end
 
 -- Asking for a creature the client hasn't cached sends the request; it's tracked from then until the
 -- name arrives or the timeout passes.
@@ -1462,6 +1501,7 @@ local function qcNpcLoadStarted(npcId)
 	qcNpcLoadTried[npcId] = true
 	qcNpcLoadInFlight[npcId] = token
 	qcNpcLoadInFlightCount = qcNpcLoadInFlightCount + 1
+	qcScheduleNpcRecheck()
 	C_Timer.After(QC_NPC_LOAD_TIMEOUT, function()
 		if qcNpcLoadInFlight[npcId] ~= token then return end
 		qcNpcLoadInFlight[npcId] = nil
@@ -1472,11 +1512,12 @@ local function qcNpcLoadStarted(npcId)
 	end)
 end
 
--- Only the pins of an opened map wait in the queue; a hovered pin asks straight away.
+-- Only names wanted inside an instance wait in the queue, for the player to leave; elsewhere they're
+-- asked for straight away.
 function qcSendNpcLoads()
 	if IsInInstance() then return end
 	while qcNpcLoadInFlightCount < QC_MAX_NPC_LOADS and #qcNpcLoadQueue > 0 do
-		-- Newest first: the map opened last goes first.
+		-- Newest first: the one wanted last goes first.
 		local npcId = table.remove(qcNpcLoadQueue)
 		qcNpcLoadQueued[npcId] = nil
 		if not (qcNpcNames[npcId] or qcNpcLoadInFlight[npcId] or qcNpcLoadTried[npcId]) then
@@ -1504,7 +1545,7 @@ local function qcQueueNpcName(npcId)
 	end
 end
 
-local function qcNpcDataUpdated()
+function qcNpcDataUpdated()
 	if qcNpcLoadInFlightCount == 0 or IsInInstance() then return end
 	local arrived = {}
 	for npcId in pairs(qcNpcLoadInFlight) do
@@ -1516,6 +1557,7 @@ local function qcNpcDataUpdated()
 		qcNpcNameArrived(npcId)
 	end
 	if #arrived > 0 then qcSendNpcLoads() end
+	qcScheduleNpcRecheck()
 end
 
 -- A pin's quest giver in the client's language, or the stored name until the client has it.
@@ -1534,14 +1576,6 @@ local function qcNpcName(pinData, waiting)
 	end
 	if waiting then waiting[npcId] = true end
 	return stored
-end
-
--- The pins a map draws ask for their givers' names, so they're there before a pin is hovered.
-local function qcRequestPinNpcNames(pins)
-	if IsInInstance() then return end
-	for _, pinData in ipairs(pins) do
-		if pinData[3] and pinData[2] ~= 0 then qcQueueNpcName(pinData[2]) end
-	end
 end
 
 -- Search function start
@@ -2534,7 +2568,7 @@ QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides
 QC.qcSkillRank, QC.qcSkillName = qcSkillRank, qcSkillName
 QC.qcZoneQuests = qcGetZoneQuests
 QC.CHAT_TITLE = QCADDON_CHAT_TITLE
-QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
+QC.qcNpcName, QC.qcNpcSubtitles = qcNpcName, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
 QC.qcPvpMark, QC.QC_ICON_PVP = qcPvpMark, QC_ICON_PVP

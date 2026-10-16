@@ -262,6 +262,14 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
 ## Status
 
 - 2026-10-14: audit done for retail 12.1.5.70391, Forever 1.60.1.70374 and Era 1.15.9.70003. Nothing in the data or the addon
-  changed; this pull request adds the tool, this document and the folder.
+  changed; this pull request adds the tool, its test, this document and the folder.
 - The catalogue is the baseline: a later run compares itself with it. Run `Audit-ClientTables.ps1 -Download` per game, then
-  diff `fks`, `refs` and `tables`.
+  diff `fks`, `refs` and `tables`. `Test-AuditClientTables.ps1` tests the tool on a made-up client (25 checks).
+- 2026-10-16: before this pull request, Forever's beta moved to 1.60.1.70425, so its catalogue files are on that build
+  (retail 70391 and Era 70003 were still the newest). The researchers' Forever counts above are on 70374; the build
+  changed no table's columns, but it added 4 tables (`CatalogShopGameTitleInfo`, `Particulate`, `ParticulateSound`,
+  `UIExpansionDisplayInfoIcon`: none about quests) and rows to the quest tables: `QuestV2` 6,610 to 6,614 (99582, 99600,
+  99602 and 99670, none in our Forever data), `QuestPOIBlob` 54 to 57, `QuestPOIPoint` 99 to 121, `PlayerCondition` 1,901 to
+  1,943, `ModifierTree` 2,824 to 2,845, `Criteria` 3,279 to 3,297, `Achievement` 436 to 441, `Map` 71 to 73 (two Skycuter
+  maps, Dalaran and Mulgore), `WorldStateExpression` +6. Forever's probe results and quest cache are still on 70374, so the
+  next Forever sweep (step 10) starts with a rerun on 70425.

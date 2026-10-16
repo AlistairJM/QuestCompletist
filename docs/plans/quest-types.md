@@ -48,6 +48,8 @@ does:
 | #153 | 587 | October 2026 review, below. |
 | #156 | 603 | October 2026, the last sets, below. |
 | 9 October probe | 53 | Typed one-time, and the game says Recurring, from the probe's first retail run (`Retype-ProbeRecurring.ps1`), below. |
+| 12.1.5 sweep | 2 | Pilgrim's Bounty's "Sharing a Bountiful Feast", typed seasonal, made daily by Blizzard in 12.1.5. By hand, on the user's decision, below. |
+| 12.1.5 probe | 25 | Typed one-time, and the game says Recurring, from the probe's 12.1.5 run (`Retype-ProbeRecurring.ps1`), below. |
 
 **#133, October 2026.** The original data had a weekly type, 16, which the addon draws and counts as
 one-time, so its 79 weeklies got a permanent tick: Wintergrasp's, Wrath raids' "… Must Die!",
@@ -145,6 +147,86 @@ quests, 33,802 loaded against the 29 September type probe's 31,425) gave `Retype
   (2) and a few others.
 - Only the type field changed, no quest left the data, and `Test-QuestReachability.lua` reads the same
   before and after. Their pins now hide with the other repeatable and recurring quests by default.
+
+**The 12.1.5 sweep, 15 October 2026.** "Sharing a Bountiful Feast", 14064 (Alliance) and 14065 (Horde),
+the Pilgrim's Bounty feast, were typed seasonal (64) and became daily (4), keeping their Pilgrim's Bounty
+tag, like the event's ten other dailies (14048, 14051, 14053 to 14055 and 14058 to 14062).
+- Blizzard made them daily in 12.1.5: the API's records of 12.1.5_70077 flag them `is_daily` and those of
+  12.1.0_68914 flag nothing, and the quest cache of 12.1.5.70391 gives them the daily flag (flags 4104,
+  recurring daily), where 12.1.0.69933's gave flags 8 and no recurrence.
+- No tool retypes a seasonal quest (`Retype-FlaggedWorldQuests.ps1` takes type 128 and
+  `Retype-ProbeRecurring.ps1` the one-time types), so the change is by hand, on the user's decision.
+- Only the type field changed. The holiday audit (step 2d) gives the same 13 findings, none new, and
+  `Test-QuestReachability.lua` reads the same before and after. A completion recorded while they were
+  seasonal goes at the next daily reset, as the other dailies' do.
+
+**The probe's 12.1.5 run, 16 October 2026.** `Retype-ProbeRecurring.ps1` read the probe's file of 15
+October for 12.1.5.70391 (`tools\retail_probe_70391\QCForeverProbe.lua`, the one `Find-ProbeResults`
+picks: 35,544 quests, 29,823 loaded, 3,056 of them Recurring) and retyped 25 quests from one-time (1) to
+128. `Retype-FlaggedWorldQuests.ps1` retyped none.
+- **Why 128.** For each of the 25, the probe's record is a full one (level 70 to 90) and says Recurring,
+  the API has a record and flags it neither daily, weekly nor repeatable, and `QuestV2` lists it, so it
+  isn't repeatable. The script's table makes such a quest 128. The 12.1.5 quest cache agrees that they
+  recur: each has the scheduler bit (the game's scheduler resets it) and no daily or weekly flag.
+  - Archaeology (2): 41159 "Process of Elimination" and 41802 "The Gates of Valor".
+  - Covenant Assaults (5): 63827 "Encouraging Words", 63952 "Heavy-Handed Tactics", 63969 "Looming
+    Darkness", 63973 "Double Dromans" and 63974 "That's Going to Sting".
+  - Profession quests (7): 66941 "Tremendous Tools", 66952 "The Gnoll's Clothes" and 72423 "Weathering
+    the Storm" (Professions); 75286 "Blacksmith's Back" and 75288 "Enchanted Tales with Topuiz" (Zaralek
+    Cavern); 93700 "Experience Tranquility" and 93709 "Stocking the Staples" (Silvermoon City).
+  - The Oasis (2): 89057 "Pee-Yew de Foxy" and 89192 "A Hard Day's Work".
+  - Silvermoon City's Void Assaults (2): 94385 "Void Assaults: Eversong Woods" and 94386 "Void Assaults:
+    Zul'Aman".
+  - Vaults of Atal'Utek (5, group quests): 96349 "Ancestral Gems", 96352 "Dark Charms", 96354 "A Balance
+    Paid in Blood", 96360 "Wading In" and 96361 "Cursed Existence".
+  - And 73715 "Driftwood Derby" (The Forbidden Reach) and 93425 "Sparks of War: Harandar".
+- **No retype rests on a placeholder.** The run of 14 October saved 5,242 `cached` rows with level 0:
+  records the client held only in part. Their level is a default, and so are some other facts (the
+  expansion changed in every one that loaded in full on 15 October), but the classification mostly is
+  the game's: of the 1,811 that loaded on 15 October, 1,789 kept their class. The other 22 all changed
+  from Normal (7) to Recurring (5), so a placeholder's Normal can hide a Recurring. Six of the 22 are
+  retyped here (94386 and the five Vaults quests); the other 16 were 128 already. The rerun of
+  15 October asked 10,201 quests again, one at a time: those 5,242 and the 4,959 the server had refused.
+  Its file differs from the 14 October one in exactly those 10,201 rows and has no `cached` row with
+  level 0. (14 `ok` rows have level 0, the game's own answer; none of them is retyped.) On the 14 October
+  file the script gives 18 of the 25. The other 7 (89057, 94386 and the five Vaults quests) were
+  placeholders that day, 89057 a refusal, and full Recurring records on 15 October.
+- **Nor on a refusal.** On the 9 October file (12.1.0.69933) the script retypes nothing, as #257 applied
+  it. Of the quests typed one-time that the 9 October file calls Normal, the server refused 2,391 on 14
+  October; on 15 October 1,896 of them answered Normal again and 495 were still refused, and 198 more
+  that were placeholders on 14 October were refused too: 693 in all. The script's table retypes a quest
+  that wasn't loaded only by the API's flags, and the API flags none of the 693 (687 records with no
+  flag, 6 with no record), so none moves.
+- **83530 "Hallowfall Fishing Derby" stays weekly (128).** #257 made it weekly from the 9 October run,
+  whose record of it is a full one (level 79) and says Recurring; the 12.1.0.69933 quest cache gives it
+  the scheduler bit. The server refused it on 15 October and its 14 October row was a placeholder
+  (level 0, Normal), whose Normal can hide a Recurring, so 12.1.5 has no full record to set against the
+  9 October one. The API flags nothing and the
+  12.1.5 quest cache has no record of it. The `KEEP` row for 83531, which requires it, stays in
+  [quest-table-decisions.csv](quest-table-decisions.csv), with this recheck in its reason.
+- **#257's other retypes hold.** Of its 53, 16 say Recurring on 12.1.5 and the server refused the other
+  37 (83530 among them); none says Normal. None of the 53 rests on a placeholder either: the 9 October
+  file has 1,203 (55 of them Recurring), but each of the 53 is a full record there (48 Recurring, and
+  the 5 repeatables Normal).
+- **The Hallow's End task quests step 6b added on 15 October (#347)** joined the data after the probe's
+  list was made, so the probe didn't ask them and the script leaves them alone. Their step 6b types agree
+  with the API's flags and the client's task table:
+  - "Sugar Run" (92498, 93400, 95826), daily (4): the API flags them `is_daily`, and the task table gives
+    the daily flag (`Flags_0` 0x1000).
+  - "Candy Crafting" (97219, 98421, 98422), daily (4): the API has no record; the task table gives the
+    daily flag.
+  - "Community Candy Crawl" (98801), 128: the API has no record; the task table gives no daily or weekly
+    flag and files it as a World Quest (QuestInfo 109).
+  - "A Haunted Home" (93898), one-time (1): the API's record flags nothing, the task table gives no daily
+    or weekly flag, and `QuestV2` lists it.
+
+  The next probe run, with a list made from the data, asks them.
+- **Step 2b.** 89057 requires 85721 "Killer Instinct" and 89192 requires 89254 "Shutterbug", both weekly,
+  so with both now weekly too, their two `prereq: recurring quest` `KEEP` rows match no finding and were
+  taken out. `Audit-QuestTables.ps1` then lists 120 findings, none new, and exits 0.
+- Only the type field changed, no quest left the data, and `Test-QuestReachability.lua` reads the same
+  before and after. The quest list's "Hide World and Weekly Quests" filter, on by default, now hides the
+  25, and they no longer get a permanent tick.
 
 ## Still open
 

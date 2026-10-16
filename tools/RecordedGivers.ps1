@@ -22,10 +22,11 @@ player's file is under the tag the maintainer gave it (p01, p02: never a name). 
 #>
 
 $script:Invariant = [Globalization.CultureInfo]::InvariantCulture
+. "$PSScriptRoot\PinRules.ps1"
 
 # How far apart two places on one map may be and still be one place: the pin spacing floor (two pins
 # of one NPC may sit 1.5 map points apart, no closer), measured straight, as the pipeline does.
-$RecordedPlaceRadius = 1.5
+$RecordedPlaceRadius = $PinSameSpot
 # More than this share of a file's records odd (and at least three of them): the file is not read.
 $RecordedOddShare = 0.2
 $RecordedLedgerColumns = @('Game', 'Role', 'Kind', 'Npc', 'Name', 'Map', 'X', 'Y', 'Quest', 'Item', 'StartKind', 'FirstBuild', 'LastBuild', 'Src')
@@ -582,6 +583,9 @@ function Describe-Pin($pin) {
 <#
 Works out what the ledger changes in the pins and what it only has to say. Nothing is changed here.
     Fills       a pin with no NPC ID, one of whose quests a trusted creature offered within the radius of it
+                (a pin with no name only when that giver offered every quest on it)
+    Moves       the quests of a nameless pin that a trusted giver offered within the radius of it, when the
+                pin holds other quests too: they go to the giver's pin (PinRules.ps1)
     Adds        a quest with no pin: the pin it joins or the pin it gets, at a trusted giver's most seen place
     Review      the disagreements and the cases that need a person
 -IsPinnable is a script block, given a quest's ID, that says why a quest may not get a pin ($null when
@@ -592,6 +596,7 @@ leaves alone.
 function Get-RecordedPlan($model, $pins, [scriptblock]$IsPinnable, $decisions, $clearedPins, [int]$MaxPlaces = 6) {
     $plan = [pscustomobject]@{
         Fills = (New-Object System.Collections.Generic.List[object]); Adds = (New-Object System.Collections.Generic.List[object])
+        Moves = (New-Object System.Collections.Generic.List[object])
         Review = (New-Object System.Collections.Generic.List[object]); Skipped = [ordered]@{}
     }
     $review = $plan.Review
@@ -679,11 +684,70 @@ function Get-RecordedPlan($model, $pins, [scriptblock]$IsPinnable, $decisions, $
             & $skip 'its ID was taken off by hand'
             continue
         }
-        if ($found.Count -gt 1) {
-            # Phased or per-faction copies of one character bear one name: take the one that offers most of the pin's quests.
+        # Phased or per-faction copies of one character bear one name: the one that offers most of the pin's quests stands for them.
+        $copiesInOrder = { param($keys) return , @($keys | Sort-Object @{ Expression = { -$found[$_].Count } }, @{ Expression = { -$placeOf[$_].Visits } }, @{ Expression = { $model.Givers[$_].Npc } }) }
+        if ($null -eq $pin.name) {
+            # A nameless pin holds what starts at its spot (PinRules.ps1): each giver found there takes the quests it
+            # offered to its own pin, and the pin takes a giver only when that giver offered every quest on it.
+            $characters = New-Object System.Collections.Generic.List[object]
+            foreach ($key in @($found.Keys | Sort-Object { $_ } -CaseSensitive)) {
+                $name = $model.Givers[$key].Name
+                $same = $null
+                if ($name) { foreach ($c in $characters) { if ($c.Name -ceq $name) { $same = $c; break } } }
+                if ($same) { $same.Keys.Add($key) } else { $characters.Add([pscustomobject]@{ Name = $name; Keys = (New-Object System.Collections.Generic.List[string] (, [string[]]@($key))) }) }
+            }
+            $claims = [ordered]@{}
+            $keysOf = @{}
+            foreach ($c in $characters) {
+                $first = (& $copiesInOrder $c.Keys)[0]
+                $claims[$first] = @($c.Keys | ForEach-Object { $found[$_] } | ForEach-Object { $_ } | Sort-Object -Unique)
+                $keysOf[$first] = $c.Keys
+            }
+            $split = Split-NamelessPin $pin.quests $claims
+            foreach ($quest in $split.Disputed) {
+                $claimants = @($claims.Keys | Where-Object { $claims[$_] -contains $quest } | ForEach-Object { $keysOf[$_] } | Sort-Object { $_ } -CaseSensitive)
+                & $addReview 'two givers at one pin' $quest $where ('recorded: ' + ($claimants -join ', '))
+                & $skip 'two givers at one pin'
+            }
+            $sameName = {
+                param([string]$first, $quest)
+                if ($keysOf[$first].Count -gt 1) { & $addReview 'same name under another ID' $quest $where "recorded: $((& $copiesInOrder $keysOf[$first]) -join ', ') bear one name; the first is taken" }
+            }
+            if ($null -eq $split.Fill) {
+                foreach ($giverKey in $split.Moves.Keys) {
+                    $giver = $model.Givers[$giverKey]
+                    $quests = [int[]]$split.Moves[$giverKey]
+                    if ($giver.Kind -eq 'Vehicle') { & $skip 'a vehicle'; continue }
+                    if (-not $giver.Name) {
+                        if ($conflicted.ContainsKey($giverKey)) {
+                            & $addReview 'trusted sources disagree on the giver''s name' $quests[0] $where "$giverKey`: $($conflicted[$giverKey])"
+                            & $skip 'the sources disagree on the giver''s name'
+                        } else {
+                            & $addReview 'giver without a trusted English name' $quests[0] $where $giverKey
+                            & $skip 'no English name for the giver'
+                        }
+                        continue
+                    }
+                    $turnsIn = @($quests | Where-Object { $model.Turnins.ContainsKey($_) -and $model.Turnins[$_].Contains($giverKey) })
+                    if ($turnsIn.Count -gt 0) {
+                        $elsewhere = @($giver.Places | Where-Object { $_.Trusted -and $_.X -ge 0 -and ($_.Map -ne [int]$pin.map -or (Get-PlaceDistance $_.X $_.Y $pin.x $pin.y) -gt $nearMiss) })
+                        if ($elsewhere.Count -gt 0) {
+                            & $addReview 'offered and taken in at different places' $quests[0] $where "$giverKey offers and takes in quest $($turnsIn[0]) and stood both here and elsewhere"
+                            & $skip 'offered and taken in at different places'
+                            continue
+                        }
+                    }
+                    & $sameName $giverKey $quests[0]
+                    $plan.Moves.Add([pscustomobject]@{ Pin = $pin; GiverKey = $giverKey; Giver = $giver; Quests = $quests; Where = $where })
+                }
+                continue
+            }
+            & $sameName $split.Fill $anchor
+            foreach ($key in @($found.Keys)) { if ($key -ne $split.Fill) { $found.Remove($key) } }
+        } elseif ($found.Count -gt 1) {
             $names = @($found.Keys | ForEach-Object { $model.Givers[$_].Name } | Sort-Object { $_ } -Unique -CaseSensitive)
             if ($names.Count -eq 1 -and $names[0]) {
-                $best = @($found.Keys | Sort-Object @{ Expression = { -$found[$_].Count } }, @{ Expression = { -$placeOf[$_].Visits } }, @{ Expression = { $model.Givers[$_].Npc } })
+                $best = & $copiesInOrder @($found.Keys)
                 & $addReview 'same name under another ID' $anchor $where "recorded: $($best -join ', ') bear one name; the first is taken"
                 $keep = $best[0]
                 foreach ($key in @($found.Keys)) { if ($key -ne $keep) { $found.Remove($key) } }
@@ -854,14 +918,17 @@ function Sort-PinBlock($pins, [int]$map) {
 
 <#
 Carries out a plan on the pins (the list Read-PinData returned, which is added to and changed) and
-returns what was done. A fill gives a pin the NPC ID and name; an add puts a quest on the pin of its
+returns what was done. A fill gives a pin the NPC ID and name; a move takes quests off a nameless pin to
+the giver's pin within the radius of it, or to a new pin of the giver at its place with its icon (the
+nameless pin goes if no quest is left on it); an add puts a quest on the pin of its
 giver within the radius of the place, or gives it a pin there (with no NPC and no name when the giver has
 no trusted name: a later run fills them in once there is one). Where a new pin goes is -InsertAfter, a
 script block given the pins and the new pin, returning the index to insert at; the maps that changed are
 put back in the pipeline's order afterwards. -IconFor is given the quests of a new pin, once they are all on it.
 #>
 function Invoke-RecordedPlan($plan, [System.Collections.Generic.List[object]]$pins, [scriptblock]$InsertAfter, [scriptblock]$IconFor) {
-    $done = [pscustomobject]@{ Filled = 0; Named = 0; Joined = 0; Created = 0; Notes = (New-Object System.Collections.Generic.List[string]) }
+    $done = [pscustomobject]@{ Filled = 0; Named = 0; Joined = 0; Created = 0; Notes = (New-Object System.Collections.Generic.List[string])
+        Moved = (New-Object System.Collections.Generic.List[object]) }
     $touched = New-Object System.Collections.Generic.HashSet[int]
     $byMap = @{}
     foreach ($pin in $pins) {
@@ -874,6 +941,28 @@ function Invoke-RecordedPlan($plan, [System.Collections.Generic.List[object]]$pi
         if ($fill.Npc) { Set-RecordField $pin 'npc' $fill.Npc; $done.Filled++ }
         if ($null -eq $pin.name) { Set-RecordField $pin 'name' $fill.Name; $done.Named++ }
         [void]$touched.Add([int]$pin.map)
+    }
+    foreach ($move in $plan.Moves) {
+        $from = $move.Pin
+        $m = [int]$from.map
+        $npc = if ($move.Giver.Kind -eq 'Creature') { [int]$move.Giver.Npc } else { 0 }
+        $quests = [int[]]@($move.Quests)
+        Set-RecordField $from 'quests' ([int[]]@($from.quests | Where-Object { $quests -notcontains [int]$_ }))
+        $target = Find-GiverPin $byMap[$m] $from $npc $move.Giver.Name
+        if ($target) {
+            $new = @($quests | Where-Object { @($target.quests) -notcontains $_ })
+            if ($new.Count) { Set-RecordField $target 'quests' ([int[]](@($target.quests) + $new)) }
+        } else {
+            $target = New-GiverPin $from $npc $move.Giver.Name $quests
+            $pins.Insert((& $InsertAfter $pins $target), $target)
+            $byMap[$m].Add($target)
+        }
+        foreach ($quest in $quests) { $done.Moved.Add([pscustomobject]@{ From = $from; Quest = $quest; To = $target }) }
+        if (@($from.quests).Count -eq 0) {
+            for ($i = 0; $i -lt $pins.Count; $i++) { if ([object]::ReferenceEquals($pins[$i], $from)) { $pins.RemoveAt($i); break } }
+            for ($i = 0; $i -lt $byMap[$m].Count; $i++) { if ([object]::ReferenceEquals($byMap[$m][$i], $from)) { $byMap[$m].RemoveAt($i); break } }
+        }
+        [void]$touched.Add($m)
     }
     $created = New-Object System.Collections.Generic.List[object]
     $nameless = New-Object System.Collections.Generic.List[object]
@@ -926,14 +1015,31 @@ function Invoke-RecordedPlan($plan, [System.Collections.Generic.List[object]]$pi
 
 # The change must be only what the tool means to make, or nothing is saved: every old pin is where
 # it was, with the icon and note it had, its NPC and name only filled where they were empty, and every
-# quest it had; the pins that are new are the only other difference. Returns the problems, if any.
-function Test-RecordedChangeSafe($snapshot, $pins) {
+# quest it had but those -Moved (Invoke-RecordedPlan's) took from it to a pin that has them, which may
+# leave it with none, and then it goes; the pins that are new are the only other difference. Returns the
+# problems, if any.
+function Test-RecordedChangeSafe($snapshot, $pins, $moved = @()) {
     $problems = New-Object System.Collections.Generic.List[string]
+    $current = New-PinSet
+    foreach ($pin in $pins) { [void]$current.Add($pin) }
+    $movedOff = New-Object 'System.Collections.Generic.Dictionary[object,object]' (New-Object RecordedGiversReferenceComparer)
+    foreach ($move in $moved) {
+        if (-not $current.Contains($move.To) -or @($move.To.quests | ForEach-Object { [int]$_ }) -notcontains $move.Quest) { continue }
+        if (-not $movedOff.ContainsKey($move.From)) { $movedOff[$move.From] = New-Object System.Collections.Generic.HashSet[int] }
+        [void]$movedOff[$move.From].Add([int]$move.Quest)
+    }
     $old = New-PinSet
     foreach ($was in $snapshot) {
         [void]$old.Add($was.Pin)
         $pin = $was.Pin
         $at = "map $($was.Map) at $($was.X),$($was.Y)"
+        $off = $null
+        if ($movedOff.ContainsKey($pin)) { $off = $movedOff[$pin] }
+        $stays = @($was.Quests | Where-Object { $null -eq $off -or -not $off.Contains([int]$_) })
+        if (-not $current.Contains($pin)) {
+            if ($stays.Count) { $problems.Add("$at is gone") }
+            continue
+        }
         if ($pin.map -ne $was.Map -or (Format-PinNumber $pin.x) -ne $was.X -or (Format-PinNumber $pin.y) -ne $was.Y) { $problems.Add("$at moved") }
         if ($pin.icon -ne $was.Icon) { $problems.Add("$at changed its icon") }
         if ($pin.note -cne $was.Note) { $problems.Add("$at changed its note") }
@@ -941,17 +1047,13 @@ function Test-RecordedChangeSafe($snapshot, $pins) {
         if ($null -ne $was.Name -and $pin.name -cne $was.Name) { $problems.Add("$at changed its name") }
         if ($was.Npc -eq 0 -and [int]$pin.npc -ne 0 -and -not $pin.name) { $problems.Add("$at was given an NPC and no name") }
         $now = @($pin.quests | ForEach-Object { [int]$_ })
-        foreach ($quest in $was.Quests) { if ($now -notcontains $quest) { $problems.Add("$at lost quest $quest") } }
+        foreach ($quest in $stays) { if ($now -notcontains $quest) { $problems.Add("$at lost quest $quest") } }
     }
-    $seen = New-PinSet
     foreach ($pin in $pins) {
-        [void]$seen.Add($pin)
-        if (-not $old.Contains($pin)) {
-            if (@($pin.quests).Count -eq 0) { $problems.Add("a new pin has no quest") }
-            if ([int]$pin.npc -ne 0 -and -not $pin.name) { $problems.Add("a new pin has an NPC and no name") }
-        }
+        if ($old.Contains($pin)) { continue }
+        if (@($pin.quests).Count -eq 0) { $problems.Add("a new pin has no quest") }
+        if ([int]$pin.npc -ne 0 -and -not $pin.name) { $problems.Add("a new pin has an NPC and no name") }
     }
-    foreach ($was in $snapshot) { if (-not $seen.Contains($was.Pin)) { $problems.Add("map $($was.Map) at $($was.X),$($was.Y) is gone") } }
     return $problems.ToArray()
 }
 

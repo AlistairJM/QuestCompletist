@@ -4,7 +4,8 @@ made in a scratch folder: nothing in the checkout is written, the real game fold
 downloaded. It checks that a world where everything is the newest passes, that each kind of stale source
 (client, probe list, probe results, tables, pinned build, API docs, CMaNGOS, TrinityCore, API cache) is reported
 BEHIND and exits 1, that a client newer than wago.tools lists is not, that a product's newest build is the
-latest published and not the highest version, and that unreachable sources exit 2.
+latest published and not the highest version, that the retail PTR is the newer of wowt's and wowxptr's
+newest builds (by version, then build) and is named by its product, and that unreachable sources exit 2.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-LatestBuilds.ps1
 
@@ -47,6 +48,7 @@ function New-Newest([string]$path, [hashtable]$overrides = @{}) {
     $newest = [ordered]@{
         wago = [ordered]@{
             wow = @(@{ version = '12.1.0.69933'; created_at = '2026-09-22 14:18:16' }, @{ version = '12.1.0.69875'; created_at = '2026-09-18 19:51:00' })
+            wowt = @(@{ version = '12.1.0.69587'; created_at = '2026-09-01 01:13:03' })
             wowxptr = @(@{ version = '12.1.5.70077'; created_at = '2026-09-29 21:18:16' })
             wow_classic_beta = @(@{ version = '1.60.1.70338'; created_at = '2026-10-09 20:00:00' }, @{ version = '1.60.1.70291'; created_at = '2026-10-08 20:25:00' }, @{ version = '5.5.0.62071'; created_at = '2025-01-01 00:00:00' })
             wow_classic_era = @(@{ version = '1.15.9.70003'; created_at = '2026-09-29 14:06:00' })
@@ -115,6 +117,19 @@ try {
     $published = Get-NewestPublished (Get-Content "$($w.Newest)" -Raw | ConvertFrom-Json).wago
     Equal $published.Product['wow_classic_beta'].Version '1.60.1.70338' 'L5: a product''s newest build is the latest published, not the highest version (5.5.0.62071 is older)'
     Equal $published.Track['1.60.1'].Version '1.60.1.70338' 'L5: and a version''s newest build is the highest across the products that carry it'
+    $ptr = Get-NewestOfProducts $published $RetailPtrProducts
+    Equal "$($ptr.Product) $($ptr.Version)" 'wowxptr 12.1.5.70077' 'L6: the retail PTR is wowxptr''s build when wowt''s is an older version'
+    $ptr = Get-NewestOfProducts (Get-NewestPublished ([pscustomobject]@{
+        wowt = @(@{ version = '12.1.7.70424'; created_at = '2026-10-15 19:01:02' }, @{ version = '12.1.0.69587'; created_at = '2026-09-01 01:13:03' })
+        wowxptr = @(@{ version = '12.1.5.70500'; created_at = '2026-10-16 18:00:00' }) })) $RetailPtrProducts
+    Equal "$($ptr.Product) $($ptr.Version)" 'wowt 12.1.7.70424' 'L6: and wowt''s when it is a newer version, though its build number is lower and wowxptr''s came out later'
+    $ptr = Get-NewestOfProducts (Get-NewestPublished ([pscustomobject]@{
+        wowt = @(@{ version = '12.1.7.70424'; created_at = '2026-10-15 19:01:02' })
+        wowxptr = @(@{ version = '12.1.7.70500'; created_at = '2026-10-14 18:00:00' }) })) $RetailPtrProducts
+    Equal "$($ptr.Product) $($ptr.Version)" 'wowxptr 12.1.7.70500' 'L6: on the same version the higher build wins, though it came out earlier'
+    $ptr = Get-NewestOfProducts (Get-NewestPublished ([pscustomobject]@{ wowt = @(@{ version = '12.1.7.70424'; created_at = '2026-10-15 19:01:02' }) })) $RetailPtrProducts
+    Equal "$($ptr.Product) $($ptr.Version)" 'wowt 12.1.7.70424' 'L6: a product wago.tools doesn''t list is passed over'
+    Equal (Get-NewestOfProducts (Get-NewestPublished ([pscustomobject]@{ wow = @(@{ version = '12.1.5.70391'; created_at = '2026-10-13 21:16:02' }) })) $RetailPtrProducts) $null 'L6: and with neither there is no PTR'
 
     # --- the build of the newest probe results ---------------------------------------------------
     $w = New-World 'probebuild'
@@ -145,6 +160,8 @@ try {
     Check (Has-Row $r.Text 'ok' 'AddOns copy \(forever\)') 'R1: and so is the list in the AddOns folder'
     Check (Has-Row $r.Text 'ok' 'Forever beta, version 1\.60\.1') 'R1: and its tables'
     Check (Has-Row $r.Text 'ok' '2 other script defaults') 'R1: and the pinned builds'
+    Check (Has-Row $r.Text 'ok' 'retail PTR \(wowxptr\), version 12\.1\.5\s+held 1 tables, newest 12\.1\.5\.70077\s+newest 12\.1\.5\.70077') 'R1: the retail PTR''s tables are current, and its row names the product'
+    Check (Has-Row $r.Text 'ok' 'retail live, version 12\.1\.0\s') 'R1: while live''s row names none'
 
     # --- each source stale -----------------------------------------------------------------------
     $w = New-World 'stale'
@@ -191,8 +208,28 @@ try {
     Remove-Item "$($w.Tools)\QuestV2-12.1.0.69933.csv", "$($w.Tools)\Faction-12.1.0.69933.csv", "$($w.Tools)\QuestV2-12.1.5.70077.csv"
     $r = Run-Report $w
     Check (Has-Row $r.Text 'BEHIND' 'retail live, version 12\.1\.0.*no table held for this version') 'R3: no table at all for live retail''s version is behind'
-    Check (Has-Row $r.Text 'none' 'retail PTR, version 12\.1\.5.*no table held for this version') 'R3: but none for the PTR is only noted'
+    Check (Has-Row $r.Text 'none' 'retail PTR \(wowxptr\), version 12\.1\.5.*no table held for this version') 'R3: but none for the PTR is only noted'
     Equal $r.Exit 1 'R3: and the report still exits 1 for the one that is behind'
+
+    # --- the retail PTR on wowt or wowxptr -------------------------------------------------------
+    $w = New-World 'ptr'
+    $wago = (Get-Content $w.Newest -Raw | ConvertFrom-Json).wago
+    $wago.wowt = @([pscustomobject]@{ version = '12.1.7.70424'; created_at = '2026-10-15 19:01:02' }, [pscustomobject]@{ version = '12.1.0.69587'; created_at = '2026-09-01 01:13:03' })
+    New-Newest $w.Newest @{ wago = $wago }
+    $r = Run-Report $w
+    Check (Has-Row $r.Text 'none' 'retail PTR \(wowt\), version 12\.1\.7\s+held\s+newest 12\.1\.7\.70424\s+\(no table held for this version\)') "R6: a wowt build newer than wowxptr's is the PTR, and its row names wowt ($($r.Text))"
+    Check (-not ($r.Text -match 'retail PTR \(wowxptr\)|version 12\.1\.5')) 'R6: so wowxptr''s 12.1.5 is not checked'
+    Equal $r.Exit 0 'R6: and no PTR table yet is only noted'
+    Write-File "$($w.Tools)\QuestV2-12.1.7.70424.csv"
+    Write-File "$($w.Tools)\Faction-12.1.7.70400.csv"
+    $r = Run-Report $w
+    Check (Has-Row $r.Text 'BEHIND' 'retail PTR \(wowt\), version 12\.1\.7\s+held 2 tables, newest 12\.1\.7\.70424\s+newest 12\.1\.7\.70424\s+\(1 of 2 older: Faction 70400\)') 'R6: its tables are read for its version'
+    $wago.wowxptr = @([pscustomobject]@{ version = '12.1.7.70500'; created_at = '2026-10-14 18:00:00' })
+    New-Newest $w.Newest @{ wago = $wago }
+    Remove-Item "$($w.Tools)\Faction-12.1.7.70400.csv"
+    $r = Run-Report $w
+    Check (Has-Row $r.Text 'BEHIND' 'retail PTR \(wowxptr\), version 12\.1\.7\s+held 1 tables, newest 12\.1\.7\.70424\s+newest 12\.1\.7\.70500\s+\(1 of 1 older: QuestV2 70424\)') 'R6: the reverse, a wowxptr build newer than wowt''s on the same version, is the PTR and names wowxptr'
+    Equal $r.Exit 1 'R6: and a table of wowt''s build is then behind'
 
     # --- not reachable, not installed ------------------------------------------------------------
     $w = New-World 'offline'

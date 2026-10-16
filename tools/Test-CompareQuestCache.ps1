@@ -4,7 +4,8 @@ nothing in the checkout is read or written and nothing is downloaded. It makes a
 whose cache values, API records and client-table rows all agree, and changes one thing at a time: a
 title, a sort, a daily, weekly, recurs or repeatable flag, a faction, the races, a questInfo, a
 content tuning, a start item, a reputation amount, a few differences (what a hotfix looks like), and enough of them to look like a shifted
-field. It also checks the ways a run is refused and what it says it did not compare.
+field. It also checks the ways a run is refused, what it says it did not compare, and the warning for
+a cache that looks partial (fewer quests than the build before's cache or than the made-up data).
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-CompareQuestCache.ps1
 
@@ -95,10 +96,11 @@ function New-Base {
 
 function Write-World([string]$name, $quests, [hashtable]$options = @{}) {
     $dir = Join-Path $Scratch $name
-    New-Item -ItemType Directory "$dir\quest_api_cache" -Force | Out-Null
-    $cache = @(); $cli = @('ID,QuestTitle_lang,StartItem,QuestInfoID,ContentTuningID'); $v2 = @('ID,UniqueBitFlag')
+    New-Item -ItemType Directory "$dir\quest_api_cache", "$dir\data" -Force | Out-Null
+    $cache = @(); $cli = @('ID,QuestTitle_lang,StartItem,QuestInfoID,ContentTuningID'); $v2 = @('ID,UniqueBitFlag'); $data = @()
     foreach ($id in $quests.Keys) {
         $q = $quests[$id]
+        $data += '{"id":' + $id + ',"name":"Quest ' + $id + '"}'
         $cache += New-CacheLine $id $q.Cache
         if ($q.Api) { [IO.File]::WriteAllText("$dir\quest_api_cache\$id.json", (New-ApiRecord $id $q.Api), $utf8) }
         else { [IO.File]::WriteAllText("$dir\quest_api_cache\$id.404", '', $utf8) }
@@ -106,13 +108,14 @@ function Write-World([string]$name, $quests, [hashtable]$options = @{}) {
         if ($q.InQuestV2 -or $id -le 4) { $v2 += "$id,1" }
     }
     [IO.File]::WriteAllText("$dir\retail_quest_cache_$Build.jsonl", (($cache -join "`n") + "`n"), $utf8)
+    [IO.File]::WriteAllText("$dir\data\quests.jsonl", (($data -join "`n") + "`n"), $utf8)
     [IO.File]::WriteAllText("$dir\QuestV2CliTask.csv", (($cli -join "`r`n") + "`r`n"), $utf8)
     if (-not $options.NoQuestV2) { [IO.File]::WriteAllText("$dir\QuestV2-$Build.csv", (($v2 -join "`r`n") + "`r`n"), $utf8) }
     return $dir
 }
 
 function Invoke-Tool([string]$dir, [hashtable]$more = @{}) {
-    $params = @{ ToolsDir = $dir; MinCompared = 1 }
+    $params = @{ ToolsDir = $dir; DataDir = "$dir\data"; MinCompared = 1 }
     foreach ($k in $more.Keys) { $params[$k] = $more[$k] }
     if ($null -eq $params['MinCompared']) { $params.Remove('MinCompared') }
     $global:LASTEXITCODE = 0
@@ -395,6 +398,26 @@ try {
     Has $r.Text 'Cache retail_quest_cache_12.1.0.69933.jsonl' 'M6: the newest build''s cache is the one read, by version and not by text, and a file that is no build is ignored'
     $r = Invoke-Tool $dir @{ Cache = "$dir\retail_quest_cache_12.1.0.9.jsonl" }
     Has $r.Text 'Cache retail_quest_cache_12.1.0.9.jsonl: 0 quests' 'M6: -Cache names another'
+
+    # --- A cache that looks partial ------------------------------------------------------------------
+    $dir = Write-World 'whole' (New-Base)
+    $r = Invoke-Tool $dir
+    Lacks $r.Text 'looks partial' 'P1: a cache that holds every quest of ours, with no build before it, is not warned about'
+    Copy-Item "$dir\retail_quest_cache_$Build.jsonl" "$dir\retail_quest_cache_12.0.7.99999.jsonl"
+    $r = Invoke-Tool $dir
+    Lacks $r.Text 'looks partial' 'P1: nor one that holds as many as the build before'
+    [IO.File]::AppendAllText("$dir\retail_quest_cache_12.0.7.99999.jsonl", ('{"id":9,"title":"Iota","contentTuning":12,"sort":0,"questType":2}' + "`n" + '{"id":10,"title":"Kappa","contentTuning":12,"sort":0,"questType":2}' + "`n"), $utf8)
+    $r = Invoke-Tool $dir
+    Equal $r.Exit 0 'P2: a cache with 8 of the 10 quests of the build before still exits 0'
+    Has $r.Text "WARNING: retail_quest_cache_$Build.jsonl looks partial, with under 90% of the quests it should hold: 8 against the 10 of retail_quest_cache_12.0.7.99999.jsonl, the build before (80.0%)." 'P2: and is warned about, with both counts'
+    Has $r.Text 'Ask the missing quests again, and don''t let a smaller cache replace this one (docs\maintenance.md, step 2e).' 'P2: and what to do'
+    $r = Invoke-Tool $dir @{ Cache = "$dir\retail_quest_cache_12.0.7.99999.jsonl" }
+    Lacks $r.Text 'looks partial' 'P2: the build before, read with -Cache, is held to no later build'
+    $dir = Write-World 'fewer' (New-Base)
+    [IO.File]::AppendAllText("$dir\data\quests.jsonl", ('{"id":9,"name":"Quest 9"}' + "`n" + '{"id":10,"name":"Quest 10"}' + "`n"), $utf8)
+    $r = Invoke-Tool $dir
+    Equal $r.Exit 0 'P3: a cache with 8 of our 10 quests still exits 0'
+    Has $r.Text "WARNING: retail_quest_cache_$Build.jsonl looks partial, with under 90% of the quests it should hold: 8 of our 10 (80.0%)." 'P3: and is warned about, with both counts'
 }
 finally {
     [Threading.Thread]::CurrentThread.CurrentCulture = $savedCulture

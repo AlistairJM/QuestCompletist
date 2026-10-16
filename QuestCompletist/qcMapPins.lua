@@ -11,7 +11,7 @@ local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessi
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
 local qcQuestName, qcMaskAllows, qcPrereq, qcPvpMark = QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq, QC.qcPvpMark
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
-local qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles = QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles
+local qcNpcName, qcNpcSubtitles = QC.qcNpcName, QC.qcNpcSubtitles
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
 local qcQuestStatus, qcMapTip = QC.qcQuestStatus, QC.qcMapTip
 local qcAddMapTooltipLine, qcSetMapTooltipLineIcon, qcAddMapTooltipDivider = qcMapTip.Line, qcMapTip.LineIcon, qcMapTip.Divider
@@ -491,7 +491,6 @@ function qcMapDataProvider:RefreshAllData()
         end
     end
 
-    qcRequestPinNpcNames(pins)
     for _, pinData in ipairs(qcMergeStackedPins(pins)) do
         self:GetMap():AcquirePin("qcPinTemplate", pinData)
     end

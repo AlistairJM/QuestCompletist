@@ -26,11 +26,13 @@ rule that no data file can hold, so it isn't applied. A tuning whose minimum is 
 (tuning 949 has 255, a marker for a quest nobody can take) gives a quest no minimum: it is no level.
 
 The data file keeps `level` as the quest's own level, which the list's bracket, sort and low-level
-filter read, and holds the minimum in `minLevel` only where it is not that: 0 and 1 both mean no
+filter read for a quest that doesn't scale (QuestScaling.ps1 has the rest), and holds the minimum in
+`minLevel` only where it is not that: 0 and 1 both mean no
 minimum, so a quest whose level and minimum are both 0 or 1 gets no entry, and nor does a quest on
 tuning 0 with no API minimum.
 #>
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 
 $script:TuningLevelBase = @{ 0 = 0; 1 = 1; 2 = 90; 3 = 80 }
 $script:LevelCap = 90
@@ -38,9 +40,7 @@ $script:TuningColumns = @('ID', 'MinLevelSquish', 'MaxLevelSquish', 'MinLevelSca
 
 function Resolve-RetailBuild([string]$toolsDir, [string]$build) {
     if ($build) { return $build }
-    $newest = Get-ChildItem "$toolsDir\retail_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
-        Where-Object { $_.BaseName -match '^retail_quest_cache_\d+\.\d+\.\d+\.\d+$' } |
-        Sort-Object { [version]($_.BaseName -replace '^retail_quest_cache_') } | Select-Object -Last 1
+    $newest = Get-QuestCacheFiles $toolsDir | Select-Object -Last 1
     if (-not $newest) { throw "No retail_quest_cache_<build>.jsonl under ${toolsDir}: run Read-QuestCache.ps1 -Build <retail build> (step 2e) first, or give -Build." }
     return ($newest.BaseName -replace '^retail_quest_cache_')
 }
@@ -212,8 +212,9 @@ function Get-QuestLevelWorld([string]$toolsDir, [string]$dataDir, [string]$build
     $records = Read-QuestData $dataDir
     $minimums = @{}
     foreach ($q in $records) { $minimums[[int]$q.id] = Get-QuestMinimum ([int]$q.id) $api.Minimum $questTuning.ByQuest $tunings $validation }
+    $cacheWarning = @(Get-QuestCacheWarning $cacheFile $minimums.Keys)
     return [pscustomobject]@{
-        Build = $build; CacheFile = $cacheFile; TuningFile = $tuningFile; Tunings = $tunings; QuestTuning = $questTuning
+        Build = $build; CacheFile = $cacheFile; CacheWarning = $cacheWarning; TuningFile = $tuningFile; Tunings = $tunings; QuestTuning = $questTuning
         Api = $api; Validation = $validation; Records = $records; Minimums = $minimums
     }
 }

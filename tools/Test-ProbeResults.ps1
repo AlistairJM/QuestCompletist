@@ -78,7 +78,7 @@ try {
     Check (@(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $withRuns | Where-Object { $_ -match "^(run|runfact|trivialrange|refusedfact)`t" }).Count -eq 0) 'T1: and the plain mode prints none of it'
     $levelRows = @(
         '[1] = {build = "12.1.5.70400", result = "ok", level = 10, trivial = true, contentDifficulty = 0},',
-        '[2] = {build = "12.1.5.70400", result = "ok", level = 40, trivial = false, contentDifficulty = 2},',
+        '[2] = {build = "12.1.5.70400", result = "ok", level = 40, trivial = false, contentDifficulty = 2, expansion = 11},',
         '[3] = {build = "12.1.5.70400", result = "cached", level = 41, trivial = false, contentDifficulty = 3},',
         '[4] = {build = "12.1.5.70400", result = "late", level = 20, trivial = true, contentDifficulty = 1},',
         '[5] = {build = "12.1.5.70400", result = "ok", level = 30},',
@@ -86,7 +86,9 @@ try {
         '[7] = {build = "12.1.5.70400", result = "fail"},',
         '[8] = {build = "12.1.0.69933", result = "ok", level = 5, trivial = true, contentDifficulty = 0},',
         '[9] = {build = "12.1.5.70400", result = "timeout"},',
-        '[10] = {build = "12.1.5.70400", result = "ok", level = 12, trivial = true, contentDifficulty = 4},'
+        '[10] = {build = "12.1.5.70400", result = "ok", level = 12, trivial = true, contentDifficulty = 4},',
+        '[11] = {build = "12.1.5.70400", result = "cached", level = 0, trivial = false, contentDifficulty = 2},',
+        '[12] = {build = "12.1.5.70400", result = "cached", trivial = false, contentDifficulty = 2},'
     ) -join "`n"
     $levelRuns = @(
         '{kind = "quests", build = "12.1.5.70400", time = 5, character = "Horde Orc WARRIOR", level = 20, answered = 9, asked = 10, facts = {trivial = "C_QuestLog.IsQuestTrivial", contentDifficulty = "C_PlayerInfo.GetContentDifficultyQuestForPlayer"}, trivialRange = {UnitQuestTrivialLevelRange = 4, UnitQuestTrivialLevelRangeScaling = 7}},',
@@ -149,11 +151,15 @@ try {
     Equal $lf.Build '12.1.5.70400' 'T9: the level facts are of the run''s build'
     Equal $lf.Character 'Alliance Human MAGE' 'T9: of the last quest run that asked IsQuestTrivial (not the one before, not the map run, not a later one that did not ask)'
     Equal $lf.CharacterLevel 40 'T9: with its character''s level'
+    Equal (@($lf.BuildRuns | ForEach-Object { "$($_.Run):$($_.Level)" }) -join ',') '1:20,2:40,4:40' 'T9: and every quest run of that build, with its character''s level, as a row may be any one''s (not the map run)'
+    Equal $lf.BuildRuns[0].Character 'Horde Orc WARRIOR' 'T9: and its character'
     Equal $lf.TrivialFunction 'C_QuestLog.IsQuestTrivial' 'T9: the function that answered IsQuestTrivial'
     Equal $lf.DifficultyFunction 'C_PlayerInfo.GetContentDifficultyQuestForPlayer' 'T9: and the difficulty'
     Equal $lf.TrivialRange 6 'T9: the character''s trivial range'
     Check ($lf.TrivialRangeScaling -is [bool] -and -not $lf.TrivialRangeScaling) 'T9: and $false for a scaling range the client lacks'
     Equal $lf.Loaded 7 'T9: seven loaded quests of that build (not the refused one, the timed-out one or the other build''s)'
+    Equal $lf.Partial 2 'T9: two cached rows with no level above 0 are records held in part, counted apart'
+    Check (-not $lf.Quests.ContainsKey('11') -and -not $lf.Quests.ContainsKey('12')) 'T9: and left out of the tallies'
     Equal $lf.Trivial['true'] 3 'T9: three are trivial'
     Equal $lf.Trivial['false'] 3 'T9: three are not'
     Equal $lf.Trivial['none'] 1 'T9: and one has no answer'
@@ -166,6 +172,8 @@ try {
     Equal $lf.Quests['2'].Level 40 'T9: a quest keeps the level the game gave'
     Check ($lf.Quests['2'].Trivial -is [bool] -and -not $lf.Quests['2'].Trivial) 'T9: and IsQuestTrivial, as a boolean'
     Equal $lf.Quests['2'].Difficulty 2 'T9: and the difficulty, as a number'
+    Equal $lf.Quests['2'].Expansion 11 'T9: and the game''s expansion, as a number'
+    Check ($null -eq $lf.Quests['1'].Expansion) 'T9: none for a quest whose row has none'
     Check ($lf.Quests['1'].Trivial -is [bool] -and $lf.Quests['1'].Trivial) 'T9: true as true'
     Equal $lf.Quests['1'].Difficulty 0 'T9: Trivial (0) as 0'
     Check ($null -eq $lf.Quests['5'].Trivial -and $null -eq $lf.Quests['5'].Difficulty) 'T9: a quest with no answer has none'

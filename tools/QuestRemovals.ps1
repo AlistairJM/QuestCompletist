@@ -1,5 +1,5 @@
-# Dot-sourced by Import-ForeverData.ps1 and Show-RemovedQuests.ps1: which quests a data file has lost, and the
-# decisions (docs\plans\quest-removal-decisions.csv) that say what to do about them.
+# Dot-sourced by Import-ForeverData.ps1, Show-RemovedQuests.ps1 and Sync-QuestPvP.ps1: which quests a data file
+# has lost, and the decisions (docs\plans\quest-removal-decisions.csv) that say what to do about them.
 
 function Read-QuestIdLines([string]$text) {
     $lines = @{}

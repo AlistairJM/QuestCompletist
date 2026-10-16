@@ -250,3 +250,24 @@ The review's code change, decision 2 and the last 3 findings:
 - 2026-10-07: step 2c takes the client's task-quest tables for task quests (client-tables-review.md,
   Status): 687 quests gained a prerequisite, 90 changed. The check found one new finding, an
   other-faction quest, and kept it (121 findings, all decided).
+- 2026-10-15: the check lists its new findings and exits with 1 on one, as step 2d does, and a KEEP row
+  that matches no finding is a finding of its own ("decision out of date"). Its first run on
+  12.1.5.70391 found 7 such rows and 3 new findings
+  ([maintenance.md](../maintenance.md#2b-the-tables-kept-by-hand)).
+- 2026-10-15: the 3 are one-time quests that require a quest #257 retyped weekly on 10 October:
+  83531 requires 83530 (Hallowfall Fishing Derby), 89056 "Ray-ket Ball, Redux" requires 89197 "Ray
+  Ranching" and 89057 "Pee-Yew de Foxy" requires 85721 "Killer Instinct". The user kept them, as
+  decision 3 of the review above kept the 26 like them; 83530's weekly type is to be rechecked at
+  step 3 once the probe's 15 October rerun is read. The 7 rows out of date, whose links step 2c
+  dropped on 12 October, are taken out: six `prereq: recurring quest` rows (83530, 85470, 85721,
+  88659, 89195 and 89197) and the `prereq: quest not in the data` row for 91798. The check lists 122
+  findings, all kept, none new and no row out of date; Forever's 6 are unchanged.
+- 2026-10-16: step 3 on the probe's 15 October rerun ([quest-types.md](quest-types.md)) left 83530
+  weekly, as 12.1.5 refused it and the 9 October run's Recurring stands, so the 83531 row stays, with
+  the recheck in its reason. It retyped 89057 and 89192 as weekly, so the rows for 89057 (requires 85721)
+  and 89192 (requires 89254 "Shutterbug", kept on 6 October) matched no finding and are taken out. The
+  check lists 120 findings, all kept, none new and no row out of date; Forever's 6 are unchanged.
+- 2026-10-16: with 89057 and 89192 weekly, step 2c took the four recurring links of line 5704 that no
+  Blizzard source names (89057 requires 85721, 89192 requires 89254, 85465 requires 89057 and 86342
+  requires 89192; [maintenance.md](../maintenance.md#2c-prerequisites)). The check writes the same
+  findings file as before: 120 findings, all kept, none new and no row out of date.
