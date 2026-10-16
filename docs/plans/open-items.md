@@ -272,6 +272,13 @@ again.
   shown while 638 runs; Windcaller Yessendra's pin, which shares a stack with one turn-in pin of each
   faction in Ahn'Qiraj: The Fallen Kingdom, stays under her name. While the event runs, those pins should
   be on the map, and Kalimdor's Silithus icon should count 9 more quests than out of season.
+- **The Darkspear Dash (retail, #PRNUM, untried in game; one look while it runs, from 26 June 2027).**
+  `/qc holidays` should now list Darkspear Dash (1793, 26 to 28 June 2027) as an entry, no longer under
+  "Other calendar holidays". Offline, with the seasonal and faction filters on, the five pins of 95009
+  "Doing the Dash" (four in Dornogal, one in Silvermoon City; their other quests are all tagged) are
+  hidden out of season, and while 1793 runs they show 95009 to Horde characters and not to Alliance
+  ones. While the event runs, a Horde character should see them, and the Holiday Enthusiasts there
+  should offer the quest; the race, 94954, has no pin.
 - **The cups' pins (retail, one look while a cup runs; the next is the Kalimdor Cup, from 23 February
   2027).** The 16 Skyriding cup quests share one flag on the four cups' calendar IDs (#310).
   `/qc holidays` listed 1395 and 1400 on 11 October 2026; the Outland (1407) and Northrend (1429)

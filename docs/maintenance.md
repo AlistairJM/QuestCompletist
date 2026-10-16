@@ -246,7 +246,10 @@ then every tool refuses to save.
    (of 23 holidays 21 matched, the two new ones by their own names, under the Holidays filter
    their rows give, `CalendarFilterType` 255), nor did the PTR. With Call of the Scarab added
    (#315), the same three builds gave no finding again (of 24 holidays 22 matched on retail and
-   Forever, the new one by its own name, row 638, under `CalendarFilterType` 255). Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
+   Forever, the new one by its own name, row 638, under `CalendarFilterType` 255). With the
+   Darkspear Dash added on 16 October 2026 (#PRNUM), retail 12.1.5.70391 and Forever's newest beta
+   build, 1.60.1.70425, gave no finding (of 25 holidays 23 matched, the new one by its own name, row
+   1793, under `CalendarFilterType` 255). Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
    systematic review of every table (2026-10-07) is in
    [plans/client-tables-review.md](plans/client-tables-review.md); before it, the tables read
@@ -2734,8 +2737,9 @@ were tagged that day (six and the one pinned), and the Scourge Invasion and the 
 whose 11 and 43 retail quests (none pinned) were tagged with them that day; the 57 Guest Relations
 quests took WoW's Anniversary, which now has 76 quests, 52 of them pinned. Later that day (#315)
 Call of the Scarab joined them, with its 18 quests (the 16 turn-ins pinned), and left "Other calendar
-holidays". Since 16 October 2026 (#PRNUM) the Darkspear Dash has too, with its two quests (95009 on five
-pins), so it should leave "Other calendar holidays" as well. Each entry's line is the soonest event of any of its IDs, under that event's own name and ID, and under
+holidays". Since 16 October 2026 (#PRNUM) the Darkspear Dash is among them too, with its two quests
+(95009 on five pins), and should no longer be under "Other calendar holidays". Each entry's line is the
+soonest event of any of its IDs, under that event's own name and ID, and under
 it a line for each other ID of the entry that the calendar has in its 12 months, soonest first, so
 each ID can be confirmed in game (Hallow's End's 324 and 1405, Love is in the Air's 423 and 335, the
 Darkmoon Faire's 479, 263 and 264, Hearthstone's 10th Anniversary's 1462 and 1578, the Skyriding Cups' four). Until 12
@@ -2958,9 +2962,10 @@ Dash heading. No signal of step 2d names the event (the API's "Seasonal" names n
 has no event with either quest, and neither heading is a holiday's), so it checks them through their
 `SET` rows; step 2b matches the entry by its own name. TrinityCore has no start for either quest (no
 starter and no POI row), so step 6's TrinityCore placement, which skips tagged quests, had nothing to
-place for them anyway; the client's five points place 95009 as before. Forever's tables (70374's, and the newest beta
-build's, 1.60.1.70425) have no row 1793 and its data none of these quests, so step 2b lists the entry as
-not on Forever's calendar, which is no finding, and the importer's table of Holidays IDs is left as it is.
+place for them anyway; the client's five points place 95009 as before. Forever's tables (70374's, and
+the newest beta build's, 1.60.1.70425) have no row 1793 and its data none of these quests, so step 2b
+lists the entry as not on Forever's calendar, which is no finding, and the importer's table of Holidays
+IDs is left as it is.
 
 Retail's calendar on 11 October 2026, as `/qc holidays` listed it on the user's realm (whose
 per-region rows are region 4's): every holiday our quests have was dated in the next 12 months
@@ -2993,10 +2998,10 @@ facts in `docs\plans\calendar-decisions.csv`, with the day they were seen: 1808,
 way, on both games.
 
 On 16 October 2026 (#PRNUM) the Darkspear Dash (1793) left that list for an entry of its own (above), and
-1793 joined the seen facts. The rest of the list was checked against the 583 quests the data gained
-after 10 October 2026 (the task quests of step 6b, 12.1.5's Hallow's End and story quests and the
-others) and 94954: by name, by Blizzard's API category and text, and by TrinityCore's events, none ties
-to one of those events but Emissary of War (93598, a level 90 weekly dungeon quest the API files under
+1793 joined the seen facts. The rest of the list was checked against the 606 quests the data gained
+after 10 October 2026 (the task quests of step 6b, 12.1.5's Hallow's End, story and gap-rule quests,
+94954 and the others): by name, by Blizzard's API category and text, and by TrinityCore's events, none
+ties to one of those events but Emissary of War (93598, a level 90 weekly dungeon quest the API files under
 Weekly Event, in the data since 15 October), one of the weekly bonus events' quests, which stay untagged
 by the user's decision of 12 October 2026 (its `KEEP` row); its text names no event.
 
