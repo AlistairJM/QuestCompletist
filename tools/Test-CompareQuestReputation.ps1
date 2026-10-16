@@ -6,7 +6,9 @@ agree or not (class A to H), with the factions in different orders, a faction li
 with an amount of 0; the rest changes one thing at a time: the Faction table's flags, the builds, the
 baseline file, a cache that looks partial (its warning, and -UpdateBaseline refused unless
 -AcceptPartialCache), the files that are missing, and what the run exits with. It also runs
-Apply-ReputationBackfill.ps1 on the CSV, to check that it leaves the cache pass's rows alone.
+Apply-ReputationBackfill.ps1 on the CSV, to check that it leaves the cache pass's rows alone, and
+that with -CacheOnly it writes the cache-only rows of quests the API has no record of, adds the
+factions they name to qcFactions and refuses while a reward differs or is lost.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-CompareQuestReputation.ps1
 
@@ -230,14 +232,18 @@ try {
         if ($kind -like 'cache-*') { Check ($kind -ine 'differ' -and $kind -ine 'api-only' -and $kind -ine 'ours-only') "W8: the Kind $kind is none Apply-ReputationBackfill acts on or counts" }
     }
     $csv = @(Import-Csv "$dir\quest_reputation_compare.csv")
-    Equal (($csv[0].PSObject.Properties.Name) -join ',') 'QuestID,Kind,Ours,Api,ApiFactionNames,Cache,CacheFactionNames' 'W9: the columns are the old ones and the cache'
+    Equal (($csv[0].PSObject.Properties.Name) -join ',') 'QuestID,Kind,Ours,Api,ApiFactionNames,Cache,CacheFactionNames,CacheShown' 'W9: the columns are the old ones and the cache'
     $row = $csv | Where-Object { $_.QuestID -eq '13' -and $_.Kind -eq 'cache-more' }
     Equal $row.Ours '' 'W9: a row of the cache pass has ours'
     Equal $row.Api '76=250' 'W9: and the API''s'
     Equal $row.Cache '76=250;88=5' 'W9: and the cache''s'
     Equal $row.CacheFactionNames '76=Orgrimmar;88=(not in the Faction table)' 'W9: and the names of the cache''s factions from the Faction table'
+    Equal $row.CacheShown '76=250' 'W9: and the cache''s rewards on shown factions'
+    Equal ($csv | Where-Object { $_.QuestID -eq '31' }).CacheShown '76=5' 'W9: a cache-only row''s shown rewards leave out a hidden faction'
+    Equal ($csv | Where-Object { $_.QuestID -eq '33' }).CacheShown '' 'W9: and a cache-hidden row has none'
     $row = $csv | Where-Object { $_.QuestID -eq '17' -and $_.Kind -eq 'differ' }
     Equal $row.Cache '' 'W9: a row of the old pass has no cache'
+    Equal $row.CacheShown '' 'W9: nor shown rewards'
     Equal $row.ApiFactionNames '76=Faction "76"' 'W9: and still has the API''s names'
     $row = $csv | Where-Object { $_.QuestID -eq '28' }
     Equal $row.Api '' 'W9: a quest the API has no record of has no API reward'
@@ -278,6 +284,94 @@ try {
     $afterMap = Get-QuestReputation $luaAfter
     Equal (Format-Flat $afterMap['3']) '76=250' 'Y2: an api-only quest has the API''s reward'
     Equal (Format-Flat $afterMap['17']) '76=250' 'Y2: and a differ quest has its row corrected'
+
+    # --- Apply-ReputationBackfill -CacheOnly ---------------------------------------------------------
+    function Invoke-Apply([string]$dir) {
+        $failure = ''; $out = @()
+        try { $out = @(& $Apply -ToolsDir $dir -DataDir "$dir\data" -QuestFile "$dir\qcQuest.lua" -CacheOnly) } catch { $failure = $_.Exception.Message }
+        return @{ Text = ($out -join "`n"); Failure = $failure }
+    }
+    function Get-FactionBlock([string]$path) { return [regex]::Match([IO.File]::ReadAllText($path), '(?s)qcFactions = \{\r\n(.*?)\r\n\}').Groups[1].Value }
+
+    $refusedDir = Join-Path $Scratch 'apply-refused'
+    Copy-Item $dir $refusedDir -Recurse
+    $luaBefore = [IO.File]::ReadAllText("$refusedDir\qcQuest.lua")
+    $a = Invoke-Apply $refusedDir
+    Has $a.Failure 'the CSV has 13 cache-differ or cache-lost rows, so the quest cache''s rewards are not used' 'Y3: -CacheOnly refuses while a reward differs or is lost in the cache'
+    Equal ([IO.File]::ReadAllText("$refusedDir\qcQuest.lua")) $luaBefore 'Y3: and writes nothing'
+
+    $world = New-World
+    foreach ($id in 15..27) { $world.Remove($id) }
+    $d = Write-World 'apply-cache' $world
+    $null = Invoke-Tool $d
+    Copy-Item "$d\quest_reputation_compare.csv" "$d\first.csv"
+    $luaBefore = [IO.File]::ReadAllText("$d\qcQuest.lua")
+    $a = Invoke-Apply $d
+    Equal $a.Failure '' 'Y4: -CacheOnly runs on a CSV with no differing or lost reward'
+    Has $a.Text 'Rows added: 2; corrected: 0' 'Y4: the API''s rows are applied as before'
+    Has $a.Text 'Rows added from the quest cache: 11 quests, 11 rewards; left: 1 whose API record lists none, 1 the API hasn''t been asked about' 'Y4: the cache-only rows of quests the API has no record of are written, and the others counted'
+    Has $a.Text 'Factions added to qcFactions: [9] Nine, [56] Fifty-six, [81] Eighty-one, [82] Eighty-two, [100] Hundred' 'Y4: with the factions qcFactions lacked, by ID'
+    Has $a.Text 'qcQuestReputation now holds: 24' 'Y4: and the rows it now holds'
+    $luaAfter = [IO.File]::ReadAllText("$d\qcQuest.lua")
+    $afterMap = Get-QuestReputation $luaAfter
+    $changed = @(Compare-Object (Get-Flat (Get-QuestReputation $luaBefore)) (Get-Flat $afterMap) | ForEach-Object { [int]($_.InputObject -replace ':.*$') } | Sort-Object -Unique)
+    Equal ($changed -join ',') '3,13,28,31,32,41,42,43,44,45,46,52,53' 'Y5: the api-only quests and the cache-only quests the API has no record of have new rows, and no other quest'
+    Equal (Format-Flat $afterMap['28']) '76=250' 'Y5: a cache-only quest has the cache''s reward'
+    Equal (Format-Flat $afterMap['31']) '76=5' 'Y5: and only its rewards on shown factions'
+    foreach ($case in @(@(29, 'a quest whose API record lists none'), @(30, 'a quest the API was not asked about'), @(33, 'a cache-hidden quest'), @(39, 'a quest not in our data'))) {
+        Check (-not $afterMap.ContainsKey("$($case[0])")) "Y5: $($case[1]) gets no row"
+    }
+    Has $luaAfter "`t[14]={[76]=250},`r`n`t[28]={[76]=250},`r`n`t[31]={[76]=5},`r`n`t[32]={[81]=5},`r`n`t[37]={[76]=250},`r`n`t[41]={[76]=5}," 'Y5: the rows go in by quest ID, in the table''s format'
+    Equal (Get-FactionBlock "$d\qcQuest.lua") ("`t[9] = `"Nine`",`r`n`t[56] = `"Fifty-six`",`r`n    [76] = `"Orgrimmar`", `r`n    [72] = `"Stormwind`", `r`n    [80] = `"Eighty`", `r`n`t[81] = `"Eighty-one`",`r`n`t[82] = `"Eighty-two`",`r`n`t[100] = `"Hundred`",") 'Y6: a faction goes in ahead of the first entry with a higher ID, the rest at the end, the old lines untouched'
+    Equal ($luaAfter -replace '(?m)^\t\[(9|56|81|82|100)\] = "[^"]*",\r\n', '' -replace '(?m)^\t\[(3|13|28|31|32|41|42|43|44|45|46|52|53)\]=\{[^}]*\},\r\n', '') $luaBefore 'Y6: and no other line of qcQuest.lua changes'
+
+    $r = Invoke-Tool $d
+    Equal $r.Exit 0 'Y7: the compare after it finds nothing that differs'
+    HasLine $r.Text '  E cache only, on a shown faction (backfill candidates): 2 quests, 2 rewards; API: no record 0, a record listing none 1, not asked 1' 'Y7: E holds the two quests left'
+    HasLine $r.Text '  B cache adds rewards on factions that are not shown: 5' 'Y7: and the quest whose hidden reward was left out is in B'
+    Lacks $r.Text 'E rewards on a faction missing from qcFactions' 'Y7: and no faction is missing'
+    $a = Invoke-Apply $d
+    Has $a.Text 'Rows added from the quest cache: 0 quests, 0 rewards; left: 1 whose API record lists none, 1 the API hasn''t been asked about' 'Y8: -CacheOnly on that compare adds nothing'
+    Has $a.Text 'Factions added to qcFactions: none' 'Y8: nor a faction'
+    Equal ([IO.File]::ReadAllText("$d\qcQuest.lua")) $luaAfter 'Y8: and leaves the file as it was'
+    Copy-Item "$d\first.csv" "$d\quest_reputation_compare.csv" -Force
+    $a = Invoke-Apply $d
+    Has $a.Failure 'Refusing to write.' 'Y9: the first CSV again is refused'
+    Has $a.Failure '28 already has a reputation row' 'Y9: as its cache-only quests now have rows'
+    Equal ([IO.File]::ReadAllText("$d\qcQuest.lua")) $luaAfter 'Y9: and nothing is written'
+
+    $d = Write-World 'apply-unnamed' @{ 1 = New-Quest '' $null '81=5' }
+    $null = Invoke-Tool $d
+    $rows = @(Import-Csv "$d\quest_reputation_compare.csv")
+    $rows[0].CacheFactionNames = ''
+    $rows | Export-Csv "$d\quest_reputation_compare.csv" -NoTypeInformation -Encoding utf8
+    $luaBefore = [IO.File]::ReadAllText("$d\qcQuest.lua")
+    $a = Invoke-Apply $d
+    Has $a.Failure '1 rewards faction 81, which qcFactions lacks and the row does not name' 'Y10: a faction qcFactions lacks and the CSV does not name is refused'
+    Equal ([IO.File]::ReadAllText("$d\qcQuest.lua")) $luaBefore 'Y10: and nothing is written'
+
+    $d = Write-World 'apply-nocomma' @{ 1 = New-Quest '' $null '81=5' }
+    [IO.File]::WriteAllText("$d\qcQuest.lua", ([IO.File]::ReadAllText("$d\qcQuest.lua").Replace('[80] = "Eighty", ', '[80] = "Eighty"')), $utf8)
+    $null = Invoke-Tool $d
+    $a = Invoke-Apply $d
+    Equal $a.Failure '' 'Y11: a qcFactions whose last entry has no comma is written to'
+    Equal (Get-FactionBlock "$d\qcQuest.lua") ("    [76] = `"Orgrimmar`", `r`n    [72] = `"Stormwind`", `r`n    [80] = `"Eighty`",`r`n`t[81] = `"Eighty-one`",") 'Y11: and the last entry gets a comma before the new one'
+
+    $d = Write-World 'apply-quoted' @{ 1 = New-Quest '' $null '82=5' }
+    [IO.File]::WriteAllText("$d\Faction-$Build.csv", "ID,Name_lang,ReputationIndex,ReputationFlags_0`r`n82,`"Back\slash `"`"quoted`"`"`",14,1`r`n", $utf8)
+    $null = Invoke-Tool $d
+    $a = Invoke-Apply $d
+    Equal $a.Failure '' 'Y12: a faction name with a backslash and quotes is written'
+    Has (Get-FactionBlock "$d\qcQuest.lua") "`t[82] = `"Back\\slash \`"quoted\`"`"," 'Y12: escaped for Lua'
+    $r = Invoke-Tool $d
+    HasLine $r.Text '  A agree: 1' 'Y12: and the quest agrees with the cache'
+    $d = Write-World 'apply-quoted-read' @{ 1 = New-Quest '' $null '82=5' }
+    Copy-Item "$Scratch\apply-quoted\Faction-$Build.csv" "$d\Faction-$Build.csv" -Force
+    Copy-Item "$Scratch\apply-quoted\qcQuest.lua" "$d\qcQuest.lua" -Force
+    [IO.File]::WriteAllText("$d\qcQuest.lua", ([IO.File]::ReadAllText("$d\qcQuest.lua") -replace '(?m)^\t\[1\]=\{\[82\]=5\},\r\n', ''), $utf8)
+    $r = Invoke-Tool $d
+    HasLine $r.Text '  E cache only, on a shown faction (backfill candidates): 1 quests' 'Y12: with its row taken out again, the quest is E'
+    Lacks $r.Text 'E rewards on a faction missing from qcFactions' 'Y12: and the escaped name is read back as the faction''s'
 
     # --- Which factions are shown ------------------------------------------------------------------------
     foreach ($case in @(
@@ -341,7 +435,7 @@ try {
     HasLine $r.Text 'Rows written: 8 ->' 'S1: and writes its rows'
     $csv = @(Import-Csv "$d\quest_reputation_compare.csv")
     Equal $csv.Count 8 'S1: the CSV holds the old rows only'
-    Equal (($csv[0].PSObject.Properties.Name) -join ',') 'QuestID,Kind,Ours,Api,ApiFactionNames,Cache,CacheFactionNames' 'S1: with the same columns'
+    Equal (($csv[0].PSObject.Properties.Name) -join ',') 'QuestID,Kind,Ours,Api,ApiFactionNames,Cache,CacheFactionNames,CacheShown' 'S1: with the same columns'
     $d = Write-World 'nofaction' (New-World) @{ NoFaction = $true }
     $r = Invoke-Tool $d
     Equal $r.Failure '' 'S2: without a Faction table the run does not throw'

@@ -338,7 +338,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1 | Faction, race and class (after step 1b) | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
 | 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 1d | Professions (after steps 1b and 2e, whose tables and quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
-| 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
+| 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1 -CacheOnly` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers, TrinityCore and the decisions kept by hand (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
@@ -517,7 +517,7 @@ its `ReputationIndex` is 0 or more (the client keeps no standing for it otherwis
 `ReputationFlags_0` lacks bit 4 (value 4, hidden). The classes, with the `Kind` of the row each
 writes to `quest_reputation_compare.csv` (the old kinds, `api-only`, `ours-only` and `differ`, are
 still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on `api-only` and
-`differ` only):
+`differ`, and with `-CacheOnly` on `cache-only` too, below):
 
 | Class | Quests where | Kind |
 |---|---|---|
@@ -545,8 +545,23 @@ On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) the classes held 
 record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the cache reproduced all
 11,690 of the API's rewards. Step 6b's 506 task quests (11 October 2026) moved E to 2,085 (42 new, all of
 them new rows) and G to 2,852 (401 new, the new rows the cache lacks), and the baseline file was rewritten.
-Whether to backfill E is the user's decision
-([plans/retail-quest-cache.md](plans/retail-quest-cache.md)); nothing here changes data.
+
+Since the 12.1.5 sweep, class E is taken from the newest cache, with no check in the game (the
+user's decision 11b, option B; [plans/open-items.md](plans/open-items.md), row 15): wherever the
+API and the cache both list a reward they agree (11,690 of 11,690 on 12.1.0, 11,093 of 11,093 on
+12.1.5). After the compare, this writes it:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-ReputationBackfill.ps1 -CacheOnly
+```
+
+It does what the run without `-CacheOnly` does, and also adds the `cache-only` rows of the quests
+the API has no record of (a `.404` in the API cache), with only their rewards on shown factions
+(the CSV's `CacheShown` column). A faction those rewards name that `qcFactions` lacks is added to
+it, with the Faction table's name, so step 2b's name check passes. A quest whose API record lists
+no reward, or that step 1 hasn't asked about, is left and counted. It refuses while the CSV has a
+`cache-differ` or `cache-lost` row. Rerun the compare after it: E then holds only the quests left,
+and one whose cache record also rewards a hidden faction is in B.
 
 On 15 October 2026 (cache 12.1.5.70391, API cache 12.1.5_70077, Faction table 12.1.5.70391)
 C and D were 0 and B the same 3 quests, and the cache reproduced all 10,054 of the API's
@@ -561,13 +576,38 @@ all quests this cache lacks, now in G, and the 57 new E and 9 new F quests were 
 baseline. G gained 6,366 quests: 6,336 that the 12 October reading holds and this cache lacks,
 and 30 that neither file holds, all added to the data since the baseline (#347's 29, and 97212,
 a Midnight Candy Bucket added on 13 October). It lost the 243 baseline G quests this cache holds,
-146 of them also in the 12 October reading. So the baseline file stays as it was until a complete
-12.1.5 cache is read. The API cache of 14 October has no record of the 29 quests #347 added
+146 of them also in the 12 October reading. So the baseline file stayed as it was that day
+(16 October, below). The API cache of 14 October has no record of the 29 quests #347 added
 (18 Hallow's End quests and 11 task quests), so the API pass counts 5,388 quests with none:
 the 5,359 the API does not know and those 29. The records fetched for #347 on 15 October, in
 the same namespace, list no reputation reward for the 24 the API knows, and it does not know
 97219, 97241, 98421, 98422 and 98801; the quest cache holds none of the 29. On those records,
 step 2 would add nothing for them once step 1 has fetched them.
+
+On 16 October 2026 the pass read the joined 12.1.5 cache (step 2e: the game's copies of 14 and 15
+October read together), with the API cache, which by then had answers for the 29 quests (24
+records, and 5 the API does not know; 5,364 of our quests have no record), and the Faction table of
+12.1.5.70391. The cache holds
+29,844 quests, 29,824 of our 35,573 (83.8%), so it is still warned about as partial; it will not
+get fuller this sweep. C and D were 0, B the same 3 quests, and the cache reproduced all 11,093 of
+the API's rewards on the quests it holds. E held 738 quests with 1,028 rewards, all of them quests
+the API has no record of, none with a hidden faction among its rewards, and `-CacheOnly` wrote all
+of them, adding 2574 Dream Wardens to `qcFactions` (5 rewards): `qcQuestReputation` went from
+11,039 to 11,777 quests. By our type, 645 are typed 128 (928 rewards), 75 one-time (80), 14 daily
+(15), 3 repeatable (3) and 1 type 0 (2). 695 are in the client's task table: 621 world quests (906
+rewards), 23 bonus objectives, 12 Dragonriding races, 3 threat wrappers, 2 island weeklies and 34
+with no quest type there. The other 43 are 21 emissary quests (1,500 each), 5 Darkshore donations,
+3 Broken Shore contributions, 5 typed 128 and filed under no category (71153, 72298, 72381, 72382
+and 72383, whose cache records give Tortollan Seekers 1,500), 8 one-time quests whose cache record
+carries the Deprecated flag (8330, 8336, 8345, 8346, 9422, 10119, 38711, 75641) and the daily
+56419. After it: A 11,007, E 0, F 151, G 5,749 (767 with a reward row of ours), H 20 (1 with a
+reward). The baseline file was then rewritten from that run with `-AcceptPartialCache` (decided
+for the sweep, as the cache will not get fuller). Against the 11 October baseline: of its 2,085 E
+quests, 646 were written and the other 1,439 are quests this cache lacks, now in G; the other 92
+written were in G, as the 11 October reading lacked them. F kept 135, lost 18 to G and gained 16
+from G. G gained 3,286 (3,256 that the 12 October 12.1.0 reading holds and this cache lacks, and
+the 30 added to the data since) and lost 389, all of them held by this cache. The 1,439 keep no
+reward until a cache holds them again, when the pass lists them as new E.
 
 ### 2b. The tables kept by hand
 
@@ -1789,8 +1829,9 @@ the newest build, and files the new rows through a scratch copy of the data and
     fetched the new rows' API records, so 11378, 11382, 11386 and 57326 were still without their
     rewards at the 12.1.5 sweep, whose compare (14 October 2026) listed them as `api-only`; step 2
     added them on 15 October 2026. The compare
-    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
-    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`
+    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026),
+    which `Apply-ReputationBackfill.ps1 -CacheOnly` writes since the 12.1.5 sweep (step 2), and the
+    new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`
     (refused, as step 2g's is, while the cache looks partial: step 2e);
   - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
     without `-WhatIf`, for the PvP tag, which it also reads from the task table: on 14 October 2026,
@@ -3074,7 +3115,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), the quest category that names a holiday or a profession, and the rewards that are profession knowledge (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d), the profession category and rewards by `Sync-QuestProfessions.ps1` (step 1d) |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, the profession headings (`QuestSort`) and the items that are profession knowledge (`Item`, `ItemSparse`), the professions a renown reward is given for (`RenownRewards`, `PlayerCondition`, `ModifierTree`, `SkillLine`; the evidence in `plans\quest-link-decisions.csv`), questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1` (on retail its sort names a profession's heading, for step 1d); `Report-MapOffers.lua` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; on retail, the reputation rewards of the quests the API has no record of (step 2); each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1` (on retail its sort names a profession's heading, for step 1d, and its rewards are written by `Apply-ReputationBackfill.ps1 -CacheOnly`, step 2); `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag; players' first-hand comments, with Questie's issues and a test in the game, as evidence for a WoW: Forever link CMaNGOS gets wrong or a class no source gives | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv`; the link evidence is in `plans\forever-quest-link-decisions.csv`, read by `Import-ForeverData.ps1` and `Build-ForeverMenu.ps1`; the class evidence is in `plans\forever-quest-class-decisions.csv`, read by `Import-ForeverData.ps1` |
