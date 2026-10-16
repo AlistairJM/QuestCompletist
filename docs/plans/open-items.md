@@ -203,7 +203,10 @@ again.
   Midnight zones, so the probe likely took an update meant for another map as Eversong's. What that left
   unchecked is the position of the 13 pinned in Eversong (86997, 89383, 89384, 89386, 90548, 90549, 90550,
   91284, 91388, 91823, 91824, 91825, 97622) against an Eversong offer (`Report-MapOffers.lua`). The next map
-  pass should be watched for 2395's own entry.
+  pass should be watched for 2395's own entry. Since 16 October 2026 the probe's map pass asks every zone
+  that answered empty once more at the end and reads it after its whole wait (maintenance.md, "In the
+  game", step 3b), so the next pass should fill 2395 itself; its run row's `recovered` names how many
+  zones that saved.
 - **The retail probe for the 79 quests step 6 added on 16 October 2026** (the 33 story quests, the
   second gap run's 22 and the noTitle API scan's 24; the next sweep's, retail). The probe has asked none of them. Rebuild the retail list
   with `Build-ProbeLists.ps1`, copy the probe into the AddOns folder and run its quest pass at level 90

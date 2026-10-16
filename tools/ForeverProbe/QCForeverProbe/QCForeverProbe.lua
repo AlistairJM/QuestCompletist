@@ -21,7 +21,9 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               dungeon entrances, and once for the events schedule
                               (docs/plans/game-api-review.md, recommendation 3). It waits the given
                               seconds, 2 by default, for each map's answer. Runs on retail too. At its
-                              end it takes the geometry below.
+                              end it asks every zone that answered empty once more, one at a time,
+                              reading it only when its whole wait is over (retried; the run's row keeps
+                              retried and recovered), then takes the geometry below.
 /qcprobe geometry             takes the geometry alone, in a moment: where each child map sits on its
                               continent (docs/plans/continent-pins.md). To also record the map window's
                               size, open the world map on a continent first, maximised or not.
@@ -64,7 +66,9 @@ QCForeverProbeDB holds:
   accepted[id]  build, heading, map, x, y, by, level
   maps[mapID]   build, preset (Forever's experience preset: 0 Classic, 1 Modern, nil on retail),
                 result (event: QUESTLINE_UPDATE came; noevent: it didn't within the wait; unanswered:
-                the game kept asking for another request), ms, requests, name, mapType, parent,
+                the game kept asking for another request), ms, requests, retried (an empty zone asked
+                again at the end: result and the lists are the second answer's, ms stays the first's,
+                and retriedMs is when the second update came, if one did), name, mapType, parent,
                 questLines (the offers, each with its quest, storyline, x, y, startMapID and flags),
                 forceVisible, tasks, logQuests, pois, events, hubs, entrances, levels, waypoint.
                 Positions are map percentages, like the recorder's spots.
@@ -198,11 +202,11 @@ local function tick()
 			r.lateWaitUntil = now + LATE_ANSWER_WAIT_MS
 		end
 		if not next(r.timedOut) or now > r.lateWaitUntil then
-			if r.lastLook then r.lastLook() end
 			if r.beforeFinish and r.beforeFinish() then
 				r.lateWaitUntil = nil
 				return
 			end
+			if r.lastLook then r.lastLook() end
 			finish(false)
 		end
 	end
@@ -840,6 +844,7 @@ local function startMaps(waitSeconds)
 	if filtered ~= nil then r.extra.trackingQuestPois = not filtered end
 	local questPoi = try(function() return C_CVar.GetCVarBool("questPOI") end)
 	if questPoi ~= nil then r.extra.questPoiSetting = questPoi end
+	local retrying, retryAnswer, reasking = {}, {}, false
 	r.send = function(mapID)
 		r.inFlight[mapID] = debugprofilestop()
 		r.inFlightCount = r.inFlightCount + 1
@@ -853,17 +858,59 @@ local function startMaps(waitSeconds)
 			pcall(C_QuestLine.RequestQuestLinesForMap, mapID)
 			return
 		end
+		local result = requestRequired and "unanswered" or "event"
+		if retrying[mapID] then
+			retryAnswer[mapID] = retryAnswer[mapID] or {result = result, ms = debugprofilestop() - started}
+			return
+		end
 		r.inFlight[mapID] = nil
 		r.inFlightCount = r.inFlightCount - 1
-		local result = requestRequired and "unanswered" or "event"
 		db.maps[mapID] = mapFacts(mapID, r, result, debugprofilestop() - started)
 		count(r, result)
+	end
+	local function reasked(mapID)
+		local first, answer = db.maps[mapID], retryAnswer[mapID] or {result = "noevent"}
+		local facts = mapFacts(mapID, r, answer.result, first.ms)
+		facts.retried = true
+		facts.retriedMs = answer.ms and math.floor(answer.ms + 0.5) or nil
+		db.maps[mapID] = facts
+		retrying[mapID], retryAnswer[mapID] = nil, nil
+		r.extra.retried = r.extra.retried + 1
+		if facts.questLines or facts.forceVisible then r.extra.recovered = r.extra.recovered + 1 end
+		if facts.result ~= first.result then recount(r, first.result, facts.result) end
 	end
 	r.timeout = function(mapID)
 		local started = r.timedOut[mapID]
 		r.timedOut[mapID] = nil
+		if retrying[mapID] then
+			reasked(mapID)
+			return
+		end
 		db.maps[mapID] = mapFacts(mapID, r, "noevent", started and debugprofilestop() - started or nil)
 		count(r, "noevent")
+	end
+	-- A zone can come back empty when an update meant for another map closes it first (Eversong Woods on
+	-- 12.1.5: no offers in 99 ms, 33 in game), so each empty zone is asked once more at the end, and read
+	-- only when its whole wait is over.
+	r.beforeFinish = function()
+		if reasking then return false end
+		reasking = true
+		r.extra.retried, r.extra.recovered = 0, 0
+		local empty = {}
+		for _, mapID in ipairs(r.queue) do
+			local facts = db.maps[mapID]
+			if facts and facts.build == build and facts.mapType == MAP_TYPE.Zone and not facts.questLines
+				and not facts.forceVisible and (facts.result == "event" or facts.result == "noevent") then
+				empty[#empty + 1] = mapID
+			end
+		end
+		if #empty == 0 then return false end
+		for _, mapID in ipairs(empty) do
+			retrying[mapID] = true
+			r.queue[#r.queue + 1] = mapID
+		end
+		say(string.format("%s: asking the %d zones that answered empty once more, %d s each...", r.label, #empty, waitSeconds))
+		return true
 	end
 	r.schedulerUpdate = function()
 		r.extra.scheduler = schedulerFacts()

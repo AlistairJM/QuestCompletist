@@ -135,7 +135,7 @@ end
 -- The maps
 local totals = {maps = 0, byResult = {}, offers = 0, offersInData = 0, offersNoData = {}, offersNoPin = {}, within = 0,
 	near = 0, far = 0, elsewhere = 0, forced = 0, tasks = 0, logQuests = 0, pois = 0, namedPois = 0, events = 0, hubs = 0,
-	entrances = 0, levels = 0, waypoint = 0, otherMapStart = 0}
+	entrances = 0, levels = 0, waypoint = 0, otherMapStart = 0, retried = 0, recovered = {}}
 local mapTypeNames = {[0] = "cosmic", "world", "continent", "zone", "dungeon", "micro", "orphan"}
 
 for _, mapID in ipairs(sortedKeys(db.maps)) do
@@ -153,9 +153,14 @@ for _, mapID in ipairs(sortedKeys(db.maps)) do
 	if #events > 0 then parts[#parts + 1] = #events .. " events" end
 	if #hubs > 0 then parts[#parts + 1] = #hubs .. " hubs" end
 	if #entrances > 0 then parts[#parts + 1] = #entrances .. " entrances" end
-	print(string.format("map %s %s (%s, parent %s): %s%s%s; levels %s; waypoint %s; %s.", text(mapID), text(m.name),
+	if m.retried then
+		totals.retried = totals.retried + 1
+		if #lines > 0 or #forced > 0 then table.insert(totals.recovered, text(mapID) .. " " .. text(m.name)) end
+	end
+	print(string.format("map %s %s (%s, parent %s): %s%s%s%s; levels %s; waypoint %s; %s.", text(mapID), text(m.name),
 		mapTypeNames[m.mapType] or text(m.mapType), text(m.parent), text(m.result), m.ms and (" in " .. m.ms .. " ms") or "",
 		(m.requests or 0) > 1 and (", " .. m.requests .. " requests") or "",
+		m.retried and (", asked again" .. (m.retriedMs and (", answered in " .. m.retriedMs .. " ms") or "")) or "",
 		m.levels and (m.levels[1] .. "-" .. m.levels[2]) or "none", text(m.waypoint),
 		#parts > 0 and table.concat(parts, ", ") or "nothing"))
 	if m.levels then totals.levels = totals.levels + 1 end
@@ -227,6 +232,10 @@ local resultParts = {}
 for _, k in ipairs(sortedKeys(totals.byResult)) do resultParts[#resultParts + 1] = k .. " " .. totals.byResult[k] end
 print(string.format("%d maps (%s); %d with a level range, %d allow a user waypoint.", totals.maps, table.concat(resultParts, ", "),
 	totals.levels, totals.waypoint))
+if totals.retried > 0 then
+	print(string.format("%d zones answered empty and were asked again; %d came back with offers or forced quests%s", totals.retried,
+		#totals.recovered, #totals.recovered > 0 and (": " .. table.concat(totals.recovered, ", ") .. ".") or "."))
+end
 print(string.format("%d quest offers (%d start on another map), %d forced quests, %d task quests, %d log quests.", totals.offers,
 	totals.otherMapStart, totals.forced, totals.tasks, totals.logQuests))
 print(string.format("Of the offers, %d are quests in the addon's data: %d have a pin on that map within 1.5 points, %d within 3, %d further, %d have pins on other maps only, and %d have no pin at all.",
