@@ -8,6 +8,7 @@
 --   turnin   kind  id  questId
 --   accepted questId  heading  map  x  y
 --   started  questId  item  map  x  y
+--   completed  key  build  time  character  level  ids  (a character's completed quests, comma-separated)
 --   run          n  kind  build  time  character  level  answered  asked          (only with "facts")
 --   runfact      n  fact  function                                                  (only with "facts": which function answered each fact in
 --                                                                                  the n-th run, or false when the client has none)
@@ -61,6 +62,10 @@ end
 for _, id in ipairs(keys(db.started)) do
 	local started = db.started[id]
 	line("started", id, started.item, started.map, started.x, started.y)
+end
+for _, key in ipairs(keys(db.completed)) do
+	local row = db.completed[key]
+	line("completed", key, row.build, row.time, row.character, row.level, row.ids)
 end
 if arg[2] == "facts" then
 	for i, run in ipairs(db.runs or {}) do

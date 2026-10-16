@@ -119,3 +119,19 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
         Quests = $quests
     }
 }
+
+# Each character's completed quests as the game gave them, not as Quest Completist ticks them (the probe
+# saves them at login, reload and logout): Key (the character's GUID), Build, Character (faction, race and
+# class), Level and Ids. For Sync-SharedSlotLinks.ps1.
+function Get-ProbeCompletions([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
+    if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
+    $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path)
+    if ($LASTEXITCODE -ne 0) { throw "Read-ForeverProbe.lua failed on $Path" }
+    return @(foreach ($line in $lines) {
+        if (-not $line.StartsWith("completed`t")) { continue }
+        $f = $line.Split("`t")
+        $ids = New-Object 'System.Collections.Generic.HashSet[int]'
+        foreach ($id in $f[6].Split(',')) { if ($id -match '^\d+$') { [void]$ids.Add([int]$id) } }
+        [pscustomobject]@{ Key = $f[1]; Build = $f[2]; Character = $f[4]; Level = $f[5]; Ids = $ids }
+    })
+}
