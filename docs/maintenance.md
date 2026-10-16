@@ -2229,6 +2229,27 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\Fetch-GapQuestData.ps1
 
 The fetch reads a quest's cached record or `.404` instead of asking again, so only the quests new to the report reach the API (all 20,305 took about half an hour in two halves at once). Then run the report again: each quest the API served has its title and is a candidate, a quest with no evidence or an internal title, to decide as above. A `.404` stays until it is deleted, so to ask again about a quest the API didn't serve (99585 once the API's namespace is past 12.1.5_70077, or every 404 when a patch adds quests to the API), delete its `.404` first, or fetch into a fresh folder and copy its answers in, deleting the `.404` of each quest it now serves: never keep a `.json` and a `.404` for one quest, as `Fetch-GapQuestData.ps1` and `Audit-QuestAccuracy.ps1` read the `.404` first and count the quest as not served, while `Find-MissingQuests.ps1` and `Sync-QuestNamesFromApi.ps1` read the `.json` (on 16 October 2026 no quest had both).
 
+**The item-started gap run (16 October 2026).** Of the 324 items that start retail quests the data lacked (step 6e),
+the report took 91 as candidates and left the rest out (retired 141, disabled 42, no title 31, internal 17). The API
+served 88 of the 91 once asked (the fetch of above, on the 88 it hadn't asked), so serving says little about whether a
+quest can still be taken. On the user's word (client tables audit, opportunity 2) 33 went in: the 32 Midnight ones
+(94834 to 97910: the Zul'Aman idols, the Void Assault and Ritual Site finds, the Coiled Isle's fishing finds, the
+Vaults of Atal'Utek relics and others) and 11003, the Horde's The Fall of Magtheridon, Horde like its item; five dead
+ones are `SKIP` rows (40335 "DISABLED", 52991 "[REMOVED]", 45045 whose item is "ZZZ OLD", 28462 and 50195, which the
+API doesn't serve); the 52 older candidates and 93852 stay in the report. Placement filed 23 by API area; by hand,
+95355 under 1510 Zul'Aman with its three siblings, the four Void Assault finds (94920, 95069 to 95071) under 1508
+Voidstorm with 38 of the data's 50 Void Assaults quests, and the four Ritual Site ones (95547, 95548, 95551, 95554)
+under 1512 Silvermoon City with all 12 of the data's; 97910 Cracked Keystone stays in 0, with the other Midnight
+meta quests. None has an API daily or weekly flag, a client start point or a pin. Steps 1, 1c, 1d, 2, 2b, 2c, 2d,
+2g, 2i, 2j, 7 and `File-WeeklyEventQuests.ps1` ran on master's data and the branch's: step 2 added 11003's 1,000
+Thrallmar (947), the API's, and counted the 33 in G (the quest cache has none of them; baseline rewritten with
+`-AcceptPartialCache`); step 2c gave 95933 Traces in the Dark the four Void Assault finds as a prerequisite, from the
+client's task table; step 1 lists 11003's faction, which the API leaves unsaid; nothing else changed. The report's
+baseline went from 542 to 505 undecided candidates. `Build-AddonData.ps1 -Check` gives 35,687 quests,
+`Show-RemovedQuests.ps1` none, `Audit-QuestTables.ps1 -OwnDataOnly` master's 268 findings, and
+`Test-QuestReachability.lua` master's report but the quest count. The probe has never asked the 33, so the probe
+and step 3 are the next sweep's for them.
+
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
 same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. That
 run covers every quest in category 0, not only the new ones, so it also files older ones it can: on
