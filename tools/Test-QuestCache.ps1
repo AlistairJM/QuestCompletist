@@ -457,6 +457,12 @@ try {
     (Get-Item $again).LastWriteTime = [datetime]'2026-10-15 09:00'
     $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, $again); OutFile = "$many\s2e.jsonl" }
     Has $r.Text 'again.wdb (written 2026-10-15 09:00): 1 quests, 0 of them new; 1 an older file holds too, 0 of them different.' 'S2: a file that adds nothing and changes nothing says so'
+    $brackets = "$many\br[1]"
+    [void][IO.Directory]::CreateDirectory($brackets)
+    [IO.File]::Copy($older, "$brackets\questcache.wdb")
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = "$brackets\questcache.wdb"; OutFile = "$many\s2f.jsonl" }
+    Equal $r.Failure '' 'S2: a named file in a folder whose name has brackets reads, as a path and not a wildcard'
+    Has $r.Text '3 quests from build 69933' 'S2: with all its quests'
 
     (Get-Item $older).LastWriteTime = [datetime]'2026-10-16 08:00'
     $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; OutFile = "$many\s3.jsonl" }

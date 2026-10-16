@@ -74,7 +74,7 @@ function Get-CacheHeader([IO.FileInfo]$file) {
 $named = @($CacheFile -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 if ($named.Count) {
     $caches = @(foreach ($name in $named) {
-        $matched = @(Get-ChildItem -Path $name -File -ErrorAction SilentlyContinue)
+        $matched = @(if (Test-Path -LiteralPath $name -PathType Leaf) { Get-Item -LiteralPath $name } else { Get-ChildItem -Path $name -File -ErrorAction SilentlyContinue })
         if (-not $matched.Count) { throw "There is no cache file $name." }
         foreach ($file in $matched) { Get-CacheHeader $file }
     })

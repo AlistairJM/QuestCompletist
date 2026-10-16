@@ -190,7 +190,8 @@ Run on an Alliance Night Elf rogue, level 12. The probe's saved variables and bo
 
 ### Phase 2: the cache reader (5 October 2026)
 
-`tools/Read-QuestCache.ps1` reads `questcache.wdb` into
+`tools/Read-QuestCache.ps1` reads `questcache.wdb` (since 16 October 2026 every copy of the build in
+the probe folder together, as [maintenance.md](../maintenance.md) step 2e describes) into
 `tools/forever_quest_cache_<build>.jsonl`, one quest per line:
 - **Always:** id, title, level, minLevel, sort (the zone, or a negative QuestSort for class,
   profession and holiday quests) and questType. Retail's lines carry contentTuning instead of level

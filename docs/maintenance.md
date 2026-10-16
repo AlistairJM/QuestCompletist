@@ -1755,10 +1755,11 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    70245, no quest offers, 16 points of interest, no events, no dungeon entrances and no level
    ranges. A rise in any of them is a finding to plan, as a new client table is (step 2b under
    "Before a sweep"): offers would become start points for quests with no giver.
-3. `Read-QuestCache.ps1 -Build <build>` reads the probe's copy of the game's quest cache into
-   `tools\forever_quest_cache_<build>.jsonl`. If a single record doesn't read exactly, it writes
-   nothing: Blizzard has changed the record's layout, and the reader needs updating. (The same
-   script reads retail's cache, from a retail build number: step 2e.)
+3. `Read-QuestCache.ps1 -Build <build>` reads the probe folder's copies of the game's quest cache
+   (every `questcache*.wdb` of the build in the `forever_probe_*` folder that holds the newest of them,
+   joined as step 2e describes) into `tools\forever_quest_cache_<build>.jsonl`. If a single record
+   doesn't read exactly, it writes nothing: Blizzard has changed the record's layout, and the reader
+   needs updating. (The same script reads retail's cache, from a retail build number: step 2e.)
 4. `Import-ForeverData.ps1 -Build <build>` writes `data\forever\quests.jsonl`, `pins.jsonl`,
    `links.jsonl`, `reputation.jsonl` and `skills.jsonl`, and the review list,
    `tools\forever_import_review.csv`. It downloads the client tables and the CMaNGOS dump it doesn't
@@ -2508,8 +2509,9 @@ It began as pull request #139, which stays open as the record; its files are in
    about 18 MB; delete the addon's folder, or disable it, when you are not running it. After the run,
    log out fully and copy `questcache.wdb` at once: on 15 October 2026 the game's copy held only that
    day's 5,110 quests, the 26,616 of the day before gone. Keep each session's copy under its own name
-   in `tools\retail_probe_<build number>\`, as `questcache.2026-10-14-1208.wdb`: step 2e reads every
-   copy of the build there together, each quest from the newest file that holds it.
+   in `tools\<game>_probe_<build number>\`, as `questcache.2026-10-14-1208.wdb`: `Read-QuestCache.ps1`
+   (step 2e for retail, step 10 for Forever) reads every copy of the build there together, each quest
+   from the newest file that holds it.
 3b. Type `/qcprobe maps`. It asks the server for each of the client's maps in turn (60 on Forever)
    and waits 2 seconds for each answer, so a run takes a minute or two; `/qcprobe maps 1` waits 1
    second. One run is enough. The results note the experience preset chosen once at Forever's login
@@ -2563,13 +2565,17 @@ It began as pull request #139, which stays open as the record; its files are in
 4. Log out fully, so the game writes the results and its caches. Then copy these from
    `C:\Program Files (x86)\World of Warcraft\_classic_beta_\` into
    `tools\forever_probe_<build number>\` (`forever_probe_70205` for build 1.60.1.70205):
-   - `Cache\WDB\enUS\questcache.wdb` and `creaturecache.wdb`;
+   - `Cache\WDB\enUS\questcache.wdb` (each session's copy under its own name, as step 3 says) and
+     `creaturecache.wdb`;
    - `WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua`.
 
 After Forever's launch, use its live client's folder in place of `_classic_beta_`. From `_retail_`, copy
-`WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua` into `tools\retail_probe_<build number>\`
-(`retail_probe_69933` for build 12.1.0.69933), where step 3 of the sweep, step 7 and the map report find it;
-the retail quest cache is not read yet. `Read-ForeverProbe.lua <file> facts` prints every fact the quest
+`WTF\Account\<ACCOUNT>\SavedVariables\QCForeverProbe.lua` and `Cache\WDB\enUS\questcache.wdb` into
+`tools\retail_probe_<build number>\` (`retail_probe_69933` for build 12.1.0.69933), keeping each session's
+copy of the cache under its own name, as step 3 says. Step 3 of the sweep, step 7 and the map report read
+the `.lua` file there, and step 2e reads every copy of the cache together.
+
+`Read-ForeverProbe.lua <file> facts` prints every fact the quest
 pass saved, one per line, then a `run` line for each run (its kind, build, time, the character that ran
 it, as faction, race and class and never a name, and its level), a `runfact` line for each fact of a
 quest run (the function that answered it, or `false` when the client has none), a `trivialrange` line
