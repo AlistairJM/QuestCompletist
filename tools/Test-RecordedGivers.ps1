@@ -831,8 +831,10 @@ try {
         (G 'Creature:3720' 'Gil' 69933 '37 30.2 30.1 9' '115' ''),
         (G 'Creature:3721' 'GIL' 69933 '37 30.4 30.0 1' '116' ''))
     $run = Invoke-Tool $root
-    Check (-not (Find-Pin (Get-Pins $root) 115)[0].npc) 'E32: two givers whose names differ in case only do not fill one pin'
-    Check ($run.Report -match 'two givers at one pin') 'E32: and the report says why'
+    $pins = Get-Pins $root
+    $gil = Find-Pin $pins 115; $loud = Find-Pin $pins 116
+    Check ($gil.Count -eq 1 -and $gil[0].npc -eq 3720 -and $gil[0].name -ceq 'Gil' -and $loud.Count -eq 1 -and $loud[0].npc -eq 3721 -and $loud[0].name -ceq 'GIL') 'E32: two givers whose names differ in case only are two givers: each takes its quest off the nameless pin to a pin of its own'
+    Equal @($run.Report -split "`r?`n" | Where-Object { $_ -match '^  move ' }).Count 2 'E32: and the report lists the two moves'
 
     # ---------- E33: the radius of a fill is 1.5, and so is the radius of a place ----------
     $root = New-World 'e33' @(
@@ -996,7 +998,8 @@ try {
     $root = New-World 'e43' @('{"map":37,"icon":1,"x":50,"y":50,"quests":[102,103]}')
     Put-RawOwn $root @((G 'Creature:3702' '' 69933 '37 50.4 50.2 3' '102' ''), (G 'Creature:3703' '' 69933 '37 50.2 50.4 3' '103' ''))
     $run = Invoke-Tool $root
-    Check ($run.Report -match 'two givers at one pin') 'E43: two givers of no name at one pin are two givers'
+    Equal @($run.Report -split "`r?`n" | Where-Object { $_ -match 'giver without a trusted English name: quest' }).Count 2 'E43: two givers of no name at one pin are two givers, each listed for its want of a name'
+    Equal ((Find-Pin (Get-Pins $root) 102)[0].quests -join ',') '102,103' 'E43: and neither takes its quest off the nameless pin'
 
     # ---------- E44: which place a new pin gets ----------
     $root = New-World 'e44' @('{"map":37,"icon":1,"npc":3701,"name":"Guard Roberts","x":45.3,"y":67.8,"quests":[100]}')
@@ -1243,7 +1246,7 @@ try {
     # ---------- F18: a change that would move a pin saves nothing, end to end ----------
     $mutant = Join-Path $Scratch 'mutant'
     New-Item -ItemType Directory -Path $mutant -Force | Out-Null
-    foreach ($name in 'Import-RecordedGivers.ps1', 'RecordedGivers.ps1', 'AddonData.ps1', 'LatestBuilds.ps1', 'Read-RecordedGivers.lua') { Copy-Item (Join-Path $PSScriptRoot $name) $mutant }
+    foreach ($name in 'Import-RecordedGivers.ps1', 'RecordedGivers.ps1', 'PinRules.ps1', 'AddonData.ps1', 'LatestBuilds.ps1', 'Read-RecordedGivers.lua') { Copy-Item (Join-Path $PSScriptRoot $name) $mutant }
     $text = [IO.File]::ReadAllText("$mutant\RecordedGivers.ps1")
     $needle = "if (`$fill.Npc) { Set-RecordField `$pin 'npc' `$fill.Npc; `$done.Filled++ }"
     Check ($text.Contains($needle)) 'F18: the line the mutation changes is there'

@@ -7,7 +7,10 @@ with $MasterOutput, what master's importer wrote on its world; a change meant to
 them again, from a run checked by hand. Section I checks the classes it gives quests: from the items that
 start them (ItemSparse), from the hand list of classes, and from a quest's only prerequisite. Section J checks
 that pins of one name holding a quest at one spot are written as one, as Remove-DuplicatePinQuests.ps1 (step 10's
-item 9) would leave them.
+item 9) would leave them. Section L checks the pins of quests with no giver, at their start points, by the rules both
+games share (PinRules.ps1, which Test-PinRules.ps1 checks on retail): one nameless pin per spot of 1.5 map points, its
+icon from its quests, and a quest whose giver turns up later leaving the spot for its giver's pin while the spot's other
+quests stay on it, nameless.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1
 
@@ -176,7 +179,11 @@ function Get-ProbeGivers() {
 # The world: tools, data and addon folders, the probe file, the dump and the cache.
 # -Bottles adds Nu Quest (9014), which three CMaNGOS objects of one name start, as several entries of Venom Bottle
 # do: 910014 at 40,60, 910015 0.2 points from it and 910016 a point from it.
-function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles, [switch]$Spawn) {
+# -Starts adds quests only the game knows, with a start point in the client's tables and no giver: 9020 to 9022 at
+# one spot (30,40; 30.6,40.4; 29.5,40.9), 9023 at 30,80 with 9024 1.5 points from it and 9025 1.51, two Feast of Winter
+# Veil quests at one spot (9026 at 70,20, 9027 at 70.5,20.3), and one of them with a quest of no holiday at another
+# (9028 at 80,20, 9029 at 80.4,20.2).
+function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles, [switch]$Spawn, [switch]$Starts) {
     $root = Join-Path $Scratch $name
     foreach ($dir in 'tools', 'tools\forever_probe_70900', 'data\forever', 'addon') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
     $t = "$root\tools"
@@ -190,6 +197,17 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
         $objectSpawns += @(@(4, 910014, -200, 200), @(5, 910015, -204, 200), @(6, 910016, -220, 200))
         $objectNames += @(@(910014, 'Nu Bottle'), @(910015, 'Nu Bottle'), @(910016, 'Nu Bottle'))
     }
+    $blobs = @('ID,MapID,UiMapID,Flags,NumPoints,QuestID,ObjectiveIndex,ObjectiveID'); $points = @('ID,X,Y,Z,QuestPOIBlobID')
+    if ($Starts) {
+        $at = @{ 9020 = @(30, 40); 9021 = @(30.6, 40.4); 9022 = @(29.5, 40.9); 9023 = @(30, 80); 9024 = @(31.5, 80); 9025 = @(30, 81.51)
+            9026 = @(70, 20); 9027 = @(70.5, 20.3); 9028 = @(80, 20); 9029 = @(80.4, 20.2) }
+        foreach ($quest in ($at.Keys | Sort-Object)) {
+            $quests[$quest] = "Start $quest"
+            # The world frame of map 1411: map x = (1000 - world y) / 20, map y = (1000 - world x) / 20.
+            $blobs += "$quest,1,1411,0,1,$quest,32,0"
+            $points += "$quest,$((1000 - 20 * $at[$quest][1]).ToString($script:Invariant)),$((1000 - 20 * $at[$quest][0]).ToString($script:Invariant)),0,$quest"
+        }
+    }
     Write-Lines "$t\QuestV2-$Build.csv" (@('ID') + @($quests.Keys | Sort-Object))
     Write-Lines "$t\AreaTable-$Build.csv" @('ID,ZoneName,AreaName_lang,ContinentID,ParentAreaID', '10,Alpha,Alpha Zone,1,0')
     Write-Lines "$t\ChrRaces-$Build.csv" @('ID,Name_lang', '1,Human')
@@ -201,8 +219,8 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     Write-Lines "$t\UiMap.csv" @('Name_lang,ID,ParentUiMapID,Flags,System,Type', 'Stormwind,84,0,0,0,3')
     Write-Lines "$t\QuestLineXQuest-$Build.csv" @('ID,QuestLineID,QuestID,OrderIndex,Flags')
     Write-Lines "$t\QuestLine-$Build.csv" @('ID,Name_lang')
-    Write-Lines "$t\QuestPOIBlob-$Build.csv" @('ID,MapID,UiMapID,Flags,NumPoints,QuestID,ObjectiveIndex,ObjectiveID')
-    Write-Lines "$t\QuestPOIPoint-$Build.csv" @('ID,X,Y,Z,QuestPOIBlobID')
+    Write-Lines "$t\QuestPOIBlob-$Build.csv" $blobs
+    Write-Lines "$t\QuestPOIPoint-$Build.csv" $points
     Write-Lines "$t\ChrClasses-$Build.csv" @('ID,Name_lang', '1,Warrior', '2,Paladin', '3,Hunter', '4,Rogue', '5,Priest', '7,Shaman', '8,Mage', '9,Warlock', '11,Druid')
     Write-Lines "$t\ItemSparse-$Build.csv" @('ID,Display_lang,StartQuestID,AllowableClass')
     Write-Lines "$t\forever_quest_cache_$Build.jsonl" @($quests.Keys | Sort-Object | ForEach-Object { Cache-Line $_ $quests[$_] })
@@ -223,7 +241,7 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     Write-Lines "$root\decisions.csv" @('Game,Quest,Decision,Reason')
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
     Write-Lines "$root\zones.csv" @('Quest,Zone,Name,Note')
-    Write-Lines "$root\holidays.csv" @('Quest,Name,Holiday,Decision,Evidence')
+    Write-Lines "$root\holidays.csv" (@('Quest,Name,Holiday,Decision,Evidence') + @(if ($Starts) { 9026, 9027, 9028 | ForEach-Object { "$_,Start $_,Feast of Winter Veil,SET,test" } }))
     Write-Lines "$root\links.csv" @('Quest,Name,Link,Other,Decision,Evidence')
     Write-Lines "$root\classes.csv" @('Quest,Name,Class,Decision,Evidence')
     # Retail's data (step 6d reads it) and Forever's data from an earlier import, which has every quest but 9006.
@@ -588,6 +606,33 @@ try {
     Write-Lines "$w6\givers.csv" @('Quest,Npc,Name,Note,Decision', '9007,910007,Eta Giver,test,DROP')
     $r = Invoke-Importer $w6
     Check ($r.Exit -ne 0 -and $r.Text -match "the decision 'DROP'") "K3: a giver decision other than ADD or REMOVE stops the import ($($r.Text))"
+
+    # ---------- L: start points with no giver, one pin per spot, and a giver found later ----------
+    function Describe-Pins($pins, [int]$quest) {
+        return ((Pins-Of $pins $quest | ForEach-Object { "$(if ($_.npc) { "$($_.npc) $($_.name)" } elseif ($null -ne $_.name) { $_.name } else { 'nobody' }) at $(Place-Of $_) icon $($_.icon): $(@($_.quests) -join ',')" }) -join '; ')
+    }
+    $w7 = New-World 'spots' -ZetaKnown -Starts
+    $r = Invoke-MergeTool $w7
+    $r = Invoke-Importer $w7
+    Equal $r.Exit 0 "L1: the importer runs with start points that no giver stands at ($($r.Text))"
+    $pins = Get-WorldPins $w7
+    Equal (Describe-Pins $pins 9020) 'nobody at 30,40 icon 1: 9020,9021,9022' 'L1: three quests that start at one spot with no giver share one nameless pin, at the first one''s start'
+    Equal (Describe-Pins $pins 9023) 'nobody at 30,80 icon 1: 9023,9024' 'L2: a start exactly 1.5 points from a nameless pin joins it'
+    Equal (Describe-Pins $pins 9025) 'nobody at 30,81.51 icon 1: 9025' 'L2: 1.51 points away it gets a pin of its own'
+    Equal (Describe-Pins $pins 9026) 'nobody at 70,20 icon 5: 9026,9027' 'L3: two holiday quests at one spot: the seasonal icon'
+    Equal (Describe-Pins $pins 9028) 'nobody at 80,20 icon 1: 9028,9029' 'L3: a holiday quest and one of no holiday: the normal icon, from the quests'
+    # The recorder meets the giver of 9021, standing at the spot.
+    Add-LedgerRow $w7 'giver' 'Creature' 910030 'own-forever=1' 'Spot Finder'
+    Add-LedgerRow $w7 'spot' 'Creature' 910030 'own-forever=2' '' '1411' '30.3' '40.2'
+    Add-LedgerRow $w7 'offer' 'Creature' 910030 'own-forever=1' '' '' '' '' '9021'
+    $r = Invoke-Importer $w7
+    Equal $r.Exit 0 "L4: the importer runs with the giver of one quest of the spot ($($r.Text))"
+    $pins = Get-WorldPins $w7
+    Equal (Describe-Pins $pins 9021) '910030 Spot Finder at 30.3,40.2 icon 1: 9021' 'L4: that quest leaves the spot for its giver''s pin'
+    Equal (Describe-Pins $pins 9020) 'nobody at 30,40 icon 1: 9020,9022' 'L5: the spot''s other two stay on its pin, which nobody renames'
+    $before = Hash-Data $w7
+    $r = Invoke-Importer $w7
+    Equal (Hash-Data $w7) $before 'L6: a rerun writes every data file byte for byte as it was'
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }
