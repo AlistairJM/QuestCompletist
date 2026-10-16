@@ -3239,7 +3239,9 @@ Some answers only the game client has.
   `Build-ProbeLists.ps1` (the probe's step 3, below);
 - one `/qc holidays` on each game, set beside `Review-Calendar.ps1`'s list (below, and step 2h);
 - Eversong Woods' offers: map 2395 answered none on the 12.1.5 map pass of 14 October 2026 (step 6), so
-  one line asks the game what it offers there;
+  one line asks the game what it offers there (answered on 16 October 2026: 33 offers and 5 shown quests,
+  all already in that pass under neighbouring maps; only 2395's own entry was empty, see
+  [plans/open-items.md](plans/open-items.md));
 - a scaling quest's bracket at level 90: one look at the list on a character at the cap.
 
 **The calendar (`/qc holidays`), every sweep, on both games** (sweep step 2h). In a city, with
@@ -3255,7 +3257,9 @@ the review, and differed only in the times of the six events the table starts at
 Faire, Moonkin Festival, the two cups, The Great Gnomeregan Run and Call of the Scarab), which the game
 shows from 00:01 to 23:59; since then the review prints them that way, and that run's 63 lines match it
 line for line. Run the review with `-AddonDir` on the code the game loaded (the main checkout's
-`QuestCompletist\`, through the AddOns junction) when that isn't the branch the review runs from.
+`QuestCompletist\`, through the AddOns junction) when that isn't the branch the review runs from. Later
+that day both games ran 113.4's code: retail's 63 lines and Forever's first full list, 17 lines on beta
+build 1.60.1.70425, each matched the review line for line.
 
 **Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It's pull
 request #42, which is closed and its branch deleted; GitHub keeps its commits. It is superseded by the
