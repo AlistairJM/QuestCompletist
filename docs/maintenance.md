@@ -3382,6 +3382,16 @@ It began as pull request #139, which stays open as the record; its files are in
    (12.1.5, 14 October 2026). Read it with `tools\Report-MapOffers.lua <saved variables> QuestCompletist` and
    compare the totals with the baseline in game-api-review.md, "Map-offers probe: retail run"; the
    offers and log quests depend on the character, so use a similar one.
+   Since 16 October 2026 the pass ends by asking once more, one at a time, every zone that answered with
+   no offers and no shown quests, and reads each only when its whole wait is over: on 12.1.5 Eversong
+   Woods (2395) answered with nothing in 99 ms, likely closed by an update meant for another map, while
+   the game offers 33 quest lines there ([plans/open-items.md](plans/open-items.md)). That was 272 zones on
+   retail and 51 on Forever, so the pass takes about that many waits longer (about 4½ minutes with
+   `maps 1` on retail). A zone asked again has `retried` (its lists are the second answer's, `ms` stays
+   the first's, `retriedMs` is when the second update came), and the run's row counts `retried` and
+   `recovered` (those that came back with offers or shown quests): a zone recovered is one the pass
+   would have missed, and a sweep should name them. `Report-MapOffers.lua` marks each such zone
+   "asked again" and lists the recovered ones under its totals.
    The map pass ends by taking the **geometry** (the zone icons planned in
    [continent-pins.md](plans/continent-pins.md) need it): for every cosmic, world and continent map, each
    child map with its rectangle on it, what the game's hit test names at the rectangle's centre and over a

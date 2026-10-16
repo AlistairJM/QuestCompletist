@@ -277,6 +277,8 @@ local function newWorld(options)
 			w.calls.RequestQuestLinesForMap = (w.calls.RequestQuestLinesForMap or 0) + 1
 			w.mapRequests = w.mapRequests or {}
 			w.mapRequests[mapID] = (w.mapRequests[mapID] or 0) + 1
+			w.mapAskedAt = w.mapAskedAt or {}
+			w.mapAskedAt[mapID] = S.ms
 			local plan = S.mapAnswers[mapID] or {}
 			if plan.never then return end
 			w.mapPending = w.mapPending or {}
@@ -284,7 +286,11 @@ local function newWorld(options)
 			local needed = plan.requestRequired or 0
 			w.mapPending[#w.mapPending + 1] = {at = S.ms + 200, requestRequired = asked <= needed}
 		end,
-		GetAvailableQuestLines = function(mapID) return S.lines[mapID] or {} end,
+		GetAvailableQuestLines = function(mapID)
+			local plan = S.mapAnswers[mapID]
+			if plan and plan.linesAfterMs and S.ms < ((w.mapAskedAt or {})[mapID] or 0) + plan.linesAfterMs then return {} end
+			return S.lines[mapID] or {}
+		end,
 		GetForceVisibleQuests = function(mapID) return S.mapAnswers[mapID] and S.mapAnswers[mapID].forceVisible or {} end,
 	}
 	env.C_TaskQuest = {GetQuestsOnMap = function(mapID) return S.mapAnswers[mapID] and S.mapAnswers[mapID].tasks or {} end}
@@ -1206,6 +1212,57 @@ do
 	w3.slash("maps")
 	check(w3.said("the client lists no maps."), "M3: a client with no maps says so")
 	check(not w3.running(), "M3: and runs nothing")
+
+	-- Eversong Woods on 12.1.5: an update came at once with no offers in it, and the offers were there later.
+	local w4 = newWorld({})
+	local S4 = w4.S
+	S4.maps = {[1] = {name = "Eversong Woods"}, [2] = {name = "Empty Zone"}, [3] = {name = "Quel'Thalas", mapType = 2},
+		[4] = {name = "Silvermoon City"}, [5] = {name = "Quiet Zone"}}
+	S4.lines[1] = {{questLineID = 6221, questID = 91206, questName = "Loa Disturbance", x = 0.5, y = 0.5}}
+	S4.mapAnswers[1] = {linesAfterMs = 500}
+	S4.lines[4] = {{questLineID = 1, questID = 86997, x = 0.2, y = 0.3}}
+	S4.mapAnswers[5] = {never = true}
+	w4.boot()
+	w4.slash("maps 1")
+	w4.run(120)
+	local db4 = w4.db()
+	check(w4.said("map pass: asking the 3 zones that answered empty once more, 1 s each..."), "M4: the empty zones are asked again")
+	equal(db4.maps[1].retried, true, "M4: a zone that answered empty is asked again")
+	equal(db4.maps[1].questLines and db4.maps[1].questLines[1].questID, 91206, "M4: and the second answer's offers are kept")
+	equal(db4.maps[1].result, "event", "M4: as an answered map")
+	equal(db4.maps[1].ms, 200, "M4: ms stays the first answer's")
+	equal(db4.maps[1].retriedMs, 200, "M4: retriedMs is when the second update came")
+	equal(db4.maps[2].retried, true, "M4: a zone with nothing to offer is asked again too")
+	equal(db4.maps[2].questLines, nil, "M4: and stays empty")
+	equal(db4.maps[3].retried, nil, "M4: a continent is not asked again")
+	equal(db4.maps[4].retried, nil, "M4: nor a zone that answered with offers")
+	equal(db4.maps[5].retried, true, "M4: a zone that sent no update is asked again")
+	equal(db4.maps[5].result, "noevent", "M4: and stays noevent when it sends none again")
+	equal(db4.maps[5].retriedMs, nil, "M4: with no retriedMs")
+	equal(w4.mapRequests[1], 2, "M4: two requests for the retried zone")
+	equal(w4.mapRequests[3], 1, "M4: one for the continent")
+	equal(w4.mapRequests[4], 1, "M4: one for the zone with offers")
+	local run4 = db4.runs[#db4.runs]
+	equal(run4.retried, 3, "M4: the run row counts the zones asked again")
+	equal(run4.recovered, 1, "M4: and those that came back with offers")
+	equal(run4.asked, 5, "M4: asked counts each map once")
+	equal(run4.counts.event, 4, "M4: the counts are of maps, not of requests")
+	equal(run4.counts.noevent, 1, "M4: one map sent no update")
+	check(run4.geometry ~= nil or run4.geometryError ~= nil, "M4: the geometry is still taken at the end")
+	roundTrips(db4, "M4")
+
+	local w5 = newWorld({})
+	w5.S.maps = {[1] = {name = "Eversong Woods"}}
+	w5.S.lines[1] = {{questLineID = 6221, questID = 91206, x = 0.5, y = 0.5}}
+	w5.S.mapAnswers[1] = {linesAfterMs = 500}
+	w5.boot()
+	w5.slash("maps 1")
+	w5.runUntil("answered empty once more", 60)
+	w5.slash("stop")
+	local run5 = w5.db().runs[#w5.db().runs]
+	equal(run5.stopped, true, "M5: a stop while zones are asked again ends the run")
+	equal(run5.retried, 0, "M5: before any second answer")
+	equal(w5.db().maps[1].retried, nil, "M5: the zone keeps its first answer")
 end
 
 -- 4b. The geometry pass ----------------------------------------------------------------------------
