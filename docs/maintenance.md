@@ -583,7 +583,8 @@ step 2 would add nothing for them once step 1 has fetched them.
 On 16 October 2026 step 1 had fetched them, and step 6 had added the 33 story quests of 12.1.5,
 whose records list no reputation reward either. The API pass matched all 11,039 of our rewards,
 with none to add or correct, and `Apply-ReputationBackfill.ps1` changed nothing. The cache pass read
-a fuller reading of 12.1.5.70391's cache (29,844 quests, 29,825 of our 35,606, still under 90%):
+12.1.5.70391's cache joined from its two copies (step 2e: 29,844 quests, 29,825 of our 35,606, still
+under 90%):
 A 10,269, B the same 3, C 0, D 0, E 738 quests with 1,028 rewards (all quests the API has no record
 of), F 151, G 5,781 and H 19, and the cache reproduced all 11,093 of the API's rewards on the
 quests it holds. Against the same run on the data before the 33 quests, G has the 32 of them the
@@ -871,8 +872,8 @@ weekly, recurs and repeatable for 27,847 each, sort for 27,516, faction for 9,01
 11,093 reputation rewards, one level range per content tuning over 27,845 quests, quest info for 1,779
 quests against the API and 2,311 against the task table, which also agreed on content tuning and start
 item for those 2,311. The partial-cache warning still shows, for our quests only: the cache holds
-29,824 of our 35,573 (83.8%), while its 29,844 quests are 90.1% of 12.1.0.69933's 33,123, just over
-the 90% the other half asks for. If it fails, don't use the cache's values
+29,824 of our 35,573 (83.8%; 29,825 of 35,606 since the story quests of step 6, the same day), while
+its 29,844 quests are 90.1% of 12.1.0.69933's 33,123, just over the 90% the other half asks for. If it fails, don't use the cache's values
 that sweep: check that the cache, the API cache and the task table are from the builds you think,
 then rerun the reader's record walk and look at the first differing quests with both values.
 
@@ -959,8 +960,8 @@ baseline, which neither cache nor the API cache holds. One has gone: 54393 now h
 baseline was not rewritten, since the cache is partial.
 
 On 16 October 2026, after step 6 added the 33 story quests of 12.1.5, `Apply-QuestMinLevels.ps1 -WhatIf`
-changed nothing: each new row's level is its API minimum (90, or 80 for line 6385's six). The fuller
-reading of the 12.1.5.70391 cache (29,844 quests) tested the formula on 28,406 quests, all agreeing; class
+changed nothing: each new row's level is its API minimum (90, or 80 for line 6385's six). The
+12.1.5.70391 cache joined from its two copies (step 2e: 29,844 quests) tested the formula on 28,406 quests, all agreeing; class
 D was 0 and class N 525 (44 new against the baseline, 2 gone), none of them a new row, and the baseline
 stays, as the cache is still partial.
 
@@ -1259,7 +1260,7 @@ the icon of a pin whose quests are all PvP. Every sweep, with the newest cache o
   56, Tol Barad 68, Alterac Valley 15, Arathi Basin 3, Seething Shore 2; Forever 34: Alterac Valley 20, Arathi
   Basin 8, Warsong Gulch 6). Whether any of them gets the tag is the user's call, by a row in the decisions file,
   so the list is read each sweep for a count that moved or a quest a source has started to tag.
-- On 16 October 2026 (cache 12.1.5.70391, its reading of 29,844 quests), after step 6 added the 33 story quests
+- On 16 October 2026 (cache 12.1.5.70391, joined from two copies: 29,844 quests), after step 6 added the 33 story quests
   of 12.1.5: 0 quests get `pvp`, 363 have it, and no source answers for 152 of ours, against 120 on the data
   before them. The 32 more are the new rows the cache lacks (all but 98831): the API answers only through a
   record of type 41 (PvP), and theirs are not. The cache read after the next probe run, which asks every
