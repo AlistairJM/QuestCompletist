@@ -115,6 +115,14 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   the ceiling. Retail's table has 27,637 entries; Forever's is empty, as its quests don't scale. It is a
   keyed table like the minimum's, for the same reason; it costs 1,024 KB loaded on retail
   ([load-and-memory.md](load-and-memory.md)).
+- **The tunings and their samples** are in `qcQuestTuning` and `qcTuningSample` since 16 October 2026
+  (option E of [quest-scaling-redirects.md](quest-scaling-redirects.md); no addon code reads them yet). A
+  sample is a fact about a tuning, not a quest, so it has a data file of its own, `data\tunings.jsonl`, one
+  record per tuning (its level at the cap, its redirects, its samples), built into `qcTuningSample`
+  (`[73]={11,35,37}`). The quest's own `tuning` is a field of `data\quests.jsonl` (33,250 quests), and
+  `qcQuestTuning` (`[11]=73`) holds it only for the 28,680 quests on a tuning with samples: no sample can
+  change the others' level, and leaving them out keeps the table under 32,768 keys, half the memory all
+  33,250 would take. Forever has no `tunings.jsonl` and no `tuning`, so both tables are empty there.
 - **The zone text isn't written to the Lua.** The game never read it; it stays in the data file for
   the tools.
 - **The quest ID isn't repeated inside its row.** The quest list now holds quest IDs rather than

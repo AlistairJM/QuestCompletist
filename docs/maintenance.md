@@ -64,6 +64,7 @@ categories, the zone table, reputation rewards, storylines and so on).
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
   `minLevel` is left out when it's the same as `level`, and kept when it's 0 (no minimum).
   `maxLevel`, the level a scaling quest stops scaling at, is left out for a quest that doesn't scale.
+  `tuning`, the quest's `ContentTuningID` (step 2j), is left out when no source gives one or it is 0.
   `class` is the game's own class mask, 1 shifted left by the class ID less one (Warrior 1,
   Paladin 2, … Monk 512, Druid 1024, Evoker 4096), so masks from Blizzard's API, the client
   tables and CMaNGOS are used as they are; `race` and the other masks are the addon's own bits,
@@ -77,6 +78,12 @@ categories, the zone table, reputation rewards, storylines and so on).
 - `data\pins.jsonl`, one pin per line:
   `{"map":84,"icon":1,"npc":29611,"name":"King Varian Wrynn","x":26.12,"y":47.32,"quests":[26365]}`.
   `npc` is left out when it's 0, and `name` and `note` when the pin has none.
+- `data\tunings.jsonl` (retail only), one line for each content tuning our quests are on that a redirect
+  can move, written by step 2j: `{"id":73,"level":30,"redirects":[0,13,34],"samples":[11,35,37]}`.
+  `level` is what its samples answered at the level cap in the probe, `redirects` the `RedirectEnum`
+  values of its `ConditionalContentTuning` rows, and `samples` the quests to read its level from in the
+  game, the first preferred ([quest-scaling-redirects.md](plans/quest-scaling-redirects.md)). Ascending
+  by `id`.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -99,7 +106,11 @@ race, class, storyline}`, with storyline left off when it's 0. Profession, holid
 prerequisite, which most quests don't have, the minimum level, where it isn't the row's level, and
 the level a scaling quest stops scaling at are in `qcQuestProfession`, `qcQuestHoliday`,
 `qcQuestCovenant`, `qcQuestPvP`, `qcQuestPrereq`, `qcQuestMinLevel` and `qcQuestMaxLevel`, keyed by
-quest ID, a list of prerequisites as a Lua table.
+quest ID, a list of prerequisites as a Lua table. From `tunings.jsonl`, `qcTuningSample` holds each
+tuning's samples (`[73]={11,35,37}`) and `qcQuestTuning` the tuning of each quest on one of them
+(`[11]=73`); a quest on any other tuning is left out, as no sample can say more about its level than its
+stored one. Retail's hold 537 tunings and 28,680 quests (16 October 2026), Forever's nothing. No addon code
+reads them yet (the second pull request of [quest-scaling-redirects.md](plans/quest-scaling-redirects.md)).
 The zone text stays in the data file only: the game never reads it.
 
 `level` means three things, and the data keeps all of them. The row's level is the quest's own. The
@@ -357,7 +368,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2i | The PvP tag, from the quest cache's kind of each quest, else the API, the task table and TrinityCore or CMaNGOS, and the hand decisions (after step 2e; Forever's comes from its importer too): `pvp` on every PvP quest, for both games; lists, and leaves alone, the quests in battlegrounds, Wintergrasp, Tol Barad and Ashran no source tags | `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf`; the same with `-Game forever` after step 10 | Only the last one |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
 | 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 or 6b adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
-| 2j | Scaling quests' levels: the level each content tuning scales to at the level cap, from the retail probe's quest pass at the cap, in `qcQuestMaxLevel` (after the probe, step 2e and step 2g; again after step 6 or 6b adds quests) | `Apply-QuestScaling.ps1 -WhatIf`, then without `-WhatIf` | Only the applying run |
+| 2j | Scaling quests' levels: the level each content tuning scales to at the level cap, from the retail probe's quest pass at the cap, in `qcQuestMaxLevel`; each quest's tuning, and the samples of each tuning a redirect can move (`data\tunings.jsonl`, `qcQuestTuning`, `qcTuningSample`); the redirect table against its baseline (after the probe, step 2e and step 2g; again after step 6 or 6b adds quests) | `Apply-QuestScaling.ps1 -WhatIf`, then without `-WhatIf`; `-UpdateBaseline` once a new `RedirectEnum` has been looked at | Only the applying run (`-UpdateBaseline` writes the baseline) |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
@@ -1505,10 +1516,17 @@ the low-level rule agreed with `IsQuestTrivial` on 2,963; the one left is 8856, 
 never counts as low), so its `qcQuestMaxLevel` is empty and the shared code reads its levels as before.
 `Apply-QuestScaling.ps1 -Game forever` checks that at each Forever probe run (step 10): it writes nothing
 and exits 1 when a quest the probe loaded has another level than its stored one, or the data holds a
-`maxLevel`.
+`maxLevel`, a `tuning` or a `tunings.jsonl`.
+
+The same run gives each retail quest its content tuning and writes `data\tunings.jsonl`, the samples of
+each tuning a redirect can move (below, "Tunings and samples"), for the addon to read the game's own level
+from: option E of [quest-scaling-redirects.md](plans/quest-scaling-redirects.md), taken on 16 October 2026.
 
 It needs the retail probe's quest pass made at the level cap ([In the game](#in-the-game), step 3), the
-quest cache of the probe's build (step 2e), the task table (step 1b) and step 2g's minimum levels:
+quest cache of the probe's build (step 2e), the task table (step 1b) and step 2g's minimum levels. It
+reads the client's `ConditionalContentTuning` and `QuestV2` tables of the probe's build as
+`tools\ConditionalContentTuning-<build>.csv` and `tools\QuestV2-<build>.csv`, downloading them from
+wago.tools (`?build=<build>`) when they are missing, and `plans\unavailable-quest-decisions.csv`:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-QuestScaling.ps1 -WhatIf
@@ -1532,18 +1550,22 @@ Where the ceiling comes from (`QuestScaling.ps1`):
   answered for; the game scales the other 105 higher (750, 1427 and 1707 are 60 or less in the table and 90
   in the game). Read with an `AllowedMaxOffset` of 255 as no cap, it agrees for 718, and the game still
   scales the other 53, all of offset 0, higher.
-- **Not Chromie Time.** The ceilings are the levels the probe's character was given at the cap.
-  TrinityCore's `Player::GetQuestLevel` takes the tuning through the character's Chromie Time options
-  (`CTROptions`, whose `ConditionalFlags` pick a `ConditionalContentTuning` redirect), so a character in
-  Chromie Time may be scaled to another level. That redirect is not modelled: such a character's bracket
-  and low-level filter read the ceilings of a character outside it.
+- **Not the redirects.** The ceilings are the levels the probe's character was given at the cap, with its
+  redirect bits (1, 5, 14 and 33). TrinityCore's `Player::GetQuestLevel` takes the tuning through the
+  character's `ConditionalFlags` (`CTROptions`), which pick a `ConditionalContentTuning` row, so a
+  character with other bits (in Chromie Time, in an Endeavor's zones) is scaled to another level where a
+  row names the tuning: on 16 October 2026 one level 90 character read 90 for 11 "Riverpaw Gnoll Bounty" in
+  Nazmir and 30, its ceiling, in Elwynn Forest. No addon call reads the bits, so the ceilings stay the
+  probe's, and the samples (below) are there for the addon to read the game's level from.
 
 It refuses, writing nothing, when a quest run of the probe's build was made below the cap or kept no
 level (a row keeps only its last answer, so any of the build's quest runs may have given it; the cap is
 90 for 12.x builds, `$RetailLevelCaps` in `QuestScaling.ps1`, or `-Cap`), when the probe's build is not
 the quest cache's (`-Build`), and unless at least 99% of at least 20,000 usable probed quests sit on
 tunings that agree (`-MinAgreement`, `-MinProbed`). `-WhatIf` reports and writes nothing; `-Check` is
-the same and exits 1 when the data isn't what the probe says. A second run changes nothing.
+the same and exits 1 when the data isn't what the sources say (a `maxLevel`, a `tuning` or
+`tunings.jsonl`) or the redirect table has a `RedirectEnum` its baseline lacks. A second run changes
+nothing.
 
 After the changes it compares the addon's low-level rule with the game's own answer, for every quest
 of ours the probe asked `IsQuestTrivial` about, at the probe's level and trivial range: how many it hid,
@@ -1612,9 +1634,45 @@ quests with a `maxLevel`; 59 at their minimum with another level of their own (5
 and 10 shown though trivial. A rise in the "by the level shown" counts means a tuning, a rule of the game
 or the data has moved.
 
-The table costs memory: `qcQuestData.lua` grows from 2,461,508 to 2,819,637 bytes and, loaded alone under
-Lua 5.1 (32-bit), from 9,381 to 10,405 KB; [load-and-memory.md](plans/load-and-memory.md) has the figures.
-`Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
+**Tunings and samples** ([quest-scaling-redirects.md](plans/quest-scaling-redirects.md)). What the run writes:
+- **Each quest's `tuning`:** its `ContentTuningID` in the quest cache, else in the task table, world quests
+  included. A quest on tuning 0 gets none (no range); one neither source has keeps the one it holds, so a
+  partial cache doesn't take tunings away.
+- **`data\tunings.jsonl`:** a record for each tuning our quests are on that a `ConditionalContentTuning` row
+  names (`ParentContentTuningID`) and the probe sampled: its `level` at the cap, its `redirects` (the rows'
+  `RedirectEnum` values, ascending) and up to `-Samples` (3) `samples`. A sample is a quest the probe loaded,
+  `ok` or `cached` with a level above 0, at its tuning's one level (a late answer doesn't count). They are
+  taken in this order: a quest of ours, in `QuestV2` of the probe's build, not flagged in
+  `unavailable-quest-decisions.csv`, one-time rather than recurring (`qcRecurringTypes`), open to both
+  factions (no retail probe run has had a Horde character), then the lowest ID. A tuning no row names gets
+  no record: every character gets its own range there, which `maxLevel` holds. The build writes
+  `qcTuningSample` from the records and `qcQuestTuning` for the quests on their tunings.
+- **The checks.** A stored sample the newest probe no longer loads, no longer gives its tuning's one level,
+  or whose quest moved tuning is listed and replaced, and fails `-Check` until the run has written it. The
+  redirect table is compared with `plans\quest-scaling-redirects-baseline.csv` (`-BaselineFile`): its rows
+  per `RedirectEnum`, the values gone and those with another row count are listed, and a value the baseline
+  lacks is flagged `[NEW]` and fails `-Check`, as a redirect no sweep has read. Look at which tunings it moves
+  and whether the samples cover them, then `-UpdateBaseline` writes the baseline from the run's table (not
+  with `-Check`). With no baseline file every value counts as new.
+
+The run of 16 October 2026 (12.1.5.70391; the 15 October probe, the joined quest cache, the task table):
+**33,250 quests got a `tuning`**, 29,811 from the cache and 3,439 from the task table; 16 are on tuning 0
+(14 in the cache, 2 in the task table) and 2,388 have none in either. They are on 783 tunings: a redirect
+names 543, and 240 none. **537 tunings got samples** (424 three, 47 two, 66 one), 1,432 quests: 1,393 of them
+in `QuestV2`, 1,310 one-time, 1,216 open to both factions and one, 42905, flagged unavailable (its tuning's
+only other quest, 42904, isn't in `QuestV2`). The 6 a redirect names that got none (2251, 2306, 2330, 2516,
+2535 and 2862, 11 quests) have no level in the probe. `qcQuestTuning` holds 28,680 quests; the other 4,570
+with a tuning keep it in the data only. No `maxLevel` and no other field changed, `-Check` and a second run
+find nothing to change, and no quest left the data. Baseline: 2,564 rows, 39 `RedirectEnum` values, 1,031
+tunings redirected; by value 0 (638), 1 (63), 2 (3), 3 (34), 4 (6), 5 (165), 6 (17), 7 (1), 8 (1), 9 (13),
+10 (3), 11 (41), 12 (67), 13 (498), 14 (29), 15 (2), 16 to 20 (4 each), 21 to 25 (3 each), 26 and 27 (2
+each), 28 and 29 (1 each), 30 (105), 31 (3), 32 (19), 33 (35), 34 (772), 35 (3), 38 (1), 39 (2) and 40 (2).
+
+The tables cost memory: `qcQuestMaxLevel` took `qcQuestData.lua` from 2,461,508 to 2,819,637 bytes and,
+loaded alone under Lua 5.1 (32-bit), from 9,381 to 10,405 KB; `qcQuestTuning` and `qcTuningSample` take it
+from 2,822,865 to 3,239,164 bytes and from 10,434.2 to 11,529.4 KB (all 33,250 tunings would take 12,553.4
+KB, as more than 32,768 keys double the hash part); [load-and-memory.md](plans/load-and-memory.md) has the
+figures. `Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
 
 ### 3. Quest types
 
@@ -2721,7 +2779,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    a check that writes nothing: every quest the probe loaded must have its stored level, and the low-level
    rule is compared with `IsQuestTrivial` at the probe's level (14 October 2026, 1.60.1.70374, level 16:
    2,964 of 2,964 at their stored level; 0 hidden though not trivial, 1 shown though trivial, 8856 of level
-   0). It exits 1 when a quest's level is not the game's, which would mean Forever's quests scale now.
+   0). It exits 1 when a quest's level is not the game's, which would mean Forever's quests scale now, and
+   when Forever's data holds a `maxLevel`, a `tuning` or a `tunings.jsonl`, which nothing writes there.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
    run of 14 October 2026 (build 70374) found 6 on 2,399 prerequisites and 447 table entries (35 of them
@@ -3350,8 +3409,12 @@ It began as pull request #139, which stays open as the record; its files are in
    already answered on a build isn't asked again. `Get-ProbeLevelFacts` in `ProbeResults.ps1` tallies them
    (how many are trivial, how many at each difficulty, and both together). On retail, run the quest pass
    on a character at the level cap (90 on 12.x), every run of it on the build: step 2j reads each quest's
-   `GetQuestDifficultyLevel` as the level its tuning scales to, and refuses a build any of whose quest
-   runs was made below the cap, as it can't tell which run a quest's answer came from.
+   `GetQuestDifficultyLevel` as the level its tuning scales to, takes its samples from the quests it
+   loaded, and refuses a build any of whose quest runs was made below the cap, as it can't tell which run a
+   quest's answer came from. The answers also depend on the character's redirect bits
+   ([quest-scaling-redirects.md](plans/quest-scaling-redirects.md)): the 15 October 2026 run was made in a
+   Midnight zone, with bits 1, 5, 14 and 33, and the same character read 90 in Nazmir for quests whose
+   tuning a bit-34 row names, which step 2j would take as their ceilings. Run it where that one was.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered. On retail a full quest pass
    after a patch takes about two and a half hours one at a time (35,544 quests on 12.1.5; 4 at a time it
@@ -3496,7 +3559,8 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 16 October 2026 they're 35,654 quests (with the
+  or pins were meant to be added or removed, and for a game with a `tunings.jsonl` (retail: 537 on 16
+  October 2026) its tunings. As of 16 October 2026 they're 35,654 quests (with the
   Darkspear Dash's 94954 and the Gnomeregan Run's 95012, 35,630, and then the noTitle API scan's 24 of
   step 6) and 13,557 pins for retail (16,084 before
   the nameless pins went one per spot, 13,547 before the second gap run's quests got theirs), and
@@ -3522,13 +3586,18 @@ git diff --stat
   makes quests, API records, a quest cache and a ContentTuning table in a scratch folder (nothing downloaded),
   and with the real files in `tools\` (or `-RealToolsDir`) also applies the formula to a copy of the data. It
   must say "0 failed".
-- For changes to `QuestScaling.ps1` or `Apply-QuestScaling.ps1` (retail's scaling ceilings and Forever's
-  check, step 2j), run
+- For changes to `QuestScaling.ps1` or `Apply-QuestScaling.ps1` (retail's scaling ceilings, tunings and
+  samples, and Forever's check, step 2j), or to how `AddonData.ps1` reads, checks or builds `tunings.jsonl`
+  and the `tuning` field, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestScaling.ps1`. It makes quests, a quest
-  cache, a task table and probe saved variables in a scratch folder, and with the real files in `tools\` (or
-  `-RealToolsDir`) also applies the tool to a copy of the data with every `maxLevel` taken out. It must say
-  "0 failed" (173 checks, 182 with the real files, 16 October 2026). A change to how the list or the low-level
-  filter reads a level is checked by `Test-QuestReachability.lua` on both TOCs (step 9).
+  cache, a task table, probe saved variables, a redirect table, a `QuestV2` table, a baseline and
+  unavailable decisions in a scratch folder (nothing downloaded), and with the real files in `tools\` (or
+  `-RealToolsDir`) also applies the tool to a copy of the data with every `maxLevel` and `tuning` taken out
+  and no `tunings.jsonl`, downloading the redirect table and `QuestV2` into that folder if it lacks them. It
+  must say "0 failed" (308 checks, 320 with the real files, 16 October 2026), and its last line says whether
+  the result is the checkout's data and whether the redirect table has a `RedirectEnum` the baseline lacks.
+  A change to how the list or the low-level filter reads a level is checked by `Test-QuestReachability.lua`
+  on both TOCs (step 9).
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
   that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
@@ -3730,7 +3799,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 | Source | Used for | How |
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), the quest category that names a holiday or a profession, the rewards that are profession knowledge, and whether it serves a quest the data lacks, with its title (step 6) (retail only) | `Audit-QuestAccuracy.ps1` and `Fetch-GapQuestData.ps1`, cached in `tools\quest_api_cache` (a `.404` for each quest it doesn't serve); the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d), the profession category and rewards by `Sync-QuestProfessions.ps1` (step 1d) |
-| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, the profession headings (`QuestSort`) and the items that are profession knowledge (`Item`, `ItemSparse`), the professions a renown reward is given for (`RenownRewards`, `PlayerCondition`, `ModifierTree`, `SkillLine`; the evidence in `plans\quest-link-decisions.csv`), questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
+| The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, the profession headings (`QuestSort`) and the items that are profession knowledge (`Item`, `ItemSparse`), the professions a renown reward is given for (`RenownRewards`, `PlayerCondition`, `ModifierTree`, `SkillLine`; the evidence in `plans\quest-link-decisions.csv`), questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); the redirects of a quest's level range (`ConditionalContentTuning`), which say which tunings get samples, and `QuestV2`, which samples are preferred (step 2j); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
 | The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; on retail, the reputation rewards of the quests the API has no record of (step 2), and the level each content tuning scales to at the level cap (the probe's `GetQuestDifficultyLevel`, step 2j); each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1` (on retail its sort names a profession's heading, for step 1d, and its rewards are written by `Apply-ReputationBackfill.ps1 -CacheOnly`, step 2); `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
