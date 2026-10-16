@@ -270,14 +270,14 @@ inside an instance either; this covers them.) Then switch back to English.
    pins the player may never hover, but a busy map has at most ~140 NPCs (Isle of Dorn 136, Dornogal
    106). At 16 in flight the server answered about 84 requests a second, so an uncached busy map
    takes about 2 s, and most names are there by the time the player hovers a pin.
-   **Reversed on 16 October 2026:** players on CurseForge reported the game freezing for up to three
-   minutes the first time they opened a Battle for Azeroth or Dragonflight zone's map, never again
-   for that zone, even after a relog; 109.97, which asked for no names, didn't. The only thing the
-   addon does on a zone's first open that outlasts a relog is filling the client's creature cache,
-   and the reported zones' pins name the most givers (Zuldazar 160, Waking Shores 153, Azure Span
-   148, Ohn'ahran Plains 139; the ID backfill of 7 October took maps past the ~140 above). The
-   author's cache held every pin NPC from the phase 1 runs, so the freeze never showed for them.
-   Names are now asked for only when a tooltip or waypoint shows them (Status, 16 October 2026).
+   **Reversed on 16 October 2026 (#371):** it cost more than the 2 s above. The ID backfill of 7
+   October took the largest maps past ~140 (Zuldazar 160, Waking Shores 153, Azure Span 148,
+   Ohn'ahran Plains 139), and each update event while names load asks again for every one still
+   awaited, so opening Zuldazar uncached took about 2,600 lookups in `Test-NpcNames.lua`'s stand-in
+   game, for pins mostly never hovered. Names are now asked for only when a tooltip or waypoint shows
+   them. It came up while looking into players' reports of a freeze on a zone map's first open, but
+   it isn't that freeze's known cause: with both the creature and the quest caches emptied, the
+   author's game didn't freeze (open-items.md, "After 113.0").
 3. **Correct IDs rather than add a lookup table** (see "Dropped").
 
 ## Out of scope
@@ -341,4 +341,4 @@ inside an instance either; this covers them.) Then switch back to English.
   (master, under the same game: 2,600 lookups), a hovered giver is named whether the name can be
   read at the update event or only after it, a giver the game never names is looked at about four
   times a second until the timeout and then left, and a giver hovered inside an instance is asked
-  for after leaving. The freeze's cause isn't proven in game yet: open-items.md, "To try in game".
+  for after leaving. A cut in needless work, not a fix for a known fault.

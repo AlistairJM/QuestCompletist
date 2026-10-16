@@ -2,8 +2,8 @@
 Checks how quest givers' names in the client's language are asked for (docs/plans/localized-npc-names.md):
 opening a map asks for none of them, a hovered pin asks for its own givers, and a name that arrives is
 drawn on the pin's tooltip, also when the game's update event comes before the name can be read, as it
-usually does. Users reported that opening a large map froze the game the first time while the addon asked
-for every giver on it.
+usually does. Until #371 the addon asked for every giver on a map when it opened, up to 160 of them and
+thousands of lookups, for pins mostly never hovered.
 
 Loads the addon's own files with stand-ins for the WoW API, a clock that only moves when told, and a game
 that answers a creature it hasn't cached with nothing, then 0.1 s later fires TOOLTIP_DATA_UPDATE with no

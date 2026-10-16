@@ -1437,8 +1437,8 @@ end
 -- cached, the reply is empty and TOOLTIP_DATA_UPDATE fires when the name arrives; an empty reply has
 -- no ID to match that event to, so every name still awaited is checked again. Inside an instance the
 -- game hides creature names, so nothing is asked there. A pin with no NPC ID keeps its stored name.
--- Names are asked for when something shows them, never for a whole map: asking for every giver on a
--- large map froze the game the first time that map was opened.
+-- Names are asked for when something shows them, never for a whole map: a large map's pins name up
+-- to 160 givers, most of them never hovered, and asking for them all took thousands of lookups.
 local QC_MAX_NPC_LOADS = 16
 local QC_NPC_LOAD_TIMEOUT = 5
 local QC_NPC_RECHECK_DELAY = 0.25
