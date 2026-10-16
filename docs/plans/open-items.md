@@ -38,7 +38,9 @@ taken. What is left, in one place:
     lets every character see each: "The Arts of a Mage/Shaman/Druid" (24752, 24760, 24766) open to every class,
     the priest race quests (27268/27269, 27361 to 27363), the covenant Veteran and Tactician sets (63340 to 63347,
     64083 to 64086, 64322 to 64325) and 60721 to 60723 with no covenant, and the Trading Post copies.
-  - **A junk quest:** 38845, named "Unused", is in the data.
+  - **Junk quests:** 38845, named "Unused", is in the data; so is 33931 "This Is Not a Quest" (Talador, Horde), the
+    placeholder 21 Legion items name as their start (found in opportunity 3, 17 October 2026). Removing either needs
+    the user's review first.
   - **The Gilneas trio** (14402, 14405, 14463), unlinked by D2 because Blizzard's API requires all three for
     14465 and 14466, is on one switch: doing any one marks all three done, which meets "requires all three". Step
     2k lists it until the user decides ADD (undoing D2's unlink) or SKIP.
@@ -49,8 +51,15 @@ taken. What is left, in one place:
   own pull request, the 33 item-started quests the user chose went in (the 32 Midnight ones, from 94834 to 97910,
   and 11003, the Horde's The Fall of Magtheridon), with SKIP rows for the dead ones (40335, 45045, 28462, 50195;
   52991 had one): maintenance.md, step 6, "The item-started gap run". The 52 older candidates and 93852 stay in step
-  6's queue, and Forever's 7 Ahn'Qiraj Task Briefings (8498, 8536, 8804 to 8807, 8829) weren't chosen. Opportunity
-  2 is done once both pull requests are merged.
+  6's queue, and Forever's 7 Ahn'Qiraj Task Briefings (8498, 8536, 8804 to 8807, 8829) weren't chosen. Both pull
+  requests were merged on 17 October 2026 (#379, #380).
+- **Opportunity 3, quests started by a spell (17 October 2026):** the user took part A only: step 6e also takes the
+  items whose effect casts a quest-starting spell when used, picked up or looted, so "Starts From" covers 39 more
+  retail quests (Forever: second items for the Duskwood missions). Left as they are, on the user's word: the
+  tooltip's "Unknown or Auto-Accepted Quest" for the ~440 other pinless spell-started quests (the spell is the
+  mechanism, not the trigger: the Hero's Call boards cast one), the pins (every pinned spell-started quest sits on
+  the client's own start point), and Forever's 64 spell-started quests we lack (63 are on the probe's list,
+  untitled until the beta serves them: the Ashenvale, Hinterlands and Feralas Deputize missions).
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest

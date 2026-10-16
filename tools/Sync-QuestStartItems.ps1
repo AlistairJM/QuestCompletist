@@ -4,9 +4,10 @@ quests, from the game's own client tables, into data\startitems.jsonl (Forever: 
 Build-AddonData.ps1 turns into qcQuestStartItems. The quest list's tooltip shows "Starts from: <item>", named by the game,
 with what the item itself requires (open-items row 19; docs/plans/client-tables-audit.md, opportunity 2).
 
-For each item whose ItemSparse.StartQuestID is one of our quests it keeps the item's faction flag, level, profession,
-reputation and races (StartItems.ps1 says how each is read). It downloads the build's ItemSparse and ChrRaces into
-tools\ (ItemSparse-<build>.csv, ChrRaces-<build>.csv) when they aren't there, and reports:
+For each item that starts one of our quests, by its ItemSparse.StartQuestID or by a spell it casts when used, picked up
+or looted (client tables audit, opportunity 3), it keeps the item's faction flag, level, profession, reputation and races
+(StartItems.ps1 says how each is read). It downloads the build's ItemSparse, ChrRaces, ItemEffect, ItemXItemEffect and
+SpellEffect into tools\ (<table>-<build>.csv) when they aren't there, and reports:
   - what changed against the data file: items added, gone and changed, and items whose quest has left the data;
   - the quests whose faction their start items contradict (every item for one side, the quest for the other or both):
     findings for a decision, as 11002, 38194, 38202 and 56071 were on 16 October 2026;
@@ -45,9 +46,17 @@ $quests = @{}
 foreach ($q in (Read-QuestData $DataDir)) { $quests[[int]$q.id] = $q }
 $itemPath = Get-BuildTable 'ItemSparse'
 $racePath = Get-BuildTable 'ChrRaces'
+$spellStarts = Get-SpellStartItems (Import-Csv (Get-BuildTable 'ItemEffect')) (Import-Csv (Get-BuildTable 'ItemXItemEffect')) `
+    (Import-Csv (Get-BuildTable 'SpellEffect') | Where-Object { $_.Effect -eq '150' })
 $allStarts = @{}
-$itemRows = Import-Csv $itemPath | Where-Object { $_.StartQuestID -and $_.StartQuestID -ne '0' } | ForEach-Object { $allStarts[[int]$_.StartQuestID] = $true; $_ }
-$records = Get-StartItemRecords $itemRows (Import-Csv $racePath) $quests
+foreach ($quest in $spellStarts.Values) { $allStarts[$quest] = $true }
+$namedQuest = @{}
+$itemRows = Import-Csv $itemPath | Where-Object { ($_.StartQuestID -and $_.StartQuestID -ne '0') -or $spellStarts.ContainsKey([int]$_.ID) } | ForEach-Object {
+    if ($_.StartQuestID -and $_.StartQuestID -ne '0') { $allStarts[[int]$_.StartQuestID] = $true; $namedQuest[[int]$_.ID] = [int]$_.StartQuestID }
+    $_
+}
+$records = Get-StartItemRecords $itemRows (Import-Csv $racePath) $quests $spellStarts
+$bySpell = @($records | Where-Object { $namedQuest[$_.item] -ne $_.quest })
 
 $file = Join-Path (Resolve-Path $DataDir).Path 'startitems.jsonl'
 $current = if (Test-Path $file) { @(Read-JsonLines $file) } else { @() }
@@ -66,7 +75,8 @@ Write-Output ("{0} items start {1} of our {2} quests; {3} carry a faction, {4} a
     @($records | Where-Object side).Count, @($records | Where-Object level).Count, @($records | Where-Object skill).Count,
     @($records | Where-Object rep).Count, @($records | Where-Object races).Count)
 Write-Output "Against $(Split-Path -Leaf $file): $($added.Count) added, $($gone.Count) gone ($($orphans.Count) of them for quests no longer in the data), $($changed.Count) changed."
-Write-Output "$($missing.Count) items start quests the data lacks: Find-MissingQuests.ps1 (step 6) lists them."
+Write-Output "$($bySpell.Count) of the items start their quest by a spell they cast when used, picked up or looted, not by StartQuestID."
+Write-Output "$($missing.Count) quests the data lacks are started by an item: Find-MissingQuests.ps1 (step 6) lists them."
 
 $disagree = Get-StartItemFactionDisagreements $records $quests
 $sideName = @{ 1 = 'Alliance'; 2 = 'Horde'; 3 = 'both' }

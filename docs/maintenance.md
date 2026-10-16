@@ -2455,8 +2455,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestStartItems.p
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>
 ```
 
-It reads the build's `ItemSparse` and `ChrRaces` (downloaded into `tools\` as `<table>-<build>.csv` when missing):
-every item whose `StartQuestID` is one of our quests, with its faction flag (`Flags_1` 0x1 Horde, 0x2 Alliance),
+It reads the build's `ItemSparse`, `ChrRaces`, `ItemEffect`, `ItemXItemEffect` and `SpellEffect` (downloaded into
+`tools\` as `<table>-<build>.csv` when missing): every item that starts one of our quests, either because its
+`StartQuestID` names it or because one of its effects casts a spell with a `QUEST_START` effect (150, the quest in
+`EffectMiscValue_0`) when the item is used, picked up or looted (`ItemEffect.TriggerType` 0, 5, 7, 9 or 10, TrinityCore's
+`ItemSpelltriggerType`; client tables audit, opportunity 3). Where both speak, the spell's quest wins, as it is what the
+item does: six Legion scouting reports name the placeholder 33931 "This Is Not a Quest" as their `StartQuestID` and
+start their real quest by their spell. Each item comes with its faction flag (`Flags_1` 0x1 Horde, 0x2 Alliance),
 `RequiredLevel`, `RequiredSkill` and `RequiredSkillRank`, `MinFactionID` and `MinReputation`, and its races
 (`AllowableRaces_0/_1` on retail, `AllowableRace_0/_1` on Forever, two words of the race mask over
 `ChrRaces.PlayableRaceBit`), where races that are exactly one side's playable ones make the item that side's. It writes
@@ -2474,6 +2479,11 @@ level, 41 a profession, 16 a reputation, none a race list); Forever 1.60.1.70425
 each one of a pair Blizzard split by faction, and the user set them (11002 and 38194 Alliance, 38202 and 56071
 Horde; the reasons are in `quest-accuracy-manual-decisions.csv`): the API and the quests' own records name no
 faction for them, so step 1 leaves them be. 324 retail and 139 Forever items start quests we lack.
+On 17 October 2026 the items that start a quest by their spell were added (opportunity 3): retail 1,533 items for
+1,503 quests (36 items more, 39 quests more, the six scouting reports moved off 33931), among them 52221 Mission Report:
+Stonefist Watch and 39718 Paradise Lost; Forever 431 items for the same 408 quests, its 18 "Deputization Authorization"
+items beside the Duskwood missions' own. 15 items still name 33931, a quest of the data whose title says it isn't
+one (open-items).
 
 ### 7. Quests that may no longer be obtainable
 
