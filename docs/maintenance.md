@@ -1231,9 +1231,9 @@ the icon of a pin whose quests are all PvP. Every sweep, with the newest cache o
 
 `Apply-QuestScaling.ps1` gives each retail quest that scales the level it stops scaling at, in its
 `maxLevel` field, which the build writes to `qcQuestMaxLevel`. The list's bracket, its sort and the
-low-level filter (the list's and the map's) then read the level the game scales the quest to for the
-character: its level, raised to the quest's minimum (`minLevel`, else `level`) and held down at
-`maxLevel`. A quest with no `maxLevel` reads its own level, as before ([the data
+low-level filter (the list's and the map's) then read the level the game scales the quest to for a
+character outside Chromie Time: its level, raised to the quest's minimum (`minLevel`, else `level`) and
+held down at `maxLevel`. A quest with no `maxLevel` reads its own level, as before ([the data
 files](#the-quest-and-pin-data-files)). This is open-items.md row 9, option C, taken on 16 October 2026,
 API review recommendation 4. It is retail's: Forever's quests don't scale (its probe of 14 October 2026, a
 level 16 character on 1.60.1.70374, gave each of the 2,964 quests of ours it loaded its stored level, and
@@ -1268,6 +1268,11 @@ Where the ceiling comes from (`QuestScaling.ps1`):
   answered for; the game scales the other 105 higher (750, 1427 and 1707 are 60 or less in the table and 90
   in the game). Read with an `AllowedMaxOffset` of 255 as no cap, it agrees for 718, and the game still
   scales the other 53, all of offset 0, higher.
+- **Not Chromie Time.** The ceilings are the levels the probe's character was given at the cap.
+  TrinityCore's `Player::GetQuestLevel` takes the tuning through the character's Chromie Time options
+  (`CTROptions`, whose `ConditionalFlags` pick a `ConditionalContentTuning` redirect), so a character in
+  Chromie Time may be scaled to another level. That redirect is not modelled: such a character's bracket
+  and low-level filter read the ceilings of a character outside it.
 
 It refuses, writing nothing, when a quest run of the probe's build was made below the cap or kept no
 level (a row keeps only its last answer, so any of the build's quest runs may have given it; the cap is
@@ -1292,6 +1297,19 @@ them are level 0, so the list now shows them at a level; 4 have a level of their
 (24758, 24759 and 28167, level 30 and scaling to 10; 51534, level 50 and to 49), so at the cap the list
 shows them lower than their level. No other field and no pin changed, and no quest left the data.
 
+Of the 5,589 at their minimum, 59 have a level of their own that isn't it. With no ceiling, the list
+shows that level, sorts by it and the low-level filter reads it, while the game holds the quest at its
+minimum. The tool lists them by id (`-WhatIf -Examples 60` lists them all; 31 were loaded in the probe):
+- 50 are below their minimum. By minimum: 30 (1), 35 (6), 45 (1), 50 (31), 70 (4), 80 (3) and 90 (4).
+  Examples are 24428 (level 1, minimum 30), 50417 (10 and 50) and 50782 (35 and 50). The low-level
+  filter hides such a quest once the character is 6 levels above its own level, but the game calls it
+  trivial only from 6 levels above its minimum. So 50417 is hidden from a character of level 50 to 55,
+  where the game calls it not trivial. Only the four with a minimum of 90 show this at the cap (below).
+- 4 are above it: 52182, 52244, 52312 and 53310, level 50 with a minimum of 10, which is the game's level
+  for them at the cap. The list shows them as [50].
+- 5 are level 0: 38204 and 38205 (minimum 40), and 96746, 96995 and 97128 (minimum 90). They get no
+  bracket and are never hidden.
+
 Against the game, at level 90 with a trivial range of 5, for the 29,823 quests of ours the probe asked
 `IsQuestTrivial` about:
 
@@ -1309,17 +1327,18 @@ Against the game, at level 90 with a trivial range of 5, for the 29,823 quests o
 | Midnight | 2,434 | 4 |
 | All | 9,753 | 4 |
 
-The 4 are 41368 "Lost Mail", 47148 "Something Different", 58273 and 58274 "Servant of N'Zoth": their own
-level is 10 or 50 and their minimum 90, which is also the game's level for them at the cap, so they don't
-scale and the list reads their own level, which is below their minimum (open-items.md row 8: retail's
-`level` is not refreshed; open-items.md lists them). Shown though the game calls them trivial: 11 by the
+The 4 are 41368 "Lost Mail", 47148 "Something Different", 58273 and 58274 "Servant of N'Zoth", the four
+of the 50 below their minimum whose minimum is 90: their own level is 10 or 50, and the game's level for them at the
+cap is their minimum, so they don't scale and the list reads their own level (open-items.md row 8:
+retail's `level` is not refreshed; open-items.md lists all 59). Shown though the game calls them trivial: 11 by the
 own level, all of level 0, which the rule never counts as low (open-items.md row 13); 10 by the level
 shown, as 1582 "Moonglow Vest" now scales to 10 and is hidden, and the other 10 have no level in the game
 either (`GetQuestDifficultyLevel` 0). The probe file of 14
 October (one quest run, 25,337 usable quests, 5,242 placeholder rows left out) gives 743 tunings, each the
 level the 15 October file gives, so `-WhatIf` with it changes nothing; it found 8,043 quests hidden though
 not trivial (1,978 of them Midnight), and the level shown leaves 3. Baseline for the next sweep: 27,637
-quests with a `maxLevel`; 9,753 hidden though not trivial by the own level and 4 by the level shown; 11
+quests with a `maxLevel`; 59 at their minimum with another level of their own (50 below it, 4 above it and
+5 of level 0); 9,753 hidden though not trivial by the own level and 4 by the level shown; 11
 and 10 shown though trivial. A rise in the "by the level shown" counts means a tuning, a rule of the game
 or the data has moved.
 
@@ -2031,8 +2050,8 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   low); the sort is by that level, then the quest's own. Made-up scaling quests check the five levels
   apart from the data: the bracket, the order of the rows and the low-level filter of the list and the
   map, as the game would give them (95 checks). With `qcCore.lua` of before step 2j, which reads the
-  quest's own level for all three, retail's run finds 53,378 problems and the made-up quests 39 on both
-  games; Forever's data, with no `maxLevel`, reads the same with either. A PvP quest's row has the game's crossed swords
+  quest's own level for all three, retail's run finds 53,378 problems, 39 of them on the made-up quests;
+  Forever's finds the 39 only, as its data, with no `maxLevel`, reads the same with either. A PvP quest's row has the game's crossed swords
   (`|A:questlog-questtypeicon-pvp:14:14|a `) before its name, after any bracket. Since step 2g retail's two levels differ for 1,627 quests,
   so both games' runs can catch a mix-up there (with the requirements filter ignoring `qcQuestMinLevel`,
   retail's run finds 2,828 problems; with the grey pins and the tooltip line ignoring it, 6,748). Made-up quests with those levels check the same, and the
@@ -3015,7 +3034,7 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestScaling.ps1`. It makes quests, a quest
   cache, a task table and probe saved variables in a scratch folder, and with the real files in `tools\` (or
   `-RealToolsDir`) also applies the tool to a copy of the data with every `maxLevel` taken out. It must say
-  "0 failed" (157 checks, 166 with the real files, 16 October 2026). A change to how the list or the low-level
+  "0 failed" (173 checks, 182 with the real files, 16 October 2026). A change to how the list or the low-level
   filter reads a level is checked by `Test-QuestReachability.lua` on both TOCs (step 9).
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools

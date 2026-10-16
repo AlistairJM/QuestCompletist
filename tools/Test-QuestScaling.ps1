@@ -2,7 +2,8 @@
 Checks Apply-QuestScaling.ps1 and QuestScaling.ps1 on quests, a quest cache, a task table and probe saved
 variables made here, in a scratch folder: nothing in the checkout is read or written (but the scripts
 themselves). One world holds a quest for each way a ceiling can come out: probed on its tuning or only
-sharing it, at its minimum or below it, a level of 0, a tuning from the task table, a split tuning, tuning 0,
+sharing it, at its minimum (with an own level of its minimum, below it, above it or of 0) or below it, a
+level of 0, a tuning from the task table, a split tuning, tuning 0,
 no tuning, a tuning only a placeholder row, a refusal, a level of 0 or another build's row speaks for, and a
 maxLevel that is added, changed, taken away or kept. The rest changes one thing at a time: -WhatIf and
 -Check, a second run, the level-cap check (a run below the cap, a run with no level, a build whose cap
@@ -74,11 +75,14 @@ function New-World {
     $q[19] = New-Quest 10 $null 65 100 $null $null
     $q[20] = New-Quest 30 $null $null 700 $null (New-Row 'ok' 0 $true 4)
     $q[21] = New-Quest 60 $null $null 200 $null (New-Row 'ok' 90 $false 11)
+    $q[22] = New-Quest 50 70 $null 100 $null $null
+    $q[23] = New-Quest 80 70 $null 100 $null $null
+    $q[24] = New-Quest 0 70 $null 100 $null $null
     return $q
 }
 # What each quest's maxLevel must be after a run of the world above.
 $Wanted = @{ 1 = 70; 2 = 70; 3 = 70; 4 = 70; 5 = $null; 6 = $null; 7 = 90; 8 = 90; 9 = $null; 10 = $null; 11 = $null; 12 = $null
-    13 = $null; 14 = 60; 15 = 70; 16 = 70; 17 = 45; 18 = $null; 19 = 70; 20 = $null; 21 = 90 }
+    13 = $null; 14 = 60; 15 = 70; 16 = 70; 17 = 45; 18 = $null; 19 = 70; 20 = $null; 21 = 90; 22 = $null; 23 = $null; 24 = $null }
 
 function Write-Probe([string]$path, $quests, [string]$runs) {
     $rows = foreach ($id in ($quests.Keys | Sort-Object)) {
@@ -191,11 +195,15 @@ try {
     Has $r.Text '2 placeholder rows of records held in part left out' 'W1: a cached row with no level is a placeholder, left out'
     Has $r.Text 'Tunings: 6 probed quests used (1 with no level above 0, 0 with no tuning and 1 on tuning 0 left out); 2 tunings scale to one level each at the cap, for 4 of them (66.67%); 1 give several  [ok]' 'W1: the tunings, counted'
     Has $r.Text 'tuning 400 gives several levels, so none of its quests gets a ceiling: 60 (1 quests), 70 (1 quests)' 'W1: the split tuning, with its levels'
-    Has $r.Text 'Sources: a probed tuning for 12 quests, a split one for 3, tuning 0 for 1; 5 keep what they have (1 no tuning, 4 tuning not probed).' 'W1: where each quest''s ceiling comes from'
-    Has $r.Text 'Ceilings: 10 quests scale, 4 of them answered in the probe and 6 through their tuning; 1 are at their minimum at the cap, so don''t scale; 1 would have a ceiling below their minimum and get none.' 'W1: the ceilings, counted'
+    Has $r.Text 'Sources: a probed tuning for 15 quests, a split one for 3, tuning 0 for 1; 5 keep what they have (1 no tuning, 4 tuning not probed).' 'W1: where each quest''s ceiling comes from'
+    Has $r.Text 'Ceilings: 10 quests scale, 4 of them answered in the probe and 6 through their tuning; 4 are at their minimum at the cap, so don''t scale; 1 would have a ceiling below their minimum and get none.' 'W1: the ceilings, counted'
     Has $r.Text 'by ceiling: 90 (3), 70 (7)' 'W1: by level'
     Has $r.Text '1 of them have a level of 0 (no level)' 'W1: the level-0 quest that scales'
     Has $r.Text 'below its minimum: 6  level 60  minimum 75  the game''s level at the cap 70' 'W1: and the one whose ceiling is below its minimum'
+    Has $r.Text '3 of those at their minimum have a level of their own that isn''t it' 'W1: the quests held at their minimum whose own level is another'
+    Has $r.Text '1 below it, 1 above it and 1 of level 0 (no bracket, never low); 0 of them answered in the probe' 'W1: below, above and of level 0'
+    Has $r.Text "    22  level 50  minimum 70  Quest 22`n    23  level 80  minimum 70  Quest 23`n    24  level 0  minimum 70  Quest 24" 'W1: listed by id'
+    Check (-not $r.Text.Contains('    5  level 70  minimum')) 'W1: but not the one whose own level is its minimum'
     Has $r.Text 'Changes: 12 quests (9 maxLevel added, 1 changed, 2 removed).' 'W1: the changes'
     Has $r.Text 'hidden though the game calls them not trivial: 2 by the quest''s own level, 0 by the shown level (2 now shown)' 'W1: against the game, the quests the old rule hid'
     Has $r.Text 'shown though the game calls them trivial: 0 by the quest''s own level, 0 by the shown level' 'W1: and none the new rule shows that the game calls trivial'

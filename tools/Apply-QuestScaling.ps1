@@ -15,6 +15,8 @@ quest of a tuning, probed or not, gets that level as its `maxLevel` when it is a
 minimum (minLevel, else level), and none when it isn't, or when its tuning is 0 or split. A quest
 with no tuning, or on a tuning the probe has no level for, keeps what it has. Nothing else in a
 record changes. Saved through AddonData.ps1, which rebuilds qcQuestData.lua (qcQuestMaxLevel).
+It also lists the quests the game holds at their minimum whose own level is another: the list shows
+that level, as no ceiling applies, and nothing here changes it (open-items.md, "Data to finish").
 
 After the changes it compares the addon's low-level rule with the game's own answer, for every quest
 the probe asked IsQuestTrivial about: how many the rule hid, before and after, that the game calls
@@ -139,6 +141,7 @@ $wantedOf = @{}
 $changes = New-Object System.Collections.Generic.List[object]
 $given = 0; $givenProbed = 0; $atFloor = 0; $belowFloor = New-Object System.Collections.Generic.List[object]
 $byCeiling = @{}; $levelZero = 0; $aboveCeiling = New-Object System.Collections.Generic.List[object]
+$offFloor = New-Object System.Collections.Generic.List[object]
 foreach ($q in $records) {
     $id = [int]$q.id
     $r = Get-QuestCeiling $q $questTuning.ByQuest $ceilings
@@ -158,8 +161,10 @@ foreach ($q in $records) {
             $byCeiling[$wanted] = 1 + [int]$byCeiling[$wanted]
             if ([int]$q.level -le 0) { $levelZero++ }
             if ([int]$q.level -gt $wanted) { $aboveCeiling.Add($q) }
-        } elseif ($r.Level -eq (Get-QuestGate $q)) { $atFloor++ }
-        else { $belowFloor.Add([pscustomobject]@{ Quest = $q; Level = $r.Level }) }
+        } elseif ($r.Level -eq (Get-QuestGate $q)) {
+            $atFloor++
+            if ([int]$q.level -ne $r.Level) { $offFloor.Add($q) }
+        } else { $belowFloor.Add([pscustomobject]@{ Quest = $q; Level = $r.Level }) }
     }
     if ($null -eq $wanted -and $null -eq $current) { continue }
     if ($null -ne $wanted -and $null -ne $current -and [int]$wanted -eq [int]$current) { continue }
@@ -182,6 +187,16 @@ if ($aboveCeiling.Count) {
 }
 foreach ($b in ($belowFloor | Sort-Object { [int]$_.Quest.id } | Select-Object -First $Examples)) {
     Write-Output ("  below its minimum: {0}  level {1}  minimum {2}  the game's level at the cap {3}  {4}" -f $b.Quest.id, $b.Quest.level, (Get-QuestGate $b.Quest), $b.Level, $b.Quest.name)
+}
+if ($offFloor.Count) {
+    $offZero = @($offFloor | Where-Object { [int]$_.level -le 0 }).Count
+    $offBelow = @($offFloor | Where-Object { [int]$_.level -gt 0 -and [int]$_.level -lt [int]$_.minLevel }).Count
+    $offProbed = @($offFloor | Where-Object { $probe.Quests.ContainsKey([string]$_.id) }).Count
+    Write-Output ("  {0} of those at their minimum have a level of their own that isn't it, which the list shows, sorts by and the low-level filter reads, where the game holds the quest at its minimum: {1} below it, {2} above it and {3} of level 0 (no bracket, never low); {4} of them answered in the probe. The first {5} by id (id, level, minimum, name):" -f
+        $offFloor.Count, $offBelow, ($offFloor.Count - $offBelow - $offZero), $offZero, $offProbed, $Examples)
+    foreach ($q in ($offFloor | Sort-Object { [int]$_.id } | Select-Object -First $Examples)) {
+        Write-Output ("    {0}  level {1}  minimum {2}  {3}" -f $q.id, $q.level, $q.minLevel, $q.name)
+    }
 }
 
 Write-Output ("Changes: {0:N0} quests ({1:N0} maxLevel added, {2:N0} changed, {3:N0} removed)." -f $changes.Count,

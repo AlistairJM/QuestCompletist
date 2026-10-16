@@ -11,6 +11,10 @@ the game's answer is the maximum itself. The game calls a quest trivial (grey) w
 above 0 and below the character's level less UnitQuestTrivialLevelRange, which is the addon's
 low-level rule applied to the scaled level.
 
+TrinityCore takes the tuning through the character's Chromie Time options (CTROptions' ConditionalFlags
+pick a ConditionalContentTuning redirect), so a character in Chromie Time may scale to another level;
+the ceilings here are those of the probe's character, and that redirect is not modelled.
+
 So a probe run at the level cap gives each tuning's maximum: every quest it loaded on the tuning
 answers that level, and quests the server refused, or the probe never asked, share it through their
 tuning. A quest's tuning is the quest cache's, else the task table's (QuestLevels.ps1's
