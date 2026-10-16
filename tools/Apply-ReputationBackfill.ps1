@@ -11,9 +11,14 @@ shown faction, ours and the API list nothing), for the quests the API has no rec
 A quest whose API record lists no reward, or that step 1 hasn't asked about, is left and counted,
 since the API speaks for the first and may for the second. A faction those rewards name that
 qcFactions lacks is added to it, in ID order, with the Faction table's name (CacheFactionNames).
-It refuses while the CSV has a cache-differ or cache-lost row: the cache's rewards are taken without
-a check in the game because they match the API's wherever both list one (the user's decision 11b
-of the 12.1.5 sweep), so a cache that doesn't is not used.
+The cache's rewards are taken without a check in the game because they match the API's wherever
+both list one (the user's decision 11b of the 12.1.5 sweep), and from the newest cache only. So it
+refuses a CSV whose cache pass read another build than the newest under -ToolsDir (the CSV's
+CacheBuild), and one with a cache-differ or cache-lost row, unless the API has a record of that
+quest and the cache gives the API's amount for every faction the API lists and no reward on a
+shown faction the API doesn't: then only ours differs, and the API's own row corrects it (or, for
+a reward only we list, counts it). Without -CacheOnly neither is checked, as no cache reward is
+written.
 
 No other line in qcQuest.lua is touched.
 
@@ -30,6 +35,7 @@ param(
 
 . "$PSScriptRoot\QuestReputation.ps1"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 
 $content = [System.IO.File]::ReadAllText($QuestFile, [System.Text.Encoding]::UTF8)
 $lines = $content -split "`r`n"
@@ -55,15 +61,42 @@ function Get-RewardRow([string]$id, [string]$text) {
     return [PSCustomObject]@{ Text = "{$rendered}"; Pairs = $pairs }
 }
 
+function Read-Set([string]$text) {
+    $set = @{}
+    foreach ($part in ($text -split ";")) {
+        if (-not $part) { continue }
+        if ($part -notmatch '^(\d+)=(-?\d+)$') { return $null }
+        $set[$matches[1]] = [int]$matches[2]
+    }
+    return $set
+}
+
+function Test-CacheGivesApi($row) {
+    if (-not (Test-Path "$ToolsDir\quest_api_cache\$($row.QuestID).json")) { return $false }
+    $api = Read-Set $row.Api; $cache = Read-Set $row.Cache; $shown = Read-Set $row.CacheShown
+    if ($null -eq $api -or $null -eq $cache -or $null -eq $shown) { return $false }
+    foreach ($faction in $api.Keys) { if (-not $cache.ContainsKey($faction) -or $cache[$faction] -ne $api[$faction]) { return $false } }
+    foreach ($faction in $shown.Keys) { if (-not $api.ContainsKey($faction)) { return $false } }
+    return $true
+}
+
 $new = @{}; $replace = @{}; $oursOnly = 0
-$fromCache = @{}; $cacheRewards = 0; $cacheLeft = 0; $apiListsNone = 0; $unasked = 0; $untrusted = 0
-$addFactions = @{}
+$fromCache = @{}; $cacheRewards = 0; $cacheLeft = 0; $cacheNoRecord = 0; $apiListsNone = 0; $unasked = 0; $untrusted = 0; $oursStale = 0
+$addFactions = @{}; $cacheBuilds = @{}
 foreach ($row in (Import-Csv "$ToolsDir\quest_reputation_compare.csv")) {
     $id = $row.QuestID
+    if ($row.Kind -like "cache-*") { $cacheBuilds[[string]$row.CacheBuild] = $true }
     if ($row.Kind -eq "ours-only") { $oursOnly++; continue }
-    if ($row.Kind -eq "cache-differ" -or $row.Kind -eq "cache-lost") { $untrusted++; continue }
+    if ($row.Kind -eq "cache-differ" -or $row.Kind -eq "cache-lost") {
+        if (Test-CacheGivesApi $row) { $oursStale++ } else { $untrusted++ }
+        continue
+    }
     if ($row.Kind -eq "cache-only") {
-        if (-not $CacheOnly) { $cacheLeft++; continue }
+        if (-not $CacheOnly) {
+            $cacheLeft++
+            if (-not (Test-Path "$ToolsDir\quest_api_cache\$id.json") -and (Test-Path "$ToolsDir\quest_api_cache\$id.404")) { $cacheNoRecord++ }
+            continue
+        }
         if ($existing.ContainsKey($id)) { $errors.Add("$id already has a reputation row"); continue }
         if (-not $questIds.ContainsKey($id)) { $errors.Add("$id is not in quests.jsonl"); continue }
         if (Test-Path "$ToolsDir\quest_api_cache\$id.json") { $apiListsNone++; continue }
@@ -90,7 +123,16 @@ foreach ($row in (Import-Csv "$ToolsDir\quest_reputation_compare.csv")) {
     if (-not $reward) { continue }
     if ($row.Kind -eq "api-only") { $new[$id] = $reward.Text } else { $replace[$id] = $reward.Text }
 }
-if ($CacheOnly -and $untrusted) { $errors.Add("the CSV has $untrusted cache-differ or cache-lost rows, so the quest cache's rewards are not used (docs\maintenance.md, step 2)") }
+if ($CacheOnly -and $untrusted) { $errors.Insert(0, "the CSV has $untrusted cache-differ or cache-lost rows whose quest cache record gives other rewards than the API's, or that the API has no record of to check it against, so the quest cache's rewards are not used; without -CacheOnly the API's rows are still applied (docs\maintenance.md, step 2)") }
+if ($CacheOnly -and $cacheBuilds.Count) {
+    $newest = Get-QuestCacheFiles $ToolsDir | Select-Object -Last 1
+    $newestBuild = if ($newest) { $newest.BaseName -replace '^retail_quest_cache_' } else { '' }
+    $read = @($cacheBuilds.Keys | Sort-Object)
+    if (-not $newestBuild -or $read.Count -ne 1 -or $read[0] -ne $newestBuild) {
+        $readText = ($read | ForEach-Object { if ($_) { $_ } else { '(none named)' } }) -join ' and '
+        $errors.Insert(0, "the CSV's cache pass read the quest cache of $readText, not the newest under ${ToolsDir} ($(if ($newestBuild) { $newestBuild } else { 'none there' })), and only the newest cache's rewards are taken: rerun Compare-QuestReputation.ps1 without -Cache")
+    }
+}
 
 if ($errors.Count) { throw "Refusing to write. $($errors.Count) problem(s):`n" + (($errors | Select-Object -First 20) -join "`n") }
 
@@ -158,7 +200,8 @@ if ($replaced -ne $replace.Count) { throw "Only $replaced of the $($replace.Coun
 if ($CacheOnly) {
     "Rows added from the quest cache: $($fromCache.Count) quests, $cacheRewards rewards; left: $apiListsNone whose API record lists none, $unasked the API hasn't been asked about"
     "Factions added to qcFactions: $(if ($addFactions.Count) { ($addFactions.Keys | Sort-Object | ForEach-Object { "[$_] $($addFactions[$_])" }) -join ', ' } else { 'none' })"
+    if ($oursStale) { "Cache-differ or cache-lost rows whose cache gives the API's rewards, so only ours differs: $oursStale" }
 } elseif ($cacheLeft) {
-    "Rewards only the quest cache lists, left: $cacheLeft quests (-CacheOnly writes them)"
+    "Rewards only the quest cache lists, left: $cacheLeft quests; -CacheOnly writes the $cacheNoRecord the API has no record of"
 }
 "qcQuestReputation now holds: $($existing.Count + $new.Count)"

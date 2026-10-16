@@ -358,11 +358,14 @@ faction (backfill candidates); F cache only, on factions that are not shown; G n
 the cache's own extras (quests not in our data, empty-amount slots, a faction in two slots). It fails
 (exit 1) on a class C or D quest, and says the reader looks moved at 100 C quests or more. Its rows
 go in `quest_reputation_compare.csv` with the Kinds `cache-more`, `cache-differ`, `cache-lost`,
-`cache-only` and `cache-hidden`, and the cache's rewards on shown factions in the `CacheShown`
-column. `Apply-ReputationBackfill.ps1` skips them, except that `-CacheOnly` (16 October 2026)
-writes the `cache-only` rows of the quests the API has no record of, their shown rewards only, adds
-a faction they name that `qcFactions` lacks, and refuses while a `cache-differ` or `cache-lost` row
-is there.
+`cache-only` and `cache-hidden`, the cache's rewards on shown factions in the `CacheShown`
+column and the cache's build in `CacheBuild`. `Apply-ReputationBackfill.ps1` skips them, except
+that `-CacheOnly` (16 October 2026) writes the `cache-only` rows of the quests the API has no record
+of, their shown rewards only, and adds a faction they name that `qcFactions` lacks. It refuses a
+CSV made from another build's cache than the newest, and one with a `cache-differ` or `cache-lost`
+row whose cache record gives other rewards than the API's or has no API record to be checked
+against. A C or D row whose cache gives the API's rewards is only ours out of date, and the API's
+own row corrects it in the same run.
 
 A faction counts as **shown** when the Faction table lists it, its `ReputationIndex` is 0 or more and
 `ReputationFlags_0` lacks bit 4 (value 4, hidden). The index matters for one quest: 1833 (Uncrowned)
@@ -489,5 +492,6 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   sweep (option B). `Apply-ReputationBackfill.ps1 -CacheOnly` wrote the 738 class E quests (1,028
   rewards; the cache reproduced all 11,093 of the API's rewards on the quests it holds) and added 2574
   Dream Wardens to `qcFactions`; `Compare-QuestReputation.ps1` writes the shown rewards it reads in a
-  new `CacheShown` column. The reputation baseline was rewritten on this cache with
+  new `CacheShown` column, and the cache's build in `CacheBuild`, which `-CacheOnly` checks is the
+  newest. The reputation baseline was rewritten on this cache with
   `-AcceptPartialCache` (above, "Checks built").

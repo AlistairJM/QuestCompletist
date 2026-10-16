@@ -530,7 +530,8 @@ still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on 
 | G | the quest is not in the cache (informational) | none |
 | H | the cache's own extras: quests not in our data, slots with an amount of 0, a faction in two slots | none |
 
-The run exits with 1 on a class C or D quest, and says the reader looks moved when there are 100 or
+The run exits with 1 on a class C or D quest (one whose cache gives the API's rewards is only ours
+out of date: `-CacheOnly`, below), and says the reader looks moved when there are 100 or
 more C quests (`-ReaderMovedAt`): run `Compare-QuestCache.ps1` then, and don't use the cache's
 rewards that sweep. It prints the three builds (the API's, the cache's, the Faction table's) and warns
 when they differ, as on 15 October 2026 (API `12.1.5_70077`, the other two `12.1.5.70391`); a few C
@@ -559,9 +560,18 @@ It does what the run without `-CacheOnly` does, and also adds the `cache-only` r
 the API has no record of (a `.404` in the API cache), with only their rewards on shown factions
 (the CSV's `CacheShown` column). A faction those rewards name that `qcFactions` lacks is added to
 it, with the Faction table's name, so step 2b's name check passes. A quest whose API record lists
-no reward, or that step 1 hasn't asked about, is left and counted. It refuses while the CSV has a
-`cache-differ` or `cache-lost` row. Rerun the compare after it: E then holds only the quests left,
-and one whose cache record also rewards a hidden faction is in B.
+no reward, or that step 1 hasn't asked about, is left and counted. It takes the newest cache only,
+so it refuses a CSV whose cache pass read another build than the newest in `tools\` (the CSV's
+`CacheBuild` column): rerun the compare without `-Cache`. It also refuses while the CSV has a
+`cache-differ` or `cache-lost` row whose cache record gives other rewards than the API's, or whose
+quest the API has no record of. A C or D quest whose cache record gives the API's rewards (the
+API's amount for every faction the API lists, and no reward on another shown faction) is only ours
+out of date, as when Blizzard changes a reward. The compare still fails on it, but this run
+corrects ours from the API's `differ` row (a reward only we list stays, and is counted) and writes
+the cache's rows as well. When it refuses, the run without `-CacheOnly` still applies the API's
+rows; find out why the cache differs (step 2e) before its rewards are taken. Rerun the compare
+after it: E then holds only the quests left, and one whose cache record also rewards a hidden
+faction is in B.
 
 On 15 October 2026 (cache 12.1.5.70391, API cache 12.1.5_70077, Faction table 12.1.5.70391)
 C and D were 0 and B the same 3 quests, and the cache reproduced all 10,054 of the API's
