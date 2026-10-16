@@ -1223,10 +1223,27 @@ from Blizzard's own questline tables. It skips internal questlines ("8.0 Profess
 The quest tooltip shows a storyline's name from the game (`C_QuestLine.GetQuestLineInfo`, in the
 player's language) when the game's quest line for the quest is the quest's `storyline`, and the name
 in `qcQuestLines` otherwise. So the rule above, the smallest quest line a quest is in, decides how
-often the game's name is used: 97.9% on the 9 October 2026 retail probe (16,391 of 16,737 storylined
-quests), 11 of 11 on Forever's. The rest are quests in two quest lines, where the game names the
-larger. To measure it again, compare the probe's `questLineID` facts (`Read-ForeverProbe.lua <file> facts`,
-the `fact <quest> questLineID <id>` lines) with each quest's `storyline`.
+often the game's name is used: 98.1% on the 15 October 2026 retail probe of 12.1.5.70391 (15,979 of
+the 16,293 storylined quests it gave a quest line for; it gave none for the other 716 of the 17,009),
+97.9% on the 9 October one (16,391 of 16,737), 11 of 11 on Forever's. Of the other 314 on 12.1.5, the
+game names a line with more of our quests for 244; one with as many for 45, where the tool takes the
+lower ID (17 of them are in 1108 "Through the Shattered Sky", where the game names 1267 "Maw Intro");
+and an internal line the tool skips for 25 (11 in the "Catch Up: War Within: Wrapper" lines, 6 in
+"[PH] 12.1 Max Level Campaign Chp 1", 6 in `[DNT]` lines, 2 in test lines). To measure it again,
+compare the probe's `questLineID` facts (`Read-ForeverProbe.lua <file> facts`, the `fact <quest>
+questLineID <id>` lines) with each quest's `storyline`, sizing each line by its quests in our data, as
+the tool does.
+
+The 12.1.5 run (15 October 2026, build 12.1.5.70391): 1,563 quest lines with player-facing names
+(131 internal skipped), 1,476 written to `qcQuestLines` (1,474 before); 17,009 quests with a storyline
+(16,950 before), the 59 gained being step 6b's rows of 11 October, and none lost or moved. The 12.1.5
+tables add 5 quest lines and 36 of their rows, none for a quest of ours, and reorder Shadows Awaken (40)
+to 33075, 33070, 33765, 33905, 33813, 34019. The 59 were in the 12.1.0 tables too: step 4 hadn't run
+since step 6b added them. Two lines are new to `qcQuestLines`: 6056 "Blessing Task List" (7 quests)
+and 6228 "The Coiled Isle - World Quests/Repeatables" (31, and the same 7, which go to the smaller
+line). Five grew: 5954 "Prey WQs" by 15, 5978 by 3, 5986, 383 and 5747 by one each. The 15 October probe
+gave a quest line for 28 of the 59, ours for 26 and the larger 6228 for 2 of 6056's, and got no answer
+for the other 31.
 
 ### 5. Zone table and category names from the client
 
@@ -1285,6 +1302,31 @@ games. Run it with `-WhatIf` first.
 - A category's entry in `qcMenu.lua` loses its label: the menu names categories through
   `qcCategoryName`, so the label never shows. An indented entry keeps its indent, as
   `text="   "`.
+
+The 12.1.5 run (15 October 2026, retail 12.1.5.70391, Forever 1.60.1.70374) is the baseline to
+compare a sweep with:
+- `Build-CategoryUiMapIDs.ps1`: 337 of the 481 categories named by a map, 32 left to our own text
+  because the client's name differs ("Maw of Souls" is "Helmouth Cliffs" to the client). Both runs
+  left `qcQuest.lua` as it was.
+- `Add-ZoneTableMaps.ps1` added 2 maps, both by the same name and parent: 2605 Silvermoon City (as
+  2393, parent 2395) to Silvermoon City (1512), and 2162 Alterac Valley (as 91 and 1537, parent 25) to
+  Alterac Valley (7). Runs had listed 2162 since at least 11 October
+  ([plans/menu-review.md](plans/menu-review.md), question 31) without its being added; it was added by
+  the user's decision of 15 October 2026. Neither map has a pin. It listed The Stockade (1013) as
+  before. The table has 1,111 keys (1,115 entries: 219, 221, 1670 and 2372 are each there twice).
+- `Build-CategoryClientNames.ps1`: 111 categories named other than by map (instance 19, achievement
+  category 16, area 16, skill 16, class 12, format 11, string 8, faction 6, covenant 4, map 3), 31
+  categories with quests still named by our own text, 25 menu headings named by the client (26
+  lines). `qcQuest.lua` and `qcMenu.lua` were left as they were.
+- `Sync-QuestSortNames.ps1`: 0 keys changed or added; 31 unchanged in each file except Italian's,
+  which has 26 unchanged and 5 kept (AHNQIRAJWAR, CAMPING, INVASION, LUNARFESTIVAL, MIDSUMMER) as the
+  file has them, Forever's Italian table being its English one.
+- `Remove-ConvertedLocaleKeys.ps1 -WhatIf`: 0 lines, with 29 keys kept in English only for the
+  headings the client names. `Test-Localization.lua`: 162 keys of English's own, 133 of each other
+  language's, no problems.
+- Of the tables downloaded with `-Refresh`, the build-less `Covenant.csv` and `GlobalStrings.csv` in
+  `tools\` were of an older build than 12.1.5.70391's, so a run without `-Refresh` would have read
+  those.
 
 ### 6. Map pins
 
@@ -1708,8 +1750,9 @@ the newest build, and files the new rows through a scratch copy of the data and
   - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
     without `-WhatIf`, for the PvP tag, which it also reads from the task table: on 14 October 2026,
     248 of the data's 5,740 task quests had a minimum level and 52 the tag;
-  - step 2c (the prerequisites the client names, 112 of the new rows on 11 October 2026 and no old row)
-    and step 4 (59 storylines, no old row);
+  - step 2c (the prerequisites the client names, 112 of the first run's rows, in #319, and no old row)
+    and step 4 (59 storylines for the first run's rows, given at the 12.1.5 sweep on 15 October 2026,
+    and no old row);
   - `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf` if it lists any: placement files a
     weekly event quest by its zone, and 93598 "Emissary of War" was still under Silvermoon City at
     the 12.1.5 sweep;
