@@ -376,15 +376,26 @@ expected). `Categorize-AuditDiscrepancies.ps1` groups the disagreements.
 `Get-WagoQuestRequirements.ps1` (step 1b) gives it a second source from the client's tables: the
 task quests' races and classes (`QuestV2CliTask`), the conditions on a quest's start points
 (`QuestPOIBlob` and `PlayerCondition`), and the classes that may use the items that start a quest
-(`ItemSparse`: 36 quests on build 12.1.0.69933, and the 25 we have agree with ours). WoW: Forever's
-importer reads the same item columns (step 10).
+(`ItemSparse`: 36 quests on build 12.1.5.70391, as on 12.1.0.69933, and the 25 we have agree with
+ours). WoW: Forever's importer reads the same item columns (step 10).
 
 Run step 1b first, and start the audit only when it has finished. The audit reads
 `quest_wago_requirements.csv` once, when it starts, and a 1b run beside it leaves the audit on the
-old file: on 14 October 2026 the two ran together, and the audit was run again from the cache it had
-filled.
+old file: on 14 October 2026 the two ran together, and the audit was run again on 15 October from the
+cache it had filled.
 
 A class list that names Adventurer or Traveler (non-class entries) is read without them, not as "all classes" (13 October 2026: 21 fixes, and KEEP rows for the 175 lists that are wider than ours only because they predate Evoker, start in Acherus or belong to a class hall).
+
+The 12.1.5 baseline (15 October 2026: the API's static-12.1.5_70077 records, the client's tables of
+12.1.5.70391): 11,936 disagreement rows, and 5,359 of our quests the API doesn't know. Categorize
+found 1 quest with a FIX field, 0 with SKIP, 1 with MANUAL and 217 KEPT. The FIX was 97212 Candy
+Bucket, faction 3 to 2: the API and TrinityCore give it to the Horde only, and #328 had opened it to
+both factions by a slip. `Apply-AccuracyFixes.ps1` applied it; race and class had no fix. The MANUAL
+was 44920 Order of Incantations. The API lists every class but Evoker, plus Adventurer (4095), and
+ours had 5 classes (2093). On the user's word it now has every class (8191), read like the 117
+pre-Evoker lists. Categorize on the audit with those two rows brought up to date reports 0 FIX,
+0 MANUAL and 218 KEPT. 12.1.5's API no longer lists classes for 39934 Our New Allies, so its KEEP row
+matches no disagreement now. It stays, in case the list comes back.
 
 Review before applying anything. Two lessons from the last cleanup:
 - A faction's race mask is not a stale placeholder.
@@ -392,7 +403,13 @@ Review before applying anything. Two lessons from the last cleanup:
 
 The decisions from that cleanup are in
 [plans/quest-database-accuracy-cleanup.md](plans/quest-database-accuracy-cleanup.md).
-`Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time.
+`Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time. A value changed by hand gets
+a `FIX` row in `docs\plans\quest-accuracy-manual-decisions.csv`, from `Cur` to `Target`, with the
+reason. Categorize reads only that file's `KEEP` rows (below), and applies them only to rows it
+marks MANUAL. If it would mark the changed value MANUAL (as it does 44920's pre-Evoker list,
+15 October 2026), the value also needs a `KEEP` row with the new value in `Cur`, which turns it into
+KEPT. A `KEEP` row doesn't hold back a FIX, so a hand change against a narrowing the API asserts
+needs Categorize changed or the fix left unapplied.
 
 To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-decisions.csv` with
 `Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
@@ -1708,6 +1725,9 @@ only; see [plans/unavailable-quests.md](plans/unavailable-quests.md). Its summar
 that have no sign of being live and no decision yet: those are the ones to review, in groups, with
 the user.
 
+Before this step, rerun step 1's audit after any pull request that adds quests: the audit fetches
+the API records `tools\quest_api_cache` lacks, and this step reads the API only through that cache.
+
 The quests the addon hides as unavailable are the FLAG rows of
 `docs/plans/unavailable-quest-decisions.csv`. A quest reviewed and left shown gets a KEEP row, with
 the evidence, so later sweeps don't raise it again. After changing that file, run
@@ -1728,6 +1748,16 @@ filter already hides (a repeatable, daily or world quest) gets a KEEP row instea
 
 Players who accept or turn in a flagged quest get a chat message, and the quest is recorded in their
 `qcFlaggedButSeen` saved variable. Unflag anything reported that way.
+
+The 12.1.5 baseline (15 October 2026: the client's tables of 12.1.5.70391, the API cache of 14 and 15
+October, the probe of 15 October): the API 404s on 925 non-task quests, 527 of them with no sign of
+being live, 0 of those undecided; 191 are not in `QuestV2`, 34 of them unknown to the server too. The
+one undecided quest was 94474 The Great Vault: it is in `QuestV2`, the probe loaded it and the quest
+cache holds it, so it got a KEEP row on the user's word, and it moved from Azuremyst Isle to
+Silvermoon City, the game's sort for it. Its quest-cache record carries the server's Deprecated flag
+(0x4000), the one sign against it. On 15 October 2026 the 29 quests #347 added were missing from
+`tools\quest_api_cache`; without them the run counts 943, 530 and 193 and lists 92568, 92570 and
+54709 as undecided.
 
 ### 8. Dungeons and raids against the Dungeon Journal
 
