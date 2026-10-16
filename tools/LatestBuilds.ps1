@@ -3,6 +3,8 @@
 # tools folder holds.
 
 $GameProducts = [ordered]@{ retail = 'wow'; forever = 'wow_classic_beta' }
+# wago.tools lists retail PTR builds under either product: 12.1.5's under wowxptr, 12.1.7's under wowt.
+$RetailPtrProducts = @('wowt', 'wowxptr')
 $GameFolders = @{ retail = '_retail_'; forever = '_classic_beta_' }
 $DefaultWowDir = 'C:\Program Files (x86)\World of Warcraft'
 
@@ -53,6 +55,15 @@ function Get-NewestPublished($wago) {
         }
     }
     return @{ Product = $byProduct; Track = $byTrack }
+}
+
+function Get-NewestOfProducts($published, [string[]]$products) {
+    $newest = $null
+    foreach ($product in $products) {
+        $item = $published.Product[$product]
+        if ($item -and (-not $newest -or [version]$item.Version -gt [version]$newest.Version)) { $newest = $item }
+    }
+    return $newest
 }
 
 function Get-HeldTables([string]$toolsDir) {

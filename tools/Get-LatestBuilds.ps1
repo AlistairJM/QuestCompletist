@@ -10,7 +10,10 @@ no result is built on last time's version. Report-only: it changes nothing.
                      against the installed client
   Probe results      the newest tools\<game>_probe_<revision> folder against the installed client
   Client tables      the tables in tools\ for each product's current version (retail live, retail PTR,
-                     Forever beta, Classic Era): none held, or an older build than the newest
+                     Forever beta, Classic Era): none held, or an older build than the newest. The
+                     retail PTR is the newer of the newest `wowt` and `wowxptr` builds, by version
+                     and then build ($RetailPtrProducts in LatestBuilds.ps1), and its row names
+                     which product it is
   Pinned builds      scripts whose -Build default is older than the newest build of that version
   API docs           api_docs-<branch>-<build>.tsv against Gethe/wow-ui-source's version.txt
   CMaNGOS, TrinityCore  the dump and the TDB held against the newest published
@@ -113,19 +116,23 @@ foreach ($game in $GameProducts.Keys) {
 
 $tables = Get-HeldTables $ToolsDir
 $tableProducts = @(
-    @{ Label = 'retail live'; Product = 'wow'; Required = $true },
-    @{ Label = 'retail PTR'; Product = 'wowxptr'; Required = $false },
-    @{ Label = 'Forever beta'; Product = 'wow_classic_beta'; Required = $true },
-    @{ Label = 'Classic Era'; Product = 'wow_classic_era'; Required = $false })
+    @{ Label = 'retail live'; Products = @('wow'); Required = $true },
+    @{ Label = 'retail PTR'; Products = $RetailPtrProducts; Required = $false },
+    @{ Label = 'Forever beta'; Products = @('wow_classic_beta'); Required = $true },
+    @{ Label = 'Classic Era'; Products = @('wow_classic_era'); Required = $false })
 foreach ($p in $tableProducts) {
-    if (-not $published -or -not $published.Product.ContainsKey($p.Product)) { Add-Row 'Client tables' $p.Label '' '' 'unknown' $unreachable; continue }
-    $latest = $published.Product[$p.Product].Version
+    $newestBuild = $null
+    if ($published) { $newestBuild = Get-NewestOfProducts $published $p.Products }
+    if (-not $newestBuild) { Add-Row 'Client tables' $p.Label '' '' 'unknown' $unreachable; continue }
+    $latest = $newestBuild.Version
     $track = Get-BuildTrack $latest
+    $label = $p.Label
+    if ($p.Products.Count -gt 1) { $label += " ($($newestBuild.Product))" }
     $onTrack = @($tables | Where-Object { $_.Track -eq $track })
     if (-not $onTrack.Count) {
         $state = 'none'
         if ($p.Required) { $state = 'BEHIND' }
-        Add-Row 'Client tables' "$($p.Label), version $track" '' $latest $state 'no table held for this version'
+        Add-Row 'Client tables' "$label, version $track" '' $latest $state 'no table held for this version'
         continue
     }
     $behind = @($onTrack | Where-Object { [version]$_.Build -lt [version]$latest } | Sort-Object Family)
@@ -138,7 +145,7 @@ foreach ($p in $tableProducts) {
         $note = "$($behind.Count) of $($onTrack.Count) older: " + ($names -join ', ')
         if ($behind.Count -gt 12) { $note += ", and $($behind.Count - 12) more" }
     }
-    Add-Row 'Client tables' "$($p.Label), version $track" "$($onTrack.Count) tables, newest $top" $latest $state $note
+    Add-Row 'Client tables' "$label, version $track" "$($onTrack.Count) tables, newest $top" $latest $state $note
 }
 
 if ($published) {
