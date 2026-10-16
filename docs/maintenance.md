@@ -110,7 +110,7 @@ to (`qcShownQuestLevel` in `qcCore.lua`, [step 2j](#2j-scaling-quests-levels)). 
 shown, then the row's level, then the name, so a quest that doesn't scale keeps the order it had. A
 level of 0 or below is no level: the list prints the bare name with no bracket, the low-level filter
 (the map's too) never counts the quest as low, and the sort puts it first. Retail's `qcQuestMaxLevel`
-holds 27,637 of its 35,628 quests (16 October 2026); Forever's quests don't scale, so its table is
+holds 27,637 of its 35,630 quests (16 October 2026); Forever's quests don't scale, so its table is
 empty. `qcQuestMinLevel[questId]` is the level a character needs to
 take the quest, and the tooltip's "Requires Level" line, the grey pins and the requirements-not-met
 filter read `qcQuestMinLevel[questId] or level`, where 0 or below asks for nothing. The table holds only
@@ -935,8 +935,9 @@ count or finding. On 16 October 2026, with the 24 records step 1 fetched for #34
 the same 1,004, 587 and 1,082, and the findings the same 13, none new. So they are, in the same file,
 with the 22 of step 6's second gap run that day. Later that day the Darkspear Dash's entry came in
 (#368, [Holidays](#holidays)), with its two quests tagged, 95009 and 94954 (whose API record step 1's
-cache gained when step 6 fetched it): 1,349 quests tagged, 25 holidays and 495 decision rows, and the
-counts and the 13 findings the same, none new, as no signal names the event.
+cache gained when step 6 fetched it), and The Great Gnomeregan Run's 95012, added and tagged in the
+same pull request (its API record fetched the same way): 1,350 quests tagged, 25 holidays and 496
+decision rows, and the counts and the 13 findings the same, none new, as no signal names either event.
 
 ### 2e. The retail quest cache
 
@@ -2923,8 +2924,12 @@ Gnomeregan Run (flag 4194304) is row 696, for every region, 48 hours each Octobe
 2026, then from 9 October 2027; the table dates it to 2030), which `/qc holidays` on retail listed
 under "Other calendar holidays" on 11 October 2026 and now lists as the entry. Its one quest, 47709 (for
 gnomes, filed under the general "Seasonal" in the API), has one pin, nameless, on map 469, which shows
-only while the race runs. Neither event is in Forever's tables or data, so step 2b lists both as not on
-Forever's calendar, which is no finding.
+only while the race runs. Since 16 October 2026 (#368) 47709 is no longer the run's only known quest:
+the look for the Darkspear Dash's quests found 95012 "Run On Gnome", for the Alliance, which the data
+lacked. Like the Darkspear Dash's 95009, it asks "Have you heard about the race today?", and it sends the
+player to Mina Gleespanner, who starts 47709. It went in through step 6's gap route with no pin, as
+nothing places it, tagged with the run's flag and filed under Seasonal, as 94954 was. Neither event is
+in Forever's tables or data, so step 2b lists both as not on Forever's calendar, which is no finding.
 
 Call of the Scarab has an entry of its own since 12 October 2026 (#315, the user's answer to decision
 35: "yes, add the Call of the Scarab holiday"): flag 8388608 on row 638, the only row of its name, for
@@ -2945,16 +2950,18 @@ of these quests, so step 2b lists the entry as not on Forever's calendar, which 
 
 The Darkspear Dash has an entry of its own since 16 October 2026 (#368, taken on the recommendation
 the user delegated, [open-items.md](plans/open-items.md) decision 43): flag 16777216 on row 1793
-(HolidayNames 458), the only row of its name, 48 hours each June under the Holidays filter
+(HolidayNames 458), the only row of its name, 48 hours a year under the Holidays filter
 (`CalendarFilterType` 255, as for the Trial of Style, the Moonkin Festival and The Great Gnomeregan Run),
 with a `Region` mask (2031) that holds region 4. The tables of 12.1.0.69933, 12.1.5.70391 and the 12.1.7
-PTR's 70424 date it from 26 June 2027 to 2030. `/qc holidays` on retail listed it under "Other calendar
+PTR's 70424 date it from 26 June 2027 and 24 June 2028, then 28 July 2029 and 27 July 2030 (its first
+run was from 27 June 2026). `/qc holidays` on retail listed it under "Other calendar
 holidays" on 11 October 2026 and should now list it as the entry. It is a Horde race from the Echo Isles
 to Silvermoon City, with two Horde quests: 95009 "Doing the Dash", a task quest step 6b added on 11
 October 2026, which sends the player to Kalaya on the Echo Isles and stands on five nameless pins since
 16 October (four in Dornogal, one in Silvermoon City), and the race itself, 94954 "Darkspear Dash",
 which the data lacked until the entry came in (step 6's gap route, an `ADD` row in
-`missing-quest-decisions.csv`; no pin, as nothing places it). The other quests on 95009's five pins are
+`missing-quest-decisions.csv`; no pin, as nothing places it; 95009's Horde races, as TrinityCore gives
+both quests the same race mask, where the gap route had given every race). The other quests on 95009's five pins are
 all tagged, so out of season those pins show only while Pilgrim's Bounty, Hallow's End, WoW's
 Anniversary or the Trial of Style runs. 95009 stays under Dornogal and 94954 is filed under Seasonal,
 the heading named like the general category Blizzard's API files both under; nothing names a Darkspear
@@ -3001,9 +3008,14 @@ On 16 October 2026 (#368) the Darkspear Dash (1793) left that list for an entry 
 1793 joined the seen facts. The rest of the list was checked against the 606 quests the data gained
 after 10 October 2026 (the task quests of step 6b, 12.1.5's Hallow's End, story and gap-rule quests,
 94954 and the others): by name, by Blizzard's API category and text, and by TrinityCore's events, none
-ties to one of those events but Emissary of War (93598, a level 90 weekly dungeon quest the API files under
-Weekly Event, in the data since 15 October), one of the weekly bonus events' quests, which stay untagged
-by the user's decision of 12 October 2026 (its `KEEP` row); its text names no event.
+ties to one of those events but Emissary of War (93598, in the data since 11 October, step 6b, and filed
+under Weekly Events on 15 October, #347). It is a level 90 weekly quest that the API types Dungeon and
+files under Weekly Event, and Wowhead has it ask for four Mythic dungeons, so it is most likely the
+Midnight Dungeon Event's (1803), as "A Call to Delves" (93595, in the data since 4 October) of the
+same Midnight set is the Delves Bonus Event's; neither its text nor the event's names the other. It
+stays untagged with the other weekly bonus events' quests by the user's decision of 12 October 2026
+(its `KEEP` row). The same pull request added one quest of another event on the list, The Great
+Gnomeregan Run (696, an entry since 12 October): 95012 "Run On Gnome" (above).
 
 The calendar only serves events around the month it's set to, and at login it's set to November
 2004. The addon sets it to the current month before reading, as Blizzard's calendar does when it
@@ -3360,8 +3372,8 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 16 October 2026 they're 35,629 quests (with the
-  Darkspear Dash's 94954) and 13,547 pins for retail (16,084 before the nameless pins went one per
+  or pins were meant to be added or removed. As of 16 October 2026 they're 35,630 quests (with the
+  Darkspear Dash's 94954 and the Gnomeregan Run's 95012) and 13,547 pins for retail (16,084 before the nameless pins went one per
   spot), and 5,105 quests and 1,706 pins
   for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
