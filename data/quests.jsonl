@@ -374,7 +374,7 @@
 {"id":64556,"name":"In Need of Assistance","level":60,"zone":"Korthia","category":1243,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1225}
 {"id":46341,"name":"The Tale of Ban-Lu","level":45,"zone":"","category":1015,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":316}
 {"id":63505,"name":"An Engraved Invitation","level":60,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1217}
-{"id":88942,"name":"The Elves are Going to War","level":90,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5795,"prereq":90806}
+{"id":88942,"name":"The Elves Are Going to War","level":90,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5795,"prereq":90806}
 {"id":88922,"name":"The Quel'dorei","level":90,"zone":"","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5795,"prereq":[88925,88937,88927,90806]}
 {"id":88938,"name":"Symbols of the Past","level":90,"zone":"","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5795,"prereq":[88925,88937,88927,90806]}
 {"id":88939,"name":"Rest for the Restless","level":90,"zone":"","category":1511,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5795,"prereq":90806}
@@ -32132,7 +32132,7 @@
 {"id":84616,"name":"Celebrate Good Fun!","level":10,"zone":"Seasonal","category":173,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":82783,"name":"Chromie's Codex","level":10,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":83737,"name":"Chromie's Time Trips","level":1,"zone":"Seasonal","category":173,"type":2,"faction":3,"race":67108863,"class":8191,"holiday":524288}
-{"id":84773,"name":"Crystalized Celebration Crate","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
+{"id":84773,"name":"Crystallized Celebration Crate","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":84489,"name":"Shopping Squee!","level":10,"zone":"Seasonal","category":173,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":83285,"name":"The Ancient Scroll","level":1,"zone":"Seasonal","category":173,"type":128,"faction":3,"race":67108863,"class":8191,"holiday":524288}
 {"id":84924,"name":"A Bird's Tail","level":10,"zone":"Secrets of Azeroth","category":203,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":524288}
@@ -34531,7 +34531,7 @@
 {"id":92445,"name":"Smelting for Two","level":25,"zone":"Unknown","category":0,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":92447,"name":"Abyss Anglers","level":80,"zone":"Depth Divers","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":92448,"name":"Where Dust Dances","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":92450,"name":"Growing Up is Hard","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999}
+{"id":92450,"name":"Growing Up Is Hard","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999}
 {"id":92451,"name":"I Think I Can","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92450}
 {"id":92452,"name":"Not According to Plan","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92451}
 {"id":92453,"name":"Fearless","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5999,"prereq":92452}
@@ -34948,9 +34948,9 @@
 {"id":94444,"name":"Choose a Path","level":10,"zone":"Harandar","category":1502,"type":1,"faction":2,"race":33554432,"class":8191,"prereq":90961}
 {"id":94445,"name":"Choose a Path","level":10,"zone":"Harandar","category":1502,"type":1,"faction":1,"race":33554432,"class":8191,"prereq":90961}
 {"id":94446,"name":"A Nightmarish Task","level":90,"zone":"Prey","category":1514,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":94450,"name":"Twenty Five Percent Completed","level":25,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":94450,"name":"Twenty-Five Percent Completed","level":25,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94451,"name":"Fifty Percent Completed","level":25,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":94452,"name":"Seventy Five Percent Completed","level":25,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":94452,"name":"Seventy-Five Percent Completed","level":25,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94453,"name":"One Hundred Percent Completed","level":25,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94455,"name":"Home at Last","level":0,"zone":"Unknown","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":94457,"name":"Midnight: Battlegrounds","level":90,"zone":"Meta Quests","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
