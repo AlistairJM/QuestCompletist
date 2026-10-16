@@ -174,8 +174,8 @@ then every tool refuses to save.
    - **The retail PTR** is listed by wago.tools under two products, `wowt` and `wowxptr`
      (`$RetailPtrProducts` in `tools\LatestBuilds.ps1`). The check takes the newer of the two products'
      newest builds, by version and then build, and its "retail PTR" row names the product it came from.
-     The 12.1.5 PTR was on `wowxptr` (70340 on 12 October 2026), and a 12.1.7 PTR, 12.1.7.70424, is on
-     `wowt` since 15 October 2026, which the check missed while it read `wowxptr` alone (until
+     The 12.1.5 PTR was on `wowxptr` (70340 on 12 October 2026). A 12.1.7 PTR, 12.1.7.70424, has been
+     on `wowt` since 15 October 2026, and the check missed it while it read `wowxptr` alone (until
      16 October 2026). That build, or a newer one the check names, is `Review-Calendar.ps1`'s
      `-PtrBuild` at the next sweep (step 2h), not 12.1.5's.
    - `Test-LatestBuilds.ps1` checks the script on a made-up game folder and made-up newest versions.
