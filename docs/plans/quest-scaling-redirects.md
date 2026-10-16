@@ -8,7 +8,7 @@ others, by redirect bits the server sends each character, which no addon call re
 the user took **option E**: ship each retail quest's content tuning and a few quests per tuning to read
 the game's own level from, at run time, with the stored ceilings as the fallback. Two pull requests:
 
-1. **Data and tools** (this one): each quest's `tuning`, `data\tunings.jsonl` with the samples, the Lua
+1. **Data and tools** (#378): each quest's `tuning`, `data\tunings.jsonl` with the samples, the Lua
    tables `qcQuestTuning` and `qcTuningSample`, and step 2j's checks. No addon code reads them yet.
 2. **Addon code** (next, stacked on it): the list, the map and the continent icons read a sample's level,
    under the performance rule below.
@@ -87,7 +87,7 @@ Forever's quests don't scale (`Apply-QuestScaling.ps1 -Game forever` checks it a
 tables stay empty and its behaviour doesn't change; the shared code is gated on the data, not on the game
 ([game-parity.md](game-parity.md)).
 
-## What the first pull request ships
+## What the first pull request (#378) ships
 
 Written by `Apply-QuestScaling.ps1` (step 2j, [maintenance.md](../maintenance.md#2j-scaling-quests-levels)),
 from the 12.1.5.70391 sources:
