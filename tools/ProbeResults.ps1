@@ -50,6 +50,9 @@ function Get-ProbeQuests([string]$Path, [string]$LuaExe = 'C:\Program Files (x86
 # counts are keyed by strings: 'true', 'false' and 'none' for Trivial; '0' to '4', 'none' and 'other' for Difficulty;
 # 'true/0' for both. A cached row with no level above 0 is a record the client held only in part, whose answers are
 # defaults (5,242 rows of the 12.1.5 run before the probe asked about them): it is counted in Partial, not tallied.
+# A quest's row keeps only its last answer, so on a build probed more than once it may come from any of that build's
+# quest runs: BuildRuns lists them all (Run, Character, Level), for a tool that needs to know every row's character.
+# Each quest also keeps the game's GetQuestExpansion answer (Expansion), or $null.
 function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
     if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
     $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path facts)
@@ -60,7 +63,7 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
         $f = $line.Split("`t")
         switch ($f[0]) {
             'quest' { $rows[$f[1]] = @{ Build = $f[2]; Result = $f[3] } }
-            'fact' { if ($f[2] -ceq 'level' -or $f[2] -ceq 'trivial' -or $f[2] -ceq 'contentDifficulty') { $rows[$f[1]][$f[2]] = $f[3] } }
+            'fact' { if ($f[2] -ceq 'level' -or $f[2] -ceq 'trivial' -or $f[2] -ceq 'contentDifficulty' -or $f[2] -ceq 'expansion') { $rows[$f[1]][$f[2]] = $f[3] } }
             'run' { $runs[[int]$f[1]] = @{ Kind = $f[2]; Build = $f[3]; Character = $f[5]; Level = $f[6]; Facts = @{}; Ranges = @{} } }
             'runfact' { $runs[[int]$f[1]].Facts[$f[2]] = $f[3] }
             'trivialrange' { $runs[[int]$f[1]].Ranges[$f[2]] = $f[3] }
@@ -91,12 +94,19 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
             Level = $level
             Trivial = if ($t -eq 'none') { $null } else { $t -ceq 'true' }
             Difficulty = if ($d -match '^[0-4]$') { [int]$d } else { $null }
+            Expansion = if ($row.ContainsKey('expansion') -and $row.expansion -match '^-?\d+$') { [int]$row.expansion } else { $null }
         }
     }
+    $buildRuns = @(foreach ($n in @($runs.Keys | Sort-Object)) {
+        if ($runs[$n].Kind -ceq 'quests' -and $runs[$n].Build -ceq $run.Build) {
+            [pscustomobject]@{ Run = $n; Character = $runs[$n].Character; Level = if ($runs[$n].Level -match '^\d+$') { [int]$runs[$n].Level } else { $null } }
+        }
+    })
     return [pscustomobject]@{
         Build = $run.Build
         Character = $run.Character
         CharacterLevel = if ($run.Level -match '^\d+$') { [int]$run.Level } else { $null }
+        BuildRuns = $buildRuns
         TrivialFunction = & $answer $run.Facts['trivial'] $false
         DifficultyFunction = & $answer $run.Facts['contentDifficulty'] $false
         TrivialRange = & $answer $run.Ranges['UnitQuestTrivialLevelRange'] $true

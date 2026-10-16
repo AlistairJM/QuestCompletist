@@ -12395,3 +12395,5 @@ qcQuestMinLevel={
 [99260]=5,
 [99411]=5,
 }
+qcQuestMaxLevel={
+}

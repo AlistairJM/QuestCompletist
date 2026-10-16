@@ -120,7 +120,10 @@ table's for 4,125 of 4,125.
   the true minimum goes in `qcQuestMinLevel`, empty on retail until then. Row 8, overwriting retail's
   `level` with the API's minimum, is **not taken**: the API's minimum is used for the gate, and the
   stored level is unchanged. (The maximum, which would fix the low-level filter hiding scaling quests
-  early, is not used: 21,972 quests have a maximum above our level. That is decision 9.)
+  early, is not used: 21,972 quests have a maximum above our level. That is decision 9.) **Decision 9
+  taken, 16 October 2026:** the maximum is used, read from the probe at the level cap per tuning, so the
+  list's bracket, its sort and the low-level filter read a scaling quest's scaled level; 27,637 quests
+  have one (maintenance.md, step 2j).
   - **Built:** `QuestLevels.ps1` (the sources and the formula), `Apply-QuestMinLevels.ps1` (sets
     `minLevel`; `-WhatIf` and `-Check`), `Compare-QuestLevels.ps1` (the sweep's check, with
     `quest-levels-baseline.csv` in this folder) and `Test-QuestLevels.ps1` (177 checks), as step 2g of
