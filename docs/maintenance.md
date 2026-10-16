@@ -336,7 +336,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 0 | Everything is the newest version: clients, probe lists and results, tables, API docs, databases | `Get-LatestBuilds.ps1` ([Before a sweep](#before-a-sweep), item 1) | No |
 | 1b | Second source for race and class, and the task-quest tables 1d and 2c read. Run it before step 1 and let it finish: the audit reads its `quest_wago_requirements.csv` when it starts | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1 | Faction, race and class (after step 1b) | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
-| 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 1c | Quest names: the API's titles, else the quest cache's or the task table's (after steps 1, 1b and 2e, whose API cache, task table and quest cache it reads) | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 1d | Professions (after steps 1b and 2e, whose tables and quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
@@ -433,12 +433,25 @@ KEPT rather than raising it again, unless our value changes.
 
 ### 1c. Quest names
 
-`Sync-QuestNamesFromApi.ps1` gives each quest the title of its record in `tools\quest_api_cache`,
-which step 1's audit fills, and rebuilds `qcQuestData.lua`. The title is copied exactly, odd spacing
-included, as the game shows it. The game shows its own title once a quest's data has loaded, so ours
-matters for English search and until then. `-WhatIf` lists the changes without making them. A quest
-the API doesn't serve (a `.404` file in the cache), or one the cache has no record of yet, keeps its
-name. From a worktree, point `-ToolsDir` at the main checkout's `tools\`.
+`Sync-QuestNamesFromApi.ps1` gives each quest Blizzard's title for it and rebuilds `qcQuestData.lua`.
+The game shows its own title once a quest's data has loaded, so ours matters for English search and
+until then. A quest takes the title of the first of these that has one for it:
+1. its record in `tools\quest_api_cache`, which step 1's audit fills;
+2. for a quest the API doesn't serve (a `.404` file there), the newest retail quest cache (step 2e;
+   `-Build` reads another);
+3. for a quest the API doesn't serve and that cache lacks, the client's task table,
+   `QuestV2CliTask.csv` (step 1b), which titles world quests, bonus objectives and the other task
+   quests.
+
+The user chose that order (decision 10e of the 12.1.5 sweep, option A). A quest none of them titles
+keeps its name, as does one the API cache has no file for yet. The title is copied exactly, odd
+spacing and capitals included, as the game shows it, with one exception: a title that starts with
+`[DEPRECATED]` is never taken. That prefix is Blizzard's mark on a quest it retired. Whether such a
+quest can still be done is decided on its evidence in `docs\plans\unavailable-quest-decisions.csv`
+([plans/unavailable-quests.md](plans/unavailable-quests.md)), not by its title, and the quest keeps
+its name; the run lists these apart. `-WhatIf` lists every rename by source, without making them.
+`Test-SyncQuestNames.ps1` tests the order and the exception. From a worktree, point `-ToolsDir` at
+the main checkout's `tools\`.
 
 On 15 October 2026 (retail 12.1.5.70391, with the API cache of 14 October, whose records come from
 the API's 12.1.5_70077 namespace) it checked 30,185 quests and renamed 5, each a title Blizzard changed
@@ -448,9 +461,35 @@ Seventy-Five Percent Completed. 5,359 quests were API 404s and kept their names,
 #347 added had no record in the cache yet. A second run changes nothing. On 16 October 2026, with
 those records and the 33 of the story quests step 6 added, it checked 30,242 quests and renamed none.
 
-For the quests the API doesn't serve, the user decided (decision 10e of the 12.1.5 sweep) that this
-step falls back to the title in the newest retail quest cache (step 2e). That fallback comes in a
-later pull request; until then those quests keep the names they have.
+The 12.1.5 baseline, with the fallback (16 October 2026, on the data with step 6's 33 story quests:
+the API cache of 14 October, whose files for the 29 quests of #347 were fetched on 16 October from
+the same namespace, so every quest of ours has one; the quest cache of 12.1.5.70391, its copies of 14
+and 15 October read together, 29,825 of our 35,606 quests; the task table of 12.1.5.70391). By
+source:
+
+| Source | Quests it titles | Renamed |
+|---|---|---|
+| The API | 30,242 | 0 |
+| The quest cache, for the 5,364 the API doesn't serve | 1,977 | 19 |
+| The task table, for those the cache lacks | 2,881 | 15 |
+| Neither: the name stays | 506 | |
+
+- **From the quest cache:** 41778, 46810, 46946, 48100 (The Defense of Eredath), 52115 (Kraken, not
+  Kracken), 53372, 53982, 55976, 56119, 57330, 91802 (The Best Bites Are Bog Bugs), 92087 to 92093
+  ("Level 2" to "Level 8", which ours had as "Unlock Ability 1 - Level 2" and so on) and 92123
+  (Cragpine).
+- **From the task table:** 45654 and 45737 (C'Thun), 45743, 51004, 51097, 51120 and 51988 (their
+  nicknames' quotes, `Stef "Marrow" Quin`), 51848, 51894, 56793, 58744 (Whispers, not Whipers),
+  91798 (Fish of the Day), 92139, 92150 and 92576 (Dominating the Domanaar).
+- **Titles not taken:** 4, the Sunstrider Isle quests 8330, 8336, 8345 and 8346, which the quest cache
+  titles `[DEPRECATED]...`. They got `KEEP` rows: `QuestV2` of 12.1.5.70391 lists them, and the server
+  sent their data to the probe on 15 October, so they don't meet the rule to flag one
+  ([plans/unavailable-quests.md](plans/unavailable-quests.md)).
+- Of the 506 that keep their names, the 12.1.5 probe titles none, and 12.1.0.69933's cache, which
+  this step doesn't read, differs from ours on 3: 52928, 53159 and 53239, "Wartime Donations: ..." in
+  ours and "Arathi Donations: ..." there. The server refused all three to the 12.1.5 probe.
+- The run warns that the quest cache holds under 90% of our quests (83.8%). A second run changes
+  nothing.
 
 ### 1d. Professions
 
@@ -2983,9 +3022,9 @@ git diff --stat
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
   that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
-  `Test-AddTaskQuests.ps1`, `Test-SyncQuestProfessions.ps1` and `Test-SyncQuestPvP.ps1` (which checks that
-  retail's cache is warned about when it holds too few of our quests, and that Forever's isn't held to our
-  quests). Each must say "0 failed". `Sync-QuestPrerequisites.ps1` prints it too and has no test, so run it with `-WhatIf` on the
+  `Test-AddTaskQuests.ps1`, `Test-SyncQuestProfessions.ps1`, `Test-SyncQuestNames.ps1` and
+  `Test-SyncQuestPvP.ps1` (which checks that retail's cache is warned about when it holds too few of our
+  quests, and that Forever's isn't held to our quests). Each must say "0 failed". `Sync-QuestPrerequisites.ps1` prints it too and has no test, so run it with `-WhatIf` on the
   real files in `tools\`: `Sync-QuestPrerequisites.ps1 -Build <newest retail build> -WhatIf` must warn only
   when that cache looks partial.
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
@@ -3004,6 +3043,12 @@ git diff --stat
   (with the real tables) takes the profession, heading or zone from quests of every pass and kind of
   decision and checks that the tool gives exactly that back; `-MadeUpOnly` runs the first half alone. It
   must say "0 failed".
+- For changes to `Sync-QuestNamesFromApi.ps1` (step 1c), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestNames.ps1`. It makes API records,
+  two quest caches and a task table in a scratch folder (nothing downloaded) and checks which source names
+  each quest (the API first, then the newest cache, then the task table), that titles are copied exactly,
+  that no `[DEPRECATED]` title is taken from any source, that missing sources are named as skipped, that
+  `-WhatIf` writes nothing and that a second run changes nothing. It must say "0 failed".
 - For changes to `Sync-QuestPvP.ps1` (step 2i), or to `ForeverAnswers.ps1` or `QuestRemovals.ps1`, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestPvP.ps1`. It makes a Forever world
   (two quest caches, an answer memory, a CMaNGOS dump, removal decisions) and a retail one in a scratch folder

@@ -14,7 +14,8 @@ taken. What is left, in one place:
   field through every source of both games. Its defects D1 to D19 (among them #320's board-quest prerequisites,
   the Adventurer class lists, the Paladin Rescue faction tags, Forever's own-breadcrumb prerequisites and its
   A Lesson to Learn givers), its 43 recommendations, its 14 decisions and its few in-game lines are the next
-  work; nothing there is decided yet.
+  work; its Status section logs what has been fixed or decided since, among them D16 (step 1c's names for
+  the quests the API doesn't serve, 16 October 2026).
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest
