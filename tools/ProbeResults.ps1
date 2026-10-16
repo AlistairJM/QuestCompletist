@@ -52,7 +52,8 @@ function Get-ProbeQuests([string]$Path, [string]$LuaExe = 'C:\Program Files (x86
 # defaults (5,242 rows of the 12.1.5 run before the probe asked about them): it is counted in Partial, not tallied.
 # A quest's row keeps only its last answer, so on a build probed more than once it may come from any of that build's
 # quest runs: BuildRuns lists them all (Run, Character, Level), for a tool that needs to know every row's character.
-# Each quest also keeps the game's GetQuestExpansion answer (Expansion), or $null.
+# Each quest also keeps the game's GetQuestExpansion answer (Expansion), or $null, and its row's Result (ok,
+# cached or late).
 function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
     if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
     $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path facts)
@@ -95,6 +96,7 @@ function Get-ProbeLevelFacts([string]$Path, [string]$LuaExe = 'C:\Program Files 
             Trivial = if ($t -eq 'none') { $null } else { $t -ceq 'true' }
             Difficulty = if ($d -match '^[0-4]$') { [int]$d } else { $null }
             Expansion = if ($row.ContainsKey('expansion') -and $row.expansion -match '^-?\d+$') { [int]$row.expansion } else { $null }
+            Result = $row.Result
         }
     }
     $buildRuns = @(foreach ($n in @($runs.Keys | Sort-Object)) {

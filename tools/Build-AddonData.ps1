@@ -1,6 +1,7 @@
 <#
 Builds the addon's quest and pin data from the data files: the whole of qcQuestData.lua (qcQuestDatabase
-and the tables of rarer fields beside it) and the whole of qcPinDB.lua. With no folders given it builds
+and the tables of rarer fields beside it, with the tunings of tunings.jsonl where a folder has one) and
+the whole of qcPinDB.lua. With no folders given it builds
 both games: data\ into QuestCompletist\ for retail, and data\forever\ into QuestCompletist\Forever\
 for WoW: Forever (docs/plans/forever.md). The records are checked first; if any problem is found,
 nothing is written for that game.
