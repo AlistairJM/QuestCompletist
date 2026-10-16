@@ -94,6 +94,12 @@ data alone can't sort into obsolete and live. The client could give names but no
 Adding them would put a couple of hundred probably obsolete quests into lists and pins, so they
 join the phase 5 review instead. The 110 pins stay hidden by "hide quests with no data".
 
+**The pass after 12.1.5 went live: done on 16 October 2026,** through step 6's gap route (the 12.1.5
+sweep's decision 9; `maintenance.md`, step 6, "The 12.1.5 gap run"). 27 quests that sat on no-data
+pins went into the data, 95211, 96707 and 98836 among them. The reachability report's pins hidden
+from every character by the identity filters went from 98 to 80: the 18 that left were "hidden by: no
+data" pins of these quests.
+
 ### 3. A placement rule from the client's map points (tool change, then data)
 
 - Add a rule to `Place-UncategorisedQuests.ps1` after "pin's map". It uses the maps of a quest's

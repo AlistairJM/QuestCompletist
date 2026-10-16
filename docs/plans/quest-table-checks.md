@@ -262,3 +262,8 @@ The review's code change, decision 2 and the last 3 findings:
   dropped on 12 October, are taken out: six `prereq: recurring quest` rows (83530, 85470, 85721,
   88659, 89195 and 89197) and the `prereq: quest not in the data` row for 91798. The check lists 122
   findings, all kept, none new and no row out of date; Forever's 6 are unchanged.
+- 2026-10-16: step 3 on the probe's 15 October rerun ([quest-types.md](quest-types.md)) left 83530
+  weekly, as 12.1.5 refused it and the 9 October run's Recurring stands, so the 83531 row stays, with
+  the recheck in its reason. It retyped 89057 and 89192 as weekly, so the rows for 89057 (requires 85721)
+  and 89192 (requires 89254 "Shutterbug", kept on 6 October) matched no finding and are taken out. The
+  check lists 120 findings, all kept, none new and no row out of date; Forever's 6 are unchanged.
