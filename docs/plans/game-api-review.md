@@ -140,7 +140,7 @@ our own strings, translated by us. Storyline names (`qcQuestLines`) were on this
 | IsOnMap, GetMapForQuestPOIs, SetMapForQuestPOIs, GetQuestAdditionalHighlights, GetNextWaypoint, GetNextWaypointForMap, GetNextWaypointText, GetDistanceSqToQuest | both | – | the map's routing for log quests | no |
 | GetZoneStoryInfo(uiMapID) | both | – | the zone's story achievement and its map (the quest log's "zone story" header) | later: a zone's story progress from the achievement's criteria; retail only, as Forever has no achievements |
 | GetBountiesForMapID, GetBountySetInfoForMapID, IsQuestCriteriaForBounty, GetActiveThreatMaps, HasActiveThreats, GetActivePreyQuest | both | – | emissaries, N'Zoth threats, the current Prey quest | no |
-| GetQuestLogMajorFactionReputationRewards, DoesQuestAwardReputationWithFaction, QuestContainsFirstTimeRepBonusForPlayer, GetQuestRewardCurrencies, GetQuestRewardCurrencyInfo, ShouldShowQuestRewards, GetRequiredMoney | both | – | rewards of a loaded quest | no: Blizzard's API has retail's reputation (all 11,035 of ours matched), and Forever's comes from the quest cache |
+| GetQuestLogMajorFactionReputationRewards, DoesQuestAwardReputationWithFaction, QuestContainsFirstTimeRepBonusForPlayer, GetQuestRewardCurrencies, GetQuestRewardCurrencyInfo, ShouldShowQuestRewards, GetRequiredMoney | both | – | rewards of a loaded quest | no: Blizzard's API has retail's reputation (all 11,039 of ours match, 15 October 2026), and Forever's comes from the quest cache |
 | QuestCanHaveWarModeBonus, QuestHasWarModeBonus, QuestHasQuestSessionBonus | both | – | bonuses | no |
 | GetTimeAllowed, ShouldDisplayTimeRemaining, GetQuestObjectives, GetNumQuestObjectives | both | – | timers and objectives | no |
 | GetQuestLogPortraitGiver | both | – | the model and name of the giver shown beside the quest log, for the selected quest | no: the recorder has the giver's GUID |
@@ -344,7 +344,7 @@ the player's language, isWarCampaign), `GetChapterIDs`, `GetCampaignChapterInfo`
 description, rewardQuestID), `GetCurrentChapterID`, `GetState`, `GetFailureReason`,
 `GetAvailableCampaigns`, `SortAsNormalQuest`. A campaign is the grouping above storylines. Use:
 probe, the campaign of every quest (the client's campaign tables are the offline side: the
-client-tables review counts 145 campaigns holding 740 of our 1,474 storylines); addon, "Campaign: X"
+client-tables review counts 145 campaigns holding 527 of our 1,476 storylines); addon, "Campaign: X"
 in the player's language. Retail only in practice.
 
 ### C_ContentTracking (18 functions, 5 events, both games)
@@ -719,10 +719,11 @@ variables are `tools/retail_probe_69933/QCForeverProbe.lua` and the reader's row
 Nothing in the addon or the pipeline changed with these results. Decisions 8 and 9 below come from
 them.
 
-## Probe runs since (9 and 10 October 2026)
+## Probe runs since (9, 10 and 14 October 2026)
 
 The probe ran on both games, with the lists built for the installed builds (retail 12.1.0.69933, the
-Forever beta 1.60.1.70291, then 70338 the next day).
+Forever beta 1.60.1.70291, then 70338 the next day). Forever ran again on 1.60.1.70374 on 14 October (last
+bullet).
 
 - **Maps:** the totals of 7 October again. Retail: 439 offers, 77 forced quests, 459 points of
   interest, 290 dungeon entrances, 14 hubs, 182 maps with a level range and 657 that allow a waypoint
@@ -735,13 +736,21 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   quest, campaign or story quest; 11 quests have a quest line. A refused quest saved no facts, so
   whether `GetQuestLineInfo` answers for one, and whether `IsAccountQuest` needs loaded data, were not
   known; the probe now tallies each function on the refused quests (`refusedFacts` in the quest run's
-  row), and records the character and level of every run.
+  row), and records the character and level of every run. Forever's 14 October run answered both (last
+  bullet).
 - **The quest pass on retail:** all 35,023 quests answered, 33,802 loaded (31,425 on 29 September,
   same build), so 183 newly loaded quests classify as Recurring.
 - **The quest pass on Forever differs between runs:** about 80 of 7,320 quests are answered in one run
   and refused in the next (see [forever.md](forever.md), "The beta's answers differ between runs").
 - **Pin names:** 10,562 of 10,564 retail pins and 1,503 of 1,503 Forever pins carry the game's own
   NPC name; the two retail ones differ by a trailing space.
+- **Forever on 1.60.1.70374 (14 October, a level 16 Night Elf rogue, `tools\forever_probe_70374\`):**
+  the map totals are the same (no offers, 16 points of interest), and so is the continent geometry
+  (`Compare-ContinentGeometry.lua` against 70338's baseline). Of the 4,279 quests the server refused,
+  `GetQuestLineInfo` and `GetQuestFactionGroup` answered none, and `IsAccountQuest` answered every one
+  without loaded data (all false), as the other ten functions did; only
+  `GetContentDifficultyQuestForPlayer` gave a value above 0. Retail's half of the question waits for its
+  12.1.5.70391 files (`tools\retail_probe_70391\`) to be read.
 
 ## Decisions to take
 
@@ -943,8 +952,8 @@ Forever beta 1.60.1.70291, then 70338 the next day).
   the client gives them no map point). The 7 trackers that slip past the flag are caught, as the retail run
   of 7 October said they would be. Retail's data is 35,529 quests; `qcQuestData.lua` grew from 2,373,371 to
   2,405,155 bytes (13.34 to 13.48 MB loaded under Lua 5.1, 57 to 64 ms). Retail alone, by nature
-  ([game-parity.md](game-parity.md)). Steps 2c (112 new rows get a prerequisite, no old row) and 4 (59 storylines,
-  no old row) follow in their own pull requests.
+  ([game-parity.md](game-parity.md)). Step 2c gave 112 of the new rows a prerequisite and no old row (#319);
+  step 4 gave 59 of them a storyline and no old row at the 12.1.5 sweep (15 October 2026).
 - 2026-10-11: the task quests that are not world quests got pins (open-items.md decision 2, approved
   by the user; [quest-location-data-pipeline.md](quest-location-data-pipeline.md), last section). Of the 4,082
   task quests in the data with a start and no pin, 814 got one: 737 of the 758 of kind 0, Combat Ally,

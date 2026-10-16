@@ -116,8 +116,8 @@ refreshed: of the 30,066 quests whose API record gives a minimum it equals the A
 against a 1 for 191 (the same thing), and differed for 1,398, which now have the API's number in the
 table; 463 quests no source speaks for, and one whose tuning has a minimum beyond the level cap, keep
 what they had, and the 17 on tuning 0 have no entry, so their own level is their gate. Forever's
-`level` is the quest's own level, so its table holds 4,194 of its 5,097
-quests (10 October 2026). The importer fills it from the game's quest cache, and from CMaNGOS where
+`level` is the quest's own level, so its table holds 4,202 of its 5,105
+quests (14 October 2026). The importer fills it from the game's quest cache, and from CMaNGOS where
 the game hasn't answered. The code doesn't ask which game it is on, only whether the table has an
 entry.
 
@@ -181,8 +181,16 @@ then every tool refuses to save.
    `Sync-QuestSortNames.ps1`'s `-ForeverBuild`) take the build of the newest `tools\forever_probe_<revision>`
    results when it is left out, and say which: the importer needs the tables, the quest cache and the
    probe's answers on one build, and the check says when those results are behind the installed client.
-   Retail's tools still carry a build as their default, which the check lists when it is older than the
-   newest build of its version: pass the build, or change the default, at the sweep for a new patch.
+   Twelve of retail's tools still carry a build as their `-Build` default (the check counts them under
+   "Pinned builds"). The check lists a default only when it is older than the newest build of its own
+   version, so a default left on the patch before still reads `ok`: all twelve were on 12.1.0.69933 while
+   12.1.5.70391 was live, and the check passed them. So at the sweep for a new patch, change the twelve
+   defaults to the new live build
+   (`Select-String -Path tools\*.ps1 -Pattern '^\s*\[string\]\$Build = "\d'` lists them: Add-TaskQuests,
+   Add-ZoneTableMaps, Apply-ClientQuestGivers, Audit-DungeonCategories, Audit-QuestTables,
+   Build-CategoryClientNames, Build-CategoryUiMapIDs, Build-QuestLines, Find-UnavailableQuestCandidates,
+   Get-WagoQuestRequirements, Sync-QuestPrerequisites and Sync-QuestSortNames, whose help examples name
+   the builds too); between patches, pass the build.
    Downloading a table from wago.tools without a build number does *not* reliably return the latest build.
 2b. **Check the client's tables for changes,** both games, every sweep. Blizzard can change a
    table's columns, or add tables, at a patch, an expansion, or when a game goes from beta to live,
@@ -368,15 +376,26 @@ expected). `Categorize-AuditDiscrepancies.ps1` groups the disagreements.
 `Get-WagoQuestRequirements.ps1` (step 1b) gives it a second source from the client's tables: the
 task quests' races and classes (`QuestV2CliTask`), the conditions on a quest's start points
 (`QuestPOIBlob` and `PlayerCondition`), and the classes that may use the items that start a quest
-(`ItemSparse`: 36 quests on build 12.1.0.69933, and the 25 we have agree with ours). WoW: Forever's
-importer reads the same item columns (step 10).
+(`ItemSparse`: 36 quests on build 12.1.5.70391, as on 12.1.0.69933, and the 25 we have agree with
+ours). WoW: Forever's importer reads the same item columns (step 10).
 
 Run step 1b first, and start the audit only when it has finished. The audit reads
 `quest_wago_requirements.csv` once, when it starts, and a 1b run beside it leaves the audit on the
-old file: on 14 October 2026 the two ran together, and the audit was run again from the cache it had
-filled.
+old file: on 14 October 2026 the two ran together, and the audit was run again on 15 October from the
+cache it had filled.
 
 A class list that names Adventurer or Traveler (non-class entries) is read without them, not as "all classes" (13 October 2026: 21 fixes, and KEEP rows for the 175 lists that are wider than ours only because they predate Evoker, start in Acherus or belong to a class hall).
+
+The 12.1.5 baseline (15 October 2026: the API's static-12.1.5_70077 records, the client's tables of
+12.1.5.70391): 11,936 disagreement rows, and 5,359 of our quests the API doesn't know. Categorize
+found 1 quest with a FIX field, 0 with SKIP, 1 with MANUAL and 217 KEPT. The FIX was 97212 Candy
+Bucket, faction 3 to 2: the API and TrinityCore give it to the Horde only, and #328 had opened it to
+both factions by a slip. `Apply-AccuracyFixes.ps1` applied it; race and class had no fix. The MANUAL
+was 44920 Order of Incantations. The API lists every class but Evoker, plus Adventurer (4095), and
+ours had 5 classes (2093). On the user's word it now has every class (8191), read like the 117
+pre-Evoker lists. Categorize on the audit with those two rows brought up to date reports 0 FIX,
+0 MANUAL and 218 KEPT. 12.1.5's API no longer lists classes for 39934 Our New Allies, so its KEEP row
+matches no disagreement now. It stays, in case the list comes back.
 
 Review before applying anything. Two lessons from the last cleanup:
 - A faction's race mask is not a stale placeholder.
@@ -384,11 +403,37 @@ Review before applying anything. Two lessons from the last cleanup:
 
 The decisions from that cleanup are in
 [plans/quest-database-accuracy-cleanup.md](plans/quest-database-accuracy-cleanup.md).
-`Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time.
+`Apply-AccuracyFixes.ps1` applies one field's reviewed fixes at a time. A value changed by hand gets
+a `FIX` row in `docs\plans\quest-accuracy-manual-decisions.csv`, from `Cur` to `Target`, with the
+reason. Categorize reads only that file's `KEEP` rows (below), and applies them only to rows it
+marks MANUAL. If it would mark the changed value MANUAL (as it does 44920's pre-Evoker list,
+15 October 2026), the value also needs a `KEEP` row with the new value in `Cur`, which turns it into
+KEPT. A `KEEP` row doesn't hold back a FIX, so a hand change against a narrowing the API asserts
+needs Categorize changed or the fix left unapplied.
 
 To leave a MANUAL row as it is, record it in `docs\plans\quest-accuracy-manual-decisions.csv` with
 `Decision` set to `KEEP`, our current value in `Cur`, and a reason. Later sweeps then report it as
 KEPT rather than raising it again, unless our value changes.
+
+### 1c. Quest names
+
+`Sync-QuestNamesFromApi.ps1` gives each quest the title of its record in `tools\quest_api_cache`,
+which step 1's audit fills, and rebuilds `qcQuestData.lua`. The title is copied exactly, odd spacing
+included, as the game shows it. The game shows its own title once a quest's data has loaded, so ours
+matters for English search and until then. `-WhatIf` lists the changes without making them. A quest
+the API doesn't serve (a `.404` file in the cache), or one the cache has no record of yet, keeps its
+name. From a worktree, point `-ToolsDir` at the main checkout's `tools\`.
+
+On 15 October 2026 (retail 12.1.5.70391, with the API cache of 14 October, whose records come from
+the API's 12.1.5_70077 namespace) it checked 30,185 quests and renamed 5, each a title Blizzard changed
+in 12.1.5 (the API's 12.1.0 records had our old names): 84773 Crystallized Celebration Crate, 88942
+The Elves Are Going to War, 92450 Growing Up Is Hard, 94450 Twenty-Five Percent Completed and 94452
+Seventy-Five Percent Completed. 5,359 quests were API 404s and kept their names, and the 29 quests
+#347 added had no record in the cache yet. A second run changes nothing.
+
+For the quests the API doesn't serve, the user decided (decision 10e of the 12.1.5 sweep) that this
+step falls back to the title in the newest retail quest cache (step 2e). That fallback comes in a
+later pull request; until then those quests keep the names they have.
 
 ### 1d. Professions
 
@@ -443,7 +488,9 @@ from CMaNGOS in step 10, whose item 10 runs this tool's heading check on Forever
 writes `quest_reputation_compare.csv`. Then `Apply-ReputationBackfill.ps1` adds the rewards the API
 lists and we don't have, and corrects the ones whose amounts differ from the API's. It leaves a
 reward only we list alone and counts it: check those by hand, as the API may simply not list a
-reward the game gives. In October 2026 all 11,035 of our rewards matched the API.
+reward the game gives. On 15 October 2026 (API cache `12.1.5_70077`) the API pass found 4 rewards
+to add, step 6b's 11378, 11382, 11386 and 57326 (below), none to correct and none only we list;
+with them, all 11,039 of our rewards match the API.
 
 Its cache pass (retail only, report-only) then checks the same rewards against the client's own
 quest cache. It needs step 2e's `Read-QuestCache.ps1` to have written
@@ -478,10 +525,13 @@ still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on 
 The run exits with 1 on a class C or D quest, and says the reader looks moved when there are 100 or
 more C quests (`-ReaderMovedAt`): run `Compare-QuestCache.ps1` then, and don't use the cache's
 rewards that sweep. It prints the three builds (the API's, the cache's, the Faction table's) and warns
-when they differ, as they do in October 2026 (API `12.1.0_68914`, cache `12.1.0.69933`); a few C
+when they differ, as on 15 October 2026 (API `12.1.5_70077`, the other two `12.1.5.70391`); a few C
 quests may be a hotfix between them. B, E, F and G move with what a probe run asked for, so their
 quests are kept in `docs\plans\quest-reputation-cache-baseline.csv`, and each run says how many are
 new and gone against it. Once those are explained, rerun with `-UpdateBaseline` and commit the file.
+A cache that looks partial ([2e](#2e-the-retail-quest-cache)) would put the quests it lacks in G for
+no reason of the game's, so the pass warns then, and `-UpdateBaseline` refuses to write (exit 1) until
+a whole cache is read; `-AcceptPartialCache` writes it all the same.
 On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) the classes held A 10,786, B 3 (quests
 41138, 43568, 73226), C 0, D 0, E 2,043 quests with 2,986 rewards (all of them quests the API has no
 record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the cache reproduced all
@@ -489,6 +539,27 @@ record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the c
 them new rows) and G to 2,852 (401 new, the new rows the cache lacks), and the baseline file was rewritten.
 Whether to backfill E is the user's decision
 ([plans/retail-quest-cache.md](plans/retail-quest-cache.md)); nothing here changes data.
+
+On 15 October 2026 (cache 12.1.5.70391, API cache 12.1.5_70077, Faction table 12.1.5.70391)
+C and D were 0 and B the same 3 quests, and the cache reproduced all 10,054 of the API's
+rewards on the quests it holds: A 9,329, E 433 quests with 581 rewards (all of them quests the
+API has no record of), F 130, G 8,975 (1,707 with a reward row of ours) and H 18 (none with a
+reward). That cache is partial: it holds 26,598 of our 35,573 quests ([In the game](#in-the-game),
+the probe's step 3). The baseline was written on 11 October from an earlier reading of the
+12.1.0 cache than the one in `tools\` (12 October, 33,123 quests): 409 of the baseline's G
+quests are in the 12 October reading. The classes moved with the quests each reading holds,
+and G with the data's new quests too. The 1,709 E and 32 F quests gone from the baseline are
+all quests this cache lacks, now in G, and the 57 new E and 9 new F quests were all G in the
+baseline. G gained 6,366 quests: 6,336 that the 12 October reading holds and this cache lacks,
+and 30 that neither file holds, all added to the data since the baseline (#347's 29, and 97212,
+a Midnight Candy Bucket added on 13 October). It lost the 243 baseline G quests this cache holds,
+146 of them also in the 12 October reading. So the baseline file stays as it was until a complete
+12.1.5 cache is read. The API cache of 14 October has no record of the 29 quests #347 added
+(18 Hallow's End quests and 11 task quests), so the API pass counts 5,388 quests with none:
+the 5,359 the API does not know and those 29. The records fetched for #347 on 15 October, in
+the same namespace, list no reputation reward for the 24 the API knows, and it does not know
+97219, 97241, 98421, 98422 and 98801; the quest cache holds none of the 29. On those records,
+step 2 would add nothing for them once step 1 has fetched them.
 
 ### 2b. The tables kept by hand
 
@@ -548,7 +619,10 @@ requires 85721. The other 7 were rows out of date: six `prereq: recurring quest`
 retyped as weekly too (83530, 85470, 85721, 88659, 89195 and 89197), and the `prereq: quest not in the
 data` row for 91798, whose 91799 step 6b added on 11 October. Step 2c then dropped all seven links on 12
 October (recurring links Blizzard doesn't name), so none of those quests has a prerequisite now and no
-finding took the rows' place.
+finding took the rows' place. The user kept the 3 the same day, as decision 3 of 6 October kept the 26
+like them ([plans/quest-table-checks.md](plans/quest-table-checks.md#review-of-what-was-left-6-october-2026)),
+and the 7 rows were taken out: the run then reported 122 findings, all kept, none new and no row out of
+date.
 
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
@@ -674,17 +748,33 @@ the findings 15: the API now files the Candy Exchanges 92567 and 92569 under Hal
 task quests of step 6b and 18 quests new to the data), the counts are 1,004, 587 (four of the new Horde
 Candy Buckets are in TrinityCore's Hallow's End event) and 1,082 (with Broomstick Express and Specter
 Inspector, 92104 and 92455, moved from Uncategorized under the Hallow's End heading too), and the findings
-the same 13, none new.
+the same 13, none new. The 1,004 need the API records of the quests new to the data: a cache without the
+24 fetched for them (22 of them in Hallow's End's category) counts 982, and step 1 fetches them. The same
+day the `SET` rows of the 12 Bar Tab Barrels, which said the API gave them no category, were brought up
+to date: the 12.1.5 API files all 30 Bar Tab Barrels of our data under Brewfest (370). That changed no
+count or finding.
 
 ### 2e. The retail quest cache
 
 The client keeps the server's record of every quest it has asked about in
 `Cache\WDB\enUS\questcache.wdb`, and step 10 reads WoW: Forever's copy of it. Retail's holds the same
 record, in the same layout with two fields fewer, for every quest the game has been asked about
-(32,713 in October 2026). The cache holds only what was asked: the quest-type probe (`/qc typecheck`,
-see [In the game](#in-the-game)) asks for every quest in our data, so a cache from ordinary play is
-far too small, and `Compare-QuestCache.ps1` fails when fewer than 20,000 quests could be compared.
-Log out fully, so the game writes it, and copy the file from `_retail_\Cache\WDB\enUS\` to
+(32,713 on 9 October 2026, 33,123 on 12 October). The cache holds only what was asked: the
+quest-type probe (`/qc typecheck`, see [In the game](#in-the-game)) asks for every quest in our data,
+so a cache from ordinary play is far too small, and `Compare-QuestCache.ps1` fails when fewer than
+20,000 quests could be compared. A cache can pass that check and still be partial: 12.1.5.70391's,
+of 14 October 2026, held 26,616 quests against the 33,123 of 12.1.0.69933's, though the probe's quest
+pass asked all 35,544 of ours. The server refused 4,959 of them, asked 4 at a time, and 3,987 more were
+among the 5,242 the probe counted as held with no level ([In the game](#in-the-game), step 3), which
+never reached the cache. So the tools of steps 1d, 2, 2c, 2e, 2g, 2i and 6b (the check is in
+`QuestCacheFiles.ps1`) warn when the cache holds under 90% of the quests of the newest cache of an
+earlier build in `tools\`, or of the quests in our data, and name both counts. The warning changes
+no exit code, but steps 2 and 2g refuse `-UpdateBaseline` (exit 1) while it stands, unless
+`-AcceptPartialCache` is given. Step 6's `Find-MissingQuests.ps1` reads the cache too and does not
+warn yet, so don't run its `-UpdateBaseline` on a cache the others warn about. When the warning
+shows, ask the missing quests again before using the cache's values, and don't read the newest
+`questcache.wdb` over a larger cache: on 15 October 2026 the game's copy held only that session's
+quests. Log out fully, so the game writes the cache, and copy the file from `_retail_\Cache\WDB\enUS\` to
 `tools\retail_probe_<build number>\` (`retail_probe_69933` for build 12.1.0.69933). The comparison also
 needs the API cache (step 1), the client's task table (step 1b) and the client's `QuestV2` for the
 cache's build, which step 1b's unnumbered `QuestV2.csv` is not:
@@ -810,10 +900,16 @@ a quest no source speaks for (483 on 11 October 2026: 463 that neither the quest
 has, three whose tuning has a minimum beyond the cap (38708, and the task quests 36868 and 36869), and the
 17 on tuning 0); a new one is listed, since a source was lost, and doesn't fail. A
 quest on tuning 0 that holds a `minLevel` is class D, so one of them gaining a gate again fails the run.
-Baseline: D 0, N 483.
+Baseline: D 0, N 483. A quest cache that looks partial ([2e](#2e-the-retail-quest-cache)) would put
+those of the quests it lacks that neither the API nor the task table covers in class N as "no record"
+(535 on 12.1.5.70391's partial cache, against 454 on 12.1.0.69933's), and test the formula on fewer
+quests (25,759 against 29,447), so both scripts warn then, and `-UpdateBaseline` refuses to
+write (exit 1) unless `-AcceptPartialCache` is given. `Apply-QuestMinLevels.ps1` still runs: a quest
+the cache lacks keeps what it has, unless the API or the task table gives it a minimum.
 Because the formula is tested against the API on every run, a new level cap, or a change in what
 `MinLevelScalingOffset` means, fails here. `Test-QuestLevels.ps1` tests all three scripts on made-up quests
-and, with the real files, on a copy of the data (177 checks).
+and, with the real files, on a copy of the data, and the partial-cache check of `QuestCacheFiles.ps1` on
+made-up caches (209 checks).
 
 ### 2h. The calendar
 
@@ -926,9 +1022,10 @@ The tables answer these, each `holds`, `waits` or `fails`:
 - `weekly-every-day <region>`: some weekly bonus event is on that region's calendar, by its name, Flags
   and Region, every day from today to the last day the table dates one there; it fails on a day with
   none, and when none is dated to come. Its outcome can also turn with time alone, as the days with
-  none pass or the last dated run ends: on the 12.1.0 tables it fails today (no weekly event on 7 to 19
-  January and 28 January to 9 February 2027), holds from 10 February (only Timewalking 1583, 10 to 17
-  February, is left) and fails again from 18 February (none dated to come). Such a turn is a finding
+  none pass or the last dated run ends: on the 12.1.5 tables (live's 70391 and the PTR's 70340, which
+  date the weekly events as 12.1.0's did) it fails today (no weekly event on 7 to 19 January and 28
+  January to 9 February 2027), holds from 10 February (only Timewalking 1583, 10 to 17 February, is
+  left) and fails again from 18 February (none dated to come). Such a turn is a finding
   like the others: read it, then `-UpdateBaseline`. The weekly bonus events are taken by name (`$WeeklyEventPattern`
   in `Review-Calendar.ps1`): the Battleground, Arena Skirmish, Pet Battle, World Quest, Delves and
   Apexis Bonus Events and the Timewalking, Midnight and older Dungeon Events, whatever calendar filter
@@ -960,23 +1057,11 @@ whether the Guest Relations quests are offered while WoW's Anniversary runs, and
 Eve quests 8860 and 8861 follow Fireworks Celebration (658). The one that fails is
 `weekly-every-day 4`, on live and on the PTR (below). Run as of 11 October 2026, its list for retail is
 the user's `/qc holidays` of that day ([Holidays](#holidays)): the same 58 IDs, and for each entry the
-same days. It said:
-- **Running out within 90 days, on live:** the Darkmoon Faire (479, last 13 December 2026; the PTR dates
-  it to 12 December 2027), WoW's Anniversary (1808, 8 December 2026; neither table has next year's row
-  yet), and the weekly events: the Arena Skirmish (19 November), World Quest (3 December), Pet Battle
-  and Battleground (10 December) and Delves (24 December) Bonus Events and the Midnight Dungeon Event (31
-  December 2026), which the PTR doesn't extend. Timewalking runs to 18 February 2027. On region 4's
-  calendar some weekly bonus event runs every day to 6 January 2027, and then none from 7 to 19 January
-  and from 28 January to 9 February, between the Timewalking runs of 20 to 27 January (1720) and 10 to 17
-  February (1583, the last), so `weekly-every-day 4` fails.
-- **No date to come:** Hearthstone's 10th Anniversary on retail (2024 only); on Forever, Children's Week
-  (2023 to 2025) and the Darkmoon Faire (263 and 264 hold no date at all).
-- **On the calendar with no entry:** 34 events on retail, the same on the PTR, among them Call of the
-  Scarab (638), The Great Gnomeregan Run (696), the bonus and dungeon events, Timewalking and eleven PvP
-  brawls; on Forever the three Calls to Arms (1840 to 1842). Dated in region 4 and off the calendar: the
-  plain-named "WoW's Anniversary" (1587, Flags 3) and ten rows with no name on retail, four with no name on
-  Forever, 1879 among them.
-- **The PTR** differs from live only in the Darkmoon Faire's last date.
+same days. Live's table (12.1.0) then dated the Darkmoon Faire (479) to 13 December 2026, within the 90
+days, and the PTR's to 12 December 2027, the one line in which the two differed; 34 events on the
+calendar had no entry, Call of the Scarab (638) and The Great Gnomeregan Run (696) among them, and ten
+rows with no name were dated in region 4 off the calendar. What the tables say now is under the sweep of
+16 October 2026, below.
 
 Later that day decision 10's answers added two entries (#314). Run again on the same tables, the review
 gave no finding and listed 8 changes: Dastardly Duos a new entry with no date to come on each game (it
@@ -999,6 +1084,65 @@ game; 32 events on retail's and the PTR's calendars have no entry now), the same
 (638's on retail and on the PTR now an entry's) and 34 fact outcomes, and a run after it says nothing.
 Retail's "What /qc holidays should print" lists Call of the Scarab (638) on its own line instead of under
 "Other calendar holidays".
+
+The sweep of 16 October 2026, three days after 12.1.5 went live (retail 12.1.5.70391, the PTR's
+12.1.5.70340 and Forever 1.60.1.70374), gave no finding and 6 changes. Live's Holidays table changes one
+row of 12.1.0's and adds twelve, and the PTR's is the same file, as is each one's HolidayNames: it dates
+the Darkmoon Faire (479) monthly through the run of 5 to 12 December 2027 (12 more runs, from 3 January
+2027; its last date 13 December 2026 -> 12 December 2027, no longer within the 90 days), and adds The
+Unbinding of Kith'ix, a raid opening (above). It extends no weekly bonus event and no Timewalking, and
+names no 23rd anniversary. Kith'ix's twelve rows are dated 13 to 15 October 2026 (region 4's on 14
+October at 06:00), so on 16 October the event has no date to come and, never in the baseline, isn't
+listed at all; the run of 15 October had listed it as a raid opening. The other changes are two rows
+with no name and off the calendar, 651 and 653, whose last runs ended on 14 and 15 October ("has no date
+to come any more"), on live and on the PTR. Forever's table is 70338's, unchanged. No decision moved:
+the same 25 facts hold or were seen, `weekly-every-day 4` fails on the same days as on 12.1.0, and the
+same three are open. With `-UpdateBaseline` the baseline holds 186 rows (651 and 653 gone, on live and
+on the PTR), 371 in the rows file (479's runs to come extended; the passed Timewalking rows 643, 652,
+654 and 656 and the nameless 651 and 653 gone, on each) and the same 34 fact outcomes, and a run after it
+says nothing. On these tables:
+- **Running out within 90 days, on live and on the PTR:** WoW's Anniversary (1808, 8 December 2026; no
+  table has next year's row yet) and the weekly events: the Arena Skirmish (19 November), World Quest (3
+  December), Pet Battle and Battleground (10 December) and Delves (24 December) Bonus Events and the
+  Midnight Dungeon Event (31 December 2026). Timewalking runs to 18 February 2027 and the Darkmoon Faire
+  to 12 December 2027. On region 4's calendar some weekly bonus event runs every day to 6 January 2027,
+  and then none from 7 to 19 January and from 28 January to 9 February, between the Timewalking runs of
+  20 to 27 January (1720) and 10 to 17 February (1583, the last), so `weekly-every-day 4` fails.
+- **No date to come:** Hearthstone's 10th Anniversary (2024 only) and Dastardly Duos (2025 only) on
+  retail; on Forever, Children's Week (2023 to 2025) and the Darkmoon Faire (263 and 264 hold no date at
+  all).
+- **On the calendar with no entry:** 32 events on retail, the same on the PTR, among them the bonus and
+  dungeon events, Timewalking and eleven PvP brawls; on Forever the three Calls to Arms (1840 to 1842).
+  Dated in region 4 and off the calendar: the plain-named "WoW's Anniversary" (1587, Flags 3) and nine
+  rows with no name on retail, four with no name on Forever, 1879 among them.
+- **Findings time alone brings,** on these tables (each seen by a run with a later `-Today` against this
+  baseline): from 18 November 2026 the Lunar Festival (327, last 16 February 2027) comes within the 90
+  days, on all three tables; from 20 November the Arena Skirmish Bonus Event has no date to come and
+  Timewalking (last 18 February 2027) comes within the 90 days; from 24 November so does Love is in the
+  Air (423, last 22 February 2027), on live and on the PTR (Forever's 335 is dated every year); after 3
+  December the World Quest Bonus Event has no date to come, after 8 December WoW's Anniversary (1808),
+  whose `yearly` fact goes from holding to waiting, after 10 December the Pet Battle and Battleground
+  Bonus Events, after 24 December the Delves Bonus Event and after 31 December the Midnight Dungeon
+  Event, so a sweep on 1 January 2027 would list 23 findings. `weekly-every-day 4` then holds from 10
+  February 2027 and fails again from 18 February; the Lunar Festival has no date to come from 17
+  February, Timewalking from 19 February and Love is in the Air from 23 February; the Harvest Festival
+  (321, last 18 September 2027, on both games) comes within the 90 days from 20 June 2027 and has no
+  date to come from 19 September, the Darkmoon Faire comes within them from 13 September 2027 and has
+  none from 13 December, and WoW's Anniversary's `yearly` fact goes from waiting to failing on 17
+  November 2027. A newer table that dates these further turns each into a change instead.
+
+A 12.1.7 PTR, 12.1.7.70424, came out on 15 October 2026 under wago.tools' `wowt` (the 12.1.5 PTR's
+builds are under `wowxptr`, the product `Get-LatestBuilds.ps1` reads for the PTR), after this sweep's
+builds were set, and the baseline's PTR rows stay 70340's. Its Holidays table dates the Arena Skirmish,
+Battleground, World Quest and Delves Bonus Events, the Midnight Dungeon Event and Timewalking into July
+and August 2027 (the Pet Battle Bonus Event still ends on 10 December 2026), dates Turbulent Timeways
+(1458, whose last run was 1 July to 12 August 2026) again, on region 4's calendar from 2 December 2026
+to 27 January 2027, gives the nameless 651 and 653 a run in January 2027 (19 to 28 January), adds a
+row with no name, 1895 (Flags 15), and its HolidayNames is live's. Given as `-PtrBuild` against this
+baseline, it makes 21 findings: Turbulent Timeways, 1895, 651 and 653 new, 16 Timewalking runs removed
+before they came (their rows dated other weeks instead), and `weekly-every-day 4` holding on it, every
+day to 18 August 2027, whose `IfChanged` asks the user whether the weekly bonus event quests still stay
+untagged.
 
 `Test-ReviewCalendar.ps1` checks the review and `HolidayTables.ps1` on made-up tables (157 checks).
 
@@ -1023,13 +1167,13 @@ the icon of a pin whose quests are all PvP. Every sweep, with the newest cache o
   0 quests get `pvp` and list nothing under "Has pvp, but no source calls the quest PvP". Its first line says how
   many quests the answer memory adds to the newest cache; the next says so when the memory's last run isn't that
   cache's build (run the importer first), and a missing memory is named as skipped.
-- Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933, Forever
-  1.60.1.70338): retail 363 (the game 343: PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP
-  Elite World Quest 6; the API 4, the task table 3, TrinityCore 13), 109 of our quests no source answers for;
-  Forever 179 (the game 27, CMaNGOS 151, one decision), 0 of our quests no source answers for (36 with the
-  newest cache alone), counted again on 15 October with the answer memory; without it, on 13 October, 176 (the
-  game 14, CMaNGOS 161), the three fewer being 98897, 98899 and 98901, kept from 70291. The sources agreed
-  wherever more than one answered, except 7838. A kind the game adds (a new `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
+- Compare its counts with the last sweep's. Baseline, 13 October 2026 (retail cache 12.1.0.69933): retail 363
+  (the game 343: PvP 157, PvP World Quest 42, War Mode PvP 32, PvP Conquest 106, PvP Elite World Quest 6; the API
+  4, the task table 3, TrinityCore 13), 109 of our quests no source answers for. Forever, 14 October 2026 (cache
+  1.60.1.70374): 183 (the game 33, CMaNGOS 149, one decision), 0 of our quests no source answers for (5 with the
+  newest cache alone); on 70338 it was 179 with the memory (the game 27, CMaNGOS 151), 176 without it (the game
+  14, CMaNGOS 161). The sources agreed wherever more than one answered, except 7838. A kind the game adds (a new
+  `QuestInfo` row with PvP in its name, read in `tools\QuestInfo.csv`)
   belongs in `$pvpKinds` in `Sync-QuestPvP.ps1`.
 - Looked at on 13 October 2026 and not used, to be looked at again when a source changes: the quest cache's
   `flags` and `flagsEx` (no bit marks PvP: retail's 0x4000 and 0x4000000 are 32% and 31% of the PvP quests and
@@ -1094,10 +1238,27 @@ from Blizzard's own questline tables. It skips internal questlines ("8.0 Profess
 The quest tooltip shows a storyline's name from the game (`C_QuestLine.GetQuestLineInfo`, in the
 player's language) when the game's quest line for the quest is the quest's `storyline`, and the name
 in `qcQuestLines` otherwise. So the rule above, the smallest quest line a quest is in, decides how
-often the game's name is used: 97.9% on the 9 October 2026 retail probe (16,391 of 16,737 storylined
-quests), 11 of 11 on Forever's. The rest are quests in two quest lines, where the game names the
-larger. To measure it again, compare the probe's `questLineID` facts (`Read-ForeverProbe.lua <file> facts`,
-the `fact <quest> questLineID <id>` lines) with each quest's `storyline`.
+often the game's name is used: 98.1% on the 15 October 2026 retail probe of 12.1.5.70391 (15,979 of
+the 16,293 storylined quests it gave a quest line for; it gave none for the other 716 of the 17,009),
+97.9% on the 9 October one (16,391 of 16,737), 11 of 11 on Forever's. Of the other 314 on 12.1.5, the
+game names a line with more of our quests for 244; one with as many for 45, where the tool takes the
+lower ID (17 of them are in 1108 "Through the Shattered Sky", where the game names 1267 "Maw Intro");
+and an internal line the tool skips for 25 (11 in the "Catch Up: War Within: Wrapper" lines, 6 in
+"[PH] 12.1 Max Level Campaign Chp 1", 6 in `[DNT]` lines, 2 in test lines). To measure it again,
+compare the probe's `questLineID` facts (`Read-ForeverProbe.lua <file> facts`, the `fact <quest>
+questLineID <id>` lines) with each quest's `storyline`, sizing each line by its quests in our data, as
+the tool does.
+
+The 12.1.5 run (15 October 2026, build 12.1.5.70391): 1,563 quest lines with player-facing names
+(131 internal skipped), 1,476 written to `qcQuestLines` (1,474 before); 17,009 quests with a storyline
+(16,950 before), the 59 gained being step 6b's rows of 11 October, and none lost or moved. The 12.1.5
+tables add 5 quest lines and 36 of their rows, none for a quest of ours, and reorder Shadows Awaken (40)
+to 33075, 33070, 33765, 33905, 33813, 34019. The 59 were in the 12.1.0 tables too: step 4 hadn't run
+since step 6b added them. Two lines are new to `qcQuestLines`: 6056 "Blessing Task List" (7 quests)
+and 6228 "The Coiled Isle - World Quests/Repeatables" (31, and the same 7, which go to the smaller
+line). Five grew: 5954 "Prey WQs" by 15, 5978 by 3, 5986, 383 and 5747 by one each. The 15 October probe
+gave a quest line for 28 of the 59, ours for 26 and the larger 6228 for 2 of 6056's, and got no answer
+for the other 31.
 
 ### 5. Zone table and category names from the client
 
@@ -1156,6 +1317,31 @@ games. Run it with `-WhatIf` first.
 - A category's entry in `qcMenu.lua` loses its label: the menu names categories through
   `qcCategoryName`, so the label never shows. An indented entry keeps its indent, as
   `text="   "`.
+
+The 12.1.5 run (15 October 2026, retail 12.1.5.70391, Forever 1.60.1.70374) is the baseline to
+compare a sweep with:
+- `Build-CategoryUiMapIDs.ps1`: 337 of the 481 categories named by a map, 32 left to our own text
+  because the client's name differs ("Maw of Souls" is "Helmouth Cliffs" to the client). Both runs
+  left `qcQuest.lua` as it was.
+- `Add-ZoneTableMaps.ps1` added 2 maps, both by the same name and parent: 2605 Silvermoon City (as
+  2393, parent 2395) to Silvermoon City (1512), and 2162 Alterac Valley (as 91 and 1537, parent 25) to
+  Alterac Valley (7). Runs had listed 2162 since at least 11 October
+  ([plans/menu-review.md](plans/menu-review.md), question 31) without its being added; it was added by
+  the user's decision of 15 October 2026. Neither map has a pin. It listed The Stockade (1013) as
+  before. The table has 1,111 keys (1,115 entries: 219, 221, 1670 and 2372 are each there twice).
+- `Build-CategoryClientNames.ps1`: 111 categories named other than by map (instance 19, achievement
+  category 16, area 16, skill 16, class 12, format 11, string 8, faction 6, covenant 4, map 3), 31
+  categories with quests still named by our own text, 25 menu headings named by the client (26
+  lines). `qcQuest.lua` and `qcMenu.lua` were left as they were.
+- `Sync-QuestSortNames.ps1`: 0 keys changed or added; 31 unchanged in each file except Italian's,
+  which has 26 unchanged and 5 kept (AHNQIRAJWAR, CAMPING, INVASION, LUNARFESTIVAL, MIDSUMMER) as the
+  file has them, Forever's Italian table being its English one.
+- `Remove-ConvertedLocaleKeys.ps1 -WhatIf`: 0 lines, with 29 keys kept in English only for the
+  headings the client names. `Test-Localization.lua`: 162 keys of English's own, 133 of each other
+  language's, no problems.
+- Of the tables downloaded with `-Refresh`, the build-less `Covenant.csv` and `GlobalStrings.csv` in
+  `tools\` were of an older build than 12.1.5.70391's, so a run without `-Refresh` would have read
+  those.
 
 ### 6. Map pins
 
@@ -1243,14 +1429,39 @@ run were within 10 yards of point 32. On the 12.1.5 pass (14 October 2026) the p
 points of 243 of its 412 offers and more than 5 points from 1; Eversong Woods (map 2395) answered no
 offers that run.
 
-- An NPC's quests share a pin only where they start within 1.5 map points of each other (3 until
+The grouping rule and the order a pin's giver is chosen in are `tools\PinRules.ps1`, which Forever's
+importer uses too (step 10), so the pins of both games follow one rule; what stays retail's own is
+the carry-over of what its pins hold (the borrowed names, the old pairs kept, the positions reused):
+- A pin names the first of these that has someone: the quest's existing pin nearest the start (the
+  carry-over), a starter whose TrinityCore spawn stands at the start, and a known NPC within 1.5 map
+  points that starts the quest. With none, it names nobody.
+- A giver's quests share a pin only where they start within 1.5 map points of each other (3 until
   October 2026, when the user chose that a quest with a start point in the client's data keeps it
   rather than joining its giver's pin up to 3 points away; see the pipeline plan, "October 2026,
-  after the NPC IDs").
+  after the NPC IDs"). The giver is the pin's NPC ID, or its name when it has no ID.
+- Quests that name nobody (no NPC ID and no name) share one pin per spot, in both games: a start
+  within 1.5 map points of such a pin's first start joins it, the nearest when several are in reach.
+  Until October 2026 retail gave them a pin per quest and place (decided 13 October, the 1.5 points
+  on 15 October: [plans/open-items.md](plans/open-items.md), row 7). When the quests of a spot bring
+  different icons, the pin takes its quests' icon (seasonal, profession or class when every quest is
+  one, else normal); otherwise the icon it brings stays.
 - A pin that lands within 1.5 points of an existing one keeps the existing coordinates, and its note.
-  Notes that find no pin are listed. Two groups of one NPC that land on the same coordinates this
-  way become one pin, so a rebuild leaves no two pins of an NPC closer than 1.5 points.
+  Notes that find no pin are listed. Two groups of one giver, or two that name nobody, that land on
+  the same coordinates this way become one pin, so a rebuild leaves no two pins of a giver closer
+  than 1.5 points. With the reused coordinates, a start can end up a little more than 1.5 points from
+  its pin (16 starts, 1.5 to 2.1 points, on the 12.1.5 data).
 - Pins are written in a fixed order.
+
+On the 12.1.5 tables (build 12.1.5.70391, 16 October 2026) the pipeline makes 13,549 pins where the
+rule of a pin per nameless quest made 16,294 from the same inputs: 2,745 of the 5,364 nameless pins
+merge into others, leaving 2,619, and the 10,593 pins with an NPC ID and the 337 with only a name are
+line for line the same. No quest gains or loses its last pin: 7 quests whose starts straddle two
+spots sit on two nameless pins close by, 2 quests with several pins on one map have one fewer, and 8
+spots whose quests bring different icons take their quests' (for 3, another than their first pin's).
+The pin data still holds a pin per quest: applying the rule is its own
+pull request, after the 12.1.5 story quests
+([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026, one
+pin per spot").
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
 September 30 locations were last applied in October 2026 (see the pipeline plan, "October 2026
@@ -1289,7 +1500,12 @@ of its spawns. Blizzard's data over TrinityCore's wherever both speak.
   Pandaria).
 - **A pin with no NPC ID takes the giver** when a spawn stands within 3 map points of it and
   TrinityCore names no other starter, with the giver's name from TrinityCore's database if the pin
-  has none.
+  has none. A pin with no name holds what starts at its spot, so it takes the giver only when the
+  giver is found for every quest on it. Otherwise the quests the giver is found for move to its
+  pin within 1.5 points, or to a new one at the nameless pin's place, and the others stay on the
+  nameless pin, which keeps no name (`Split-NamelessPin` in `PinRules.ps1`; the import of Forever
+  gets the same by placing every quest at its giver each time). A quest two givers are found for
+  stays, and is listed with the pins whose quests name different givers.
 - **A quest with no pin gets one** at the giver's spawn, on the smallest zone map that holds it,
   joining a pin of that giver within 1.5 points.
 - **A giver farther than that is listed, not acted on.** The pins stand at the client's start
@@ -1343,9 +1559,11 @@ counts the quests by class; a world, bonus or hidden quest, a quest flagged unav
 and a system category stay held, except six system categories whose quests mostly stand on a pin with an NPC
 already (World PvP, Little Scales Daycare, Upgrade System, Warbands, Delver's Headquarters, Weekly Events:
 `$allowedSystemCategories` in the tool; Prey and Garrison Support stay held on purpose, see the plan, "Adds").
-It never moves a pin, never changes an ID
-or a name that is there, never takes a quest off a pin, and writes no pin if any of that would
-happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
+A pin with no name is filled only when the giver offered every quest on it; otherwise the quests a
+trusted giver offered there move to its pin within 1.5 points, or to a new pin of the giver at the
+nameless pin's place, and the others stay, as in step 6c. It never moves a pin, never changes an ID
+or a name that is there, never takes a quest off a pin but in such a move, and writes no pin if any
+of that would happen. A fill that would put two pins of one NPC within 1.5 points is not made (the pipeline would
 merge them and move one pin's quests): it is listed, as are a pin the recorded giver stood 1.5 to 3
 points from, a giver recorded where the game gave no position, and trusted sources that disagree on a
 name (the giver then has none). Everything that needs a person is in `tools\recorded-giver-report.txt`,
@@ -1365,8 +1583,12 @@ Forever this step only keeps the ledger and the lists; run it before step 10. Th
 the ledger with Forever's pins, so its "0 cases for
 review" says nothing about them. The first real run (11 October 2026, the Forever beta file: 87 records, 0
 odd, 42 givers, 40 spots, 45 offers, 41 turn-ins, no starts; the ledger 121 to 231 rows, no pin changed, a
-second run byte for byte) is the baseline to compare a sweep with; retail's file held 0 records that day. The
-numbers are in [plans/quest-giver-recorder.md](plans/quest-giver-recorder.md), "The first real run".
+second run byte for byte) has its numbers in [plans/quest-giver-recorder.md](plans/quest-giver-recorder.md),
+"The first real run". The baseline to compare a sweep with is the run of 14 October 2026 (Forever beta
+1.60.1.70374): the addon's Forever file 144 records, 0 odd (69 givers, 67 spots, 76 offers, 49 turn-ins, no
+starts), the probe's file 164 records (80 givers, 88 spots, 99 offers, 58 turn-ins), and the Forever ledger
+231 to 326 rows (80 givers, 88 spots, 99 offers, 59 turn-ins), all trusted. Every giver note in them was of
+build 70338 or earlier. Retail's file held 0 records again, so retail's pins did not change.
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -1392,9 +1614,9 @@ Quests that appear in the pin data but are missing from the database are fetched
 keeps each API response in `tools\quest_api_cache`, and the inserter refuses any quest that's
 already in the database.
 
-The fetch reads its quest IDs from `toolsgap_quest_ids.txt`, which no tool writes: make it from the quests the pin data names and the data lacks, or from the candidates of `Find-MissingQuests.ps1` the user has said to add (below). A quest the Blizzard API has no record of (a 404) is dropped, so a quest only the client or an emulator knows (a new holiday quest, say) goes in through the cache or the probe and a decisions row instead.
+The fetch reads its quest IDs from `tools\gap_quest_ids.txt`, which no tool writes: make it from the quests the pin data names and the data lacks (the rows of `Find-MissingQuests.ps1`'s report whose Sources include `pin`: 261 on retail on 15 October 2026, 156 of them retired), or from the candidates of `Find-MissingQuests.ps1` the user has said to add (below). A quest the Blizzard API has no record of (a 404) is dropped, so a quest only the client or an emulator knows (a new holiday quest, say) goes in through the cache or the probe and a decisions row instead.
 
-**Quests the data lacks.** `Find-MissingQuests.ps1 -Game retail` (and `-Game forever`; report only, about a minute) lists the quests the client's QuestV2, the game's quest cache or the emulator (TrinityCore, CMaNGOS) know and the data doesn't hold, and sorts them: task rows (step 6b), tracking and retired quests, internal titles, quests the emulator disables, and the rest with or without evidence that someone starts them (an emulator starter, a start point, a quest line row, an item that starts it). QuestV2 alone proves nothing: it omits almost all repeatable quests and lists tracking and retired ones. Look at the candidates, record each reviewed one in `docsplansmissing-quest-decisions.csv` (Game, Quest, Name, Decision ADD or SKIP, Reason), and add nothing without the user having seen the list. Its baseline is `docsplansmissing-quests-baseline.csv` (12 October 2026: 555 retail candidates, 130 Forever); it exits 1 on more undecided candidates than that, and `-UpdateBaseline` writes the new counts once they are explained. A quest with no title anywhere (20,358 on retail) is a hidden or tracking quest; a Candy Bucket the emulator knows but nothing places is the holiday case, which needs the user's list first.
+**Quests the data lacks.** `Find-MissingQuests.ps1 -Game retail` (and `-Game forever`; report only, about a minute) lists the quests the client's QuestV2 or QuestPOIBlob, the game's newest quest cache, the emulator (TrinityCore, CMaNGOS) or the pins know and the data doesn't hold, and sorts them: task rows (step 6b), tracking and retired quests, internal titles, quests the emulator disables, and the rest with or without evidence that someone starts them (an emulator starter, a start point, a quest line row, an item that starts it). A quest's title comes from the quest cache, then Blizzard's API (`tools\quest_api_cache`, which has a quest the data lacks once `Fetch-GapQuestData.ps1` has asked for it), then the task table, then the emulator. Internal titles are placeholders and tests, `(POC)`, `TO DEPRECATE`, the `LFGDungeons - ` rows, Midnight's `Midnight (90) E` and its other level brackets, and `Prey: Target NN`. Quest lines come from `QuestLineXQuest-<newest QuestV2 build>.csv`. Steps 2b, 2c and 4 (retail) and step 10 (Forever) download that table for the pinned build, so it is missing when a PTR's QuestV2 is the newest, or when step 10 has not yet run on a new Forever build. When that file is missing, each game reads its newest numbered one up to that build; retail, failing that, reads the unnumbered `tools\QuestLineXQuest.csv`, step 7's download, of an unknown build. The items that start a quest (`ItemSparse`) are found the same way: retail has only step 1b's unnumbered `tools\ItemSparse.csv`, and Forever reads its previous build's until step 10 downloads the new one (on 15 October 2026, 131 Forever rows have a start item this way, against 14 from `ItemSparse-1.60.1.70374.csv` alone, which isn't there yet). The run says when it reads another file, or none. QuestV2 alone proves nothing: it omits almost all repeatable quests and lists tracking and retired ones. Look at the candidates, record each reviewed one in `docs\plans\missing-quest-decisions.csv` (Game, Quest, Name, Decision ADD or SKIP, Reason), and add nothing without the user having seen the list. Its baseline is `docs\plans\missing-quests-baseline.csv` (13 October 2026: 555 retail candidates, 130 Forever); it exits 1 on more undecided candidates than that, and `-UpdateBaseline` writes the new counts once they are explained. That baseline's run had no quest line table (its report has no quest line rows). On 15 October 2026 retail has 558 candidates. 11 are new and wait for the user's review before the baseline moves: 10 quest line rows (War Pigs!, Hisingen Blues, The Empty Cradle, four Nightmare Prey quests and three Special Assignments) and 98831 The Labyrinth, which only the 12.1.5.70391 quest cache titles. 93701 Brittle and Brilliant has left the candidates: only the 12.1.0.69933 cache titles it, and the report reads the newest cache, so it is now untitled. Seven more no longer count since the 18 Hallow's End quests of 15 October 2026: the six Horde Candy Buckets are in the data, and 52991 '[REMOVED]' has a `SKIP` row. A quest with no title anywhere (20,341 on retail on 15 October 2026) is mostly a hidden or tracking quest, but 2,099 of them have evidence, among them 95808 and 95812, which only QuestPOIBlob and a pin name; a Candy Bucket the emulator knows but nothing places is the holiday case, which needs the user's list first.
 
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
 same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. That
@@ -1494,9 +1716,9 @@ category and type lists can find the rest.
 Run it with `-WhatIf` first: it prints the counts and the quests it can't place and writes nothing. A
 second run adds nothing and changes no byte, and no row that is there is changed or removed. It reads
 `QuestV2CliTask`, `QuestInfo`, `SkillLine`, `QuestPOIBlob`, `UiMap` and `ChrRaces` from `-ToolsDir`
-(downloaded for `-Build` when missing or with `-Refresh`) and the newest `retail_quest_cache_*.jsonl`,
-and files the new rows through a scratch copy of the data and `Place-UncategorisedQuests.ps1`, so no
-old row is touched.
+(downloaded for `-Build` when missing or with `-Refresh`) and the `retail_quest_cache_<build>.jsonl` of
+the newest build, and files the new rows through a scratch copy of the data and
+`Place-UncategorisedQuests.ps1`, so no old row is touched.
 
 - **Skipped, in this order:** a row already in the data (even if the client names it a tracker or has
   renamed it); a hidden tracker, a quest the game keeps out of the quest log (`Flags_0` has 0x400, the
@@ -1535,14 +1757,17 @@ old row is touched.
   - step 2, `Compare-QuestReputation.ps1` and then `Apply-ReputationBackfill.ps1`, for the rewards the
     API lists. After step 6b's first run (11 October 2026, below), step 2 ran before step 1 had
     fetched the new rows' API records, so 11378, 11382, 11386 and 57326 were still without their
-    rewards at the 12.1.5 sweep, whose compare (14 October 2026) lists them as `api-only`. The compare
+    rewards at the 12.1.5 sweep, whose compare (14 October 2026) listed them as `api-only`; step 2
+    added them on 15 October 2026. The compare
     counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
-    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`;
+    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`
+    (refused, as step 2g's is, while the cache looks partial: step 2e);
   - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
     without `-WhatIf`, for the PvP tag, which it also reads from the task table: on 14 October 2026,
     248 of the data's 5,740 task quests had a minimum level and 52 the tag;
-  - step 2c (the prerequisites the client names, 112 of the new rows on 11 October 2026 and no old row)
-    and step 4 (59 storylines, no old row);
+  - step 2c (the prerequisites the client names, 112 of the first run's rows, in #319, and no old row)
+    and step 4 (59 storylines for the first run's rows, given at the 12.1.5 sweep on 15 October 2026,
+    and no old row);
   - `File-WeeklyEventQuests.ps1 -WhatIf`, then without `-WhatIf` if it lists any: placement files a
     weekly event quest by its zone, and 93598 "Emissary of War" was still under Silvermoon City at
     the 12.1.5 sweep;
@@ -1582,6 +1807,9 @@ only; see [plans/unavailable-quests.md](plans/unavailable-quests.md). Its summar
 that have no sign of being live and no decision yet: those are the ones to review, in groups, with
 the user.
 
+Before this step, rerun step 1's audit after any pull request that adds quests: the audit fetches
+the API records `tools\quest_api_cache` lacks, and this step reads the API only through that cache.
+
 The quests the addon hides as unavailable are the FLAG rows of
 `docs/plans/unavailable-quest-decisions.csv`. A quest reviewed and left shown gets a KEEP row, with
 the evidence, so later sweeps don't raise it again. After changing that file, run
@@ -1602,6 +1830,16 @@ filter already hides (a repeatable, daily or world quest) gets a KEEP row instea
 
 Players who accept or turn in a flagged quest get a chat message, and the quest is recorded in their
 `qcFlaggedButSeen` saved variable. Unflag anything reported that way.
+
+The 12.1.5 baseline (15 October 2026: the client's tables of 12.1.5.70391, the API cache of 14 and 15
+October, the probe of 15 October): the API 404s on 925 non-task quests, 527 of them with no sign of
+being live, 0 of those undecided; 191 are not in `QuestV2`, 34 of them unknown to the server too. The
+one undecided quest was 94474 The Great Vault: it is in `QuestV2`, the probe loaded it and the quest
+cache holds it, so it got a KEEP row on the user's word, and it moved from Azuremyst Isle to
+Silvermoon City, the game's sort for it. Its quest-cache record carries the server's Deprecated flag
+(0x4000), the one sign against it. On 15 October 2026 the 29 quests #347 added were missing from
+`tools\quest_api_cache`; without them the run counts 943, 530 and 193 and lists 92568, 92570 and
+54709 as undecided.
 
 ### 8. Dungeons and raids against the Dungeon Journal
 
@@ -1704,7 +1942,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    the probe's file unread ("Not read" in its report) and the importer stops, until the version is
    passed to both with `-Builds`. A file that mixes a named and an unnamed version is read in part by
    both and does not stop: the unnamed version's notes are left out, so pass `-Builds` whenever the
-   beta's version changes.
+   beta's version changes. The import's "Recorded givers:" summary line says what the ledger gave: 78
+   givers with a place, 78 places and 98 quests with an offer, and no row waiting for a second source, on
+   build 70374 on 14 October 2026.
 2. **The probe**, when Forever has a new build, the beta opens higher levels, or the probe's quest
    list has grown: see [In the game](#in-the-game). Otherwise the last run's results stand. Every
    probe run includes the map pass (step 3b there), and the reader's totals are compared with the
@@ -1725,9 +1965,9 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    Breadcrumbs and the groups of quests of which only one can be done come from CMaNGOS, without
    recurring quests, with the links a hand list adds and less those it removes (below). A quest is
    also a breadcrumb of the quest its CMaNGOS `NextQuestInChain` names, unless that one needs it done:
-   the server closes it once that quest is taken or done (141 on build 70338, the summary's "closed by
+   the server closes it once that quest is taken or done (141 on builds 70338 and 70374, the summary's "closed by
    their next quest in the chain"). The summary's "Storylines:" line is a watch on the client's `QuestLine` and
-   `QuestLineXQuest` tables, the only source of Forever's storylines: on builds 70205 to 70338 they had 3 and 22
+   `QuestLineXQuest` tables, the only source of Forever's storylines: on builds 70205 to 70374 they had 3 and 22
    rows, so 11 of our quests were in 1 storyline. A rise in any of them means Blizzard has started to
    fill them in, and the menu and the quest list's storyline lines then have something to show.
    A quest's prerequisite is CMaNGOS's requirement, as its server checks it: its `PrevQuestId` or any
@@ -1735,29 +1975,30 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    `RequiredCondition` that asks only for quests handed in, written as a list where it needs all of
    several quests (`[7791,7793,7794]`) or one of several (`[[994,995]]`). A negative `PrevQuestId` or
    `NextQuestId` means the quest is offered only while that one is in the log: `links.jsonl` gives it as
-   `needsInLog` (35 quests on build 70338, the "Links:" line's last number), which becomes
+   `needsInLog` (35 quests on builds 70338 and 70374, the "Links:" line's last number), which becomes
    `qcQuestNeedsInLog`. A requirement neither can hold (an aura, an area, the war effort's collections)
    is left out and listed in the review as "CMaNGOS requirement not a prerequisite" (82 conditions on
-   build 70338). A quest CMaNGOS gives no requirement takes the quest whose follow-up it is in the
+   builds 70338 and 70374). A quest CMaNGOS gives no requirement takes the quest whose follow-up it is in the
    cache, when only one names it.
    A quest with no prerequisite from CMaNGOS or the cache's follow-up links gets the quest before it in
    its quest line (the client's `QuestLineXQuest` order) when that one is handed in on the map this one
    starts on (the client's `QuestPOIBlob` points -1 and 32), which is the case for the ten steps after
    the first of "Toxic Soil", quest line 6026 (92742 to 92819, Westfall, Stormwind and Elwynn). The
    summary's "Prerequisites:" line counts them (2,399 quests, 126 of them lists, 2,175 from CMaNGOS's
-   requirement and 34 with its condition, 10 from the quest line order and 18 from the hand list below,
-   which removes 15, on build 70338 on 11 October 2026), and the review lists each as "prerequisite from the quest line order", a line whose places
+   requirement and 34 with its condition, 10 from the quest line order and 20 from the hand list below,
+   which removes 15, on build 70374 on 14 October 2026), and the review lists each as "prerequisite from the quest line order", a line whose places
    don't match, or that the hand list removes, as "quest line order not used", and one that disagrees with another source as
    "quest line order disagrees with the prerequisite". Look at all three after an import: a rise in
    the first means Blizzard filled in more quest lines. Reputation comes from the game's records only: CMaNGOS's amounts are mostly The
    Burning Crusade's, larger than Classic's. The summary counts the quests the game hasn't answered
-   that reward reputation in CMaNGOS; they get theirs once it answers.
+   that reward reputation in CMaNGOS; they get theirs once it answers. Its "Reputation:" line read 2,354
+   rewards on 1,871 quests, with 1,000 quests waiting, on build 70374 on 14 October 2026.
    The level a character needs to take a quest (`minLevel`) is the game's, else CMaNGOS's
    `MinLevel`, as given; it is kept only where it differs from the quest's own level (`level`), and
    builds into `qcQuestMinLevel` (see the data files above). The summary's "Minimum levels:" line
-   counts them: 4,194 quests, 2,462 from the game and 1,732 from CMaNGOS, 26 of them above the
-   quest's level and 4 at 0 (no minimum), on build 1.60.1.70338 on 10 October 2026 (4,180, 2,436,
-   1,744, 26 and 2 on build 70205).
+   counts them: 4,202 quests, 2,483 from the game and 1,719 from CMaNGOS, 26 of them above the
+   quest's level and 4 at 0 (no minimum), on build 1.60.1.70374 on 14 October 2026 (4,194, 2,462,
+   1,732, 26 and 4 on build 70338; 4,180, 2,436, 1,744, 26 and 2 on build 70205).
    The profession a quest needs, and the skill level in it, come from CMaNGOS too: the game's
    records only say what skill a quest rewards. The summary's "Skills:" line counts them, 141
    quests, 102 of them with a level above 1, in October 2026.
@@ -1787,17 +2028,21 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    are nearly empty in Forever so far, so a rise means Blizzard has filled in more.
    Pins follow the same rule as retail's ([plans/game-parity.md](plans/game-parity.md)): a normal quest
    gets a pin at every place a source puts its pickup, named after the giver when one stands there and
-   nameless otherwise. Forever's sources are CMaNGOS's creature and object givers with their spawns,
+   nameless otherwise, with one nameless pin per 1.5-point spot (`tools\PinRules.ps1`, shared with step 6).
+   On build 70374 that changes nothing: the 11 quests pinned at their start stand on 4 pins, the quests of
+   each at one point, and no two of the 4 are within 1.5 points. A quest whose giver turns up later
+   leaves the spot for its giver's pin at the next import. Forever's sources are CMaNGOS's creature and object givers with their spawns,
    the recorder's places, the hand list and the client's start points (point 32 first). A giver the
    ledger has a trusted place for stands there instead of at CMaNGOS's spawns, and its places within
    1.5 map points of each other (the merge tool's test) are one pin, two places further apart are two. It has no
    equivalent of retail's TrinityCore start table, as CMaNGOS's `quest_poi` holds no point 32 and its
    point -1 is the hand-in, and it has no world quests to leave out. Its pinless quests, by cause in
-   the review list of 6 October 2026: 956 that only the game knows (no giver, no start point), 197
-   started by an item, 72 that CMaNGOS gives no giver, 142 whose giver stands only inside
-   instances, 46 whose giver has no CMaNGOS spawn, and 1 off every Forever map. Compare each
-   import's pinless count and causes with these: a start point, recorded place or spawn that turns up
-   for one of them is a pin the importer already makes.
+   the review list of 14 October 2026 (build 70374), are 1,424 of the 5,105: 1,238 "no giver" rows
+   (969 that only the game knows, with no giver and no start point, 197 started by an item and 72 that
+   CMaNGOS gives no giver) and 186 "no pin: giver not on a Forever map" rows (6 October's 189 were 142
+   whose giver stands only inside instances, 46 whose giver has no CMaNGOS spawn and 1 off every
+   Forever map). Compare each import's pinless count and causes with these: a start point, recorded
+   place or spawn that turns up for one of them is a pin the importer already makes.
    A quest whose givers, NPCs and objects, all stand only during one of CMaNGOS's game events gets
    that event's holiday, so its pins follow the calendar. Events with no holiday of their own go by
    their description: the Darkmoon Faire's building days, the fishing contest's announcers and
@@ -1853,7 +2098,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    rests on, as the link list's do. A quest whose only prerequisite is for some classes is for them too,
    down the chain, as the addon counts a prerequisite the character can't take as met. The summary's
    "Classes:" line counts them: 888 quests for some classes only, 1 from its items, 2 from their
-   prerequisite and 3 by hand, on build 70338 on 11 October 2026. The review list names each change
+   prerequisite and 3 by hand, on build 70338 on 11 October 2026 and again on build 70374 on 14 October.
+   The review list names each change
    ("class from the items that start it", "class from its prerequisite"), an item's class a giver makes
    moot, and a row another source already gives or contradicts.
    A giver no source has, like those of most of Forever's new quests, can be looked up by hand on
@@ -1893,11 +2139,12 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    which fail the run when one isn't 0.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
-   run of 15 October 2026 found 6 on 2,399 prerequisites and 447 table entries (35 of them quests that
-   need another in the log), all kept in
-   `docs\plans\forever-quest-table-decisions.csv` (a prerequisite that names the other faction's
-   quest, three that name a repeatable one, one of them as one of a choice, and two of another
-   profession), and no row of that file out of date. The first run, on 9 October, also found a quest whose own
+   run of 14 October 2026 (build 70374) found 6 on 2,399 prerequisites and 447 table entries (35 of them
+   quests that need another in the log), all kept in `docs\plans\forever-quest-table-decisions.csv`: one
+   prerequisite that names the other faction's quest (3647 needs 3643), two that name another profession's
+   quest (769 and 5124, waiting for evidence), and three that name a repeatable one (3638, 4001 and 5125;
+   3638's as one of a choice). No row of that file is out of date. The other faction's prerequisites of 28
+   and 29 went with the data-sources review's D7 on 13 October. The first run, on 9 October, also found a quest whose own
    record in the game names itself as its next quest (92727, which the importer no longer takes as its
    previous quest). Anything new is a finding to look at before the pull request: the run exits with 1.
 9. `Remove-DuplicatePinQuests.ps1 -Game forever -WhatIf` (see step 6), as a check. Several CMaNGOS
@@ -1915,17 +2162,21 @@ whatever changes in them comes from the game, the client's tables, CMaNGOS or th
 before its pull request. Until decision 36 of
 [plans/open-items.md](plans/open-items.md) is taken, the ledger can move a pin with nothing new seen: it sums a
 place's visits over every probe file read, and the probe's file is cumulative, so the same visits count once per
-file and can make the other of two rows 0.1 apart the place. That is why Thundris Windweaver's pin (map 1439)
-stands at 37.4,40.2 and not at 37.4,40.1, where the addon's file saw him more often. The committed `pins.jsonl`
-is the import of 12 October 2026 (build 70338, the ledger of #298), which moved 21 pins by 0.02 to 0.36 of a
-map point to the places the addon's own recorder file holds, and gave Trek to Ashenvale (990) a pin at
-Sentinel Selarin, whom CMaNGOS gives no spawn (the user reviewed each; see "A rerun of the import" in
-[plans/forever.md](plans/forever.md)). A giver the recorders have met since
-moves its pin the same way, by 0.02 to 0.4 of a map point (1.1 for Darcy in Lakeshire, who walks a path
-whose one end is her CMaNGOS spawn), because the recorder keeps where the player stood: the first import
-after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS" names a
-giver more than a point off ("The importer reads the ledger" in the plan; whether such a place should
-still win is decision 38 of [plans/open-items.md](plans/open-items.md)).
+file and can make the other of two rows 0.1 apart the place. That is how Thundris Windweaver's pin (map 1439)
+went to 37.4,40.2 on 12 October 2026. He now stands at 37.4,40.1 by the same visit sum (22 against 15), where
+the addon's file and the newest probe file saw him more often. The committed `pins.jsonl` is the import of
+14 October 2026 (build 70374, with the ledger at 326 Forever rows), which the user reviewed and accepted pin
+by pin. It moved 26 pins and added 5. 21 givers new to the ledger moved to their recorded places: 20 by 0.02
+to 0.26 of a map point, and Darcy in Lakeshire by 1.1 (she walks a path, and her CMaNGOS spawn is one end of
+it). 4 givers the ledger already had moved 0.1 to 0.14 to the row seen more often, and Gubber Blump, whose two
+rows now tie at 6 visits, to the lower one (36.1,44.9). The 5 new pins are for
+quests only the game knew: four givers in Elwynn Forest and the Wanted: Incinerator Gar'im poster in
+Redridge Mountains (see the status of 14 October in [plans/forever.md](plans/forever.md)). A giver the
+recorders meet later moves its pin the same way, because the recorder keeps where the player stood: the
+first import after the ledger grows moves such pins, and the review list's "recorded spot far from CMaNGOS"
+names a giver more than a point off. That place still wins over the spawn (decision 38 of
+[plans/open-items.md](plans/open-items.md), taken 12 October 2026), so the row is there to be looked at,
+not to undo the move.
 
 ## Text in other languages
 
@@ -2092,8 +2343,8 @@ but retail's Holidays table has no such row, so a retail quest tagged with it wo
 good, and its seven retail quests stay untagged for that reason (`KEEP` rows, the user's decision of
 12 October 2026).
 
-Forever's calendar, in build 70338's Holidays table (dates decoded by hand at first, by step 2h's
-review every sweep since 12 October 2026): Children's Week (201)
+Forever's calendar, in its Holidays table (the same in builds 70245, 70291, 70338 and 70374; dates
+decoded by hand at first, by step 2h's review every sweep since 12 October 2026): Children's Week (201)
 has dates only in 2023, 2024 and 2025, so the calendar has none to show and its pins stay hidden
 until the game dates it again (the two matron quests, 172 and 1468, hold the only two). Winter
 Veil (141) is dated from 15 December for 18 days, and `/qc holidays` on the beta showed it so on 11 October 2026 (15 December to 2 January). A row with no name, 1879, is dated from 15
@@ -2136,8 +2387,9 @@ Flags still keep them off (`calendar-decisions.csv`, with 1587's absence from th
 After 8 December 2026, when 1808's run ends, the entry has no date to come until next year's row is in
 the table: step 2h's `yearly WoW's Anniversary` fact then goes from holding to waiting (a finding at that
 sweep), is listed as waiting every sweep after, and fails if no later row is in the table by 17 November
-2027, a year after 1808 began (`calendar-decisions.csv`). The 12.1.5 PTR's table
-(70077) has no 23rd row yet (11 October 2026). Since 12 October 2026 (#314, the user's answer to
+2027, a year after 1808 began (`calendar-decisions.csv`). On 16 October 2026 no table has a 23rd row
+or name yet: not 12.1.5 live's (70391), the 12.1.5 PTR's (70340) or the 12.1.7 PTR's (70424), whose
+HolidayNames are the same file. Since 12 October 2026 (#314, the user's answer to
 decision 10) the entry also holds the 20th anniversary's 57 Guest Relations quests (83794 to 85574;
 44 of them pinned, most in Tanaris near the Caverns of Time), which Blizzard's API files
 under its category Secrets of Azeroth (646); the client's rows of that name (1396, 1398 and 1399) are
@@ -2145,9 +2397,9 @@ another event, of 2023, with no date to come. Step 2d reads that category as thi
 in `Audit-QuestHolidays.ps1` (it holds no other quest of ours); no API category, TrinityCore event or
 heading names the entry's other 19 quests. Whether later anniversaries still offer the Guest Relations
 quests is open (an `ask` fact in `calendar-decisions.csv`): if they don't, their pins show while the
-anniversary runs for quests nobody can take. Forever's Holidays tables (70245, 70291 and 70338)
-have no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not on
-Forever's calendar, which is no finding.
+anniversary runs for quests nobody can take. Forever's Holidays table (the same in 70245, 70291, 70338
+and 70374) has no anniversary row, and its data no anniversary quest, so step 2b lists the entry as not
+on Forever's calendar, which is no finding.
 
 The Skyriding Cups are one entry with one flag (the user's decision of 11 October 2026; named after
 the client's "Skyriding Races" on 12 October, as no table names the four cups together) for four
@@ -2167,13 +2419,14 @@ holidays": the next cup, and on a line below it each other cup the calendar has 
 (on 12 October 2026, the Kalimdor Cup and then the Eastern Kingdoms Cup). Step 2b matches the entry to every row named
 "<Region> Cup" (`$HolidayRowPatterns`); on 12 October 2026 that took in only the six cups' names in retail
 12.1.0.69933's and the 12.1.5 PTR's (70077) HolidayNames: the four above, the Pandaria Cup (432)
-and the Broken Isles Cup (433), which have no Holidays row in either build. A cup's row that runs
-today or later and isn't in the entry is a finding; until its ID is added, the cups' pins stay
-hidden while only that cup runs, and `/qc holidays` lists it under "Other calendar holidays". Step
+and the Broken Isles Cup (433), which have no Holidays row in either build, nor on 16 October 2026 in
+12.1.5 live's (70391) or the PTR's (70340), whose only new name is The Unbinding of Kith'ix. A cup's
+row that runs today or later and isn't in the entry is a finding; until its ID is added, the cups' pins
+stay hidden while only that cup runs, and `/qc holidays` lists it under "Other calendar holidays". Step
 2d reads the API's cup categories (all six) and our heading "Northrend Cup" as this entry through
-aliases in `Audit-QuestHolidays.ps1`, so a new cup's quests show up there untagged. Forever's
-Holidays tables (70245, 70291 and 70338) have no cup and its data no cup quest, so step 2b lists
-the entry as not on Forever's calendar, which is no finding.
+aliases in `Audit-QuestHolidays.ps1`, so a new cup's quests show up there untagged. Forever's Holidays
+table (the same in 70245, 70291, 70338 and 70374) has no cup and its data no cup quest, so step 2b
+lists the entry as not on Forever's calendar, which is no finding.
 
 Dastardly Duos and The Great Gnomeregan Run have entries of their own since 12 October 2026 (#314, the
 user's answers to decision 10), each on the rows of its own name, which step 2b checks by that name.
@@ -2466,8 +2719,8 @@ It began as pull request #139, which stays open as the record; its files are in
    choice, whose Classic option turns the quest points of interest on the map off: the map
    filter's "Quest Objectives" entry, the `questPOI` setting, which the results note. The first
    run, on beta build 70245 (7 October 2026), had it on and found no offers on any map
-   (game-api-review.md, "Map-offers probe: first run"), and so did the runs on 70291 and 70338 (9 and
-   10 October). Run it with every probe run all the same:
+   (game-api-review.md, "Map-offers probe: first run"), and so did the runs on 70291, 70338 and 70374
+   (9, 10 and 14 October). Run it with every probe run all the same:
    a check stays in the sweep while it finds nothing, as the client's files and the game's API can
    start serving more at any build (decided 7 October 2026), and a change in its totals is a
    finding to plan. It works on retail too, and the retail sweep takes it as well: copy the folder
@@ -2576,7 +2829,7 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed. As of 15 October 2026 they're 35,573 quests and 16,084
-  pins for retail, and 5,097 quests and 1,701 pins for Forever.
+  pins for retail, and 5,105 quests and 1,706 pins for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
@@ -2596,6 +2849,14 @@ git diff --stat
   makes quests, API records, a quest cache and a ContentTuning table in a scratch folder (nothing downloaded),
   and with the real files in `tools\` (or `-RealToolsDir`) also applies the formula to a copy of the data. It
   must say "0 failed".
+- For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
+  partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
+  that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
+  `Test-AddTaskQuests.ps1`, `Test-SyncQuestProfessions.ps1` and `Test-SyncQuestPvP.ps1` (which checks that
+  retail's cache is warned about when it holds too few of our quests, and that Forever's isn't held to our
+  quests). Each must say "0 failed". `Sync-QuestPrerequisites.ps1` prints it too and has no test, so run it with `-WhatIf` on the
+  real files in `tools\`: `Sync-QuestPrerequisites.ps1 -Build <newest retail build> -WhatIf` must warn only
+  when that cache looks partial.
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
@@ -2616,8 +2877,9 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestPvP.ps1`. It makes a Forever world
   (two quest caches, an answer memory, a CMaNGOS dump, removal decisions) and a retail one in a scratch folder
   (nothing downloaded) and checks which source tags each quest, a quest kept from an earlier run included, that
-  a missing memory is named as skipped and one out of step with the cache is named, that `-WhatIf` writes
-  nothing and that a second run changes nothing. It must say "0 failed".
+  a missing memory is named as skipped and one out of step with the cache is named, that retail's cache
+  is warned about when it holds too few of our quests and Forever's isn't, that `-WhatIf` writes nothing and
+  that a second run changes nothing. It must say "0 failed".
 - For changes to the calendar code, `/qc holidays` included, run `Test-SeasonalCalendar.lua` for both
   games' TOCs (see [Holidays](#holidays)). It must say "All checks passed."
 - For changes to `Review-Calendar.ps1` or `HolidayTables.ps1` (step 2h, and the holiday check of step
@@ -2634,6 +2896,10 @@ git diff --stat
   (TomTom's waypoint, nothing of the game's) and without it (the game's own waypoint and arrow, against
   stand-ins for a client that allows the map, refuses it, turns the map pin off by rule, errors, or lacks
   the functions), and checks that the pin's tooltip offers a click only where one will set a waypoint.
+  It checks the tooltip with the quest IDs turned off and with a quest it marks PvP, and the PvP pin icon.
+  The pins and quests it uses are the first fitting ones in the data of the TOC it loads, so the two
+  games' runs check different quests. Forever's run:
+  `& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-MapTooltip.lua QuestCompletist QuestCompletist_Camelot.toc`.
 - For changes to what the addon ticks (the login sync and hand-ins in `qcCore.lua`, with their
   breadcrumbs and "only one of these" groups) or to Forever's links or classes, run `Test-Completions.lua` for both
   games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
@@ -2670,7 +2936,9 @@ git diff --stat
   `Test-ContinentPins.lua` for both games' TOCs. It must say "All checks passed." It builds a made-up
   continent from the game's own zones, counts a character step by step (a breadcrumb whose quest is in the
   log counts as closed, not available), checks every category against the quest list's zone counter, and,
-  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass.
+  with the client's UiMap table in `tools\`, gives every continent its zones and times a pass. Retail's
+  table is `UiMap.csv`; Forever's is the newest `UiMap-1.60.1.<build>.csv` by build number, unless a third
+  argument names another.
 - For changes to the addon's text, run `Test-Localization.lua` (see
   [Text in other languages](#text-in-other-languages)). It must say "No problems".
 - **A quest never leaves the data unseen.** Before a pull request that touches `data\quests.jsonl` or
@@ -2709,7 +2977,18 @@ git diff --stat
   ledger filled from the probe's file alone, the files
   master's importer wrote on that world (kept in the test as written once by it, 448bd64). It must say
   "0 failed". A change that is meant to alter those files means writing the expected text again, from a run
-  that has been checked by hand.
+  that has been checked by hand. Its section L checks the pins of start points with no giver: one per
+  1.5-point spot, the icon from the quests, and a giver found later taking its quest off the spot.
+- For changes to `PinRules.ps1`, `Assemble-PinDB.ps1` or `Apply-ClientQuestGivers.ps1`, or to how
+  `RecordedGivers.ps1` fills a pin, run `powershell -NoProfile -ExecutionPolicy Bypass -File
+  tools\Test-PinRules.ps1` (the rules, then the pipeline and both fill tools on a world made in a scratch
+  folder: three quests at one spot with no giver share a pin, the icon of a spot whose quests bring
+  different ones, the 1.5-point edge, and a giver found for one quest from the client's giver table and from
+  the recorder taking that quest to its own pin while the other two stay on the nameless one, through a
+  rebuild, and two nameless pins on one point each giving the client's giver only their own quest). It
+  must say "0 failed"; `-Tools` runs it on another copy of the tools, to see what fails
+  there. Also run `Test-ForeverImport.ps1` and `Test-RecordedGivers.ps1`, as both games use the rules,
+  and the pin pipeline (step 6) on scratch copies before and after, comparing the candidates' pins.
 - For changes to `Read-ApiDocs.lua` or `Compare-ApiDocs.ps1`, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also

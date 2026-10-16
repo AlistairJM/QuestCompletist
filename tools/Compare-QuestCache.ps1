@@ -22,22 +22,25 @@ more than 0.5% of what it compared, when the title, sort or daily check compared
 Nothing in tools\ says what the group size, the follow-up quest, the quest giver or the scheduler bit
 should be, or the flags bits other than the daily and weekly ones, so a shift of those would not show.
 
+A cache that looks partial (QuestCacheFiles.ps1: under 90% of the quests of the build before's cache,
+or of ours in -DataDir) is warned about; that alone fails nothing.
+
 The baseline on 9 October 2026 (cache 12.1.0.69933, API 12.1.0_68914) is in docs\maintenance.md,
 step 2e. Exit 0 is a clean run, 1 a failed one.
 #>
 param(
     [string]$ToolsDir = $PSScriptRoot,
+    [string]$DataDir = (Join-Path $PSScriptRoot '..\data'),
     [string]$Cache = "",
     [int]$MinCompared = 20000,
     [int]$Examples = 5
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
+. "$PSScriptRoot\QuestCacheFiles.ps1"
 
 if (-not $Cache) {
-    $newest = Get-ChildItem "$ToolsDir\retail_quest_cache_*.jsonl" -ErrorAction SilentlyContinue |
-        Where-Object { $_.BaseName -match '^retail_quest_cache_\d+\.\d+\.\d+\.\d+$' } |
-        Sort-Object { [version]($_.BaseName -replace '^retail_quest_cache_') } | Select-Object -Last 1
+    $newest = Get-QuestCacheFiles $ToolsDir | Select-Object -Last 1
     if (-not $newest) { throw "No retail_quest_cache_<build>.jsonl under ${ToolsDir}: run Read-QuestCache.ps1 -Build <retail build> first." }
     $Cache = $newest.FullName
 }
@@ -176,6 +179,9 @@ foreach ($row in $tuningRows) {
 $failed = $false
 Write-Output ("Cache {0}: {1} quests, {2} with an API record (build {3}), {4} in the client's task table." -f
     (Split-Path $Cache -Leaf), $quests.Count, $withApi, (($apiBuilds.Keys | Sort-Object) -join ', '), @($quests.Keys | Where-Object { $cli.ContainsKey($_) }).Count)
+$dataFile = Join-Path $DataDir 'quests.jsonl'
+$ourIds = if (Test-Path $dataFile) { foreach ($line in [IO.File]::ReadLines($dataFile)) { if ($line -match '^\{"id":(\d+)') { [int]$Matches[1] } } }
+Get-QuestCacheWarning $Cache $ourIds
 foreach ($name in $checks.Keys) {
     $c = $checks[$name]
     $limit = [Math]::Max(5, [int][Math]::Floor($c.Compared * 0.005))

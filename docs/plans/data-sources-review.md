@@ -313,7 +313,10 @@ listed: they follow the user's "check everything every sweep" rule.
 6. **The TrinityCore pass's holds** (rec 30): place holiday, seasonal and profession quests (337) together
    with object spawns for the 258 Candy Buckets? *Recommended: yes, all at once.*
 7. **Nameless pins per quest or per spot** (open-items row 7, game-parity recommendation 11): per spot on
-   retail would remove 1,672 of its 5,159 nameless pins. *Still the user's call.*
+   retail would remove 1,672 of its 5,159 nameless pins. **Decided: per spot in both games (13 October
+   2026), within 1.5 map points (15 October),** which merges 2,745 of the 5,364 nameless pins the 12.1.5
+   tables give retail (the 1,672 counted only the merges at the very same point); built in the tools
+   (`tools\PinRules.ps1`), the pin data to follow in a pull request of its own.
 8. **Category names:** rename Mac'Aree, Time Rift and Weekly Events to Blizzard's "Eredath",
    "Time Rifts" and "Weekly Event", so the client names them in every language? *Recommended: yes ("match
    Blizzard exactly").*
@@ -475,6 +478,12 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-15: Hallow's End for 12.1.5, on the user's word (the 12.1.5 sweep's item 8, option A). 18 quests that the 12.1.5 API files under Hallow's End are in the data, with no pins: nine candy dailies (92535-92537, 93401, 95822, 95825, 95827-95829), the Drustvar and Duskwood Candy Exchanges (92568, 92570), the Alliance-only Midnight bucket 97211 and six Horde-only buckets (12391, 12393, 12946, 13468, 28959, 54709). Step 6b's eight Hallow's End task quests and the Candy Exchanges 92567 and 92569 are tagged too, all under the Hallow's End heading; retail has 35,573 quests. 52991 '[REMOVED]' was left out, with a `SKIP` row. The buckets 12346 (retired) and 28997, and the Ahune, Headless Horseman and gift quests, are still undecided.
 
+- 2026-10-15: `Find-MissingQuests.ps1` also counts the quests only QuestPOIBlob or a pin names (95808, 95811, 95812 and 95813 on retail, all untitled), takes titles from the API cache, files 162 more retail quests under internal titles (the `LFGDungeons - ` rows, Midnight's level-bracket placeholders, Prey targets, `(POC)`, `TO DEPRECATE`), and, when the newest build's quest line or `ItemSparse` table is missing, reads the newest numbered one up to that build (on Forever 11 untitled quests gain a quest line, and 131 rows keep their start item, against 14 with the missing table). Retail has 558 candidates. 11 are new: the 10 quest line rows and 98831 The Labyrinth, which only the 12.1.5.70391 quest cache titles. 93701 Brittle and Brilliant has left them, because only the 12.1.0.69933 cache titles it, and the entry above's six Horde Candy Buckets (now in the data) and 52991 (its `SKIP` row) no longer count. The baseline waits for the user's review.
+
+- 2026-10-15: recommendation 43 in part, for the 12.1.5 sweep: the twelve retail tools whose `-Build` default was 12.1.0.69933 now default to 12.1.5.70391, changed by hand as maintenance.md's "Pin the builds" asks at a new patch (`Get-LatestBuilds.ps1` passed the old defaults, since it only compares a default with its own version's newest build). `Test-ContinentPins.lua` reads Forever's newest `UiMap-1.60.1.<build>.csv` instead of 70338's. Still open: tools that work out their build (from `.build.info` or `Get-LatestBuilds.ps1`), build-named tables only, the build each tool read printed, a tool that keeps a timestamped copy of each `questcache.wdb` before it is read (maintenance.md's In the game step 3 asks for one by hand since #335), renaming the mislabelled `retail_quest_cache_12.1.0.69933.from-probe-cache-2026-10-09.jsonl`, and the API namespace build in the 2b and 2c summaries.
+
+- 2026-10-15: step 1 and two quests for 12.1.5, on the user's word (the 12.1.5 sweep's decisions 10b and 10c). 44920 Order of Incantations, which D3 left for the user, has every class: the API lists every class but Evoker, plus Adventurer, read like the 117 pre-Evoker lists, with a `FIX` row and a `KEEP` row. 94474 The Great Vault (one of recommendation 19's misfiles) gets a `KEEP` row in unavailable-quest-decisions.csv and moves to Silvermoon City (1512): 12.1.5's API 404s on it, but `QuestV2`, the probe and the quest cache all have it. Its cache record carries the server's Deprecated flag (0x4000) on 12.1.0 and 12.1.5, the one sign against it: it was recommendation 13's one API-served flagged quest (on 12.1.0; lean KEEP), and is now decided. The other four Silvermoon quests under Azuremyst Isle (94993, 95008, 95114, 95276), which don't carry the flag, are unchanged. Step 1's one fix made the Midnight bucket 97212 Horde only, as the API and TrinityCore say.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
@@ -528,7 +537,7 @@ checking pass carry "(new)"; duplicates name the finding they were merged into.
 | Pin positions | Item-started quests: neither game uses emulator loot sources; Forever's 200 stay pinless and retail's 70 item-named pins are legacy | both | confirmed, corrected | low |
 | Pin positions | Both games pin a quest with no point 32 at its point -1, the hand-in for most quests | both | confirmed, corrected | low |
 | Pin positions | Retail object-started quests: 151 nameless pins and 40 unpinned board quests that TrinityCore's object spawns could place and name | retail | confirmed, corrected | medium |
-| Pin positions | Nameless pins: per quest on retail, per spot on Forever (new retail numbers for row 7) | both | confirmed | low |
+| Pin positions | Nameless pins: per quest on retail, per spot on Forever (new retail numbers for row 7) | both | confirmed; decided per spot in both, 1.5 points, built in the tools (decision 7) | low |
 | Pin positions | The recorder's precedence differs: it never moves a retail pin, but replaces all of a Forever giver's spawns | both | merged into "The recorder outranks CMaNGOS on Forever but only fills blanks on retail" | low |
 | Pin positions | No sweep check records how far the pin sources agree, on either game | both | confirmed, corrected | high |
 | Pin positions | The map pass is compared with the pins by hand only, and neighbour-map offers read as mismatches | both | confirmed | medium |

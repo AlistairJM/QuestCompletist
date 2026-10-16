@@ -289,11 +289,12 @@ What else changed:
 - `qcQuestCategories` has 481 rows instead of 563, and `qcCategoryUiMapID` 337 instead of 373 (36 of the
   82 took their name from a map; `Build-CategoryUiMapIDs.ps1` drops those rows). `qcCategoryClientName`
   stays at 111: `Build-CategoryClientNames.ps1` only names categories that hold quests, so it never had
-  a row for one of the 82. `qcAreaIDToCategoryID` (1,109 rows) and `qcMenu.lua` named none of them and
-  are as they were. A Lua dump of retail's menu before and after is identical (557 items), a dump of
-  `qcQuestCategories` shows exactly the 82 rows gone and the other 481 in their old order, and
-  `data\quests.jsonl` and the generated Lua data files are byte for byte what they were: the 480
-  categories that hold quests are the same.
+  a row for one of the 82. `qcAreaIDToCategoryID` (1,109 keys then, 1,111 since the 12.1.5 sweep added
+  2162 and 2605 on 15 October 2026) and `qcMenu.lua` named none of them and are as they were. A Lua
+  dump of retail's menu before and after is identical (557 items), a dump of `qcQuestCategories` shows
+  exactly the 82 rows gone and the other 481 in their old order, and `data\quests.jsonl` and the
+  generated Lua data files are byte for byte what they were: the 480 categories that hold quests are
+  the same.
 - Locale files: 12 keys go from all 11 (`THEBARRENS` is in English only), 122 lines: `DHARBANDAR`,
   `EARTHEN`, `MOURNINGRISE`, `NEIGHBORHOOD`, `SIEGEOFZULDAZAR`, `SKETTIS`, `SPIREOFLIGHT`,
   `STORMSHIELDSTRONGHOLD`, `STRANGLETHORNVALE`, `THEBARRENS`, `WARSPEAROUTPOST` and
@@ -310,7 +311,8 @@ What else changed:
   reports 0 lines, and on the branch it reports 0 after the run.
 - `Add-ZoneTableMaps.ps1`: its header used two of the removed categories as examples (500 "Stranglethorn
   Vale", empty, and 429, Acherus); reworded. Its `-WhatIf` gives the same result as before (one map to
-  add, 2162 Alterac Valley, found before too).
+  add, 2162 Alterac Valley, found before too; added at the 12.1.5 sweep by the user's decision of 15
+  October 2026, with 2605 Silvermoon City).
 - `maintenance.md`: the key example under "Text in other languages" (`STRANGLETHORNVALE` is gone), the
   list of what `Remove-ConvertedLocaleKeys.ps1` removes (step 5), and a paragraph on unused definitions
   beside the one on merging categories (step 6).

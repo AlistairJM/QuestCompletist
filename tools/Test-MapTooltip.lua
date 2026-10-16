@@ -453,16 +453,17 @@ local heading = firstHeading(drawn[1])
 check("the tooltip's first heading is the same giver", heading and heading:find(":AddDoubleLine(" .. pinA[3] .. ",", 1, true) ~= nil, heading)
 check("and the nameless pin's quests follow under the other quests", count(otherQuests, 1) == 1)
 local npcIdText, questIdText = "|cff808080" .. pinA[2] .. "|r", "|cff808080" .. pinA[6][3] .. "|r"
+local namelessQuestName = QUESTS[pinA[6][3]][1]
 check("the heading shows the giver's NPC ID, and a quest line its quest ID", heading:find(npcIdText, 1, true) ~= nil and count(questIdText, 1) >= 1)
 env.qcSettings.QC_SHOW_QUEST_IDS = 0
 firstHeading(draw({nameless, namedA})[1])
-check("with quest IDs off the tooltip still names the giver and the quest", count(pinA[3], 1) >= 1 and count("Home Sweet Gnome", 1) == 1)
+check("with quest IDs off the tooltip still names the giver and the quest", count(pinA[3], 1) >= 1 and count(namelessQuestName, 1) == 1)
 check("but shows no NPC ID", count(npcIdText, 1) == 0)
 check("and no quest ID", count(questIdText, 1) == 0)
 env.qcSettings.QC_SHOW_QUEST_IDS = nil
 env.qcQuestPvP = {[pinA[6][3]] = 1}
 firstHeading(draw({nameless, namedA})[1])
-check("a PvP quest's line has the crossed swords before its name", count("|A:questlog-questtypeicon-pvp:14:14|a |cff", 1) == 1 and count("Home Sweet Gnome", 1) == 1)
+check("a PvP quest's line has the crossed swords before its name", count("|A:questlog-questtypeicon-pvp:14:14|a |cff", 1) == 1 and count(namelessQuestName, 1) == 1)
 env.qcQuestPvP = {}
 firstHeading(draw({nameless, namedA})[1])
 check("a quest that is not in the PvP table has none", count("questlog-questtypeicon-pvp", 1) == 0)

@@ -23,7 +23,10 @@ On retail's pins (data\pins.jsonl) it does two things, and nothing else:
   - a pin with no NPC ID gets the ID, and the name if it has none, of a creature that offered one of its
     quests and stood within 1.5 map points of the pin, when the pin's name (if any) is that creature's.
     A pin of an object's quest gets the object's name. Where the game gave the recorder no position (an
-    instance) the case is listed, not filled.
+    instance) the case is listed, not filled. A pin with no name holds what starts at its spot
+    (PinRules.ps1), so it takes a giver only when that giver offered every quest on it; otherwise the
+    quests a giver offered there move to the giver's pin within 1.5 points, or to a new pin of the giver
+    at the nameless pin's place, and the others stay (a quest two givers offered there stays, listed).
   - a quest with no pin gets one at the place a trusted giver of it was most seen, or joins the pin that
     giver already has within 1.5 points (a giver with no trusted English name gets a pin with no NPC and
     no name, which a later run fills). Up to six givers. A quest that is a world, bonus or hidden quest
@@ -36,8 +39,8 @@ On retail's pins (data\pins.jsonl) it does two things, and nothing else:
     categories only those in $allowedSystemCategories (World PvP, Little Scales Daycare, Upgrade System,
     Warbands, Delver's Headquarters, Weekly Events: at least half their quests already stand on a pin with
     an NPC) let an offer pin a quest; Prey, Garrison Support and the rest stay held.
-It never moves a pin, never changes an ID or a name that is there, never takes a quest off a pin, and
-saves no pin if any of that would happen. A fill that would put two pins of one NPC (or of one object name)
+It never moves a pin, never changes an ID or a name that is there, never takes a quest off a pin but to
+move it from a nameless pin to its giver's as above, and saves no pin if any of that would happen. A fill that would put two pins of one NPC (or of one object name)
 1.5 points or less apart, but not on one spot, is not made: the pipeline would merge them and move one pin's
 quests. Everything else is in the report, for a person: a pin that names another NPC than the one recorded at
 it, a quest offered away from its pins, a pin at a hand-in, names the trusted sources disagree on, masks the
@@ -249,14 +252,15 @@ $iconFor = {
     return 3
 }
 $done = Invoke-RecordedPlan $plan $pins $insertAfter $iconFor
-$problems = @(Test-RecordedChangeSafe $snapshot $pins)
+$problems = @(Test-RecordedChangeSafe $snapshot $pins $done.Moved)
 $review = New-Object System.Collections.Generic.List[object]
 foreach ($item in $plan.Review) { $review.Add($item) }
 foreach ($item in (Get-RecordedReview $model $pins $decisions $unavailable)) { $review.Add($item) }
 
 $report.Add("")
-$report.Add("Retail pins: $($plan.Fills.Count) get an NPC ID or a name; $($done.Joined) quests join a pin, $($done.Created) new pins.")
+$report.Add("Retail pins: $($plan.Fills.Count) get an NPC ID or a name; $($done.Joined) quests join a pin, $($done.Created) new pins; $($done.Moved.Count) quests move from a nameless pin to their giver's.")
 foreach ($fill in $plan.Fills) { $report.Add("  fill  $($fill.Where): $($fill.GiverKey) '$($fill.Name)' (quests $($fill.Quests -join ', '))") }
+foreach ($move in $plan.Moves) { $report.Add("  move  $($move.Where): quests $($move.Quests -join ', ') to $($move.GiverKey) '$($move.Giver.Name)'") }
 $classCount = @{}
 $addedQuests = New-Object System.Collections.Generic.HashSet[int]
 foreach ($add in $plan.Adds) {
@@ -367,7 +371,7 @@ $report.Add("Beside the report: $($unknownQuests.Count) offers for quests the da
 if ($problems.Count -gt 0) {
     throw ("No pin was saved: the change would not be only what this tool means to make.`n  " + ($problems -join "`n  "))
 }
-Write-Output "$($plan.Fills.Count) pins filled, $($done.Joined) quests joined a pin, $($done.Created) pins new; $($review.Count) cases for review."
+Write-Output "$($plan.Fills.Count) pins filled, $($done.Moved.Count) quests moved from a nameless pin to their giver's, $($done.Joined) quests joined a pin, $($done.Created) pins new; $($review.Count) cases for review."
 Write-Output "Report: $ReportFile"
 if ($WhatIf) { Write-Output "WhatIf: nothing changed."; exit 0 }
-if ($plan.Fills.Count -gt 0 -or $done.Joined -gt 0 -or $done.Created -gt 0) { Save-PinData $pins.ToArray() $DataDir $AddonDir }
+if ($plan.Fills.Count -gt 0 -or $done.Moved.Count -gt 0 -or $done.Joined -gt 0 -or $done.Created -gt 0) { Save-PinData $pins.ToArray() $DataDir $AddonDir }

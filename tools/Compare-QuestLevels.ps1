@@ -20,6 +20,11 @@ from this run), and each run says what is new: a D quest that wasn't in the base
 was right and no longer is, and fails the run (exit 1), as does a formula that no longer reproduces the
 API. A new N quest is a source lost, and is listed. A quest in neither class is right.
 
+A quest cache that looks partial (QuestCacheFiles.ps1: under 90% of the quests of the build before's
+cache, or of ours) is warned about, and -UpdateBaseline refuses to write from it (exit 1) unless
+-AcceptPartialCache is given: those of its gaps that neither the API nor the task table covers would go
+into class N as "no record", and the formula would be tested on fewer quests.
+
 A full sweep runs it after step 2e, which writes the quest cache it reads, and again after Apply-
 QuestMinLevels.ps1 and after step 6 has added quests, when the baseline is rewritten once the new
 quests are read. The first baseline is in docs\plans\quest-levels-baseline.csv.
@@ -33,7 +38,8 @@ param(
     [int]$MinTested = 20000,
     [int]$Examples = 5,
     [switch]$Refresh,
-    [switch]$UpdateBaseline
+    [switch]$UpdateBaseline,
+    [switch]$AcceptPartialCache
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -42,6 +48,7 @@ $ProgressPreference = 'SilentlyContinue'
 $world = Get-QuestLevelWorld $ToolsDir $DataDir $Build $Refresh.IsPresent
 Write-Output ("Retail build {0}: {1:N0} quests in the data, {2:N0} with an API minimum, {3:N0} tunings in the table." -f
     $world.Build, $world.Records.Count, $world.Api.Minimum.Count, $world.Tunings.Count)
+$world.CacheWarning | ForEach-Object { Write-Output $_ }
 $formula = Get-FormulaReport $world $MinAgreement $MinTested $Examples
 $formula.Lines | ForEach-Object { Write-Output $_ }
 $failed = -not $formula.Ok
@@ -91,7 +98,10 @@ foreach ($class in 'D', 'N') {
     if ($class -eq 'D' -and $new.Count -gt 0) { $failed = $true }
 }
 
-if ($UpdateBaseline) {
+$refused = $UpdateBaseline -and $world.CacheWarning.Count -gt 0 -and -not $AcceptPartialCache
+if ($refused) {
+    Write-Output "Baseline not written: the quest cache looks partial (the warning above). Read a whole cache, or give -AcceptPartialCache to write it from this one all the same."
+} elseif ($UpdateBaseline) {
     $lines = New-Object System.Collections.Generic.List[string]
     $lines.Add('"Class","QuestID"')
     foreach ($class in 'D', 'N') { foreach ($id in ($now[$class] | Sort-Object)) { $lines.Add('"' + $class + '","' + $id + '"') } }
@@ -99,11 +109,12 @@ if ($UpdateBaseline) {
     Write-Output "Baseline written: $($lines.Count - 1) quests -> $BaselineFile"
 }
 
-if ($failed) {
+if ($failed -or $refused) {
     $reasons = @()
     if (-not $formula.Ok) { $reasons += "the formula no longer reproduces the API's minimums" }
     $newD = @($now.D | Where-Object { -not $baseline.D.Contains($_) })
     if ($newD.Count -gt 0) { $reasons += "$($newD.Count) quests are new in class D, their minLevel not what their sources say (Apply-QuestMinLevels.ps1 -WhatIf says what it would set)" }
+    if ($refused) { $reasons += "-UpdateBaseline was refused, as the quest cache looks partial" }
     Write-Output ("FAILED: " + ($reasons -join '; '))
     exit 1
 }

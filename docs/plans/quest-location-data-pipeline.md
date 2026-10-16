@@ -832,3 +832,73 @@ holds them, and `Import-RecordedGivers.ps1` no longer counts Landfall among the 
   So filtered, a round with master's scripts changed no byte, a round with the hold gone changed
   `Assemble-PinDB.ps1`'s result alone, and the next round, and one on the checkout's own files, changed
   nothing. Step 6d (`-WhatIf`) fills and adds nothing.
+
+## October 2026, one pin per spot
+
+*The user, 13 October 2026: pins that name nobody are one pin per spot in both games, with every quest
+of the spot on it, and a quest that later gets a proper giver leaves the shared pin for its giver's
+(open-items row 7, game-parity recommendation 11). 15 October, for the 12.1.5 sweep: the spot is 1.5
+map points, row 37's one radius; retail keeps its carry-over layer (the old pairs kept, the positions
+reused, the names borrowed), and the grouping rule and the order a pin's giver is chosen in become one
+module both games call, as `DuplicatePins.ps1` is. The one real difference stays: retail places a
+quest at the client's start point, Forever at its giver.*
+
+- **The module.** `tools\PinRules.ps1`, dot-sourced by `Assemble-PinDB.ps1`, `Import-ForeverData.ps1`,
+  `Apply-ClientQuestGivers.ps1` and `RecordedGivers.ps1`: `$PinSameSpot` (1.5, which is also the
+  recorder's place radius now), `$PinIdentityOrder` with `Select-PinIdentity` (the quest's existing
+  pin, the game's own name, the recorder, the emulator's starter there, a known neighbour that starts
+  the quest), the grouping (`Get-PinGiverKey`, `Find-PinGroup`, `Add-PinGroup`), the icon from a pin's
+  quests (`Get-PinQuestIcon`, Forever's rule: seasonal, profession or class when every quest is one,
+  else normal), and what a nameless pin does once a giver of some of its quests is known
+  (`Split-NamelessPin`, `Find-GiverPin`, `New-GiverPin`).
+- **Retail's grouping.** Before, a row that named nobody joined a group of its own quest within 1.5
+  points, so every nameless pin held one quest (5,159 of 5,159 on 12 October), and a row with a name
+  but no ID that found no group of its name fell back to that quest group. Now a row joins the group
+  of its giver (its NPC ID, else its name) or, naming nobody, the nameless group of its spot whose
+  first row stands nearest it within 1.5 points; distances are measured on the decimals, so exactly
+  1.5 joins. After positions are reused, two groups of one giver, or two that name nobody, at the
+  same coordinates become one pin (it was NPC groups only). A nameless spot whose rows bring different
+  icons takes its quests' icon. The order a row's giver is chosen in is the one the tool had, now read
+  from the module, and it keeps one quirk: a row named after a starter's spawn keeps the normal icon
+  even for a profession quest.
+- **Forever's grouping.** The importer's pins went by an exact key (map, giver, point), so start
+  points merged only at one point. They now go by the module: a giver's places as before (they are
+  1.5 points apart or more already), and the start points of quests with no giver one pin per spot.
+- **The fill tools.** Steps 6c and 6d named a whole nameless pin after the giver found for one of its
+  quests, which was right while a nameless pin held one quest and is not on a shared spot: on a scratch
+  copy of the per-spot pins, master's 6c named the three quests of a spot after one quest's giver, and
+  6d the same. Both now fill a nameless pin only when one giver has every quest on it; otherwise the
+  quests the giver is found for move to its pin within 1.5 points, or to a new pin of the giver at the
+  nameless pin's place (with its icon), the rest stay on the nameless pin, and a quest two givers are
+  found for stays and is listed. 6d's safety check lets a quest leave a pin only in such a move. The
+  Stormheim spot that raised it (map 634, quests 39591, 39592, 39594, 39595 and 39597, at 46.89,44.56
+  in the 12.1.5 candidate) is not reached by 6c on today's data either way: 39597 also stands on Havi's
+  pin, and 6c fills a nameless pin only for quests with no NPC pin. Forever needed no change here: it
+  places every quest at its givers on each import, so a quest whose giver turns up leaves the spot.
+- **On the 12.1.5 tables** (12.1.5.70391, TrinityCore 1210.26091, 16 October 2026; the baseline): the
+  location step gives 19,904 rows, 28,883 with the 8,979 old pairs kept. Master's tools make 16,294
+  pins of them (10,593 with an NPC ID, 337 with only a name, 5,364 nameless), the module 13,549 (10,593,
+  337 and 2,619): 2,745 nameless pins merge, every pin with an ID or a name is the same line, and the
+  quests with a pin are 25,960 both times. 7 quests whose starts straddle two spots sit on two nameless
+  pins close by and 2 quests with several pins on a map have one fewer (28,203 placements to 28,208).
+  Of the placements 26,735 stay where they were, 747 move up to 0.5 points, 703 0.5 to 1.5 and 16 1.5
+  to 2.14, the last because the reused coordinates of a spot can be 1.5 points from its first row. 8
+  spots bring different icons and take their quests': the profession icon for the 3 whose quests all
+  need a profession, the normal one for the other 5; for 3 of the 8 that is another icon than their
+  first pin's. The dry run of 14 October (on master 82e302b) is the same rule:
+  run on today's inputs, its switch writes this candidate byte for byte but for those 3 icons. A
+  rebuild on the candidate's own output writes it byte for byte. Step 6c `-WhatIf` on the candidate
+  changes no pin, with master's tools or these (2,054 quests agree with the client's giver table), and
+  no row of `pin-npc-id-decisions.csv` or `pin-giver-decisions.csv` loses the pin at its place.
+- **On Forever** the import of builds 70338 and 70374 writes `pins.jsonl` as committed: its 4 nameless
+  pins hold the 11 quests pinned at their start, each pin's at one point, none within 1.5 points of
+  another.
+- **Checks.** `Test-PinRules.ps1` (46 checks: the rules, then the pipeline, 6c and 6d on a scratch
+  world, through a rebuild; 13 of them fail with master's tools), `Test-ForeverImport.ps1` (125, its
+  section L new; 5 of L's 10 fail with master's importer, which already moved a quest to a giver found
+  later), `Test-RecordedGivers.ps1` (298, E32 and E43
+  now expecting two givers on one nameless pin to take their quests, or to be listed for their want of
+  a name), and the reachability report, unchanged as no data changed.
+- **Left.** Applying the rule to `data\pins.jsonl`, in a pull request of its own after the 12.1.5 story
+  quests: `Assemble-PinDB.ps1 -Apply` on the candidate, then `Apply-PinNpcIds.ps1 -WhatIf`,
+  `Remove-DuplicatePinQuests.ps1 -WhatIf` and steps 6c and 6d with `-WhatIf`, and the reachability report.

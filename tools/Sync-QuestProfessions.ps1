@@ -52,8 +52,9 @@ Reads QuestV2CliTask.csv, QuestInfo.csv and ItemSparse.csv in -ToolsDir as step 
 -Build, only when one is missing), and its own SkillLine-<build>.csv, QuestSort-<build>.csv and
 Item-<build>.csv, downloaded when missing or -Refresh is given. -Build is the build of the newest
 tools\retail_quest_cache_<build>.jsonl unless given; without that build's cache the heading pass reads
-the API alone, and says so. Safe to rerun: a second run changes nothing. With -WhatIf it only reports;
-otherwise it saves through AddonData.ps1, which rebuilds the Lua.
+the API alone, and says so; a cache that looks partial (QuestCacheFiles.ps1) is warned about. Safe to
+rerun: a second run changes nothing. With -WhatIf it only reports; otherwise it saves through
+AddonData.ps1, which rebuilds the Lua.
 #>
 param(
     [ValidateSet('retail', 'forever')]
@@ -232,9 +233,11 @@ foreach ($id in $quests.Keys) {
     if ($text.Contains('"items":{"items":')) { $rewardFiles.Add($id) }
 }
 $cacheSort = @{}
+$cacheWarning = @()
 $cacheFile = Join-Path $ToolsDir "retail_quest_cache_$Build.jsonl"
 $sortRx = New-Object Text.RegularExpressions.Regex '^\{"id":(\d+),"title":"(?:[^"\\]|\\.)*",.*?"sort":(-?\d+)[,}]'
 if (Test-Path $cacheFile) {
+    $cacheWarning = @(Get-QuestCacheWarning $cacheFile $quests.Keys)
     foreach ($line in [IO.File]::ReadLines($cacheFile)) {
         $m = $sortRx.Match($line)
         if ($m.Success -and [int]$m.Groups[2].Value -lt 0) { $cacheSort[[int]$m.Groups[1].Value] = -[int]$m.Groups[2].Value }
@@ -322,6 +325,7 @@ foreach ($change in $changes) { $after[[int]$change.Quest.id] = $change }
 Find-OtherHeadings (Join-Path $AddonDir 'qcQuest.lua') $after | Out-Null
 
 "Build $Build. Task quests of ours: $taskCount; the API has $apiRecords of our quests; $($headingBit.Count) headings name a profession; $(@($knowledgeItems.Values | Where-Object { $_ }).Count) knowledge items need a skill."
+$cacheWarning
 "The passes name a profession for {0} quests (task {1}, heading {2}, knowledge {3}): {4} get it (task {5}, heading {6}, knowledge {7}), {8} already have it." -f
     $namedIds.Count, $named.task.Count, $named.heading.Count, $named.knowledge.Count, $counts.set, $byPass.task, $byPass.heading, $byPass.knowledge, $counts.same
 "Decisions: {0} rows; {1} to apply, {2} applied, {3} kept." -f $decided.Count, @($changes | Where-Object { $_.Why -eq 'decision' }).Count, $counts.decided, $counts.kept

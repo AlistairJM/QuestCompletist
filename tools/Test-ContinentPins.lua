@@ -7,19 +7,33 @@ filters. The zone list is checked against a made-up continent, with the cases th
 rectangle, a rectangle of nothing, twins, a city beside its zone, a zone filed under other zones' categories,
 a child that is not a zone, and no answer at all. The counting is checked on a character built step by
 step: quests done, in the log, ready, locked by level and done on another character, and the daily and
-weekly quests that must never count. Then, with the client's UiMap table (tools\UiMap.csv for retail,
-tools\UiMap-1.60.1.70338.csv for Forever, if present), every continent of the game gets its zones, the
-sum over zones is checked against the quest list's own zone counter, and one continent pass is timed.
+weekly quests that must never count. Then, with the client's UiMap table (tools\UiMap.csv for retail, the
+newest tools\UiMap-1.60.1.<build>.csv for Forever, if present, or the table named as the third argument),
+every continent of the game gets its zones, the sum over zones is checked against the quest list's own zone
+counter, and one continent pass is timed.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-ContinentPins.lua
-  & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-ContinentPins.lua QuestCompletist QuestCompletist_Camelot.toc tools\UiMap-1.60.1.70338.csv
+  & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-ContinentPins.lua QuestCompletist QuestCompletist_Camelot.toc
+  & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-ContinentPins.lua QuestCompletist QuestCompletist_Camelot.toc tools\UiMap-1.60.1.<build>.csv
 Prints each check and exits with 1 if one fails. Run it for both games' TOCs.
 ]]
 
+local function newestForeverUiMap()
+	local newest, newestBuild = "tools/UiMap-1.60.1.<build>.csv", -1
+	local pipe = io.popen(package.config:sub(1, 1) == "\\" and "dir /b tools 2>nul" or "ls tools 2>/dev/null")
+	if not pipe then return newest end
+	for name in pipe:lines() do
+		local build = tonumber(name:match("^UiMap%-1%.60%.1%.(%d+)%.csv$"))
+		if build and build > newestBuild then newest, newestBuild = "tools/" .. name, build end
+	end
+	pipe:close()
+	return newest
+end
+
 local ADDON_DIR = arg and arg[1] or "QuestCompletist"
 local TOC_FILE = arg and arg[2] or "QuestCompletist.toc"
-local UIMAP_FILE = arg and arg[3] or (TOC_FILE == "QuestCompletist.toc" and "tools/UiMap.csv" or "tools/UiMap-1.60.1.70338.csv")
+local UIMAP_FILE = arg and arg[3] or (TOC_FILE == "QuestCompletist.toc" and "tools/UiMap.csv" or newestForeverUiMap())
 local FOREVER = TOC_FILE ~= "QuestCompletist.toc"
 
 --[[ Lua 5.1 has no bit library; WoW's masks here are all non-negative and under 2^32. ]]--

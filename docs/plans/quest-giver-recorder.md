@@ -258,9 +258,15 @@ sources of both.
 **Fills.** A pin with no NPC ID gets the ID (and the name, together: the addon reads a pin with an ID
 and no name as a quest the player gives themselves) of the one trusted creature that offered one of the
 pin's quests and stood within 1.5 map points of it. The offer decides, never the nearest giver: a quarter
-of all pins have another within 1.5 points. When the pin has a name it must be the giver's, compared as
-Blizzard writes it. Two givers of one name (phased copies) are one character: the one that offers most
-of the pin's quests is taken. Left and listed: two givers of different names, a vehicle, a giver with no
+of all pins have another within 1.5 points. Two givers of one name (phased copies) are one character: the
+one that offers most of the pin's quests is taken. When the pin has a name it must be the giver's,
+compared as Blizzard writes it, and two givers of different names are left and listed. **A pin with no
+name** holds what starts at its spot (one pin per 1.5-point spot, `PinRules.ps1`, 16 October 2026), so it
+is filled only when one character offered every quest on it. Otherwise each trusted giver's quests move
+to its pin within 1.5 points of the nameless pin, or to a new pin of the giver at the nameless pin's
+place, with its icon, and the rest stay on the nameless pin, which keeps no name; a pin left with no quest
+goes. A quest two givers of different names offered stays where it is, listed as `two givers at one pin`.
+Left and listed, for a fill or a move: a vehicle, a giver with no
 trusted English name or whose sources disagree on it, a pin whose ID `pin-npc-id-decisions.csv` took off by
 hand, a case `pin-giver-decisions.csv` or `recorded-giver-decisions.csv` keeps (a KEEP on any quest of the
 pin keeps the pin), a giver that stood 1.5 to 3 points away, a giver recorded where the game gave no
@@ -269,6 +275,9 @@ keeps what a giver offered and took in, and where it stood, but not which place 
 **A fill that would put two pins of one NPC, or of one object name, 1.5 points or less apart but not on
 one spot, is not made:** the pipeline would merge them at its next run and move one pin's quests. Blank
 pins stacked on one spot are filled together, which the pipeline then makes one pin without moving anything.
+The tool saves nothing unless the change is only what it means to make: every old pin where it was, with its
+icon and note, its NPC and name filled only where they were empty, and every quest it had but those such a
+move took to a giver's pin that has them (a pin that loses its last quest that way goes).
 
 **Where the game gave no position** (an instance): the recorder stores `-1 -1`, and the tool lists the
 case instead of filling it. A quest that has one pin on a map and a giver recorded on it is not proof that
@@ -498,3 +507,8 @@ so nothing was written there.
   move is measured in [forever.md](forever.md), "The importer reads the ledger". Nothing is retired: the user
   decided the same day to keep both recorders ("yes, keep both, go ahead"), so the probe's notes and the addon's
   are combined through the ledger ("What is left", 4).
+- 2026-10-14: step 6d in the 12.1.5 sweep read the addon's Forever file (144 records, 0 odd: 69 givers, 67 spots,
+  76 offers, 49 turn-ins) and the probe's file of build 70374 (164 records: 80 givers, 88 spots, 99 offers, 58
+  turn-ins). The Forever ledger went from 231 to 326 rows, all trusted; every note is of build 70338 or earlier.
+  Retail's file held 0 records again. Forever's import then read the ledger and moved 26 pins and added 5, which
+  the user accepted ([forever.md](forever.md), status of 14 October).
