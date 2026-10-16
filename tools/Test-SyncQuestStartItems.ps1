@@ -75,6 +75,24 @@ Check (@($disagree | Where-Object Quest -eq 107).Count -eq 0) 'F1: an item for e
 Check (@($disagree | Where-Object Quest -eq 108).Count -eq 0) 'F1: nor does an item for either side beside an Alliance one'
 Check (@($disagree | Where-Object Quest -eq 102).Count -eq 0) 'F1: nor a Horde item for a Horde quest'
 
+# Items whose effect casts a quest-starting spell: on use (0), on pickup (5) and on looted (7) count; on equip (1) doesn't,
+# nor a spell whose effect isn't 150. Item 30 names the placeholder 900 by StartQuestID and starts 100 by its spell.
+$effects = @(
+    [pscustomobject]@{ ID = '1'; TriggerType = '0'; SpellID = '501' }, [pscustomobject]@{ ID = '2'; TriggerType = '5'; SpellID = '502' },
+    [pscustomobject]@{ ID = '3'; TriggerType = '7'; SpellID = '503' }, [pscustomobject]@{ ID = '4'; TriggerType = '1'; SpellID = '504' },
+    [pscustomobject]@{ ID = '5'; TriggerType = '0'; SpellID = '505' }, [pscustomobject]@{ ID = '6'; TriggerType = '0'; SpellID = '506' })
+$itemEffects = @(@(30, 1), @(31, 2), @(32, 3), @(33, 4), @(34, 5), @(35, 6)) | ForEach-Object { [pscustomobject]@{ ItemID = "$($_[0])"; ItemEffectID = "$($_[1])" } }
+$spellEffects = @(@(501, 150, 100), @(502, 150, 101), @(503, 150, 102), @(504, 150, 103), @(505, 16, 104), @(506, 150, 999)) |
+    ForEach-Object { [pscustomobject]@{ SpellID = "$($_[0])"; Effect = "$($_[1])"; EffectMiscValue_0 = "$($_[2])" } }
+$spellStarts = Get-SpellStartItems $effects $itemEffects $spellEffects
+Equal (@($spellStarts.Keys | Sort-Object | ForEach-Object { "$_>$($spellStarts[$_])" }) -join ' ') '30>100 31>101 32>102 35>999' 'S1: used, picked up or looted, casting QUEST_START'
+$spellRows = @((Item 30 900), (Item 31 0 2 20), (Item 32 0), (Item 33 0), (Item 35 0))
+$quests[900] = [pscustomobject]@{ id = 900; name = 'This Is Not a Quest'; faction = 3 }
+$spellRecords = Get-StartItemRecords $spellRows $races $quests $spellStarts
+Equal (@($spellRecords | ForEach-Object { "$($_.item)>$($_.quest)" }) -join ' ') '30>100 31>101 32>102' 'S2: the spell''s quest wins over StartQuestID; an item with neither, or a spell for a quest we lack, is left out'
+Equal "$($spellRecords[1].side)/$($spellRecords[1].level)" '1/20' 'S2: a spell-started item keeps its own limits'
+$quests.Remove(900)
+
 $json = ConvertTo-StartItemJsonLines @($by[11], $by[13], $by[16])
 Equal $json ('{"item":11,"quest":101,"side":1,"level":30}' + "`n" + '{"item":13,"quest":103,"rep":1015,"repRank":3}' + "`n" + '{"item":16,"quest":106,"races":[1,2]}' + "`n") 'J1: the data file leaves out what is empty'
 $lua = ConvertTo-LuaStartItemTable @($by[17], $by[18], $by[10], $by[13], $by[16])

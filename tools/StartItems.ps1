@@ -1,6 +1,8 @@
 # Items that start quests, from a client's ItemSparse and ChrRaces, for Sync-QuestStartItems.ps1 (both games) and its
-# test. ItemSparse.StartQuestID is the only client link from an item to the quest it begins; the StartItem of the quest
-# cache and TrinityCore is the item handed over on accept (docs/plans/retail-quest-cache.md, "Start item").
+# test. An item begins a quest in one of two ways: its ItemSparse.StartQuestID names the quest, or one of its effects
+# (ItemXItemEffect -> ItemEffect) casts a spell whose SpellEffect is 150, QUEST_START, with the quest in EffectMiscValue_0,
+# when the item is used, picked up or looted. The StartItem of the quest cache and TrinityCore is the item handed over on
+# accept, not one of these (docs/plans/retail-quest-cache.md, "Start item").
 # Each item's own limits come with it:
 #   side       its faction flag: Flags_1 0x1 Horde, 0x2 Alliance (TrinityCore's ITEM_FLAG2_FACTION_HORDE and
 #              _ALLIANCE; exactly one of them on every item that has an opposite-faction twin)
@@ -48,14 +50,32 @@ function Get-SideRaces($raceRows) {
 
 # One record per item that starts one of $questIds (a hashtable of quest ID -> anything), in item order. Races that are
 # exactly one side's playable races are that side: the item's faction, not a list of races.
-function Get-StartItemRecords($itemRows, $raceRows, $questIds) {
+# Item ID -> the quest its effect starts: ItemEffect.TriggerType 0 on use, 5 on pickup, 7 on looted, 9 and 10 their forced
+# kinds (TrinityCore's ItemSpelltriggerType; equipping, procs, death and learning start nothing), casting a spell with a
+# QUEST_START effect (150). $spellEffectRows may hold only the effect-150 rows.
+$StartItemTriggers = @('0', '5', '7', '9', '10')
+function Get-SpellStartItems($itemEffectRows, $itemXEffectRows, $spellEffectRows) {
+    $questOfSpell = @{}
+    foreach ($e in $spellEffectRows) { if ($e.Effect -eq '150') { $questOfSpell[$e.SpellID] = [int]$e.EffectMiscValue_0 } }
+    $questOfEffect = @{}
+    foreach ($e in $itemEffectRows) { if ($StartItemTriggers -contains $e.TriggerType -and $questOfSpell.ContainsKey($e.SpellID)) { $questOfEffect[$e.ID] = $questOfSpell[$e.SpellID] } }
+    $questOfItem = @{}
+    foreach ($x in $itemXEffectRows) { if ($questOfEffect.ContainsKey($x.ItemEffectID)) { $questOfItem[[int]$x.ItemID] = $questOfEffect[$x.ItemEffectID] } }
+    return $questOfItem
+}
+
+# $spellStarts (Get-SpellStartItems) gives the quest an item's spell starts, which is what the item does, so it wins over
+# the item's StartQuestID: six Legion scouting reports name the placeholder 33931 "This Is Not a Quest" there and start
+# their real quest (39718 Paradise Lost and others) by their spell.
+function Get-StartItemRecords($itemRows, $raceRows, $questIds, $spellStarts = @{}) {
     $bits = Get-PlayableRaceBits $raceRows
     $sideRaces = Get-SideRaces $raceRows
     $records = New-Object System.Collections.Generic.List[object]
     $lowColumn = $null
     foreach ($row in $itemRows) {
-        $quest = 0
-        if (-not [int]::TryParse($row.StartQuestID, [ref]$quest) -or $quest -le 0 -or -not $questIds.ContainsKey($quest)) { continue }
+        $quest = [int]$spellStarts[[int]$row.ID]
+        if (-not $questIds.ContainsKey($quest) -and -not [int]::TryParse($row.StartQuestID, [ref]$quest)) { continue }
+        if ($quest -le 0 -or -not $questIds.ContainsKey($quest)) { continue }
         if (-not $lowColumn) { $lowColumn = if ($row.PSObject.Properties['AllowableRaces_0']) { 'AllowableRaces' } else { 'AllowableRace' } }
         $faction = [long]$row.Flags_1 -band 3
         $side = if ($faction -eq 1) { 2 } elseif ($faction -eq 2) { 1 } else { $null }
