@@ -334,7 +334,7 @@ inside an instance either; this covers them.) Then switch back to English.
   client's giver are listed in `tools\client-giver-report.txt` for review, 47 of them within 1.5
   points of a spawn, so the same spot under another ID of the character. Next: those 76 through
   the decisions file.
-- 2026-10-16: decision 2 reversed (see Decisions) on `fix/map-freeze-npc-prefetch`: opening a map
+- 2026-10-16: decision 2 reversed (see Decisions) in #371: opening a map
   asks for no names, a tooltip or waypoint asks for its own, and names still awaited are re-checked
   every 0.25 s as well as on each update event. The new `tools/Test-NpcNames.lua` plays it on a
   clock of its own against a game that answers 0.1 s later: opening Zuldazar asks for no names

@@ -140,7 +140,7 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
-- **The map freezing on a zone's first open** (16 October 2026, `fix/map-freeze-npc-prefetch`, untried in game;
+- **The map freezing on a zone's first open** (#371, 16 October 2026, untried in game;
   retail, a few minutes). Players reported the game freezing for minutes the first time they opened a Battle for
   Azeroth or Dragonflight zone's map; the branch stops the addon asking for every giver's name when a map opens
   ([localized-npc-names.md](localized-npc-names.md), decision 2). Your creature cache already holds every pin NPC
