@@ -559,7 +559,10 @@ requires 85721. The other 7 were rows out of date: six `prereq: recurring quest`
 retyped as weekly too (83530, 85470, 85721, 88659, 89195 and 89197), and the `prereq: quest not in the
 data` row for 91798, whose 91799 step 6b added on 11 October. Step 2c then dropped all seven links on 12
 October (recurring links Blizzard doesn't name), so none of those quests has a prerequisite now and no
-finding took the rows' place.
+finding took the rows' place. The user kept the 3 the same day, as decision 3 of 6 October kept the 26
+like them ([plans/quest-table-checks.md](plans/quest-table-checks.md#review-of-what-was-left-6-october-2026)),
+and the 7 rows were taken out: the run then reported 122 findings, all kept, none new and no row out of
+date.
 
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
@@ -685,7 +688,11 @@ the findings 15: the API now files the Candy Exchanges 92567 and 92569 under Hal
 task quests of step 6b and 18 quests new to the data), the counts are 1,004, 587 (four of the new Horde
 Candy Buckets are in TrinityCore's Hallow's End event) and 1,082 (with Broomstick Express and Specter
 Inspector, 92104 and 92455, moved from Uncategorized under the Hallow's End heading too), and the findings
-the same 13, none new.
+the same 13, none new. The 1,004 need the API records of the quests new to the data: a cache without the
+24 fetched for them (22 of them in Hallow's End's category) counts 982, and step 1 fetches them. The same
+day the `SET` rows of the 12 Bar Tab Barrels, which said the API gave them no category, were brought up
+to date: the 12.1.5 API files all 30 Bar Tab Barrels of our data under Brewfest (370). That changed no
+count or finding.
 
 ### 2e. The retail quest cache
 
