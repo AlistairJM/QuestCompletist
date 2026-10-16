@@ -230,7 +230,8 @@ The entries of the question, by what the review found (quest counts as of 11 Oct
 The line also helps every other category that opens empty, such as Rated PvP (question 27: 86 of 87
 quests unavailable) and any class, faction or race category the character can't use. For a Horde Blood
 Elf Death Knight at the default settings 61 of retail's 480 categories and 15 of Forever's 113 open
-empty; the reachability report lists them.
+empty; the reachability report lists them. On 16 October 2026, with the two 12.1.5 categories, it is 61
+of retail's 482.
 
 ## Question 31: what the removal changed
 
@@ -334,7 +335,9 @@ What the tools say now:
 
 - A plain `Place-UncategorisedQuests.ps1 -Refile 0` would now move 30 more quests out of
   Uncategorized (28 by their pin's map, 2 by storyline: 91437 and 92430). They were left where they
-  are; run it with `-WhatIf` to see the list.
+  are; run it with `-WhatIf` to see the list. **Done on 16 October 2026:** the gap inserter's run filed
+  34 (30 by pin's map, 2 by storyline, 2 by API area; `maintenance.md`, step 6), kept on the user's word
+  (the 12.1.5 sweep's decision 9c); a `-WhatIf` run now places none of the 779 left in category 0.
 - `Build-CategoryClientNames.ps1` listed two expected differences (categories 1221 and 1430) that
   the spelling fixes made stale. Removed on 10 October 2026: the client's names now agree with ours,
   and the one difference left is category 1420 ("Awakening The Machine" in the client, "Awakening
