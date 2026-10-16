@@ -45,11 +45,12 @@ taken. What is left, in one place:
 - **Opportunity 2, quests started by an item (16 October 2026):** row 19 is built as sweep step 6e
   ([maintenance.md](../maintenance.md)): the tooltip's "Starts From: <item>", named by the game, with what the item
   requires as information only (the user: the item's limits as filters only if the game ever proves they block the
-  start). The four quests Blizzard split by faction (11002, 38194, 38202, 56071) took their item's faction. Next, in
-  its own pull request: the 33 item-started quests the user chose to add (the 32 Midnight ones, from 94834 to 97910,
-  and 11003, the Horde's The Fall of Magtheridon) and SKIP rows for the five dead ones (40335, 52991, 45045, 28462,
-  50195); the 52 older candidates and 93852 stay in step 6's queue, and Forever's 7 Ahn'Qiraj Task Briefings
-  (8498, 8536, 8804 to 8807, 8829) weren't chosen.
+  start). The four quests Blizzard split by faction (11002, 38194, 38202, 56071) took their item's faction. In its
+  own pull request, the 33 item-started quests the user chose went in (the 32 Midnight ones, from 94834 to 97910,
+  and 11003, the Horde's The Fall of Magtheridon), with SKIP rows for the dead ones (40335, 45045, 28462, 50195;
+  52991 had one): maintenance.md, step 6, "The item-started gap run". The 52 older candidates and 93852 stay in step
+  6's queue, and Forever's 7 Ahn'Qiraj Task Briefings (8498, 8536, 8804 to 8807, 8829) weren't chosen. Opportunity
+  2 is done once both pull requests are merged.
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest
