@@ -319,6 +319,11 @@ again.
   absence of 1879, Children's Week and the Darkmoon Faire only), so its first full paste is the next
   sweep's. The 12.1.5 sweep's two are still to do (16 October 2026): set each beside the "What /qc
   holidays should print" of a `Review-Calendar.ps1` run of the same day (maintenance.md, step 2h).
+  Retail's was run on 16 October 2026, on 113.2's code (the main checkout the game loads was on another
+  branch): its 63 lines match the review line for line once the review prints midnight runs as the game
+  does (00:01 to 23:59, maintenance.md, "In the game"). Left: Forever's, and retail's again once the game
+  loads 113.4, where the Darkspear Dash moves up among the holidays quests follow, 2027-06-26 00:01 to
+  2027-06-27 23:59.
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When

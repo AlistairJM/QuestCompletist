@@ -1207,7 +1207,9 @@ it into `-DownloadDir`. It writes:
   "Other calendar holidays", those dated there but not expected on the calendar, and those dated for
   other regions only, each with its next run and its last date;
 - **what `/qc holidays` should print** on each game today, in its order and words, to set beside the one
-  run in game (below);
+  run in game (below). Its times are the game's: a run the table starts at midnight shows from 00:01,
+  and one it ends at midnight ends at 23:59 the day before, as the game printed all six such events on
+  retail on 16 October 2026; the other sections keep the table's times;
 - **the comparison with the baseline**, `docs\plans\calendar-baseline.csv` and the two files beside it,
   `calendar-baseline-rows.csv` and `calendar-baseline-facts.csv`;
 - **each fact of `docs\plans\calendar-decisions.csv`**, the decisions taken on the calendar's word, with
@@ -3247,7 +3249,13 @@ for that game: the same IDs under the same entries, and the same days. An ID the
 review doesn't, or the other way, is a finding to look at. For each open `served` fact of
 `docs\plans\calendar-decisions.csv` that the game now lists, put the day in its `Seen` column; for a
 row the table dates in the 12 months and the game doesn't list, add a `not-served` row with the day.
-The first comparison is retail's list of 11 October 2026 ([Holidays](#holidays)).
+The first comparison is retail's list of 11 October 2026 ([Holidays](#holidays)). On 16 October 2026
+retail's list (run by 113.2's code, which the game then loaded) had the same IDs, entries and days as
+the review, and differed only in the times of the six events the table starts at midnight (Darkmoon
+Faire, Moonkin Festival, the two cups, The Great Gnomeregan Run and Call of the Scarab), which the game
+shows from 00:01 to 23:59; since then the review prints them that way, and that run's 63 lines match it
+line for line. Run the review with `-AddonDir` on the code the game loaded (the main checkout's
+`QuestCompletist\`, through the AddOns junction) when that isn't the branch the review runs from.
 
 **Quest-type probe (`/qc typecheck`).** This asks the client whether each quest recurs. It's pull
 request #42, which is closed and its branch deleted; GitHub keeps its commits. It is superseded by the

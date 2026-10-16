@@ -8,8 +8,8 @@ HolidayNames tables of retail live (-Build), the retail PTR (-PtrBuild, when the
   - every event the table dates that no entry covers (not one of an entry's IDs, its name, or its
     $HolidayRowPatterns pattern), by name, ID and region, with its next run and its last date: those the
     calendar shows in the region, those it is not expected to show, and those dated for other regions only;
-  - what /qc holidays should print on each game today, in its order and words, to set beside the one
-    run in game (the sweep asks for one per game: maintenance.md, "Holidays");
+  - what /qc holidays should print on each game today, in its order, words and times, to set beside the
+    one run in game (the sweep asks for one per game: maintenance.md, "Holidays");
   - the comparison with the baseline (-BaselineFile, docs\plans\calendar-baseline.csv, and beside it
     calendar-baseline-rows.csv and calendar-baseline-facts.csv);
   - each fact of -DecisionsFile (docs\plans\calendar-decisions.csv), which lists the decisions taken on
@@ -132,6 +132,13 @@ function Get-FlagsInUse([string]$file) {
 
 function Format-Time([datetime]$t) { return $t.ToString('yyyy-MM-dd HH:mm') }
 function Format-Day([datetime]$t) { return $t.ToString('yyyy-MM-dd') }
+# The game's calendar starts a run at 00:01 when the table starts it at midnight, and ends one at 23:59
+# when the table ends it at midnight (all six such events in /qc holidays on retail, 16 October 2026).
+function Format-CalendarRun($run) {
+    $start = if ($run.Start.TimeOfDay -eq [timespan]::Zero) { $run.Start.AddMinutes(1) } else { $run.Start }
+    $end = if ($run.End.TimeOfDay -eq [timespan]::Zero) { $run.End.AddMinutes(-1) } else { $run.End }
+    return "$(Format-Time $start) to $(Format-Time $end)"
+}
 function ConvertTo-Day([string]$day) { return [datetime]::ParseExact($day, 'yyyy-MM-dd', $null) }
 
 function Get-RepeatWords($r, $last) {
@@ -344,7 +351,7 @@ function Write-Preview($game) {
         for ($i = 0; $i -lt $seen.Count; $i++) {
             $s = $seen[$i]
             $running = if ($i -eq 0 -and $s.Run.Start -le $Today -and $Today -lt $s.Run.End) { 'Running ' } else { '' }
-            Write-Output "$(if ($i -eq 0) { '  ' } else { '    ' })$running$($s.Row.Name) ($($s.Row.ID)): $(Format-Time $s.Run.Start) to $(Format-Time $s.Run.End)"
+            Write-Output "$(if ($i -eq 0) { '  ' } else { '    ' })$running$($s.Row.Name) ($($s.Row.ID)): $(Format-CalendarRun $s.Run)"
         }
     }
     $others = @($onCalendar | Where-Object { -not $tracked.ContainsKey($_.ID) } | Sort-Object ID)

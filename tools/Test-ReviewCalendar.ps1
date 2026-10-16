@@ -212,6 +212,10 @@ try {
     $preview = ($r.Text -split '== What /qc holidays should print on retail')[1] -split '== ' | Select-Object -First 1
     Has $preview "  Brewfest (372): 2027-09-20 07:00 to 2027-10-06 07:00" 'the preview lists an entry in use with its run'
     Has $preview "  Children's Week: not on the calendar in the next 12 months" 'an entry in use with no run in the 12 months says so'
+    Has $preview "  Old Faire Days (500): 2026-11-01 00:01 to 2026-11-07 23:59" 'a run the table starts and ends at midnight shows 00:01 to 23:59 the day before, as the game prints it'
+    Has $preview "  Kalimdor Cup (1395): 2027-02-23 00:01 to 2027-03-08 23:59" "so does a cup's"
+    Lacks $preview '00:00' 'no run in the preview starts or ends at 00:00'
+    Has $r.Text 'Old Fair: next 2026-11-01 00:00 to 2026-11-08 00:00 (500)' "the entries' list keeps the table's times"
     Has $preview "  Love is in the Air (423): 2027-02-08 10:00 to 2027-02-22 10:00`r`n    Love is in the Air (335): 2027-02-11 06:00 to 2027-02-16 06:00" "an entry's other ID in the 12 months is on a line below"
     Has $preview "  Hallow's End (324): 2026-10-19 10:00 to 2026-11-02 11:00`r`n  Love" "an entry's ID for other regions is not listed"
     Lacks $preview 'Feast of Winter Veil' 'an entry no quest of the game has is left out, as qcPrintHolidays does'
