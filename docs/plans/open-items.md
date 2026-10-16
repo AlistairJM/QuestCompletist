@@ -16,6 +16,16 @@ taken. What is left, in one place:
   A Lesson to Learn givers), its 43 recommendations, its 14 decisions and its few in-game lines are the next
   work; its Status section logs what has been fixed or decided since, among them D16 (step 1c's names for
   the quests the API doesn't serve, 16 October 2026).
+- **The map freeze reports (CurseForge, 12 to 16 October 2026):** two players see the game freeze for up to three
+  minutes the first time they open a Battle for Azeroth or Dragonflight zone's map, never again for that zone,
+  with `Script from "QuestCompletist" has exceeded its execution time limit` in Blizzard's pin nudging; 109.97
+  doesn't do it for them. Not reproduced: on 16 October, with the creature and quest caches both emptied, the
+  author's game opened Zuldazar, Waking Shores and other zones without a freeze, and `C_AddOnProfiler` put Quest
+  Completist's worst frame at 21 ms, none over 50 ms. #371 stops a map asking for every giver's name when it
+  opens ([localized-npc-names.md](localized-npc-names.md), decision 2), a cut in needless work, not a known fix.
+  Next: from the reporters, straight after a freeze, the five add-ons with the slowest frame
+  (`C_AddOnProfiler.GetTopKAddOnsForMetric`, `PeakTime`), the game's own slowest frame
+  (`GetApplicationMetric`) and their add-on lists.
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest

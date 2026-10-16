@@ -1437,8 +1437,11 @@ end
 -- cached, the reply is empty and TOOLTIP_DATA_UPDATE fires when the name arrives; an empty reply has
 -- no ID to match that event to, so every name still awaited is checked again. Inside an instance the
 -- game hides creature names, so nothing is asked there. A pin with no NPC ID keeps its stored name.
+-- Names are asked for when something shows them, never for a whole map: a large map's pins name up
+-- to 160 givers, most of them never hovered, and asking for them all took thousands of lookups.
 local QC_MAX_NPC_LOADS = 16
 local QC_NPC_LOAD_TIMEOUT = 5
+local QC_NPC_RECHECK_DELAY = 0.25
 
 local qcNpcNames = {}
 -- A creature's subtitle, such as "Innkeeper": the tooltip line after its name, unless that line is
@@ -1451,6 +1454,7 @@ local qcNpcLoadInFlight = {}
 local qcNpcLoadInFlightCount = 0
 local qcNpcLoadTried = {}
 local qcNpcLoadScheduled = false
+local qcNpcRecheckScheduled = false
 -- NPCs whose names an open tooltip is still waiting for.
 local qcNpcTooltipWaiting = {}
 local qcNpcMapTooltipWaiting = {}
@@ -1477,7 +1481,18 @@ local function qcNpcNameArrived(npcId)
 	qcScheduleNameRedraw()
 end
 
-local qcSendNpcLoads
+local qcSendNpcLoads, qcNpcDataUpdated
+
+-- The update event usually comes a moment before the name can be read, and with no other name
+-- loading no later event would bring it, so names still awaited are also looked at again shortly.
+local function qcScheduleNpcRecheck()
+	if qcNpcRecheckScheduled or qcNpcLoadInFlightCount == 0 then return end
+	qcNpcRecheckScheduled = true
+	C_Timer.After(QC_NPC_RECHECK_DELAY, function()
+		qcNpcRecheckScheduled = false
+		qcNpcDataUpdated()
+	end)
+end
 
 -- Asking for a creature the client hasn't cached sends the request; it's tracked from then until the
 -- name arrives or the timeout passes.
@@ -1486,6 +1501,7 @@ local function qcNpcLoadStarted(npcId)
 	qcNpcLoadTried[npcId] = true
 	qcNpcLoadInFlight[npcId] = token
 	qcNpcLoadInFlightCount = qcNpcLoadInFlightCount + 1
+	qcScheduleNpcRecheck()
 	C_Timer.After(QC_NPC_LOAD_TIMEOUT, function()
 		if qcNpcLoadInFlight[npcId] ~= token then return end
 		qcNpcLoadInFlight[npcId] = nil
@@ -1496,11 +1512,12 @@ local function qcNpcLoadStarted(npcId)
 	end)
 end
 
--- Only the pins of an opened map wait in the queue; a hovered pin asks straight away.
+-- Only names wanted inside an instance wait in the queue, for the player to leave; elsewhere they're
+-- asked for straight away.
 function qcSendNpcLoads()
 	if IsInInstance() then return end
 	while qcNpcLoadInFlightCount < QC_MAX_NPC_LOADS and #qcNpcLoadQueue > 0 do
-		-- Newest first: the map opened last goes first.
+		-- Newest first: the one wanted last goes first.
 		local npcId = table.remove(qcNpcLoadQueue)
 		qcNpcLoadQueued[npcId] = nil
 		if not (qcNpcNames[npcId] or qcNpcLoadInFlight[npcId] or qcNpcLoadTried[npcId]) then
@@ -1528,7 +1545,7 @@ local function qcQueueNpcName(npcId)
 	end
 end
 
-local function qcNpcDataUpdated()
+function qcNpcDataUpdated()
 	if qcNpcLoadInFlightCount == 0 or IsInInstance() then return end
 	local arrived = {}
 	for npcId in pairs(qcNpcLoadInFlight) do
@@ -1540,6 +1557,7 @@ local function qcNpcDataUpdated()
 		qcNpcNameArrived(npcId)
 	end
 	if #arrived > 0 then qcSendNpcLoads() end
+	qcScheduleNpcRecheck()
 end
 
 -- A pin's quest giver in the client's language, or the stored name until the client has it.
@@ -1558,14 +1576,6 @@ local function qcNpcName(pinData, waiting)
 	end
 	if waiting then waiting[npcId] = true end
 	return stored
-end
-
--- The pins a map draws ask for their givers' names, so they're there before a pin is hovered.
-local function qcRequestPinNpcNames(pins)
-	if IsInInstance() then return end
-	for _, pinData in ipairs(pins) do
-		if pinData[3] and pinData[2] ~= 0 then qcQueueNpcName(pinData[2]) end
-	end
 end
 
 -- Search function start
@@ -2558,7 +2568,7 @@ QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides
 QC.qcSkillRank, QC.qcSkillName = qcSkillRank, qcSkillName
 QC.qcZoneQuests = qcGetZoneQuests
 QC.CHAT_TITLE = QCADDON_CHAT_TITLE
-QC.qcNpcName, QC.qcRequestPinNpcNames, QC.qcNpcSubtitles = qcNpcName, qcRequestPinNpcNames, qcNpcSubtitles
+QC.qcNpcName, QC.qcNpcSubtitles = qcNpcName, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
 QC.qcPvpMark, QC.QC_ICON_PVP = qcPvpMark, QC_ICON_PVP

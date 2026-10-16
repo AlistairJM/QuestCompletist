@@ -3586,6 +3586,12 @@ git diff --stat
   The pins and quests it uses are the first fitting ones in the data of the TOC it loads, so the two
   games' runs check different quests. Forever's run:
   `& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-MapTooltip.lua QuestCompletist QuestCompletist_Camelot.toc`.
+- For changes to how quest givers' names are asked for (`qcNpcName` and the code around it in `qcCore.lua`,
+  or a map's refresh in `qcMapPins.lua`), run `Test-NpcNames.lua` for both games' TOCs. It must say "All
+  checks passed." On a clock of its own, against a game that names a creature 0.1 s after it is asked for,
+  it checks that opening the map with the most named givers asks for none of them, that a hovered giver is
+  named whether the name can be read at the game's update event or only after it, that a giver the game
+  never names is left after the timeout, and that one hovered inside an instance is asked for after leaving.
 - For changes to what the addon ticks (the login sync and hand-ins in `qcCore.lua`, with their
   breadcrumbs and "only one of these" groups) or to Forever's links or classes, run `Test-Completions.lua` for both
   games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
