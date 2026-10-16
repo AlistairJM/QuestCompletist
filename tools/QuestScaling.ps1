@@ -280,44 +280,66 @@ function Get-SampleCandidates($probe, $questTuning, $ceilings) {
     return $byTuning
 }
 
-# The order samples are taken in, best first: a quest of ours, in QuestV2, not flagged unavailable, one-time, open to
-# both factions (the probe's character loaded the other faction's quests, but no run has shown the reverse), then the
-# lowest id.
-function Get-SampleOrder($ids, $ours, $questV2, $unavailable) {
+# A quest's kind as a sample, lower being better: a quest of ours, in QuestV2, not flagged unavailable, one-time, open
+# to both factions (the probe's character loaded the other faction's quests, but no run has shown the reverse).
+function Get-SampleKind($id, $ours, $questV2, $unavailable) {
+    $q = $ours[$id]
+    return 16 * [int]($null -eq $q) + 8 * [int](-not $questV2.Contains($id)) + 4 * [int]$unavailable.Contains($id) +
+        2 * [int]($null -ne $q -and (Test-RecurringQuest $q)) + [int]($null -ne $q -and -not (Test-BothFactions $q))
+}
+
+# The order samples are taken in, best first: by kind (Get-SampleKind), then a sample already stored ($kept, in its
+# stored order) before a new one, then the lowest id. So a fuller probe adds samples without moving one that players'
+# clients may already hold, unless a better kind of quest is there to take its place.
+function Get-SampleOrder($ids, $ours, $questV2, $unavailable, $kept = @()) {
+    $at = @{}
+    foreach ($id in @($kept)) { if (-not $at.ContainsKey([int]$id)) { $at[[int]$id] = $at.Count } }
     $rows = foreach ($id in $ids) {
-        $q = $ours[$id]
         [pscustomobject]@{
             Id = $id
-            NotOurs = [int]($null -eq $q)
-            NotInV2 = [int](-not $questV2.Contains($id))
-            Flagged = [int]$unavailable.Contains($id)
-            Recurs = [int]($null -ne $q -and (Test-RecurringQuest $q))
-            OneFaction = [int]($null -ne $q -and -not (Test-BothFactions $q))
+            Kind = Get-SampleKind $id $ours $questV2 $unavailable
+            New = [int](-not $at.ContainsKey([int]$id))
+            StoredAt = if ($at.ContainsKey([int]$id)) { $at[[int]$id] } else { 0 }
         }
     }
-    return @($rows | Sort-Object NotOurs, NotInV2, Flagged, Recurs, OneFaction, Id | ForEach-Object { $_.Id })
+    return @($rows | Sort-Object Kind, New, StoredAt, Id | ForEach-Object { $_.Id })
 }
 
 # The records of tunings.jsonl: one for each tuning our quests are on ($used: tuning -> how many) that a redirect
-# names and the probe sampled, with its level at the cap, its RedirectEnum values and up to $max samples. Fixed lists
-# the tunings no redirect names, whose level is their own range for every character; Missing those a redirect names
-# that get no samples, with Why: split, not probed, or no loaded quest.
-function Get-TuningSamples($used, $redirects, $ceilings, $candidates, $ours, $questV2, $unavailable, [int]$max) {
+# names and the probe sampled, with its level at the cap, its RedirectEnum values and up to $max samples, a sample of
+# the $stored records staying while it is still a candidate (Get-SampleOrder). Fixed lists the tunings no redirect
+# names, whose level is their own range for every character; Missing those a redirect names that get no samples, with
+# Why: split, not probed, or no loaded quest. Kept counts the stored samples that stay, and Displaced lists those still
+# candidates that don't (Tuning, Quest, Why).
+function Get-TuningSamples($used, $redirects, $ceilings, $candidates, $ours, $questV2, $unavailable, [int]$max, $stored = @()) {
+    $storedOf = @{}
+    foreach ($t in @($stored)) { $storedOf[[int]$t.id] = [int[]]@($t.samples) }
     $records = New-Object System.Collections.Generic.List[object]
     $fixed = New-Object System.Collections.Generic.List[int]
     $missing = New-Object System.Collections.Generic.List[object]
+    $displaced = New-Object System.Collections.Generic.List[object]
+    $kept = 0
     foreach ($tuning in (@($used.Keys) | Sort-Object)) {
         if (-not $redirects.ByParent.ContainsKey($tuning)) { $fixed.Add($tuning); continue }
         $why = if ($ceilings.Split.ContainsKey($tuning)) { 'split' } elseif (-not $ceilings.Single.ContainsKey($tuning)) { 'not probed' } elseif (-not $candidates.ContainsKey($tuning)) { 'no loaded quest' } else { '' }
         if ($why) { $missing.Add([pscustomobject]@{ Tuning = $tuning; Why = $why; Quests = $used[$tuning] }); continue }
-        $order = Get-SampleOrder $candidates[$tuning] $ours $questV2 $unavailable
-        $records.Add([pscustomobject]@{ id = $tuning; level = [int]$ceilings.Single[$tuning]; redirects = $redirects.ByParent[$tuning]; samples = [int[]]@($order | Select-Object -First $max) })
+        $before = if ($storedOf.ContainsKey([int]$tuning)) { $storedOf[[int]$tuning] } else { [int[]]@() }
+        $chosen = [int[]]@(Get-SampleOrder $candidates[$tuning] $ours $questV2 $unavailable $before | Select-Object -First $max)
+        foreach ($s in $before) {
+            if ($chosen -contains $s) { $kept++; continue }
+            if (-not $candidates[$tuning].Contains($s)) { continue }
+            $kind = Get-SampleKind $s $ours $questV2 $unavailable
+            $better = @($chosen | Where-Object { (Get-SampleKind $_ $ours $questV2 $unavailable) -lt $kind }).Count -gt 0
+            $displaced.Add([pscustomobject]@{ Tuning = $tuning; Quest = $s; Why = $(if ($better) { 'a better kind of quest takes its place' } else { "-Samples $max keeps the ones before it" }) })
+        }
+        $records.Add([pscustomobject]@{ id = $tuning; level = [int]$ceilings.Single[$tuning]; redirects = $redirects.ByParent[$tuning]; samples = $chosen })
     }
-    return [pscustomobject]@{ Records = $records.ToArray(); Fixed = $fixed.ToArray(); Missing = $missing.ToArray() }
+    return [pscustomobject]@{ Records = $records.ToArray(); Fixed = $fixed.ToArray(); Missing = $missing.ToArray(); Kept = $kept; Displaced = $displaced.ToArray() }
 }
 
-# The stored tunings.jsonl against the wanted records: Added, Changed and Removed (tuning ids), and Stale, each stored
-# sample that is no longer one (Tuning, Quest, Why).
+# The stored tunings.jsonl against the wanted records: Added, Changed and Removed (tuning ids); LevelMoved, each tuning
+# in both whose level is another (Tuning, Old, New, Redirects); and Stale, each stored sample that is no longer one
+# (Tuning, Quest, Why).
 function Compare-TuningRecords($stored, $wanted, $probe, $questTuning, $ceilings) {
     $was = @{}; foreach ($t in $stored) { $was[[int]$t.id] = $t }
     $now = @{}; foreach ($t in $wanted) { $now[[int]$t.id] = $t }
@@ -325,6 +347,8 @@ function Compare-TuningRecords($stored, $wanted, $probe, $questTuning, $ceilings
     $added = @(@($now.Keys) | Where-Object { -not $was.ContainsKey($_) } | Sort-Object)
     $removed = @(@($was.Keys) | Where-Object { -not $now.ContainsKey($_) } | Sort-Object)
     $changed = @(@($now.Keys) | Where-Object { $was.ContainsKey($_) -and (& $text $was[$_]) -cne (& $text $now[$_]) } | Sort-Object)
+    $levelMoved = @(@($now.Keys) | Where-Object { $was.ContainsKey($_) -and [int]$was[$_].level -ne [int]$now[$_].level } | Sort-Object | ForEach-Object {
+        [pscustomobject]@{ Tuning = $_; Old = [int]$was[$_].level; New = [int]$now[$_].level; Redirects = @($now[$_].redirects) } })
     $stale = New-Object System.Collections.Generic.List[object]
     foreach ($t in $stored) {
         $tuning = [int]$t.id
@@ -337,5 +361,5 @@ function Compare-TuningRecords($stored, $wanted, $probe, $questTuning, $ceilings
             if ($why) { $stale.Add([pscustomobject]@{ Tuning = $tuning; Quest = [int]$quest; Why = $why }) }
         }
     }
-    return [pscustomobject]@{ Added = $added; Changed = $changed; Removed = $removed; Stale = $stale.ToArray() }
+    return [pscustomobject]@{ Added = $added; Changed = $changed; Removed = $removed; LevelMoved = $levelMoved; Stale = $stale.ToArray() }
 }

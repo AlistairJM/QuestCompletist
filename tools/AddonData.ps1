@@ -21,7 +21,7 @@ whole of qcPinDB.lua, map by map in ascending order. Both start with a line sayi
 
 data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
 quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
-	{"id":73,"level":30,"redirects":[0,13,34],"samples":[11,16,20]}
+	{"id":73,"level":30,"redirects":[0,13,34],"samples":[11,35,37]}
 level is what each sample answered at the level cap in the probe, redirects the RedirectEnum values of
 the tuning's ConditionalContentTuning rows, and samples its representative quests, the first preferred.
 They go into qcQuestData.lua too, as qcTuningSample and as the qcQuestTuning of the quests on them.

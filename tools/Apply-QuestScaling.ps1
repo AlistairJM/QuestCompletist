@@ -31,17 +31,21 @@ server gives each character the redirect bits that choose such a row, and no add
 character can get another level for the tuning than the probe's did (docs\plans\quest-scaling-redirects.md).
 The addon is to read that level from a sample whose data the client holds. A tuning no row names gets no
 record: every character gets its own range, which maxLevel already holds. The build writes qcTuningSample
-from the records, and qcQuestTuning for the quests on their tunings. A stored sample the newest probe no
-longer loads at its tuning's one level is listed, and replaced. The redirect table is compared with its
-baseline (-BaselineFile): its rows by RedirectEnum, and any RedirectEnum the baseline lacks, which a sweep
-must look at before -UpdateBaseline takes it in.
+from the records, and qcQuestTuning for the quests on their tunings. A stored sample stays while the newest
+probe still loads it at its tuning's one level, unless a better kind of quest is there to take its place,
+as players' clients may hold it already; one the probe no longer loads at that level, or whose quest moved
+tuning, is listed and replaced. A sampled tuning whose level moved is listed too, as many at once can mean
+the probe's character had other redirect bits. The redirect table is compared with its baseline
+(-BaselineFile): its rows by RedirectEnum, and any RedirectEnum the baseline lacks, which a sweep must look
+at before -UpdateBaseline takes it in. It also counts the keys of qcQuestMaxLevel and qcQuestTuning
+against 32,768, above which Lua 5.1 doubles a table's hash part (docs\plans\load-and-memory.md).
 
   -WhatIf    report only: the sources, the ceilings, the changes and the comparison; writes no data
   -Check     like -WhatIf, but exits 1 when the data isn't what the probe says, or the redirect table has a
              RedirectEnum its baseline lacks (for Test- and Audit- steps)
   -Samples   the most samples a tuning gets (3)
   -BaselineFile    the redirect table's baseline; docs\plans\quest-scaling-redirects-baseline.csv by default
-  -UpdateBaseline  write the baseline from this run's redirect table (not with -Check)
+  -UpdateBaseline  write the baseline from this run's redirect table (not with -Check or -WhatIf)
   -UnavailableFile the reviewed unavailable quests, whose FLAG rows are taken as samples only after the others;
              docs\plans\unavailable-quest-decisions.csv by default
   -ProbeFile the probe's saved variables; the newest tools\retail_probe_<build>\QCForeverProbe.lua by default
@@ -92,6 +96,7 @@ function Refuse([string]$why) {
 
 if ($Game -notin 'retail', 'forever') { throw '-Game must be retail or forever.' }
 if ($Check -and $UpdateBaseline) { throw '-Check writes nothing, so it takes no -UpdateBaseline.' }
+if ($WhatIf -and $UpdateBaseline) { throw '-WhatIf writes nothing, so it takes no -UpdateBaseline.' }
 if ($Samples -lt 1) { throw '-Samples must be 1 or more.' }
 if ($Game -eq 'forever') {
     if (-not $PSBoundParameters.ContainsKey('DataDir')) { $DataDir = Join-Path $PSScriptRoot '..\data\forever' }
@@ -290,7 +295,8 @@ foreach ($row in (Import-Csv $UnavailableFile)) { if ($row.Decision -ceq 'FLAG')
 $ours = @{}
 foreach ($q in $records) { $ours[[int]$q.id] = $q }
 $candidates = Get-SampleCandidates $probe $questTuning.ByQuest $ceilings
-$sampled = Get-TuningSamples $used $redirects $ceilings $candidates $ours $questV2 $unavailable $Samples
+$stored = @(Read-TuningData $DataDir)
+$sampled = Get-TuningSamples $used $redirects $ceilings $candidates $ours $questV2 $unavailable $Samples $stored
 $records3 = @($sampled.Records | Where-Object { $_.samples.Count -ge 3 }).Count
 $records2 = @($sampled.Records | Where-Object { $_.samples.Count -eq 2 }).Count
 $records1 = @($sampled.Records | Where-Object { $_.samples.Count -eq 1 }).Count
@@ -310,13 +316,23 @@ foreach ($t in $sampled.Records) { [void]$sampledSet.Add([int]$t.id) }
 $onSampled = @($wantedTuning.Values | Where-Object { $sampledSet.Contains($_) }).Count
 Write-Output ("  {0:N0} samples: {1:N0} quests of ours, {2:N0} in QuestV2, {3:N0} one-time, {4:N0} open to both factions, {5:N0} flagged unavailable. The addon gets the tuning of the {6:N0} quests on a sampled tuning (qcQuestTuning); the other {7:N0} with one keep it in the data only." -f
     $picked.Count, $kinds.ours, $kinds.v2, $kinds.oneTime, $kinds.both, $kinds.flagged, $onSampled, ($wantedTuning.Count - $onSampled))
-$stored = @(Read-TuningData $DataDir)
 $tuningDiff = Compare-TuningRecords $stored $sampled.Records $probe $questTuning.ByQuest $ceilings
 $tuningFileChanged = (ConvertTo-TuningJsonLines $stored) -cne (ConvertTo-TuningJsonLines $sampled.Records)
-Write-Output ("  tunings.jsonl: {0:N0} records held, {1:N0} wanted; {2:N0} added, {3:N0} changed, {4:N0} removed; {5:N0} stored samples are no longer ones" -f
-    $stored.Count, $sampled.Records.Count, $tuningDiff.Added.Count, $tuningDiff.Changed.Count, $tuningDiff.Removed.Count, $tuningDiff.Stale.Count)
+Write-Output ("  tunings.jsonl: {0:N0} records held, {1:N0} wanted; {2:N0} added, {3:N0} changed, {4:N0} removed; {5:N0} stored samples stay, {6:N0} are no longer ones and {7:N0} give way" -f
+    $stored.Count, $sampled.Records.Count, $tuningDiff.Added.Count, $tuningDiff.Changed.Count, $tuningDiff.Removed.Count, $sampled.Kept, $tuningDiff.Stale.Count, $sampled.Displaced.Count)
 foreach ($s in ($tuningDiff.Stale | Select-Object -First $Examples)) { Write-Output ("    tuning {0}, sample {1}: {2}" -f $s.Tuning, $s.Quest, $s.Why) }
 if ($tuningDiff.Stale.Count -gt $Examples) { Write-Output "    ... and $($tuningDiff.Stale.Count - $Examples) more" }
+foreach ($s in ($sampled.Displaced | Select-Object -First $Examples)) { Write-Output ("    tuning {0}, sample {1}: still loaded at its tuning's level, but {2}" -f $s.Tuning, $s.Quest, $s.Why) }
+if ($sampled.Displaced.Count -gt $Examples) { Write-Output "    ... and $($sampled.Displaced.Count - $Examples) more that give way" }
+if ($tuningDiff.LevelMoved.Count) {
+    Write-Output ("  {0:N0} sampled tunings have another level at the cap than tunings.jsonl holds; many at once can mean the probe's character had other redirect bits than the last run's (docs\plans\quest-scaling-redirects.md). Tuning, level before and now, its RedirectEnum values:" -f $tuningDiff.LevelMoved.Count)
+    foreach ($m in ($tuningDiff.LevelMoved | Select-Object -First $Examples)) { Write-Output ("    {0}  {1} -> {2}  ({3})" -f $m.Tuning, $m.Old, $m.New, ($m.Redirects -join ', ')) }
+    if ($tuningDiff.LevelMoved.Count -gt $Examples) { Write-Output "    ... and $($tuningDiff.LevelMoved.Count - $Examples) more" }
+}
+$maxKeys = @($wantedOf.Values | Where-Object { $null -ne $_ }).Count
+$hashLimit = 32768
+Write-Output ("Lua tables: qcQuestMaxLevel {0:N0} keys and qcQuestTuning {1:N0}, {2:N0} and {3:N0} under {4:N0}; above it Lua 5.1 doubles a table's hash part, about 1 MB more loaded (docs\plans\load-and-memory.md)  [{5}]" -f
+    $maxKeys, $onSampled, ($hashLimit - $maxKeys), ($hashLimit - $onSampled), $hashLimit, $(if ($maxKeys -gt $hashLimit -or $onSampled -gt $hashLimit) { 'OVER' } else { 'ok' }))
 
 if ($UpdateBaseline) {
     [IO.File]::WriteAllText($BaselineFile, (ConvertTo-RedirectBaselineText $redirects $Build), (New-Object Text.UTF8Encoding $true))

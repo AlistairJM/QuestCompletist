@@ -12,8 +12,10 @@ tunings.jsonl and the Lua's qcQuestTuning and qcTuningSample are checked against
 The rest changes one thing at a time: -WhatIf and
 -Check, a second run, the level-cap check (a run below the cap, a run with no level, a build whose cap
 isn't known, -Cap), a probe of another build than the quest cache, the agreement thresholds, a sample the
-probe no longer loads or that moved tuning, the order samples are taken in and -Samples, and the redirect
-table against its baseline (a new RedirectEnum, one gone, another row count, no baseline, -UpdateBaseline).
+probe no longer loads or that moved tuning, the order samples are taken in and -Samples, stored samples
+that stay when a fuller probe loads more, give way to a better kind or to a lower -Samples, a tuning whose
+level moved, and the redirect table against its baseline (a new RedirectEnum, one gone, another row count,
+no baseline, -UpdateBaseline, which -WhatIf refuses).
 A Forever world checks -Game forever: it passes while every loaded quest has its stored level, fails on a
 level the game doesn't give, on a maxLevel, on a tuning or on a tunings.jsonl, and writes nothing. The
 shared functions are checked one at a time, and so are AddonData.ps1's checks of tunings.jsonl and the
@@ -270,6 +272,8 @@ try {
     $flagged = New-Object 'System.Collections.Generic.HashSet[int]'
     [void]$flagged.Add(5)
     Equal ((Get-SampleOrder @(7, 6, 5, 4, 3, 2, 1) $ours $v2 $flagged) -join ',') '1,4,3,2,5,6,7' 'U4: samples go ours, in QuestV2, not flagged, one-time, both factions, then by id'
+    Equal ((Get-SampleOrder @(7, 6, 5, 4, 3, 2, 1) $ours $v2 $flagged @(4, 3)) -join ',') '4,1,3,2,5,6,7' 'U4: a stored sample goes before a new one of its kind, but not before a better kind'
+    Equal ((@(1, 2, 3, 5, 6, 7) | ForEach-Object { Get-SampleKind $_ $ours $v2 $flagged }) -join ',') '0,2,1,4,8,16' 'U4: each kind weighs more than all the ones after it'
 
     # --- The data files: tunings.jsonl and the tables built from it -----------------------------------------
     $tunings = @([pscustomobject]@{ id = 5; level = 30; redirects = @(0, 34); samples = @(11, 12) }, [pscustomobject]@{ id = 9; level = 90; redirects = @(13); samples = @(20) })
@@ -344,7 +348,10 @@ try {
     Has $r.Text 'Samples: our quests are on 8 tunings; a redirect names 5 of them, and none the other 3, whose level is their own range for every character. 2 get samples (0 with 3 or more, 2 with 2, 0 with 1); 3 that a redirect names get none.' 'W1: the tunings that get samples'
     Has $r.Text "  no samples: tuning 300 (1 of our quests): not probed`n  no samples: tuning 400 (3 of our quests): split`n  no samples: tuning 700 (1 of our quests): not probed" 'W1: and those that get none, and why: a placeholder or a level of 0 is no level'
     Has $r.Text '  4 samples: 4 quests of ours, 4 in QuestV2, 4 one-time, 4 open to both factions, 0 flagged unavailable. The addon gets the tuning of the 15 quests on a sampled tuning (qcQuestTuning); the other 8 with one keep it in the data only.' 'W1: the samples, and what the addon gets'
-    Has $r.Text '  tunings.jsonl: 0 records held, 2 wanted; 2 added, 0 changed, 0 removed; 0 stored samples are no longer ones' 'W1: tunings.jsonl''s changes'
+    Has $r.Text '  tunings.jsonl: 0 records held, 2 wanted; 2 added, 0 changed, 0 removed; 0 stored samples stay, 0 are no longer ones and 0 give way' 'W1: tunings.jsonl''s changes'
+    Check (-not $r.Text.Contains('have another level at the cap')) 'W1: with nothing stored, no tuning''s level has moved'
+    Has $r.Text 'Lua tables: qcQuestMaxLevel 12 keys and qcQuestTuning 15, 32,756 and 32,753 under 32,768; above it Lua 5.1 doubles a table''s hash part' 'W1: the two big tables'' keys, against the hash part''s step'
+    Has $r.Text '(docs\plans\load-and-memory.md)  [ok]' 'W1: both under it'
     Has $r.Text '-WhatIf: nothing was written (12 maxLevel and 23 tuning changes, and tunings.jsonl).' 'W1: and that nothing was written'
     $r = Invoke-Tool $world @{ Check = $true }
     Equal $r.Exit 1 'W2: -Check exits 1 while the data differs'
@@ -387,13 +394,20 @@ try {
     Equal $r.Exit 0 'W5: -Check passes now'
     $r = Invoke-Tool $world @{ WhatIf = $true }
     Has $r.Text 'hidden though the game calls them not trivial: 2 by the quest''s own level, 0 by the shown level (2 now shown)' 'W5: the comparison reads the data as saved'
-    Has $r.Text '  tunings.jsonl: 2 records held, 2 wanted; 0 added, 0 changed, 0 removed; 0 stored samples are no longer ones' 'W5: and so does the samples'' part'
+    Has $r.Text '  tunings.jsonl: 2 records held, 2 wanted; 0 added, 0 changed, 0 removed; 4 stored samples stay, 0 are no longer ones and 0 give way' 'W5: and so does the samples'' part'
     $r = Invoke-Tool $world @{ Check = $true; BaselineFile = "$world\missing.csv" }
     Equal $r.Exit 1 'W6: -Check with no baseline file exits 1'
     Has $r.Text 'No baseline file, so every RedirectEnum counts as new' 'W6: and says why'
     Has $r.Text 'the redirect table has RedirectEnum values its baseline lacks (0, 5, 13, 34)' 'W6: naming them all'
     $r = Invoke-Tool $world @{ Check = $true; UpdateBaseline = $true }
     Has $r.Failure '-Check writes nothing, so it takes no -UpdateBaseline.' 'W6: -Check with -UpdateBaseline is refused'
+    [IO.File]::WriteAllText("$world\baseline-short.csv", ((@($Baseline | Select-Object -First 4) -join "`r`n") + "`r`n"), $utf8)
+    $baselineBefore = (Get-FileHash "$world\baseline-short.csv").Hash
+    $r = Invoke-Tool $world @{ WhatIf = $true; UpdateBaseline = $true; BaselineFile = "$world\baseline-short.csv" }
+    Has $r.Failure '-WhatIf writes nothing, so it takes no -UpdateBaseline.' 'W6: and so is -WhatIf with -UpdateBaseline'
+    Check (-not $r.Text.Contains('Baseline written')) 'W6: which writes no baseline'
+    Equal (Get-FileHash "$world\baseline-short.csv").Hash $baselineBefore 'W6: leaving a baseline the table no longer matches as it was'
+    Equal (Get-Hashes $world) $after 'W6: and the data too'
 
     # --- The thresholds ---------------------------------------------------------------------------------------
     $r = Invoke-Tool $world @{ WhatIf = $true; MinAgreement = 0.99 }
@@ -412,7 +426,7 @@ try {
     Write-Probe (Get-ProbeFile $stale) $quests (New-Run 90)
     $r = Invoke-Tool $stale @{ Check = $true }
     Equal $r.Exit 1 'P1: -Check fails once a stored sample is no longer loaded'
-    Has $r.Text '  tunings.jsonl: 2 records held, 2 wanted; 0 added, 1 changed, 0 removed; 1 stored samples are no longer ones' 'P1: it counts the change'
+    Has $r.Text '  tunings.jsonl: 2 records held, 2 wanted; 0 added, 1 changed, 0 removed; 3 stored samples stay, 1 are no longer ones and 0 give way' 'P1: it counts the change'
     Has $r.Text '    tuning 100, sample 1: not loaded in the probe' 'P1: and names the sample and why'
     $r = Invoke-Tool $stale
     Equal $r.Exit 0 'P1: the run exits 0'
@@ -424,7 +438,7 @@ try {
     $r = Invoke-Tool $stale @{ WhatIf = $true }
     Has $r.Text '    tuning 100, sample 2: on another tuning now' 'P2: a sample whose quest moved tuning is no longer one'
     Has $r.Text '    2  tuning 100 -> 300  Quest 2' 'P2: and the quest''s tuning changes'
-    Has $r.Text '  tunings.jsonl: 2 records held, 3 wanted; 1 added, 1 changed, 0 removed; 1 stored samples are no longer ones' 'P2: the tuning it moved to gets samples'
+    Has $r.Text '  tunings.jsonl: 2 records held, 3 wanted; 1 added, 1 changed, 0 removed; 2 stored samples stay, 1 are no longer ones and 0 give way' 'P2: the tuning it moved to gets samples'
     $r = Invoke-Tool $stale
     Equal (Get-TuningText $stale) "{`"id`":100,`"level`":70,`"redirects`":[0,34],`"samples`":[1]}`n{`"id`":200,`"level`":90,`"redirects`":[13],`"samples`":[7,21]}`n{`"id`":300,`"level`":70,`"redirects`":[34],`"samples`":[2]}`n" 'P2: and the run writes them all'
 
@@ -447,6 +461,41 @@ try {
     $failure = (Invoke-Tool $ordered @{ Samples = 0 }).Failure
     Has $failure '-Samples must be 1 or more.' 'O3: -Samples 0 is refused'
 
+    # --- Stored samples: they stay, or give way to a better kind or a lower -Samples ------------------------------
+    $keep = @{}
+    foreach ($id in 41, 42, 43) { $keep[$id] = New-Quest 20 $null $null 200 $null (New-Row 'ok' 90 $false 11) $null 1 3 }
+    $keep[40] = New-Quest 20 $null $null 200 $null $null $null 1 3
+    $kept = Write-World 'keep' $keep (New-Run 90) '' $Build @($Redirects[0], '3,0,1002,8192,13,200') @('"Build","RedirectEnum","Rows"', "`"$Build`",`"13`",`"1`"")
+    Invoke-Tool $kept | Out-Null
+    $keepText = { param($samples) "{`"id`":200,`"level`":90,`"redirects`":[13],`"samples`":[$samples]}`n" }
+    Equal (Get-TuningText $kept) (& $keepText '41,42,43') 'K1: the three quests the probe loaded are the samples'
+    $keep[40].Probe = New-Row 'ok' 90 $false 11
+    Write-Probe (Get-ProbeFile $kept) $keep (New-Run 90)
+    $keptBefore = Get-Hashes $kept
+    $r = Invoke-Tool $kept @{ Check = $true }
+    Equal $r.Exit 0 'K2: a fuller probe that loads a quest of the same kind and a lower id changes nothing, so -Check passes'
+    Has $r.Text '  tunings.jsonl: 1 records held, 1 wanted; 0 added, 0 changed, 0 removed; 3 stored samples stay, 0 are no longer ones and 0 give way' 'K2: the stored samples stay'
+    Invoke-Tool $kept | Out-Null
+    Equal (Get-Hashes $kept) $keptBefore 'K2: and an applying run writes nothing'
+    [IO.File]::WriteAllText("$kept\unavailable.csv", "`"QuestID`",`"Name`",`"Zone`",`"Reason`",`"Decision`",`"Evidence`"`n`"43`",`"Quest 43`",`"Zone`",`"1`",`"FLAG`",`"test`"`n", $utf8)
+    $r = Invoke-Tool $kept @{ WhatIf = $true }
+    Has $r.Text '  tunings.jsonl: 1 records held, 1 wanted; 0 added, 1 changed, 0 removed; 2 stored samples stay, 0 are no longer ones and 1 give way' 'K3: a stored sample flagged unavailable gives way to a loaded quest of a better kind'
+    Has $r.Text '    tuning 200, sample 43: still loaded at its tuning''s level, but a better kind of quest takes its place' 'K3: and is named, with why'
+    Invoke-Tool $kept | Out-Null
+    Equal (Get-TuningText $kept) (& $keepText '41,42,40') 'K3: the samples kept stay in their order, and the new one follows'
+    $r = Invoke-Tool $kept @{ Samples = 2 }
+    Has $r.Text '    tuning 200, sample 40: still loaded at its tuning''s level, but -Samples 2 keeps the ones before it' 'K4: a lower -Samples drops the last stored sample, and says so'
+    Equal (Get-TuningText $kept) (& $keepText '41,42') 'K4: keeping the ones before it'
+    $r = Invoke-Tool $kept
+    Has $r.Text '0 added, 1 changed, 0 removed; 2 stored samples stay, 0 are no longer ones and 0 give way' 'K5: -Samples 3 again tops the tuning up'
+    Equal (Get-TuningText $kept) (& $keepText '41,42,40') 'K5: with the best quest not yet a sample, not the flagged one'
+    foreach ($id in 40, 41, 42, 43) { $keep[$id].Probe.Level = 80 }
+    Write-Probe (Get-ProbeFile $kept) $keep (New-Run 90)
+    $r = Invoke-Tool $kept @{ WhatIf = $true }
+    Has $r.Text '  1 sampled tunings have another level at the cap than tunings.jsonl holds; many at once can mean the probe''s character had other redirect bits' 'K6: a sampled tuning whose level moved is listed'
+    Has $r.Text "    200  90 -> 80  (13)" 'K6: with its levels and RedirectEnum values'
+    Has $r.Text '3 stored samples stay, 0 are no longer ones and 0 give way' 'K6: its samples stay, as they give its one level still'
+
     # --- The redirect table against its baseline ----------------------------------------------------------------
     $enums = Write-World 'enums' (New-World) (New-Run 90) '' $Build ($Redirects + '7,2,1004,0,40,100') @($Baseline[0], $Baseline[1], $Baseline[2], "`"$Build`",`"9`",`"1`"", "`"$Build`",`"13`",`"2`"", $Baseline[4])
     $r = Invoke-Tool $enums @{ WhatIf = $true }
@@ -458,8 +507,9 @@ try {
     $r = Invoke-Tool $enums @{ Check = $true }
     Equal $r.Exit 1 'E3: but -Check fails while the baseline lacks the RedirectEnum'
     Has $r.Text 'Check failed: the redirect table has RedirectEnum values its baseline lacks (40): look at them, then -UpdateBaseline.' 'E3: and names it'
-    $r = Invoke-Tool $enums @{ WhatIf = $true; UpdateBaseline = $true }
+    $r = Invoke-Tool $enums @{ UpdateBaseline = $true }
     Has $r.Text 'Baseline written: 5 RedirectEnum values, 7 rows of 12.1.5.70400' 'E4: -UpdateBaseline writes the baseline'
+    Has $r.Text 'Nothing to change' 'E4: and the data, written by E2, stays'
     Equal ([IO.File]::ReadAllText("$enums\baseline.csv")) ("`"Build`",`"RedirectEnum`",`"Rows`"`r`n`"$Build`",`"0`",`"1`"`r`n`"$Build`",`"5`",`"1`"`r`n`"$Build`",`"13`",`"1`"`r`n`"$Build`",`"34`",`"3`"`r`n`"$Build`",`"40`",`"1`"`r`n") 'E4: the table''s rows by RedirectEnum'
     $r = Invoke-Tool $enums @{ Check = $true }
     Equal $r.Exit 0 'E4: and -Check passes after it'
