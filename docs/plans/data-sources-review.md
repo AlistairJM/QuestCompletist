@@ -316,7 +316,9 @@ listed: they follow the user's "check everything every sweep" rule.
    retail would remove 1,672 of its 5,159 nameless pins. **Decided: per spot in both games (13 October
    2026), within 1.5 map points (15 October),** which merges 2,745 of the 5,364 nameless pins the 12.1.5
    tables give retail (the 1,672 counted only the merges at the very same point); built in the tools
-   (`tools\PinRules.ps1`), the pin data to follow in a pull request of its own.
+   (`tools\PinRules.ps1`). **Applied** to `data\pins.jsonl` on 16 October 2026, on 12.1.5.70391: 2,746 of
+   5,368 nameless pins merged, 13,547 pins (quest-location-data-pipeline.md, "October 2026, one pin per
+   spot", "Applied").
 8. **Category names:** rename Mac'Aree, Time Rift and Weekly Events to Blizzard's "Eredath",
    "Time Rifts" and "Weekly Event", so the client names them in every language? *Recommended: yes ("match
    Blizzard exactly").*
@@ -491,6 +493,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 - 2026-10-16: retail's reputation rewards from the quest cache, on the user's word (the 12.1.5 sweep's decision 11b, option B; open-items.md row 15). `Apply-ReputationBackfill.ps1 -CacheOnly` wrote the joined 12.1.5 cache's 738 class E quests (1,028 rewards, all quests the API has no record of) with no check in game, as the cache gave the API's figure for all 11,093 rewards both list; 2574 Dream Wardens joined `qcFactions`. The "Reputation rewards" row of "Source order by field" now says so. Not changed: the rank caps the reader drops, the shown-faction rule's reading of `ReputationFlags_0` alone (the appendix's finding that the flags are per race group), and Forever's side.
 
 - 2026-10-16: D14 fixed and recommendation 27 done, by open-items.md row 9 (option C, taken on the user's word to go with the recommendations while they were away): `Apply-QuestScaling.ps1` (maintenance.md, step 2j) gives 27,637 retail quests a `maxLevel`, each tuning's level at the cap from the 12.1.5.70391 probe, and the list's bracket, its sort and the low-level filter read the level the game scales a quest to. Taken from the probe rather than the ContentTuning table, which misses 53 of the 771 tunings even with AllowedMaxOffset 255 read as no cap; the live `IsQuestTrivial` is not asked, as the sweep compares the rule with the probe's answers instead.
+
+- 2026-10-16: D10 seen again in step 6 on 12.1.5.70391, with the per-spot pins (quest-location-data-pipeline.md, "October 2026, one pin per spot", "Applied"). Three quests whose start moved to a map where they had no pin took an NPC from another map, and the old pairs of that NPC were dropped as covered: 14022 and 14036 Pilgrim's Bounty took Goblin Commoner to Dornogal and Silvermoon City, where no source names a giver, and 95187 took Lady Liadrin, whom Wowhead names as its ender (Lor'themar Theron starts it, at its start point). Set right by hand and by a `MOVE` row, on the recommendation the user delegated (no NPC carried across maps); the code is as it was, so recommendation 31 still stands, and maintenance.md, step 6, now says to read Join's `MAP_ID_DRIFT` rows that carry an NPC before `-Apply`. Retail has 13,547 pins.
 
 - 2026-10-16: recommendation 37's second 12.1.5 gap run, on the rule the user delegated (add a quest when 12.1.5's `QuestV2` lists it, the API serves a player-facing record and nothing marks it removed; for older content, its quest line's other quests in the data and none flagged unavailable). 22 quests are in the data, with no pins: 90745, the four Nightmare Prey quests 95021 to 95024 and 17 with only a client start point, 93420 Lor'themar's Judgement among them; six got `SKIP` rows (30173, 31694, 96029, 96307 and 96492, which the API doesn't serve, and the internal 96070). Retail has 35,628 quests, and its missing-quests baseline is rewritten: 533 undecided candidates (maintenance.md, step 6, "The second 12.1.5 gap run").
 

@@ -1766,8 +1766,11 @@ the table lacks, so a kind a new build adds is looked at, not pinned; add its li
 not named "World Quest" and is not in the table is pinned: World Event (82), Emissary Quest (128) and
 Delve (288) would be as soon as the task-quest change (#295) adds quests of those kinds that have a
 start, so read the run's count of new task quests by kind before applying, and add a line to hold one.
-Since #295, the next run pins 175 of its quests, 52 of them World Event (decision 40 of
-[plans/open-items.md](plans/open-items.md)). The tool needs
+The run of 16 October 2026 pinned 184 task quests that had a start and no pin (kind 0 83, World Event
+52, Group 20, Important Quest 14, Meta Quest 6, World Boss 4, Heroic 2, Dungeon 2, Raid 1): 174 that
+step 6b added on 11 October, 98379 and 98390 that its 12.1.5 run added, and 8 Hallow's End quests, on
+the user's word (decision 40 of [plans/open-items.md](plans/open-items.md), World Event included; the
+Hallow's End ones follow the calendar). The tool needs
 `UiMap.csv`, `QuestV2CliTask.csv` and `QuestInfo.csv` (it stops without the last two) as well as the
 tables above; step 5 downloads `UiMap.csv`, and step 1b `QuestV2CliTask.csv`, `QuestV2.csv` and
 `QuestInfo.csv`.
@@ -1782,7 +1785,11 @@ tool reads the newest `tools\tdb\TDB_full_world_*.sql` with
 Lua 5.1 and, without them, only warns and places none. It writes each place of such a quest, up to
 six, to `quest_locations.csv` (`Source=trinitycore`). The quests it holds back for a person, at a
 placeholder start point or with no usable start, go to `tools\quest_locations_tdb_review.csv`: look
-through it every sweep. A starter whose TrinityCore spawn stands at the start names the pin;
+through it every sweep (152 quests in 156 rows on 16 October 2026: 130 placeholder starts, 15 starts
+outside every region of their map, 3 on a map without a region, 3 starts without a point and 5 quests
+with 9 to 15 places; 156 quests on 8 October: since then the two on a disabled map got their pins by hand,
+and 47251 and 47252, tagged WoW's Anniversary, are held as holiday quests). A starter whose TrinityCore
+spawn stands at the start names the pin;
 otherwise the quest joins a neighbour's pin only if that NPC starts it, else it gets a nameless pin,
 and it never changes the icon of a pin it joins. A quest the client places (a point 32) that has no pin
 yet is named the same way, by the starters TrinityCore lists for it, instead of taking the name of
@@ -1815,7 +1822,9 @@ are the game's own start positions, to compare with the pins: `tools\Report-MapO
 quests whose pin is far from, or on another map than, the game's position. The 439 offers of the first
 run were within 10 yards of point 32. On the 12.1.5 pass (14 October 2026) the pins were within 1.5
 points of 243 of its 412 offers and more than 5 points from 1; Eversong Woods (map 2395) answered no
-offers that run.
+offers that run. Against the per-spot pins of 16 October 2026 the same pass gives 244 within 1.5 points
+(98831 now has a pin on The Coiled Isle), still 1 more than 5 points away (82125), 163 with pins on
+other maps only and 4 with none (40040, offered on four maps).
 
 The grouping rule and the order a pin's giver is chosen in are `tools\PinRules.ps1`, which Forever's
 importer uses too (step 10), so the pins of both games follow one rule; what stays retail's own is
@@ -1837,30 +1846,43 @@ the carry-over of what its pins hold (the borrowed names, the old pairs kept, th
   Notes that find no pin are listed. Two groups of one giver, or two that name nobody, that land on
   the same coordinates this way become one pin, so a rebuild leaves no two pins of a giver closer
   than 1.5 points. With the reused coordinates, a start can end up a little more than 1.5 points from
-  its pin (16 starts, 1.5 to 2.1 points, on the 12.1.5 data).
+  its pin (on the 12.1.5 data the rule put 16 placements 1.5 to 2.14 points from where a pin per quest
+  had them).
 - Pins are written in a fixed order.
 
-On the 12.1.5 tables (build 12.1.5.70391, 16 October 2026) the pipeline makes 13,549 pins where the
-rule of a pin per nameless quest made 16,294 from the same inputs: 2,745 of the 5,364 nameless pins
-merge into others, leaving 2,619, and the 10,593 pins with an NPC ID and the 337 with only a name are
-line for line the same. No quest gains or loses its last pin: 7 quests whose starts straddle two
-spots sit on two nameless pins close by, 2 quests with several pins on one map have one fewer, and 8
-spots whose quests bring different icons take their quests' (for 3, another than their first pin's).
-The pin data still holds a pin per quest: applying the rule is its own
-pull request, after the 12.1.5 story quests
-([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md), "October 2026, one
-pin per spot").
+The rule went into `data\pins.jsonl` on 16 October 2026, with the 12.1.5 tables (build 12.1.5.70391)
+and TrinityCore 1210.26091 ([plans/quest-location-data-pipeline.md](plans/quest-location-data-pipeline.md),
+"October 2026, one pin per spot", "Applied"). From the same inputs a pin per nameless quest makes
+16,298 pins and the rule 13,552: 2,746 of the 5,368 nameless pins merge into others, leaving 2,622, and
+the 10,593 pins with an NPC ID and the 337 with only a name are line for line the same. No quest gains
+or loses its last pin by the rule: 7 quests whose starts straddle two spots sit on two nameless pins
+close by, 2 quests with several pins on one map have one fewer, and 8 spots whose quests bring
+different icons take their quests'. (Assemble's "Total pins after grouping" counts the groups before
+the ones that land on one spot become one pin: 13,564 groups, 12 merged.) After the review, the pins
+went from 16,084 to 13,547 (10,588 with an NPC ID, 337 with only a name, 2,622 with neither), and the
+quests with a pin from 25,776 to 25,964: the 184 task quests above and four of the 12.1.5 story
+quests (95811, 95813, 98833, 98834) got their first pins, and 17 story quests moved to their start
+points. Two nameless spots that keep different old coordinates can still stand closer than 1.5 points:
+on 16 October 2026 six pairs did, five at the coordinates they had before and one new (95808 and 95812 on
+Silvermoon City, 0.37 apart, whose starts are 1.69 apart); no two pins of one NPC did. Compare the pairs
+after each run (the plan's "Applied" lists them).
 
-The story quests went into the data on 16 October 2026 (below, "Quests the data lacks") with the pins
-as they were. On that data the same run, not applied, makes 13,564 pins. For the 33 quests it moves
-17 to their start points in the client's data, keeps 10 where they are (the six steps of line 6385,
-98951 and 98959 to 98963, at one spot, share one nameless pin), gives 95811, 95813, 98833 and 98834 their first
-pins, and places neither 99306 nor 99312. That is for the per-spot pull request to apply.
+Before `-Apply`, read the rows of `quest_locations_joined.csv` whose `DriftStatus` is `MAP_ID_DRIFT`
+and whose `NpcId` is not 0: the quest starts on a map where it has no pin, and the run gives it the NPC
+of its pin on another map (the carry-over takes the quest's first pin when none is on the same map;
+[plans/data-sources-review.md](plans/data-sources-review.md), D10). The old pairs of that NPC then count
+as covered and go. On 16 October 2026 three quests did this, all wrongly, and were set right by hand
+and by a decision row, which reruns keep (the carry-over then finds the quest's pin on the same map):
+14022 and 14036 "Pilgrim's Bounty", which the 12.1.5 client starts in Dornogal and Silvermoon City and
+no source names a giver for there, joined those spots' nameless pins, and their Goblin Commoner pins in
+Netherstorm and the Storm Peaks were put back; 95187 "All Along the Watchtowers" went to Lor'themar
+Theron's pin, at its start point, by a `MOVE` row in `pin-giver-decisions.csv` (step 6c). The plan has
+the evidence.
 
 With no real changes, a rerun leaves `data\pins.jsonl` and `qcPinDB.lua` byte-identical; the
-September 30 locations were last applied in October 2026 (see the pipeline plan, "October 2026
-rebuild"). So whatever a rerun changes comes from new client data or a change made since, and is
-for review before `-Apply`.
+12.1.5.70391 locations were last applied on 16 October 2026, and a third round on them changed no byte
+(see the pipeline plan, "October 2026, one pin per spot"). So whatever a rerun changes comes from new
+client data or a change made since, and is for review before `-Apply`.
 
 After `-Apply`, run `Apply-PinNpcIds.ps1 -WhatIf`. A row in `pin-npc-id-decisions.csv` whose pin
 the rebuild merged into another matches no pin, and stops that tool. Point the row at the pin that
@@ -1982,7 +2004,10 @@ second run byte for byte) has its numbers in [plans/quest-giver-recorder.md](pla
 1.60.1.70374): the addon's Forever file 144 records, 0 odd (69 givers, 67 spots, 76 offers, 49 turn-ins, no
 starts), the probe's file 164 records (80 givers, 88 spots, 99 offers, 58 turn-ins), and the Forever ledger
 231 to 326 rows (80 givers, 88 spots, 99 offers, 59 turn-ins), all trusted. Every giver note in them was of
-build 70338 or earlier. Retail's file held 0 records again, so retail's pins did not change.
+build 70338 or earlier. Retail's file held 0 records again, so retail's pins did not change. The `-WhatIf`
+run of 16 October 2026, after the per-spot pins, read the same files with the same counts (retail's own
+file 0 records, its two probe files one quest record each and no giver), left the ledger as it was (retail
+0 rows, Forever 326) and filled, moved and added nothing.
 
 After any change to the pins, run `Remove-DuplicatePinQuests.ps1 -WhatIf`, then without `-WhatIf`
 if it lists anything. It takes a quest off a pin when a pin with the same giver name within 3 map
@@ -2019,7 +2044,7 @@ The fetch reads its quest IDs from `tools\gap_quest_ids.txt`, which no tool writ
 
 Each was checked first against the client's QuestV2 (12.1.5.70391 lists 29; the four of line 6245 are only in the 12.1.7 PTR's, 12.1.7.70424, so the game can record them as done), its API record (all 33 in 12.1.5_70077: both factions, every race and class, level 90, or 80 to 90 for line 6385, no reputation reward, and required quests for 95193 only) and `QuestLineXQuest-12.1.5.70391.csv` (31 in the five lines; 99306 and 99312 in none). 93420 Lor'themar's Judgement stayed an undecided candidate (the second gap run, below, added it). The gap list and `gap_quest_data.csv` were scratch copies, not the hand list in `tools\`: the fetch and the inserter ran with `-ToolsDir` on a scratch folder holding copies of the client tables and a link to the main checkout's `quest_api_cache`, which gained the 33 records. Two categories came first, with Blizzard's names, so that placement could file by API area ([step 5](#5-zone-table-and-category-names-from-the-client)): the inserter filed the 13 whose API area is the Labyrinth under 1515 "The Labyrinth of Kindo'jan", and the other 20 under Midnight's zones (1511 Eversong Woods 13, 1513 The Coiled Isle 3, 1512 Silvermoon City 3, 1510 Zul'Aman 1), by API area but for 96707 (the zone that holds its area, Vaults of Atal'Utek) and 95813 (its client map points; its area, Falconwing Square, names no category). 95211 "The Unbinding of Kith'ix", the raid's quest, was moved by hand from 1511 to the raid's 1752, with the category's name as its zone text. Then step 5's tools ran for the two categories, and steps 1, 1c, 1d, 2, 2b, 2c (and 2b again), 2d, 2g, 2i, 4 and 8 for the new rows; their results are under each step. Only steps 2c (25 prerequisites) and 4 (31 storylines) changed the new rows; `File-WeeklyEventQuests.ps1` moved none, and step 7 gives its baseline again. The probe has never asked these quests, so the probe (with its retail list rebuilt by `Build-ProbeLists.ps1`, [In the game](#in-the-game)) and step 3 are the next sweep's. `Find-MissingQuests.ps1` then counts 557 undecided retail candidates (the 33 report "now in the data"), still 2 over the baseline's 555 while the 10 quest line rows above wait for the user, so the baseline stayed.
 
-**The second 12.1.5 gap run (16 October 2026).** The user delegated the decisions to a recommended rule, applied to the 10 quest line rows new since the baseline and to the 17 older quests the 15 October gap scan found with only a client start point (point 32) and no pin: `ADD` when `QuestV2` 12.1.5.70391 lists the quest, Blizzard's API serves a player-facing record (a real title, not an internal, test or placeholder one, nor a tracking or hidden kind) and nothing marks it removed (no `[DEPRECATED]` title, no tracking or deprecated flag in TrinityCore, no disables row, no `FLAG` row in `unavailable-quest-decisions.csv`); otherwise `SKIP` with the reason. For the older quests, whose content may have been replaced (Legion artifact and class hall quests among them), the liveness check is the same two facts, `QuestV2` 12.1.5 and the API, with their quest line's other quests in the data and none flagged unavailable. Every decision has its row and its evidence in the decisions file. The API records were fetched afresh first, into a scratch folder (the 12.1.5_70077 namespace, the same records as on 15 October), and the fetch put the 22 added into the main checkout's `quest_api_cache`; the six left out have no file there.
+**The second 12.1.5 gap run (16 October 2026).** The user delegated the decisions to a recommended rule, applied to the 10 quest line rows new since the baseline and to the 17 quests the 15 October gap scan found with only a client start point (point 32) and no pin (15 older ones, plus 88930 Drained Mana, Midnight's lead-in, and 93420 Lor'themar's Judgement, a Coiled Isle campaign quest): `ADD` when `QuestV2` 12.1.5.70391 lists the quest, Blizzard's API serves a player-facing record (a real title, not an internal, test or placeholder one, nor a tracking or hidden kind) and nothing marks it removed (no `[DEPRECATED]` title, no tracking or deprecated flag in TrinityCore, no disables row, no `FLAG` row in `unavailable-quest-decisions.csv`); otherwise `SKIP` with the reason. For these 17, whose content may have been replaced (Legion artifact and class hall quests among them), the liveness check is the same two facts, `QuestV2` 12.1.5 and the API, with their quest line's other quests in the data and none flagged unavailable. Every decision has its row and its evidence in the decisions file. The API records were fetched afresh first, into a scratch folder (the 12.1.5_70077 namespace, the same records as on 15 October), and the fetch put the 22 added into the main checkout's `quest_api_cache`; the six left out have no file there.
 - **22 added:** 90745 The Empty Cradle (the last step of line 5929, the quest line row its only evidence); the four Nightmare Prey quests 95021 to 95024 (line 5945, weekly in the API, so type 128 like the line's other Nightmare quests); and 17 with a client start point: 27588 Signal the Attack (Alliance, Twilight Highlands), 39818 Champion: Nazgrim, 43933 Champion: Delas Moonfang and 46059 Champion: Tess Greymane (Legion class hall campaigns), 41628 Eyes of the Dragon and 41630 Unleashing Judgment (Priest artifact), 41790 and 41792 The First and Third Trials of Ursol (Druid artifact), 45099 Hot On The Trail and 45112 and 45133 Signs of Madness (Druid and Rogue), 41030 Sigil Reclamation (Suramar), 48962 Telogrus Rift and 53566 Dark Iron Dwarves (allied race recruitment), 63506 Mecha Gone (Ardenweald), 88930 Drained Mana (Midnight's lead-in) and 93420 Lor'themar's Judgement (The Coiled Isle). Of the 17, 45099, 45133 and 63506 were untitled in the report (TrinityCore has no row for them) until their API records were fetched.
 - **6 left out:** 30173 War Pigs! and 31694 Hisingen Blues (API 404, and their only line is 863 "Francesco Test Quest Line"); the Special Assignments 96029, 96307 and 96492 (API 404, not in the client's task table, line 6228 their only evidence); and 96070, an internal `(POC)` housing title, which the report counts as an internal title, not a candidate.
 
@@ -3280,8 +3305,9 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed. As of 16 October 2026 they're 35,628 quests and 16,084
-  pins for retail, and 5,105 quests and 1,706 pins for Forever.
+  or pins were meant to be added or removed. As of 16 October 2026 they're 35,628 quests and 13,547
+  pins for retail (16,084 before the nameless pins went one per spot), and 5,105 quests and 1,706 pins
+  for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.
