@@ -876,6 +876,21 @@ and the Emerald Dream (201), all lowered. The 17 quests on tuning 0 got none: an
 five of them whose level is above 0 (9422, 50341, 54255, 54256 and 89346) a gate of 0, and the user chose
 to leave them as they were; the other 12 are level 0.
 
+**12.1.5 (15 October 2026).** With the ContentTuning table and the partial quest cache of 12.1.5.70391
+and the API cache of 12.1.5_70077, the formula agreed for 25,759 of 25,759 quests (offset type 0: 25,615;
+type 1: 134; type 2: 6; type 3: 4). Blizzard's retune lowered 15 Prey world quests: 95942, 95974 and
+95989 (The Coiled Isle) and 96588 to 96599 (Voidstorm, Harandar, Zul'Aman and Eversong Woods) were on
+tuning 5381 (90 to 90) in the quest cache of 12.1.0.69933, and 12.1.5's task table puts them on 5224
+(80 to 90), the tuning of their 12 siblings (91207, 91458, 91523, 91590 to 91592, 91594 to 91596, 91601,
+91602 and 91604), which are level 80. So `Compare-QuestLevels.ps1` found them new in class D: level 90,
+and a minimum of 80. On the user's word they were given level 80 by hand, like the siblings, rather than
+a `minLevel` (no tool refreshes retail's `level`). Now their level is their range's floor, class D is 0
+again and `Apply-QuestMinLevels.ps1 -WhatIf` changes nothing. Class N was 571 (553 no record, 15 on
+tuning 0, 3 above the cap). Against the baseline, 89 are new, all "no record": 71 that 12.1.0.69933's
+cache holds and the partial cache lacks (step 2e), and 18 Hallow's End quests new to the data since the
+baseline, which neither cache nor the API cache holds. One has gone: 54393 now has a tuning. The
+baseline was not rewritten, since the cache is partial.
+
 `Compare-QuestLevels.ps1` is the check, which writes nothing: the formula's test, then every quest
 against its sources, in two classes kept in `docs\plans\quest-levels-baseline.csv` (`-UpdateBaseline`
 rewrites it once the differences are read). Class D is a quest whose `minLevel` is not what its sources say:

@@ -5087,8 +5087,8 @@
 {"id":14061,"name":"Can't Get Enough Turkey","level":1,"zone":"Pilgrim's Bounty","category":153,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":1024}
 {"id":14062,"name":"Don't Forget The Stuffing!","level":1,"zone":"Pilgrim's Bounty","category":153,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":1024}
 {"id":14063,"name":"Mutiny, Mon!","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":509,"prereq":14057}
-{"id":14064,"name":"Sharing a Bountiful Feast","level":1,"zone":"Pilgrim's Bounty","category":153,"type":64,"faction":1,"race":64175181,"class":8191,"holiday":1024}
-{"id":14065,"name":"Sharing a Bountiful Feast","level":1,"zone":"Pilgrim's Bounty","category":153,"type":64,"faction":2,"race":61658034,"class":8191,"holiday":1024}
+{"id":14064,"name":"Sharing a Bountiful Feast","level":1,"zone":"Pilgrim's Bounty","category":153,"type":4,"faction":1,"race":64175181,"class":8191,"holiday":1024}
+{"id":14065,"name":"Sharing a Bountiful Feast","level":1,"zone":"Pilgrim's Bounty","category":153,"type":4,"faction":2,"race":61658034,"class":8191,"holiday":1024}
 {"id":14066,"name":"Investigate the Wreckage","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":509}
 {"id":14067,"name":"The Stolen Silver","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":509,"prereq":869}
 {"id":14068,"name":"Waptor Twapping","level":5,"zone":"Northern Barrens","category":146,"type":1,"faction":2,"race":61658034,"class":8191}
@@ -35406,15 +35406,15 @@
 {"id":95923,"name":"Ruin Runner Rush","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":95931,"name":"Open Sea Fishing","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384,"storyline":6228,"prereq":96113}
 {"id":95933,"name":"Traces in the Dark","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95942,"name":"Prey: Venom Ambush","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":95942,"name":"Prey: Venom Ambush","level":80,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":95952,"name":"Temple Patrol: Breath and Bile","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95953,"name":"Temple Patrol: Congealed Venom","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95962,"name":"Temple Patrol: Vengeance for the Dead","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95972,"name":"Temple Patrol: Ash to Ash","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95974,"name":"Prey: Abandoned Camp","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":95974,"name":"Prey: Abandoned Camp","level":80,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":95985,"name":"Temple Patrol: Calming the Dead","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":95987,"name":"Temple Patrol: Laid to Rest","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":95989,"name":"Prey: Venomblade Burrows","level":90,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":95989,"name":"Prey: Venomblade Burrows","level":80,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":95990,"name":"Slithering Heights","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":96000,"name":"Skiff Joyride","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96017,"name":"Temple Patrol: Dragged Below","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -35451,18 +35451,18 @@
 {"id":96547,"name":"Weaken Their Forces","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96548,"name":"High Spore","level":80,"zone":"Naigtal","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96557,"name":"Flying Debris","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
-{"id":96588,"name":"Prey: Venom Ambush","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96589,"name":"Prey: Venom Ambush","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96590,"name":"Prey: Venom Ambush","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96591,"name":"Prey: Venom Ambush","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96592,"name":"Prey: Venomblade Burrows","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96593,"name":"Prey: Venomblade Burrows","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96594,"name":"Prey: Venomblade Burrows","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96595,"name":"Prey: Venomblade Burrows","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96596,"name":"Prey: Abandoned Camp","level":90,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96597,"name":"Prey: Abandoned Camp","level":90,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96598,"name":"Prey: Abandoned Camp","level":90,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
-{"id":96599,"name":"Prey: Abandoned Camp","level":90,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96588,"name":"Prey: Venom Ambush","level":80,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96589,"name":"Prey: Venom Ambush","level":80,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96590,"name":"Prey: Venom Ambush","level":80,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96591,"name":"Prey: Venom Ambush","level":80,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96592,"name":"Prey: Venomblade Burrows","level":80,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96593,"name":"Prey: Venomblade Burrows","level":80,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96594,"name":"Prey: Venomblade Burrows","level":80,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96595,"name":"Prey: Venomblade Burrows","level":80,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96596,"name":"Prey: Abandoned Camp","level":80,"zone":"Voidstorm","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96597,"name":"Prey: Abandoned Camp","level":80,"zone":"Harandar","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96598,"name":"Prey: Abandoned Camp","level":80,"zone":"Zul'Aman","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
+{"id":96599,"name":"Prey: Abandoned Camp","level":80,"zone":"Eversong Woods","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954}
 {"id":96600,"name":"Crypt Culling","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}
 {"id":96611,"name":"Storm Mitigation","level":80,"zone":"Val","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":96614,"name":"Forged Through Fire","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
