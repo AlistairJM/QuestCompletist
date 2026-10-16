@@ -52,9 +52,24 @@ taken. What is left, in one place:
   point, no pin). Two categories with Blizzard's names (9b): 1515 "The Labyrinth of Kindo'jan" under
   Midnight > Other Categories and the raid's 1752 "The Unbinding of Kith'ix" under Dungeons & Raids >
   Midnight. The 34 old Uncategorized quests the inserter refiled stay refiled (9c). Campaign 349 stays
-  gate-only (9e; maintenance.md, step 2c). 93420 stays an undecided candidate. Left from it: their pins,
+  gate-only (9e; maintenance.md, step 2c). 93420 stayed an undecided candidate (the second gap run, below,
+  added it). Left from it: their pins,
   for the per-spot pull request's pipeline run (row 7: it moves 17 of the 33 to their start points and
   pins 95811, 95813, 98833 and 98834), and the probe and step 3 for the new rows, the next sweep's.
+- **The second 12.1.5 gap run: done on 16 October 2026** (branch `data/missing-quests-and-baselines-12-1-5`),
+  on the rule the user delegated: a quest goes in when `QuestV2` 12.1.5 lists it, Blizzard's API serves a
+  player-facing record and nothing marks it removed. 22 quests are in the data, each with an `ADD` row and
+  its evidence in `missing-quest-decisions.csv`: 90745 The Empty Cradle, the four Nightmare Prey quests
+  95021 to 95024 (type 128), and 17 older or lead-in quests with only a client start point (Legion class hall
+  and artifact quests, the Void Elf and Dark Iron Dwarf recruitments, 27588 Signal the Attack, 41030 Sigil
+  Reclamation, 63506 Mecha Gone, 88930 Drained Mana and 93420). Six got `SKIP` rows: War Pigs! and Hisingen
+  Blues (a test quest line, API 404), three Special Assignments (API 404) and the internal 96070. 41628 and
+  53566 were filed by hand, where placement couldn't. Retail's missing-quests baseline (533 candidates),
+  step 2g's (D 0, N 525) and step 2's cache baseline were rewritten, the last two with `-AcceptPartialCache`,
+  as the cache will not get fuller this sweep (maintenance.md, steps 6, 2g and 2). Left from it: pins for the
+  17 with a start point (the next pin pipeline run), the probe and step 3 (below, "To try in game"), and the 4
+  changes step 2c lists on master for the quests #361 retyped as weekly (maintenance.md, step 2c), for a pull
+  request of their own.
 - **Shipped untried in game in 113.0,** on the user's go-ahead: most of the addon changes since 112.9 (the
   waypoint fallback, the tooltip's Type line, the empty list's count, the menu splits, `/qc holidays`
   listing every ID, the requirements gates and their tooltip text). The lines under "To try in game"
@@ -151,6 +166,23 @@ again.
   `/run local q=11 C_QuestLog.RequestLoadQuestByID(q) C_Timer.After(2,function() print(C_PlayerInfo.IsPlayerInChromieTime(),UnitLevel("player"),C_QuestLog.GetQuestDifficultyLevel(q)) end)`
   should print true, the level, then 30, the list's "[30]". A third number above 30 means Chromie Time
   scales the quest further, so the list reads such quests too low there.
+- **Scaling quests at the level cap** (16 October 2026, row 9, untried in game; retail, one look). The
+  ceilings are the levels the probe's quest pass got at 90, so this only checks that the list shows them.
+  On a level 90 Alliance character outside Chromie Time, open Elwynn Forest in the quest list: 11 "Riverpaw
+  Gnoll Bounty" (level 1, scaling to 30) should read "[30] Riverpaw Gnoll Bounty", not "[1]", and sort
+  among the zone's level 30 quests. If it isn't listed (done, or its prerequisite 76 not), any old zone's
+  quest that scales does: its bracket should be its ceiling, the `maxLevel` in `data\quests.jsonl`.
+- **Eversong Woods' offers** (retail, one line). The 12.1.5 map pass of 14 October 2026 got no offers for
+  Eversong Woods (map 2395; maintenance.md, step 6). On a level 90 character with Eversong's quests still to
+  do, `/run local m=2395 C_QuestLine.RequestQuestLinesForMap(m) C_Timer.After(3,function() local n=0 for _,q in ipairs(C_QuestLine.GetAvailableQuestLines(m)) do n=n+1 print(q.questID,q.questName) end print(n) end)`
+  lists what the game offers there. Quests in the list mean the pass missed them, and the next map pass
+  should be watched for it; 0 means the game offered that character nothing there.
+- **The retail probe for the 55 quests step 6 added on 16 October 2026** (the 33 story quests and the
+  second gap run's 22; the next sweep's, retail). The probe has asked none of them. Rebuild the retail list
+  with `Build-ProbeLists.ps1`, copy the probe into the AddOns folder and run its quest pass at level 90
+  ([maintenance.md](../maintenance.md), "In the game", the probe's steps 1 to 4); then step 2e reads the
+  cache, and steps 3, 2, 2g, 2i and 2j take what it says of them (their types, cache rewards, tunings,
+  minimum levels, PvP tag and ceilings).
 - **Retail's minimum levels (11 October 2026, untried in game):** on a level 1 Horde character, hover the pin of quest 24430 "Blacken the Skies" (Azshara, 14.5, 65.7) and read the Requires Level line: 5 (it said 30 before).
 - **The continent icons** (released in 112.8; the first look is done, the final build is untried; the probe's geometry pass is run): both games'
   dumps were read on 10 October and are the baseline (`continent-geometry-baseline.csv`, sweep step
@@ -259,7 +291,8 @@ again.
   print. The first comparison is retail's list of 11 October 2026, which the review reproduces exactly;
   Forever's full list hasn't been seen yet (the check of 11 October noted Winter Veil, 141, and the
   absence of 1879, Children's Week and the Darkmoon Faire only), so its first full paste is the next
-  sweep's.
+  sweep's. The 12.1.5 sweep's two are still to do (16 October 2026): set each beside the "What /qc
+  holidays should print" of a `Review-Calendar.ps1` run of the same day (maintenance.md, step 2h).
 - **The pins of #223 and #224** (193 quests with only a start point, and 1,453 more from
   TrinityCore's start points) shipped in 112.5 without an in-game check: the user, shown a list of
   spots to check, said it was too much to check by hand and to go ahead (8 October 2026). When

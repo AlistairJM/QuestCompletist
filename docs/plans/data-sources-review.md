@@ -492,6 +492,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-16: D14 fixed and recommendation 27 done, by open-items.md row 9 (option C, taken on the user's word to go with the recommendations while they were away): `Apply-QuestScaling.ps1` (maintenance.md, step 2j) gives 27,637 retail quests a `maxLevel`, each tuning's level at the cap from the 12.1.5.70391 probe, and the list's bracket, its sort and the low-level filter read the level the game scales a quest to. Taken from the probe rather than the ContentTuning table, which misses 53 of the 771 tunings even with AllowedMaxOffset 255 read as no cap; the live `IsQuestTrivial` is not asked, as the sweep compares the rule with the probe's answers instead.
 
+- 2026-10-16: recommendation 37's second 12.1.5 gap run, on the rule the user delegated (add a quest when 12.1.5's `QuestV2` lists it, the API serves a player-facing record and nothing marks it removed; for older content, its quest line's other quests in the data and none flagged unavailable). 22 quests are in the data, with no pins: 90745, the four Nightmare Prey quests 95021 to 95024 and 17 with only a client start point, 93420 Lor'themar's Judgement among them; six got `SKIP` rows (30173, 31694, 96029, 96307 and 96492, which the API doesn't serve, and the internal 96070). Retail has 35,628 quests, and its missing-quests baseline is rewritten: 533 undecided candidates (maintenance.md, step 6, "The second 12.1.5 gap run").
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

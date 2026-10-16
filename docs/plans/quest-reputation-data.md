@@ -2,7 +2,7 @@
 
 > Update 2026-10-09: the retail quest cache is a per-quest reputation source for the quests the API has no record of (see [retail-quest-cache.md](retail-quest-cache.md), "Reputation"). Where this plan says there is none, it means the API and the client's tables.
 
-> Update 2026-10-16: the 12.1.5 cache's rewards for 738 such quests are in `qcQuestReputation` (1,028 rewards, `Apply-ReputationBackfill.ps1 -CacheOnly`; [maintenance.md](../maintenance.md), step 2), which now holds 11,777 quests.
+> Update 2026-10-16: the 12.1.5 cache's rewards for 738 such quests are in `qcQuestReputation` (1,028 rewards, `Apply-ReputationBackfill.ps1 -CacheOnly`; [maintenance.md](../maintenance.md), step 2), which held 11,777 quests then, and 11,778 after step 6's second gap run added 27588's API reward the same day.
 
 > Since October 2026 the quests live in `data/quests.jsonl` and are built into `qcQuestData.lua` with a different row layout (see [data-structure.md](data-structure.md)). File names, field numbers and code references below describe the addon as it was when this plan was written.
 
