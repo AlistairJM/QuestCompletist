@@ -3239,7 +3239,9 @@ Some answers only the game client has.
   `Build-ProbeLists.ps1` (the probe's step 3, below);
 - one `/qc holidays` on each game, set beside `Review-Calendar.ps1`'s list (below, and step 2h);
 - Eversong Woods' offers: map 2395 answered none on the 12.1.5 map pass of 14 October 2026 (step 6), so
-  one line asks the game what it offers there;
+  one line asks the game what it offers there (answered on 16 October 2026: 33 offers and 5 shown quests,
+  all already in that pass under neighbouring maps; only 2395's own entry was empty, see
+  [plans/open-items.md](plans/open-items.md));
 - a scaling quest's bracket at level 90: one look at the list on a character at the cap.
 
 **The calendar (`/qc holidays`), every sweep, on both games** (sweep step 2h). In a city, with

@@ -192,7 +192,18 @@ again.
   Eversong Woods (map 2395; maintenance.md, step 6). On a level 90 character with Eversong's quests still to
   do, `/run local m=2395 C_QuestLine.RequestQuestLinesForMap(m) C_Timer.After(3,function() local n=0 for _,q in ipairs(C_QuestLine.GetAvailableQuestLines(m)) do n=n+1 print(q.questID,q.questName) end print(n) end)`
   lists what the game offers there. Quests in the list mean the pass missed them, and the next map pass
-  should be watched for it; 0 means the game offered that character nothing there.
+  should be watched for it; 0 means the game offered that character nothing there. **Answered on 16 October
+  2026**, on the probe's level 90 Alliance Human mage: the game offers 33 quest lines on 2395 (91206, 94396,
+  86997, 87456, 87457, 90669, 89383, 89386, 89384, 90548, 90549, 90550, 90835, 94393, 91284, 91823, 91824,
+  91825, 91833, 89230, 89231, 91388, 92729, 92177, 93093, 94012, 93094, 97622, 97625, 94868, 94869, 98831,
+  94382) and shows 5 quests there (94361, 89289, 93050, 93440, 96004). All 38 are in the data and pinned,
+  and the 14 October pass has every one of them, the 33 among its offers on Zul'Aman, Silvermoon City and
+  The Coiled Isle and the 5 among its forced quests, so step 2c's offers check saw them all. Only map 2395's
+  own entry was empty: its answer came after 99 ms with no offers, against about 130 ms for the other
+  Midnight zones, so the probe likely took an update meant for another map as Eversong's. What that left
+  unchecked is the position of the 13 pinned in Eversong (86997, 89383, 89384, 89386, 90548, 90549, 90550,
+  91284, 91388, 91823, 91824, 91825, 97622) against an Eversong offer (`Report-MapOffers.lua`). The next map
+  pass should be watched for 2395's own entry.
 - **The retail probe for the 79 quests step 6 added on 16 October 2026** (the 33 story quests, the
   second gap run's 22 and the noTitle API scan's 24; the next sweep's, retail). The probe has asked none of them. Rebuild the retail list
   with `Build-ProbeLists.ps1`, copy the probe into the AddOns folder and run its quest pass at level 90
