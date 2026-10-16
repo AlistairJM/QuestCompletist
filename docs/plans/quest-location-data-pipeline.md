@@ -1019,4 +1019,7 @@ scratch folder.
   `Test-RecordedGivers.ps1` (298), `Test-RecordedGivers.lua` (366), `Test-QuestLocationKinds.ps1` (21) and
   `Test-ForeverChecks.ps1` (53). The retail map pass of 14 October against the pins: 244 of 412 offers within
   1.5 points (243 before; 98831 now has its pin on The Coiled Isle), 1 more than 5 (82125), 163 on other maps
-  only, 4 with none. Not tried in game.
+  only, 4 with none. With master's #360 to #364 (names, retypes, reputation, scaling levels) merged in, a
+  fourth round of the pipeline changed no byte, the after-steps and the tests above gave the same, and the
+  reachability report, the continent icons and the tooltips against that master differ in the same lines
+  only. Not tried in game.

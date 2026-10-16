@@ -16,13 +16,15 @@ max renown, nothing completed, and the character has every profession, at the hi
 The calendar is a stand-in that shows no holiday, then each of qcHolidays in turn. An event the calendar
 never shows, such as the Scourge Invasion, can't be on, so its pins get a section of their own.
 
-The minimum level is checked at character levels 1, 10, 30 and 60: the tooltip's "Requires Level" line,
-the grey pins and the requirements filter must follow each quest's minLevel (else its level) in the data
-file qcQuestData.lua was built from, while the low-level filter and the bracket and sort of the list (its
-first 16 rows in each category) must still follow its level. A level of 0 or below is no level: the
-row prints the bare name and the low-level filter keeps the quest, which made-up quests check apart from
-the data. A PvP quest's name (qcQuestPvP) is led by the game's crossed swords, as the list draws it.
-Any wrong reading fails the run (exit status 1).
+The minimum level is checked at character levels 1, 10, 30, 60 and 90: the tooltip's "Requires Level"
+line, the grey pins and the requirements filter must follow each quest's minLevel (else its level) in the
+data file qcQuestData.lua was built from, while the low-level filter and the bracket and sort of the list
+(its first 16 rows in each category) must follow the level the quest shows: its level, or for a quest
+with a maxLevel (one that scales) the character's level raised to the minimum and held down at the
+maxLevel, as the game scales it. A level of 0 or below is no level: the row prints the bare name and the
+low-level filter keeps the quest, which made-up quests check apart from the data, as other made-up
+quests check scaling quests at the five levels. A PvP quest's name (qcQuestPvP) is led by the game's
+crossed swords, as the list draws it. Any wrong reading fails the run (exit status 1).
 
 An empty quest list says how many quests the filters hide (qcUpdateQuestList's line): made-up quests in
 made-up categories, each kind hidden by a filter of its own, check that the line gives the number the
@@ -684,8 +686,11 @@ note(string.format("%d holiday values with no calendar holiday in qcHolidays", c
 -- level. The tooltip's "Requires Level" line, the grey pins and the requirements filter must follow it
 -- at any character level. The character here has no faction, race or class, and has done every quest
 -- to do first, so nothing else stands between it and a quest. The list's bracket and sort and the
--- low-level filter must still follow the quest's own level, its level in the data file.
-local minimumLevels, ownLevels = {}, {}
+-- low-level filter must follow the level the quest shows: its own level in the data file, or, for a quest
+-- with a maxLevel there (one that scales), the character's level raised to the minimum and held down at
+-- the maxLevel, as the game scales it (TrinityCore's Player::GetQuestLevel). The game calls a quest
+-- trivial when that level is above 0 and below the character's less the trivial range.
+local minimumLevels, ownLevels, maxLevels = {}, {}, {}
 do
 	local source = readFile(ADDON_DIR .. "/" .. questDataFile):match("^%-%- Generated from (.-) by tools")
 	local handle = source and io.open(ADDON_DIR .. "/../" .. (source:gsub("\\", "/")), "rb")
@@ -695,10 +700,16 @@ do
 			if id then
 				ownLevels[tonumber(id)] = tonumber(level)
 				minimumLevels[tonumber(id)] = tonumber(line:match('[,{]"minLevel":(%d+)')) or tonumber(level)
+				maxLevels[tonumber(id)] = tonumber(line:match('[,{]"maxLevel":(%d+)'))
 			end
 		end
 		handle:close()
 	end
+end
+
+local function shownLevel(own, minimum, ceiling, character)
+	if not ceiling then return own end
+	return math.max(minimum, math.min(character, ceiling))
 end
 
 local buttons = {}
@@ -723,7 +734,7 @@ if next(minimumLevels) then
 	end
 	local categories = {}
 	for _, e in pairs(QUESTS) do categories[e[3]] = true end
-	for _, level in ipairs({1, 10, 30, 60}) do
+	for _, level in ipairs({1, 10, 30, 60, 90}) do
 		P.level, P.faction, P.race, P.class = level, nil, nil, nil
 		applySettings({QC_L_HIDE_REQUIREMENTSNOTMET = true})
 		local filter = core.BuildListFilter()
@@ -758,26 +769,31 @@ if next(minimumLevels) then
 				elseif not grey and expected then plainWrongly[mapId * 100000 + index] = true end
 			end
 		end
-		local lowLevel, bracket, order = {}, {}, {}
+		local lowLevel, bracket, order, scaled = {}, {}, {}, {}
+		local shownAt = {}
+		for id, own in pairs(ownLevels) do
+			shownAt[id] = shownLevel(own, minimumLevels[id], maxLevels[id], level)
+			if shownAt[id] ~= own then scaled[id] = true end
+		end
 		applySettings({QC_L_HIDE_LOWLEVEL = true})
 		local lowLevelFilter = core.BuildListFilter()
-		for id, own in pairs(ownLevels) do
-			if QUESTS[id] and lowLevelFilter(id) == (own > 0 and own < level - env.UnitQuestTrivialLevelRange()) then lowLevel[id] = true end
+		for id, shownLevelHere in pairs(shownAt) do
+			if QUESTS[id] and lowLevelFilter(id) == (shownLevelHere > 0 and shownLevelHere < level - env.UnitQuestTrivialLevelRange()) then lowLevel[id] = true end
 		end
 		applySettings({})
 		for categoryId in pairs(categories) do
 			env.qcUpdateQuestList(categoryId, 1)
-			local previous = -math.huge
+			local previousShown, previousOwn = -math.huge, -math.huge
 			for _, button in ipairs(buttons) do
 				local id, text = button.QuestID, button.QuestName.text
-				local own = ownLevels[id]
+				local own, shownHere = ownLevels[id], shownAt[id]
 				if text == "#" then break end
 				if own then
 					local name = (env.qcQuestPvP and env.qcQuestPvP[id] and PVP_MARK or "") .. QUESTS[id][1]
-					if text ~= (own > 0 and string.format("[%d] %s", own, name) or name) then bracket[id] = true end
+					if text ~= (shownHere > 0 and string.format("[%d] %s", shownHere, name) or name) then bracket[id] = true end
+					if shownHere < previousShown or (shownHere == previousShown and own < previousOwn) then order[id] = true end
+					previousShown, previousOwn = shownHere, own
 				end
-				if own and own < previous then order[id] = true end
-				previous = own or previous
 			end
 		end
 		local needWrong, noneWrong = {}, {}
@@ -793,14 +809,15 @@ if next(minimumLevels) then
 		out("  requirements filter shows a quest the character lacks the level for: " .. ids(shown))
 		out(string.format("  pins greyed although a quest on them can be taken: %d; not greyed although none can: %d",
 			count(greyWrongly), count(plainWrongly)))
-		out("  low-level filter not following the quest's own level (a level of 0 or below is never low): " .. ids(lowLevel))
-		out("  list row not '[level] name', or not the bare name for a level of 0 or below, the name led by the PvP mark on a PvP quest (first 16 rows of each category): " .. ids(bracket))
-		out("  list sort not by the quest's own level (first 16 rows of each category): " .. ids(order))
+		out("  scaling quests (a maxLevel in the data file) shown at another level than their own: " .. count(scaled))
+		out("  low-level filter not following the level shown, the quest's own or the scaled one (a level of 0 or below is never low): " .. ids(lowLevel))
+		out("  list row not '[level] name' with the level shown, or not the bare name for a level of 0 or below, the name led by the PvP mark on a PvP quest (first 16 rows of each category): " .. ids(bracket))
+		out("  list sort not by the level shown, then the quest's own level (first 16 rows of each category): " .. ids(order))
 		out("  quests in qcQuestData.lua that the data file lacks: " .. ids(notInData))
 		out()
-		note(string.format("character level %d: %d quests (%d with pins) wrongly need a level, %d (%d) wrongly need none, %d need another; %d pins wrongly grey, %d wrongly not; %d wrong low-level, %d bracket, %d sort",
+		note(string.format("character level %d: %d quests (%d with pins) wrongly need a level, %d (%d) wrongly need none, %d need another; %d pins wrongly grey, %d wrongly not; %d wrong low-level, %d bracket, %d sort; %d shown scaled",
 			level, count(needWrong), withPins(needWrong), count(noneWrong), withPins(noneWrong), count(otherLevel),
-			count(greyWrongly), count(plainWrongly), count(lowLevel), count(bracket), count(order)))
+			count(greyWrongly), count(plainWrongly), count(lowLevel), count(bracket), count(order), count(scaled)))
 		levelProblems = levelProblems + count(needWrong) + count(noneWrong) + count(otherLevel) + count(greyWrongly) +
 			count(plainWrongly) + count(lowLevel) + count(bracket) + count(order) + count(notInData)
 	end
@@ -898,6 +915,85 @@ do
 	out()
 	note(string.format("level 0 or below, made-up quests: %d of %d checks wrong", noLevelWrong, noLevelChecks))
 	levelProblems = levelProblems + noLevelWrong
+end
+
+--[[ A scaling quest shows the level the game scales it to ]]--
+-- Made-up quests in a made-up category, apart from the data, with a minimum and a maxLevel (and one with
+-- neither, which keeps its own level). At each character level the game's level for such a quest is the
+-- character's, raised to the minimum and held down at the maxLevel, and the game calls it trivial when
+-- that is above 0 and below the character's level less the trivial range (5 here): the list's bracket, its
+-- order and the low-level filter of the list and the map must say the same.
+local scalingChecks, scalingWrong = 0, 0
+do
+	local BASE, CATEGORY = 4000000200, 99998
+	-- name, own level, minimum, maxLevel, and the level shown at each of CHARACTERS
+	local MADE = {
+		{"a", 30, 10, 70, {10, 10, 30, 60, 70}},
+		{"b", 10, nil, 90, {10, 10, 30, 60, 90}},
+		{"c", 0, nil, 60, {1, 10, 30, 60, 60}},
+		{"d", 50, 10, 30, {10, 10, 30, 30, 30}},
+		{"e", 20, nil, nil, {20, 20, 20, 20, 20}},
+		{"g", 25, 10, 70, {10, 10, 30, 60, 70}},
+	}
+	local CHARACTERS = {1, 10, 30, 60, 90}
+	-- The rows in order: by the level shown, then the quest's own level.
+	local ORDERS = {"cbgade", "cbgade", "ecbgad", "edcbga", "edcgab"}
+	local ids, nameOf = {}, {}
+	for index, made in ipairs(MADE) do
+		local id = BASE + index
+		ids[index], nameOf[id] = id, made[1]
+		QUESTS[id] = {"zz scaling test " .. made[1], made[2], CATEGORY, 1, 0, 0, 0}
+		env.qcQuestMinLevel[id], env.qcQuestMaxLevel[id] = made[3], made[4]
+	end
+	core.ForgetQuestIndexes()
+	local function kept(value) return value and "kept" or "hidden" end
+	local function check(ok, text)
+		scalingChecks = scalingChecks + 1
+		if not ok then
+			scalingWrong = scalingWrong + 1
+			out("  wrong: " .. text)
+		end
+	end
+
+	out("== A scaling quest shows the level the game scales it to (made-up quests)")
+	for c, character in ipairs(CHARACTERS) do
+		P.level, P.faction, P.race, P.class = character, nil, nil, nil
+		local below = character - env.UnitQuestTrivialLevelRange()
+		applySettings({QC_L_HIDE_LOWLEVEL = true, QC_M_HIDE_LOWLEVEL = true})
+		for _, view in ipairs({{"list", core.BuildListFilter}, {"map", core.BuildMapFilter}}) do
+			local filter = view[2]()
+			for index, made in ipairs(MADE) do
+				local shown = made[5][c]
+				local got, want = filter(ids[index]), not (shown > 0 and shown < below)
+				check(got == want, string.format("low-level filter, %s, character level %d, quest %s (level %d, minimum %s, maxLevel %s, shown %d): %s, should be %s",
+					view[1], character, made[1], made[2], tostring(made[3]), tostring(made[4]), shown, kept(got), kept(want)))
+			end
+		end
+		applySettings({})
+		env.qcUpdateQuestList(CATEGORY, 1)
+		local order, rowText = {}, {}
+		for _, button in ipairs(buttons) do
+			if button.QuestName.text == "#" then break end
+			order[#order + 1] = nameOf[button.QuestID] or "?"
+			rowText[button.QuestID] = button.QuestName.text
+		end
+		for index, made in ipairs(MADE) do
+			local shown, name = made[5][c], QUESTS[ids[index]][1]
+			local want = shown > 0 and string.format("[%d] %s", shown, name) or name
+			check(rowText[ids[index]] == want, string.format("list row, character level %d, quest %s: %s, should be %s",
+				character, made[1], tostring(rowText[ids[index]]), want))
+		end
+		check(table.concat(order) == ORDERS[c], string.format("list order, character level %d: %s, should be %s",
+			character, table.concat(order), ORDERS[c]))
+	end
+
+	for _, id in ipairs(ids) do QUESTS[id], env.qcQuestMinLevel[id], env.qcQuestMaxLevel[id] = nil, nil, nil end
+	core.ForgetQuestIndexes()
+	P.level = nil
+	out(string.format("  %d checks, %d wrong", scalingChecks, scalingWrong))
+	out()
+	note(string.format("scaling quests, made-up quests: %d of %d checks wrong", scalingWrong, scalingChecks))
+	levelProblems = levelProblems + scalingWrong
 end
 
 --[[ An empty list says how many quests the filters hide ]]--

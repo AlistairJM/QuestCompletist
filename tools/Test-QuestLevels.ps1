@@ -520,7 +520,7 @@ if (-not $haveReal) {
     $realDir = Join-Path $Scratch 'real'
     New-Item -ItemType Directory "$realDir\data", "$realDir\addon" | Out-Null
     $checkoutData = Join-Path $PSScriptRoot '..\data'
-    $stripped = ([IO.File]::ReadAllText("$checkoutData\quests.jsonl") -replace ',"minLevel":\d+\}', '}')
+    $stripped = ([IO.File]::ReadAllText("$checkoutData\quests.jsonl") -replace ',"minLevel":\d+(?=[,}])', '')
     [IO.File]::WriteAllText("$realDir\data\quests.jsonl", $stripped, $utf8)
     Copy-Item "$checkoutData\pins.jsonl" "$realDir\data\pins.jsonl"
     Invoke-AddonDataBuild -DataDir "$realDir\data" -AddonDir "$realDir\addon" | Out-Null
@@ -539,7 +539,7 @@ if (-not $haveReal) {
     for ($i = 0; $i -lt $strippedLines.Count; $i++) {
         if ($appliedLines[$i] -ceq $strippedLines[$i]) { continue }
         $changed = $appliedLines[$i] | ConvertFrom-Json
-        if ($appliedLines[$i].EndsWith(',"minLevel":' + $changed.minLevel + '}') -and $appliedLines[$i].Substring(0, $appliedLines[$i].LastIndexOf(',"minLevel":')) + '}' -ceq $strippedLines[$i] -and $changed.minLevel -ne $changed.level) { $addedOnly++ }
+        if ($null -ne $changed.minLevel -and ($appliedLines[$i] -replace ',"minLevel":\d+(?=[,}])', '') -ceq $strippedLines[$i] -and $changed.minLevel -ne $changed.level) { $addedOnly++ }
         else { $bad++ }
     }
     Check ($addedOnly -gt 0) "R2: some quests get a minLevel ($addedOnly)"

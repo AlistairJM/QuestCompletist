@@ -63,6 +63,7 @@ categories, the zone table, reputation rewards, storylines and so on).
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
   `minLevel` is left out when it's the same as `level`, and kept when it's 0 (no minimum).
+  `maxLevel`, the level a scaling quest stops scaling at, is left out for a quest that doesn't scale.
   `class` is the game's own class mask, 1 shifted left by the class ID less one (Warrior 1,
   Paladin 2, … Monk 512, Druid 1024, Evoker 4096), so masks from Blizzard's API, the client
   tables and CMaNGOS are used as they are; `race` and the other masks are the addon's own bits,
@@ -95,15 +96,22 @@ line, e.g. `quests.jsonl line 3 (id 53665): 'level' is missing`.
 
 In `qcQuestData.lua` a quest's row in `qcQuestDatabase` is `{name, level, category, type, faction,
 race, class, storyline}`, with storyline left off when it's 0. Profession, holiday, covenant, PvP and
-prerequisite, which most quests don't have, and the minimum level, where it isn't the row's level,
-are in `qcQuestProfession`, `qcQuestHoliday`, `qcQuestCovenant`, `qcQuestPvP`, `qcQuestPrereq` and
-`qcQuestMinLevel`, keyed by quest ID, a list of prerequisites as a Lua table.
+prerequisite, which most quests don't have, the minimum level, where it isn't the row's level, and
+the level a scaling quest stops scaling at are in `qcQuestProfession`, `qcQuestHoliday`,
+`qcQuestCovenant`, `qcQuestPvP`, `qcQuestPrereq`, `qcQuestMinLevel` and `qcQuestMaxLevel`, keyed by
+quest ID, a list of prerequisites as a Lua table.
 The zone text stays in the data file only: the game never reads it.
 
-`level` means two things, and the data keeps both. The row's level is the quest's own: the list's
-bracket (`[30] Name`), its sort and the low-level filter read it. A level of 0 or below is no level:
-the list prints the bare name with no bracket, the low-level filter (the map's too) never counts the
-quest as low, and the sort puts it first. `qcQuestMinLevel[questId]` is the level a character needs to
+`level` means three things, and the data keeps all of them. The row's level is the quest's own. The
+list's bracket (`[30] Name`), its sort and the low-level filter read the level the quest shows, which
+is the row's level unless `qcQuestMaxLevel` has the quest: then it is the character's level, raised to
+the quest's minimum (below) and held down at `qcQuestMaxLevel[questId]`, the level the game scales it
+to (`qcShownQuestLevel` in `qcCore.lua`, [step 2j](#2j-scaling-quests-levels)). The sort is by the level
+shown, then the row's level, then the name, so a quest that doesn't scale keeps the order it had. A
+level of 0 or below is no level: the list prints the bare name with no bracket, the low-level filter
+(the map's too) never counts the quest as low, and the sort puts it first. Retail's `qcQuestMaxLevel`
+holds 27,637 of its 35,606 quests (16 October 2026); Forever's quests don't scale, so its table is
+empty. `qcQuestMinLevel[questId]` is the level a character needs to
 take the quest, and the tooltip's "Requires Level" line, the grey pins and the requirements-not-met
 filter read `qcQuestMinLevel[questId] or level`, where 0 or below asks for nothing. The table holds only
 the quests whose minimum is not their level, and it keeps a 0 (no minimum); a minimum of 0 or 1 against
@@ -125,7 +133,7 @@ entry.
 `Apply-AccuracyFixes.ps1`, `Sync-QuestNamesFromApi.ps1`, `Sync-QuestProfessions.ps1`,
 `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1`, `File-WeeklyEventQuests.ps1`,
 `Place-UncategorisedQuests.ps1`, `Insert-GapQuestEntries.ps1`, `Add-TaskQuests.ps1`, `Build-QuestLines.ps1`,
-`Sync-QuestPrerequisites.ps1`, `Apply-QuestMinLevels.ps1`, `Apply-ClientQuestGivers.ps1`, `Apply-PinNpcIds.ps1`,
+`Sync-QuestPrerequisites.ps1`, `Apply-QuestMinLevels.ps1`, `Apply-QuestScaling.ps1`, `Apply-ClientQuestGivers.ps1`, `Apply-PinNpcIds.ps1`,
 `Fill-PinNpcIds.ps1`, `Import-RecordedGivers.ps1`, `Assemble-PinDB.ps1` and `Remove-DuplicatePinQuests.ps1`.
 They take `-DataDir` and `-AddonDir`, and default to the checkout they're in, so a scratch copy for
 a trial run needs both folders. Before saving, they check that the Lua still matches the data
@@ -336,9 +344,9 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 0 | Everything is the newest version: clients, probe lists and results, tables, API docs, databases | `Get-LatestBuilds.ps1` ([Before a sweep](#before-a-sweep), item 1) | No |
 | 1b | Second source for race and class, and the task-quest tables 1d and 2c read. Run it before step 1 and let it finish: the audit reads its `quest_wago_requirements.csv` when it starts | `Get-WagoQuestRequirements.ps1 -Refresh` | No |
 | 1 | Faction, race and class (after step 1b) | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
-| 1c | Quest names | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 1c | Quest names: the API's titles, else the quest cache's or the task table's (after steps 1, 1b and 2e, whose API cache, task table and quest cache it reads) | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 1d | Professions (after steps 1b and 2e, whose tables and quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
-| 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1` | Only the last one |
+| 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1 -CacheOnly` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers, TrinityCore and the decisions kept by hand (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2d | Holiday tags: quests that belong to a holiday and carry none, or the wrong one | `Audit-QuestHolidays.ps1` | No |
@@ -346,18 +354,19 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2i | The PvP tag, from the quest cache's kind of each quest, else the API, the task table and TrinityCore or CMaNGOS, and the hand decisions (after step 2e; Forever's comes from its importer too): `pvp` on every PvP quest, for both games; lists, and leaves alone, the quests in battlegrounds, Wintergrasp, Tol Barad and Ashran no source tags | `Sync-QuestPvP.ps1 -Game retail -WhatIf`, then without `-WhatIf`; the same with `-Game forever` after step 10 | Only the last one |
 | 2f | Where each zone sits on its continent map, for the zone icons | the probe's map pass ([In the game](#in-the-game), step 3b) → `Compare-ContinentGeometry.lua <saved variables> docs\plans\continent-geometry-baseline.csv`, then `--update` once the differences are read | No |
 | 2g | Minimum levels: the API's, else the client's level ranges, in `qcQuestMinLevel` (after steps 1, 1b and 2e; again after step 6 or 6b adds quests) | `Compare-QuestLevels.ps1` → `Apply-QuestMinLevels.ps1 -WhatIf`, then without `-WhatIf` → `Compare-QuestLevels.ps1 -UpdateBaseline` once the differences are read | Only the applying run |
+| 2j | Scaling quests' levels: the level each content tuning scales to at the level cap, from the retail probe's quest pass at the cap, in `qcQuestMaxLevel` (after the probe, step 2e and step 2g; again after step 6 or 6b adds quests) | `Apply-QuestScaling.ps1 -WhatIf`, then without `-WhatIf` | Only the applying run |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
-| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1`; then steps 2b, 2c, 2g and 4 again, for the quests the inserter added | A candidate file, until you apply it |
-| 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2g, 2i, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
+| 6 | Map pins, and quests new to the database | see [the pin pipeline](plans/quest-location-data-pipeline.md) → `Remove-DuplicatePinQuests.ps1`, then `Fetch-GapQuestData.ps1` → `Insert-GapQuestEntries.ps1` → `File-WeeklyEventQuests.ps1`; then steps 2b, 2c, 2g, 2j and 4 again, for the quests the inserter added | A candidate file, until you apply it |
+| 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2g, 2j, 2i, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -433,12 +442,25 @@ KEPT rather than raising it again, unless our value changes.
 
 ### 1c. Quest names
 
-`Sync-QuestNamesFromApi.ps1` gives each quest the title of its record in `tools\quest_api_cache`,
-which step 1's audit fills, and rebuilds `qcQuestData.lua`. The title is copied exactly, odd spacing
-included, as the game shows it. The game shows its own title once a quest's data has loaded, so ours
-matters for English search and until then. `-WhatIf` lists the changes without making them. A quest
-the API doesn't serve (a `.404` file in the cache), or one the cache has no record of yet, keeps its
-name. From a worktree, point `-ToolsDir` at the main checkout's `tools\`.
+`Sync-QuestNamesFromApi.ps1` gives each quest Blizzard's title for it and rebuilds `qcQuestData.lua`.
+The game shows its own title once a quest's data has loaded, so ours matters for English search and
+until then. A quest takes the title of the first of these that has one for it:
+1. its record in `tools\quest_api_cache`, which step 1's audit fills;
+2. for a quest the API doesn't serve (a `.404` file there), the newest retail quest cache (step 2e;
+   `-Build` reads another);
+3. for a quest the API doesn't serve and that cache lacks, the client's task table,
+   `QuestV2CliTask.csv` (step 1b), which titles world quests, bonus objectives and the other task
+   quests.
+
+The user chose that order (decision 10e of the 12.1.5 sweep, option A). A quest none of them titles
+keeps its name, as does one the API cache has no file for yet. The title is copied exactly, odd
+spacing and capitals included, as the game shows it, with one exception: a title that starts with
+`[DEPRECATED]` is never taken. That prefix is Blizzard's mark on a quest it retired. Whether such a
+quest can still be done is decided on its evidence in `docs\plans\unavailable-quest-decisions.csv`
+([plans/unavailable-quests.md](plans/unavailable-quests.md)), not by its title, and the quest keeps
+its name; the run lists these apart. `-WhatIf` lists every rename by source, without making them.
+`Test-SyncQuestNames.ps1` tests the order and the exception. From a worktree, point `-ToolsDir` at
+the main checkout's `tools\`.
 
 On 15 October 2026 (retail 12.1.5.70391, with the API cache of 14 October, whose records come from
 the API's 12.1.5_70077 namespace) it checked 30,185 quests and renamed 5, each a title Blizzard changed
@@ -448,9 +470,35 @@ Seventy-Five Percent Completed. 5,359 quests were API 404s and kept their names,
 #347 added had no record in the cache yet. A second run changes nothing. On 16 October 2026, with
 those records and the 33 of the story quests step 6 added, it checked 30,242 quests and renamed none.
 
-For the quests the API doesn't serve, the user decided (decision 10e of the 12.1.5 sweep) that this
-step falls back to the title in the newest retail quest cache (step 2e). That fallback comes in a
-later pull request; until then those quests keep the names they have.
+The 12.1.5 baseline, with the fallback (16 October 2026, on the data with step 6's 33 story quests:
+the API cache of 14 October, whose files for the 29 quests of #347 were fetched on 16 October from
+the same namespace, so every quest of ours has one; the quest cache of 12.1.5.70391, its copies of 14
+and 15 October read together, 29,825 of our 35,606 quests; the task table of 12.1.5.70391). By
+source:
+
+| Source | Quests it titles | Renamed |
+|---|---|---|
+| The API | 30,242 | 0 |
+| The quest cache, for the 5,364 the API doesn't serve | 1,977 | 19 |
+| The task table, for those the cache lacks | 2,881 | 15 |
+| Neither: the name stays | 506 | |
+
+- **From the quest cache:** 41778, 46810, 46946, 48100 (The Defense of Eredath), 52115 (Kraken, not
+  Kracken), 53372, 53982, 55976, 56119, 57330, 91802 (The Best Bites Are Bog Bugs), 92087 to 92093
+  ("Level 2" to "Level 8", which ours had as "Unlock Ability 1 - Level 2" and so on) and 92123
+  (Cragpine).
+- **From the task table:** 45654 and 45737 (C'Thun), 45743, 51004, 51097, 51120 and 51988 (their
+  nicknames' quotes, `Stef "Marrow" Quin`), 51848, 51894, 56793, 58744 (Whispers, not Whipers),
+  91798 (Fish of the Day), 92139, 92150 and 92576 (Dominating the Domanaar).
+- **Titles not taken:** 4, the Sunstrider Isle quests 8330, 8336, 8345 and 8346, which the quest cache
+  titles `[DEPRECATED]...`. They got `KEEP` rows: `QuestV2` of 12.1.5.70391 lists them, and the server
+  sent their data to the probe on 15 October, so they don't meet the rule to flag one
+  ([plans/unavailable-quests.md](plans/unavailable-quests.md)).
+- Of the 506 that keep their names, the 12.1.5 probe titles none, and 12.1.0.69933's cache, which
+  this step doesn't read, differs from ours on 3: 52928, 53159 and 53239, "Wartime Donations: ..." in
+  ours and "Arathi Donations: ..." there. The server refused all three to the 12.1.5 probe.
+- The run warns that the quest cache holds under 90% of our quests (83.8%). A second run changes
+  nothing.
 
 ### 1d. Professions
 
@@ -528,7 +576,7 @@ its `ReputationIndex` is 0 or more (the client keeps no standing for it otherwis
 `ReputationFlags_0` lacks bit 4 (value 4, hidden). The classes, with the `Kind` of the row each
 writes to `quest_reputation_compare.csv` (the old kinds, `api-only`, `ours-only` and `differ`, are
 still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on `api-only` and
-`differ` only):
+`differ`, and with `-CacheOnly` on `cache-only` too, below):
 
 | Class | Quests where | Kind |
 |---|---|---|
@@ -541,7 +589,8 @@ still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on 
 | G | the quest is not in the cache (informational) | none |
 | H | the cache's own extras: quests not in our data, slots with an amount of 0, a faction in two slots | none |
 
-The run exits with 1 on a class C or D quest, and says the reader looks moved when there are 100 or
+The run exits with 1 on a class C or D quest (one whose cache gives the API's rewards is only ours
+out of date: `-CacheOnly`, below), and says the reader looks moved when there are 100 or
 more C quests (`-ReaderMovedAt`): run `Compare-QuestCache.ps1` then, and don't use the cache's
 rewards that sweep. It prints the three builds (the API's, the cache's, the Faction table's) and warns
 when they differ, as on 15 October 2026 (API `12.1.5_70077`, the other two `12.1.5.70391`); a few C
@@ -556,8 +605,32 @@ On 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914) the classes held 
 record of), F 153 and G 2,451 (246 of them with a reward row of ours), and the cache reproduced all
 11,690 of the API's rewards. Step 6b's 506 task quests (11 October 2026) moved E to 2,085 (42 new, all of
 them new rows) and G to 2,852 (401 new, the new rows the cache lacks), and the baseline file was rewritten.
-Whether to backfill E is the user's decision
-([plans/retail-quest-cache.md](plans/retail-quest-cache.md)); nothing here changes data.
+
+Since the 12.1.5 sweep, class E is taken from the newest cache, with no check in the game (the
+user's decision 11b, option B; [plans/open-items.md](plans/open-items.md), row 15): wherever the
+API and the cache both list a reward they agree (11,690 of 11,690 on 12.1.0, 11,093 of 11,093 on
+12.1.5). After the compare, this writes it:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-ReputationBackfill.ps1 -CacheOnly
+```
+
+It does what the run without `-CacheOnly` does, and also adds the `cache-only` rows of the quests
+the API has no record of (a `.404` in the API cache), with only their rewards on shown factions
+(the CSV's `CacheShown` column). A faction those rewards name that `qcFactions` lacks is added to
+it, with the Faction table's name, so step 2b's name check passes. A quest whose API record lists
+no reward, or that step 1 hasn't asked about, is left and counted. It takes the newest cache only,
+so it refuses a CSV whose cache pass read another build than the newest in `tools\` (the CSV's
+`CacheBuild` column): rerun the compare without `-Cache`. It also refuses while the CSV has a
+`cache-differ` or `cache-lost` row whose cache record gives other rewards than the API's, or whose
+quest the API has no record of. A C or D quest whose cache record gives the API's rewards (the
+API's amount for every faction the API lists, and no reward on another shown faction) is only ours
+out of date, as when Blizzard changes a reward. The compare still fails on it, but this run
+corrects ours from the API's `differ` row (a reward only we list stays, and is counted) and writes
+the cache's rows as well. When it refuses, the run without `-CacheOnly` still applies the API's
+rows; find out why the cache differs (step 2e) before its rewards are taken. Rerun the compare
+after it: E then holds only the quests left, and one whose cache record also rewards a hidden
+faction is in B.
 
 On 15 October 2026 (cache 12.1.5.70391, API cache 12.1.5_70077, Faction table 12.1.5.70391)
 C and D were 0 and B the same 3 quests, and the cache reproduced all 10,054 of the API's
@@ -572,8 +645,8 @@ all quests this cache lacks, now in G, and the 57 new E and 9 new F quests were 
 baseline. G gained 6,366 quests: 6,336 that the 12 October reading holds and this cache lacks,
 and 30 that neither file holds, all added to the data since the baseline (#347's 29, and 97212,
 a Midnight Candy Bucket added on 13 October). It lost the 243 baseline G quests this cache holds,
-146 of them also in the 12 October reading. So the baseline file stays as it was until a complete
-12.1.5 cache is read. The API cache of 14 October has no record of the 29 quests #347 added
+146 of them also in the 12 October reading. So the baseline file stayed as it was that day
+(16 October, below). The API cache of 14 October has no record of the 29 quests #347 added
 (18 Hallow's End quests and 11 task quests), so the API pass counts 5,388 quests with none:
 the 5,359 the API does not know and those 29. The records fetched for #347 on 15 October, in
 the same namespace, list no reputation reward for the 24 the API knows, and it does not know
@@ -589,7 +662,33 @@ A 10,269, B the same 3, C 0, D 0, E 738 quests with 1,028 rewards (all quests th
 of), F 151, G 5,781 and H 19, and the cache reproduced all 11,093 of the API's rewards on the
 quests it holds. Against the same run on the data before the 33 quests, G has the 32 of them the
 cache lacks and H one fewer: 98831 The Labyrinth, the one it holds, is now ours and has no reward.
-The baseline file stays as it was, as the cache is still partial.
+The baseline file stayed as it was then; it was rewritten later that day (below).
+
+On 16 October 2026 the pass read the joined 12.1.5 cache (step 2e: the game's copies of 14 and 15
+October read together), with the API cache, which by then had answers for the 29 quests (24
+records, and 5 the API does not know; 5,364 of our quests have no record), and the Faction table of
+12.1.5.70391. The cache holds 29,844 quests, 29,825 of our 35,606 (83.8%, with the 33 story
+quests), so it is still warned about
+as partial; it will not get fuller this sweep. C and D were 0, B the same 3 quests, and the cache reproduced all 11,093 of
+the API's rewards on the quests it holds. E held 738 quests with 1,028 rewards, all of them quests
+the API has no record of, none with a hidden faction among its rewards, and `-CacheOnly` wrote all
+of them, adding 2574 Dream Wardens to `qcFactions` (5 rewards): `qcQuestReputation` went from
+11,039 to 11,777 quests. By our type, 645 are typed 128 (928 rewards), 75 one-time (80), 14 daily
+(15), 3 repeatable (3) and 1 type 0 (2). 695 are in the client's task table: 621 world quests (906
+rewards), 23 bonus objectives, 12 Dragonriding races, 3 threat wrappers, 2 island weeklies and 34
+with no quest type there. The other 43 are 21 emissary quests (1,500 each), 5 Darkshore donations,
+3 Broken Shore contributions, 5 typed 128 and filed under no category (71153, 72298, 72381, 72382
+and 72383, whose cache records give Tortollan Seekers 1,500), 8 one-time quests whose cache record
+carries the Deprecated flag (8330, 8336, 8345, 8346, 9422, 10119, 38711, 75641) and the daily
+56419. After it: A 11,007, E 0, F 151, G 5,781 (767 with a reward row of ours), H 19 (1 with a
+reward). The baseline file was then rewritten from that run with `-AcceptPartialCache` (decided
+for the sweep, as the cache will not get fuller). Against the 11 October baseline: of its 2,085 E
+quests, 646 were written and the other 1,439 are quests this cache lacks, now in G; the other 92
+written were in G, as the 11 October reading lacked them. F kept 135, lost 18 to G and gained 16
+from G. G gained 3,318 (3,256 that the 12 October 12.1.0 reading holds and this cache lacks, and
+the 62 added to the data since that neither holds: #347's 29, 97212 and 32 of the 33 story quests)
+and lost 389, all of them held by this cache. The 1,439 keep no reward until a cache holds them
+again, when the pass lists them as new E.
 
 ### 2b. The tables kept by hand
 
@@ -655,6 +754,9 @@ and the 7 rows were taken out: the run then reported 122 findings, all kept, non
 date. On 16 October 2026, after step 6 added the 12.1.5 story quests, a run before step 2c had one new
 finding, 95193 ("the API has one, we don't": 95190, 95191 and 95192), which step 2c then set; after
 it, the run reports the same 122 findings, none new, and the same findings file as on the data before.
+On 16 October step 3 retyped 89057 and 89192 as weekly, which put their `prereq: recurring quest`
+rows (89057 requires 85721, 89192 requires 89254, both weekly) out of date, and they were taken out: 120
+findings, all kept.
 
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
@@ -813,7 +915,7 @@ so a cache from ordinary play is far too small, and `Compare-QuestCache.ps1` fai
 of 14 October 2026, held 26,616 quests against the 33,123 of 12.1.0.69933's, though the probe's quest
 pass asked all 35,544 of ours. The server refused 4,959 of them, asked 4 at a time, and 3,987 more were
 among the 5,242 the probe counted as held with no level ([In the game](#in-the-game), step 3), which
-never reached the cache. So the tools of steps 1d, 2, 2c, 2e, 2g, 2i and 6b (the check is in
+never reached the cache. So the tools of steps 1d, 2, 2c, 2e, 2g, 2i, 2j and 6b (the check is in
 `QuestCacheFiles.ps1`) warn when the cache holds under 90% of the quests of the newest cache of an
 earlier build in `tools\`, or of the quests in our data, and name both counts. The warning changes
 no exit code, but steps 2 and 2g refuse `-UpdateBaseline` (exit 1) while it stands, unless
@@ -889,8 +991,9 @@ and the record holds no level, only the ContentTuning ID that Blizzard's level r
 the tooltip's "Requires Level" line, the grey pins and "Hide quests with unfinished requirements" agree
 with the game (the user's decision of 11 October 2026, option C of open-items.md rows 14 and 8). The
 level goes in the quest's `minLevel` field, which the build writes to `qcQuestMinLevel`; the quest's own
-`level` is not touched, because the list's bracket, its sort and the low-level filter read that
-([the data files](#the-quest-and-pin-data-files)). Forever's table is filled by its importer (step 10);
+`level` is not touched, because the list's bracket, its sort and the low-level filter read that for a
+quest that doesn't scale ([the data files](#the-quest-and-pin-data-files)). A scaling quest's minimum is
+also the floor of the level they read for it (step 2j), so run step 2j after this one. Forever's table is filled by its importer (step 10);
 this is retail's. It needs the API cache (step 1), the quest cache (step 2e) and the task table (step 1b):
 
 ```powershell
@@ -1266,6 +1369,127 @@ the icon of a pin whose quests are all PvP. Every sweep, with the newest cache o
   record of type 41 (PvP), and theirs are not. The cache read after the next probe run, which asks every
   quest in the data, is the source to answer for them.
 
+### 2j. Scaling quests' levels
+
+`Apply-QuestScaling.ps1` gives each retail quest that scales the level it stops scaling at, in its
+`maxLevel` field, which the build writes to `qcQuestMaxLevel`. The list's bracket, its sort and the
+low-level filter (the list's and the map's) then read the level the game scales the quest to for a
+character outside Chromie Time: its level, raised to the quest's minimum (`minLevel`, else `level`) and
+held down at `maxLevel`. A quest with no `maxLevel` reads its own level, as before ([the data
+files](#the-quest-and-pin-data-files)). This is open-items.md row 9, option C, taken on 16 October 2026,
+API review recommendation 4. It is retail's: Forever's quests don't scale (its probe of 14 October 2026, a
+level 16 character on 1.60.1.70374, gave each of the 2,964 quests of ours it loaded its stored level, and
+the low-level rule agreed with `IsQuestTrivial` on 2,963; the one left is 8856, of level 0, which the rule
+never counts as low), so its `qcQuestMaxLevel` is empty and the shared code reads its levels as before.
+`Apply-QuestScaling.ps1 -Game forever` checks that at each Forever probe run (step 10): it writes nothing
+and exits 1 when a quest the probe loaded has another level than its stored one, or the data holds a
+`maxLevel`.
+
+It needs the retail probe's quest pass made at the level cap ([In the game](#in-the-game), step 3), the
+quest cache of the probe's build (step 2e), the task table (step 1b) and step 2g's minimum levels:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-QuestScaling.ps1 -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-QuestScaling.ps1
+```
+
+Where the ceiling comes from (`QuestScaling.ps1`):
+- **The game's level at the cap.** `GetQuestDifficultyLevel` is the character's level, raised to the
+  quest's minimum and held down at its tuning's maximum (TrinityCore's `Player::GetQuestLevel` does just
+  that), so for a character at the cap it is the maximum. The probe saves it as each loaded quest's
+  `level` fact. Rows the server refused or never answered, and the placeholder rows of records the client
+  held in part (cached with no level above 0), are never read.
+- **The quest's tuning:** its `ContentTuningID` in the quest cache, else in the task table. Tuning 0 has
+  no range, so its quests get none.
+- **One level per tuning.** The loaded quests of a tuning must all give the same level; every quest of
+  the tuning, loaded or not, then gets it as its `maxLevel` where it is above the quest's minimum. A tuning
+  whose quests give several levels gives none of them a ceiling, and is listed. A quest with no tuning, or
+  on a tuning the probe has no level for, keeps what it has.
+- **Not the ContentTuning table.** Its own maximum (`MaxLevelSquish` plus the base `MaxLevelScalingOffset`
+  picks, as for the minimum in step 2g) agrees with the game for 666 of the 771 tunings the 12.1.5 probe
+  answered for; the game scales the other 105 higher (750, 1427 and 1707 are 60 or less in the table and 90
+  in the game). Read with an `AllowedMaxOffset` of 255 as no cap, it agrees for 718, and the game still
+  scales the other 53, all of offset 0, higher.
+- **Not Chromie Time.** The ceilings are the levels the probe's character was given at the cap.
+  TrinityCore's `Player::GetQuestLevel` takes the tuning through the character's Chromie Time options
+  (`CTROptions`, whose `ConditionalFlags` pick a `ConditionalContentTuning` redirect), so a character in
+  Chromie Time may be scaled to another level. That redirect is not modelled: such a character's bracket
+  and low-level filter read the ceilings of a character outside it.
+
+It refuses, writing nothing, when a quest run of the probe's build was made below the cap or kept no
+level (a row keeps only its last answer, so any of the build's quest runs may have given it; the cap is
+90 for 12.x builds, `$RetailLevelCaps` in `QuestScaling.ps1`, or `-Cap`), when the probe's build is not
+the quest cache's (`-Build`), and unless at least 99% of at least 20,000 usable probed quests sit on
+tunings that agree (`-MinAgreement`, `-MinProbed`). `-WhatIf` reports and writes nothing; `-Check` is
+the same and exits 1 when the data isn't what the probe says. A second run changes nothing.
+
+After the changes it compares the addon's low-level rule with the game's own answer, for every quest
+of ours the probe asked `IsQuestTrivial` about, at the probe's level and trivial range: how many it hid,
+by the quest's own level and by the level shown, that the game calls not trivial, and how many it showed
+that the game calls trivial, by the game's expansion (`GetQuestExpansion`).
+
+The run of 16 October 2026 (the probe of 15 October, 12.1.5.70391, its two quest runs by a level 90
+Alliance mage; the joined quest cache of 29,844 quests; the task table): 29,809 usable probed quests (14
+more have no level above 0), 771 tunings, each scaling to one level at the cap, none split. **27,637
+quests got a `maxLevel`**, 25,301 of them loaded in the probe and 2,336 only sharing a tuning with one;
+5,589 are at their minimum at the cap, so they don't scale; 16 on tuning 0, 2,340 with no tuning and 24
+on tunings the probe has no level for got none (on the data with step 6's 33 story quests, 35,606 quests:
+32 of them have no tuning in the cache or the task table, and 98831's tuning, 6772, wasn't probed, so
+none of the 33 has a ceiling yet; before them, 2,308 and 23). By ceiling: 90 (11,988), 30 (6,411), 35 (2,357), 70
+(2,113), 80 (1,629), 60 (1,524), 45 (589), 40 (382), 10 (327), 20 (175) and 142 at ten other levels. 237 of
+them are level 0, so the list now shows them at a level; 4 have a level of their own above their ceiling
+(24758, 24759 and 28167, level 30 and scaling to 10; 51534, level 50 and to 49), so at the cap the list
+shows them lower than their level. No other field and no pin changed, and no quest left the data.
+
+Of the 5,589 at their minimum, 59 have a level of their own that isn't it. With no ceiling, the list
+shows that level, sorts by it and the low-level filter reads it, while the game holds the quest at its
+minimum. The tool lists them by id (`-WhatIf -Examples 60` lists them all; 31 were loaded in the probe):
+- 50 are below their minimum. By minimum: 30 (1), 35 (6), 45 (1), 50 (31), 70 (4), 80 (3) and 90 (4).
+  Examples are 24428 (level 1, minimum 30), 50417 (10 and 50) and 50782 (35 and 50). The low-level
+  filter hides such a quest once the character is 6 levels above its own level, but the game calls it
+  trivial only from 6 levels above its minimum. So 50417 is hidden from a character of level 50 to 55,
+  where the game calls it not trivial. Only the four with a minimum of 90 show this at the cap (below).
+- 4 are above it: 52182, 52244, 52312 and 53310, level 50 with a minimum of 10, which is the game's level
+  for them at the cap. The list shows them as [50].
+- 5 are level 0: 38204 and 38205 (minimum 40), and 96746, 96995 and 97128 (minimum 90). They get no
+  bracket and are never hidden.
+
+Against the game, at level 90 with a trivial range of 5, for the 29,823 quests of ours the probe asked
+`IsQuestTrivial` about:
+
+| Expansion (the game's) | Hidden though not trivial, by the own level | by the level shown |
+|---|---|---|
+| Classic | 14 | 0 |
+| The Burning Crusade, Wrath of the Lich King, Cataclysm | 1 each | 0 |
+| Mists of Pandaria | 160 | 0 |
+| Warlords of Draenor | 1,003 | 0 |
+| Legion | 2,483 | 0 |
+| Battle for Azeroth | 1,240 | 0 |
+| Shadowlands | 2,314 | 0 |
+| Dragonflight | 41 | 0 |
+| The War Within | 61 | 0 |
+| Midnight | 2,434 | 4 |
+| All | 9,753 | 4 |
+
+The 4 are 41368 "Lost Mail", 47148 "Something Different", 58273 and 58274 "Servant of N'Zoth", the four
+of the 50 below their minimum whose minimum is 90: their own level is 10 or 50, and the game's level for them at the
+cap is their minimum, so they don't scale and the list reads their own level (open-items.md row 8:
+retail's `level` is not refreshed; open-items.md lists all 59). Shown though the game calls them trivial: 11 by the
+own level, all of level 0, which the rule never counts as low (open-items.md row 13); 10 by the level
+shown, as 1582 "Moonglow Vest" now scales to 10 and is hidden, and the other 10 have no level in the game
+either (`GetQuestDifficultyLevel` 0). The probe file of 14
+October (one quest run, 25,337 usable quests, 5,242 placeholder rows left out) gives 743 tunings, each the
+level the 15 October file gives, so `-WhatIf` with it changes nothing; it found 8,043 quests hidden though
+not trivial (1,978 of them Midnight), and the level shown leaves 3. Baseline for the next sweep: 27,637
+quests with a `maxLevel`; 59 at their minimum with another level of their own (50 below it, 4 above it and
+5 of level 0); 9,753 hidden though not trivial by the own level and 4 by the level shown; 11
+and 10 shown though trivial. A rise in the "by the level shown" counts means a tuning, a rule of the game
+or the data has moved.
+
+The table costs memory: `qcQuestData.lua` grows from 2,461,508 to 2,819,637 bytes and, loaded alone under
+Lua 5.1 (32-bit), from 9,381 to 10,405 KB; [load-and-memory.md](plans/load-and-memory.md) has the figures.
+`Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
+
 ### 3. Quest types
 
 Types are a bitmask. The ones that matter here:
@@ -1290,10 +1514,25 @@ as one-time; since October 2026 no quest has it.
     That table lists only quests the game can record as done.
   - **Inputs:** the probe's saved results on retail: the newest `tools\retail_probe_<build number>\QCForeverProbe.lua`
     (the probe's list is every quest in the data, so a quest added since needs a new list and run), else
-    the older `tools\quest_type_probe_results.lua` of the retail type probe, whose only run, on 29
-    September 2026, is the baseline until the probe has run on retail; and `QuestV2` for the probe's
-    build. The script downloads that table when it isn't there. `Test-ProbeResults.ps1` checks that
-    both files give the same retypes.
+    the older `tools\quest_type_probe_results.lua` of the retail type probe, whose only run was on 29
+    September 2026; and `QuestV2` for the probe's build. The script downloads that table when it isn't
+    there. `Test-ProbeResults.ps1` checks that both files give the same retypes.
+  - **Check the probe file for placeholders first.** A `cached` row whose level isn't above 0 is a
+    record the client held only in part, and `Get-ProbeQuests` reads it like any other. Its level is 0
+    and its Normal can hide a Recurring: of the 1,811 such rows of 14 October 2026 that loaded on 15
+    October, 22 changed from Normal to Recurring (6 of them retyped in the 12.1.5 run) and the other
+    1,789 kept their class. `(Get-ProbeLevelFacts <file>).Partial`, after dot-sourcing
+    `tools\ProbeResults.ps1`, counts them: 5,242 in the first 12.1.5 file (14 October), 0 in the rerun
+    of 15 October, which asked them again one at a time. The function needs a quest run that asked
+    `IsQuestTrivial`, which the probe has done since #282 (10 October 2026); on an older file, count the
+    `cached` rows with no level above 0 in `Read-ForeverProbe.lua`'s `facts` output instead (the
+    12.1.0.69933 file of 9 October has 1,203). Rerun the probe on them before retyping from a file that has any.
+  - **The 12.1.5 run (16 October 2026, the 15 October file):** 25 quests from one-time to 128, every one a
+    full Recurring record the API flags nothing for; `Retype-FlaggedWorldQuests.ps1` retyped none. The
+    same script on the 9 October file (12.1.0.69933) retypes nothing, and none of the 693 one-time quests
+    that file calls Normal and 12.1.5 refused carries an API flag that would retype it. 83530 "Hallowfall
+    Fishing Derby" stays weekly: 12.1.5 refused it, so the 9 October Recurring stands. The details, and
+    the check of step 6b's Hallow's End quests, are in [plans/quest-types.md](plans/quest-types.md).
 
 What's been checked and decided, and the quests still open, are in
 [plans/quest-types.md](plans/quest-types.md).
@@ -1815,8 +2054,8 @@ After moving quests between categories, run `Remove-EmptyMenuEntries.ps1 -WhatIf
 
 Once the inserter has added quests, and `File-WeeklyEventQuests.ps1` has filed them, run steps 2b
 and 2c again for them: 2b checks the tables kept by hand and the prerequisites against what the API
-says of them, and 2c gives them their prerequisites. Then run steps 2g and 4, for their minimum
-levels and storylines, and the probe and step 3, for their types ([The sweep](#the-sweep)).
+says of them, and 2c gives them their prerequisites. Then run steps 2g, 2j and 4, for their minimum
+levels, scaling ceilings and storylines, and the probe and step 3, for their types ([The sweep](#the-sweep)).
 
 Merging a category into another is a refile with more to clean up (Darkmoon Island and four one-quest
 categories went into their zones on 11 October 2026). Refile its quests first, with `Set-RecordField`
@@ -1897,10 +2136,11 @@ the newest build, and files the new rows through a scratch copy of the data and
     fetched the new rows' API records, so 11378, 11382, 11386 and 57326 were still without their
     rewards at the 12.1.5 sweep, whose compare (14 October 2026) listed them as `api-only`; step 2
     added them on 15 October 2026. The compare
-    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026)
-    and the new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`
+    counts the new rows with a cache reward on a visible faction in class E (42 on 11 October 2026),
+    which `Apply-ReputationBackfill.ps1 -CacheOnly` writes since the 12.1.5 sweep (step 2), and the
+    new rows the cache lacks in G (401): they are explained, so rerun it with `-UpdateBaseline`
     (refused, as step 2g's is, while the cache looks partial: step 2e);
-  - step 2g, for the minimum levels, and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
+  - step 2g, for the minimum levels, step 2j, for the scaling ceilings (their tuning is in the task table), and step 2i, `Sync-QuestPvP.ps1 -Game retail -WhatIf` and then
     without `-WhatIf`, for the PvP tag, which it also reads from the task table: on 14 October 2026,
     248 of the data's 5,740 task quests had a minimum level and 52 the tag;
   - step 2c (the prerequisites the client names, 112 of the first run's rows, in #319, and no old row)
@@ -2027,18 +2267,24 @@ It writes `tools\reachability-report.txt`, a report apart from its last check be
   hides from everyone, as it should. Retail has none.
 - Quests in categories the list can't browse to, pin maps missing from `tools\UiMap.csv`, and
   holiday values that aren't in `qcHolidays`.
-- The minimum level, for a character of level 1, 10, 30 and 60 with nothing else in its way: the
+- The minimum level, for a character of level 1, 10, 30, 60 and 90 with nothing else in its way: the
   tooltip's "Requires Level" line, the grey pins and the requirements-not-met filter against each
   quest's `minLevel`, else its `level`, in the data file `qcQuestData.lua` was built from. It reports
   quests that need a level the character has, quests that need one it lacks, and pins greyed or not
   wrongly. It checks the opposite mistake too: the low-level filter, and the bracket and sort of the
-  list (its first 16 rows in each category), must still follow the quest's own `level`, where 0 or
-  below is no level (no bracket, never low). A PvP quest's row has the game's crossed swords
+  list (its first 16 rows in each category), must follow the level the quest shows: its own `level`,
+  or for a quest with a `maxLevel` the character's level raised to the minimum and held down at the
+  `maxLevel` ([step 2j](#2j-scaling-quests-levels)), where 0 or below is no level (no bracket, never
+  low); the sort is by that level, then the quest's own. Made-up scaling quests check the five levels
+  apart from the data: the bracket, the order of the rows and the low-level filter of the list and the
+  map, as the game would give them (95 checks). With `qcCore.lua` of before step 2j, which reads the
+  quest's own level for all three, retail's run finds 53,378 problems, 39 of them on the made-up quests;
+  Forever's finds the 39 only, as its data, with no `maxLevel`, reads the same with either. A PvP quest's row has the game's crossed swords
   (`|A:questlog-questtypeicon-pvp:14:14|a `) before its name, after any bracket. Since step 2g retail's two levels differ for 1,627 quests,
   so both games' runs can catch a mix-up there (with the requirements filter ignoring `qcQuestMinLevel`,
   retail's run finds 2,828 problems; with the grey pins and the tooltip line ignoring it, 6,748). Made-up quests with those levels check the same, and the
   minimum level at 0, apart from the data (33 checks). The summary has one line per level and one for
-  the made-up quests, and each must read 0. A wrong reading prints `FAILED` and ends the run with
+  each set of made-up quests, and each must read 0 wrong. A wrong reading prints `FAILED` and ends the run with
   exit status 1.
 - The line an empty quest list says. When the filters hid every quest of the selected category, the
   list says how many ("Quests hidden by your filters: 22", `qcL.QUESTSHIDDEN`, drawn by
@@ -2282,9 +2528,14 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    ```
    It writes `tools\reachability-report-QuestCompletist_Camelot.txt`. Every count in its summary was
    0 in October 2026, so anything else is new, apart from the 81 pins of events the calendar doesn't
-   show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's. That includes the four
-   "character level" lines, the minimum-level check, and the "made-up quests" line (0 of 33 checks wrong),
-   which fail the run when one isn't 0.
+   show: 23 of the Scourge Invasion's and 58 of the Ahn'Qiraj War Effort's. That includes the five
+   "character level" lines, the minimum-level check (each ends "0 shown scaled", as Forever's quests don't
+   scale), and the two "made-up quests" lines (0 of 33 and 0 of 95 checks wrong), which fail the run when
+   one isn't 0. Then, after a probe run, `Apply-QuestScaling.ps1 -Game forever` ([2j](#2j-scaling-quests-levels)),
+   a check that writes nothing: every quest the probe loaded must have its stored level, and the low-level
+   rule is compared with `IsQuestTrivial` at the probe's level (14 October 2026, 1.60.1.70374, level 16:
+   2,964 of 2,964 at their stored level; 0 hidden though not trivial, 1 shown though trivial, 8856 of level
+   0). It exits 1 when a quest's level is not the game's, which would mean Forever's quests scale now.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
    run of 14 October 2026 (build 70374) found 6 on 2,399 prerequisites and 447 table entries (35 of them
@@ -2845,8 +3096,10 @@ It began as pull request #139, which stays open as the record; its files are in
    answers depend on the character's level, so run it on one character, and on a build that was
    probed before the level facts existed (Forever's 70338) type `/qcprobe quests all`, because a quest
    already answered on a build isn't asked again. `Get-ProbeLevelFacts` in `ProbeResults.ps1` tallies them
-   (how many are trivial, how many at each difficulty, and both together); nothing else reads the
-   facts yet.
+   (how many are trivial, how many at each difficulty, and both together). On retail, run the quest pass
+   on a character at the level cap (90 on 12.x), every run of it on the build: step 2j reads each quest's
+   `GetQuestDifficultyLevel` as the level its tuning scales to, and refuses a build any of whose quest
+   runs was made below the cap, as it can't tell which run a quest's answer came from.
    Then `/qcprobe npcs`, outside any instance,
    as instances hide names. `/qcprobe status` says what's been gathered. On retail a full quest pass
    after a patch takes about two and a half hours one at a time (35,544 quests on 12.1.5; 4 at a time it
@@ -2991,9 +3244,11 @@ git diff --stat
   `QuestCompletist\Forever\` exactly as written.
 - For filter or data changes, run `Test-QuestReachability.lua` before and after, and compare the
   summaries it prints. A change to the shared code needs it for both games: step 9 for retail,
-  step 10 for Forever. Its four "character level" lines (the minimum level), its "made-up quests"
-  line (a level of 0 or below) and its "empty list's line" line (what an empty list says) must read 0,
-  and the run exits with 1 when they don't.
+  step 10 for Forever. Its five "character level" lines (the minimum level, and the level shown), its
+  two "made-up quests" lines (a level of 0 or below, and scaling quests) and its "empty list's line" line
+  (what an empty list says) must read 0 wrong, and the run exits with 1 when they don't. Each "character
+  level" line ends with how many quests it showed at a scaled level (retail 1,610 at level 1 to 27,591 at
+  90 on 16 October 2026; Forever 0).
 - For changes to `Read-QuestCache.ps1`, `Compare-QuestCache.ps1` or `Compare-QuestReputation.ps1`,
   run `Test-QuestCache.ps1`, `Test-CompareQuestCache.ps1` and `Test-CompareQuestReputation.ps1`.
   They build their own caches, API records and tables in a scratch folder; each must end "N checks
@@ -3003,12 +3258,19 @@ git diff --stat
   makes quests, API records, a quest cache and a ContentTuning table in a scratch folder (nothing downloaded),
   and with the real files in `tools\` (or `-RealToolsDir`) also applies the formula to a copy of the data. It
   must say "0 failed".
+- For changes to `QuestScaling.ps1` or `Apply-QuestScaling.ps1` (retail's scaling ceilings and Forever's
+  check, step 2j), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestScaling.ps1`. It makes quests, a quest
+  cache, a task table and probe saved variables in a scratch folder, and with the real files in `tools\` (or
+  `-RealToolsDir`) also applies the tool to a copy of the data with every `maxLevel` taken out. It must say
+  "0 failed" (173 checks, 182 with the real files, 16 October 2026). A change to how the list or the low-level
+  filter reads a level is checked by `Test-QuestReachability.lua` on both TOCs (step 9).
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
   that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
-  `Test-AddTaskQuests.ps1`, `Test-SyncQuestProfessions.ps1` and `Test-SyncQuestPvP.ps1` (which checks that
-  retail's cache is warned about when it holds too few of our quests, and that Forever's isn't held to our
-  quests). Each must say "0 failed". `Sync-QuestPrerequisites.ps1` prints it too and has no test, so run it with `-WhatIf` on the
+  `Test-AddTaskQuests.ps1`, `Test-SyncQuestProfessions.ps1`, `Test-SyncQuestNames.ps1` and
+  `Test-SyncQuestPvP.ps1` (which checks that retail's cache is warned about when it holds too few of our
+  quests, and that Forever's isn't held to our quests). Each must say "0 failed". `Sync-QuestPrerequisites.ps1` prints it too and has no test, so run it with `-WhatIf` on the
   real files in `tools\`: `Sync-QuestPrerequisites.ps1 -Build <newest retail build> -WhatIf` must warn only
   when that cache looks partial.
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
@@ -3027,6 +3289,12 @@ git diff --stat
   (with the real tables) takes the profession, heading or zone from quests of every pass and kind of
   decision and checks that the tool gives exactly that back; `-MadeUpOnly` runs the first half alone. It
   must say "0 failed".
+- For changes to `Sync-QuestNamesFromApi.ps1` (step 1c), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestNames.ps1`. It makes API records,
+  two quest caches and a task table in a scratch folder (nothing downloaded) and checks which source names
+  each quest (the API first, then the newest cache, then the task table), that titles are copied exactly,
+  that no `[DEPRECATED]` title is taken from any source, that missing sources are named as skipped, that
+  `-WhatIf` writes nothing and that a second run changes nothing. It must say "0 failed".
 - For changes to `Sync-QuestPvP.ps1` (step 2i), or to `ForeverAnswers.ps1` or `QuestRemovals.ps1`, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestPvP.ps1`. It makes a Forever world
   (two quest caches, an answer memory, a CMaNGOS dump, removal decisions) and a retail one in a scratch folder
@@ -3113,7 +3381,8 @@ git diff --stat
   For `ProbeResults.ps1`, `Read-ForeverProbe.lua`, `Retype-ProbeRecurring.ps1`,
   `Find-UnavailableQuestCandidates.ps1` or `Compare-PinNpcNames.ps1`, run `powershell -NoProfile -ExecutionPolicy Bypass -File
   tools\Test-ProbeResults.ps1` (both probes' files read the same, and the two scripts give the same answers
-  on a scratch copy of the data). It must say "0 failed".
+  on a scratch copy of the data), and for `ProbeResults.ps1` also `Test-QuestScaling.ps1`, as step 2j reads
+  its level facts. Each must say "0 failed".
 - For changes to the recorder (`qcRecorder.lua`) or what it reads, run `Test-Recorder.lua`. It must
   say "0 failed". It plays the events against stand-ins for the API, so it can't say what the game
   answers: that is the in-game list in [quest-giver-recorder.md](plans/quest-giver-recorder.md).
@@ -3192,7 +3461,7 @@ git log --diff-filter=D --name-only --oneline -- tools
 |---|---|---|
 | Blizzard's Game Data API | faction, race, class, reputation, daily/weekly flags, quest names, required quests, the minimum level (`min_character_level`, step 2g), the quest category that names a holiday or a profession, and the rewards that are profession knowledge (retail only) | `Audit-QuestAccuracy.ps1`, cached in `tools\quest_api_cache`; the holiday category is read by `Audit-QuestHolidays.ps1` (step 2d), the profession category and rewards by `Sync-QuestProfessions.ps1` (step 1d) |
 | The game client's own tables, via [wago.tools](https://wago.tools) | task quests with their professions and prerequisites, the profession headings (`QuestSort`) and the items that are profession knowledge (`Item`, `ItemSparse`), the professions a renown reward is given for (`RenownRewards`, `PlayerCondition`, `ModifierTree`, `SkillLine`; the evidence in `plans\quest-link-decisions.csv`), questlines, map positions, map names, dungeon journal, faction names and which have renown or friendship ranks, and the level ranges (`ContentTuning`) that give the minimum level of the quests the API has no record of (step 2g); for Forever, which quests exist, its maps, zones, headings, races, classes and factions, its reputation amounts, and the few quest start points it has; on both, the classes that may use the items that start a quest | CSV exports per build, e.g. `https://wago.tools/db2/QuestLine/csv?build=<build>` |
-| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1` (on retail its sort names a profession's heading, for step 1d); `Report-MapOffers.lua` |
+| The game itself | recurring or one-time, world quest or not; for Forever, each quest's title, level, minimum level, zone, race limits, recurrence and reputation rewards, and quest givers seen while playing; on retail, the reputation rewards of the quests the API has no record of (step 2), and the level each content tuning scales to at the level cap (the probe's `GetQuestDifficultyLevel`, step 2j); each map's quest offers, points of interest and events (the probe's map pass) | in-game probes and runtime API calls; the addon's recorder (`Import-RecordedGivers.ps1`, ledger `plans\recorded-quest-givers.csv`, which Forever's `Import-ForeverData.ps1` reads); the quest cache of either game, read by `Read-QuestCache.ps1` (on retail its sort names a profession's heading, for step 1d, and its rewards are written by `Apply-ReputationBackfill.ps1 -CacheOnly`, step 2); `Report-MapOffers.lua` |
 | TrinityCore's world database ([TrinityCore](https://github.com/TrinityCore/TrinityCore/releases)) | breadcrumbs, groups of which only one can be done, and previous quests, for older quests; the quest giver's creature ID for a pin that has a name and none; the start points of quests the client lists none for (`quest_poi`) and their starters' spawns; which holiday event a quest belongs to (`game_event_seasonal_questrelation`, `game_event_creature_quest`, `game_event_gameobject_quest`), as evidence for retail's holiday tags | `Audit-QuestTables.ps1`, `Audit-QuestHolidays.ps1`, `Sync-QuestPrerequisites.ps1`, `Fill-PinNpcIds.ps1` and `Build-QuestLocationData.ps1`, from `tools\tdb\` |
 | CMaNGOS's vanilla database ([cmangos/classic-db](https://github.com/cmangos/classic-db)) | WoW: Forever's old-world quests, givers and their spawns, breadcrumbs and quests of which only one can be done | `Import-ForeverData.ps1`, from its `Full_DB` dump |
 | [Wowhead](https://www.wowhead.com), by hand | the right NPC for retail pins whose ID was wrong; WoW: Forever quest givers and zones no other source has; the event in a retail quest's quick facts and the achievement it is a criterion of, as evidence for its holiday tag; players' first-hand comments, with Questie's issues and a test in the game, as evidence for a WoW: Forever link CMaNGOS gets wrong or a class no source gives | looked up by a person: `plans\pin-npc-id-decisions.csv`, read by `Apply-PinNpcIds.ps1`, and `plans\forever-quest-givers.csv` and `plans\forever-quest-zones.csv`, read by `Import-ForeverData.ps1`; the holiday evidence is in `plans\quest-holiday-decisions.csv`; the link evidence is in `plans\forever-quest-link-decisions.csv`, read by `Import-ForeverData.ps1` and `Build-ForeverMenu.ps1`; the class evidence is in `plans\forever-quest-class-decisions.csv`, read by `Import-ForeverData.ps1` |

@@ -594,8 +594,9 @@ local qcCategoryIndex = nil
 local qcQuestNameUpperCache = nil
 
 -- A quest's row in qcQuestDatabase (qcQuestData.lua) is {name, level, category, type, faction, race,
--- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So is
--- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that.
+-- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So are
+-- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that, and
+-- qcQuestMaxLevel, the level a scaling quest stops scaling at.
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
     for questId, e in pairs(qcQuestDatabase) do
@@ -805,6 +806,15 @@ local function qcHides(view, key)
 	return qcSettings["QC_" .. view .. "_HIDE_" .. key] == 1
 end
 
+-- The level the list shows, sorts by and the low-level filter reads: the quest's own, or for a quest that
+-- scales (qcQuestMaxLevel) the character's, raised to its minimum and held down at the level it stops
+-- scaling at, as the game scales it. May be nil for a quest with no level.
+local function qcShownQuestLevel(questId, e, playerLevel)
+	local ceiling = qcQuestMaxLevel[questId]
+	if not ceiling then return e[2] end
+	return math.max(qcQuestMinLevel[questId] or e[2] or 0, math.min(playerLevel, ceiling))
+end
+
 -- Every quest filter that reads only the quest's data, not whether it's done.
 local function qcBuildQuestFilter(view)
 	local BitBand = bit.band
@@ -815,9 +825,10 @@ local function qcBuildQuestFilter(view)
 	if qcHides(view, "REPEATABLEQUEST") then hiddenTypes = hiddenTypes + 2 end
 	if qcHides(view, "WORLDQUEST") then hiddenTypes = hiddenTypes + 128 end
 
-	local greenCutoff
+	local greenCutoff, playerLevel
 	if qcHides(view, "LOWLEVEL") then
-		greenCutoff = UnitLevel("player") - UnitQuestTrivialLevelRange("player")
+		playerLevel = UnitLevel("player")
+		greenCutoff = playerLevel - UnitQuestTrivialLevelRange("player")
 	end
 
 	local professionBitmask
@@ -847,7 +858,10 @@ local function qcBuildQuestFilter(view)
 	local professions, covenants = qcQuestProfession, qcQuestCovenant
 	return function(questId, e)
 		if (BitBand(e[4], hiddenTypes) ~= 0) then return false end
-		if greenCutoff and (e[2] or 0) > 0 and e[2] < greenCutoff then return false end
+		if greenCutoff then
+			local level = qcShownQuestLevel(questId, e, playerLevel) or 0
+			if level > 0 and level < greenCutoff then return false end
+		end
 		local profession = professions[questId]
 		if professionBitmask and profession and BitBand(profession, professionBitmask) == 0 then return false end
 		if factionFlag and not qcMaskAllows(e[5], factionFlag) then return false end
@@ -1051,16 +1065,23 @@ local function qcGetCategoryQuests(categoryId, searchText)
 
     -- Sorting quests. An entry with no level sorts as 0 rather than erroring out of the sort and
 	-- leaving the list empty. Names are the ones shown now; names that load later don't re-sort the
-	-- list until it's next rebuilt, so rows don't jump while being read.
-	local sortName, sortLevel = {}, {}
+	-- list until it's next rebuilt, so rows don't jump while being read. The order is by the level
+	-- shown, so the brackets read in order; among quests shown at one level, a zone's scaling quests
+	-- keep the order of their own levels, the order a quest that doesn't scale has always had.
+	local playerLevel = UnitLevel("player")
+	local sortName, sortLevel, ownLevel = {}, {}, {}
 	for _, questId in ipairs(qcCategoryQuests) do
 		local e = qcQuestDatabase[questId]
 		sortName[questId] = qcClientQuestName(questId) or e[1]
-		sortLevel[questId] = e[2] or 0
+		sortLevel[questId] = qcShownQuestLevel(questId, e, playerLevel) or 0
+		ownLevel[questId] = e[2] or 0
 	end
 	local function byLevel(a,b)
 		local levelA, levelB = sortLevel[a], sortLevel[b]
-		return (levelA<levelB or (levelA == levelB and sortName[a]<sortName[b]))
+		if levelA ~= levelB then return levelA < levelB end
+		local ownA, ownB = ownLevel[a], ownLevel[b]
+		if ownA ~= ownB then return ownA < ownB end
+		return sortName[a] < sortName[b]
 	end
 	if (qcSettings.SORT == 1) then
 		tableSort(qcCategoryQuests,byLevel)
@@ -1230,6 +1251,7 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			qcShowHiddenQuests()
 		end
 	end
+	local playerLevel = UnitLevel("player")
 	for i = 1, 16 do
 		local offset = ((i + startIndex) - 1)
 		local questRecord = _G["qcMenuButton" .. i]
@@ -1240,7 +1262,8 @@ function qcUpdateQuestList(categoryId, startIndex, searchText) -- *
 			local questFaction = e[5]
 			local questName = qcQuestName(questId)
 			local shownName = qcPvpMark(questId) .. questName
-			questRecord.QuestName:SetText((e[2] or 0) > 0 and stringFormat("[%d] %s",e[2],shownName) or shownName)
+			local level = qcShownQuestLevel(questId, e, playerLevel) or 0
+			questRecord.QuestName:SetText(level > 0 and stringFormat("[%d] %s",level,shownName) or shownName)
 			questRecord.QuestID = questId
 			-- TODO: Possible to reduce code with call to _G[]?
 			if (questType == 1) then
