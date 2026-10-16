@@ -15137,7 +15137,7 @@
 {"id":41156,"name":"The Power Possessed","level":10,"zone":"Artifact","category":1003,"type":1,"faction":3,"race":67108863,"class":256,"storyline":208}
 {"id":41157,"name":"Corrupted Studies","level":45,"zone":"Archaeology","category":11,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":321}
 {"id":41158,"name":"Fragments of the Fjords","level":45,"zone":"Archaeology","category":11,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":325}
-{"id":41159,"name":"Process of Elimination","level":45,"zone":"Archaeology","category":11,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":325}
+{"id":41159,"name":"Process of Elimination","level":45,"zone":"Archaeology","category":11,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":325}
 {"id":41160,"name":"Earth to Earth","level":20,"zone":"Blacksmithing","category":25,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2}
 {"id":41161,"name":"Out of the Frying Pan","level":45,"zone":"Archaeology","category":11,"type":4,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":327}
 {"id":41162,"name":"And Into the Fel Fire","level":45,"zone":"Archaeology","category":11,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":327}
@@ -15636,7 +15636,7 @@
 {"id":41798,"name":"Recruiting More Troops","level":10,"zone":"Warlock Campaign","category":1017,"type":1,"faction":3,"race":67108863,"class":256,"storyline":5874}
 {"id":41799,"name":"Minions of the Darkness","level":45,"zone":"Highmountain","category":1005,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":377,"minLevel":40}
 {"id":41800,"name":"Servants of the Darkness","level":45,"zone":"Highmountain","category":1005,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":377,"minLevel":40}
-{"id":41802,"name":"The Gates of Valor","level":45,"zone":"Archaeology","category":11,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":325}
+{"id":41802,"name":"The Gates of Valor","level":45,"zone":"Archaeology","category":11,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2048,"storyline":325}
 {"id":41803,"name":"Asking a Favor","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":2048,"storyline":160}
 {"id":41804,"name":"Ask and You Shall Receive","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":2048,"storyline":160}
 {"id":41806,"name":"Return to Jace","level":10,"zone":"Dalaran","category":1003,"type":1,"faction":3,"race":67108863,"class":2048,"storyline":160}
@@ -26243,7 +26243,7 @@
 {"id":63822,"name":"Venthyr Assault","level":60,"zone":"The Maw","category":1206,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":63823,"name":"Night Fae Assault","level":60,"zone":"The Maw","category":1206,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":63824,"name":"Kyrian Assault","level":60,"zone":"The Maw","category":1206,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":63827,"name":"Encouraging Words","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":63827,"name":"Encouraging Words","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":63828,"name":"Mine's Bigger","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":63829,"name":"No One Floats Down Here","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":63831,"name":"Fury Given Voice","level":60,"zone":"Korthia","category":1243,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1234,"prereq":63811}
@@ -26311,7 +26311,7 @@
 {"id":63949,"name":"Shaping Fate","level":60,"zone":"Korthia","category":1243,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":1219,"prereq":[63639,63902]}
 {"id":63950,"name":"Razorwing Talons","level":60,"zone":"Korthia","category":1243,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":63951,"name":"A Shady Place","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":63952,"name":"Heavy-Handed Tactics","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":63952,"name":"Heavy-Handed Tactics","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":63953,"name":"Korrak's Revenge","level":1,"zone":"Battlegrounds","category":20,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":63954,"name":"Sealed Secrets","level":60,"zone":"Korthia","category":1243,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":63955,"name":"Sealed Secrets","level":60,"zone":"Korthia","category":1243,"type":4,"faction":3,"race":67108863,"class":8191}
@@ -26326,12 +26326,12 @@
 {"id":63964,"name":"Broker's Bounty: Grimtalon","level":60,"zone":"Korthia","category":1243,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":63965,"name":"Razorwing Egg Rescue","level":60,"zone":"Korthia","category":1243,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":63968,"name":"Clean Out the Crucible","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":63969,"name":"Looming Darkness","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":63969,"name":"Looming Darkness","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":63970,"name":"No Soul Left Behind","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":63971,"name":"Snail Stomping","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":63972,"name":"Just Don't Ask Me to Spell It","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":63973,"name":"Double Dromans","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
-{"id":63974,"name":"That's Going to Sting","level":60,"zone":"Covenant Assaults","category":1241,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":63973,"name":"Double Dromans","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":63974,"name":"That's Going to Sting","level":60,"zone":"Covenant Assaults","category":1241,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":63976,"name":"The Al'ley Cat of Oribos","level":60,"zone":"Tazavesh The Veiled Market","category":1244,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1235,"prereq":85028}
 {"id":63977,"name":"Insider Trading","level":60,"zone":"Tazavesh The Veiled Market","category":1244,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1235,"prereq":63976}
 {"id":63979,"name":"Things Best Kept Dark","level":60,"zone":"Tazavesh The Veiled Market","category":1244,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1235}
@@ -27564,7 +27564,7 @@
 {"id":66938,"name":"Mammoth Marrow","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1}
 {"id":66939,"name":"Hunting the Huntmaster","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":66940,"name":"Elixir Experiment","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
-{"id":66941,"name":"Tremendous Tools","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2}
+{"id":66941,"name":"Tremendous Tools","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2}
 {"id":66942,"name":"Enemy Engineering","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":8}
 {"id":66943,"name":"Wood for Writing","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16}
 {"id":66944,"name":"Peacock Pigments","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":16}
@@ -27575,7 +27575,7 @@
 {"id":66949,"name":"Trinket Bandits","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":32}
 {"id":66950,"name":"Heart of a Giant","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":32}
 {"id":66951,"name":"Population Control","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":64}
-{"id":66952,"name":"The Gnoll's Clothes","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128}
+{"id":66952,"name":"The Gnoll's Clothes","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
 {"id":66953,"name":"All Things Fluffy","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":128}
 {"id":66956,"name":"Dragonhunter Igordan","level":10,"zone":"The Waking Shores","category":1305,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":66957,"name":"A Shadow In The Ice","level":30,"zone":"The Azure Span","category":1303,"type":1,"faction":3,"race":67108863,"class":8191}
@@ -28620,7 +28620,7 @@
 {"id":72420,"name":"Wreckonciliation","level":40,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5368,"prereq":72419}
 {"id":72421,"name":"The Quill to Power","level":40,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5368,"prereq":72420}
 {"id":72422,"name":"Stop the Presses","level":40,"zone":"Thaldraszus","category":1302,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5368,"prereq":72421}
-{"id":72423,"name":"Weathering the Storm","level":10,"zone":"Professions","category":1335,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4}
+{"id":72423,"name":"Weathering the Storm","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
 {"id":72424,"name":"Looking for Something Specific","level":50,"zone":"Heritage","category":1093,"type":1,"faction":1,"race":1,"class":8191,"storyline":1379,"prereq":72409}
 {"id":72426,"name":"The New Clessington Estate","level":50,"zone":"Heritage","category":1093,"type":1,"faction":1,"race":1,"class":8191,"storyline":1379,"prereq":72424}
 {"id":72427,"name":"Animated Infusion","level":10,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":1}
@@ -29126,7 +29126,7 @@
 {"id":73709,"name":"Favor on the Side","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":73710,"name":"Rock By Rock","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
 {"id":73711,"name":"Marked Champion","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10}
-{"id":73715,"name":"Driftwood Derby","level":70,"zone":"The Forbidden Reach","category":1304,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":73715,"name":"Driftwood Derby","level":70,"zone":"The Forbidden Reach","category":1304,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":73716,"name":"Aylaag Elder","level":1,"zone":"Lunar Festival","category":127,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":73717,"name":"Ohn'ir Elder","level":1,"zone":"Lunar Festival","category":127,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":128}
 {"id":73848,"name":"Iskaara Elder Shomkol","level":1,"zone":"Lunar Festival","category":127,"type":1,"faction":3,"race":67108863,"class":8191,"holiday":128}
@@ -29447,8 +29447,8 @@
 {"id":75277,"name":"Felwood Flyover","level":10,"zone":"Felwood","category":76,"type":4,"faction":3,"race":67108863,"class":8191}
 {"id":75280,"name":"Suffusion Camp: Frostburn","level":60,"zone":"The Azure Span","category":1303,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":75888}
 {"id":75285,"name":"Alcanon","level":70,"zone":"Zaralek Cavern","category":1307,"type":4,"faction":3,"race":67108863,"class":8191,"minLevel":10}
-{"id":75286,"name":"Blacksmith's Back","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"profession":2,"minLevel":10}
-{"id":75288,"name":"Enchanted Tales with Topuiz","level":70,"zone":"Zaralek Cavern","category":1307,"type":1,"faction":3,"race":67108863,"class":8191,"profession":4,"minLevel":10}
+{"id":75286,"name":"Blacksmith's Back","level":70,"zone":"Zaralek Cavern","category":1307,"type":128,"faction":3,"race":67108863,"class":8191,"profession":2,"minLevel":10}
+{"id":75288,"name":"Enchanted Tales with Topuiz","level":70,"zone":"Zaralek Cavern","category":1307,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4,"minLevel":10}
 {"id":75289,"name":"Ink Master","level":70,"zone":"Zaralek Cavern","category":1307,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16,"minLevel":10}
 {"id":75290,"name":"Renowned with the Loamm Niffen","level":60,"zone":"Zaralek Cavern","category":1307,"type":2,"faction":3,"race":67108863,"class":8191}
 {"id":75292,"name":"Professor Gastrinax","level":70,"zone":"Zaralek Cavern","category":1307,"type":4,"faction":3,"race":67108863,"class":8191,"minLevel":10}
@@ -33192,12 +33192,12 @@
 {"id":88980,"name":"Who You Gonna Call?","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704}
 {"id":88981,"name":"Nesting Upkeep","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704}
 {"id":89056,"name":"Ray-ket Ball, Redux","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5704,"prereq":89197}
-{"id":89057,"name":"Pee-Yew de Foxy","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5704,"prereq":85721}
+{"id":89057,"name":"Pee-Yew de Foxy","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704,"prereq":85721}
 {"id":89061,"name":"Making a Deposit","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":89062,"name":"Making a Deposit","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":89063,"name":"Making a Deposit","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":89065,"name":"Ray-cing for the Future","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704}
-{"id":89192,"name":"A Hard Day's Work","level":80,"zone":"The Oasis","category":1432,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5704,"prereq":89254}
+{"id":89192,"name":"A Hard Day's Work","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704,"prereq":89254}
 {"id":89194,"name":"Shake your Bee-hind","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":89195,"name":"Funny Buzzness","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704}
 {"id":89197,"name":"Ray Ranching","level":80,"zone":"The Oasis","category":1432,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5704}
@@ -34774,7 +34774,7 @@
 {"id":93421,"name":"Delver's Call: The Grudge Pit","level":80,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6051,"prereq":93416}
 {"id":93423,"name":"Sparks of War: Eversong Woods","level":90,"zone":"Eversong Woods","category":1511,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93424,"name":"Sparks of War: Zul'Aman","level":90,"zone":"Zul'Aman","category":1510,"type":128,"faction":3,"race":67108863,"class":8191}
-{"id":93425,"name":"Sparks of War: Harandar","level":90,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":93425,"name":"Sparks of War: Harandar","level":90,"zone":"Harandar","category":1502,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93426,"name":"Sparks of War: Voidstorm","level":90,"zone":"Voidstorm","category":1508,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":93427,"name":"Delver's Call: Sunkiller Sanctum","level":80,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6051,"prereq":93421}
 {"id":93428,"name":"Delver's Call: Shadowguard Point","level":80,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6051,"prereq":93427}
@@ -34838,14 +34838,14 @@
 {"id":93696,"name":"Tailoring Services Requested","level":80,"zone":"Professions","category":1335,"type":128,"faction":3,"race":67108863,"class":8191,"profession":128}
 {"id":93698,"name":"Splintered Radiance","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
 {"id":93699,"name":"A Ray of Sunlight","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":4}
-{"id":93700,"name":"Experience Tranquility","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256}
+{"id":93700,"name":"Experience Tranquility","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":93702,"name":"The Root of Life","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":93703,"name":"Sin'dorei Vices","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":93704,"name":"Traditional Harvests","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":256}
 {"id":93705,"name":"Copper for Your Thoughts?","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":93706,"name":"Aggressive Tin-dencies","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":93708,"name":"Conductive Metals","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512}
-{"id":93709,"name":"Stocking the Staples","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":512}
+{"id":93709,"name":"Stocking the Staples","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"profession":512}
 {"id":93710,"name":"Tempered in Darkness","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024}
 {"id":93711,"name":"The Chill of the Void","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":2,"race":67108863,"class":8191,"profession":1024}
 {"id":93714,"name":"Minor Scales","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"profession":1024}
@@ -35274,8 +35274,8 @@
 {"id":93670,"name":"How 'Bout Them Apples?","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
 {"id":93671,"name":"A Tight Squeeze","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
 {"id":93672,"name":"Blade to Rest","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6056}
-{"id":94385,"name":"Void Assaults: Eversong Woods","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":94381}
-{"id":94386,"name":"Void Assaults: Zul'Aman","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":94381}
+{"id":94385,"name":"Void Assaults: Eversong Woods","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":94381}
+{"id":94386,"name":"Void Assaults: Zul'Aman","level":80,"zone":"Silvermoon City","category":1512,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":94381}
 {"id":94571,"name":"Ashes of History","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":94572,"name":"Shell the Future","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
 {"id":94573,"name":"The Floor is Larvae","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
@@ -35433,11 +35433,11 @@
 {"id":96295,"name":"A Pertinent Punishment","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191}
 {"id":96305,"name":"The Innocent Essence","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96271}
 {"id":96329,"name":"Hexes and Hoaxes","level":90,"zone":"Tomb of the Lost Priest","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228}
-{"id":96349,"name":"Ancestral Gems","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
-{"id":96352,"name":"Dark Charms","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
-{"id":96354,"name":"A Balance Paid in Blood","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
-{"id":96360,"name":"Wading In","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
-{"id":96361,"name":"Cursed Existence","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":96305}
+{"id":96349,"name":"Ancestral Gems","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96305}
+{"id":96352,"name":"Dark Charms","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96305}
+{"id":96354,"name":"A Balance Paid in Blood","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96305}
+{"id":96360,"name":"Wading In","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96305}
+{"id":96361,"name":"Cursed Existence","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96305}
 {"id":96388,"name":"Joining the Abyss Anglers","level":80,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":96400,"name":"Lingering Corruption","level":80,"zone":"Val","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96051}
 {"id":96432,"name":"Power Overload","level":80,"zone":"Naigtal","category":1508,"type":128,"faction":3,"race":67108863,"class":8191,"prereq":96052}

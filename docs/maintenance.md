@@ -630,7 +630,9 @@ October (recurring links Blizzard doesn't name), so none of those quests has a p
 finding took the rows' place. The user kept the 3 the same day, as decision 3 of 6 October kept the 26
 like them ([plans/quest-table-checks.md](plans/quest-table-checks.md#review-of-what-was-left-6-october-2026)),
 and the 7 rows were taken out: the run then reported 122 findings, all kept, none new and no row out of
-date.
+date. On 16 October step 3 retyped 89057 and 89192 as weekly, which put their `prereq: recurring quest`
+rows (89057 requires 85721, 89192 requires 89254, both weekly) out of date, and they were taken out: 120
+findings, all kept.
 
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
@@ -1241,10 +1243,21 @@ as one-time; since October 2026 no quest has it.
     That table lists only quests the game can record as done.
   - **Inputs:** the probe's saved results on retail: the newest `tools\retail_probe_<build number>\QCForeverProbe.lua`
     (the probe's list is every quest in the data, so a quest added since needs a new list and run), else
-    the older `tools\quest_type_probe_results.lua` of the retail type probe, whose only run, on 29
-    September 2026, is the baseline until the probe has run on retail; and `QuestV2` for the probe's
-    build. The script downloads that table when it isn't there. `Test-ProbeResults.ps1` checks that
-    both files give the same retypes.
+    the older `tools\quest_type_probe_results.lua` of the retail type probe, whose only run was on 29
+    September 2026; and `QuestV2` for the probe's build. The script downloads that table when it isn't
+    there. `Test-ProbeResults.ps1` checks that both files give the same retypes.
+  - **Check the probe file for placeholders first.** A `cached` row whose level isn't above 0 is a
+    record the client held only in part: its classification is a default, not the game's answer, but
+    `Get-ProbeQuests` reads it like any other. `(Get-ProbeLevelFacts <file>).Partial`, after
+    dot-sourcing `tools\ProbeResults.ps1`, counts them: 5,242 in the first 12.1.5 file (14 October
+    2026), 0 in the rerun of 15 October, which asked them again one at a time. Rerun the probe on them
+    before retyping from a file that has any.
+  - **The 12.1.5 run (16 October 2026, the 15 October file):** 25 quests from one-time to 128, every one a
+    full Recurring record the API flags nothing for; `Retype-FlaggedWorldQuests.ps1` retyped none. The
+    same script on the 9 October file (12.1.0.69933) retypes nothing, and none of the 693 one-time quests
+    that file calls Normal and 12.1.5 refused carries an API flag that would retype it. 83530 "Hallowfall
+    Fishing Derby" stays weekly: 12.1.5 refused it, so the 9 October Recurring stands. The details, and
+    the check of step 6b's Hallow's End quests, are in [plans/quest-types.md](plans/quest-types.md).
 
 What's been checked and decided, and the quests still open, are in
 [plans/quest-types.md](plans/quest-types.md).
