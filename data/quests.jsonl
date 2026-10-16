@@ -35604,3 +35604,25 @@
 {"id":98963,"name":"Halazzi's Lair","level":80,"zone":"The Labyrinth of Kindo'jan","category":1515,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6385}
 {"id":99306,"name":"The Labyrinth of Kindo'jan","level":90,"zone":"The Labyrinth of Kindo'jan","category":1515,"type":1,"faction":3,"race":67108863,"class":8191}
 {"id":99312,"name":"On the Trail of Kindo'jan","level":90,"zone":"The Labyrinth of Kindo'jan","category":1515,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":27588,"name":"Signal the Attack","level":30,"zone":"Twilight Highlands","category":252,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":546}
+{"id":39818,"name":"Champion: Nazgrim","level":10,"zone":"","category":1001,"type":1,"faction":3,"race":67108863,"class":32,"storyline":5892}
+{"id":41030,"name":"Sigil Reclamation","level":45,"zone":"Suramar","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":342}
+{"id":41628,"name":"Eyes of the Dragon","level":10,"zone":"","category":59,"type":1,"faction":3,"race":67108863,"class":16,"storyline":239}
+{"id":41630,"name":"Unleashing Judgment","level":10,"zone":"","category":29,"type":1,"faction":3,"race":67108863,"class":16,"storyline":239}
+{"id":41790,"name":"The First Trial of Ursol","level":10,"zone":"","category":88,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":167}
+{"id":41792,"name":"The Third Trial of Ursol","level":10,"zone":"","category":88,"type":1,"faction":3,"race":67108863,"class":1024,"storyline":167}
+{"id":43933,"name":"Champion: Delas Moonfang","level":45,"zone":"","category":67,"type":1,"faction":3,"race":67108863,"class":2,"storyline":5826}
+{"id":45099,"name":"Hot On The Trail","level":45,"zone":"","category":203,"type":1,"faction":3,"race":67108863,"class":1032,"storyline":291}
+{"id":45112,"name":"Signs of Madness","level":45,"zone":"","category":203,"type":1,"faction":3,"race":67108863,"class":1032,"storyline":291}
+{"id":45133,"name":"Signs of Madness","level":45,"zone":"","category":203,"type":1,"faction":3,"race":67108863,"class":1032,"storyline":291}
+{"id":46059,"name":"Champion: Tess Greymane","level":45,"zone":"","category":1003,"type":1,"faction":1,"race":67108863,"class":8,"storyline":5856}
+{"id":48962,"name":"Telogrus Rift","level":40,"zone":"","category":82,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":532}
+{"id":53566,"name":"Dark Iron Dwarves","level":40,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":781}
+{"id":63506,"name":"Mecha Gone","level":60,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1217}
+{"id":88930,"name":"Drained Mana","level":90,"zone":"","category":1007,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5795,"prereq":90806}
+{"id":90745,"name":"The Empty Cradle","level":83,"zone":"Harandar","category":1502,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5929}
+{"id":93420,"name":"Lor'themar's Judgement","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":6090,"prereq":90806}
+{"id":95021,"name":"Prey: Janoa the Fang (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}
+{"id":95022,"name":"Prey: Kursak the Coiled (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}
+{"id":95023,"name":"Prey: Batani the Scaled (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}
+{"id":95024,"name":"Prey: Kadani the Claw (Nightmare)","level":90,"zone":"","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5945}

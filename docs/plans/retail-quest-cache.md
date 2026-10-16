@@ -427,6 +427,10 @@ moves against the old baseline):
 | | 18,664 with nothing listed anywhere | |
 | | 11,093 of the API's 11,093 rewards reproduced | |
 
+Later that day step 6's second gap run added 22 quests, none of them in the cache, and the baseline was
+rewritten again the same way: G is 5,803 (768 with a reward row of ours, 27588's from the API among them),
+the 22 new rows added to it; every other class is as above, on 29,825 of our 35,628 quests (83.7%).
+
 ## Checks to build
 
 None of these changes data; each prints what it found and keeps a baseline. They are not built yet,
