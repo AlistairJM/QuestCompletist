@@ -2672,6 +2672,10 @@ git diff --stat
   (TomTom's waypoint, nothing of the game's) and without it (the game's own waypoint and arrow, against
   stand-ins for a client that allows the map, refuses it, turns the map pin off by rule, errors, or lacks
   the functions), and checks that the pin's tooltip offers a click only where one will set a waypoint.
+  It checks the tooltip with the quest IDs turned off and with a quest it marks PvP, and the PvP pin icon.
+  The pins and quests it uses are the first fitting ones in the data of the TOC it loads, so the two
+  games' runs check different quests. Forever's run:
+  `& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-MapTooltip.lua QuestCompletist QuestCompletist_Camelot.toc`.
 - For changes to what the addon ticks (the login sync and hand-ins in `qcCore.lua`, with their
   breadcrumbs and "only one of these" groups) or to Forever's links or classes, run `Test-Completions.lua` for both
   games' TOCs. It must say "All checks passed." It fires the login and hand-in events against a made-up
