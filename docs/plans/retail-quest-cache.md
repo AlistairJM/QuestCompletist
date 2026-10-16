@@ -325,7 +325,8 @@ not ours. The 14 October copy alone held 26,598 of ours (74.8%). Of the 5,749 of
 copies hold 209 it lacked.
 
 Titles on 12.1.5.70391 (16 October 2026, with the API cache of the 12.1.5_70077 namespace): the API
-and the cache agree on the title of every one of the 27,847 quests of ours both have. Step 1c of
+and the cache agree on the title of every one of the 27,848 quests of ours both have (35,606 quests,
+with step 6's story quests). Step 1c of
 [maintenance.md](../maintenance.md) now takes the cache's title for a quest the API doesn't serve
 (decision 10e of the 12.1.5 sweep), and the client's task table's for one the cache lacks too. The
 cache titles 1,977 of the 5,364 quests the API doesn't serve, and the first run renamed 19 of them;
