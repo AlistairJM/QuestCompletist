@@ -1068,8 +1068,9 @@ again, and it was the same), and TrinityCore 1210.26091. Every step ran with `-T
   (45668), stands within 1.5 points of its start in the Twilight Highlands (241 at 43.36,57.35), so it joined
   his pin at 43.4,57.33, which holds 27498, the other quest of that name. No source names a giver for the
   other 16: the client's giver table has no row for any of the 22 new quests, TrinityCore's
-  `creature_queststarter` and `gameobject_queststarter` have none either (its `quest_template` has 19 of the 22,
-  not 45099, 45133 and 63506), and retail's recorder ledger has 0 rows. They are nameless:
+  `creature_queststarter` has a row only for 27588 (45668) and `gameobject_queststarter` none (its
+  `quest_template` has 19 of the 22, not 45099, 45133 and 63506), and retail's recorder ledger has 0 rows. They
+  are nameless:
   - on nameless spots that were there: 43933 Champion: Delas Moonfang (Light's Hope Chapel, 24, with 42851 and
     49812, 1.35 points from its start), 41630 Unleashing Judgment (Borean Tundra, 114, with 41629, 1.46), 88930
     Drained Mana (Suramar, 680, with 88919 and 88929, at its start) and 53566 Dark Iron Dwarves' start in
@@ -1092,7 +1093,8 @@ again, and it was the same), and TrinityCore 1210.26091. Every step ran with `-T
   `game_event_gameobject_quest`, `game_event_seasonal_questrelation`), and none is flagged unavailable. Their
   pins draw all year, as the quests are not seasonal.
 - **Still without a pin:** 90745 The Empty Cradle and the Nightmare Prey quests 95021 to 95024. The client lists
-  no point for them, TrinityCore's `quest_poi` has no row for them, and no source names a giver.
+  no start point for them (no point 32 or -1; the Prey quests have only objective points), TrinityCore's
+  `quest_poi` has no row for them, and no source names a giver.
 - **The after-steps.** `Apply-PinNpcIds.ps1 -WhatIf`: all 197 rows find their pin, nothing to change.
   `Remove-DuplicatePinQuests.ps1 -WhatIf`: nothing to take off, the same 13 left alone. Step 6c (`-Refresh
   -WhatIf`): 2,054 quests agree with the table, nothing to change, the 16 cases for review the same and none new
@@ -1117,3 +1119,9 @@ again, and it was the same), and TrinityCore 1210.26091. Every step ran with `-T
   (the same), `Test-PinRules.ps1` (49), `Test-QuestLocationKinds.ps1` (21), `Test-ForeverImport.ps1` (125),
   `Test-RecordedGivers.ps1` (298), `Test-RecordedGivers.lua` (366) and `Test-ForeverChecks.ps1` (53). Not tried
   in game.
+- **After master's #368 merged in** (the same day): it added 94954 and 95012, which have no point in
+  `QuestPOIBlob`, no row in the client's giver table and no TrinityCore starter or `quest_poi` row. One round of
+  the pipeline on the merged data wrote `data\pins.jsonl` and `qcPinDB.lua` byte for byte, its logs the third
+  round's but for the quest count, and the after-steps' `-WhatIf` reports were the same (step 6c on the table
+  downloaded above). `Build-AddonData.ps1 -Check` gives 35,630 quests and 13,557 pins; against that master the
+  reachability report, the tooltips and the continent icons differ in the same lines as above.
