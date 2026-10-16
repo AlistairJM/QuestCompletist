@@ -1247,11 +1247,15 @@ as one-time; since October 2026 no quest has it.
     September 2026; and `QuestV2` for the probe's build. The script downloads that table when it isn't
     there. `Test-ProbeResults.ps1` checks that both files give the same retypes.
   - **Check the probe file for placeholders first.** A `cached` row whose level isn't above 0 is a
-    record the client held only in part: its classification is a default, not the game's answer, but
-    `Get-ProbeQuests` reads it like any other. `(Get-ProbeLevelFacts <file>).Partial`, after
-    dot-sourcing `tools\ProbeResults.ps1`, counts them: 5,242 in the first 12.1.5 file (14 October
-    2026), 0 in the rerun of 15 October, which asked them again one at a time. Rerun the probe on them
-    before retyping from a file that has any.
+    record the client held only in part, and `Get-ProbeQuests` reads it like any other. Its level is 0
+    and its Normal can hide a Recurring: of the 1,811 such rows of 14 October 2026 that loaded on 15
+    October, 22 changed from Normal to Recurring (6 of them retyped in the 12.1.5 run) and the other
+    1,789 kept their class. `(Get-ProbeLevelFacts <file>).Partial`, after dot-sourcing
+    `tools\ProbeResults.ps1`, counts them: 5,242 in the first 12.1.5 file (14 October), 0 in the rerun
+    of 15 October, which asked them again one at a time. The function needs a quest run that asked
+    `IsQuestTrivial`, which the probe has done since #282 (10 October 2026); on an older file, count the
+    `cached` rows with no level above 0 in `Read-ForeverProbe.lua`'s `facts` output instead (the
+    12.1.0.69933 file of 9 October has 1,203). Rerun the probe on them before retyping from a file that has any.
   - **The 12.1.5 run (16 October 2026, the 15 October file):** 25 quests from one-time to 128, every one a
     full Recurring record the API flags nothing for; `Retype-FlaggedWorldQuests.ps1` retyped none. The
     same script on the 9 October file (12.1.0.69933) retypes nothing, and none of the 693 one-time quests

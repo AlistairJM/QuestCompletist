@@ -181,7 +181,11 @@ picks: 35,544 quests, 29,823 loaded, 3,056 of them Recurring) and retyped 25 que
     Paid in Blood", 96360 "Wading In" and 96361 "Cursed Existence".
   - And 73715 "Driftwood Derby" (The Forbidden Reach) and 93425 "Sparks of War: Harandar".
 - **No retype rests on a placeholder.** The run of 14 October saved 5,242 `cached` rows with level 0:
-  records the client held only in part, whose facts are defaults, not the game's answer. The rerun of
+  records the client held only in part. Their level is a default, and so are some other facts (the
+  expansion changed in every one that loaded in full on 15 October), but the classification mostly is
+  the game's: of the 1,811 that loaded on 15 October, 1,789 kept their class. The other 22 all changed
+  from Normal (7) to Recurring (5), so a placeholder's Normal can hide a Recurring. Six of the 22 are
+  retyped here (94386 and the five Vaults quests); the other 16 were 128 already. The rerun of
   15 October asked 10,201 quests again, one at a time: those 5,242 and the 4,959 the server had refused.
   Its file differs from the 14 October one in exactly those 10,201 rows and has no `cached` row with
   level 0. (14 `ok` rows have level 0, the game's own answer; none of them is retyped.) On the 14 October
@@ -189,17 +193,21 @@ picks: 35,544 quests, 29,823 loaded, 3,056 of them Recurring) and retyped 25 que
   placeholders that day, 89057 a refusal, and full Recurring records on 15 October.
 - **Nor on a refusal.** On the 9 October file (12.1.0.69933) the script retypes nothing, as #257 applied
   it. Of the quests typed one-time that the 9 October file calls Normal, the server refused 2,391 on 14
-  October and still refused 693 of them on 15 October. The script's table retypes a quest that wasn't
-  loaded only by the API's flags, and the API flags none of the 693 (687 records with no flag, 6 with no
-  record), so none moves.
+  October; on 15 October 1,896 of them answered Normal again and 495 were still refused, and 198 more
+  that were placeholders on 14 October were refused too: 693 in all. The script's table retypes a quest
+  that wasn't loaded only by the API's flags, and the API flags none of the 693 (687 records with no
+  flag, 6 with no record), so none moves.
 - **83530 "Hallowfall Fishing Derby" stays weekly (128).** #257 made it weekly from the 9 October run,
   whose record of it is a full one (level 79) and says Recurring; the 12.1.0.69933 quest cache gives it
   the scheduler bit. The server refused it on 15 October and its 14 October row was a placeholder
-  (level 0, Normal), so 12.1.5 gives no answer against the 9 October one. The API flags nothing and the
+  (level 0, Normal), whose Normal can hide a Recurring, so 12.1.5 has no full record to set against the
+  9 October one. The API flags nothing and the
   12.1.5 quest cache has no record of it. The `KEEP` row for 83531, which requires it, stays in
   [quest-table-decisions.csv](quest-table-decisions.csv), with this recheck in its reason.
 - **#257's other retypes hold.** Of its 53, 16 say Recurring on 12.1.5 and the server refused the other
-  37 (83530 among them); none says Normal.
+  37 (83530 among them); none says Normal. None of the 53 rests on a placeholder either: the 9 October
+  file has 1,203 (55 of them Recurring), but each of the 53 is a full record there (48 Recurring, and
+  the 5 repeatables Normal).
 - **The Hallow's End task quests step 6b added on 15 October (#347)** joined the data after the probe's
   list was made, so the probe didn't ask them and the script leaves them alone. Their step 6b types agree
   with the API's flags and the client's task table:
