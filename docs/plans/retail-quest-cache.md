@@ -34,7 +34,9 @@ After the fixed numbers come the lists, the nine texts' lengths as bits (9, 12, 
 and 11, then the reset-by-scheduler bit) and the texts, title first. The walk of a retail record is
 Forever's with the indexes two lower; `Read-QuestCache.ps1` holds one walker and a table of
 positions for each game, and takes the game from `-Build` (1.x is Forever, 12.x retail). It refuses
-a file that does not end with its 8-byte terminator, so a copy cut short writes nothing.
+a file that does not end with its 8-byte terminator, so a copy cut short writes nothing. Since the
+game's copy can hold only the last session's quests, it reads several copies of one build together,
+each quest from the newest file that holds it (maintenance.md, step 2e).
 
 Three independent derivations (TrinityCore's packet definition, an empirical alignment against
 TrinityCore's database, and Forever's walk shifted) arrived at this layout, and a reader written
@@ -50,19 +52,21 @@ content tuning, start item). A layout that moved one field for another of the sa
 walk to the last byte, and for those fields this is what would show it. It does not look at the
 group size, the follow-up quest, the quest giver, the scheduler bit or the flags bits other than
 daily and weekly; the follow-up quest was compared once, by hand, with TrinityCore's (32,688 of
-32,688). The first run found nothing:
+32,688). The first run, on 9 October 2026 (cache 12.1.0.69933, API cache 12.1.0_68914), found
+nothing, and nor did the run of 16 October 2026 on 12.1.5.70391's two copies of the cache read
+together (API cache 12.1.5_70077):
 
-| Check | Compared | Differ |
-|---|---|---|
-| title | 28,985 | 0 |
-| sort (the API's area, or minus its category) | 28,614 | 0 |
-| daily (flags 0x1000 or flags Ex 0x8000), weekly (flags 0x8000), repeatable (quest type 0 and not in `QuestV2`) | 28,985 each | 0 |
-| recurs (weekly before daily) | 28,985 | 0 |
-| faction, races | 9,273, 728 | 0 |
-| reputation reward amounts | 11,690 | 0 |
-| one level range for each content tuning (a tuning's commonest range is the one its quests are held to) | 28,983 (741 tunings) | 0 |
-| quest info against the API, and against the task table | 1,830, 4,125 | 0 |
-| content tuning and start item against the task table | 4,125 each | 0 |
+| Check | Compared, 9 October | Compared, 16 October | Differ |
+|---|---|---|---|
+| title | 28,985 | 27,847 | 0 |
+| sort (the API's area, or minus its category) | 28,614 | 27,516 | 0 |
+| daily (flags 0x1000 or flags Ex 0x8000), weekly (flags 0x8000), repeatable (quest type 0 and not in `QuestV2`) | 28,985 each | 27,847 each | 0 |
+| recurs (weekly before daily) | 28,985 | 27,847 | 0 |
+| faction, races | 9,273, 728 | 9,019, 567 | 0 |
+| reputation reward amounts | 11,690 | 11,093 | 0 |
+| one level range for each content tuning (a tuning's commonest range is the one its quests are held to) | 28,983 (741 tunings) | 27,845 | 0 |
+| quest info against the API, and against the task table | 1,830, 4,125 | 1,779, 2,311 | 0 |
+| content tuning and start item against the task table | 4,125 each | 2,311 each | 0 |
 
 The cache is the server's record, the same one the API publishes part of, so this proves the reader
 and not what a player is awarded: where the API and the cache agree they are one source twice.
@@ -314,6 +318,12 @@ agree on every one; the 34 that differ are quests the API has no record of, wher
 with the cache for 32 (our names are stale), and four carry a `[DEPRECATED]` prefix in the cache that
 ours strips.
 
+On 12.1.5.70391 (16 October 2026, the data of master cea4322: 35,573 quests) the two copies of the
+cache, of 14 and 15 October, read together hold 29,844 quests: 29,824 of ours (83.8%) and 20 that are
+not ours. The 14 October copy alone held 26,598 of ours (74.8%). Of the 5,749 of ours the two lack,
+3,467 were in 12.1.0.69933's cache. Of that cache's 33,123 quests, 3,488 are in neither copy, and the
+copies hold 209 it lacked.
+
 ## Corrections to earlier notes
 
 - "Start item" in recommendation 13 and the field table of [game-api-review.md](game-api-review.md),
@@ -440,3 +450,9 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
   counts, and `Compare-QuestReputation.ps1` and
   `Compare-QuestLevels.ps1` refuse `-UpdateBaseline` while it stands, unless `-AcceptPartialCache` is
   given (runbook step 2e).
+- 2026-10-16: the game's copy of the cache on 15 October held only that day's 5,110 quests.
+  `Read-QuestCache.ps1` now reads every copy of a build in the probe folder together, the newest
+  file's record winning, and refuses a named copy of another build. The two copies of 12.1.5.70391 gave
+  29,844 quests (the 1,882 in both read the same), and step 2e's check found no difference on any field
+  it compares (above, "Checked against Blizzard's data"). The partial-cache warning still shows, for our
+  quests only (83.8% of ours, while the 29,844 are 90.1% of the build before's 33,123).

@@ -5,9 +5,10 @@ a field table typed in below rather than read from the reader, so a slipped fiel
 shows. It checks every field of a line, the lists a record walks past (reward spells, objectives with
 and without visual effects, treasure pickers, conditional texts, house rewards), the races of both
 games (the high word, the neutral side, a race one game counts and the other doesn't), the reputation
-amounts, how the output is named and ordered, and every way a cache is refused: a record that
-is a byte too long or short, a cache of the other game's layout, the wrong build, a file that is no
-quest cache.
+amounts, how the output is named and ordered, several caches of one build read together (the
+newest file's record kept, which files the default reads, what each one added), and every way a
+cache is refused: a record that is a byte too long or short, a cache of the other game's layout,
+the wrong build or locale, a file that is no quest cache.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestCache.ps1
 
@@ -393,8 +394,109 @@ try {
     New-Item -ItemType Directory $empty | Out-Null
     $r = $null
     try { & $Tool -ToolsDir $empty -Build $Retail.Version 6>&1 | Out-Null } catch { $r = $_.Exception.Message }
-    Has $r 'No questcache.wdb under' 'D2: no cache to find is said so'
+    Has $r 'No questcache*.wdb of build 69933 under' 'D2: no cache to find is said so'
     Has $r 'retail_probe_*' 'D2: naming the retail folders it looked in'
+    Lacks $r 'those there are' 'D2: and no other build, as there is none'
+    New-Item -ItemType Directory "$empty\retail_probe_69000" | Out-Null
+    Write-Cache $Retail @($plain) "$empty\retail_probe_69000\questcache.wdb" 69000
+    $r = $null
+    try { & $Tool -ToolsDir $empty -Build $Retail.Version 6>&1 | Out-Null } catch { $r = $_.Exception.Message }
+    Has $r 'No questcache*.wdb of build 69933 under' 'D2: a cache of another build is no cache of this one'
+    Has $r '(those there are of build 69000)' 'D2: and the builds there are named'
+
+    # --- Several caches of one build -------------------------------------------------------------------
+    $many = "$Scratch\several"
+    $probe = "$many\retail_probe_69933"
+    New-Item -ItemType Directory $probe, "$many\retail_probe_70000", "$many\retail_probe_71000" | Out-Null
+    Write-Tables $many $Retail.Version
+    $older = "$probe\questcache.2026-10-14-1208.wdb"; $newer = "$probe\questcache.wdb"
+    $same = New-Quest 501 'In both, the same' @{ Set = @{ Tuning = 5; Next = 502 } }
+    Write-Cache $Retail @($plain, (New-Quest 500 'Old title' @{ Set = @{ Tuning = 5; Flags = 0x8000 } }), $same) $older
+    Write-Cache $Retail @((New-Quest 500 'New title' @{ Set = @{ Tuning = 5 } }), $same, (New-Quest 502 'Only in the newer')) $newer
+    (Get-Item $older).LastWriteTime = [datetime]'2026-10-14 12:08'
+    (Get-Item $newer).LastWriteTime = [datetime]'2026-10-15 20:53'
+    Write-Cache $Retail @((New-Quest 503 'Another build')) "$probe\questcache.other.wdb" 69000
+    Write-Cache $Retail @((New-Quest 504 'Creatures')) "$probe\questcache.creature.wdb" 0 'WCRQ'
+    Write-Cache $Retail @((New-Quest 600 'Elsewhere')) "$many\retail_probe_70000\questcache.wdb"
+    (Get-Item "$many\retail_probe_70000\questcache.wdb").LastWriteTime = [datetime]'2026-10-01'
+    Write-Cache $Retail @((New-Quest 601 'A later build')) "$many\retail_probe_71000\questcache.wdb" 71000
+    $out = "$many\retail_quest_cache_12.1.0.69933.jsonl"
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version }
+    Equal $r.Failure '' 'S1: two caches of one build read together'
+    $lines = Read-Lines $out
+    Equal $lines.Count 4 'S1: four quests, each once, though two are in both'
+    Equal $lines[0] '{"id":150,"title":"Plain retail","contentTuning":12,"sort":331,"questType":2}' 'S1: a quest only the older file holds is kept'
+    Equal $lines[1] '{"id":500,"title":"New title","contentTuning":5,"sort":0,"questType":2}' 'S1: a quest in both that reads differently takes the newer file''s record'
+    Equal $lines[2] '{"id":501,"title":"In both, the same","contentTuning":5,"sort":0,"nextQuest":502,"questType":2}' 'S1: one that reads the same is written once'
+    Equal $lines[3] '{"id":502,"title":"Only in the newer","contentTuning":0,"sort":0,"questType":2}' 'S1: and one only the newer file holds is added'
+    Has $r.Text 'questcache.2026-10-14-1208.wdb (written 2026-10-14 12:08): 3 quests, 3 of them new.' 'S1: the older file is read first, all of its quests new'
+    Has $r.Text "questcache.wdb (written 2026-10-15 20:53): 3 quests, 1 of them new; 2 an older file holds too, 1 of them different, which take this file's record (500)." 'S1: the newer one says what it added and which quests it changed'
+    Check ($r.Text.IndexOf('questcache.2026-10-14-1208.wdb (written') -lt $r.Text.IndexOf('questcache.wdb (written')) 'S1: oldest first'
+    Has $r.Text '4 quests from build 69933 (enUS) written to' 'S1: the summary counts the quests of both, once each'
+    Has $r.Text 'Recurring: 0 daily, 0 weekly. 0 start from an item, 1 offer a follow-up' 'S1: and so do the counts: the older weekly record was replaced, and the follow-up in both is one'
+    Has $r.Text 'Left out questcache.other.wdb: it is of build 69000.' 'S1: a cache of another build in the folder is left out, and said so'
+    Has $r.Text "Left out questcache.creature.wdb: it isn't a quest cache." 'S1: as is a file that is no quest cache'
+    $all = [IO.File]::ReadAllText($out)
+    Lacks $all 'Elsewhere' 'S1: only the folder of the newest cache of the build is read, not an older folder of the same build'
+    Lacks $all 'A later build' 'S1: nor a newer folder of another build'
+    Lacks $r.Text 'build 71000' 'S1: whose cache is not mentioned'
+
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($newer, $older); OutFile = "$many\s2.jsonl" }
+    Equal $r.Failure '' 'S2: the files named with -CacheFile read'
+    Equal ([IO.File]::ReadAllText("$many\s2.jsonl")) $all 'S2: newest named first, they give the same file: the write time, not the order, decides'
+    Lacks $r.Text 'Left out' 'S2: named files leave nothing out'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = "$older,$newer"; OutFile = "$many\s2b.jsonl" }
+    Equal ([IO.File]::ReadAllText("$many\s2b.jsonl")) $all 'S2: as one comma-separated string, as powershell -File passes a list'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = "$probe\questcache.2*.wdb", $newer; OutFile = "$many\s2c.jsonl" }
+    Equal ([IO.File]::ReadAllText("$many\s2c.jsonl")) $all 'S2: and with a wildcard'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, $older); OutFile = "$many\s2d.jsonl" }
+    Has $r.Text '3 quests from build 69933' 'S2: a file named twice is read once'
+    Lacks $r.Text 'an older file holds' 'S2: and is not its own older file'
+    $again = "$many\again.wdb"
+    Write-Cache $Retail @($same) $again
+    (Get-Item $again).LastWriteTime = [datetime]'2026-10-15 09:00'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, $again); OutFile = "$many\s2e.jsonl" }
+    Has $r.Text 'again.wdb (written 2026-10-15 09:00): 1 quests, 0 of them new; 1 an older file holds too, 0 of them different.' 'S2: a file that adds nothing and changes nothing says so'
+    $brackets = "$many\br[1]"
+    [void][IO.Directory]::CreateDirectory($brackets)
+    [IO.File]::Copy($older, "$brackets\questcache.wdb")
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = "$brackets\questcache.wdb"; OutFile = "$many\s2f.jsonl" }
+    Equal $r.Failure '' 'S2: a named file in a folder whose name has brackets reads, as a path and not a wildcard'
+    Has $r.Text '3 quests from build 69933' 'S2: with all its quests'
+
+    (Get-Item $older).LastWriteTime = [datetime]'2026-10-16 08:00'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; OutFile = "$many\s3.jsonl" }
+    Has ([IO.File]::ReadAllText("$many\s3.jsonl")) '{"id":500,"title":"Old title","contentTuning":5,"sort":0,"recurs":"weekly","flags":32768,"questType":2}' 'S3: the file written last wins, whatever its name'
+    Has $r.Text "questcache.2026-10-14-1208.wdb (written 2026-10-16 08:00): 3 quests, 1 of them new; 2 an older file holds too, 1 of them different, which take this file's record (500)." 'S3: and is read last'
+    Has $r.Text 'Recurring: 0 daily, 1 weekly.' 'S3: with the counts of the records kept'
+    (Get-Item $older).LastWriteTime = [datetime]'2026-10-14 12:08'
+
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, "$probe\questcache.other.wdb"); OutFile = "$many\s4.jsonl" }
+    Has $r.Failure 'questcache.other.wdb is from build 69000, not 12.1.0.69933' 'S4: a named file of another build stops the run'
+    Check (-not (Test-Path "$many\s4.jsonl")) 'S4: and nothing is written'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, "$probe\questcache.creature.wdb"); OutFile = "$many\s4b.jsonl" }
+    Has $r.Failure "questcache.creature.wdb isn't a quest cache (it starts 'WCRQ')" 'S4: as does a named file that is no quest cache'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, "$many\missing.wdb"); OutFile = "$many\s4c.jsonl" }
+    Has $r.Failure 'There is no cache file' 'S4: and a named file that is not there'
+    Check (-not (Test-Path "$many\s4b.jsonl") -and -not (Test-Path "$many\s4c.jsonl")) 'S4: neither writes anything'
+
+    $german = "$many\german.wdb"
+    Write-Cache $Retail @((New-Quest 505 'Deutsch')) $german
+    $bytes = [IO.File]::ReadAllBytes($german)
+    $bytes[8] = [byte][char]'E'; $bytes[9] = [byte][char]'D'; $bytes[10] = [byte][char]'e'; $bytes[11] = [byte][char]'d'
+    [IO.File]::WriteAllBytes($german, $bytes)
+    (Get-Item $german).LastWriteTime = [datetime]'2026-10-15 00:00'
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, $german); OutFile = "$many\s5.jsonl" }
+    Has $r.Failure 'german.wdb is deDE and questcache.2026-10-14-1208.wdb enUS: read one locale at a time' 'S5: caches of two locales are not joined'
+    Check (-not (Test-Path "$many\s5.jsonl")) 'S5: and nothing is written'
+
+    $cut = "$many\cut.wdb"
+    Write-Cache $Retail @((New-Quest 506 'Cut short')) $cut
+    $bytes = [IO.File]::ReadAllBytes($cut)
+    [IO.File]::WriteAllBytes($cut, [byte[]]$bytes[0..($bytes.Length - 9)])
+    $r = Invoke-Reader @{ ToolsDir = $many; Build = $Retail.Version; CacheFile = @($older, $cut); OutFile = "$many\s6.jsonl" }
+    Has $r.Failure "cut.wdb doesn't end with its terminator after 1 quests" 'S6: one file cut short among several stops the run, naming it'
+    Check (-not (Test-Path "$many\s6.jsonl")) 'S6: and nothing is written, though the other file was fine'
 
     # --- A cache that doesn't fit ---------------------------------------------------------------------
     foreach ($case in @(
@@ -475,7 +577,7 @@ try {
     $path = "$Scratch\okay.wdb"
     Write-Cache $Retail @($plain) $path
     $r = Invoke-Reader @{ CacheFile = $path; Build = '12.1.0.69934'; OutFile = "$Scratch\x1.jsonl" }
-    Has $r.Failure 'The cache is from build 69933, not 12.1.0.69934' 'W1: a cache of another build is refused'
+    Has $r.Failure 'okay.wdb is from build 69933, not 12.1.0.69934' 'W1: a cache of another build is refused'
     $path = "$Scratch\magic.wdb"
     Write-Cache $Retail @($plain) $path 0 'WCRQ'
     $r = Invoke-Reader @{ CacheFile = $path; Build = $Retail.Version; OutFile = "$Scratch\x2.jsonl" }
