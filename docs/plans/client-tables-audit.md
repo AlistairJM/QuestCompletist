@@ -273,3 +273,11 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
   1,943, `ModifierTree` 2,824 to 2,845, `Criteria` 3,279 to 3,297, `Achievement` 436 to 441, `Map` 71 to 73 (two Skycuter
   maps, Dalaran and Mulgore), `WorldStateExpression` +6. Forever's probe results and quest cache are still on 70374, so the
   next Forever sweep (step 10) starts with a rerun on 70425.
+- 2026-10-16: the user went through the opportunities one at a time. **Opportunity 1 is done** in #377, as sweep step 2k
+  (maintenance.md). The in-game test wasn't needed: the saved completions of the user's characters showed the game
+  reporting every one of 780 retail and 16 Forever shared-switch groups whole, none in part. So the game already ticks
+  partners itself, and the links' worth is the "only one of these" warning before a player chooses. Counted per pair,
+  with the filters the step uses (different names, not recurring, one character could be offered both), retail had
+  650 unlinked pairs, not the 4,556 estimated above: 145 were added and 502 skipped, and the Gilneas trio waits for the
+  user; Forever had none. The probe now saves each character's completed list, which a sweep needs to prove one of
+  our links wrong. Four findings it turned up are in open-items.md. Opportunities 2 on are next.

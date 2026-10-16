@@ -23,13 +23,16 @@ param(
     [Parameter(Mandatory)][string]$Build,
     [string]$CacheDir = (Join-Path $env:TEMP 'client_tables_audit'),
     [string]$DbdDir = (Join-Path $env:TEMP 'WoWDBDefs\definitions'),
-    [string]$OutDir = (Join-Path $PSScriptRoot '..\docs\plans\client-tables-audit'),
-    [string]$ToolsDir = $PSScriptRoot,
+    [string]$OutDir = '',
+    [string]$ToolsDir = '',
     [string[]]$RefTargets = @('QuestV2', 'QuestLine', 'Campaign', 'QuestSort', 'QuestInfo', 'PlayerCondition', 'ModifierTree', 'ContentTuning', 'UiMap', 'AreaTable', 'Map', 'Faction', 'FriendshipReputation', 'SkillLine', 'Holidays', 'Achievement', 'Criteria', 'CriteriaTree', 'ChrRaces', 'ChrClasses', 'ChrSpecialization', 'CurrencyTypes', 'Creature', 'GameObjects', 'Item', 'AreaPOI', 'LFGDungeons', 'JournalInstance', 'Covenant', 'ScheduledEvent', 'UiMapGroup', 'Expansion', 'ExpansionLevel'),
     [switch]$Download
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+# $PSScriptRoot is empty in the defaults of a script with a mandatory parameter (Windows PowerShell 5.1).
+if (-not $OutDir) { $OutDir = Join-Path $PSScriptRoot '..\docs\plans\client-tables-audit' }
+if (-not $ToolsDir) { $ToolsDir = $PSScriptRoot }
 $dir = Join-Path $CacheDir $Build
 New-Item -ItemType Directory -Force $dir, $OutDir | Out-Null
 
