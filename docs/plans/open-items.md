@@ -71,9 +71,10 @@ taken. What is left, in one place:
   as the cache will not get fuller this sweep (maintenance.md, steps 6, 2g and 2). The 17 with a start point got
   their pins later on 16 October 2026 (branch `data/pins-new-quests-12-1-5`: a rerun of the pin pipeline; 27588
   on Kurdran Wildhammer's pin, the other 16 nameless, as no source names their giver; 13,557 pins;
-  maintenance.md, step 6). Left from it: the probe and step 3 (below, "To try in game"), and the 4
-  changes step 2c lists on master for the quests #361 retyped as weekly (maintenance.md, step 2c), for a pull
-  request of their own.
+  maintenance.md, step 6). Left from it: the probe and step 3 (below, "To try in game"). The 4
+  changes step 2c listed on master for the quests #361 retyped as weekly: **done on 16 October 2026** (branch
+  `data/prereqs-after-weekly-retypes-12-1-5`): no Blizzard source names them, so 89057, 89192, 85465 and 86342
+  no longer need another weekly quest of line 5704, and step 2c is idempotent again (maintenance.md, step 2c).
 - **Shipped untried in game in 113.0,** on the user's go-ahead: most of the addon changes since 112.9 (the
   waypoint fallback, the tooltip's Type line, the empty list's count, the menu splits, `/qc holidays`
   listing every ID, the requirements gates and their tooltip text). The lines under "To try in game"
