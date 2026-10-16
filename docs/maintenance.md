@@ -782,6 +782,8 @@ On 16 October step 3 retyped 89057 and 89192 as weekly, which put their `prereq:
 rows (89057 requires 85721, 89192 requires 89254, both weekly) out of date, and they were taken out: 120
 findings, all kept. After step 6's second gap run (22 quests, the same day), the run before step 2c and
 the one after it each wrote the same findings file as on the data before: 120 findings, none new.
+After step 2c took the four weekly links of line 5704 the same day (step 2c, the recurring
+requirements), the run wrote that file again: 120 findings, none new, no row out of date.
 
 `-Game forever` runs the checks that need only our own data on `data\forever` and
 `QuestCompletist\Forever`, as step 10 does after the import: the breadcrumb, "only one of these" and
@@ -827,10 +829,8 @@ with `-WhatIf` first to see what it would change.
   240 since step 6's second gap run the same day: 88930 Drained Mana (campaign 284, line 5795) and 93420
   Lor'themar's Judgement (campaign 324, line 6232) got 90806, as their lines' 88929 and 93419 have. That
   run's step 2c changed no other new row. It also listed 4 changes to old rows that master's own run
-  lists too, left out of that pull request as they are not about its quests: since step 3 retyped 89057
-  and 89192 as weekly (#361), "Recurring quests' recurring requirements that Blizzard doesn't name" would
-  take 89057's 85721, 89192's 89254, and the 89057 and 89192 that 85465 Play Ball and 86342 Soaring over
-  K'aresh need. Taking them is the next step 2c run's.
+  lists too, left out of that pull request as they are not about its quests; a step 2c run of their own
+  took them the same day (the recurring requirements, below).
   - **Campaign 349 "The Promise of Tomorrow"** (12.1.5: lines 6233 "What Slept Below", 6221 "Sins of the
     Past" and 6245 "To the Faithful", in that order) has a condition that reads as 90806, like 284's and
     324's, and gives it to all 25 quests of its lines in the data, 95193 beside the three quests the API
@@ -859,13 +859,24 @@ with `-WhatIf` first to see what it would change.
   offers one is left out whole. A recurring quest keeps one only where Blizzard's API or the client's
   task tables name it, as in a chain of world quests, which the game knows within the day or week;
   ours and TrinityCore's would hide the later quest after every reset (544 left out on 12 October
-  2026, 102 kept).
+  2026, 102 kept). On 16 October 2026, after step 3 retyped 89057 Pee-Yew de Foxy and 89192 A Hard
+  Day's Work as weekly (#361), a run took 4 more, all between weekly quests of line 5704 "Eco-Dome
+  Repeatables" (The Oasis and K'aresh): 89057's 85721 Killer Instinct, 89192's 89254 Shutterbug, 85465
+  Play Ball's 89057 and 86342 Soaring over K'aresh's 89192. No Blizzard source names them: the six
+  quests' API records (12.1.5_70077) name no required quest, `QuestV2CliTask` has no row for any of
+  them, `QuestLineXQuest-12.1.5.70391.csv` only orders them (steps 12 to 14 and 18 to 20 of line
+  5704, each link one step to the next, all six with flags 0), the line has no `PlayerConditionID` and
+  is in no campaign, and neither quest cache (12.1.0.69933, 12.1.5.70391) gives a next quest from or
+  to any of them. `quest-link-decisions.csv` has no row for them, nor has TrinityCore's
+  `quest_template_addon`. The four now have no prerequisite (9,387 quests have one, from 9,391), and a
+  second run changes nothing.
 - **The prerequisites decided with the user** replace what the sources give:
   `docs\plans\quest-link-decisions.csv`, in the columns of Forever's link decisions (`Quest`, `Name`,
   `Link` = `prereq`, `Other`, `Decision` = `SET`, `Evidence`), where several rows for one quest are a
   choice. The run counts them, and lists any that a source would now give something else, so a sweep
   sees when Blizzard starts to name one. Since 12 October 2026 it holds Dragonflight's renown crafting
-  knowledge quests (45 rows). Each faction's Crafter's Knowledge I and II (`RenownRewards`) is one reward
+  knowledge quests (45 rows), and since 13 October (#325) 85249 A Bee Test's (46 rows, 46 quests on 16
+  October 2026, all matching). Each faction's Crafter's Knowledge I and II (`RenownRewards`) is one reward
   per profession, given to a character with any of the set's professions (its `PlayerCondition`). So
   each variant needs the renown quest before its set in Blizzard's line, and the reward after a set
   skips the variants. The 109.97 data chained each variant to another profession's.

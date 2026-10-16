@@ -267,3 +267,7 @@ The review's code change, decision 2 and the last 3 findings:
   the recheck in its reason. It retyped 89057 and 89192 as weekly, so the rows for 89057 (requires 85721)
   and 89192 (requires 89254 "Shutterbug", kept on 6 October) matched no finding and are taken out. The
   check lists 120 findings, all kept, none new and no row out of date; Forever's 6 are unchanged.
+- 2026-10-16: with 89057 and 89192 weekly, step 2c took the four recurring links of line 5704 that no
+  Blizzard source names (89057 requires 85721, 89192 requires 89254, 85465 requires 89057 and 86342
+  requires 89192; [maintenance.md](../maintenance.md#2c-prerequisites)). The check writes the same
+  findings file as before: 120 findings, all kept, none new and no row out of date.
