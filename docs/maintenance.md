@@ -1812,7 +1812,10 @@ the ones that land on one spot become one pin: 13,564 groups, 12 merged.) After 
 went from 16,084 to 13,547 (10,588 with an NPC ID, 337 with only a name, 2,622 with neither), and the
 quests with a pin from 25,776 to 25,964: the 184 task quests above and four of the 12.1.5 story
 quests (95811, 95813, 98833, 98834) got their first pins, and 17 story quests moved to their start
-points.
+points. Two nameless spots that keep different old coordinates can still stand closer than 1.5 points:
+on 16 October 2026 six pairs did, five at the coordinates they had before and one new (95808 and 95812 on
+Silvermoon City, 0.37 apart, whose starts are 1.69 apart); no two pins of one NPC did. Compare the pairs
+after each run (the plan's "Applied" lists them).
 
 Before `-Apply`, read the rows of `quest_locations_joined.csv` whose `DriftStatus` is `MAP_ID_DRIFT`
 and whose `NpcId` is not 0: the quest starts on a map where it has no pin, and the run gives it the NPC

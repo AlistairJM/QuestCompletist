@@ -316,7 +316,9 @@ listed: they follow the user's "check everything every sweep" rule.
    retail would remove 1,672 of its 5,159 nameless pins. **Decided: per spot in both games (13 October
    2026), within 1.5 map points (15 October),** which merges 2,745 of the 5,364 nameless pins the 12.1.5
    tables give retail (the 1,672 counted only the merges at the very same point); built in the tools
-   (`tools\PinRules.ps1`), the pin data to follow in a pull request of its own.
+   (`tools\PinRules.ps1`). **Applied** to `data\pins.jsonl` on 16 October 2026, on 12.1.5.70391: 2,746 of
+   5,368 nameless pins merged, 13,547 pins (quest-location-data-pipeline.md, "October 2026, one pin per
+   spot", "Applied").
 8. **Category names:** rename Mac'Aree, Time Rift and Weekly Events to Blizzard's "Eredath",
    "Time Rifts" and "Weekly Event", so the client names them in every language? *Recommended: yes ("match
    Blizzard exactly").*

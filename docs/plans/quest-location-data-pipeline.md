@@ -953,9 +953,13 @@ scratch folder.
     start too. The run named five new pins Goblin Commoner (20102), from their Netherstorm pin, and so dropped
     them from the Goblin Commoner pins in Netherstorm (109 at 33.8,64) and the Storm Peaks (120 at 40.6,84.4).
     No source names a giver at the new points: the client's giver table has no row for either quest,
-    TrinityCore has no starter for either (creature or object) and no spawn within 1.5 points of the
-    Silvermoon point or of any Dornogal point that starts a quest, the API has no giver field, and retail's
-    recorder has nothing. Wowhead's pages (read 16 October 2026) list the race commoners and the Goblin
+    TrinityCore has no starter for either (creature or object), no spawn of a creature that starts any
+    quest stands within 1.5 points of a Dornogal point, and no spawn at all within 1.5 points of the
+    Silvermoon point (51.12,76.38, or the pin's 51.48,75.68); the API has no giver field, and retail's
+    recorder has nothing. Spawns of creatures that start no quest do stand near three of the Dornogal
+    points: Oathsworn Peacekeeper (219014) 0.50 points from 46.08,55, Oathsworn Citizen (219151) 0.46 from
+    55.56,61.14 and Soaking Resident (219182) 0.33 from 56.84,28.64, among others; near 31.41,55.86 only
+    spawns of another instance fall inside the map's box. Wowhead's pages (read 16 October 2026) list the race commoners and the Goblin
     Commoner as the starters of both, with Netherstorm and the Storm Peaks among the places, and neither
     Dornogal nor Midnight's Silvermoon City (14036's names the Burning Crusade one). Decided on the
     recommendation the user delegated (no NPC carried across maps): the new
@@ -1008,6 +1012,25 @@ scratch folder.
   quests that straddle two spots, 9 for story quests on their new maps). 23 location rows stand more than
   1.5 points from their quest's pin, 2.14 at most: 17 on NPC pins whose coordinates were reused before, and
   6 of nameless spots.
+- **Nameless pins closer than 1.5 points: 6 pairs.** No two pins of one NPC on a map stand closer than
+  1.5 points. Six pairs of nameless pins do, because each spot keeps an old pin's coordinates and the
+  grouping keeps the two spots apart. Five pairs stood at the same coordinates on master: map 22 at
+  47.83,63.13 (26925) and 47.83,62.78 (27084, 27086, 27087), 0.35 apart; 379 at 61.58,80.2 and 62.69,80.73,
+  1.23; 745 at 44.95,37.35 (42158) and 43.61,36.78 (54919, 54920), 1.46; 2024 at 70.28,24.94 (66192, 69861)
+  and 71.29,24.63 (70427), 1.06; and 2031 at 53.98,45.45 (64728, 64962) and 52.6,45.71 (64731), 1.40, the
+  straddle of 64962 above. One pair is new: on 2393, 95808 at 31.95,69.64 and 95812 at 31.95,69.27, 0.37
+  apart. Their client starts (30.6,70.29 and 31.95,69.27) are 1.69 apart, so they are two spots, and
+  95808's pin kept its old coordinates, 1.498 points from its start. No data was changed for them: a hand
+  merge would be split again by the next run. A `PinRules.ps1` change that merges nameless spots whose
+  pins land within 1.5 points would close them; it waits for the user.
+- **95009 "Doing the Dash" draws all year for Horde until it has a holiday.** One of the task quests of
+  decision 5, it got its first pins at the five Dornogal and Silvermoon City spots above (2339 at
+  31.41,55.86, 45.51,55.57, 55.56,61.14 and 56.84,28.64; 2393 at 51.48,75.68). It belongs to the Darkspear
+  Dash: the client's Holidays row 1793 is "Darkspear Dash" (HolidayNames 458) in 12.1.0.69933 and
+  12.1.5.70391, next dated 26 June 2027 (`calendar-baseline-rows.csv`); `QuestV2CliTask` gates the quest by
+  world state expression 50704; and Wowhead (read 16 October 2026) links it to the 27 June 2026 news post on
+  the new microholiday. `data\quests.jsonl` gives it no holiday and `qcHolidays` has no Darkspear Dash, so
+  the seasonal filter never hides these pins. The fix is a quest-data change, open-items row 43.
 - **Checks.** `Build-AddonData.ps1 -Check` (retail 35,606 quests and 13,547 pins, Forever unchanged),
   `Show-RemovedQuests.ps1` for both games (none), the syntax check, and against master: the reachability
   report for both games (retail: the pin counts, 16,084 and 14,416 once identical pins at one spot count as
