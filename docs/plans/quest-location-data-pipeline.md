@@ -902,3 +902,10 @@ quest at the client's start point, Forever at its giver.*
 - **Left.** Applying the rule to `data\pins.jsonl`, in a pull request of its own after the 12.1.5 story
   quests: `Assemble-PinDB.ps1 -Apply` on the candidate, then `Apply-PinNpcIds.ps1 -WhatIf`,
   `Remove-DuplicatePinQuests.ps1 -WhatIf` and steps 6c and 6d with `-WhatIf`, and the reachability report.
+- **The 12.1.5 story quests** went into the data on 16 October 2026 (maintenance.md, step 6, "The 12.1.5 gap
+  run") with the pins as they were, so the baseline above moves. On their data, with the same tables and
+  the module, the four steps (not applied) make 13,564 pins and keep 28,887 location rows. Of the 33 story
+  quests, 17 move to their start points in the client's data (95187, for one, from Lady Liadrin's pin in
+  Eversong Woods to hers in Silvermoon City, 2393 at 45.67,70.34), 10 stay where they are (the six of line
+  6385 now one nameless pin), 95811, 95813, 98833 and 98834 get their first pins, and 99306 and 99312 none.
+  The pull request that applies the rule takes these with it.
