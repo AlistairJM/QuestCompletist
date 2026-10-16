@@ -26,6 +26,22 @@ taken. What is left, in one place:
   Next: from the reporters, straight after a freeze, the five add-ons with the slowest frame
   (`C_AddOnProfiler.GetTopKAddOnsForMetric`, `PeakTime`), the game's own slowest frame
   (`GetApplicationMetric`) and their add-on lists.
+- **The client tables audit (PR #376) and its opportunity 1 (16 October 2026):** the user went through the
+  audit's opportunities one at a time. Opportunity 1, quests on one completion switch, is done as sweep step 2k
+  ([maintenance.md](../maintenance.md)): 145 "only one of these" pairs added on retail, 502 skipped, the probe now
+  saves each character's completed list so a later sweep can catch a link the game disproves. Opportunities 2 on
+  come next, one at a time. Four findings of opportunity 1 wait for the user, to decide later:
+  - **Quest types:** the 27 "Paragon of ..." quests, the 14 "Midnight: ..." meta quests with "Unity Against the
+    Void", and the 9 "Worldsoul: ..." ones are typed one-time, though paragon caches repeat and the meta quests are
+    weeklies; each group shares one completion switch.
+  - **Limits too broad:** quests that are one version per class, race or covenant share a switch while our data
+    lets every character see each: "The Arts of a Mage/Shaman/Druid" (24752, 24760, 24766) open to every class,
+    the priest race quests (27268/27269, 27361 to 27363), the covenant Veteran and Tactician sets (63340 to 63347,
+    64083 to 64086, 64322 to 64325) and 60721 to 60723 with no covenant, and the Trading Post copies.
+  - **A junk quest:** 38845, named "Unused", is in the data.
+  - **The Gilneas trio** (14402, 14405, 14463), unlinked by D2 because Blizzard's API requires all three for
+    14465 and 14466, is on one switch: doing any one marks all three done, which meets "requires all three". Step
+    2k lists it until the user decides ADD (undoing D2's unlink) or SKIP.
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest

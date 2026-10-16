@@ -27,6 +27,8 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
 /qcprobe geometry             takes the geometry alone, in a moment: where each child map sits on its
                               continent (docs/plans/continent-pins.md). To also record the map window's
                               size, open the world map on a continent first, maximised or not.
+/qcprobe completed            saves this character's completed quests now (it is done anyway at every login,
+                              reload and logout)
 /qcprobe stop                 stops the run in progress
 /qcprobe status               what's been gathered on this build
 /qcprobe record on|off        the recorder, on by default
@@ -63,6 +65,12 @@ QCForeverProbeDB holds:
                 seen), offers (questId = level, frequency, repeatable, lowestPlayerLevel, seenBy),
                 turnIns (questId = true)
   started[id]   quests offered by no NPC or object: build, item, map, x, y, by
+  completed[guid]  for each character, the quests the game says it has completed (C_QuestLog.GetAllCompletedQuestIDs,
+                or GetQuestsCompleted where that is missing), as the game gives them and not as Quest Completist
+                ticks them: build, time, character (faction, race and class), level, ids (sorted, comma-separated).
+                Saved at login, reload and logout, and by /qcprobe completed. Keyed by the character's GUID,
+                never its name; the results stay in the game folder and tools\ (which git ignores).
+                Sync-SharedSlotLinks.ps1 reads it (docs/maintenance.md, step 2k).
   accepted[id]  build, heading, map, x, y, by, level
   maps[mapID]   build, preset (Forever's experience preset: 0 Classic, 1 Modern, nil on retail),
                 result (event: QUESTLINE_UPDATE came; noevent: it didn't within the wait; unanswered:
@@ -1049,6 +1057,28 @@ local function record(event, ...)
 	end
 end
 
+local function completedIds()
+	local ids = try(C_QuestLog and C_QuestLog.GetAllCompletedQuestIDs)
+	if type(ids) == "table" and #ids > 0 then return ids end
+	local flagged = try(GetQuestsCompleted)
+	if type(flagged) ~= "table" then return nil end
+	ids = {}
+	for id, done in pairs(flagged) do if done then ids[#ids + 1] = id end end
+	if #ids == 0 then return nil end
+	return ids
+end
+
+local function saveCompleted()
+	local key = try(UnitGUID, "player")
+	if not key or secret(key) then return nil end
+	local ids = completedIds()
+	if not ids then return nil end
+	table.sort(ids)
+	db.completed[key] = {build = build, time = time(), character = character(), level = UnitLevel("player"),
+		ids = table.concat(ids, ",")}
+	return #ids
+end
+
 local function status()
 	local quests, npcs = {}, {}
 	local questCount, npcCount = 0, 0
@@ -1094,6 +1124,9 @@ local function status()
 		end
 	end
 	say(string.format("Geometry on %s: %d continent, world and cosmic maps with %d child maps.", build, continents, children))
+	local characters = 0
+	for _ in pairs(db.completed) do characters = characters + 1 end
+	say(string.format("Completed quests saved for %d characters.", characters))
 	if run then say(string.format("Running: the %s, %d of %d.", run.label, run.done, run.total)) end
 end
 
@@ -1110,7 +1143,7 @@ end
 local function init()
 	QCForeverProbeDB = QCForeverProbeDB or {}
 	db = QCForeverProbeDB
-	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "geometry", "runs", "logins"}) do
+	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "geometry", "runs", "logins", "completed"}) do
 		db[key] = db[key] or {}
 	end
 	if db.recording == nil then db.recording = true end
@@ -1121,7 +1154,7 @@ end
 local frame = CreateFrame("Frame")
 for _, event in ipairs({"ADDON_LOADED", "PLAYER_LOGIN", "QUEST_DATA_LOAD_RESULT", "TOOLTIP_DATA_UPDATE",
 	"QUESTLINE_UPDATE", "EVENT_SCHEDULER_UPDATE", "GOSSIP_SHOW", "QUEST_GREETING", "QUEST_DETAIL", "QUEST_COMPLETE",
-	"QUEST_ACCEPTED"}) do
+	"QUEST_ACCEPTED", "PLAYER_ENTERING_WORLD", "PLAYER_LOGOUT"}) do
 	pcall(frame.RegisterEvent, frame, event)
 end
 frame:SetScript("OnEvent", function(_, event, ...)
@@ -1131,6 +1164,11 @@ frame:SetScript("OnEvent", function(_, event, ...)
 		return
 	elseif event == "PLAYER_LOGIN" then
 		onLogin()
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		local initialLogin, reloadingUi = ...
+		if initialLogin or reloadingUi then saveCompleted() end
+	elseif event == "PLAYER_LOGOUT" then
+		saveCompleted()
 	elseif event == "QUEST_DATA_LOAD_RESULT" then
 		if run and run.answered then run.answered(...) end
 	elseif event == "TOOLTIP_DATA_UPDATE" then
@@ -1166,10 +1204,13 @@ SlashCmdList.QCFOREVERPROBE = function(argument)
 		if run then finish(true) else say("nothing is running.") end
 	elseif command == "status" then
 		status()
+	elseif command == "completed" then
+		local count = saveCompleted()
+		if count then say(string.format("saved this character's %d completed quests.", count)) else say("the game gave no completed quests.") end
 	elseif command == "record" and (option == "on" or option == "off") then
 		db.recording = option == "on"
 		say("the recorder is " .. option .. ".")
 	else
-		say("/qcprobe quests [all | in flight], npcs [all | in flight], maps [wait seconds], geometry, stop, status, record on|off.")
+		say("/qcprobe quests [all | in flight], npcs [all | in flight], maps [wait seconds], geometry, completed, stop, status, record on|off.")
 	end
 end

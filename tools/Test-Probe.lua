@@ -429,7 +429,7 @@ do
 	w.boot()
 	local db = w.db()
 	check(db ~= nil, "S1: the saved variable is made")
-	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "runs", "logins"}) do
+	for _, key in ipairs({"quests", "npcs", "givers", "started", "accepted", "maps", "runs", "logins", "completed"}) do
 		check(type(db[key]) == "table", "S1: " .. key .. " is a table")
 	end
 	equal(db.recording, true, "S1: the recorder is on by default")
@@ -1770,6 +1770,56 @@ do
 	w.fire("GOSSIP_SHOW")
 	local spot = next(w.db().givers["Creature:3702"].spots)
 	equal(spot, "84", "T2: with no position only the map is kept")
+end
+
+-- 7. Completed quests, as the game gives them -------------------------------------------------------
+
+do
+	local w = newWorld({})
+	local S = w.S
+	S.guid.player = "Player-1-00000001"
+	S.completed = {30, 4, 1000}
+	w.env.C_QuestLog.GetAllCompletedQuestIDs = function() return S.completed end
+	w.boot()
+	local db = w.db()
+	equal(next(db.completed), nil, "K1: nothing is saved at login, before the world loads")
+	w.fire("PLAYER_ENTERING_WORLD", true, false)
+	local row = db.completed["Player-1-00000001"]
+	check(row ~= nil, "K1: entering the world saves the character's completed quests")
+	equal(row and row.ids, "4,30,1000", "K1: sorted, comma-separated")
+	equal(row and row.character, "Alliance NightElf ROGUE", "K1: with the character but no name")
+	equal(row and row.level, 12, "K1: and its level")
+	S.completed = {30, 4, 1000, 7}
+	w.fire("PLAYER_ENTERING_WORLD", false, false)
+	equal(db.completed["Player-1-00000001"].ids, "4,30,1000", "K2: a zone change saves nothing")
+	w.fire("PLAYER_LOGOUT")
+	equal(db.completed["Player-1-00000001"].ids, "4,7,30,1000", "K2: logging out saves the latest")
+	S.completed = {}
+	w.fire("PLAYER_ENTERING_WORLD", false, true)
+	equal(db.completed["Player-1-00000001"].ids, "4,7,30,1000", "K3: an empty answer keeps what was saved")
+	S.completed = {1}
+	w.slash("completed")
+	check(w.said("saved this character's 1 completed quests."), "K4: /qcprobe completed saves now and says so")
+	w.slash("status")
+	check(w.said("Completed quests saved for 1 characters."), "K4: status counts the characters")
+	roundTrips(db, "K4")
+
+	local w2 = newWorld({})
+	w2.S.guid.player = "Player-2-00000002"
+	w2.env.C_QuestLog.GetAllCompletedQuestIDs = nil
+	w2.env.GetQuestsCompleted = function() return {[9] = true, [3] = true, [5] = false} end
+	w2.boot()
+	w2.fire("PLAYER_ENTERING_WORLD", true, false)
+	equal(w2.db().completed["Player-2-00000002"].ids, "3,9", "K5: where the newer call is missing, GetQuestsCompleted is read")
+
+	local w3 = newWorld({})
+	w3.S.guid.player = SECRET
+	w3.env.C_QuestLog.GetAllCompletedQuestIDs = function() return {1} end
+	w3.boot()
+	w3.fire("PLAYER_ENTERING_WORLD", true, false)
+	equal(next(w3.db().completed), nil, "K6: a hidden GUID saves nothing")
+	w3.slash("completed")
+	check(w3.said("the game gave no completed quests."), "K6: and the command says so")
 end
 
 print(string.format("%d checks passed, %d failed", passed, failed))
