@@ -31,7 +31,9 @@ by comparing three sets of faction=amount, ours, the API's and the cache's, neve
 A faction is shown when the Faction table lists it, its ReputationIndex is not negative (the
 client keeps no standing for it) and ReputationFlags_0 has not got bit 4 (value 4, hidden).
 Rows of classes B to F are written with the Kinds cache-more, cache-differ, cache-lost,
-cache-only and cache-hidden; Apply-ReputationBackfill.ps1 acts on differ and api-only only.
+cache-only and cache-hidden; their CacheShown column holds the cache's rewards on shown
+factions, and CacheBuild the build of the cache read. Apply-ReputationBackfill.ps1 acts on
+differ and api-only, and with -CacheOnly on cache-only too.
 
 B, E, F and G move with what a probe run asked for, so their quests are kept in the baseline
 file (-BaselineFile; -UpdateBaseline rewrites it from this run) and each run says what is new
@@ -79,12 +81,16 @@ $orphans = @($sideTable.Keys | Where-Object { -not $ours.ContainsKey($_) })
 
 function Format-Set($h) { return (($h.GetEnumerator() | Sort-Object { [int]$_.Key } | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ";") }
 
-$summary = @{}; $unknown = @{}; $noApi = 0
+$summary = @{}; $unknown = @{}; $noApi = 0; $noRecord = 0
 $apiSets = @{}; $apiNamespaces = New-Object 'System.Collections.Generic.HashSet[string]'
 $rows = New-Object System.Collections.Generic.List[object]
 foreach ($id in $ours.Keys) {
     $path = "$ToolsDir\quest_api_cache\$id.json"
-    if (-not (Test-Path $path)) { $noApi++; continue }
+    if (-not (Test-Path $path)) {
+        $noApi++
+        if (Test-Path "$ToolsDir\quest_api_cache\$id.404") { $noRecord++ }
+        continue
+    }
     $j = [System.IO.File]::ReadAllText($path) | ConvertFrom-Json
     $api = @{}; $names = @{}
     if ($j.rewards -and $j.rewards.reputations) {
@@ -101,7 +107,7 @@ foreach ($id in $ours.Keys) {
     $kind = if (-not $o.Count -and -not $api.Count) { "neither" } elseif (-not $o.Count) { "api-only" } elseif (-not $api.Count) { "ours-only" } elseif ($a -eq $b) { "match" } else { "differ" }
     $summary[$kind]++
     if ($kind -in "api-only", "ours-only", "differ") {
-        $rows.Add([PSCustomObject]@{ QuestID = $id; Kind = $kind; Ours = $b; Api = $a; ApiFactionNames = (($names.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ";"); Cache = ""; CacheFactionNames = "" })
+        $rows.Add([PSCustomObject]@{ QuestID = $id; Kind = $kind; Ours = $b; Api = $a; ApiFactionNames = (($names.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ";"); Cache = ""; CacheFactionNames = ""; CacheShown = ""; CacheBuild = "" })
     }
 }
 
@@ -219,7 +225,9 @@ else {
             }
             if ($rowKinds.ContainsKey($class)) {
                 $cacheNames = ($cacheSet.Keys | Sort-Object { [int]$_ } | ForEach-Object { "$_=$(if ($factionNames.ContainsKey([int]$_)) { $factionNames[[int]$_] } else { '(not in the Faction table)' })" }) -join ";"
-                $cacheRows.Add([PSCustomObject]@{ QuestID = $id; Kind = $rowKinds[$class]; Ours = (Format-Set $oursSet); Api = (Format-Set $apiSet); ApiFactionNames = ""; Cache = (Format-Set $cacheSet); CacheFactionNames = $cacheNames })
+                $shownSet = @{}
+                foreach ($faction in $cacheSet.Keys) { if ($shown.Contains([int]$faction)) { $shownSet[$faction] = $cacheSet[$faction] } }
+                $cacheRows.Add([PSCustomObject]@{ QuestID = $id; Kind = $rowKinds[$class]; Ours = (Format-Set $oursSet); Api = (Format-Set $apiSet); ApiFactionNames = ""; Cache = (Format-Set $cacheSet); CacheFactionNames = $cacheNames; CacheShown = (Format-Set $shownSet); CacheBuild = $cacheBuild })
             }
         }
         $cacheOnly = @($cacheSets.Keys | Where-Object { -not $ours.ContainsKey($_) })
@@ -308,7 +316,7 @@ else {
 $outFile = "$ToolsDir\quest_reputation_compare.csv"
 $rows.ToArray() + $cacheRows.ToArray() | Sort-Object { [int]$_.QuestID }, Kind | Export-Csv $outFile -NoTypeInformation -Encoding utf8
 "qcQuestReputation rows: $($sideTable.Count)" + $(if ($orphans.Count) { " (WARNING - $($orphans.Count) not in quests.jsonl: $($orphans -join ','))" } else { "" })
-"Quests the API 404s on (no reputation source): $noApi"
+"Quests with no API record: $noRecord the API 404s on, $($noApi - $noRecord) not asked yet (the cache pass checks them against the quest cache, and -CacheOnly writes the class E rewards of the 404s)"
 "Comparison: " + (($summary.GetEnumerator() | Sort-Object Name | ForEach-Object { "$($_.Name)=$($_.Value)" }) -join ", ")
 "API-only rows with more than one faction: $(@($rows | Where-Object { $_.Kind -eq 'api-only' -and $_.Api -match ';' }).Count)"
 "Reward factions missing from qcFactions: $($unknown.Count)"
