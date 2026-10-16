@@ -4,9 +4,10 @@ know and the data doesn't hold, and says which look like quests a player can tak
 
 Retail: data\quests.jsonl against the client's QuestV2 (live build and, when present, the PTR's) and QuestPOIBlob,
 the newest quest cache (tools\retail_quest_cache_<build>.jsonl, step 2e), TrinityCore's quest_template, the
-client's task table and the quests the pins name. Titles come from the newest cache, then the older caches in
-tools\ (newest first), then Blizzard's API (tools\quest_api_cache, step 1), then the task table, then TrinityCore.
-An older cache gives only a title: the flags and the quest type come from the newest.
+client's task table and the quests the pins name. Titles come from the newest cache, then Blizzard's API
+(tools\quest_api_cache, step 1), then the task table, then the older caches in tools\ (newest first), then
+TrinityCore. An older cache gives only a title, and only where no current source has one: the flags and the
+quest type come from the newest.
 WoW: Forever: data\forever\quests.jsonl against its QuestV2 and QuestPOIBlob, its quest caches (read the same
 way), CMaNGOS's quest_template and its pins.
 QuestV2 proves nothing alone (it omits almost all repeatable quests, and lists tracking and retired ones), so a
@@ -199,7 +200,7 @@ foreach ($id in ($known.Keys | Sort-Object)) {
     $c = $cache[$id]; $e = $em[$id]
     $apiTitle = if ($apiHas.ContainsKey($id)) { [string]([IO.File]::ReadAllText((Join-Path $apiDir "$id.json"), [Text.Encoding]::UTF8) | ConvertFrom-Json).title } else { '' }
     $o = $olderTitle[$id]
-    $title = if ($c -and $c.title) { [string]$c.title } elseif ($o) { $o.Title } elseif ($apiTitle) { $apiTitle } elseif ($task.ContainsKey($id) -and $task[$id]) { [string]$task[$id] } elseif ($e) { [string]$e.Title } else { '' }
+    $title = if ($c -and $c.title) { [string]$c.title } elseif ($apiTitle) { $apiTitle } elseif ($task.ContainsKey($id) -and $task[$id]) { [string]$task[$id] } elseif ($o) { $o.Title } elseif ($e) { [string]$e.Title } else { '' }
     $flags = if ($c) { [uint32]$(if ($null -ne $c.flags) { $c.flags } else { 0 }) } elseif ($e) { $e.Flags } else { [uint32]0 }
     $flagsEx = if ($c) { [uint32]$(if ($null -ne $c.flagsEx) { $c.flagsEx } else { 0 }) } elseif ($e) { $e.FlagsEx } else { [uint32]0 }
     $evidence = New-Object System.Collections.Generic.List[string]
