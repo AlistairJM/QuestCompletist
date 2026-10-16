@@ -116,7 +116,7 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   keyed table like the minimum's, for the same reason; it costs 1,024 KB loaded on retail
   ([load-and-memory.md](load-and-memory.md)).
 - **The tunings and their samples** are in `qcQuestTuning` and `qcTuningSample` since 16 October 2026
-  (option E of [quest-scaling-redirects.md](quest-scaling-redirects.md); no addon code reads them yet). A
+  (option E of [quest-scaling-redirects.md](quest-scaling-redirects.md); `qcTuning` in `qcCore.lua` reads them). A
   sample is a fact about a tuning, not a quest, so it has a data file of its own, `data\tunings.jsonl`, one
   record per tuning (its level at the cap, its redirects, its samples), built into `qcTuningSample`
   (`[73]={11,35,37}`). The quest's own `tuning` is a field of `data\quests.jsonl` (33,250 quests), and

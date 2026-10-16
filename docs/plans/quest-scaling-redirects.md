@@ -9,9 +9,10 @@ the user took **option E**: ship each retail quest's content tuning and a few qu
 the game's own level from, at run time, with the stored ceilings as the fallback. Two pull requests:
 
 1. **Data and tools** (#378): each quest's `tuning`, `data\tunings.jsonl` with the samples, the Lua
-   tables `qcQuestTuning` and `qcTuningSample`, and step 2j's checks. No addon code reads them yet.
-2. **Addon code** (next, stacked on it): the list, the map and the continent icons read a sample's level,
-   under the performance rule below.
+   tables `qcQuestTuning` and `qcTuningSample`, and step 2j's checks.
+2. **Addon code** (stacked on it, below): the list, the map and the continent icons read a sample's
+   level, under the performance rule below, checked offline by `Test-QuestScaling.lua`; one short check
+   in game is left (open-items.md, "To try in game").
 
 ## How a quest's level is chosen
 
@@ -131,8 +132,8 @@ from the 12.1.5.70391 sources:
   otherwise, and no quest has a `maxLevel` without a tuning. Replacing `qcQuestMaxLevel` (27,637 keys, a
   32,768-slot table) by a level per tuning would save about 1 MB, but needs the addon to read it, which this
   pull request doesn't change, and `qcQuestTuning` to hold the 3,530 quests that scale on unredirected
-  tunings too: 32,210 in all, still under 32,768 keys but with only 558 to spare. That is a choice for the
-  second pull request.
+  tunings too: 32,210 in all, still under 32,768 keys but with only 558 to spare. The second pull request
+  kept `qcQuestMaxLevel` as it is, for that room.
 
 ## The sweep's checks
 
@@ -155,9 +156,48 @@ idempotent: a second one changes nothing.
 
 ## What the second pull request does
 
-The addon code, under the rule above: a quest whose tuning has samples reads the level of the first sample
-the client holds (`C_QuestLog.GetQuestDifficultyLevel`), else its stored level; the list asks for samples of
-its current category's tunings whose stored shown level is below the character's, through
-`qcRequestQuestData`, and redraws once when an answer changes something; the map and the continent icons
-only read samples already held. The in-game check then is the line above, in Nazmir and in Elwynn Forest,
-against the list's brackets.
+The addon code (`qcTuning` in `qcCore.lua`; [maintenance.md](../maintenance.md#2j-scaling-quests-levels),
+"How the addon reads the samples"), under the rule above:
+
+- **The level.** A quest in `qcQuestTuning` reads `C_QuestLog.GetQuestDifficultyLevel` of the first sample of
+  its tuning that gives a level above 0 (a secret value counts as none). That is the level of every quest on
+  the tuning for this character now: TrinityCore's `Player::GetQuestLevel` takes it from the tuning alone, and
+  each of the 771 tunings probed gave one level for all its quests. With no such sample it reads the stored
+  level, as before. `qcShownQuestLevel` keeps its arguments and its answer's meaning, so the list's bracket
+  and sort, the low-level filter of the list and the map, the pins and the continent icons all read it.
+- **When it is read.** Once per tuning when a view is built, and again after `ZONE_CHANGED_NEW_AREA`,
+  `PLAYER_LEVEL_UP`, `UNIT_CTR_OPTIONS` (registered for the player, in a `pcall` for a client without the
+  event; it also rebuilds the list) or a sample's `QUEST_DATA_LOAD_RESULT`.
+- **What is asked.** Only the list's category build asks, through `qcRequestQuestData`: for each tuning of
+  the category with no level from a sample and a quest stored below the character's level, one sample, the
+  first neither answered nor given up. A failed sample gets the queue's own second try after 30 seconds,
+  and only after that fails is the next one asked, so one tuning never has two samples loading. The maps,
+  the continent icons, their tooltips and search ask for nothing.
+- **What is redrawn.** Once nothing the list waits on is loading, the list is rebuilt once if an answer
+  changed a level it read; answers that agree with the stored levels rebuild nothing, and no answer redraws
+  a map.
+- **Forever** has empty tables, so the code reads no level and asks for nothing there.
+
+One limit of the rule: a tuning whose quests are all stored at the character's level is not asked about, so
+a redirect that would put them lower (a character without one of the probe's bits) shows only once a sample
+of that tuning is held anyway, from an earlier answer or the client's quest cache.
+
+`Test-QuestScaling.lua` (both TOCs, 67 checks on retail and 11 on Forever, 17 October 2026) plays this
+against a game whose levels follow the client's 12.1.5.70391 redirect and ContentTuning tables:
+- The ten readings of 16 October, in Nazmir and in Silvermoon City, come out as read.
+- With the probe's bits and every sample held, every quest reads its stored level at levels 1, 10, 30, 60
+  and 90, but 46 quests at their tuning's minimum whose own level isn't it (24428, 28165, 31497, the 31 of
+  tuning 464 such as 50417, 82586, 85085, 91843 and others; open-items.md row 8). They read their tuning's
+  level, the game's.
+- In Nazmir at 90 with bit 34, its 160 quests on the three tunings bit 34 moves (190, 467 and 1403) read
+  their stored levels and are hidden by the low-level filter until the list's samples are answered, then
+  read 90, are kept, show as [90] and are drawn on Nazmir's map. The list asked for the first sample of each
+  of the 6 tunings with a quest stored below 90, once, and was rebuilt once.
+- In Chromie Time at 40, 11 "Riverpaw Gnoll Bounty" reads 30 and is hidden until its sample is answered,
+  then 40.
+- Drawing all 544 maps' pins (with the low-level filter on and off), a continent of every zone, hovering
+  them, and a search ask the game for nothing, as on master. Building every one of the 482 categories in
+  turn asks for one sample of each of the 427 tunings that needed one.
+
+The in-game check is the `/run` line above, in Nazmir and in Silvermoon City or Elwynn Forest, against the
+list's brackets (open-items.md, "To try in game").

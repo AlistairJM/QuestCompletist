@@ -109,15 +109,18 @@ the level a scaling quest stops scaling at are in `qcQuestProfession`, `qcQuestH
 quest ID, a list of prerequisites as a Lua table. From `tunings.jsonl`, `qcTuningSample` holds each
 tuning's samples (`[73]={11,35,37}`) and `qcQuestTuning` the tuning of each quest on one of them
 (`[11]=73`); a quest on any other tuning is left out, as no sample can say more about its level than its
-stored one. Retail's hold 537 tunings and 28,680 quests (16 October 2026), Forever's nothing. No addon code
-reads them yet (the second pull request of [quest-scaling-redirects.md](plans/quest-scaling-redirects.md)).
-The zone text stays in the data file only: the game never reads it.
+stored one. Retail's hold 537 tunings and 28,680 quests (16 October 2026), Forever's nothing. The addon
+reads the game's level from a sample the client holds ([step 2j](#2j-scaling-quests-levels), "How the
+addon reads the samples"). The zone text stays in the data file only: the game never reads it.
 
 `level` means three things, and the data keeps all of them. The row's level is the quest's own. The
-list's bracket (`[30] Name`), its sort and the low-level filter read the level the quest shows, which
-is the row's level unless `qcQuestMaxLevel` has the quest: then it is the character's level, raised to
-the quest's minimum (below) and held down at `qcQuestMaxLevel[questId]`, the level the game scales it
-to (`qcShownQuestLevel` in `qcCore.lua`, [step 2j](#2j-scaling-quests-levels)). The sort is by the level
+list's bracket (`[30] Name`), its sort and the low-level filter read the level the quest shows. For a
+quest in `qcQuestTuning` whose tuning has a sample the client holds, that is the game's level for the
+sample (`GetQuestDifficultyLevel`), the level of every quest on the tuning for this character now. Else
+it is the stored one: the row's level unless `qcQuestMaxLevel` has the quest, and then the character's
+level, raised to the quest's minimum (below) and held down at `qcQuestMaxLevel[questId]`, the level the
+game scales it to for a character with the probe's redirect bits (`qcShownQuestLevel` and
+`qcStoredQuestLevel` in `qcCore.lua`, [step 2j](#2j-scaling-quests-levels)). The sort is by the level
 shown, then the row's level, then the name, so a quest that doesn't scale keeps the order it had. A
 level of 0 or below is no level: the list prints the bare name with no bracket, the low-level filter
 (the map's too) never counts the quest as low, and the sort puts it first. Retail's `qcQuestMaxLevel`
@@ -1506,8 +1509,9 @@ the icon of a pin whose quests are all PvP. Every sweep, with the newest cache o
 ### 2j. Scaling quests' levels
 
 `Apply-QuestScaling.ps1` gives each retail quest that scales the level it stops scaling at, in its
-`maxLevel` field, which the build writes to `qcQuestMaxLevel`. The list's bracket, its sort and the
-low-level filter (the list's and the map's) then read the level the game scales the quest to for a
+`maxLevel` field, which the build writes to `qcQuestMaxLevel`. Where no sample of the quest's tuning gives
+the game's own level (below, "How the addon reads the samples"), the list's bracket, its sort and the
+low-level filter (the list's and the map's) read the level the game scales the quest to for a
 character with the probe character's redirect bits (outside Chromie Time and an Endeavor's zones; below,
 "Not the redirects"): its level, raised to the quest's minimum (`minLevel`, else `level`) and held down
 at `maxLevel`. A quest with no `maxLevel` reads its own level, as before ([the data
@@ -1694,10 +1698,40 @@ The tables cost memory: `qcQuestMaxLevel` took `qcQuestData.lua` from 2,461,508 
 loaded alone under Lua 5.1 (32-bit), from 9,381 to 10,405 KB; `qcQuestTuning` and `qcTuningSample` take it
 from 2,822,865 to 3,239,164 bytes and from 10,434.2 to 11,529.4 KB (all 33,250 tunings would take 12,553.4
 KB, as more than 32,768 keys double the hash part). `qcQuestTuning` has 4,088 keys of room before that
-step, and would have 558 if it held the 3,530 quests that scale on unredirected tunings too (32,210 keys, a
-choice for the second pull request); a sweep that gives a few thousand more quests a sampled tuning, such
-as a new expansion's, would cross it. [load-and-memory.md](plans/load-and-memory.md) has the figures.
-`Test-QuestScaling.ps1` tests the tool and `Test-QuestReachability.lua` the addon's reading (step 9).
+step, and would have 558 if it held the 3,530 quests that scale on unredirected tunings too (32,210 keys),
+so that `qcQuestMaxLevel` could give way to a level per tuning; the addon code kept `qcQuestMaxLevel` as
+it is, for the room. A sweep that gives a few thousand more quests a sampled tuning, such as a new
+expansion's, would cross it. [load-and-memory.md](plans/load-and-memory.md) has the figures.
+
+**How the addon reads the samples** (`qcTuning` in `qcCore.lua`, option E's second pull request). A quest
+in `qcQuestTuning` reads the level `C_QuestLog.GetQuestDifficultyLevel` gives for the first sample of its
+tuning that gives one above 0 (a secret value counts as none): the level of every quest on that tuning
+for this character now, as TrinityCore's `Player::GetQuestLevel` takes it from the tuning alone. With
+none, it reads its stored level, above. The levels are read once per tuning when a view is built (the
+list, a map, the continent icons and their tooltips), and again after the zone (`ZONE_CHANGED_NEW_AREA`),
+the character's level (`PLAYER_LEVEL_UP`) or its CtrOptions (`UNIT_CTR_OPTIONS`, which holds the redirect
+bits, registered for the player where the client has it, and which also rebuilds the list) change, or a
+sample's data arrives. The performance rule of
+[quest-scaling-redirects.md](plans/quest-scaling-redirects.md) holds:
+- The maps, the continent icons, their tooltips and search never ask the server for a sample. They read
+  the samples the client holds, also those its quest cache keeps from earlier sessions.
+- Only the list's category build asks, through the queue that loads quest names, four requests at a time
+  (`qcRequestQuestData`): for each tuning of the category with no level from a sample yet and a quest
+  stored below the character's level, one sample at a time, the first neither answered nor given up. A
+  sample that fails is tried once more after 30 seconds, as any quest is, and the next is asked only
+  after that second failure. A tuning whose quests are all stored at the character's level is not asked
+  about, so a redirect that would lower them shows only once a sample of it is held anyway.
+- Once nothing the list waits on is loading, the list is rebuilt once if an answer changed a level it
+  read, and not at all when the answers agree with the stored levels. No answer redraws a map: it reads
+  the new level when it is next drawn.
+
+Forever's tables are empty, so it reads no level and asks for nothing. With the probe's redirect bits and
+every sample held, every retail quest reads its stored level at levels 1, 10, 30, 60 and 90 but 46 (16
+October 2026's data). Those are quests at their tuning's minimum whose own level isn't it (open-items.md row 8), such as
+50417 "Ruin Has Come" (level 10, minimum 50, tuning 464 at 50): they read their tuning's level, the game's,
+once a sample of the tuning is held, and their own until then.
+`Test-QuestScaling.ps1` tests the tool, `Test-QuestReachability.lua` the stored levels and
+`Test-QuestScaling.lua` the levels read from samples (step 9).
 
 ### 2k. Quests on one completion switch
 
@@ -2625,7 +2659,18 @@ results are expected. Pins whose quests aren't in the database stay hidden while
 no data" is on. A map missing from `UiMap.csv` can't be opened on retail; a newer build than the
 downloaded one may add it.
 
-This checks retail's files. Step 10 runs it on Forever's.
+Its stand-in client holds no quest, so it reads every level from the data. `Test-QuestScaling.lua` checks the
+levels a held sample gives, and what is asked of the server for them ([step 2j](#2j-scaling-quests-levels),
+"How the addon reads the samples"), against the client's redirect and ContentTuning tables that step 2j
+keeps in `tools\` (a few seconds):
+
+```powershell
+& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua
+```
+
+It must say "All checks passed." (67 checks on 16 October 2026's data, 12.1.5.70391).
+
+This checks retail's files. Step 10 runs both on Forever's.
 
 ### 10. WoW: Forever
 
@@ -2856,6 +2901,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    2,964 of 2,964 at their stored level; 0 hidden though not trivial, 1 shown though trivial, 8856 of level
    0). It exits 1 when a quest's level is not the game's, which would mean Forever's quests scale now, and
    when Forever's data holds a `maxLevel`, a `tuning` or a `tunings.jsonl`, which nothing writes there.
+   And `Test-QuestScaling.lua QuestCompletist QuestCompletist_Camelot.toc` (step 9): with Forever's
+   empty tables every quest must read its stored level, and nothing may be read or asked of the game.
 8. `Audit-QuestTables.ps1 -Game forever` ([2b](#2b-the-tables-kept-by-hand)): the consistency checks on
    the quests' prerequisites and the breadcrumb and "only one of these" tables the import generated. The
    run of 14 October 2026 (build 70374) found 6 on 2,399 prerequisites and 447 table entries (35 of them
@@ -3632,7 +3679,8 @@ git diff --stat
 
 - The syntax check must be silent. If it says "main function has more than 200 local variables",
   a file has hit Lua 5.1's limit on locals declared at its top, and WoW wouldn't load it. Each file
-  has its own 200: `qcCore.lua` had room for 21 more on 12 October 2026, measured by adding
+  has its own 200: `qcCore.lua` had room for 21 more on 12 October 2026 and 13 on 17 October (10 with
+  #379's item names beside the sample levels), measured by adding
   `local zzProbeN = N` lines to the end of a copy one at a time until `luac -p` failed (`luac -l` lists
   199 there, as it also counts the locals of blocks that have closed). In October 2026 `qcTooltips.lua` had 150 left (`luac -l` listed 50 on 11 October) and
   `qcMapPins.lua` 149 (after the map's tooltip moved from one to the other). Code that doesn't need to live in `qcCore.lua` can go in a file of its own,
@@ -3680,6 +3728,20 @@ git diff --stat
   the result is the checkout's data and whether the redirect table has a `RedirectEnum` the baseline lacks.
   A change to how the list or the low-level filter reads a level is checked by `Test-QuestReachability.lua`
   on both TOCs (step 9).
+- For changes to how a level is read from a sample, or to what the list, the maps, the continent icons or
+  search ask the server for (`qcTuning`, `qcShownQuestLevel` and the quest queue in `qcCore.lua`, a map's
+  refresh), or to `tunings.jsonl`, run `Test-QuestScaling.lua` for both games' TOCs. It must say "All checks
+  passed." On a clock of its own, against a game whose levels follow the client's redirect and
+  ContentTuning tables (`tools\ConditionalContentTuning-<build>.csv` and `tools\ContentTuning-<build>.csv`,
+  the newest build there unless a fourth argument names one; a third names another folder), it checks the
+  ten quests the user read on 16 October 2026, the probe's state with every sample held (every quest at
+  its stored level but the 46 at their tuning's minimum), Nazmir with bit 34 and Chromie Time at 40 before
+  and after the list's samples are answered, and the requests: none from drawing and hovering every map, a
+  continent of every zone or a search, one sample per tuning that needs it from a list build, one rebuild
+  a batch, a failing sample giving way to the next, and the events that make the levels be read again.
+  Pointed at an addon folder without `qcTuningSample`, such as the main checkout before option E, it checks
+  the requests alone, to compare. Forever's run:
+  `& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua QuestCompletist QuestCompletist_Camelot.toc`.
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools
   that print its warning: `Test-CompareQuestCache.ps1`, `Test-CompareQuestReputation.ps1`,
