@@ -247,7 +247,7 @@ then every tool refuses to save.
    their rows give, `CalendarFilterType` 255), nor did the PTR. With Call of the Scarab added
    (#315), the same three builds gave no finding again (of 24 holidays 22 matched on retail and
    Forever, the new one by its own name, row 638, under `CalendarFilterType` 255). With the
-   Darkspear Dash added on 16 October 2026 (#PRNUM), retail 12.1.5.70391 and Forever's newest beta
+   Darkspear Dash added on 16 October 2026 (#368), retail 12.1.5.70391 and Forever's newest beta
    build, 1.60.1.70425, gave no finding (of 25 holidays 23 matched, the new one by its own name, row
    1793, under `CalendarFilterType` 255). Baseline on 2026-10-07: retail 12.1.0.69933 had 1,104 tables and Forever 1.60.1.70245 had
    612, with no column changes in the tables read, and every holiday's IDs matched. The first
@@ -934,7 +934,7 @@ count or finding. On 16 October 2026, with the 24 records step 1 fetched for #34
 33 story quests step 6 added (none of them in a holiday's category, event or heading), the counts are
 the same 1,004, 587 and 1,082, and the findings the same 13, none new. So they are, in the same file,
 with the 22 of step 6's second gap run that day. Later that day the Darkspear Dash's entry came in
-(#PRNUM, [Holidays](#holidays)), with its two quests tagged, 95009 and 94954 (whose API record step 1's
+(#368, [Holidays](#holidays)), with its two quests tagged, 95009 and 94954 (whose API record step 1's
 cache gained when step 6 fetched it): 1,349 quests tagged, 25 holidays and 495 decision rows, and the
 counts and the 13 findings the same, none new, as no signal names the event.
 
@@ -1369,7 +1369,7 @@ before they came (their rows dated other weeks instead), and `weekly-every-day 4
 day to 18 August 2027, whose `IfChanged` asks the user whether the weekly bonus event quests still stay
 untagged.
 
-Later on 16 October 2026 the Darkspear Dash's entry came in (#PRNUM, [Holidays](#holidays)), with a
+Later on 16 October 2026 the Darkspear Dash's entry came in (#368, [Holidays](#holidays)), with a
 decision of two facts in the decisions file: `dated 1793`, and `served 1793`, seen on 11 October 2026
 under "Other calendar holidays". Run again on the same tables (70391, 70340 and 70374), the review gave
 no finding and 5 changes: the entry new on each game, dated to come on retail and on the PTR (to 29
@@ -2737,7 +2737,7 @@ were tagged that day (six and the one pinned), and the Scourge Invasion and the 
 whose 11 and 43 retail quests (none pinned) were tagged with them that day; the 57 Guest Relations
 quests took WoW's Anniversary, which now has 76 quests, 52 of them pinned. Later that day (#315)
 Call of the Scarab joined them, with its 18 quests (the 16 turn-ins pinned), and left "Other calendar
-holidays". Since 16 October 2026 (#PRNUM) the Darkspear Dash is among them too, with its two quests
+holidays". Since 16 October 2026 (#368) the Darkspear Dash is among them too, with its two quests
 (95009 on five pins), and should no longer be under "Other calendar holidays". Each entry's line is the
 soonest event of any of its IDs, under that event's own name and ID, and under
 it a line for each other ID of the entry that the calendar has in its 12 months, soonest first, so
@@ -2943,7 +2943,7 @@ meat turn-ins that wake the colossi and 14 world quests, are untagged until the 
 ([open-items.md](plans/open-items.md), decision 39). Forever's tables have no row 638 and its data none
 of these quests, so step 2b lists the entry as not on Forever's calendar, which is no finding.
 
-The Darkspear Dash has an entry of its own since 16 October 2026 (#PRNUM, taken on the recommendation
+The Darkspear Dash has an entry of its own since 16 October 2026 (#368, taken on the recommendation
 the user delegated, [open-items.md](plans/open-items.md) decision 43): flag 16777216 on row 1793
 (HolidayNames 458), the only row of its name, 48 hours each June under the Holidays filter
 (`CalendarFilterType` 255, as for the Trial of Style, the Moonkin Festival and The Great Gnomeregan Run),
@@ -2997,7 +2997,7 @@ facts in `docs\plans\calendar-decisions.csv`, with the day they were seen: 1808,
 696 seen, 1587 dated and not listed. A sweep's `/qc holidays` is set beside the review's list the same
 way, on both games.
 
-On 16 October 2026 (#PRNUM) the Darkspear Dash (1793) left that list for an entry of its own (above), and
+On 16 October 2026 (#368) the Darkspear Dash (1793) left that list for an entry of its own (above), and
 1793 joined the seen facts. The rest of the list was checked against the 606 quests the data gained
 after 10 October 2026 (the task quests of step 6b, 12.1.5's Hallow's End, story and gap-rule quests,
 94954 and the others): by name, by Blizzard's API category and text, and by TrinityCore's events, none

@@ -227,7 +227,7 @@ below the game's for 105 of the 771 tunings the game answered for, and for 53 ev
   entries since 12 October 2026 (#314), and Call of the Scarab (638, #315, the same day) are
   matched by their own names; with them, of 24 holidays 22 match on retail 12.1.0.69933 and
   Forever 1.60.1.70338, and the other two are the Forever events with no row. The Darkspear Dash
-  (1793, #PRNUM, 16 October 2026) is matched by its own name too: of 25 holidays 23 match on retail
+  (1793, #368, 16 October 2026) is matched by its own name too: of 25 holidays 23 match on retail
   12.1.5.70391 and Forever 1.60.1.70425.
 - 2026-10-07: floors from UiMapGroupMember (recommendation 3), a rule in `Add-ZoneTableMaps.ps1`
   (#206): 25 floors joined the zone table (Black Temple's 7, Dawn of the Infinite's 8,
