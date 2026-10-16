@@ -9,8 +9,9 @@ The minimum is the API's min_character_level where the API has a record, else th
 for the quest's ContentTuningID (QuestLevels.ps1 has the formula and the sources; a quest on tuning 0
 with no API minimum has no known minimum, so it holds no `minLevel` and its gate is its level, and one
 with neither source is left as it is). It goes in the data file's `minLevel` field only where it differs
-from `level`, which stays the quest's own level (the list's bracket, sort and low-level filter read it);
-a minimum of 0 or 1 against a level of 0 or 1 is no difference. Nothing else in a record changes. Saved
+from `level`, which stays the quest's own level (the list's bracket, sort and low-level filter read it
+for a quest that doesn't scale; a scaling quest's minimum is the floor of its scaled level, so
+Apply-QuestScaling.ps1 runs after this); a minimum of 0 or 1 against a level of 0 or 1 is no difference. Nothing else in a record changes. Saved
 through AddonData.ps1, which rebuilds qcQuestData.lua.
 
 Before anything is written the formula is tested against every quest that has both an API minimum and a

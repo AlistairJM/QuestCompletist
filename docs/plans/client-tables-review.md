@@ -197,7 +197,10 @@ maximum would fix that; it isn't a table question. (Forever's `level` is the que
 which that filter suits; its minimum is in `qcQuestMinLevel`, which the tooltip and the
 requirements filter read.) **Update, 11 October 2026:** the user took option C: the table is now used
 for the minimum, so retail keeps its `level` and holds the true minimum in `qcQuestMinLevel` too; the
-maximum is still not used (open-items.md decision 9).
+maximum is still not used (open-items.md decision 9). **Update, 16 October 2026:** decision 9 taken; the
+maximum is used, but read from the probe at the level cap rather than this table, whose own maximum is
+below the game's for 105 of the 771 tunings the game answered for, and for 53 even with an
+`AllowedMaxOffset` of 255 read as no cap (maintenance.md, step 2j).
 
 ## Decisions
 

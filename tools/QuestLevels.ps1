@@ -26,7 +26,8 @@ rule that no data file can hold, so it isn't applied. A tuning whose minimum is 
 (tuning 949 has 255, a marker for a quest nobody can take) gives a quest no minimum: it is no level.
 
 The data file keeps `level` as the quest's own level, which the list's bracket, sort and low-level
-filter read, and holds the minimum in `minLevel` only where it is not that: 0 and 1 both mean no
+filter read for a quest that doesn't scale (QuestScaling.ps1 has the rest), and holds the minimum in
+`minLevel` only where it is not that: 0 and 1 both mean no
 minimum, so a quest whose level and minimum are both 0 or 1 gets no entry, and nor does a quest on
 tuning 0 with no API minimum.
 #>

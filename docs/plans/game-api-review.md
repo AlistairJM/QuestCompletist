@@ -133,8 +133,8 @@ our own strings, translated by us. Storyline names (`qcQuestLines`) were on this
 | IsAccountQuest(questID) | both | – | whether the quest is account-wide, so one character's completion ends it for the warband (the quest log's "Account" legend) | probe: a new data field; addon: the completion counter and filters |
 | IsImportantQuest, IsMetaQuest, IsQuestCalling, IsQuestBounty, IsQuestInvasion, IsThreatQuest, IsQuestTask, IsQuestFromContentPush, QuestIgnoresAccountCompletedFiltering | both | type probe (IsQuestTask) | flags of the quest's record | probe: Important and Meta for an icon, if wanted; the rest no |
 | IsRepeatableQuest | both | both probes | said no to every quest Blizzard's API flags repeatable (quest-types.md) | no |
-| IsQuestTrivial(questID) | both | – | whether the quest is grey for this character, with scaling and Chromie Time taken into account; Blizzard's map hides trivial offers with it | addon: the low-level filter, which today compares our stored level with `UnitQuestTrivialLevelRange`; probe: saved for every loaded quest by the next run (decision 3) |
-| GetQuestDifficultyLevel, GetSuggestedGroupSize, GetQuestType, GetQuestTagInfo | both | Forever probe (all), type probe (tag info) | the quest's level as scaled for the player; the group size; the tag ID; `QuestTagInfo` (tagName in the player's language, tagID, worldQuestType, quality, tradeskillLineID, isElite, displayExpiration) | addon: the scaled level (recommendation 4); the tag line ("Dungeon", "Group") is done, in the quest tooltip (recommendation 5, 11 October 2026); probe: have |
+| IsQuestTrivial(questID) | both | – | whether the quest is grey for this character, with scaling and Chromie Time taken into account; Blizzard's map hides trivial offers with it | addon: the low-level filter applies the same rule to the level the game scales a quest to, from data, since 16 October 2026 (recommendation 4), and the probe's answers check it every sweep (maintenance.md, step 2j); probe: saved for every loaded quest (decision 3) |
+| GetQuestDifficultyLevel, GetSuggestedGroupSize, GetQuestType, GetQuestTagInfo | both | Forever probe (all), type probe (tag info) | the quest's level as scaled for the player; the group size; the tag ID; `QuestTagInfo` (tagName in the player's language, tagID, worldQuestType, quality, tradeskillLineID, isElite, displayExpiration) | addon: the scaled level, done from data (recommendation 4, 16 October 2026: each content tuning's level at the cap, from the probe); the tag line ("Dungeon", "Group") is done, in the quest tooltip (recommendation 5, 11 October 2026); probe: have |
 | GetQuestDetailsTheme | both | – | the quest window's art | no |
 | GetQuestsOnMap(uiMapID) | both | – | `QuestPOIMapInfo` for the player's own log quests on a map: questID, x, y, mapID, isQuestStart, inProgress, isDaily, isMeta, questTagType, numObjectives, childDepth, isMapIndicatorQuest. Not offers: those are `C_QuestLine`'s | no |
 | IsOnMap, GetMapForQuestPOIs, SetMapForQuestPOIs, GetQuestAdditionalHighlights, GetNextWaypoint, GetNextWaypointForMap, GetNextWaypointText, GetDistanceSqToQuest | both | – | the map's routing for log quests | no |
@@ -321,7 +321,7 @@ TOOLTIP_DATA_UPDATE is used; SHOW_HYPERLINK_TOOLTIP and HIDE_HYPERLINK_TOOLTIP n
 | C_CreatureInfo.GetCreatureFamilyIDs, GetCreatureFamilyInfo, GetCreatureTypeIDs, GetCreatureTypeInfo | both | – | beast families and creature types | no |
 | UnitGUID, UnitName | both | recorder, addon | the NPC's GUID (Creature, GameObject or Vehicle, with its ID) and name | recorder |
 | UnitLevel, UnitRace, UnitClass, UnitFactionGroup, UnitQuestTrivialLevelRange | both | addon | the character | have |
-| UnitQuestTrivialLevelRangeScaling | both | – | the trivial range for scaling quests | addon: pairs with `IsQuestTrivial`, which already allows for it; probe: in the quest run's row, with `UnitQuestTrivialLevelRange`, for the next run |
+| UnitQuestTrivialLevelRangeScaling | both | – | the trivial range for scaling quests | addon: no, as it was the plain range's 5 on both probe runs that kept it (retail 12.1.5.70391 at level 90, Forever 1.60.1.70374 at level 16), and the plain range with the scaled level gives `IsQuestTrivial`'s answer for all but 14 of retail's 29,823 loaded quests (maintenance.md, step 2j); probe: in the quest run's row, with `UnitQuestTrivialLevelRange` |
 | UnitClassification(unit), UnitIsQuestBoss, UnitCreatureType, UnitExists | both | – | elite, rare, quest boss | no |
 | UnitPosition(unit) | both | – | world coordinates, for the player and party members only, not NPCs | no: the recorder stands beside the giver and takes the player's map position |
 | ClosestUnitPosition(creatureID), ClosestGameObjectPosition(objectID) | both | – | the nearest creature or object of that ID, which would place quest givers by ID, but the returns are secret values (`SecretReturns = true`), so an addon can neither read nor save them | no |
@@ -508,7 +508,8 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 8. **`C_QuestLog.GetSuggestedGroupSize`:** both probes have it, and Forever's quest cache gives the
    same; a "Group (3)" tooltip line is the only new use.
 9. **`C_QuestLog.IsQuestTrivial`:** the scaling-aware low-level test (recommendation 4). The quest
-   facts pass saves it, with `C_PlayerInfo.GetContentDifficultyQuestForPlayer`, from the next run on.
+   facts pass saves it, with `C_PlayerInfo.GetContentDifficultyQuestForPlayer`; since 16 October 2026 the
+   sweep checks the addon's low-level rule against it (maintenance.md, step 2j).
 10. **`C_QuestHub` (12.x):** hubs are named map POIs grouping offers; a probe can list them; no
     other use yet.
 
@@ -546,7 +547,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 1 | **A quest-giver recorder on retail too.** Move the Forever recorder's logic into the shared code of the addon, for both games: on GOSSIP_SHOW, QUEST_GREETING, QUEST_DETAIL, QUEST_COMPLETE and QUEST_ACCEPTED, save the giver's kind, ID (`UnitCreatureID` or the GUID) and name, the map and position, the quests offered with their frequency and repeatable flag, the quests taken in, the quest log heading, the start item, and for popups and area triggers the position where the window opened. Add `/qc report`, which says what's gathered and where the file is; a tools script merges a saved-variables file into the pin pipeline the way `Import-ForeverData.ps1` reads the probe's: filling IDs and names, adding pins only for quests that have none, listing every disagreement with an existing pin for review, never moving a pin on its own | addon (shared), tool | NPC IDs for the 363 named and 3,087 nameless pins as they're met, positions for the 12,110 quests without a pin, hand-in NPCs, the server's own recurrence per quest, Forever's new zones faster | small in the addon (the code exists), medium for the merge tool | fills in only from the maintainer's characters and from players who send their file; the saved variable grows with play (cap it); nothing leaves the machine |
 | 2 | **A quest-facts probe pass** in the next retail type-probe run and the next Forever quest pass: for every loaded quest also save `IsAccountQuest`, `GetQuestFactionGroup`, `IsImportantQuest`, `IsMetaQuest`, `GetQuestDifficultyLevel`, `GetSuggestedGroupSize`, `GetQuestLineInfo` (questLineID), `C_CampaignInfo.GetCampaignID`, `C_TaskQuest.GetQuestZoneID` for task quests, and try `GetQuestExpansion`, `IsBreadcrumbQuest` and `IsStoryQuest` | probe (#42 and #139), then data and addon | an account-wide field, so the counter and filters can treat a quest another character finished as done for all; a third source for faction; a check of storylines; the campaign; zones for task quests; and whether three undocumented globals answer | small: the probes exist, one 2-hour run on retail | a probe answers only for quests the server still serves (31,425 of 35,023 on 29 September) |
 | 3 | **A map-offers probe:** for every map in `UiMap`, `RequestQuestLinesForMap`, then after QUESTLINE_UPDATE save `GetAvailableQuestLines`, `GetForceVisibleQuests`, `C_TaskQuest.GetQuestsOnMap`, `GetQuestHubsForMap`, `GetAreaPOIForMap` with `GetAreaPOIInfo`, `GetEventsForMap`, and once `C_EventScheduler.GetOngoingEvents` and `GetScheduledEvents`; on Forever with the quest points of interest setting on, which the Classic experience preset turns off | probe (both games) | on Forever: whether the server sends offer positions at all (Zephras Isle has pins only from the recorder), what POIs and events exist, whether an invasion or the fishing contest shows up; on retail: how the offers' x, y compare with our pins, and which hubs and events there are | small | the offer list is per character: it shows what this character qualifies for, not every quest |
-| 4 | **Scaling-aware levels:** the low-level filter asks `IsQuestTrivial`, and list rows, tooltips and grey pins take `GetQuestDifficultyLevel` and `GetContentDifficultyQuestForPlayer`, for quests whose data is loaded (the quest-name queue already loads what's on screen), falling back to the stored level | addon (both games) | the right "low level" answer for scaling quests and Chromie Time; Blizzard's own colours | medium | needs the quest's data, so the map's pins would queue loads like the NPC names do |
+| 4 | **Scaling-aware levels (done 16 October 2026, from data, see Status):** the low-level filter asks `IsQuestTrivial`, and list rows, tooltips and grey pins take `GetQuestDifficultyLevel` and `GetContentDifficultyQuestForPlayer`, for quests whose data is loaded (the quest-name queue already loads what's on screen), falling back to the stored level. Built instead as a ceiling per quest, the level its content tuning scales to at the cap, read from the probe at each sweep, so the list's bracket and sort and the low-level filter need no loaded data | addon (both games) | the right "low level" answer for scaling quests and Chromie Time; Blizzard's own colours | medium | needs the quest's data, so the map's pins would queue loads like the NPC names do |
 | 5 | **Text from the game (done 11 October 2026, see Status):** the storyline name from `GetQuestLineInfo(questID, nil, false)`, the campaign from `C_CampaignInfo`, and a classification or tag line from `QuestUtil.GetQuestClassificationInfo` and `GetQuestTagInfo` (Dungeon, Raid, Group, Elite, Important, Campaign), all in the player's language | addon | the last English storyline names gone; Blizzard's own labels | small | as with names, an English client shows Blizzard's wording where ours differed |
 | 6 | **Waypoints without TomTom, done 11 October 2026 (#300):** when TomTom isn't loaded, a pin click and a list click ask `CanSetUserWaypointOnMap` (and the game rule that turns the map pin off), then call `C_Map.SetUserWaypoint` on the pin and `C_SuperTrack.SetSuperTrackedUserWaypoint(true)`; with TomTom loaded nothing changed. `SetSuperTrackedMapPin(QuestOffer, questID)` is not used (decision 5) | addon | an arrow to a pin for everyone | small | the game refuses a waypoint on every dungeon-type map but four and on every orphan map: 259 of retail's 541 pin maps (2,809 of its 24,931 pinned quests go to a refused map) and Forever's Alterac Valley (30 of 3,672); there the click does nothing, as it did without TomTom |
 | 7 | **Live refresh on more events:** MAJOR_FACTION_RENOWN_LEVEL_CHANGED, FACTION_STANDING_CHANGED, SKILL_LINES_CHANGED, COVENANT_CHOSEN and PLAYER_LEVEL_UP redraw an open map and list the way the quest events do (map-filter-and-live-refresh.md); CALENDAR_UPDATE_EVENT_LIST already does, for the seasonal filter | addon | gated pins change the moment the requirement is met | small | none |
@@ -769,6 +770,12 @@ bullet).
    facts pass saves `IsQuestTrivial` and `GetContentDifficultyQuestForPlayer` for every loaded quest and
    the run's row the character's two trivial ranges, so the first run after 12.1.5 (retail) and the
    next Forever run say how scaling quests read. The decision stays open until one has been read.
+   **Taken, 16 October 2026 (open-items.md row 9, option C), on the user's word to go with the
+   recommendations while they were away:** the list's bracket and the low-level filter judge a scaling
+   quest by the level the game scales it to. Both runs were read first: on retail (12.1.5.70391, level 90)
+   the game's rule is ours applied to the scaled level, and each content tuning scales to one level at the
+   cap; on Forever (1.60.1.70374, level 16) every loaded quest has its stored level, so nothing scales.
+   Built as a stored ceiling per quest rather than live calls (Status, 16 October 2026).
 4. **Text from the game** (5). English clients would show Blizzard's storyline names where ours
    differ, as quest and NPC names do. **Recommendation:** yes. **Taken: yes, 11 October 2026**
    (the user: "yes, use the game's text"); built the same day (Status).
@@ -832,7 +839,17 @@ bullet).
   `GetContentDifficultyQuestForPlayer` agree with `IsQuestTrivial`; and do the two quest calls answer
   for a quest the server refused? Probed from the next run on (the quest facts pass and the run's
   row); read with `Get-ProbeLevelFacts` in `ProbeResults.ps1`. The two answers depend on the
-  character's level, so compare runs only for one character.
+  character's level, so compare runs only for one character. **Answered on retail, 16 October 2026**
+  (the 12.1.5.70391 probe of 15 October, a level 90 character, 29,823 loaded quests): our stored level
+  hid 9,753 quests `IsQuestTrivial` calls not grey, and kept 11 it calls grey (all of level 0, which
+  the addon never counts as low); `IsQuestTrivial` is true exactly when `GetQuestDifficultyLevel` is
+  above 0 and below the character's level less `UnitQuestTrivialLevelRange` (all 29,809 quests with a
+  level above 0; the other 14 have level 0 and are grey); the scaling range was the plain one's 5 (and 5
+  on Forever's 70374 run at level 16); `GetContentDifficultyQuestForPlayer` gives Trivial (0) for every
+  grey quest (19,215) but also for 7,021 that are not, and Fair (2) for the other 3,587, so it is not
+  the grey test; and for the 4,959 and 5,721 quests the server refused in the two runs, `IsQuestTrivial`
+  answered false for every one and the content difficulty a value above 0 for every one, so neither
+  says anything for a refused quest.
 
 ## Out of scope
 
@@ -1038,3 +1055,22 @@ bullet).
     `tools/Test-QuestTooltip.lua` (98 checks on each TOC, 44 of them failing on the code of master),
     with stand-ins that give the answers named above, an error, a secret value or no function. Not tried
     in game ([open-items.md](open-items.md), "To try in game").
+- 2026-10-16: recommendation 4 and decision 3 taken (open-items.md row 9, option C), and built from data
+  rather than with live calls: the probe's `GetQuestDifficultyLevel`, asked at the level cap, gives the level
+  each content tuning scales to, so a sweep step (`tools\Apply-QuestScaling.ps1`, maintenance.md step 2j)
+  stores it per quest as `maxLevel`, `qcQuestMaxLevel` in the addon, and the list's bracket, its sort and the
+  low-level filter of the list and the map read the character's level, raised to the quest's minimum and held
+  down at its `maxLevel` (`qcShownQuestLevel` in `qcCore.lua`, one path for both games). That needs no loaded quest data,
+  works for every quest of a tuning the probe has a level for (27,637 retail quests, 2,336 of them never loaded),
+  and is checked against `IsQuestTrivial` at every sweep. On the 15 October probe (12.1.5.70391, level 90) the old
+  rule hid 9,753 quests the game calls not trivial and the new one 4, whose own level is below a minimum they
+  don't scale from (open-items.md, "Data to finish"). Not taken from the recommendation: `IsQuestTrivial` asked
+  live (it says nothing for a quest whose data isn't loaded, and on 12.1.5 the server refused 5,721 quests at the
+  probe's second run), `GetContentDifficultyQuestForPlayer` for colours (it rates 7,021 quests Trivial that the
+  game doesn't grey), and the tooltips and grey pins, which read the minimum as before. Forever is unchanged: its
+  quests don't scale (its 70374 run gave every loaded quest its stored level), so its table is empty. Checked
+  offline: `Test-QuestReachability.lua` (both TOCs, the five character levels against the data and 95 checks on
+  made-up scaling quests, of which master's code fails 39; on retail's data it fails 53,378 more) and
+  `Test-QuestScaling.ps1` (166 checks). Forever keeps a check of its own, `Apply-QuestScaling.ps1 -Game forever`
+  (step 10), which fails if a quest the probe loads stops having its stored level. Not tried in game below the cap
+  (open-items.md, "To try in game").

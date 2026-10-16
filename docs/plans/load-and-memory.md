@@ -217,6 +217,19 @@ Around 38 places read or write it today.
     entries and not again: five lines fewer are within the run-to-run noise.
   - The whole addon on retail's TOC and WoW's 64-bit Lua were not measured; the table is a keyed table of
     numbers, and +64 KB is under 0.5% of the 15,174 KB the whole addon took.
+- 2026-10-16, retail's `qcQuestMaxLevel`, the level a scaling quest stops scaling at (`Apply-QuestScaling.ps1`,
+  27,637 entries; [maintenance.md](../maintenance.md#2j-scaling-quests-levels)). Measured on `qcQuestData.lua`
+  alone, as above (Lua 5.1 on this PC, 32-bit; `dofile` in a fresh state, memory after two full collections;
+  load time the median of 8 runs of 10 loads, twice):
+  - The file goes from 2,458,901 to 2,817,030 bytes (+358,129, +14.6%), a line of about 13 bytes for each entry.
+  - Loaded, from 9,375.0 to 10,399.0 KB (+1,024.0 KB, +10.9%): a hash part of 32,768 slots of 32 bytes, as
+    27,637 keys are more than 16,384.
+  - Loading takes 65.5 to 76.4 ms before and 81.8 to 84.5 ms after, about 8 to 16 ms more; the two pairs differ
+    by more than the change in one of them, so the figure is rough.
+  - Forever's file gains an empty table (22 bytes). The whole addon and WoW's 64-bit Lua were not measured.
+    The table is keyed by quest, as the project keeps sparse quest data (data-structure.md), though its
+    values come from 771 tunings: a table of tunings would still need each quest's tuning, a table of the
+    same size.
 
 ## The quest giver recorder (8 October 2026)
 

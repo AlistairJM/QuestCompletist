@@ -101,12 +101,20 @@ and 2, 7.72 MB after all three. Measured on the real files after the change: the
   [maintenance.md](../maintenance.md#the-quest-and-pin-data-files) has the counts). Forever's table has
   4,180 entries. The tooltip's "Requires Level" line, the grey
   pins and the requirements filter read `qcQuestMinLevel[id] or level`; the list's bracket, sort and
-  low-level filter read the level. On Forever's quest data the table adds 48,948 bytes to the file
+  low-level filter read the level, or a scaling quest's scaled level (the next item). On Forever's quest data the table adds 48,948 bytes to the file
   (305,031 to 353,979) and 256 KB when loaded (a table with 4,180 keys; Lua 5.1, 32-bit), 20% of the
   quest data's 1,275 KB. A ninth value in the rows would have cost about half that in memory
   (+130.5 KB), so the keyed table costs about twice as much. It was chosen because the project
   prefers a keyed table for sparse data to a new field in the row layout both games share, and it is
   the design the user approved ([load-and-memory.md](load-and-memory.md) has the measurements).
+- **The scaling ceiling** is in `qcQuestMaxLevel`, keyed by quest ID, since 16 October 2026 (the data
+  files' `maxLevel`): the level a scaling quest's content tuning stops at, which retail's probe reads at the
+  level cap (`Apply-QuestScaling.ps1`, [maintenance.md](../maintenance.md#2j-scaling-quests-levels)). The
+  list's bracket, sort and low-level filter read `qcShownQuestLevel` in `qcCore.lua`: the row's level, or for
+  a quest in the table the character's level, raised to `qcQuestMinLevel[id] or level` and held down at
+  the ceiling. Retail's table has 27,637 entries; Forever's is empty, as its quests don't scale. It is a
+  keyed table like the minimum's, for the same reason; it costs 1,024 KB loaded on retail
+  ([load-and-memory.md](load-and-memory.md)).
 - **The zone text isn't written to the Lua.** The game never read it; it stays in the data file for
   the tools.
 - **The quest ID isn't repeated inside its row.** The quest list now holds quest IDs rather than
