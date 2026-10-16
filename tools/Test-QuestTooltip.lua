@@ -730,6 +730,117 @@ env.C_QuestLog.IsQuestFlaggedCompleted, env.C_QuestLog.GetTitleForQuestID = real
 env.GetProfessions, env.GetProfessionInfo, ctx.inLog = realProfessions, realProfessionInfo, realInLog
 env.qcSettings.QC_L_HIDE_REQUIREMENTSNOTMET, env.qcSettings.QC_L_HIDE_PROFESSION = 0, 0
 
+print("Starts From: the item that starts a quest, named by the game, with what the item requires")
+local startItems = env.qcQuestStartItems or {}
+local function minLevelOf(questId) return env.qcQuestMinLevel[questId] or env.qcQuestDatabase[questId][2] or 0 end
+local function firstStartQuest(test)
+	local best
+	for questId, list in pairs(startItems) do
+		if env.qcQuestDatabase[questId] and test(questId, list) and (not best or questId < best) then best = questId end
+	end
+	return best
+end
+local STARTS = env.qcLocalize.STARTSFROM
+local realItem, realTimer, realFaction = env.C_Item, env.C_Timer, env.UnitFactionGroup
+local itemNames, itemAsked = {}, {}
+env.C_Item = {
+	GetItemNameByID = function(itemId) return itemNames[itemId] end,
+	RequestLoadItemDataByID = function(itemId) itemAsked[#itemAsked + 1] = itemId end,
+}
+env.C_Timer = {After = function(_, fn) fn() end}
+env.RETRIEVING_ITEM_INFO = "Retrieving item information"
+for i = 1, 8 do env["FACTION_STANDING_LABEL" .. i] = "Standing " .. i end
+local function startRows(lines)
+	local at = find(lines, STARTS .. " | ")
+	if not at then return nil end
+	local rows = {lines[at]:sub(#STARTS + 4)}
+	local i = at + 1
+	while lines[i] and lines[i]:sub(1, 3) == "  |" and lines[i] ~= "  |  " do rows[#rows + 1] = lines[i]:sub(5); i = i + 1 end
+	return rows
+end
+local function rowWith(rows, text)
+	for _, row in ipairs(rows or {}) do if row:find(text, 1, true) then return row end end
+end
+-- The addon's frame registers its events when the game loads its XML, which these stand-ins don't; so the file is read
+-- for the event's wiring, and the item's arrival is handed to what the event calls.
+local core = readFile(ADDON_DIR .. "/qcCore.lua")
+check("qcCore.lua listens for ITEM_DATA_LOAD_RESULT and passes it on", core:find('RegisterEvent("ITEM_DATA_LOAD_RESULT")', 1, true) ~= nil
+	and core:find('event == "ITEM_DATA_LOAD_RESULT"%) then%s+qcItemDataArrived%(%.%.%.%)') ~= nil)
+local function itemEvent(itemId) QC.qcItemDataArrived(itemId, true) end
+
+local plainStart = firstStartQuest(function(_, list) return #list == 1 and (list[1][2] or 0) == 0 end)
+if plainStart then
+	local itemId = startItems[plainStart][1][1]
+	reset()
+	local rows = startRows((draw(plainStart)))
+	check(string.format("%d starts from item %d: the line is there, waiting for the item's name", plainStart, itemId), rows ~= nil and rows[1]:find(env.RETRIEVING_ITEM_INFO, 1, true) ~= nil)
+	check("and the item was asked for", itemAsked[#itemAsked] == itemId)
+	itemNames[itemId] = "A Test Item"
+	itemEvent(itemId)
+	rows = startRows((currentLines()))
+	check("the item's arrival redraws it with the game's name", rows ~= nil and rows[1]:find("A Test Item", 1, true) ~= nil)
+end
+
+local noStart = firstStartQuest(function() return false end)
+for _, questId in ipairs({plainQuest, dailyQuest, storyQuest}) do
+	if not startItems[questId] then noStart = questId break end
+end
+if noStart then
+	reset()
+	check(string.format("%d starts from no item: no Starts From line", noStart), startRows((draw(noStart))) == nil)
+end
+
+local levelStart = firstStartQuest(function(questId, list) return #list == 1 and (list[1][3] or 0) > minLevelOf(questId) end)
+local lowStart = firstStartQuest(function(questId, list) return #list == 1 and (list[1][3] or 0) > 1 and list[1][3] <= minLevelOf(questId) end)
+if levelStart then
+	reset()
+	local want = string.format(env.ITEM_MIN_LEVEL, startItems[levelStart][1][3])
+	check(string.format("%d's item needs a level above the quest's minimum: '%s'", levelStart, want), rowWith(startRows((draw(levelStart))), want) ~= nil)
+end
+if lowStart then
+	reset()
+	check(string.format("%d's item needs no more than the quest does: no level line", lowStart), rowWith(startRows((draw(lowStart))), "Requires Level") == nil)
+end
+
+local skillStart = firstStartQuest(function(_, list) return #list == 1 and (list[1][4] or 0) > 0 and (list[1][5] or 0) > 0 end)
+if skillStart then
+	reset()
+	local row = rowWith(startRows((draw(skillStart))), "Requires ")
+	check(string.format("%d's item needs a profession: '%s'", skillStart, tostring(row)), row ~= nil and row:find("(" .. startItems[skillStart][1][5] .. ")", 1, true) ~= nil)
+end
+
+local repStart = firstStartQuest(function(_, list) return #list == 1 and (list[1][6] or 0) > 0 end)
+if repStart then
+	reset()
+	local standing = "Standing " .. ((startItems[repStart][1][7] or 0) + 1)
+	local row = rowWith(startRows((draw(repStart))), standing)
+	check(string.format("%d's item needs a reputation: '%s'", repStart, tostring(row)), row ~= nil and row:find("Requires ", 1, true) == 1)
+end
+
+local bothStart = firstStartQuest(function(_, list) return #list == 2 and list[1][2] and list[2][2] and list[1][2] ~= list[2][2] end)
+if bothStart then
+	local list = startItems[bothStart]
+	local alliance, horde = list[1][2] == 1 and list[1] or list[2], list[1][2] == 2 and list[1] or list[2]
+	itemNames[alliance[1]], itemNames[horde[1]] = "The Alliance Item", "The Horde Item"
+	reset()
+	local rows = startRows((draw(bothStart)))
+	check(string.format("%d has an item for each side: an Alliance character sees only the Alliance's", bothStart), rowWith(rows, "The Alliance Item") ~= nil and rowWith(rows, "The Horde Item") == nil)
+	env.UnitFactionGroup = function() return "Horde", "Horde" end
+	rows = startRows((draw(bothStart)))
+	check("and a Horde character only the Horde's", rowWith(rows, "The Horde Item") ~= nil and rowWith(rows, "The Alliance Item") == nil)
+	env.UnitFactionGroup = realFaction
+end
+
+local otherSide = firstStartQuest(function(questId, list) return #list == 1 and list[1][2] == 2 and env.qcQuestDatabase[questId][5] == 2 end)
+if otherSide then
+	reset()
+	check(string.format("%d is the Horde's, from a Horde item: an Alliance character is told the item is the Horde's", otherSide), rowWith(startRows((draw(otherSide))), env.ITEM_REQ_HORDE) ~= nil)
+end
+for label, found in pairs({["an item for each side"] = bothStart, ["a level above the quest's"] = levelStart, ["a profession"] = skillStart, ["a reputation"] = repStart, ["a Horde item for a Horde quest"] = otherSide}) do
+	if not found then print("  (no start item in this game's data has " .. label .. ")") end
+end
+env.C_Item, env.C_Timer, env.UnitFactionGroup = realItem, realTimer, realFaction
+
 print("A quest the game tracks but never names")
 local function unnamed(questId) return type(questId) == "number" and env.qcQuestDatabase[questId] == nil end
 local choiceQuest, unnamedOnly
