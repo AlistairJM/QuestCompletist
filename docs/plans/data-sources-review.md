@@ -486,6 +486,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-16: the 12.1.5 story content, on the user's word (the 12.1.5 sweep's decision 9, option A; recommendation 37's route). 33 quests that the 12.1.5 API serves are in the data, each checked against `QuestV2` (12.1.5.70391 lists 29; the four of the epilogue line 6245 are only in the 12.1.7 PTR's), its API record and `QuestLineXQuest`: the 27 that sat on no-data pins (95808 and 95812 among them), 95811, 95813, 98833 and 98834 with a start point and no pin yet, and 99306 and 99312 with neither. Two categories with Blizzard's names, 1515 "The Labyrinth of Kindo'jan" and 1752 "The Unbinding of Kith'ix" (raid, journal 1324); retail has 35,606 quests. 93420 Lor'themar's Judgement stays undecided.
 
+- 2026-10-16: D10 seen again in step 6 on 12.1.5.70391, with the per-spot pins (quest-location-data-pipeline.md, "October 2026, one pin per spot", "Applied"). Three quests whose start moved to a map where they had no pin took an NPC from another map, and the old pairs of that NPC were dropped as covered: 14022 and 14036 Pilgrim's Bounty took Goblin Commoner to Dornogal and Silvermoon City, where no source names a giver, and 95187 took Lady Liadrin, whom Wowhead names as its ender (Lor'themar Theron starts it, at its start point). Set right by hand and by a `MOVE` row, on the recommendation the user delegated (no NPC carried across maps); the code is as it was, so recommendation 31 still stands, and maintenance.md, step 6, now says to read Join's `MAP_ID_DRIFT` rows that carry an NPC before `-Apply`. Retail has 13,547 pins.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
