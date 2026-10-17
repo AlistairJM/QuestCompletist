@@ -596,8 +596,9 @@ local qcQuestNameUpperCache = nil
 
 -- A quest's row in qcQuestDatabase (qcQuestData.lua) is {name, level, category, type, faction, race,
 -- class, storyline}; profession, holiday, covenant and prereq are in their own tables, keyed by ID. So are
--- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that, and
--- qcQuestMaxLevel, the level a scaling quest stops scaling at.
+-- qcQuestMinLevel, the level a character needs to take a quest whose own level (the row's) isn't that,
+-- qcQuestMaxLevel, the level a scaling quest stops scaling at, and qcQuestTuning, the content tuning of a
+-- quest whose level a redirect can move.
 local function qcBuildQuestIndexes()
     qcCategoryIndex = {}
     for questId, e in pairs(qcQuestDatabase) do
@@ -650,6 +651,8 @@ local function qcClientQuestName(questId)
 end
 
 local qcSendQuestLoads, qcQuestLoadEnded, qcRequestQuestData
+-- Levels read from the samples of content tunings (qcTuningSample), and the tunings the list is waiting on.
+local qcTuning = {levels = {}, listed = {}, rebuildDue = false}
 
 function qcSendQuestLoads()
 	while qcQuestLoadInFlightCount < QC_MAX_QUEST_LOADS and #qcQuestLoadQueue > 0 do
@@ -664,6 +667,7 @@ function qcSendQuestLoads()
 		C_Timer.After(QC_QUEST_LOAD_TIMEOUT, function()
 			if qcQuestLoadInFlight[questId] == attempt then
 				qcQuestLoadEnded(questId, false)
+				qcTuning.Settled(questId)
 			end
 		end)
 	end
@@ -807,13 +811,93 @@ local function qcHides(view, key)
 	return qcSettings["QC_" .. view .. "_HIDE_" .. key] == 1
 end
 
--- The level the list shows, sorts by and the low-level filter reads: the quest's own, or for a quest that
--- scales (qcQuestMaxLevel) the character's, raised to its minimum and held down at the level it stops
--- scaling at, as the game scales it. May be nil for a quest with no level.
-local function qcShownQuestLevel(questId, e, playerLevel)
+--[[ Quests whose level a redirect can move ]]--
+-- The server gives each character redirect bits that can move a content tuning's level range (in an
+-- Endeavor's zones, in Chromie Time), and no addon call reads them. qcTuningSample names a few quests of
+-- each tuning a redirect can move, and qcQuestTuning each quest's tuning: the game's level for a sample the
+-- client holds is the level of every quest on that tuning for this character now. Only the list asks the
+-- server for a sample; the map and the continent icons read the ones the client already holds
+-- (docs/plans/quest-scaling-redirects.md).
+function qcTuning.SampleLevel(questId)
+	if not C_QuestLog.GetQuestDifficultyLevel then return nil end
+	local level = C_QuestLog.GetQuestDifficultyLevel(questId)
+	if issecretvalue and issecretvalue(level) then return nil end
+	if type(level) == "number" and level > 0 then return level end
+end
+
+-- false when no sample of the tuning gives a level. Read again once a view is next built, or the zone,
+-- the character's level or its redirect bits change, or a sample's data arrives.
+function qcTuning.Level(tuning)
+	local level = qcTuning.levels[tuning]
+	if level == nil then
+		level = false
+		for _, sample in ipairs(qcTuningSample[tuning] or {}) do
+			level = qcTuning.SampleLevel(sample) or false
+			if level then break end
+		end
+		qcTuning.levels[tuning] = level
+	end
+	return level
+end
+
+function qcTuning.Forget()
+	wipe(qcTuning.levels)
+end
+
+-- The level the stored data gives: the quest's own, or for a quest that scales (qcQuestMaxLevel) the
+-- character's, raised to its minimum and held down at the level it stops scaling at, as the game scales it
+-- for a character with the probe's redirect bits. May be nil for a quest with no level.
+local function qcStoredQuestLevel(questId, e, playerLevel)
 	local ceiling = qcQuestMaxLevel[questId]
 	if not ceiling then return e[2] end
 	return math.max(qcQuestMinLevel[questId] or e[2] or 0, math.min(playerLevel, ceiling))
+end
+
+-- The level the list shows, sorts by and the low-level filter reads: the game's for the quest's tuning
+-- while a sample of it gives one, else the stored one.
+local function qcShownQuestLevel(questId, e, playerLevel)
+	local tuning = qcQuestTuning[questId]
+	return tuning and qcTuning.Level(tuning) or qcStoredQuestLevel(questId, e, playerLevel)
+end
+
+-- The sample to ask the server for: none while one of the tuning's samples is loading or waits for its
+-- second try, else the first neither answered nor given up.
+function qcTuning.SampleToAsk(tuning)
+	for _, sample in ipairs(qcTuningSample[tuning] or {}) do
+		if qcQuestLoadQueued[sample] or qcQuestLoadInFlight[sample] then return nil end
+		local attempts = qcQuestLoadAttempts[sample] or 0
+		if not (qcQuestDataLoaded[sample] or attempts >= QC_QUEST_LOAD_ATTEMPTS) then
+			return attempts == 0 and sample or nil
+		end
+	end
+end
+
+-- The list's category build asks for one sample of each tuning of the category that has no level from a
+-- sample yet and has a quest the stored data puts below the character's level, where the game's level
+-- can be higher. The levels the list read for the tuning's quests are kept, so an answer that agrees with
+-- them redraws nothing.
+function qcTuning.Ask(categoryId, playerLevel)
+	local listed = qcTuning.listed
+	wipe(listed)
+	qcTuning.rebuildDue = false
+	if not next(qcTuningSample) then return end
+	for _, questId in ipairs(qcCategoryIndex[categoryId] or {}) do
+		local tuning = qcQuestTuning[questId]
+		if tuning and not qcTuning.Level(tuning) then
+			listed[tuning] = listed[tuning] or {}
+			listed[tuning][qcStoredQuestLevel(questId, qcQuestDatabase[questId], playerLevel) or 0] = true
+		end
+	end
+	for tuning, levels in pairs(listed) do
+		local below = false
+		for level in pairs(levels) do below = below or level < playerLevel end
+		if below then
+			local sample = qcTuning.SampleToAsk(tuning)
+			if sample then qcRequestQuestData(sample) end
+		else
+			listed[tuning] = nil
+		end
+	end
 end
 
 -- Every quest filter that reads only the quest's data, not whether it's done.
@@ -986,6 +1070,7 @@ end
 -- has done or has in the log, so the list's zone counter and the map's progress bars count those
 -- quests too.
 local function qcBuildViewFilter(view)
+	qcTuning.Forget()
 	local passesFilters = qcBuildQuestFilter(view)
 	local hideNoData = qcHides(view, "NODATA")
 	local hideCompleted, hideInProgress = qcHides(view, "COMPLETED"), qcHides(view, "INPROGRESS")
@@ -1091,6 +1176,7 @@ local function qcGetCategoryQuests(categoryId, searchText)
 	else
 		tableSort(qcCategoryQuests,byLevel)
 	end
+	qcTuning.Ask(categoryId, playerLevel)
 end
 
 --Beta Reset Daily and Weekly Start
@@ -1387,6 +1473,50 @@ local function qcRequestRefresh(list, map)
 	end
 end
 
+function qcTuning.TuningOf(sample)
+	if not qcTuning.bySample then
+		qcTuning.bySample = {}
+		for tuning, samples in pairs(qcTuningSample) do
+			for _, questId in ipairs(samples) do qcTuning.bySample[questId] = tuning end
+		end
+	end
+	return qcTuning.bySample[sample]
+end
+
+function qcTuning.Waiting()
+	for tuning in pairs(qcTuning.listed) do
+		for _, sample in ipairs(qcTuningSample[tuning] or {}) do
+			if qcQuestLoadQueued[sample] or qcQuestLoadInFlight[sample] then return true end
+		end
+	end
+	return false
+end
+
+-- A sample's data arrived, from anyone's request, or the list's request for it ended. A tuning the list
+-- waits on that still has no level asks for its next sample. Once nothing the list waits on is loading,
+-- it is rebuilt if an answer changed a level it read; the map reads the new level when it's next drawn.
+function qcTuning.Settled(questId)
+	local tuning = qcTuning.TuningOf(questId)
+	if not tuning then return end
+	qcTuning.Forget()
+	local levels = qcTuning.listed[tuning]
+	if not levels then return end
+	local level = qcTuning.Level(tuning)
+	if level then
+		qcTuning.listed[tuning] = nil
+		for read in pairs(levels) do
+			if read ~= level then qcTuning.rebuildDue = true end
+		end
+	else
+		local sample = qcTuning.SampleToAsk(tuning)
+		if sample then qcRequestQuestData(sample) end
+	end
+	if qcTuning.rebuildDue and not qcTuning.Waiting() then
+		qcTuning.rebuildDue = false
+		qcRequestRefresh(QC_REBUILD_LIST)
+	end
+end
+
 local qcNameRedrawScheduled = false
 local qcNameRedrawTooltip = false
 local qcNameRedrawPin = false
@@ -1413,8 +1543,9 @@ end
 -- A quest's data arrived, from our request or anyone's: redraw whatever shows its name, once per frame.
 local function qcQuestDataArrived(questId, success)
 	qcQuestLoadEnded(questId, success)
+	if success then qcQuestDataLoaded[questId] = true end
+	qcTuning.Settled(questId)
 	if not success then return end
-	qcQuestDataLoaded[questId] = true
 	if qcClientNameUpperCache then
 		local name = qcClientQuestName(questId)
 		local upper = name and string.upper(name)
@@ -2486,7 +2617,14 @@ local function qcEventHandler(self, event, ...)
 	elseif (event == "UNIT_QUEST_LOG_CHANGED") then
 		if (... == "player") then qcRequestRefresh(QC_REDRAW_ROWS) end
 	elseif (event == "ZONE_CHANGED_NEW_AREA") then
+		qcTuning.Forget()
 		qcZoneChangedNewArea()		--				
+	elseif (event == "PLAYER_LEVEL_UP") then
+		qcTuning.Forget()
+	elseif (event == "UNIT_CTR_OPTIONS") then
+		-- The character's CtrOptions, which hold its redirect bits, changed: so may the list's levels.
+		qcTuning.Forget()
+		if next(qcTuningSample) then qcRequestRefresh(QC_REBUILD_LIST) end
 	elseif (event == "ZONE_CHANGED") then
 		qcZoneChangedNewArea()
 	elseif (event == "QUEST_DETAIL") then
@@ -2569,6 +2707,9 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("QUEST_DATA_LOAD_RESULT")
 	self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 	self:RegisterEvent("TOOLTIP_DATA_UPDATE")
+	self:RegisterEvent("PLAYER_LEVEL_UP")
+	-- Registering an event the client doesn't have raises an error.
+	pcall(self.RegisterUnitEvent, self, "UNIT_CTR_OPTIONS", "player")
 	self:SetScript("OnEvent", qcEventHandler)
 	qcQuestInformationTooltipSetup()
 	qcMapTooltipSetup()

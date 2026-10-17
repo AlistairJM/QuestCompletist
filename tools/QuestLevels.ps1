@@ -86,7 +86,8 @@ function Read-ContentTuning([string]$path) {
 }
 
 # Each quest's ContentTuningID: the quest cache's, else the task table's. Cache and table agree wherever
-# both have one (Compare-QuestCache.ps1 checks it); Conflicts counts the quests where they don't.
+# both have one (Compare-QuestCache.ps1 checks it); Conflicts counts the quests where they don't, and
+# TableIds holds the quests whose tuning came from the table.
 function Read-QuestTunings([string]$cacheFile, [string]$taskFile) {
     $byQuest = @{}
     $rx = New-Object Text.RegularExpressions.Regex '^\{"id":(\d+),"title":"(?:[^"\\]|\\.)*","contentTuning":(\d+)[,}]'
@@ -100,14 +101,15 @@ function Read-QuestTunings([string]$cacheFile, [string]$taskFile) {
     }
     $fromCache = $byQuest.Count
     $fromTable = 0; $conflicts = 0
+    $tableIds = New-Object 'System.Collections.Generic.HashSet[int]'
     if (Test-Path $taskFile) {
         foreach ($row in (Import-Csv $taskFile)) {
             $id = [int]$row.ID
             if ($byQuest.ContainsKey($id)) { if ($byQuest[$id] -ne [int]$row.ContentTuningID) { $conflicts++ } }
-            else { $byQuest[$id] = [int]$row.ContentTuningID; $fromTable++ }
+            else { $byQuest[$id] = [int]$row.ContentTuningID; $fromTable++; [void]$tableIds.Add($id) }
         }
     }
-    return [pscustomobject]@{ ByQuest = $byQuest; FromCache = $fromCache; FromTable = $fromTable; Conflicts = $conflicts }
+    return [pscustomobject]@{ ByQuest = $byQuest; FromCache = $fromCache; FromTable = $fromTable; Conflicts = $conflicts; TableIds = $tableIds }
 }
 
 # The API's minimum for each quest whose record gives one, by ID. Records counts the records read.

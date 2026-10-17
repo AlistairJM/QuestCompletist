@@ -21,7 +21,8 @@ line, the grey pins and the requirements filter must follow each quest's minLeve
 data file qcQuestData.lua was built from, while the low-level filter and the bracket and sort of the list
 (its first 16 rows in each category) must follow the level the quest shows: its level, or for a quest
 with a maxLevel (one that scales) the character's level raised to the minimum and held down at the
-maxLevel, as the game scales it. A level of 0 or below is no level: the row prints the bare name and the
+maxLevel, as the game scales it (the stand-in client holds no quest, so no sample of a tuning gives the game's
+level: Test-QuestScaling.lua checks that). A level of 0 or below is no level: the row prints the bare name and the
 low-level filter keeps the quest, which made-up quests check apart from the data, as other made-up
 quests check scaling quests at the five levels. A PvP quest's name (qcQuestPvP) is led by the game's
 crossed swords, as the list draws it. Any wrong reading fails the run (exit status 1).
@@ -132,6 +133,8 @@ local env = {
 		-- No client names, so a stand-in table is never taken for a quest name.
 		GetTitleForQuestID = function() return nil end,
 		RequestLoadQuestByID = function() end,
+		-- The client holds no quest, so a quest on a sampled tuning reads its stored level.
+		GetQuestDifficultyLevel = function() return 0 end,
 	}),
 	C_TaskQuest = stubTable({GetQuestInfoByQuestID = function() return nil end}),
 	-- No client NPC names either, and not in an instance.
