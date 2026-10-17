@@ -2967,7 +2967,9 @@ the game's own dungeon or raid icon (the client tables audit, opportunity 8, the
 tooltip is headed by the instance's name as the quest list names its category, with the game's word for its kind
 (`LFG_TYPE_DUNGEON`, `LFG_TYPE_RAID`) under it, and the quest list's tooltip says "Location:" (the game's
 `LOCATION_COLON`) for such a quest where it says "Quest Giver:" for a giver's. The usual filters apply to its quests, a
-click sets the waypoint, and in a stack with a giver's pin the giver names the pin and gives the icon.
+click sets the waypoint, and in a stack with a giver's pin the giver names the pin and gives the icon. On retail our pin
+stands over the game's own dungeon icon at the same place, so the mouse reaches ours (seen in game on 17 October 2026,
+Ulduar; Forever's map draws no icon of its own).
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-EntrancePins.ps1 -Game retail -Build <retail build> -WhatIf

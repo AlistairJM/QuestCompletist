@@ -139,8 +139,11 @@ taken. What is left, in one place:
   - **Forever, at the corpse points:** its client draws no entrance. 7 doors stand in one zone; the 6 that several zones
     hold were reviewed by the user and have `SHOW` rows (the old game's zones, not retail's door areas: Blackfathom
     Deeps in Ashenvale, Uldaman in the Badlands). 13 pins, 132 quests.
-  - **Untried in game:** whether our icon sits well on the game's own dungeon icon on retail (both stand at the same
-    place), and the tooltip's heading and "Location:" line.
+  - **Tried in game, both games (17 October 2026):** retail's Ulduar pin draws one icon at the door, ours over the
+    game's own, and the mouse gets our tooltip (Ulduar, Raid, the quests not done); its quest list line reads
+    "Location: Ulduar (The Storm Peaks, 41.6, 17.8)". On Forever, Gnomeregan's pin stands alone in Dun Morogh with its
+    12 quests, and Silithus' two raids share one icon whose tooltip lists both. A click on retail's icon now sets our
+    waypoint where the game's own icon would have taken it.
   - **To look at:** Manaforge Omega's 12 quests have no place (the game drew none for the probe's character and the door
     table has no row); Naxxramas and Forever's City of Dalaran have no corpse point. A decision row can't place an
     instance with no door yet.
