@@ -404,6 +404,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 1 | Faction, race and class (after step 1b) | `Audit-QuestAccuracy.ps1` → `Categorize-AuditDiscrepancies.ps1` → `Apply-AccuracyFixes.ps1 -Field <field>` | Only the last one |
 | 1c | Quest names: the API's titles, else the quest cache's or the task table's (after steps 1, 1b and 2e, whose API cache, task table and quest cache it reads) | `Sync-QuestNamesFromApi.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
 | 1d | Professions (after steps 1b and 2e, whose tables and quest cache it reads): task quests, Blizzard's profession headings, the knowledge a quest rewards, and the hand decisions | `Sync-QuestProfessions.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
+| 1e | Race lists against the game's own (after step 2e, whose quest cache it reads), both games, with a decision row for each difference (Forever's in step 10) | `Compare-QuestRaces.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2 | Reputation rewards (the cache pass wants step 2e's reader run first) | `Compare-QuestReputation.ps1` → `Apply-ReputationBackfill.ps1 -CacheOnly` | Only the last one |
 | 2b | Breadcrumbs, "only one of these", renown, prerequisites and the other tables kept by hand | `Audit-QuestTables.ps1` | No |
 | 2c | Prerequisites from Blizzard's API, the client's task quests, its quest line and campaign conditions, the current campaign's chapters, the quest cache's follow-ups, the map pass's offers, TrinityCore and the decisions kept by hand (after the retail map pass and step 2e) | `Sync-QuestPrerequisites.ps1 -WhatIf`, then without `-WhatIf` | Only the last one |
@@ -431,7 +432,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Sync-QuestSides.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Sync-QuestSides.ps1 -Game forever -Build <Forever build>` → `Compare-QuestRaces.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -638,6 +639,43 @@ Silvermoon Mining (512), as the rest of the Silvermoon City set 93700 to 93709 h
 
 WoW: Forever has no task table and its quests reward no profession knowledge, so its professions come
 from CMaNGOS in step 10, whose item 10 runs this tool's heading check on Forever's data.
+
+### 1e. Race lists against the game's
+
+Both games, every sweep, after step 2e has read the newest quest cache (Forever's in step 10, after the importer). The
+quest cache holds the race list of the game's own record of a quest, the server's field that Blizzard's API also serves
+([plans/retail-quest-cache.md](plans/retail-quest-cache.md), "Races"). Where it lists races and ours allow others, our
+list is out of date or wrong: open-items row 17, the user's choices of 12 and 17 October 2026.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestRaces.ps1 -Game retail -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestRaces.ps1 -Game retail -Build <retail build>
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestRaces.ps1 -Game forever -Build <Forever build>
+```
+
+`QuestRaces.ps1` compares the playable races of each side (the build's `ChrRaces`, by their `ClientFileString`, as our
+race bits aren't Blizzard's; the neutral Pandaren left out): ours allows a race when its mask has the race's bit and its
+faction the race's side, a mask or faction of 0 any. A difference is a contradiction (a faction of one side with a
+mask of mostly the other's), a stale mask (it lacks only races added after Legion), a narrowing (other races of a
+side the game allows: a starting race's quests, a class's old races), shown (ours allows races the game denies) or
+crosses (both). Each needs a row in `docs\plans\quest-race-decisions.csv`: `FIX` takes the game's list into
+`quests.jsonl` (the mask of its races, the faction of their sides), `KEEP` keeps ours. A difference with no row, a
+`KEEP` row whose quest now agrees and a `FIX` row the game no longer backs are findings, and the run exits 1. A quest
+the game lists no races for is open to every race in its eyes; a restriction of ours there (a giver's own race, a
+zone's side) is ours to keep, and only counted. On Forever the importer gives a quest the cache's list, so a
+difference there is the importer's to fix. It writes `tools\quest_races_<game>.csv`, one row per difference.
+`Test-CompareQuestRaces.ps1` tests it.
+
+First run, 17 October 2026 (retail quest cache 12.1.5.70391, `ChrRaces` 12.1.5.70448): the game lists races for 9,865
+of our quests, and 90 differed. 4 contradictions (2 Sharptalon's Claw and 27675 Forged Documents, and 32468 Crystal
+Clarity and 32471 Light Camera Action, whose mask was 32471, a quest ID), 19 stale masks (the Burning Steppes and
+Elwynn Forest sets, 9369, 51464), 46 narrowings (25 of them Gnome starting quests in Dun Morogh, the rest class,
+artifact and Exile's Reach quests) and 18 of the 21 shown or crossing (the Argent Tournament's Valiants, the per-race
+variants such as 9498 Falcon Watch, 9329 The Forsaken) took the game's list; 30039 (the neutral Pandaren alone, which
+our bits can't express) and the Death Knight quests 58877 and 58989 are kept. A second run finds those 3 and nothing
+else. 1,679 quests have a restriction of ours where the game lists none. Step 1's audit and Categorize give the same
+result on the data before and after (218 KEPT, no FIX). Forever (cache 1.60.1.70374): races listed for 835 quests, no
+difference; 1,344 restrictions of ours (CMaNGOS's) where the game lists none.
 
 ### 2. Reputation rewards
 
@@ -3231,7 +3269,8 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    both. Then the three steps that read the import: `Sync-QuestStartItems.ps1 -Game forever`
    ([6e](#6e-the-items-that-start-quests)), `Sync-FactionReach.ps1 -Game forever`
    ([2n](#2n-who-can-earn-each-factions-reputation)) and `Sync-QuestSides.ps1 -Game forever`
-   ([2p](#2p-which-side-can-take-a-quest)), each with `-Build <Forever build>`. The importer gives a quest the side the
+   ([2p](#2p-which-side-can-take-a-quest)), each with `-Build <Forever build>`, and `Compare-QuestRaces.ps1 -Game forever`
+   ([1e](#1e-race-lists-against-the-games)), a check that the import took the cache's race lists. The importer gives a quest the side the
    game's record restricts it to (the quest cache's races), else the side the game names in the probe
    (`GetQuestFactionGroup`), else CMaNGOS's races; step 2p adds the side of its givers in `sides.jsonl`, and exits 1
    when the game names a side the importer didn't give.
@@ -4128,6 +4167,10 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestRenown.ps1` (made-up tables). It must say
   "0 failed" (23 checks, 17 October 2026). A change to how the addon reads them (`qcRenownNeeds` in `qcCore.lua`) is
   checked by `Test-QuestTooltip.lua` and `Test-MapTooltip.lua` on both TOCs, and `Test-QuestReachability.lua`.
+- For changes to `QuestRaces.ps1` or `Compare-QuestRaces.ps1` (step 1e), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-CompareQuestRaces.ps1` (made-up race table, cache and
+  data). It must say "0 failed" (29 checks, 17 October 2026). Then run the step with `-WhatIf` on both games: retail
+  must find only its `KEEP` rows' quests, Forever none, and both "Findings: 0".
 - For changes to `QuestSides.ps1`, `Sync-QuestSides.ps1`, `Get-ProbeSides` in `ProbeResults.ps1` or the side rows of
   `AddonData.ps1` (step 2p), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestSides.ps1`
   (made-up tables, dumps and probe files). It must say "0 failed" (75 checks, 17 October 2026). Then run the step with
