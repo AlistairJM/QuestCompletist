@@ -260,6 +260,10 @@ game alone can answer, such as what an API call returns or how retail and Foreve
 lines per game and a few minutes in all, and say what was verified offline instead of asking for it
 again.
 
+- **The addon list's icon** (17 October 2026, untried in game; both games, one look each). After a full
+  restart of WoW, the AddOns list shows the map pins' yellow "!" before Quest Completist, where it showed a
+  red question mark. Checked offline: Blizzard's addon list reads `## IconAtlas` the same way on both games
+  (12.1.5.70448, 1.60.1.70450), and both clients' atlas tables have `QuestNormal`.
 - **The quest tooltip's storyline name and "Type:" row** (built 11 October 2026, untried, both games; one line each):
   hover one quest in the list and read the Storyline and Type lines. Retail: 10257 "Capturing the Keystone"
   (Netherstorm) should show "Type: Dungeon" and its storyline's name in your language. Forever: 19 "Tharil'zun"
