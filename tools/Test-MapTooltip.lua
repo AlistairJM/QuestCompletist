@@ -1,8 +1,8 @@
 --[[
 Checks the map's tooltip: what a quest giver's pin draws on it when the mouse enters, how it is cleared
-when the mouse leaves, and how it is redrawn when names arrive or Shift changes. It also clicks pins and
-quests in the list, with TomTom and without, and checks which waypoint they set and where the game's own
-is refused.
+when the mouse leaves, and how it is redrawn when names arrive or Shift changes, and what an instance
+entrance's pin draws and is named. It also clicks pins and quests in the list, with TomTom and without,
+and checks which waypoint they set and where the game's own is refused.
 
 Loads the addon's own files with stand-ins for the WoW API, and gives the tooltip, its lines, its bars,
 dividers and icons stand-ins that write down every call they get. The checks read that record, and
@@ -178,7 +178,7 @@ env = {
 	ITEM_REQ_ALLIANCE = "Alliance", ITEM_REQ_HORDE = "Horde", ITEM_RACES_ALLOWED = "Races: %s",
 	ITEM_CLASSES_ALLOWED = "Classes: %s", ITEM_MIN_LEVEL = "Requires Level %d", ITEM_REQ_SKILL = "Requires %s",
 	ITEM_REQ_REPUTATION = "Requires %s - %s", ITEM_MIN_SKILL = "Requires %s (%d)", RENOWN_LEVEL_LABEL = "Renown %d",
-	UNKNOWN = "Unknown",
+	UNKNOWN = "Unknown", LFG_TYPE_DUNGEON = "Dungeon", LFG_TYPE_RAID = "Raid",
 	QUEST_WATCH_QUEST_READY = "Ready for turn-in", AVAILABLE_QUESTS = "Available Quests", IN_PROGRESS = "In Progress",
 	UNAVAILABLE = "Unavailable", FLIGHT_MAP_CLICK_TO_ZOOM_IN = "<Click to Zoom In>",
 	C_Covenants = stubTable({GetActiveCovenantID = function() return 0 end}),
@@ -507,6 +507,41 @@ check("a single nameless pin is titled with its quest", #drawn == 1 and drawn[1]
 drawn = draw({namedA})
 check("a single named pin is titled with its giver", drawn[1].stack == nil and click(drawn[1]).title == pinA[3])
 
+print("An instance entrance's pin")
+local entrance, entranceMap
+for _, mapId in ipairs(mapIds) do
+	for _, pin in ipairs(realPinDB[mapId]) do
+		if not entrance and (pin[1] == 12 or pin[1] == 13) then entrance, entranceMap = pin, mapId end
+	end
+end
+check("the data has one", entrance ~= nil)
+local entranceKind = entrance[1] == 13 and "Raid" or "Dungeon"
+local entranceName = env.qcCategoryName(QUESTS[entrance[6][1]][3])
+check("it names no NPC, and stores its instance's name", entrance[2] == 0 and type(entrance[3]) == "string")
+check("it draws the game's " .. entranceKind .. " icon", pinAtlas(entrance) == entranceKind)
+local entranceData = {entrance[1], entrance[2], entrance[3], 50, 50, entrance[6]}
+firstHeading(entranceData)
+local headingAt, kindAt
+for i, line in ipairs(record) do
+	if not headingAt and line:find(":AddLine(" .. entranceName .. ",", 1, true) then headingAt = i end
+	if not kindAt and line:find(":AddLine(|cffc0c0c0" .. entranceKind .. "|r,", 1, true) then kindAt = i end
+end
+check("its tooltip is headed by the name the quest list gives the instance, with no ID beside it", headingAt ~= nil and count(":AddDoubleLine(" .. entranceName, 1) == 0, entranceName)
+check("and the game's word for its kind under it", kindAt ~= nil and headingAt ~= nil and kindAt > headingAt)
+local listed = 0
+for _, questId in ipairs(entrance[6]) do listed = listed + count("|cff808080" .. questId .. "|r", 1) end
+check("its quests follow, not under the other quests", count(otherQuests, 1) == 0 and listed >= 1, tostring(listed))
+check("a click's waypoint is titled with the instance", click(entranceData).title == entranceName)
+local giverHere = {pinB[1], pinB[2], pinB[3], 50.2, 50, pinB[6]}
+drawn = draw({entranceData, giverHere})
+check("in a stack with a giver, the giver names the pin even when the entrance comes first", #drawn == 1 and drawn[1][3] == pinB[3] and click(drawn[1]).title == pinB[3])
+check("and draws the giver's icon", pinAtlas(drawn[1]) ~= entranceKind)
+drawn = draw({nameless, entranceData})
+check("with a nameless pin, the entrance names it", #drawn == 1 and drawn[1][1] == entrance[1] and click(drawn[1]).title == entranceName, click(drawn[1]).title)
+check("but the nameless pin's quest gives the icon, as a quest starts there", pinAtlas(drawn[1]) ~= entranceKind)
+drawn = draw({entranceData, {entrance[1], 0, "Another Instance", 50.1, 50, entrance[6]}})
+check("of two entrances in a stack, the first draws its icon", #drawn == 1 and pinAtlas(drawn[1]) == entranceKind)
+
 env.qcPinDB = realPinDB
 local stacks, firstNameless, unnamed = 0, 0, 0
 for _, mapId in ipairs(mapIds) do
@@ -515,19 +550,22 @@ for _, mapId in ipairs(mapIds) do
 	for _, data in ipairs(stackMap.drawn) do
 		if data.stack then
 			stacks = stacks + 1
-			local named
+			local named, door
 			for _, member in ipairs(data.stack) do
-				if member[3] and not named then named = member end
+				if member[1] == 12 or member[1] == 13 then door = door or member
+				elseif member[3] and not named then named = member end
 			end
 			if named and not data.stack[1][3] then firstNameless = firstNameless + 1 end
 			if named and not (data[2] == named[2] and data[3] == named[3] and click(data).title == named[3]) then
+				unnamed = unnamed + 1
+			elseif not named and door and not (data[3] == door[3] and click(data).title == env.qcCategoryName(QUESTS[door[6][1]][3])) then
 				unnamed = unnamed + 1
 			end
 		end
 	end
 end
 stackMap.mapId = 84
-check("every stack in the data with a named pin is named for its first one", unnamed == 0,
+check("every stack in the data with a named giver is named for its first one, else for its first entrance", unnamed == 0,
 	string.format("%d stacks, %d with a nameless first pin", stacks, firstNameless))
 
 print("Without TomTom, a click sets the game's own waypoint")

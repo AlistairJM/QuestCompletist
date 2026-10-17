@@ -9,6 +9,7 @@ the parent map of another start of the quest (a continent over a zone) is left o
 a point 32 and no point -1 on a map is placed if it has a pin already, or is one of our quests and not a
 task quest of a kind in $noPinKinds below. The client's task table (QuestV2CliTask) holds world quests and
 bonus objectives, which the addon doesn't pin, and also dailies, holiday and ordinary quests, which it does.
+The table of kinds is PinRules.ps1's $NoPinTaskKinds, which the entrance pins (Sync-EntrancePins.ps1) follow too.
 
 A quest the client's export lists no point for at all, and that passes the rules in
 docs/plans/quest-location-data-pipeline.md ("October 2026, pins from TrinityCore"), gets its start
@@ -33,58 +34,9 @@ param(
     [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe'
 )
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\PinRules.ps1"
 $toolsDir = $ToolsDir
-
-# The task quests (QuestV2CliTask, by its QuestInfoID) that get no pin; every other task quest is placed like any
-# quest of ours. Every QuestInfo kind named "World Quest" is here, and the run stops at one that isn't, so a kind
-# a new build adds can't start getting pins unseen. 265 is a hidden tracker, 268 an assault wrapper and 283 a
-# bonus objective, none of them named "World Quest". 271 is kept out until it is known whether the game still
-# offers callings: deleting its line pins that kind (docs/plans/open-items.md, decision 2).
-$noPinKinds = [ordered]@{
-    109 = 'World Quest'
-    110 = 'Epic World Quest'
-    111 = 'Elite World Quest'
-    112 = 'Epic Elite World Quest'
-    113 = 'PvP World Quest'
-    114 = 'First Aid World Quest'
-    115 = 'Battle Pet World Quest'
-    116 = 'Blacksmithing World Quest'
-    117 = 'Leatherworking World Quest'
-    118 = 'Alchemy World Quest'
-    119 = 'Herbalism World Quest'
-    120 = 'Mining World Quest'
-    121 = 'Tailoring World Quest'
-    122 = 'Engineering World Quest'
-    123 = 'Enchanting World Quest'
-    124 = 'Skinning World Quest'
-    125 = 'Jewelcrafting World Quest'
-    126 = 'Inscription World Quest'
-    129 = 'Archaeology World Quest'
-    130 = 'Fishing World Quest'
-    131 = 'Cooking World Quest'
-    135 = 'Rare World Quest'
-    136 = 'Rare Elite World Quest'
-    137 = 'Dungeon World Quest'
-    139 = 'Legion Invasion World Quest'
-    141 = 'Raid World Quest'
-    142 = 'Legion Invasion Elite World Quest'
-    144 = 'Legionfall World Quest'
-    145 = 'Legionfall Dungeon World Quest'
-    146 = 'Legion Invasion World Quest Wrapper'
-    151 = 'Magni World Quest - Azerite'
-    152 = 'Tortollan World Quest - 8.0'
-    259 = 'Faction Assault World Quest'
-    260 = 'Faction Assault Elite World Quest'
-    265 = 'Hidden Quest'
-    268 = 'Threat Wrapper'
-    271 = 'Calling Quest'
-    278 = 'PvP Elite World Quest'
-    283 = 'Bonus Objective with Completion Toast'
-    286 = 'Capstone World Quest'
-    295 = 'Prey World Quest'
-    296 = 'World Quest (Short Duration)'
-    298 = 'Lair World Quest'
-}
+$noPinKinds = $NoPinTaskKinds
 
 Write-Output "Loading source tables..."
 $blobs = Import-Csv "$toolsDir\QuestPOIBlob.csv"

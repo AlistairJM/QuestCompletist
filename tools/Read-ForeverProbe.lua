@@ -16,6 +16,9 @@
 --                                                                                  trivial level ranges, or false when the client lacks the call)
 --   refusedfact  n  function  asked  answered  positive  examples                 (only with "facts": the n-th run's
 --                                                                                  tally of what a function says for refused quests)
+-- With "entrances" it prints only the dungeon entrances the map pass saw (C_EncounterJournal.GetDungeonEntrancesForMap),
+-- for Sync-EntrancePins.ps1:
+--   entrance  map  journalInstance  x  y  name
 dofile(arg[1])
 local db = QCForeverProbeDB or error("no QCForeverProbeDB in " .. arg[1])
 
@@ -34,6 +37,13 @@ local function keys(t)
 	for key in pairs(t or {}) do list[#list + 1] = key end
 	table.sort(list, function(a, b) return tostring(a) < tostring(b) end)
 	return list
+end
+
+if arg[2] == "entrances" then
+	for _, mapId in ipairs(keys(db.maps)) do
+		for _, e in ipairs(db.maps[mapId].entrances or {}) do line("entrance", mapId, e.journalInstanceID, e.x, e.y, e.name) end
+	end
+	return
 end
 
 for _, id in ipairs(keys(db.quests)) do

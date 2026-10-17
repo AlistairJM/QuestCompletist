@@ -36,6 +36,11 @@ data\sides.jsonl, written by Sync-QuestSides.ps1 and optional, holds the side wh
 givers, for a quest the data opens to both sides, one per line ({"quest":36054,"side":1}: 1 the Alliance, 2 the Horde);
 the build writes it as that quest's faction in qcQuestDatabase, and leaves out a row whose quest is no longer open to
 both.
+data\entrances.jsonl, written by Sync-EntrancePins.ps1 and optional, holds a pin per dungeon or raid entrance, one per line,
+with the instance's quests no pin of pins.jsonl places ({"map":1440,"x":14.36,"y":13.62,"kind":"dungeon","name":"Blackfathom
+Deeps","quests":[...]}); the build writes them into qcPinDB after each map's pins, with icon 12 for a dungeon and 13 for a
+raid ($EntranceIcons), no NPC and the instance's name, leaving off a quest that has left the data or that a pin of
+pins.jsonl has gained since, and a pin left with no quest.
 
 data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
 quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
@@ -61,6 +66,8 @@ $ConditionTextFields = @('key', 'quests') + $ConditionTextLocales
 $FactionFields = @('faction', 'races', 'hidden')
 $RenownFields = @('quest', 'faction', 'level')
 $SideFields = @('quest', 'side')
+$EntranceFields = @('map', 'x', 'y', 'kind', 'name', 'quests')
+$EntranceIcons = [ordered]@{ dungeon = 12; raid = 13 }
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
@@ -179,6 +186,17 @@ function ConvertTo-SideJsonLines($rows) {
     return $sb.ToString()
 }
 
+function ConvertTo-EntranceJsonLines($entrances) {
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($e in $entrances) {
+        $x = $e.x; if ($x -is [decimal]) { $x = $x.ToString('0.############################', $script:Invariant) }
+        $y = $e.y; if ($y -is [decimal]) { $y = $y.ToString('0.############################', $script:Invariant) }
+        [void]$sb.Append('{"map":' + $e.map + ',"x":' + $x + ',"y":' + $y + ',"kind":"' + $e.kind + '","name":"' + $e.name.Replace('\', '\\').Replace('"', '\"') +
+            '","quests":[' + (@($e.quests) -join ',') + "]}`n")
+    }
+    return $sb.ToString()
+}
+
 # One record per line, so a record's number is its line number; a blank line is refused.
 function Read-JsonLines([string]$path) {
     $name = Split-Path -Leaf $path
@@ -268,7 +286,8 @@ function Test-PinRecords($pins) {
             ($null -eq $name -or ($name -is [string] -and $name -ne '' -and -not ($name -match '[\x00-\x1f]'))) -and
             ($null -eq $note -or ($note -is [string] -and $note -ne '' -and -not ($note -match '[\x00-\x1f]'))) -and
             ($x -is [int] -or $x -is [decimal]) -and ($y -is [int] -or $y -is [decimal]) -and
-            $x -ge 0 -and $x -le 100 -and $y -ge 0 -and $y -le 100 -and ($quests -is [array]) -and $quests.Count -gt 0
+            $x -ge 0 -and $x -le 100 -and $y -ge 0 -and $y -le 100 -and ($quests -is [array]) -and $quests.Count -gt 0 -and
+            @($EntranceIcons.Values) -notcontains $pin.icon
         if ($sound) {
             foreach ($questId in $quests) { if ($questId -isnot [int]) { $sound = $false; break } }
         }
@@ -277,6 +296,7 @@ function Test-PinRecords($pins) {
         foreach ($field in 'map', 'icon') {
             if (-not (Test-WholeNumber $pin.$field)) { $problems.Add("${what}: '$field' must be a whole number") }
         }
+        if (@($EntranceIcons.Values) -contains $pin.icon) { $problems.Add("${what}: icon $($pin.icon) is an entrance pin's, which entrances.jsonl holds") }
         if ($null -ne $pin.npc -and -not (Test-WholeNumber $pin.npc)) { $problems.Add("${what}: 'npc' must be a whole number") }
         foreach ($field in 'name', 'note') {
             $value = $pin.$field
@@ -421,6 +441,41 @@ function Test-SideRecords($rows) {
     return $problems.ToArray()
 }
 
+# Problems with the entrance pins: a map (a UiMap ID above 0), x and y map points, a kind of $EntranceIcons, the instance's
+# name, and the quests, listed once each.
+function Test-EntranceRecords($entrances) {
+    $problems = New-Object System.Collections.Generic.List[string]
+    $n = 0
+    foreach ($e in $entrances) {
+        $n++
+        $what = "entrances.jsonl line $n" + $(if ($e.name -is [string]) { " ($($e.name))" } else { '' })
+        if (-not (Test-WholeNumber $e.map) -or $e.map -le 0) { $problems.Add("${what}: 'map' must be a whole number above 0") }
+        foreach ($field in 'x', 'y') {
+            $value = $e.$field
+            if (-not (Test-DataNumber $value)) { $problems.Add("${what}: '$field' must be a number") }
+            elseif ($value -lt 0 -or $value -gt 100) { $problems.Add("${what}: '$field' is $value, outside 0 to 100") }
+        }
+        if ($e.kind -isnot [string] -or -not $EntranceIcons.Contains($e.kind)) { $problems.Add("${what}: 'kind' is $(($EntranceIcons.Keys | ForEach-Object { "'$_'" }) -join ' or ')") }
+        if ($e.name -isnot [string] -or $e.name -eq '') { $problems.Add("${what}: 'name' must be the instance's name") }
+        elseif ($e.name -match '[\x00-\x1f]') { $problems.Add("${what}: 'name' contains a control character") }
+        $list = @($e.quests)
+        if ($e.quests -isnot [array] -or $list.Count -eq 0 -or @($list | Where-Object { -not (Test-WholeNumber $_) -or $_ -le 0 }).Count) { $problems.Add("${what}: 'quests' must list quest IDs") }
+        elseif (@($list | Select-Object -Unique).Count -ne $list.Count) { $problems.Add("${what}: 'quests' names a quest twice") }
+    }
+    return $problems.ToArray()
+}
+
+# The entrance pins as qcPinDB rows ($EntranceIcons' icon, no NPC, the instance's name): each keeps the quests the data has
+# that no pin of -Pins holds, and one left with none goes.
+function Get-EntrancePinRows($entrances, $pins, $questIds) {
+    $pinned = New-Object 'System.Collections.Generic.HashSet[long]'
+    foreach ($pin in $pins) { foreach ($q in $pin.quests) { [void]$pinned.Add([long]$q) } }
+    foreach ($e in $entrances) {
+        $kept = [long[]]@(@($e.quests) | Where-Object { $questIds.Contains([long]$_) -and -not $pinned.Contains([long]$_) })
+        if ($kept.Count) { [pscustomobject]@{ map = $e.map; icon = $EntranceIcons[$e.kind]; npc = 0; name = $e.name; x = $e.x; y = $e.y; quests = $kept; note = $null } }
+    }
+}
+
 # qcQuestRenown: quest ID -> {{faction, level}, ...}, the renown or rank levels the game's own conditions ask of it, in
 # faction order. The addon reads it before the hand-kept qcRenownLevelRequirements.
 function ConvertTo-LuaRenownTable($rows) {
@@ -560,8 +615,10 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(
     return $sb.ToString()
 }
 
-# The whole of qcPinDB.lua. Pins keep their order within a map; maps go in ascending order.
-function ConvertTo-LuaPinFile($pins, [string]$source = 'data') {
+# The whole of qcPinDB.lua. Pins keep their order within a map; maps go in ascending order. -Entrances, the rows of
+# Get-EntrancePinRows, follow each map's pins.
+function ConvertTo-LuaPinFile($pins, [string]$source = 'data', $entrances = $null) {
+    if ($null -ne $entrances) { $pins = @($pins) + @($entrances) }
     $byMap = New-Object 'System.Collections.Generic.SortedDictionary[long, System.Collections.Generic.List[object]]'
     foreach ($pin in $pins) {
         $map = [long]$pin.map
@@ -569,7 +626,8 @@ function ConvertTo-LuaPinFile($pins, [string]$source = 'data') {
         $byMap[$map].Add($pin)
     }
     $sb = New-Object System.Text.StringBuilder (2MB)
-    [void]$sb.Append("-- Generated from $source\pins.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`n")
+    $from = if ($null -ne $entrances) { "$source\pins.jsonl and $source\entrances.jsonl by tools\Build-AddonData.ps1. Edit the data files" } else { "$source\pins.jsonl by tools\Build-AddonData.ps1. Edit the data file" }
+    [void]$sb.Append("-- Generated from $from, not this one.`r`n")
     [void]$sb.Append("qcPinDB = {`r`n")
     foreach ($entry in $byMap.GetEnumerator()) {
         [void]$sb.Append("`t[" + $entry.Key + "] = {`r`n")
@@ -602,6 +660,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $factionData = Join-Path $DataDir 'factions.jsonl'
     $renownData = Join-Path $DataDir 'renown.jsonl'
     $sideData = Join-Path $DataDir 'sides.jsonl'
+    $entranceData = Join-Path $DataDir 'entrances.jsonl'
     try {
         $quests = Read-JsonLines $questData
         $pins = Read-JsonLines $pinData
@@ -611,6 +670,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         $factions = if (Test-Path $factionData) { Read-JsonLines $factionData } else { @() }
         $renown = if (Test-Path $renownData) { Read-JsonLines $renownData } else { @() }
         $sides = if (Test-Path $sideData) { Read-JsonLines $sideData } else { @() }
+        $entrances = $null
+        if (Test-Path $entranceData) { $entrances = if ((Get-Item $entranceData).Length) { Read-JsonLines $entranceData } else { , @() } }
     } catch {
         $lines.Add("  $($_.Exception.Message)")
         $lines.Add("The data files can't be read; nothing was written.")
@@ -624,6 +685,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     if (Test-Path $factionData) { $problems += @(Find-UnknownFields $factionData $FactionFields) + @(Test-FactionRecords $factions) }
     if (Test-Path $renownData) { $problems += @(Find-UnknownFields $renownData $RenownFields) + @(Test-RenownRecords $renown) }
     if (Test-Path $sideData) { $problems += @(Find-UnknownFields $sideData $SideFields) + @(Test-SideRecords $sides) }
+    if (Test-Path $entranceData) { $problems += @(Find-UnknownFields $entranceData $EntranceFields) + @(Test-EntranceRecords $entrances) }
     if ($problems.Count -gt 0) {
         $problems | Select-Object -First 30 | ForEach-Object { $lines.Add("  $_") }
         if ($problems.Count -gt 30) { $lines.Add("  ... and $($problems.Count - 30) more") }
@@ -650,9 +712,11 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
             [pscustomobject]$copy
         }
     })
+    $entranceRows = $null
+    if ($null -ne $entrances) { $entranceRows = @(Get-EntrancePinRows $entrances $pins $questIds) }
     $outputs = @(
         @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept @($factions) @($renown | Where-Object { $questIds.Contains([long]$_.quest) }) $sidesKept) },
-        @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
+        @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source $entranceRows) }
     )
     $differ = 0
     foreach ($output in $outputs) {
@@ -676,7 +740,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }) +
         $(if (Test-Path $factionData) { ", $(@($factions).Count) factions" } else { '' }) +
         $(if (Test-Path $renownData) { ", $(@($renown).Count) renown rows" } else { '' }) +
-        $(if (Test-Path $sideData) { ", $(@($sides).Count) sides" + $(if ($sidesKept.Count -ne @($sides).Count) { " ($($sidesKept.Count) applied)" } else { '' }) } else { '' }))
+        $(if (Test-Path $sideData) { ", $(@($sides).Count) sides" + $(if ($sidesKept.Count -ne @($sides).Count) { " ($($sidesKept.Count) applied)" } else { '' }) } else { '' }) +
+        $(if ($null -ne $entrances) { ", $(@($entrances).Count) entrance pins" + $(if ($entranceRows.Count -ne @($entrances).Count) { " ($($entranceRows.Count) with a quest no pin has)" } else { '' }) } else { '' }))
     return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
 }
 
@@ -751,6 +816,14 @@ function Save-SideData($rows, [string]$DataDir = $DefaultDataDir, [string]$Addon
     if ($problems.Count -gt 0) { throw ("The side rows weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
     Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'sides.jsonl'), (ConvertTo-SideJsonLines $rows), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Save-EntranceData($entrances, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-EntranceRecords $entrances)
+    if ($problems.Count -gt 0) { throw ("The entrance pins weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'entrances.jsonl'), (ConvertTo-EntranceJsonLines $entrances), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
 }
 

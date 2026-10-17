@@ -1,0 +1,131 @@
+{"map":21,"x":44.9,"y":67.9,"kind":"dungeon","name":"Shadowfang Keep","quests":[27917,27920,27921]}
+{"map":25,"x":5.9,"y":52.9,"kind":"dungeon","name":"Shadowfang Keep","quests":[27917,27920,27921]}
+{"map":34,"x":71.2,"y":53.4,"kind":"dungeon","name":"Blackrock Caverns","quests":[28737,28738]}
+{"map":71,"x":24.6,"y":92.3,"kind":"dungeon","name":"Halls of Origination","quests":[28753]}
+{"map":249,"x":69.1,"y":52.8,"kind":"dungeon","name":"Halls of Origination","quests":[28753]}
+{"map":17,"x":0.5,"y":54.6,"kind":"dungeon","name":"Zul'Gurub","quests":[29251,74576,74695,74696,74697,76438,76439,76440]}
+{"map":50,"x":72.1,"y":32.9,"kind":"dungeon","name":"Zul'Gurub","quests":[29251,74576,74695,74696,74697,76438,76439,76440]}
+{"map":224,"x":63.9,"y":21.8,"kind":"dungeon","name":"Zul'Gurub","quests":[29251,74576,74695,74696,74697,76438,76439,76440]}
+{"map":1,"x":46.2,"y":0,"kind":"dungeon","name":"Ragefire Chasm","quests":[31034,31037]}
+{"map":10,"x":80.2,"y":0.1,"kind":"dungeon","name":"Ragefire Chasm","quests":[31034,31037]}
+{"map":76,"x":18.7,"y":97.2,"kind":"dungeon","name":"Ragefire Chasm","quests":[31034,31037]}
+{"map":85,"x":51.7,"y":58.5,"kind":"dungeon","name":"Ragefire Chasm","quests":[31034,31037]}
+{"map":86,"x":66.7,"y":51.5,"kind":"dungeon","name":"Ragefire Chasm","quests":[31034,31037]}
+{"map":1534,"x":51.8,"y":58.3,"kind":"dungeon","name":"Ragefire Chasm","quests":[31034,31037]}
+{"map":62,"x":33,"y":94.7,"kind":"dungeon","name":"Blackfathom Deeps","quests":[6563]}
+{"map":63,"x":14.2,"y":13.8,"kind":"dungeon","name":"Blackfathom Deeps","quests":[6563]}
+{"map":77,"x":15.1,"y":76.6,"kind":"dungeon","name":"Blackfathom Deeps","quests":[6563]}
+{"map":35,"x":39.3,"y":18.2,"kind":"dungeon","name":"Blackrock Depths","quests":[4295,6642,6643,6644,6645,6646,7604]}
+{"map":27,"x":31.4,"y":38,"kind":"dungeon","name":"Gnomeregan","quests":[2945]}
+{"map":469,"x":32.8,"y":37,"kind":"dungeon","name":"Gnomeregan","quests":[2945]}
+{"map":15,"x":42,"y":11.5,"kind":"dungeon","name":"Uldaman","quests":[27680]}
+{"map":48,"x":43.5,"y":87.1,"kind":"dungeon","name":"Uldaman","quests":[27680]}
+{"map":22,"x":69.8,"y":73.6,"kind":"dungeon","name":"Scholomance","quests":[31528,76257]}
+{"map":23,"x":7.4,"y":91,"kind":"dungeon","name":"Scholomance","quests":[31528,76257]}
+{"map":25,"x":91.2,"y":6.9,"kind":"dungeon","name":"Scholomance","quests":[31528,76257]}
+{"map":26,"x":26.2,"y":8.1,"kind":"dungeon","name":"Scholomance","quests":[31528,76257]}
+{"map":107,"x":92,"y":92.4,"kind":"dungeon","name":"Auchenai Crypts","quests":[11374]}
+{"map":108,"x":34.7,"y":65.6,"kind":"dungeon","name":"Auchenai Crypts","quests":[11374]}
+{"map":100,"x":47.9,"y":53.4,"kind":"dungeon","name":"Hellfire Ramparts","quests":[11354]}
+{"map":75,"x":26.3,"y":32.8,"kind":"dungeon","name":"Old Hillsbrad Foothills","quests":[11378]}
+{"map":108,"x":44.6,"y":65.6,"kind":"dungeon","name":"Sethekk Halls","quests":[11372]}
+{"map":107,"x":96.9,"y":99.8,"kind":"dungeon","name":"Shadow Labyrinth","quests":[11375]}
+{"map":108,"x":39.6,"y":73.2,"kind":"dungeon","name":"Shadow Labyrinth","quests":[11375]}
+{"map":109,"x":74.4,"y":57.7,"kind":"dungeon","name":"The Arcatraz","quests":[11388,29674,29675,29681]}
+{"map":100,"x":46,"y":51.8,"kind":"dungeon","name":"The Blood Furnace","quests":[11362]}
+{"map":109,"x":71.7,"y":55.1,"kind":"dungeon","name":"The Botanica","quests":[11384]}
+{"map":100,"x":48.1,"y":51.9,"kind":"dungeon","name":"The Shattered Halls","quests":[11363]}
+{"map":102,"x":49,"y":35.9,"kind":"dungeon","name":"The Slave Pens","quests":[11368]}
+{"map":102,"x":50.5,"y":33.3,"kind":"dungeon","name":"The Steamvault","quests":[11370]}
+{"map":105,"x":35.2,"y":99.3,"kind":"dungeon","name":"The Steamvault","quests":[11370]}
+{"map":118,"x":55.3,"y":90.8,"kind":"dungeon","name":"Halls of Reflection","quests":[24500,24711,24713,24802]}
+{"map":123,"x":79.1,"y":4.4,"kind":"dungeon","name":"Halls of Reflection","quests":[24500,24711,24713,24802]}
+{"map":118,"x":54.7,"y":91.7,"kind":"dungeon","name":"Pit of Saron","quests":[24498,24507,24682,24683,24710,24712]}
+{"map":123,"x":77.9,"y":6.2,"kind":"dungeon","name":"Pit of Saron","quests":[24498,24507,24682,24683,24710,24712]}
+{"map":118,"x":74.2,"y":20.4,"kind":"dungeon","name":"Trial of the Champion","quests":[29851]}
+{"map":120,"x":14.8,"y":34.3,"kind":"dungeon","name":"Trial of the Champion","quests":[29851]}
+{"map":170,"x":54.5,"y":90.1,"kind":"dungeon","name":"Trial of the Champion","quests":[29851]}
+{"map":117,"x":57.9,"y":49.5,"kind":"dungeon","name":"Utgarde Keep","quests":[30112]}
+{"map":371,"x":2.7,"y":93.8,"kind":"dungeon","name":"Stormstout Brewery","quests":[31519]}
+{"map":376,"x":36.1,"y":69.1,"kind":"dungeon","name":"Stormstout Brewery","quests":[31519]}
+{"map":418,"x":35.9,"y":19.3,"kind":"dungeon","name":"Stormstout Brewery","quests":[31519]}
+{"map":422,"x":91.1,"y":59.7,"kind":"dungeon","name":"Stormstout Brewery","quests":[31519]}
+{"map":376,"x":15.3,"y":15.4,"kind":"dungeon","name":"Gate of the Setting Sun","quests":[31524]}
+{"map":390,"x":15.8,"y":74.4,"kind":"dungeon","name":"Gate of the Setting Sun","quests":[31524]}
+{"map":422,"x":75.8,"y":20.3,"kind":"dungeon","name":"Gate of the Setting Sun","quests":[31524]}
+{"map":18,"x":85.3,"y":32.3,"kind":"dungeon","name":"Scarlet Halls","quests":[31490,31493,31495,31497,31527]}
+{"map":19,"x":79.1,"y":61.2,"kind":"dungeon","name":"Scarlet Halls","quests":[31490,31493,31495,31497,31527]}
+{"map":22,"x":28.8,"y":17.5,"kind":"dungeon","name":"Scarlet Halls","quests":[31490,31493,31495,31497,31527]}
+{"map":379,"x":36.7,"y":47.5,"kind":"dungeon","name":"Shado-Pan Monastery","quests":[31342,31522]}
+{"map":388,"x":79,"y":24,"kind":"dungeon","name":"Shado-Pan Monastery","quests":[31342,31522]}
+{"map":371,"x":56.2,"y":57.9,"kind":"dungeon","name":"Temple of the Jade Serpent","quests":[31520]}
+{"map":18,"x":84.8,"y":30.4,"kind":"dungeon","name":"Scarlet Monastery","quests":[31513,31515,31526,77644]}
+{"map":19,"x":68.1,"y":20.6,"kind":"dungeon","name":"Scarlet Monastery","quests":[31513,31515,31526,77644]}
+{"map":22,"x":28.3,"y":15.6,"kind":"dungeon","name":"Scarlet Monastery","quests":[31513,31515,31526,77644]}
+{"map":388,"x":34.7,"y":81.5,"kind":"dungeon","name":"Siege of Niuzao Temple","quests":[31365,31366,31525]}
+{"map":504,"x":63.8,"y":32,"kind":"raid","name":"Throne of Thunder","quests":[32710,32711,32712,32713,32714,32716]}
+{"map":371,"x":12,"y":52,"kind":"raid","name":"Siege of Orgrimmar","quests":[33147]}
+{"map":390,"x":73.7,"y":42.5,"kind":"raid","name":"Siege of Orgrimmar","quests":[33147]}
+{"map":433,"x":11.1,"y":38.4,"kind":"raid","name":"Siege of Orgrimmar","quests":[33147]}
+{"map":525,"x":49.9,"y":24.8,"kind":"dungeon","name":"Bloodmaul Slag Mines","quests":[37142,37152,37153,37228,37229,37781,37795]}
+{"map":543,"x":7.5,"y":42.7,"kind":"dungeon","name":"Bloodmaul Slag Mines","quests":[37142,37152,37153,37228,37229,37781,37795]}
+{"map":543,"x":51.6,"y":27.2,"kind":"raid","name":"Blackrock Foundry","quests":[37029,37030,37031,37762,37763,37764,37765,37769,37770,37771,37772]}
+{"map":542,"x":35.6,"y":33.6,"kind":"dungeon","name":"Skyreach","quests":[37147,37158,37159,37234,37235,37785,37791]}
+{"map":550,"x":33,"y":38.4,"kind":"raid","name":"Highmaul","quests":[37756,37757,37758,37766,37767,37768]}
+{"map":543,"x":55.2,"y":31.7,"kind":"dungeon","name":"Grimrail Depot","quests":[37151,37160,37167,37209,37242,37243,37782,37794]}
+{"map":535,"x":95.6,"y":92.3,"kind":"dungeon","name":"Shadowmoon Burial Grounds","quests":[37149,37163,37164,37238,37239,37245,37784,37792]}
+{"map":539,"x":31.9,"y":42.6,"kind":"dungeon","name":"Shadowmoon Burial Grounds","quests":[37149,37163,37164,37238,37239,37245,37784,37792]}
+{"map":542,"x":75,"y":15.4,"kind":"dungeon","name":"Shadowmoon Burial Grounds","quests":[37149,37163,37164,37238,37239,37245,37784,37792]}
+{"map":543,"x":59.6,"y":45.7,"kind":"dungeon","name":"The Everbloom","quests":[36813,37150,37165,37166,37227,37240,37241,37786,37790]}
+{"map":543,"x":45.4,"y":13.5,"kind":"dungeon","name":"Iron Docks","quests":[37145,37155,37157,37230,37231,37783,37793]}
+{"map":33,"x":79,"y":33.8,"kind":"dungeon","name":"Upper Blackrock Spire","quests":[37148,37161,37162,37179,37236,37237,37244,37787,37789]}
+{"map":534,"x":47,"y":52.6,"kind":"raid","name":"Hellfire Citadel","quests":[39221,39225,39228,39231,39232,40904]}
+{"map":630,"x":48.1,"y":82.1,"kind":"dungeon","name":"Vault of the Wardens","quests":[39742,43556,44260,44261]}
+{"map":630,"x":61.2,"y":41.1,"kind":"dungeon","name":"Eye of Azshara","quests":[43552,44270,44271,64167]}
+{"map":634,"x":72.6,"y":70.5,"kind":"dungeon","name":"Halls of Valor","quests":[43509,44268,44269]}
+{"map":680,"x":41.2,"y":61.5,"kind":"dungeon","name":"The Arcway","quests":[43555,44262,44263]}
+{"map":634,"x":52.5,"y":45.4,"kind":"dungeon","name":"Maw of Souls","quests":[43553,44266,44267]}
+{"map":641,"x":37.2,"y":50.3,"kind":"dungeon","name":"Black Rook Hold","quests":[43545,44276,44277]}
+{"map":17,"x":22.2,"y":21.8,"kind":"raid","name":"Karazhan","quests":[11031,11032,11033,11034]}
+{"map":42,"x":47,"y":74.9,"kind":"raid","name":"Karazhan","quests":[11031,11032,11033,11034]}
+{"map":50,"x":91.5,"y":3.6,"kind":"raid","name":"Karazhan","quests":[11031,11032,11033,11034]}
+{"map":224,"x":76.1,"y":3.4,"kind":"raid","name":"Karazhan","quests":[11031,11032,11033,11034]}
+{"map":100,"x":46.6,"y":52.8,"kind":"raid","name":"Magtheridon's Lair","quests":[11003,13430]}
+{"map":104,"x":71.1,"y":46.3,"kind":"raid","name":"Black Temple","quests":[49556]}
+{"map":115,"x":87.3,"y":51,"kind":"raid","name":"Naxxramas","quests":[76290,76390,76395,76396,77244,77245]}
+{"map":116,"x":3.1,"y":52.8,"kind":"raid","name":"Naxxramas","quests":[76290,76390,76395,76396,77244,77245]}
+{"map":118,"x":53.8,"y":87.1,"kind":"raid","name":"Icecrown Citadel","quests":[24845]}
+{"map":120,"x":41.6,"y":17.8,"kind":"raid","name":"Ulduar","quests":[13604,13606,13607,13609,13610,13611,13622,13629,13631,13816,13817,13819,13821,13822,13823,13824]}
+{"map":115,"x":61.3,"y":52.6,"kind":"raid","name":"The Ruby Sanctum","quests":[26034]}
+{"map":641,"x":59.1,"y":31.4,"kind":"dungeon","name":"Darkheart Thicket","quests":[43551,44272,44273]}
+{"map":650,"x":49.6,"y":68.5,"kind":"dungeon","name":"Neltharion's Lair","quests":[43554,44264,44265]}
+{"map":641,"x":56.7,"y":37.5,"kind":"raid","name":"The Emerald Nightmare","quests":[43546,43547,43548,43549,43902,43903,43904,43905,43906,43907,43908,43909]}
+{"map":627,"x":65.6,"y":67.4,"kind":"dungeon","name":"Assault on Violet Hold","quests":[43557,44258,44259]}
+{"map":680,"x":43.7,"y":57.3,"kind":"raid","name":"The Nighthold","quests":[43882,43889,43890,43891,43910,43911,43912,43913,43914,43915,43916,43917,43918,43919,43920,43921,45420]}
+{"map":680,"x":50.8,"y":65.5,"kind":"dungeon","name":"Court of Stars","quests":[43550,44274,44275]}
+{"map":42,"x":46.37,"y":70.66,"kind":"dungeon","name":"Return to Karazhan","quests":[44803,44917]}
+{"map":634,"x":71.1,"y":72.8,"kind":"raid","name":"Trial of Valor","quests":[45088]}
+{"map":646,"x":64,"y":21.4,"kind":"raid","name":"Tomb of Sargeras","quests":[47114,47115,47116,47117,47118,47119,47120,47121,47122,47123,47124,47125,47126,47127,47128,47129]}
+{"map":885,"x":54.8,"y":62.5,"kind":"raid","name":"Antorus, the Burning Throne","quests":[48288,48292,48293,48294,48295,48296,48297,48298,48299,48300,48301,48302,48303,48304,48305,48306,49032,49075,49076,49133,49134,49135]}
+{"map":942,"x":83.9,"y":46.9,"kind":"raid","name":"Crucible of Storms","quests":[57155,57156]}
+{"map":1530,"x":40.01,"y":45.53,"kind":"raid","name":"Ny'alotha, the Waking City","quests":[58373,58374,58375,58876]}
+{"map":1527,"x":55.18,"y":43.96,"kind":"raid","name":"Ny'alotha, the Waking City","quests":[58373,58374,58375,58876]}
+{"map":1565,"x":68.7,"y":66.6,"kind":"dungeon","name":"De Other Side","quests":[62456]}
+{"map":1525,"x":46.4,"y":41.5,"kind":"raid","name":"Castle Nathria","quests":[62054,62055,62056]}
+{"map":1543,"x":69.7,"y":32,"kind":"raid","name":"Sanctum of Domination","quests":[64597,64598,64599]}
+{"map":2371,"x":63.6,"y":70.2,"kind":"dungeon","name":"Tazavesh, the Veiled Market","quests":[64571,64607]}
+{"map":2472,"x":36.3,"y":12.1,"kind":"dungeon","name":"Tazavesh, the Veiled Market","quests":[64571,64607]}
+{"map":1970,"x":80.5,"y":53.4,"kind":"raid","name":"Sepulcher of the First Ones","quests":[65259,65717,65762,65763,65764]}
+{"map":2025,"x":74.9,"y":55.1,"kind":"raid","name":"Vault of the Incarnates","quests":[71018,71019,71020,72261]}
+{"map":2024,"x":38.9,"y":64.6,"kind":"dungeon","name":"The Azure Vault","quests":[75388]}
+{"map":2200,"x":27.3,"y":31,"kind":"raid","name":"Amirdrassil, the Dream's Hope","quests":[78355,78421,78429,78473,78600,78601,78602,78876]}
+{"map":2133,"x":48.5,"y":11.9,"kind":"raid","name":"Aberrus, the Shadowed Crucible","quests":[76083,76085,76086]}
+{"map":2213,"x":35,"y":72.4,"kind":"raid","name":"Nerub-ar Palace","quests":[82629,82638,82639,84286]}
+{"map":2216,"x":35,"y":72.4,"kind":"raid","name":"Nerub-ar Palace","quests":[82629,82638,82639,84286]}
+{"map":2255,"x":43.6,"y":90.3,"kind":"raid","name":"Nerub-ar Palace","quests":[82629,82638,82639,84286]}
+{"map":2256,"x":43.6,"y":90.3,"kind":"raid","name":"Nerub-ar Palace","quests":[82629,82638,82639,84286]}
+{"map":69,"x":62.61,"y":24.89,"kind":"dungeon","name":"Dire Maul - Gordok Commons","quests":[77194]}
+{"map":69,"x":60.31,"y":31.42,"kind":"dungeon","name":"Dire Maul - Gordok Commons","quests":[77194]}
+{"map":69,"x":64.85,"y":30.07,"kind":"dungeon","name":"Dire Maul - Gordok Commons","quests":[77194]}
+{"map":2346,"x":42.12,"y":50.41,"kind":"raid","name":"Liberation of Undermine","quests":[89016,89018,89020,89021,89022,89023,89024,89025,89026,89027,89028,89029,89251,89252,89351,89352,89353]}
+{"map":2424,"x":63.5,"y":15.4,"kind":"dungeon","name":"Magisters' Terrace","quests":[11499]}

@@ -9,7 +9,7 @@ local QC_ICON_COMPLETE, QC_ICON_UNATTAINABLE = QC.QC_ICON_COMPLETE, QC.QC_ICON_U
 local QC_FULL_TEXCOORDS, qcSetIcon = QC.QC_FULL_TEXCOORDS, QC.qcSetIcon
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
 local qcMaskAllows, qcQuestName, qcRequestQuestData, qcPrereq = QC.qcMaskAllows, QC.qcQuestName, QC.qcRequestQuestData, QC.qcPrereq
-local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
+local qcNpcName, qcFindPinForQuest, qcEntranceKind = QC.qcNpcName, QC.qcFindPinForQuest, QC.qcEntranceKind
 local qcQuestTooltipWaiting, qcNpcTooltipWaiting = QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting
 local qcHides, qcFactionLevel = QC.qcHides, QC.qcFactionLevel
 local qcSkillRank, qcSkillName, qcRenownNeeds = QC.qcSkillRank, QC.qcSkillName, QC.qcRenownNeeds
@@ -625,11 +625,12 @@ function qcUpdateTooltip(index)
             qcAddQuestTooltipDivider()
         end
 
-        -- Quest Giver Information from qcPinDB.lua: the pin a TomTom waypoint would go to
+        -- Quest Giver Information from qcPinDB.lua: the pin a TomTom waypoint would go to, or the
+        -- entrance of the instance the quest is in
         local giverMapId, giverPin = qcFindPinForQuest(questId)
         if giverPin then
             qcQuestInformationTooltip:AddDoubleLine(
-                qcL.QUESTGIVER,
+                qcEntranceKind(giverPin) and (LOCATION_COLON or "Location:") or qcL.QUESTGIVER,
                 string.format("%s (%s, %.1f, %.1f)", qcNpcName(giverPin, qcNpcTooltipWaiting) or UNKNOWN,
                     GetZoneNameFromZoneID(giverMapId), giverPin[4] or 0, giverPin[5] or 0)
             )

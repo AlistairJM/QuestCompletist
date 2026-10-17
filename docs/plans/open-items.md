@@ -128,6 +128,22 @@ taken. What is left, in one place:
     the same `OrderIndex`, the reading the gates just disproved for prerequisites; one look at a campaign's overview in
     game, or the order of the recap, may settle which chapter a text belongs to. The recap's six quests the data lacks
     (51403, 57692, 67030, 72402, 79573, 88918) are step 6's, and its six of ours in no quest line are listed each sweep.
+- **Opportunity 8, pins at dungeon and raid entrances (17 October 2026):** recounted on 12.1.5.70448 and 1.60.1.70450,
+  built as step 6f (`Sync-EntrancePins.ps1`, both games, [maintenance.md](../maintenance.md#6f-pins-at-dungeon-and-raid-entrances)).
+  The user chose both games with Forever reviewed, and an entrance pin of our own with the game's dungeon or raid icon.
+  - **Retail, at the game's own places:** the probe's map pass records where the game's map draws each instance
+    (`GetDungeonEntrancesForMap`), and the Dungeon Journal's door table missed those icons for 20 of 80 doors (by up to
+    8.6 map points, on phased copies of a zone, off the Blackrock Mountain and Caverns of Time maps, Tazavesh before
+    K'aresh), so on the user's word the pins follow the game: 124 places for 78 instances. The door table places the 7
+    doors of the five the probe's character saw none for. 131 pins, 348 quests.
+  - **Forever, at the corpse points:** its client draws no entrance. 7 doors stand in one zone; the 6 that several zones
+    hold were reviewed by the user and have `SHOW` rows (the old game's zones, not retail's door areas: Blackfathom
+    Deeps in Ashenvale, Uldaman in the Badlands). 13 pins, 132 quests.
+  - **Untried in game:** whether our icon sits well on the game's own dungeon icon on retail (both stand at the same
+    place), and the tooltip's heading and "Location:" line.
+  - **To look at:** Manaforge Omega's 12 quests have no place (the game drew none for the probe's character and the door
+    table has no row); Naxxramas and Forever's City of Dalaran have no corpse point. A decision row can't place an
+    instance with no door yet.
 
 - **The client tables audit (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) went through
   every table and column of retail 12.1.5, Forever 1.60.1 and Era, decoded 621 bits and listed 12 opportunities

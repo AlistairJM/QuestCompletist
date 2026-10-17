@@ -635,7 +635,9 @@ Decision 2 of [open-items.md](open-items.md), approved by the user on 11 October
 758"): the quests of the client's task table that are not world quests get pins. Until then
 `Build-QuestLocationData.ps1` skipped every quest of `QuestV2CliTask`, which holds the world quests and
 bonus objectives the addon never pins but also dailies, seasonal and ordinary quests. It now skips the
-kinds of one table at the top of the script, `$noPinKinds`, keyed by `QuestInfoID`. The same day the user
+kinds of one table at the top of the script, `$noPinKinds`, keyed by `QuestInfoID` (since 17 October 2026 the table is
+`$NoPinTaskKinds` in `PinRules.ps1`, which the script reads as `$noPinKinds` and the entrance pins of step 6f follow
+too). The same day the user
 added Dragonrider Racing to the pins and held the callings ("yes, include racing, hold callings"): racing
 is pinned like the 758, callings stay out until it is known whether the game still offers them.
 
@@ -741,7 +743,7 @@ is pinned like the 758, callings stay out until it is known whether the game sti
   none), Maw Soul Spawn Tracker 273 (1, none), Delve 288 (2, both of ours already pinned), PvP 41 (1, ours), Island Weekly Quest 261 (2, both ours) and VenthyrPartyQuest 272 (47, 44 of ours; none of our 47 in these three has a start). No quest of
   ours of those kinds is waiting for a pin, but a task quest of such a kind that the task-quest change
   (#295, decision 1 of open-items.md) adds to the data will be pinned by the next pipeline run when it has
-  a start place; add its line to `$noPinKinds` first to hold a kind.
+  a start place; add its line to the table (`$NoPinTaskKinds` in `PinRules.ps1`) first to hold a kind.
 - **Checks.** The pipeline (location data, parse, join and `Assemble-PinDB.ps1 -Apply`),
   `Apply-PinNpcIds.ps1`, `Fill-PinNpcIds.ps1`, `Apply-ClientQuestGivers.ps1` and
   `Remove-DuplicatePinQuests.ps1` were run until a round changed nothing. For the 758 that took two

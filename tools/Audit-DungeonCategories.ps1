@@ -23,6 +23,7 @@ param(
 )
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\EntrancePins.ps1"
 
 foreach ($table in "JournalTier", "JournalTierXInstance", "JournalInstance", "Map") {
     if ($Refresh -or -not (Test-Path "$ToolsDir\$table.csv")) {
@@ -31,11 +32,10 @@ foreach ($table in "JournalTier", "JournalTierXInstance", "JournalInstance", "Ma
     }
 }
 
-function Get-Key($s) { return (($s -replace '^The\s+', '') -replace '[^A-Za-z0-9]', '').ToLower() }
+function Get-Key($s) { return Get-InstanceKey $s }
 
-# Categories that group several instances, so they match no single journal instance: Ahn'Qiraj,
-# Auchindoun, Caverns of Time, Coilfang Reservoir, Hellfire Citadel (TBC) and Tempest Keep.
-$hubs = @("3", "14", "36", "39", "95", "205")
+# The categories that group several instances (EntrancePins.ps1), as this report keys categories: by text.
+$hubs = @($InstanceHubCategories | ForEach-Object { "$_" })
 
 $tiers = @{}
 foreach ($row in Import-Csv "$ToolsDir\JournalTier.csv") { if ([int]$row.Expansion -lt 9000) { $tiers[$row.ID] = $row } }
