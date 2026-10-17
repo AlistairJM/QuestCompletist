@@ -255,6 +255,9 @@ Around 38 places read or write it today.
     Forever's empty tables both stay empty.
   - Forever's file gains two empty tables (41 bytes) and loads to the same 1,576.9 KB. The whole addon and
     WoW's 64-bit Lua were not measured.
+  - Measured again on master after #381 (17 October 2026), which added the start items: the file goes from
+    2,859,950 to 3,276,249 bytes (the same +416,299) and loads from 10,668.9 to 11,763.9 KB (+1,095.0 KB).
+    Forever's loads to 1,645.1 KB before and 1,645.0 KB after, the same within a collection's noise.
 
 ## The quest giver recorder (8 October 2026)
 

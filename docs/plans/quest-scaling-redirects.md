@@ -93,10 +93,11 @@ tables stay empty and its behaviour doesn't change; the shared code is gated on 
 Written by `Apply-QuestScaling.ps1` (step 2j, [maintenance.md](../maintenance.md#2j-scaling-quests-levels)),
 from the 12.1.5.70391 sources:
 
-- **`tuning` on 33,250 of the 35,654 retail quests**: 29,811 from the joined quest cache
+- **`tuning` on 33,250 of the 35,687 retail quests**: 29,811 from the joined quest cache
   (`tools\retail_quest_cache_12.1.5.70391.jsonl`) and 3,439 from the task table (`QuestV2CliTask`). 16 are
-  on tuning 0 (14 in the cache, 2 in the task table), which has no range, and 2,388 have none in either, so
-  they get none. World quests are among them.
+  on tuning 0 (14 in the cache, 2 in the task table), which has no range, and 2,421 have none in either, so
+  they get none. World quests are among them. The 2,421 include the 33 item-started quests #380 added
+  (35,654 quests before it), which neither source has.
 - **`data\tunings.jsonl`, 537 records**, one per tuning our quests are on that a `ConditionalContentTuning`
   row names and the probe sampled: `{"id":73,"level":30,"redirects":[0,13,34],"samples":[11,35,37]}`.
   `level` is what the samples answered at the cap in the probe, `redirects` the tuning's `RedirectEnum`
@@ -127,8 +128,10 @@ from the 12.1.5.70391 sources:
   (Lua 5.1 on this PC, 32-bit, `dofile` in a fresh state, memory after two full collections): 10,434.2 KB
   before, 11,529.4 KB with this pull request (+1,095.2 KB), and 12,553.4 KB with all 33,250 (+2,119.2 KB),
   as 33,250 keys take a hash part of 65,536 slots. The file grows from 2,822,865 to 3,239,164 bytes. Forever's gains two empty tables (41 bytes) and loads to the same size.
+  On master after #381 (17 October 2026), with the start items: 10,668.9 KB before and 11,763.9 KB after
+  (+1,095.0 KB), and 2,859,950 to 3,276,249 bytes, the same +416,299.
 - **`maxLevel` stays as it is**, the fallback. It is the per-tuning level without loss: for every one of the
-  35,654 quests, `maxLevel` is its tuning's level where that is above the quest's minimum and is missing
+  35,687 quests, `maxLevel` is its tuning's level where that is above the quest's minimum and is missing
   otherwise, and no quest has a `maxLevel` without a tuning. Replacing `qcQuestMaxLevel` (27,637 keys, a
   32,768-slot table) by a level per tuning would save about 1 MB, but needs the addon to read it, which this
   pull request doesn't change, and `qcQuestTuning` to hold the 3,530 quests that scale on unredirected
@@ -200,8 +203,8 @@ against a game whose levels follow the client's 12.1.5.70391 redirect and Conten
 - With no quest name held, drawing all 544 maps' pins (with the low-level filter on and off) and a
   continent of every zone, and hovering the continent's 178 icons, ask the game for nothing, as on master.
   With every name held, hovering all 9,667 pins and a search ask for nothing either. With none held, those
-  two ask for the names they show: 25,805 quests, 1,163 of them samples, the same quests as with the samples
-  taken out of the data. Building every one of the 482 categories in turn asks for one sample of each of the
+  two ask for the names they show: 25,809 quests (25,805 before master's #379 to #381 were merged in), 1,163
+  of them samples, the same quests as with the samples taken out of the data. Building every one of the 482 categories in turn asks for one sample of each of the
   427 tunings that needed one.
 
 The in-game check is open-items.md's "Scaling quests in an Endeavor's zones", under "To try in game": 47919

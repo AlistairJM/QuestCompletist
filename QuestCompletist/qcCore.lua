@@ -1563,6 +1563,26 @@ local function qcQuestDataArrived(questId, success)
 	qcScheduleNameRedraw()
 end
 
+--[[ Items' names in the client's language, for "Starts From" ]]--
+-- The game names an item it holds; for one it doesn't, it asks the server and ITEM_DATA_LOAD_RESULT says when the
+-- item has come, which redraws the tooltip still waiting for it.
+local qcItemTooltipWaiting = {}
+
+local function qcItemName(itemId)
+	local name = C_Item.GetItemNameByID(itemId)
+	if name and name ~= "" then return name end
+	qcItemTooltipWaiting[itemId] = true
+	C_Item.RequestLoadItemDataByID(itemId)
+	return nil
+end
+
+local function qcItemDataArrived(itemId)
+	if not qcItemTooltipWaiting[itemId] then return end
+	qcItemTooltipWaiting[itemId] = nil
+	qcNameRedrawTooltip = true
+	qcScheduleNameRedraw()
+end
+
 --[[ Quest givers' names in the client's language ]]--
 -- A creature's tooltip data names it in the client's language. For a creature the client hasn't
 -- cached, the reply is empty and TOOLTIP_DATA_UPDATE fires when the name arrives; an empty reply has
@@ -2587,6 +2607,8 @@ local function qcEventHandler(self, event, ...)
 		qcNpcDataUpdated()
 	elseif (event == "QUEST_DATA_LOAD_RESULT") then
 		qcQuestDataArrived(...)
+	elseif (event == "ITEM_DATA_LOAD_RESULT") then
+		qcItemDataArrived(...)
 	elseif (event == "ADVENTURE_MAP_OPEN") then
 		qcRefreshMapProviders()
 	elseif (event == "CALENDAR_UPDATE_EVENT_LIST") then
@@ -2683,6 +2705,7 @@ function qcQuestCompletistUI_OnLoad(self)
 	self:RegisterEvent("ADVENTURE_MAP_OPEN")
 	self:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
 	self:RegisterEvent("QUEST_DATA_LOAD_RESULT")
+	self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 	self:RegisterEvent("TOOLTIP_DATA_UPDATE")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	-- Registering an event the client doesn't have raises an error.
@@ -2711,5 +2734,6 @@ QC.qcZoneQuests = qcGetZoneQuests
 QC.CHAT_TITLE = QCADDON_CHAT_TITLE
 QC.qcNpcName, QC.qcNpcSubtitles = qcNpcName, qcNpcSubtitles
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
+QC.qcItemName, QC.qcItemTooltipWaiting, QC.qcItemDataArrived = qcItemName, qcItemTooltipWaiting, qcItemDataArrived
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting
 QC.qcPvpMark, QC.QC_ICON_PVP = qcPvpMark, QC_ICON_PVP

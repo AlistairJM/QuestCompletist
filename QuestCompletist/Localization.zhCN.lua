@@ -97,6 +97,7 @@ qcLocalize = setmetatable({
 	RANKLEVEL = "等级 %d", -- Needs review
 	QUESTGIVER = "任务提供者：", -- Needs review
 	NOQUESTGIVER = "未知，或自动接受的任务", -- Needs review
+	STARTSFROM = "起始物品：", -- Needs review
 	REPAMOUNT = "%d声望", -- Needs review
 	NEWDATAINTRO = "Quest Completist之前不知道以下信息。请在CurseForge上反馈，帮助提高插件的准确性。", -- Needs review
 	NEWDATAQUEST = " - 数据库中没有此任务。", -- Needs review

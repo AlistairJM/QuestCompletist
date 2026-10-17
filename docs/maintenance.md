@@ -84,6 +84,12 @@ categories, the zone table, reputation rewards, storylines and so on).
   values of its `ConditionalContentTuning` rows, and `samples` the quests to read its level from in the
   game, the first preferred ([quest-scaling-redirects.md](plans/quest-scaling-redirects.md)). Ascending
   by `id`.
+- `data\startitems.jsonl` (and `data\forever\startitems.jsonl`), one item that starts a quest per line,
+  written only by `Sync-QuestStartItems.ps1` (step 6e):
+  `{"item":32385,"quest":11002,"side":1,"level":27}`. `side` (1 Alliance, 2 Horde), `level`, `skill` and
+  `skillRank`, `rep` and `repRank` (0 Hated to 7 Exalted) and `races` (ChrRaces IDs) are what the item itself
+  requires, each left out when the item has none. It becomes `qcQuestStartItems` at the end of
+  `qcQuestData.lua`; an item whose quest has left `quests.jsonl` is left out of it until step 6e drops it.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -124,7 +130,7 @@ game scales it to for a character with the probe's redirect bits (`qcShownQuestL
 shown, then the row's level, then the name, so a quest that doesn't scale keeps the order it had. A
 level of 0 or below is no level: the list prints the bare name with no bracket, the low-level filter
 (the map's too) never counts the quest as low, and the sort puts it first. Retail's `qcQuestMaxLevel`
-holds 27,637 of its 35,654 quests (16 October 2026); Forever's quests don't scale, so its table is
+holds 27,637 of its 35,687 quests (17 October 2026); Forever's quests don't scale, so its table is
 empty. `qcQuestMinLevel[questId]` is the level a character needs to
 take the quest, and the tooltip's "Requires Level" line, the grey pins and the requirements-not-met
 filter read `qcQuestMinLevel[questId] or level`, where 0 or below asks for nothing. The table holds only
@@ -381,10 +387,11 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 6b | Task quests the client lists and the database lacks (world quests, bonus objectives, world events), no pins | `Add-TaskQuests.ps1 -WhatIf`, then without `-WhatIf`; then steps 1, 1d, 2, 2g, 2j, 2i, 2c and 4 again and `File-WeeklyEventQuests.ps1`, for the new rows | The applying run |
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
+| 6e | The items that start quests, both games, and the quests whose faction their items contradict (after 6 and 6b add quests; Forever's in step 10) | `Sync-QuestStartItems.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -1589,7 +1596,8 @@ none of the 33 has a ceiling yet; before them, 2,308 and 23; with the 22 of step
 day, 35,628 quests and 2,362 with no tuning, as none of the 22 is in the cache or the task table, and a
 rerun changes nothing; with the 24 of its noTitle API scan, 35,654 quests and 2,388 with no tuning, 2,364
 before them with #368's 94954 and 95012, as none of the 24 is in the cache or the task table either, and a
-rerun changes nothing). By ceiling: 90 (11,988), 30 (6,411), 35 (2,357), 70
+rerun changes nothing; with the 33 of the item-started gap run (#380, 17 October), 35,687 quests and 2,421
+with no tuning, as none of the 33 is in the cache or the task table, and no ceiling changed). By ceiling: 90 (11,988), 30 (6,411), 35 (2,357), 70
 (2,113), 80 (1,629), 60 (1,524), 45 (589), 40 (382), 10 (327), 20 (175) and 142 at ten other levels. 237 of
 them are level 0, so the list now shows them at a level; 4 have a level of their own above their ceiling
 (24758, 24759 and 28167, level 30 and scaling to 10; 51534, level 50 and to 49), so at the cap the list
@@ -1686,6 +1694,12 @@ tunings redirected; by value 0 (638), 1 (63), 2 (3), 3 (34), 4 (6), 5 (165), 6 (
 10 (3), 11 (41), 12 (67), 13 (498), 14 (29), 15 (2), 16 to 20 (4 each), 21 to 25 (3 each), 26 and 27 (2
 each), 28 and 29 (1 each), 30 (105), 31 (3), 32 (19), 33 (35), 34 (772), 35 (3), 38 (1), 39 (2) and 40 (2).
 The tables' keys: `qcQuestMaxLevel` 27,637 and `qcQuestTuning` 28,680, 5,131 and 4,088 under 32,768.
+After master's #379 to #381 were merged in (17 October 2026), the run was made again on master's `quests.jsonl`
+(35,687 quests), still with `-Build 12.1.5.70391`, the probe's and the quest cache's build (the client was by then
+12.1.5.70448, whose `ContentTuning` table is byte for byte 70391's). The same 33,250 quests got the same tunings.
+The 33 item-started quests of #380 got none, as neither the quest cache nor the task table has them, so 2,421 have
+none in either. No tuning was new, `tunings.jsonl` kept its 537 records and 1,432 samples, and no `maxLevel`
+changed. None of the four split quests #379 gave a faction (11002, 38194, 38202 and 56071) is a sample.
 
 Samples kept, measured on a scratch copy of the data, applied first with the 14 October probe file (518
 tunings with samples) and then with the 15 October one: before stored samples were kept, the second run
@@ -2341,6 +2355,27 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\Fetch-GapQuestData.ps1
 
 The fetch reads a quest's cached record or `.404` instead of asking again, so only the quests new to the report reach the API (all 20,305 took about half an hour in two halves at once). Then run the report again: each quest the API served has its title and is a candidate, a quest with no evidence or an internal title, to decide as above. A `.404` stays until it is deleted, so to ask again about a quest the API didn't serve (99585 once the API's namespace is past 12.1.5_70077, or every 404 when a patch adds quests to the API), delete its `.404` first, or fetch into a fresh folder and copy its answers in, deleting the `.404` of each quest it now serves: never keep a `.json` and a `.404` for one quest, as `Fetch-GapQuestData.ps1` and `Audit-QuestAccuracy.ps1` read the `.404` first and count the quest as not served, while `Find-MissingQuests.ps1` and `Sync-QuestNamesFromApi.ps1` read the `.json` (on 16 October 2026 no quest had both).
 
+**The item-started gap run (16 October 2026).** Of the 324 items that start retail quests the data lacked (step 6e),
+the report took 91 as candidates and left the rest out (retired 141, disabled 42, no title 31, internal 17). The API
+served 88 of the 91 once asked (the fetch of above, on the 88 it hadn't asked), so serving says little about whether a
+quest can still be taken. On the user's word (client tables audit, opportunity 2) 33 went in: the 32 Midnight ones
+(94834 to 97910: the Zul'Aman idols, the Void Assault and Ritual Site finds, the Coiled Isle's fishing finds, the
+Vaults of Atal'Utek relics and others) and 11003, the Horde's The Fall of Magtheridon, Horde like its item; five dead
+ones are `SKIP` rows (40335 "DISABLED", 52991 "[REMOVED]", 45045 whose item is "ZZZ OLD", 28462 and 50195, which the
+API doesn't serve); the 52 older candidates and 93852 stay in the report. Placement filed 23 by API area; by hand,
+95355 under 1510 Zul'Aman with its three siblings, the four Void Assault finds (94920, 95069 to 95071) under 1508
+Voidstorm with 38 of the data's 50 Void Assaults quests, and the four Ritual Site ones (95547, 95548, 95551, 95554)
+under 1512 Silvermoon City with all 12 of the data's; 97910 Cracked Keystone stays in 0, with the other Midnight
+meta quests. None has an API daily or weekly flag, a client start point or a pin. Steps 1, 1c, 1d, 2, 2b, 2c, 2d,
+2g, 2i, 2j, 7 and `File-WeeklyEventQuests.ps1` ran on master's data and the branch's: step 2 added 11003's 1,000
+Thrallmar (947), the API's, and counted the 33 in G (the quest cache has none of them; baseline rewritten with
+`-AcceptPartialCache`); step 2c gave 95933 Traces in the Dark the four Void Assault finds as a prerequisite, from the
+client's task table; step 1 lists 11003's faction, which the API leaves unsaid; nothing else changed. The report's
+baseline went from 542 to 505 undecided candidates. `Build-AddonData.ps1 -Check` gives 35,687 quests,
+`Show-RemovedQuests.ps1` none, `Audit-QuestTables.ps1 -OwnDataOnly` master's 268 findings, and
+`Test-QuestReachability.lua` master's report but the quest count. The probe has never asked the 33, so the probe
+and step 3 are the next sweep's for them.
+
 The inserter then files the new quests itself, by running `Place-UncategorisedQuests.ps1` on the
 same data. It lists any new quest it couldn't place; those stay in category 0, Uncategorized. That
 run covers every quest in category 0, not only the new ones, so it also files older ones it can: on
@@ -2530,6 +2565,51 @@ the newest build, and files the new rows through a scratch copy of the data and
   by hand. Step 1d found nothing, step 2c gave 5 of the 11 a prerequisite and
   changed no old row, and step 4 gave none of them a storyline. The quest cache has none of the 11, so
   `Compare-QuestReputation.ps1` counts them in G.
+
+### 6e. The items that start quests
+
+Both games, every sweep: retail after steps 6 and 6b have added quests, Forever in step 10 after
+`Build-AddonData.ps1`. A quest that starts from an item has no giver and no pin; the quest list's tooltip says
+"Starts From: <item>" under the giver line, named by the game in the player's language, and below it what the item
+itself requires, in the game's own words: its side, when it isn't the character's and the quest isn't the
+character's side's either; its level, when above the quest's minimum; its profession, its reputation and its races.
+That is information only and hides nothing: whether an item's requirement stops the quest starting is unproven
+(open-items row 19; [plans/client-tables-audit.md](plans/client-tables-audit.md), opportunity 2).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestStartItems.ps1 -Game retail -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>
+```
+
+It reads the build's `ItemSparse`, `ChrRaces`, `ItemEffect`, `ItemXItemEffect` and `SpellEffect` (downloaded into
+`tools\` as `<table>-<build>.csv` when missing): every item that starts one of our quests, either because its
+`StartQuestID` names it or because one of its effects casts a spell with a `QUEST_START` effect (150, the quest in
+`EffectMiscValue_0`) when the item is used, picked up or looted (`ItemEffect.TriggerType` 0, 5, 7, 9 or 10, TrinityCore's
+`ItemSpelltriggerType`; client tables audit, opportunity 3). Where both speak, the spell's quest wins, as it is what the
+item does: six Legion scouting reports name the placeholder 33931 "This Is Not a Quest" as their `StartQuestID` and
+start their real quest by their spell. Each item comes with its faction flag (`Flags_1` 0x1 Horde, 0x2 Alliance),
+`RequiredLevel`, `RequiredSkill` and `RequiredSkillRank`, `MinFactionID` and `MinReputation`, and its races
+(`AllowableRaces_0/_1` on retail, `AllowableRace_0/_1` on Forever, two words of the race mask over
+`ChrRaces.PlayableRaceBit`), where races that are exactly one side's playable ones make the item that side's. It writes
+`startitems.jsonl` and rebuilds the Lua, and says what changed. It also lists the quests whose start items are all
+for one side while the data gives the quest another faction: a finding to decide, since the quest's own data may be
+the wrong one. A quest whose own record in the newest `tools\<game>_quest_cache_*.jsonl` names the data's faction
+isn't listed: the server's record wins (Forever's 79358, whose item's races are the Horde's, is Alliance in its
+record). The start-item quests the data lacks are step 6's (`Find-MissingQuests.ps1`, kind `candidate` with
+evidence `startItem`). `Test-SyncQuestStartItems.ps1` tests the reading and the data file, and
+`Test-QuestTooltip.lua` (both TOCs) the line.
+
+First run, 16 October 2026: retail 12.1.5.70391, 1,459 items for 1,431 of our 35,654 quests (175 with a side, 577 a
+level, 41 a profession, 16 a reputation, none a race list); Forever 1.60.1.70425, 413 items for 408 of 5,105 quests
+(4 sides, 386 levels, 3 professions, 3 reputations). It found four retail quests whose items contradicted the data,
+each one of a pair Blizzard split by faction, and the user set them (11002 and 38194 Alliance, 38202 and 56071
+Horde; the reasons are in `quest-accuracy-manual-decisions.csv`): the API and the quests' own records name no
+faction for them, so step 1 leaves them be. 324 retail and 139 Forever items start quests we lack.
+On 17 October 2026 the items that start a quest by their spell were added (opportunity 3): retail 1,533 items for
+1,503 quests (36 items more, 39 quests more, the six scouting reports moved off 33931), among them 52221 Mission Report:
+Stonefist Watch and 39718 Paradise Lost; Forever 431 items for the same 408 quests, its 18 "Deputization Authorization"
+items beside the Duskwood missions' own. 15 items still name 33931, a quest of the data whose title says it isn't
+one (open-items).
 
 ### 7. Quests that may no longer be obtainable
 
@@ -3692,12 +3772,12 @@ git diff --stat
   TOCs, and the release that ships it tells players to fully close and restart World of Warcraft.
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
-  or pins were meant to be added or removed, and for a game with a `tunings.jsonl` (retail: 537 on 16
-  October 2026) its tunings. As of 16 October 2026 they're 35,654 quests (with the
-  Darkspear Dash's 94954 and the Gnomeregan Run's 95012, 35,630, and then the noTitle API scan's 24 of
-  step 6) and 13,557 pins for retail (16,084 before
+  or pins were meant to be added or removed, then for a game with a `tunings.jsonl` (retail: 537 on 16
+  October 2026) its tunings, and its start items (step 6e). As of 17 October 2026 they're 35,687 quests (with the
+  Darkspear Dash's 94954 and the Gnomeregan Run's 95012, 35,630, then the noTitle API scan's 24 of
+  step 6, 35,654, and the item-started gap run's 33) and 13,557 pins for retail (16,084 before
   the nameless pins went one per spot, 13,547 before the second gap run's quests got theirs), and
-  5,105 quests and 1,706 pins for Forever.
+  5,105 quests and 1,706 pins for Forever; 1,533 start items for retail and 431 for Forever.
 - The diff should touch only what the change is about. For data changes, check that only the
   intended field moved on each line of the data files.
 - The addon's files use Windows (CRLF) line endings. A script that writes them must keep that.

@@ -37,7 +37,7 @@
 {"id":26881,"name":"In Search of Aluwyn","level":10,"zone":"Blackfathom Deeps","category":21,"type":1,"faction":1,"race":67108863,"class":8191,"maxLevel":30,"tuning":200}
 {"id":6922,"name":"Baron Aquanis","level":10,"zone":"Blackfathom Deeps","category":21,"type":1,"faction":2,"race":67108863,"class":8191,"maxLevel":30,"tuning":200}
 {"id":27498,"name":"Signal the Attack","level":30,"zone":"Twilight Highlands","category":252,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":546,"maxLevel":35,"tuning":6872}
-{"id":11002,"name":"The Fall of Magtheridon","level":30,"zone":"Magtheridon's Lair","category":130,"type":1,"faction":3,"race":67108863,"class":8191,"tuning":820}
+{"id":11002,"name":"The Fall of Magtheridon","level":30,"zone":"Magtheridon's Lair","category":130,"type":1,"faction":1,"race":64175181,"class":8191,"tuning":820}
 {"id":31473,"name":"The Strength of One's Foes","level":35,"zone":"","category":236,"type":1,"faction":3,"race":67108863,"class":8191,"tuning":817}
 {"id":31468,"name":"Trial of the Black Prince","level":35,"zone":"","category":236,"type":1,"faction":3,"race":67108863,"class":8191,"tuning":817}
 {"id":31481,"name":"Fear Itself","level":35,"zone":"","category":236,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[[31468,30118],31473]}
@@ -13804,7 +13804,7 @@
 {"id":38191,"name":"Missive: Assault on the Iron Siegeworks","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38192,"name":"Missive: Assault on the Everbloom Wilds","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38193,"name":"Missive: Assault on the Broken Precipice","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
-{"id":38194,"name":"Missive: Assault on the Gorian Proving Grounds","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":3,"race":67108863,"class":8191,"tuning":816}
+{"id":38194,"name":"Missive: Assault on the Gorian Proving Grounds","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38195,"name":"Missive: Assault on Mok'gol Watchpost","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38196,"name":"Missive: Assault on Darktide Roost","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38197,"name":"Missive: Assault on Socrethar's Rise","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
@@ -13812,7 +13812,7 @@
 {"id":38199,"name":"Missive: Assault on Pillars of Fate","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38200,"name":"Missive: Assault on Skettis","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
 {"id":38201,"name":"Missive: Assault on Shattrath Harbor","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":1,"race":64175181,"class":8191,"tuning":816}
-{"id":38202,"name":"Missive: Assault on the Gorian Proving Grounds","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":3,"race":67108863,"class":8191,"tuning":816}
+{"id":38202,"name":"Missive: Assault on the Gorian Proving Grounds","level":40,"zone":"Garrison Support","category":290,"type":2,"faction":2,"race":61658034,"class":8191,"tuning":816}
 {"id":38203,"name":"Challiane Vineyards","level":10,"zone":"Azsuna","category":1001,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":5758,"maxLevel":90,"tuning":331}
 {"id":38204,"name":"Assault on the Gorian Proving Grounds","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":40,"tuning":816}
 {"id":38205,"name":"Assault on the Gorian Proving Grounds","level":0,"zone":"Garrison Support","category":290,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":40,"tuning":816}
@@ -22745,7 +22745,7 @@
 {"id":56057,"name":"The Soulbinder","level":50,"zone":"Nazjatar","category":1065,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":690}
 {"id":56063,"name":"Dark Tides","level":50,"zone":"Nazjatar","category":1065,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":886,"maxLevel":90,"tuning":690}
 {"id":56064,"name":"Assault: The Black Empire","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":703}
-{"id":56071,"name":"De-Synced Vibro Blade","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":3,"race":67108863,"class":8191,"minLevel":10,"maxLevel":60,"tuning":7209}
+{"id":56071,"name":"De-Synced Vibro Blade","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":10,"maxLevel":60,"tuning":7209}
 {"id":56072,"name":"De-Synced Vibro Blade","level":50,"zone":"Mechagon","category":1063,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":10,"maxLevel":60,"tuning":7209}
 {"id":56074,"name":"Void Conduit","level":50,"zone":"Vale of Eternal Blossoms","category":261,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":703}
 {"id":56075,"name":"Stolen Power","level":80,"zone":"Nazjatar","category":1065,"type":4,"faction":2,"race":61658034,"class":8191,"minLevel":50,"maxLevel":90,"tuning":690}
@@ -35407,7 +35407,7 @@
 {"id":95922,"name":"Special Assignment: Face the Swarm","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228,"tuning":5381}
 {"id":95923,"name":"Ruin Runner Rush","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":6228,"tuning":5381}
 {"id":95931,"name":"Open Sea Fishing","level":90,"zone":"The Coiled Isle","category":1513,"type":128,"faction":3,"race":67108863,"class":8191,"profession":16384,"storyline":6228,"prereq":96113,"tuning":5381}
-{"id":95933,"name":"Traces in the Dark","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":3321}
+{"id":95933,"name":"Traces in the Dark","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":[94920,95069,95070,95071],"maxLevel":90,"tuning":3321}
 {"id":95942,"name":"Prey: Venom Ambush","level":80,"zone":"The Coiled Isle","category":1514,"type":128,"faction":3,"race":67108863,"class":8191,"storyline":5954,"maxLevel":90,"tuning":5224}
 {"id":95952,"name":"Temple Patrol: Breath and Bile","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"tuning":6146}
 {"id":95953,"name":"Temple Patrol: Congealed Venom","level":90,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191,"tuning":6146}
@@ -35652,3 +35652,36 @@
 {"id":54979,"name":"Against Overwhelming Odds","level":50,"zone":"","category":1095,"type":128,"faction":2,"race":67108863,"class":8191,"pvp":1}
 {"id":84688,"name":"Against Overwhelming Odds","level":80,"zone":"","category":1095,"type":128,"faction":2,"race":67108863,"class":8191,"pvp":1}
 {"id":98406,"name":"A Curated Gift","level":1,"zone":"","category":1505,"type":128,"faction":3,"race":67108863,"class":8191}
+{"id":11003,"name":"The Fall of Magtheridon","level":30,"zone":"Magtheridon's Lair","category":130,"type":1,"faction":2,"race":61658034,"class":8191}
+{"id":94834,"name":"Blessings of Abundance","level":80,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":94840,"name":"Blessings of the Depths","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":94910,"name":"Blessings of Growth","level":83,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":94920,"name":"Hal'hadar Battery Core","level":80,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95069,"name":"Torn Twilight Missive","level":80,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95070,"name":"Permafrosted Keystone","level":80,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95071,"name":"Enchanted Naga Scroll","level":80,"zone":"","category":1508,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95355,"name":"The Messenger","level":90,"zone":"Zul'Aman","category":1510,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95547,"name":"Ritual Site Challenge Report: Tendrils","level":90,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95548,"name":"Tainted Sample","level":90,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95551,"name":"Misappropriated Treasures","level":90,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":95554,"name":"Questionable Power","level":90,"zone":"","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":96612,"name":"Ancient Curiosity: Combat","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":96615,"name":"Ancient Curiosity: Utility","level":80,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":96801,"name":"Calling All Combatants!","level":90,"zone":"Silvermoon City","category":1512,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97026,"name":"Esoteric Ingredients","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97455,"name":"Call of the Bell","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97457,"name":"Fits Like a Glove","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97458,"name":"Tackled and Boxed","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97459,"name":"Something Smelly","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97460,"name":"Lightly Salted","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97461,"name":"Cursed Fishing 101","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97462,"name":"Rocky Shores","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97463,"name":"Just a Normal Knife","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97464,"name":"A Dash of Poison","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97465,"name":"The Intended Way to Fish","level":90,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97616,"name":"Corrosive Gifts: Corrosive Power","level":80,"zone":"The Coiled Isle","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97661,"name":"The Protection of the Med'jai","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97662,"name":"The Winds of Tok'jara","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97668,"name":"The Watchful Gaze of Szarith","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97669,"name":"The Luck of the Bound Spirit","level":90,"zone":"Vaults of Atal'Utek","category":1513,"type":1,"faction":3,"race":67108863,"class":8191}
+{"id":97910,"name":"Cracked Keystone","level":80,"zone":"","category":0,"type":1,"faction":3,"race":67108863,"class":8191}
