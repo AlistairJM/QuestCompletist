@@ -2,6 +2,17 @@
 ## Version: 113.4
 ## Title: Quest Completist
 ## Notes: Enables you to see what quests you have completed, and what ones you have left to do.
+## Category: Quests
+## Category-deDE: Quests
+## Category-esES: Misiones
+## Category-esMX: Misiones
+## Category-frFR: Quêtes
+## Category-itIT: Missioni
+## Category-koKR: 퀘스트
+## Category-ptBR: Missões
+## Category-ruRU: Задания
+## Category-zhCN: 任务
+## Category-zhTW: 任務
 ## SavedVariables: qcSettings qcFlaggedButSeen qcQuestRecorder
 ## SavedVariablesPerCharacter: qcCharacterCompletions qcCompletedQuests QC_LastDailyReset QC_LastWeeklyReset qcMinimapIcon
 
