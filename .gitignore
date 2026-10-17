@@ -40,6 +40,7 @@ tools/*
 !tools/Test-Settings.lua
 !tools/Test-Completions.lua
 !tools/Test-NpcNames.lua
+!tools/Test-QuestScaling.lua
 !tools/ForeverProbe/
 tools/ForeverProbe/QCForeverProbe/QuestIDs_*.lua
 tools/ForeverProbe/QCForeverProbe/NpcIDs_*.lua

@@ -1083,4 +1083,5 @@ bullet).
   user took option E ([quest-scaling-redirects.md](quest-scaling-redirects.md)), which brings back part of this
   recommendation: `GetQuestDifficultyLevel` asked live, of a sample quest per tuning whose data the client holds,
   with the stored ceiling as the fallback, and the map never asking the server. Its data and tools came first
-  (each quest's `tuning`, `data\tunings.jsonl`, step 2j); the addon code follows.
+  (each quest's `tuning`, `data\tunings.jsonl`, step 2j); the addon code followed on 17 October 2026 (`qcTuning`
+  in `qcCore.lua`, checked offline by `Test-QuestScaling.lua`, untried in game).

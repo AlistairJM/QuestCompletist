@@ -245,11 +245,14 @@ Around 38 places read or write it today.
     anything about (on a tuning no redirect names, or one with no sample).
   - The room left before that step: 4,088 keys for `qcQuestTuning` (28,680), and 5,131 for `qcQuestMaxLevel`
     (27,637). If `qcQuestTuning` also held the 3,530 quests that scale on unredirected tunings (32,210 keys,
-    left to the second pull request), 558. A sweep that gives a few thousand more quests a sampled tuning,
+    so that `qcQuestMaxLevel` could go), 558; the addon code (17 October 2026) kept `qcQuestMaxLevel` for that room. A sweep that gives a few thousand more quests a sampled tuning,
     such as a new expansion's, would cross it, so step 2j prints both tables' keys against 32,768 and flags a
     table over it ([maintenance.md](../maintenance.md#2j-scaling-quests-levels)).
   - `dofile` takes 80.3 and 85.3 ms before and 90.4 and 86.3 ms after, too noisy to give more than "a few ms";
     running the compiled file alone takes 10.6 and 10.8 ms before and 11.5 and 11.4 ms after, under 1 ms more.
+  - The code that reads them (17 October 2026) keeps a level per tuning read since the last view was built
+    (537 at most) and, from the first quest data that arrives, an index of the 1,432 samples by tuning. With
+    Forever's empty tables both stay empty.
   - Forever's file gains two empty tables (41 bytes) and loads to the same 1,576.9 KB. The whole addon and
     WoW's 64-bit Lua were not measured.
   - Measured again on master after #381 (17 October 2026), which added the start items: the file goes from
