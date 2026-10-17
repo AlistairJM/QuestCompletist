@@ -1789,8 +1789,8 @@ Forever's tables are empty, so it reads no level and asks for no sample. With th
 every sample held, every retail quest reads its stored level at levels 1, 10, 30, 60 and 90 but 46 (16
 October 2026's data). Those are quests at their tuning's minimum whose own level isn't it (open-items.md row 8), such as
 50417 "Ruin Has Come" (level 10, minimum 50, tuning 464 at 50): they read their tuning's level, the game's,
-once a sample of the tuning is held, and their own until then. Whether they should, or be held to their
-stored level, is the user's call (open-items.md, row 9).
+once a sample of the tuning is held, and their own until then. The user chose that they should, on 17 October
+2026 (open-items.md, row 9).
 `Test-QuestScaling.ps1` tests the tool, `Test-QuestReachability.lua` the stored levels and
 `Test-QuestScaling.lua` the levels read from samples (step 9).
 
