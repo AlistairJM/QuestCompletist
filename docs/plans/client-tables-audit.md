@@ -304,3 +304,10 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
   the quest chain's say; the zone is a report column. The giver rule agrees with Blizzard's side for 5,964 of 5,974
   retail quests and 233 of 234 on Forever, but where Blizzard names no side the emulators can miss the other side's
   giver: 91 retail quests are kept open by `KEEP` rows (open-items.md). Opportunity 7 is next, after open-items row 17.
+- 2026-10-17: open-items row 17 built as step 1e (#391). **Opportunity 7 is done**, recounted on 12.1.5.70448: steps
+  2c, 2l and 2m had taken the chapter gates' texts, covenants and the current campaign's order. A chapter gate as its
+  first quest's prerequisite was dropped: 24 of the 47 gates that name a quest name one in the same chapter or a later
+  one. The recap (`LoreTextPublic`) became step 2q, a check of our chains against its order: it found five backwards
+  links in the Shadowlands Maw intro (fixed by step 2c's decisions) and four pairs where Blizzard's quest lines back our
+  order (kept). Whether step 2m's chapter texts sit on the right quest is a follow-up (open-items.md). Opportunity 8 is
+  next.

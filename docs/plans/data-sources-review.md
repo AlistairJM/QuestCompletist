@@ -512,6 +512,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-17: step 1e built, for the race lists (open-items row 17, the user's choices of 12 and 17 October): `Compare-QuestRaces.ps1` compares, in both games, the races our data allows with the list the game's record gives (the quest cache), and each difference needs a `FIX` or `KEEP` row in `quest-race-decisions.csv`. On the 12.1.5.70391 cache 90 retail quests differed; 87 took the game's list (4 contradictions, 19 stale masks, 46 narrowings, 18 shown or crossing) and 3 are kept; Forever had none. The review's other half of step 1e, the restrictions of ours that no source repeats ("Unsupported faction and class restrictions" in the appendix), is counted by it (1,679 retail and 1,344 Forever quests where the game lists no races) but not yet reviewed.
 
+- 2026-10-17: the campaign recap (`LoreTextPublic`) as a check of retail's prerequisite chains, step 2q (the client tables audit's opportunity 7, the user's choices). Where it and Blizzard's quest lines disagree our chains follow the lines; where neither the API nor TrinityCore names a link and it runs against both, it is fixed by a decision row. Its first run found five backwards links in the Shadowlands Maw intro, legacy links in the order of line 1267 (which lists its quests by ID) rather than line 1108 (the story's order), now step 2c's `SET` and `NONE` rows. A campaign chapter's gate was not taken as a prerequisite: half the gates that name a quest name one in the same or a later chapter.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

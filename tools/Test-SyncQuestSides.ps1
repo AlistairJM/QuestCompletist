@@ -92,7 +92,7 @@ Equal (Get-ZoneSide $areas 13) 3 'Z1: a zone of both'
 Equal (Get-ZoneSide $areas 14) 0 'Z1: a zone that says nothing'
 Equal (Get-ZoneSide $areas 999) 0 'Z1: a zone the table lacks'
 
-Equal ((0, 3, 7, 1, 2, 5) | ForEach-Object { Test-SideOpen $_ }) -join ',' 'True,True,True,False,False,False' 'O1: open to both: 0, both bits, both and neutral; one side alone is not'
+Equal (((0, 3, 7, 1, 2, 5) | ForEach-Object { Test-SideOpen $_ }) -join ',') 'True,True,True,False,False,False' 'O1: open to both: 0, both bits, both and neutral; one side alone is not'
 function Result($ours, $blizzard, $reach, $keep) { $r = Get-QuestSideResult $ours $blizzard $reach $keep; if ($r) { "$($r.Faction)/$($r.Side)/$($r.Finding)" } else { 'none' } }
 Equal (Result 3 2 1 $false) '2/0/' 'R1: Blizzard''s side comes before the givers'''
 Equal (Result 7 1 $null $false) '1/0/' 'R1: also for a quest open to the neutral Pandaren'

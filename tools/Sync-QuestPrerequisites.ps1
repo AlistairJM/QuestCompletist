@@ -46,8 +46,9 @@ Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the
     that looks partial (QuestCacheFiles.ps1) is warned about: its gaps are follow-ups not taken.
 Last, the prerequisites decided with the user (-DecisionsFile, docs\plans\quest-link-decisions.csv,
 in the columns of WoW: Forever's link decisions) replace whatever the sources give: a quest's prereq
-SET rows name the quest it needs, and several rows for one quest are a choice. The run lists any the
-sources would give something else, so a sweep sees when Blizzard starts to name one.
+SET rows name the quest it needs, and several rows for one quest are a choice; a prereq NONE row (Other
+0) says it needs none. The run lists any the sources would give something else, so a sweep sees when
+Blizzard starts to name one.
 
 A one-time quest's required quest that recurs (daily, weekly or repeatable) is left out: the game
 only knows such a quest is done until the next reset, so the map would hide the one-time quest
@@ -449,12 +450,18 @@ foreach ($id in $quests.Keys) {
     if ((Get-PartText $final[$id]) -ne (Get-PartText $quests[$id].prereq)) { $new[$id] = $final[$id] }
 }
 
-$decided = @{}
+$decided = @{}; $decidedNone = @{}
 foreach ($row in @(Import-Csv $DecisionsFile -Encoding UTF8)) {
     if ($row.Quest -notmatch '^\d+$' -or $row.Other -notmatch '^\d+$') { throw "$DecisionsFile has a row whose quests, '$($row.Quest)' and '$($row.Other)', aren't both numbers." }
     if ($row.Link -eq 'exclusive') { continue }
-    if ("$($row.Link) $($row.Decision)" -ne 'prereq SET') { throw "$DecisionsFile gives quest $($row.Quest) the link '$($row.Link)' with the decision '$($row.Decision)': only prereq SET rows are read here (exclusive rows are step 2k's)." }
     $quest = [int]$row.Quest; $other = [int]$row.Other
+    if ("$($row.Link) $($row.Decision)" -eq 'prereq NONE') {
+        if ($other -ne 0) { throw "$DecisionsFile gives quest $quest a prereq NONE row that names quest ${other}: Other is 0 there." }
+        if ($decidedNone.ContainsKey($quest)) { throw "$DecisionsFile says twice that quest $quest needs none." }
+        $decidedNone[$quest] = $true
+        continue
+    }
+    if ("$($row.Link) $($row.Decision)" -ne 'prereq SET') { throw "$DecisionsFile gives quest $($row.Quest) the link '$($row.Link)' with the decision '$($row.Decision)': only prereq SET and prereq NONE rows are read here (exclusive rows are step 2k's)." }
     if ($quest -eq $other) { throw "$DecisionsFile makes quest $quest require itself." }
     if ($decided[$quest] -contains $other) { throw "$DecisionsFile gives quest $quest the prerequisite $other twice." }
     $decided[$quest] += @($other)
@@ -470,6 +477,12 @@ foreach ($id in ($decided.Keys | Sort-Object)) {
     if ($new.ContainsKey($id) -and (ConvertTo-PrereqText $new[$id] '[' ']') -ne $text) { $overruled.Add("$id <- $(ConvertTo-PrereqText $new[$id] '[' ']')") }
     if ((ConvertTo-PrereqText $quests[$id].prereq '[' ']') -eq $text) { $new.Remove($id); $decidedSame++ } else { $new[$id] = $value; $decidedChanged++ }
 }
+foreach ($id in ($decidedNone.Keys | Sort-Object)) {
+    if ($decided.ContainsKey($id)) { throw "$DecisionsFile both names a prerequisite for quest $id and says it needs none." }
+    if (-not $quests.ContainsKey($id)) { $decidedMissing.Add("$id <- none"); continue }
+    if ($new.ContainsKey($id) -and $null -ne $new[$id]) { $overruled.Add("$id <- $(ConvertTo-PrereqText $new[$id] '[' ']')") }
+    if ($null -eq $quests[$id].prereq) { $new.Remove($id); $decidedSame++ } else { $new[$id] = $null; $decidedChanged++ }
+}
 
 # Leave out a requirement that would make two quests each require the other, or a quest require itself.
 $cycles = New-Object System.Collections.Generic.List[string]
@@ -480,6 +493,7 @@ function Get-Needs([int]$id) {
     return , $ids
 }
 foreach ($id in @($new.Keys)) {
+    if ($null -eq $new[$id]) { continue }
     $needs = Get-PrereqQuests $new[$id]
     if ($needs -contains $id) { $cycles.Add("$id requires itself"); $new.Remove($id); continue }
     foreach ($other in $needs) {
@@ -497,7 +511,7 @@ foreach ($id in @($new.Keys)) {
 "Left out as the cache names more lead-ins than TrinityCore repeats: $($severalLeadIns.Count)" + $(if ($severalLeadIns.Count) { " (" + ($severalLeadIns -join '; ') + ")" } else { '' })
 "Left out as the game offered them together with the quest: $($contradicted.Count) required quests, and $($refused.Count) conditions."
 "Recurring quests' recurring requirements that Blizzard doesn't name, left out: $($notBlizzard.Count)"
-"Decided with the user ({0}): {1} quests, {2} change, {3} already match." -f (Split-Path -Leaf $DecisionsFile), $decided.Count, $decidedChanged, $decidedSame
+"Decided with the user ({0}): {1} quests ({4} of them with none), {2} change, {3} already match." -f (Split-Path -Leaf $DecisionsFile), ($decided.Count + $decidedNone.Count), $decidedChanged, $decidedSame, $decidedNone.Count
 if ($overruled.Count) { "  The sources would give $($overruled.Count) of them something else, which the decisions overrule: " + ($overruled -join '; ') }
 if ($decidedMissing.Count) { "  $($decidedMissing.Count) name a quest not in the data, so they're left out: " + ($decidedMissing -join '; ') }
 "Left out as they'd go round in a circle: $($cycles.Count)" + $(if ($cycles.Count) { " (" + ($cycles -join '; ') + ")" } else { '' })
@@ -508,7 +522,7 @@ if ($WhatIf) {
     }
     foreach ($id in ($new.Keys | Sort-Object | Select-Object -First 40)) {
         $q = $quests[$id]
-        "  {0} {1}: {2} -> {3}" -f $id, $q.name, $(if ($q.prereq) { ConvertTo-PrereqText $q.prereq '[' ']' } else { 'none' }), (ConvertTo-PrereqText $new[$id] '[' ']')
+        "  {0} {1}: {2} -> {3}" -f $id, $q.name, $(if ($q.prereq) { ConvertTo-PrereqText $q.prereq '[' ']' } else { 'none' }), $(if ($null -ne $new[$id]) { ConvertTo-PrereqText $new[$id] '[' ']' } else { 'none' })
     }
     return
 }

@@ -114,6 +114,20 @@ taken. What is left, in one place:
   Gnome starting quests in Dun Morogh, and class, artifact and Exile's Reach quests) and 18 of the 21 quests shown to
   races the game denies (the Argent Tournament's Valiants, the per-race variants, 9329) do too; 30039, 58877 and 58989
   are kept. Forever: no difference. Opportunity 7 is next.
+- **Opportunity 7, campaign gating (17 October 2026):** recounted on 12.1.5.70448. Steps 2c (the current campaign's
+  chapters), 2l and 2m had already taken most of it. Of what was left:
+  - **Chapter gates as prerequisites: dropped.** Of the 47 gates (`CampaignXCondition`) that name a quest, 24 name one
+    in the same chapter or a later one (Bastion's chapter 1 names its own last quest), so a gate isn't what its
+    chapter needs before it starts, and none became a requirement (the user's choice).
+  - **The campaign recap as a check: built**, step 2q (`Compare-CampaignRecap.ps1`,
+    [maintenance.md](../maintenance.md#2q-quest-chains-against-the-campaign-recap)). It showed five links of the
+    Shadowlands Maw intro running backwards (taken from line 1267, which lists the quests by ID), now fixed by step 2c's
+    decisions (60545 and 61874 need none; 59907, 59755 and 59776 the step before them in line 1108, a new `NONE`
+    decision for the first two); four pairs where Blizzard's own quest lines back our order are kept.
+  - **To look at:** whether step 2m's chapter-gate texts sit on the right quest. 2m puts a gate's text on the chapter of
+    the same `OrderIndex`, the reading the gates just disproved for prerequisites; one look at a campaign's overview in
+    game, or the order of the recap, may settle which chapter a text belongs to. The recap's six quests the data lacks
+    (51403, 57692, 67030, 72402, 79573, 88918) are step 6's, and its six of ours in no quest line are listed each sweep.
 
 - **The client tables audit (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) went through
   every table and column of retail 12.1.5, Forever 1.60.1 and Era, decoded 621 bits and listed 12 opportunities
