@@ -126,6 +126,7 @@ qcLocalize = {
 	RANKLEVEL = "Rank %d",
 	QUESTGIVER = "Quest Giver:",
 	NOQUESTGIVER = "Unknown or Auto-Accepted Quest",
+	STARTSFROM = "Starts From:",
 	REPAMOUNT = "%d rep",
 	NEWDATAINTRO = "Quest Completist was not aware of the following information. Please help improve the accuracy of the addon by posting it on CurseForge.",
 	NEWDATAQUEST = " - Quest does not exist in the database.",

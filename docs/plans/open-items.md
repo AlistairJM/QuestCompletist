@@ -38,14 +38,32 @@ taken. What is left, in one place:
     lets every character see each: "The Arts of a Mage/Shaman/Druid" (24752, 24760, 24766) open to every class,
     the priest race quests (27268/27269, 27361 to 27363), the covenant Veteran and Tactician sets (63340 to 63347,
     64083 to 64086, 64322 to 64325) and 60721 to 60723 with no covenant, and the Trading Post copies.
-  - **A junk quest:** 38845, named "Unused", is in the data.
+  - **Junk quests:** 38845, named "Unused", is in the data; so is 33931 "This Is Not a Quest" (Talador, Horde), the
+    placeholder 21 Legion items name as their start (found in opportunity 3, 17 October 2026). Removing either needs
+    the user's review first.
   - **The Gilneas trio** (14402, 14405, 14463), unlinked by D2 because Blizzard's API requires all three for
     14465 and 14466, is on one switch: doing any one marks all three done, which meets "requires all three". Step
     2k lists it until the user decides ADD (undoing D2's unlink) or SKIP.
+- **Opportunity 2, quests started by an item (16 October 2026):** row 19 is built as sweep step 6e
+  ([maintenance.md](../maintenance.md)): the tooltip's "Starts From: <item>", named by the game, with what the item
+  requires as information only (the user: the item's limits as filters only if the game ever proves they block the
+  start). The four quests Blizzard split by faction (11002, 38194, 38202, 56071) took their item's faction. In its
+  own pull request, the 33 item-started quests the user chose went in (the 32 Midnight ones, from 94834 to 97910,
+  and 11003, the Horde's The Fall of Magtheridon), with SKIP rows for the dead ones (40335, 45045, 28462, 50195;
+  52991 had one): maintenance.md, step 6, "The item-started gap run". The 52 older candidates and 93852 stay in step
+  6's queue, and Forever's 7 Ahn'Qiraj Task Briefings (8498, 8536, 8804 to 8807, 8829) weren't chosen. Both pull
+  requests were merged on 17 October 2026 (#379, #380).
+- **Opportunity 3, quests started by a spell (17 October 2026):** the user took part A only: step 6e also takes the
+  items whose effect casts a quest-starting spell when used, picked up or looted, so "Starts From" covers 39 more
+  retail quests (Forever: second items for the Duskwood missions). Left as they are, on the user's word: the
+  tooltip's "Unknown or Auto-Accepted Quest" for the ~440 other pinless spell-started quests (the spell is the
+  mechanism, not the trigger: the Hero's Call boards cast one), the pins (every pinned spell-started quest sits on
+  the client's own start point), and Forever's 64 spell-started quests we lack (63 are on the probe's list,
+  untitled until the beta serves them: the Ashenvale, Hinterlands and Feralas Deputize missions).
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest
-  window), 37 (one 1.5-point grouping radius for Forever's CMaNGOS spawns and start points) and 42 (the
+  window; **built 16 October 2026** from the item, step 6e), 37 (one 1.5-point grouping radius for Forever's CMaNGOS spawns and start points) and 42 (the
   game's own offers in the requirements filter), and row 9's option E (16 October 2026): its data and tools
   are in #378 (branch `data/quest-tuning-bands`), and the addon code that reads them is next
   ([quest-scaling-redirects.md](quest-scaling-redirects.md)).
@@ -509,7 +527,7 @@ again.
 | 16 | Type changes the cache shows: 37 daily that are weekly, 92 repeatable that Blizzard calls daily or weekly, 4 that recur and are ticked for ever, 17 repeatable by the Darkmoon-deck rule, 38 one-time task quests, 21 test or deprecated titles | class by class | same, "Recurrence and flags" |
 | 17 | Race changes: the two outright contradictions (quest 2, 27675), 19 stale masks, 49 starting-race narrowings, 28 where we show a quest to races the server denies | **contradictions and stale masks taken, 12 October 2026** (the user: "go ahead with your recommendations"), to build after 113.0; the narrowings and the 28 stay calls: the contradictions and stale masks yes; the narrowings are a call; the 28 class by class | same, "Races" |
 | 18 | Sort fixes: 98 Uncategorized quests whose sort names one category, 27 profession misfiles | **taken, 12 October 2026** (the user: "go ahead with your recommendations"): yes. **The 27 profession misfiles: done, 12 October 2026** (with the profession tags players reported missing): the 15 Tailoring quests moved from Leatherworking to Tailoring, and the 12 Ub3r-Spanner quests from Enchanting to Engineering with their bit, as rows of `quest-profession-decisions.csv`, with seven more profession quests that sat under a zone or another profession; step 1d now lists any quest filed under another profession's heading. The 98 Uncategorized quests still wait, to build after 113.0 ("After 113.0", above) | same, "Sort" |
-| 19 | "Starts from" only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`, never from the cache's `startItem` | **taken, 12 October 2026** (the user: "go ahead with your recommendations"): yes, to build after 113.0 ("After 113.0", above) | same, "Start item" |
+| 19 | "Starts from" only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`, never from the cache's `startItem` | **taken, 12 October 2026** (the user: "go ahead with your recommendations"): yes, to build after 113.0 ("After 113.0", above); **built 16 October 2026** from `ItemSparse.StartQuestID` (step 6e), with the item's requirements as information | same, "Start item" |
 | 20 | The 22 placeholder-named quests that still show in default lists (menu review R08) fail the step-7 evidence rules: flag them anyway? | **yes, 11 October 2026, done**: the same call as 5 October on the internal and test entries; all 22 flagged (86645 and 94815, client task quests, with the builder's reason 3), 240 flags and 481 `KEEP` rows now | [menu-review.md](menu-review.md), question 20 |
 | 21 | One submenu shape for every expansion (R28) | **yes, 11 October 2026, done**: Main Zones and Other Categories for Draenor and The Broken Isles; Outland, Northrend and The Maelstrom stay flat | [menu-review.md](menu-review.md), question 21 |
 | 22 | Midnight: move Founder's Point and Razorwind Shores into Other Categories (R27) | **yes, 10 October 2026, done** | [menu-review.md](menu-review.md), question 22 |

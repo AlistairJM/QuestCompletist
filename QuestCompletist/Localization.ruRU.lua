@@ -97,6 +97,7 @@ qcLocalize = setmetatable({
 	RANKLEVEL = "Ранг %d", -- Needs review
 	QUESTGIVER = "Выдаёт задание:", -- Needs review
 	NOQUESTGIVER = "Неизвестно, или задание принимается автоматически", -- Needs review
+	STARTSFROM = "Начинается с:", -- Needs review
 	REPAMOUNT = "%d репутации", -- Needs review
 	NEWDATAINTRO = "Quest Completist не знал следующих сведений. Помогите сделать аддон точнее: сообщите о них на CurseForge.", -- Needs review
 	NEWDATAQUEST = " - Этого задания нет в базе данных.", -- Needs review

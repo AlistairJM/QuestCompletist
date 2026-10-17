@@ -13,6 +13,7 @@ local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
 local qcQuestTooltipWaiting, qcNpcTooltipWaiting = QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting
 local qcHides, qcFactionLevel = QC.qcHides, QC.qcFactionLevel
 local qcSkillRank, qcSkillName = QC.qcSkillRank, QC.qcSkillName
+local qcItemName, qcItemTooltipWaiting = QC.qcItemName, QC.qcItemTooltipWaiting
 
 local qcQuestInformationTooltip
 -- The list row the tooltip belongs to, and its quest, so names arriving later can redraw it.
@@ -261,6 +262,49 @@ local function qcFactionName(factionId)
 	return qcFactions[factionId]
 end
 
+-- "Starts From": the items that start a quest (qcQuestStartItems), this character's side's where the quest has one for
+-- each side, named by the game, each followed by what the item itself requires, in the game's own words: its side when
+-- that isn't the character's and the quest isn't the character's side's either, its level when above the quest's
+-- minimum, its profession, its reputation and its races. Information only: none of it hides the quest. Nil when no item
+-- starts the quest.
+local QC_SIDE = {Alliance = 1, Horde = 2}
+local function qcStartItemLines(questId, questFaction, minLevel)
+	local items = qcQuestStartItems and qcQuestStartItems[questId]
+	if not items then return nil end
+	local side = QC_SIDE[UnitFactionGroup("player")]
+	local shown = {}
+	for _, item in ipairs(items) do
+		if (item[2] or 0) == 0 or item[2] == side then shown[#shown + 1] = item end
+	end
+	if #shown == 0 then shown = items end
+	local lines = {}
+	for _, item in ipairs(shown) do
+		lines[#lines + 1] = COLOUR_DRUID .. (qcItemName(item[1]) or RETRIEVING_ITEM_INFO)
+		local itemSide = item[2] or 0
+		if itemSide ~= 0 and itemSide ~= side and questFaction ~= side then
+			lines[#lines + 1] = itemSide == 1 and ITEM_REQ_ALLIANCE or ITEM_REQ_HORDE
+		end
+		if (item[3] or 0) > minLevel then lines[#lines + 1] = string.format(ITEM_MIN_LEVEL, item[3]) end
+		if (item[4] or 0) > 0 then
+			local skillName = qcSkillName(item[4])
+			lines[#lines + 1] = (item[5] or 0) > 0 and string.format(ITEM_MIN_SKILL, skillName, item[5]) or string.format(ITEM_REQ_SKILL, skillName)
+		end
+		if (item[6] or 0) > 0 then
+			local standing = _G["FACTION_STANDING_LABEL" .. ((item[7] or 0) + 1)] or tostring(item[7] or 0)
+			lines[#lines + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(item[6]) or UNKNOWN, standing)
+		end
+		if type(item[8]) == "table" then
+			local names = {}
+			for _, raceId in ipairs(item[8]) do
+				local info = C_CreatureInfo.GetRaceInfo(raceId)
+				names[#names + 1] = info and info.raceName or tostring(raceId)
+			end
+			lines[#lines + 1] = string.format(ITEM_RACES_ALLOWED, table.concat(names, ", "))
+		end
+	end
+	return lines
+end
+
 -- A renown faction's emblem, written into a line's text and followed by a space; empty for other
 -- factions, and in a game without renown.
 local function qcFactionIconText(factionId)
@@ -393,6 +437,7 @@ function qcUpdateTooltip(index)
         qcTooltipQuestId = questId
         wipe(qcQuestTooltipWaiting)
         wipe(qcNpcTooltipWaiting)
+        wipe(qcItemTooltipWaiting)
         qcRequestQuestData(questId)
 
         -- Temporarily disable ATT's quest tooltip hook so it can't add its own ID
@@ -578,6 +623,13 @@ function qcUpdateTooltip(index)
             )
         else
             qcQuestInformationTooltip:AddDoubleLine(qcL.QUESTGIVER, qcL.NOQUESTGIVER)
+        end
+        local questRow = qcQuestDatabase[questId]
+        local startLines = questRow and qcStartItemLines(questId, questRow[5], qcQuestMinLevel[questId] or questRow[2] or 0)
+        if startLines then
+            for i, text in ipairs(startLines) do
+                qcQuestInformationTooltip:AddDoubleLine(i == 1 and qcL.STARTSFROM or " ", text)
+            end
         end
 
         -- Faction and reputation information
