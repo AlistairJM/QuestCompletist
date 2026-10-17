@@ -1,18 +1,25 @@
 <#
-The client's own conditions on the current expansion's quest lines and campaigns, as prerequisites,
-dot-sourced by Sync-QuestPrerequisites.ps1 (step 2c), which sets them, and Audit-QuestTables.ps1
-(step 2b), which knows them as the client's:
+The client's own conditions on the current expansion's quest lines and campaigns, and on task quests,
+as prerequisites, dot-sourced by Sync-QuestPrerequisites.ps1 (step 2c), which sets them,
+Audit-QuestTables.ps1 (step 2b), which knows them as the client's, and Sync-QuestCovenants.ps1 (step
+2l), which reads their covenants:
 	. "$PSScriptRoot\QuestConditions.ps1"
 
-A quest line (QuestLine.PlayerConditionID) or a campaign (Campaign.Prerequisite) names the
-PlayerCondition the game checks before it offers the line. A condition is read as a tree of quests
-that must be done (PlayerCondition.PrevQuestID with its logic field, as Sync-QuestPrerequisites.ps1
-reads a task quest's; ModifierTree type 110), joined by its ModifierTree's AND (operator 4) and OR
-(operator 8 with an amount of 1), with nested conditions (type 2) inside it. Anything else is read as
-met, as the addon can't check it: a quest that mustn't be done, a level, a reputation, an "N of" group.
-A game feature switched on for everyone at once (type 289) is read as off, so the branch the game
-keeps for while it's on drops out of an OR. Campaigns 284 and 324, for one, need the hidden quest
-90806, or else feature 1886 on.
+A quest line (QuestLine.PlayerConditionID), a campaign (Campaign.Prerequisite) or a task quest
+(QuestV2CliTask.ConditionID) names the PlayerCondition the game checks before it offers the line or the
+quest. A condition is read as a tree of quests that must be done (PlayerCondition.PrevQuestID with its
+logic field; ModifierTree type 110), joined by its ModifierTree's AND (operator 4) and OR (operator 8
+with an amount of 1), with nested conditions (type 2) and nested trees (type 73) inside it. Anything
+else is read as met, as the addon can't check it: a quest that mustn't be done, a level, a reputation,
+an "N of" group. So is a condition the client switches off (flag 0x100), and the tree of one the game
+reads the other way round (flag 0x200), as the addon can't check its opposite. A game feature switched
+on for everyone at once (type 289) is read as off, so the branch the game keeps for while it's on drops
+out of an OR. Campaigns 284 and 324, for one, need the hidden quest 90806, or else feature 1886 on. (No
+task quest's requirement depends on that reading: read as on, the same 415 quests gain the same ones,
+12.1.5.70448.)
+
+A condition's covenant (its CovenantID, or ModifierTree type 288) is read apart:
+Get-ConditionCovenants gives the ones every way through the condition needs.
 
 Only the current expansion's conditions are taken: those that name a quest of its campaign
 (-Campaign), or a quest we hold no data for that a line accepts in place of one (90806, which the
@@ -68,7 +75,7 @@ function ConvertTo-PrereqValue($value) {
 
 # The client's tables for -Build, from -ToolsDir, fetched when missing.
 function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
-    foreach ($table in 'QuestLine', 'QuestLineXQuest', 'Campaign', 'CampaignXQuestLine', 'ModifierTree') {
+    foreach ($table in 'QuestLine', 'QuestLineXQuest', 'Campaign', 'CampaignXQuestLine', 'CampaignXCondition', 'ModifierTree') {
         $path = Join-Path $ToolsDir "$table-$Build.csv"
         if (-not (Test-Path $path)) {
             Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$table/csv?build=$Build" -OutFile $path
@@ -77,7 +84,7 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
     }
     $conditionCsv = Join-Path $ToolsDir 'PlayerCondition.csv'
     if (-not (Test-Path $conditionCsv)) { Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/PlayerCondition/csv?build=$Build" -OutFile $conditionCsv }
-    $c = @{ Lines = @{}; LineQuests = @{}; Campaigns = @{}; CampaignLines = @{}; Tree = @{}; Children = @{}; Conditions = @{} }
+    $c = @{ Lines = @{}; LineQuests = @{}; Campaigns = @{}; CampaignLines = @{}; Chapters = @{}; ChapterConditions = @(); Tree = @{}; Children = @{}; Conditions = @{} }
     foreach ($row in Import-Csv (Join-Path $ToolsDir "QuestLine-$Build.csv")) { $c.Lines[[int]$row.ID] = $row }
     $steps = @{}
     foreach ($row in Import-Csv (Join-Path $ToolsDir "QuestLineXQuest-$Build.csv")) {
@@ -92,8 +99,14 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
         $campaign = [int]$row.CampaignID
         if (-not $chapters.ContainsKey($campaign)) { $chapters[$campaign] = New-Object System.Collections.Generic.List[object] }
         $chapters[$campaign].Add([pscustomobject]@{ Line = [int]$row.QuestLineID; Order = [int]$row.OrderIndex })
+        $c.Chapters["$campaign|$([int]$row.OrderIndex)"] = [int]$row.QuestLineID
     }
     foreach ($campaign in $chapters.Keys) { $c.CampaignLines[$campaign] = @($chapters[$campaign] | Sort-Object Order | ForEach-Object { $_.Line }) }
+    # A chapter's own gate, with the game's text for when it isn't met: the chapter is the campaign's line
+    # of the same OrderIndex (campaign 271 skips one, so it isn't the place in the list).
+    $c.ChapterConditions = @(Import-Csv (Join-Path $ToolsDir "CampaignXCondition-$Build.csv") | ForEach-Object {
+        [pscustomobject]@{ Campaign = [int]$_.CampaignID; Order = [int]$_.OrderIndex; Condition = [int]$_.PlayerConditionID; Text = $_.FailureReason_lang }
+    })
     foreach ($row in Import-Csv (Join-Path $ToolsDir "ModifierTree-$Build.csv")) {
         $id = [int]$row.ID; $parent = [int]$row.Parent
         $c.Tree[$id] = [pscustomobject]@{ Operator = [int]$row.Operator; Amount = [int]$row.Amount; Type = [int]$row.Type; Asset = [int]$row.Asset }
@@ -105,7 +118,7 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
     Import-Csv $conditionCsv | ForEach-Object {
         $c.Conditions[[int]$_.ID] = [pscustomobject]@{
             Prev = @([int]$_.PrevQuestID_0, [int]$_.PrevQuestID_1, [int]$_.PrevQuestID_2, [int]$_.PrevQuestID_3)
-            Logic = [int64]$_.PrevQuestLogic; Tree = [int]$_.ModifierTreeID
+            Logic = [int64]$_.PrevQuestLogic; Tree = [int]$_.ModifierTreeID; Flags = [int]$_.Flags; Covenant = [int]$_.CovenantID
         }
     }
     return $c
@@ -123,7 +136,13 @@ function Get-CampaignLines($c, [int]$campaign) {
 # A PlayerCondition as a tree; $null when nothing in it can be checked, 'never' when it can't be met.
 function ConvertFrom-PlayerCondition($c, [int]$id, [int]$depth = 0) {
     $row = $c.Conditions[$id]
-    if (-not $row -or $depth -gt 20) { return $null }
+    if (-not $row -or $depth -gt 20 -or ($row.Flags -band 0x100)) { return $null }
+    $answer = ConvertFrom-PrevQuests $row
+    if ($row.Tree -and -not ($row.Flags -band 0x200)) { $answer = Join-Condition $true $answer (ConvertFrom-ModifierTree $c $row.Tree ($depth + 1)) }
+    return $answer
+}
+# A condition's own quests (PrevQuestID with its logic field) as a tree, without its ModifierTree.
+function ConvertFrom-PrevQuests($row) {
     $answer = $null
     for ($i = 0; $i -lt 4; $i++) {
         $quest = $row.Prev[$i]
@@ -133,7 +152,6 @@ function ConvertFrom-PlayerCondition($c, [int]$id, [int]$depth = 0) {
         if ($how -eq 1) { $answer = Join-Condition $true $answer $item }
         elseif ($how -eq 2) { $answer = Join-Condition $false $answer $item }
     }
-    if ($row.Tree) { $answer = Join-Condition $true $answer (ConvertFrom-ModifierTree $c $row.Tree ($depth + 1)) }
     return $answer
 }
 function ConvertFrom-ModifierTree($c, [int]$id, [int]$depth) {
@@ -142,6 +160,7 @@ function ConvertFrom-ModifierTree($c, [int]$id, [int]$depth) {
     $own = switch ($node.Type) {
         110 { $node.Asset }
         2 { ConvertFrom-PlayerCondition $c $node.Asset ($depth + 1) }
+        73 { ConvertFrom-ModifierTree $c $node.Asset ($depth + 1) }
         289 { 'never' }
         default { $null }
     }
@@ -155,6 +174,96 @@ function ConvertFrom-ModifierTree($c, [int]$id, [int]$depth) {
         if ($first) { $joined = $part; $first = $false } else { $joined = Join-Condition $isAnd $joined $part }
     }
     return Join-Condition $true $own $joined
+}
+
+# The covenants every way through a condition needs: its CovenantID and the type 288 leaves of its tree,
+# where a choice needs only those every branch of it does. None for an "N of" group.
+function Get-ConditionCovenants($c, [int]$id, [int]$depth = 0) {
+    $row = $c.Conditions[$id]
+    if (-not $row -or $depth -gt 20 -or ($row.Flags -band 0x100)) { return }
+    $found = @()
+    if ($row.Covenant) { $found += $row.Covenant }
+    if ($row.Tree -and -not ($row.Flags -band 0x200)) { $found += @(Get-TreeCovenants $c $row.Tree ($depth + 1)) }
+    $found | Sort-Object -Unique
+}
+function Get-TreeCovenants($c, [int]$id, [int]$depth) {
+    $node = $c.Tree[$id]
+    if (-not $node -or $depth -gt 40 -or $node.Operator -eq 3) { return }
+    $found = @()
+    switch ($node.Type) {
+        288 { $found += $node.Asset }
+        2 { $found += @(Get-ConditionCovenants $c $node.Asset ($depth + 1)) }
+        73 { $found += @(Get-TreeCovenants $c $node.Asset ($depth + 1)) }
+    }
+    $children = $c.Children[$id]
+    if ($children -and $node.Operator -eq 4) {
+        foreach ($child in $children) { $found += @(Get-TreeCovenants $c $child ($depth + 1)) }
+    } elseif ($children -and $node.Operator -eq 8 -and $node.Amount -le 1) {
+        $common = @(); $first = $true
+        foreach ($child in $children) {
+            $part = @(Get-TreeCovenants $c $child ($depth + 1))
+            if ($first) { $common = $part; $first = $false } else { $common = @($common | Where-Object { $part -contains $_ }) }
+        }
+        $found += $common
+    }
+    $found | Sort-Object -Unique
+}
+
+# The Shadowlands covenants' quest headings ("Kyrian Callings"): QuestSort ID -> covenant, a heading being
+# one whose name starts with the covenant's. Only covenants 1 to 4 are the covenants; the table's later
+# rows are renown factions.
+function Get-CovenantHeadings($QuestSorts, $Covenants) {
+    $headings = @{}
+    foreach ($covenant in @($Covenants | Where-Object { [int]$_.ID -ge 1 -and [int]$_.ID -le 4 })) {
+        foreach ($sort in @($QuestSorts | Where-Object { $_.SortName_lang -like "$($covenant.Name_lang) *" })) { $headings[[int]$sort.ID] = [int]$covenant.ID }
+    }
+    return $headings
+}
+
+# The covenants each quest's client data names, by quest: its task condition ($TaskConditions, quest ->
+# ConditionID), the conditions of the quest lines and campaigns it's on, its campaign chapter's own gate,
+# and its heading ($Sorts, quest -> the quest cache's sort, whose negative is a QuestSort ID; $Headings,
+# QuestSort ID -> covenant). Each that needs one covenant (Get-ConditionCovenants) names it. A quest that
+# several covenants name, as the chapters of a quest line all four campaigns share, is open to each of them.
+function Get-ClientCovenants($c, $TaskConditions, $Sorts, $Headings) {
+    $byCondition = @{}
+    function Get-Named([int]$condition) {
+        if (-not $byCondition.ContainsKey($condition)) {
+            $list = @(Get-ConditionCovenants $c $condition)
+            $byCondition[$condition] = if ($list.Count -eq 1) { $list[0] } else { 0 }
+        }
+        return $byCondition[$condition]
+    }
+    $named = @{}
+    function Add-Named($quests, [int]$covenant) {
+        if (-not $covenant) { return }
+        foreach ($quest in $quests) {
+            if (-not $named.ContainsKey([int]$quest)) { $named[[int]$quest] = @{} }
+            $named[[int]$quest][$covenant] = $true
+        }
+    }
+    foreach ($quest in $TaskConditions.Keys) { Add-Named @($quest) (Get-Named $TaskConditions[$quest]) }
+    foreach ($line in $c.Lines.Keys) {
+        $condition = [int]$c.Lines[$line].PlayerConditionID
+        if ($condition) { Add-Named (Get-LineQuests $c $line) (Get-Named $condition) }
+    }
+    foreach ($campaign in $c.Campaigns.Keys) {
+        $condition = [int]$c.Campaigns[$campaign].Prerequisite
+        if (-not $condition) { continue }
+        $covenant = Get-Named $condition
+        foreach ($line in (Get-CampaignLines $c $campaign)) { Add-Named (Get-LineQuests $c $line) $covenant }
+    }
+    foreach ($gate in $c.ChapterConditions) {
+        $line = $c.Chapters["$($gate.Campaign)|$($gate.Order)"]
+        if ($line) { Add-Named (Get-LineQuests $c $line) (Get-Named $gate.Condition) }
+    }
+    foreach ($quest in $Sorts.Keys) {
+        $sort = -[int]$Sorts[$quest]
+        if ($Headings.ContainsKey($sort)) { Add-Named @($quest) $Headings[$sort] }
+    }
+    $result = @{}
+    foreach ($quest in $named.Keys) { $result[$quest] = @($named[$quest].Keys | Sort-Object) }
+    return $result
 }
 
 # The quests a tree names, however it nests them.
