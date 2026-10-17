@@ -233,6 +233,28 @@ Around 38 places read or write it today.
     The table is keyed by quest, as the project keeps sparse quest data (data-structure.md), though its
     values come from 771 tunings: a table of tunings would still need each quest's tuning, a table of the
     same size.
+- 2026-10-16, retail's `qcQuestTuning` (28,680 quests) and `qcTuningSample` (537 tunings), option E of
+  [quest-scaling-redirects.md](quest-scaling-redirects.md). Measured on `qcQuestData.lua` alone, as above (Lua 5.1
+  on this PC, 32-bit; `dofile` in a fresh state, memory after two full collections; load time the median of 8
+  runs of 10 loads, twice):
+  - The file goes from 2,822,865 to 3,239,164 bytes (+416,299, +14.7%).
+  - Loaded, from 10,434.2 to 11,529.4 KB (+1,095.2 KB, +10.5%): a hash part of 32,768 slots for 28,680 keys,
+    and 537 small sample lists.
+  - With every quest's tuning, 33,250 keys, it would load to 12,553.4 KB (+2,119.2 KB): more than 32,768 keys
+    take a hash part of 65,536 slots. So `qcQuestTuning` leaves out the 4,570 quests no sample can say
+    anything about (on a tuning no redirect names, or one with no sample).
+  - The room left before that step: 4,088 keys for `qcQuestTuning` (28,680), and 5,131 for `qcQuestMaxLevel`
+    (27,637). If `qcQuestTuning` also held the 3,530 quests that scale on unredirected tunings (32,210 keys,
+    left to the second pull request), 558. A sweep that gives a few thousand more quests a sampled tuning,
+    such as a new expansion's, would cross it, so step 2j prints both tables' keys against 32,768 and flags a
+    table over it ([maintenance.md](../maintenance.md#2j-scaling-quests-levels)).
+  - `dofile` takes 80.3 and 85.3 ms before and 90.4 and 86.3 ms after, too noisy to give more than "a few ms";
+    running the compiled file alone takes 10.6 and 10.8 ms before and 11.5 and 11.4 ms after, under 1 ms more.
+  - Forever's file gains two empty tables (41 bytes) and loads to the same 1,576.9 KB. The whole addon and
+    WoW's 64-bit Lua were not measured.
+  - Measured again on master after #381 (17 October 2026), which added the start items: the file goes from
+    2,859,950 to 3,276,249 bytes (the same +416,299) and loads from 10,668.9 to 11,763.9 KB (+1,095.0 KB).
+    Forever's loads to 1,645.1 KB before and 1,645.0 KB after, the same within a collection's noise.
 
 ## The quest giver recorder (8 October 2026)
 

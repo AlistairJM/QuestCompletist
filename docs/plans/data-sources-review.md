@@ -500,6 +500,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-16: recommendation 37's noTitle API scan, on the recommendations the user delegated. The API had never been asked about the 20,305 `QuestV2` 12.1.5 quests `Find-MissingQuests.ps1` had untitled; it serves 315. Checked against TrinityCore and Wowhead's tooltip endpoint, 24 are in the data (no pins), 286 have `SKIP` rows and 15 wait for the user (open-items.md, row 44); the answers stay in `tools\quest_api_cache`, each sweep asks about the report's new untitled quests, and the report reads every quest cache of the game for titles (both games: on Forever the older caches title 8 quests, all internal titles). Retail has 35,654 quests and a missing-quests baseline of 542 undecided candidates (maintenance.md, step 6, "The noTitle API scan").
 
+- 2026-10-16: D14 again, for characters other than the probe's. The ceilings of recommendation 27 are the probe character's: the server sends each character redirect bits that pick `ConditionalContentTuning` rows, and the same level 90 character read 90 for 11 "Riverpaw Gnoll Bounty" in Nazmir (bit 34 on) and 30 in Elwynn Forest. The user took option E ([quest-scaling-redirects.md](quest-scaling-redirects.md)): each quest's tuning (33,250 retail quests, from the quest cache, else the task table) and up to three samples for each of the 537 sampled tunings a redirect can move, for the addon to read the game's level from at run time, the ceiling as the fallback (maintenance.md, step 2j). The addon code follows in a second pull request.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
