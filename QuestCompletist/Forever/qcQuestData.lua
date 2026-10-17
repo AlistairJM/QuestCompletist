@@ -12871,3 +12871,5 @@ qcFactionHidden={
 [910]=1,
 [2641]=1,
 }
+qcQuestRenown={
+}

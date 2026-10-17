@@ -2,8 +2,8 @@
 The client's own conditions on the current expansion's quest lines and campaigns, and on task quests,
 as prerequisites, dot-sourced by Sync-QuestPrerequisites.ps1 (step 2c), which sets them,
 Audit-QuestTables.ps1 (step 2b), which knows them as the client's, Sync-QuestCovenants.ps1 (step 2l),
-which reads their covenants, and Sync-QuestConditionTexts.ps1 (step 2m), which takes the text the game
-shows when one isn't met:
+which reads their covenants, Sync-QuestConditionTexts.ps1 (step 2m), which takes the text the game
+shows when one isn't met, and Sync-QuestRenown.ps1 (step 2o), which reads the renown levels they need:
 	. "$PSScriptRoot\QuestConditions.ps1"
 
 A quest line (QuestLine.PlayerConditionID), a campaign (Campaign.Prerequisite) or a task quest
@@ -21,7 +21,9 @@ task quest's requirement depends on that reading: read as on, the same 415 quest
 
 A condition's covenant (its CovenantID, or ModifierTree type 288) is read apart:
 Get-ConditionCovenants gives the ones every way through the condition needs. So is its text
-(Get-ConditionTextKeys): which quests the game holds back with it.
+(Get-ConditionTextKeys): which quests the game holds back with it. So are the renown levels it needs
+(Get-ConditionRenowns: a renown currency held in some amount, by the condition's currency columns or
+ModifierTree type 119).
 
 Only the current expansion's conditions are taken: those that name a quest of its campaign
 (-Campaign), or a quest we hold no data for that a line accepts in place of one (90806, which the
@@ -111,7 +113,7 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
     })
     foreach ($row in Import-Csv (Join-Path $ToolsDir "ModifierTree-$Build.csv")) {
         $id = [int]$row.ID; $parent = [int]$row.Parent
-        $c.Tree[$id] = [pscustomobject]@{ Operator = [int]$row.Operator; Amount = [int]$row.Amount; Type = [int]$row.Type; Asset = [int]$row.Asset }
+        $c.Tree[$id] = [pscustomobject]@{ Operator = [int]$row.Operator; Amount = [int]$row.Amount; Type = [int]$row.Type; Asset = [int]$row.Asset; Secondary = [int]$row.SecondaryAsset }
         if ($parent) {
             if (-not $c.Children.ContainsKey($parent)) { $c.Children[$parent] = New-Object System.Collections.Generic.List[int] }
             $c.Children[$parent].Add($id)
@@ -122,6 +124,9 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
             Prev = @([int]$_.PrevQuestID_0, [int]$_.PrevQuestID_1, [int]$_.PrevQuestID_2, [int]$_.PrevQuestID_3)
             Logic = [int64]$_.PrevQuestLogic; Tree = [int]$_.ModifierTreeID; Flags = [int]$_.Flags; Covenant = [int]$_.CovenantID
             HasText = [bool]$_.Failure_description_lang
+            Currency = @([int]$_.CurrencyID_0, [int]$_.CurrencyID_1, [int]$_.CurrencyID_2, [int]$_.CurrencyID_3)
+            Count = @([int]$_.CurrencyCount_0, [int]$_.CurrencyCount_1, [int]$_.CurrencyCount_2, [int]$_.CurrencyCount_3)
+            CurrencyLogic = [int64]$_.CurrencyLogic
         }
     }
     return $c
@@ -210,6 +215,60 @@ function Get-TreeCovenants($c, [int]$id, [int]$depth) {
         $found += $common
     }
     $found | Sort-Object -Unique
+}
+
+# The renown levels every way through a condition needs, as faction -> level: a renown currency
+# (Faction.RenownCurrencyID; $RenownCurrencies, currency -> faction) held in at least that amount, by the condition's own
+# currency columns when their logic field joins them by AND, or by ModifierTree type 119 (Asset the currency,
+# SecondaryAsset the amount). Two asks for one faction keep the higher level; a choice needs only what every branch does,
+# at the lowest level among them.
+function Get-ConditionRenowns($c, [int]$id, $RenownCurrencies, [int]$depth = 0) {
+    $need = @{}
+    $row = $c.Conditions[$id]
+    if (-not $row -or $depth -gt 20 -or ($row.Flags -band 0x100)) { return $need }
+    $slots = @(for ($i = 0; $i -lt 4; $i++) {
+        $currency = $row.Currency[$i]
+        [pscustomobject]@{ On = $currency -gt 0 -and -not ($row.CurrencyLogic -band (0x10000 -shl $i)); Currency = $currency; Count = $row.Count[$i]
+            How = $(if ($i -eq 0) { 1 } else { [int](($row.CurrencyLogic -shr (2 * ($i - 1))) -band 3) }) }
+    })
+    if (-not @($slots | Where-Object { $_.How -eq 2 }).Count) {
+        foreach ($slot in $slots) {
+            if ($slot.On -and $slot.How -eq 1 -and $RenownCurrencies.ContainsKey($slot.Currency)) { $need = Join-RenownNeeds $need @{ $RenownCurrencies[$slot.Currency] = $slot.Count } }
+        }
+    }
+    if ($row.Tree -and -not ($row.Flags -band 0x200)) { $need = Join-RenownNeeds $need (Get-TreeRenowns $c $row.Tree $RenownCurrencies ($depth + 1)) }
+    return $need
+}
+function Get-TreeRenowns($c, [int]$id, $RenownCurrencies, [int]$depth) {
+    $need = @{}
+    $node = $c.Tree[$id]
+    if (-not $node -or $depth -gt 40 -or $node.Operator -eq 3) { return $need }
+    switch ($node.Type) {
+        119 { if ($RenownCurrencies.ContainsKey($node.Asset)) { $need = @{ $RenownCurrencies[$node.Asset] = $node.Secondary } } }
+        2 { $need = Get-ConditionRenowns $c $node.Asset $RenownCurrencies ($depth + 1) }
+        73 { $need = Get-TreeRenowns $c $node.Asset $RenownCurrencies ($depth + 1) }
+    }
+    $children = $c.Children[$id]
+    if ($children -and $node.Operator -eq 4) {
+        foreach ($child in $children) { $need = Join-RenownNeeds $need (Get-TreeRenowns $c $child $RenownCurrencies ($depth + 1)) }
+    } elseif ($children -and $node.Operator -eq 8 -and $node.Amount -le 1) {
+        $common = $null
+        foreach ($child in $children) {
+            $part = Get-TreeRenowns $c $child $RenownCurrencies ($depth + 1)
+            if ($null -eq $common) { $common = $part; continue }
+            $kept = @{}
+            foreach ($faction in $common.Keys) { if ($part.ContainsKey($faction)) { $kept[$faction] = [Math]::Min($common[$faction], $part[$faction]) } }
+            $common = $kept
+        }
+        if ($common) { $need = Join-RenownNeeds $need $common }
+    }
+    return $need
+}
+function Join-RenownNeeds($a, $b) {
+    $joined = @{}
+    foreach ($faction in $a.Keys) { $joined[$faction] = $a[$faction] }
+    foreach ($faction in $b.Keys) { if (-not $joined.ContainsKey($faction) -or $joined[$faction] -lt $b[$faction]) { $joined[$faction] = $b[$faction] } }
+    return $joined
 }
 
 # The Shadowlands covenants' quest headings ("Kyrian Callings"): QuestSort ID -> covenant, a heading being

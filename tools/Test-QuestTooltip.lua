@@ -935,6 +935,46 @@ if raceQuest then
 end
 env.C_Reputation, env.UnitRace = realReputation, realRace
 
+print("Renown: every faction and level the game's conditions ask, before the hand-kept requirement")
+local renownQuest, handQuest
+for questId, needs in pairs(env.qcQuestRenown or {}) do
+	if env.qcQuestDatabase[questId] and #needs > 1 and (not renownQuest or questId < renownQuest) then renownQuest = questId end
+end
+for questId, need in pairs(env.qcRenownLevelRequirements) do
+	if env.qcQuestDatabase[questId] and not (env.qcQuestRenown or {})[questId] and type(need) == "table" and need[2] and (not handQuest or questId < handQuest) then handQuest = questId end
+end
+local realMajor = env.C_MajorFactions
+env.C_Reputation = stubTable({GetFactionDataByID = function(factionId) return {name = "Faction" .. factionId} end, IsMajorFaction = function() return true end})
+env.C_MajorFactions = stubTable({GetCurrentRenownLevel = function() return 4 end, GetMajorFactionData = function() return {textureKit = "Kit"} end})
+local function renownRows(lines)
+	local rows = {}
+	for _, line in ipairs(lines) do
+		local factionId = line:find(env.qcLocalize.REQUIREDFACTION, 1, true) and line:match("Faction(%d+)$")
+		if factionId then rows[#rows + 1] = {tonumber(factionId)}
+		elseif line:find(env.qcLocalize.REQUIREDRENOWN, 1, true) and #rows > 0 then rows[#rows][2] = tonumber(line:match("|c%x%x%x%x%x%x%x%x(%d+)|r$")) end
+	end
+	return rows
+end
+if renownQuest then
+	local needs = env.qcQuestRenown[renownQuest]
+	reset()
+	local rows = renownRows(draw(renownQuest))
+	local same = #rows == #needs
+	for i, need in ipairs(needs) do same = same and rows[i] and rows[i][1] == need[1] and rows[i][2] == need[2] end
+	check(string.format("%d asks for %d factions' renown: a faction and a level line for each", renownQuest, #needs), same)
+else
+	print("  (no renown from the game's conditions in this game's data)")
+end
+if handQuest then
+	local need = env.qcRenownLevelRequirements[handQuest]
+	reset()
+	local lines = draw(handQuest)
+	local rows = renownRows(lines)
+	local kept = #rows == 1 and rows[1][1] == need[1] and rows[1][2] == need[2]
+	check(string.format("%d, which the game's conditions say nothing about, keeps its hand-kept faction and level", handQuest), kept, not kept and table.concat(lines, " / ") or nil)
+end
+env.C_Reputation, env.C_MajorFactions = realReputation, realMajor
+
 print("A quest the game tracks but never names")
 local function unnamed(questId) return type(questId) == "number" and env.qcQuestDatabase[questId] == nil end
 local choiceQuest, unnamedOnly

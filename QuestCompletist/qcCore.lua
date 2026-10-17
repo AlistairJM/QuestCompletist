@@ -1052,14 +1052,25 @@ local function qcSkillRank(skillLine)
 	return 0
 end
 
+-- The renown or rank levels a quest needs, as {faction, level} pairs: the game's own conditions' (qcQuestRenown, step
+-- 2o), else the hand-kept qcRenownLevelRequirements entry, where one naming a faction alone has no level. Nil for none.
+local function qcRenownNeeds(questId)
+	local fromGame = qcQuestRenown and qcQuestRenown[questId]
+	if fromGame then return fromGame end
+	local hand = qcRenownLevelRequirements[questId]
+	if type(hand) == "table" then return {hand} end
+	if type(hand) == "number" then return {{hand}} end
+end
+
 -- Whether the character has the level, the quests to do first or have in the log, the renown or rank,
 -- and the skill in a profession a quest needs. A renown level or skill the game doesn't give counts as met.
 local function qcRequirementsMet(questId, e, playerLevel)
 	if (qcQuestMinLevel[questId] or e[2] or 0) > playerLevel then return false end
 	if not qcPrereq.QuestMet(questId) or not qcPrereq.InLogMet(questId) then return false end
-	local renown = qcRenownLevelRequirements[questId]
-	local level = renown and qcFactionLevel(renown[1])
-	if level and level < renown[2] then return false end
+	for _, need in ipairs(qcRenownNeeds(questId) or {}) do
+		local level = need[2] and qcFactionLevel(need[1])
+		if level and level < need[2] then return false end
+	end
 	local skill = qcQuestSkillRequirements[questId]
 	local rank = skill and qcSkillRank(skill[1])
 	return not (rank and rank < skill[2])
@@ -2729,7 +2740,7 @@ QC.qcQuestName, QC.qcRequestQuestData, QC.qcFindPinForQuest = qcQuestName, qcReq
 QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount = qcIsQuestCompleted, qcIsQuestCompletedOnAccount
 QC.qcIsUnavailable, QC.qcMaskAllows, QC.qcPrereq = qcIsUnavailable, qcMaskAllows, qcPrereq
 QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides, qcFactionLevel
-QC.qcSkillRank, QC.qcSkillName = qcSkillRank, qcSkillName
+QC.qcSkillRank, QC.qcSkillName, QC.qcRenownNeeds = qcSkillRank, qcSkillName, qcRenownNeeds
 QC.qcZoneQuests = qcGetZoneQuests
 QC.CHAT_TITLE = QCADDON_CHAT_TITLE
 QC.qcNpcName, QC.qcNpcSubtitles = qcNpcName, qcNpcSubtitles

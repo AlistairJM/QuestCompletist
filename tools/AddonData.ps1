@@ -29,6 +29,9 @@ data\factions.jsonl, written by Sync-FactionReach.ps1 and optional, holds the fa
 that some playable race can't earn, with the races that can ("races", ChrRaces IDs, empty for none), or whose bar
 the game never shows ("hidden"), one per line ({"faction":69,"races":[2,5,6,8,9,10]}); it becomes qcFactionRaces
 and qcFactionHidden at the end of qcQuestData.lua.
+data\renown.jsonl, written by Sync-QuestRenown.ps1 and optional, holds the renown or rank level the game's own
+conditions ask of a quest, one quest and faction per line ({"quest":79333,"faction":2590,"level":4}); it becomes
+qcQuestRenown at the end of qcQuestData.lua, which the addon reads before the hand-kept qcRenownLevelRequirements.
 
 data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
 quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
@@ -52,6 +55,7 @@ $StartItemFields = @('item', 'quest', 'side', 'level', 'skill', 'skillRank', 're
 $ConditionTextLocales = @('enUS', 'deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR', 'ptBR', 'ruRU', 'zhCN', 'zhTW')
 $ConditionTextFields = @('key', 'quests') + $ConditionTextLocales
 $FactionFields = @('faction', 'races', 'hidden')
+$RenownFields = @('quest', 'faction', 'level')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
@@ -155,6 +159,12 @@ function ConvertTo-FactionJsonLines($factions) {
         if ($f.hidden) { [void]$sb.Append(',"hidden":true') }
         [void]$sb.Append("}`n")
     }
+    return $sb.ToString()
+}
+
+function ConvertTo-RenownJsonLines($rows) {
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($r in $rows) { [void]$sb.Append('{"quest":' + $r.quest + ',"faction":' + $r.faction + ',"level":' + $r.level + "}`n") }
     return $sb.ToString()
 }
 
@@ -368,6 +378,36 @@ function Test-FactionRecords($factions) {
     return $problems.ToArray()
 }
 
+# Problems with the renown rows: a quest, a faction and a level, each a whole number above 0, and a quest and faction
+# listed once.
+function Test-RenownRecords($rows) {
+    $problems = New-Object System.Collections.Generic.List[string]
+    $seen = @{}
+    $n = 0
+    foreach ($r in $rows) {
+        $n++
+        $what = "renown.jsonl line $n"
+        $bad = @('quest', 'faction', 'level' | Where-Object { -not (Test-WholeNumber $r.$_) -or $r.$_ -le 0 })
+        if ($bad.Count) { $problems.Add("${what}: '$($bad -join "', '")' must be a whole number above 0"); continue }
+        $key = "$($r.quest)|$($r.faction)"
+        if ($seen.ContainsKey($key)) { $problems.Add("${what}: quest $($r.quest) and faction $($r.faction) are also on line $($seen[$key])") } else { $seen[$key] = $n }
+    }
+    return $problems.ToArray()
+}
+
+# qcQuestRenown: quest ID -> {{faction, level}, ...}, the renown or rank levels the game's own conditions ask of it, in
+# faction order. The addon reads it before the hand-kept qcRenownLevelRequirements.
+function ConvertTo-LuaRenownTable($rows) {
+    $sb = New-Object System.Text.StringBuilder
+    [void]$sb.Append("qcQuestRenown={`r`n")
+    foreach ($group in ($rows | Group-Object { [long]$_.quest } | Sort-Object { [long]$_.Name })) {
+        $needs = foreach ($r in ($group.Group | Sort-Object { [long]$_.faction })) { '{' + $r.faction + ',' + $r.level + '}' }
+        [void]$sb.Append('[' + $group.Name + ']={' + ($needs -join ',') + "},`r`n")
+    }
+    [void]$sb.Append("}`r`n")
+    return $sb.ToString()
+}
+
 # qcFactionRaces: faction ID -> the set of races (ChrRaces IDs, as UnitRace's third value) that can earn its reputation,
 # for a faction some playable race can't; qcFactionHidden: faction ID -> 1 for one whose bar the game never shows. The
 # quest list's tooltip leaves a reward out for a character who can't earn it or never sees it.
@@ -443,7 +483,7 @@ function ConvertTo-LuaStartItemTable($items) {
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
-function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @(), $factions = @()) {
+function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @(), $factions = @(), $renown = @()) {
     $sb = New-Object System.Text.StringBuilder (4MB)
     [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
     # ZeroIsValue: a minimum level of 0 is a real value (no minimum); in the other tables 0 means none.
@@ -485,6 +525,7 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(
     [void]$sb.Append((ConvertTo-LuaStartItemTable @($startItems)))
     [void]$sb.Append((ConvertTo-LuaConditionTextTables @($conditionTexts)))
     [void]$sb.Append((ConvertTo-LuaFactionTables @($factions)))
+    [void]$sb.Append((ConvertTo-LuaRenownTable @($renown)))
     return $sb.ToString()
 }
 
@@ -528,6 +569,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $startItemData = Join-Path $DataDir 'startitems.jsonl'
     $conditionTextData = Join-Path $DataDir 'conditiontexts.jsonl'
     $factionData = Join-Path $DataDir 'factions.jsonl'
+    $renownData = Join-Path $DataDir 'renown.jsonl'
     try {
         $quests = Read-JsonLines $questData
         $pins = Read-JsonLines $pinData
@@ -535,6 +577,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         $startItems = if (Test-Path $startItemData) { Read-JsonLines $startItemData } else { @() }
         $conditionTexts = if (Test-Path $conditionTextData) { Read-JsonLines $conditionTextData } else { @() }
         $factions = if (Test-Path $factionData) { Read-JsonLines $factionData } else { @() }
+        $renown = if (Test-Path $renownData) { Read-JsonLines $renownData } else { @() }
     } catch {
         $lines.Add("  $($_.Exception.Message)")
         $lines.Add("The data files can't be read; nothing was written.")
@@ -546,6 +589,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     if (Test-Path $startItemData) { $problems += @(Find-UnknownFields $startItemData $StartItemFields) + @(Test-StartItemRecords $startItems) }
     if (Test-Path $conditionTextData) { $problems += @(Find-UnknownFields $conditionTextData $ConditionTextFields) + @(Test-ConditionTextRecords $conditionTexts) }
     if (Test-Path $factionData) { $problems += @(Find-UnknownFields $factionData $FactionFields) + @(Test-FactionRecords $factions) }
+    if (Test-Path $renownData) { $problems += @(Find-UnknownFields $renownData $RenownFields) + @(Test-RenownRecords $renown) }
     if ($problems.Count -gt 0) {
         $problems | Select-Object -First 30 | ForEach-Object { $lines.Add("  $_") }
         if ($problems.Count -gt 30) { $lines.Add("  ... and $($problems.Count - 30) more") }
@@ -570,7 +614,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         }
     })
     $outputs = @(
-        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept @($factions)) },
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept @($factions) @($renown | Where-Object { $questIds.Contains([long]$_.quest) })) },
         @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
     )
     $differ = 0
@@ -593,7 +637,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     }
     $lines.Add("$($quests.Count) quests, $($pins.Count) pins" + $(if (Test-Path $tuningData) { ", $(@($tunings).Count) tunings" } else { '' }) + ", $(@($startItems).Count) start items" +
         $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }) +
-        $(if (Test-Path $factionData) { ", $(@($factions).Count) factions" } else { '' }))
+        $(if (Test-Path $factionData) { ", $(@($factions).Count) factions" } else { '' }) +
+        $(if (Test-Path $renownData) { ", $(@($renown).Count) renown rows" } else { '' }))
     return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
 }
 
@@ -660,6 +705,14 @@ function Save-FactionData($factions, [string]$DataDir = $DefaultDataDir, [string
     if ($problems.Count -gt 0) { throw ("The factions weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
     Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'factions.jsonl'), (ConvertTo-FactionJsonLines $factions), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Save-RenownData($rows, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-RenownRecords $rows)
+    if ($problems.Count -gt 0) { throw ("The renown rows weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'renown.jsonl'), (ConvertTo-RenownJsonLines $rows), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
 }
 

@@ -16,7 +16,7 @@ local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.q
 local qcQuestStatus, qcMapTip = QC.qcQuestStatus, QC.qcMapTip
 local qcAddMapTooltipLine, qcSetMapTooltipLineIcon, qcAddMapTooltipDivider = qcMapTip.Line, qcMapTip.LineIcon, qcMapTip.Divider
 local qcFactionName, qcFactionLevel = QC.qcFactionName, QC.qcFactionLevel
-local qcSkillRank, qcSkillName = QC.qcSkillRank, QC.qcSkillName
+local qcSkillRank, qcSkillName, qcRenownNeeds = QC.qcSkillRank, QC.qcSkillName, QC.qcRenownNeeds
 
 --[[ ##### MAP PINS START ##### ]]--
 -- The map's quest filter from its last refresh, for the tooltip's progress count.
@@ -202,13 +202,14 @@ local function qcPinQuestNeeds(questId, state, anything)
         if anything then return true end
         needs[#needs + 1] = string.format(ITEM_REQ_SKILL, qcPrereq.InLogText(questId, qcPrereqName))
     end
-    local renown = qcRenownLevelRequirements[questId]
-    local level, isRank
-    if type(renown) == "table" then level, isRank = qcFactionLevel(renown[1]) end
-    if level and level < renown[2] then
-        if anything then return true end
-        needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(renown[1]) or UNKNOWN,
-            string.format(isRank and qcL.RANKLEVEL or RENOWN_LEVEL_LABEL, renown[2]))
+    for _, need in ipairs(qcRenownNeeds(questId) or {}) do
+        local level, isRank
+        if need[2] then level, isRank = qcFactionLevel(need[1]) end
+        if level and level < need[2] then
+            if anything then return true end
+            needs[#needs + 1] = string.format(ITEM_REQ_REPUTATION, qcFactionName(need[1]) or UNKNOWN,
+                string.format(isRank and qcL.RANKLEVEL or RENOWN_LEVEL_LABEL, need[2]))
+        end
     end
     -- A level of 1 asks only for the profession: "Requires Fishing" rather than "Requires Fishing (1)".
     local skill = qcQuestSkillRequirements[questId]
