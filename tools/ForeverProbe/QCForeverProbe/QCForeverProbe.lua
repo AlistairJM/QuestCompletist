@@ -13,7 +13,8 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               again a quest saved as cached with no level. One that gets no answer in
                               5 seconds is asked once more, and at the end every quest the server
                               refused, even after both tries ran out, is asked once more, one at a
-                              time (retried; the run's row keeps retried and recovered).
+                              time, with a progress line every 200 (retried; the run's row keeps
+                              retried and recovered).
 /qcprobe npcs [in flight]     names the NPCs in the game's list (NpcIDs_*.lua): the NPC of every pin, and on Forever CMaNGOS's givers
 /qcprobe npcs all             names every NPC again
 /qcprobe maps [wait seconds]  asks the server for each map's quest offers (the storyline starts
@@ -22,8 +23,9 @@ game's Interface\AddOns\QCForeverProbe (_classic_beta_ or the live Forever folde
                               (docs/plans/game-api-review.md, recommendation 3). It waits the given
                               seconds, 2 by default, for each map's answer. Runs on retail too. At its
                               end it asks every zone that answered empty once more, one at a time,
-                              reading it only when its whole wait is over (retried; the run's row keeps
-                              retried and recovered), then takes the geometry below.
+                              reading it only when its whole wait is over, with a progress line every
+                              20 (retried; the run's row keeps retried and recovered), then takes the
+                              geometry below.
 /qcprobe geometry             takes the geometry alone, in a moment: where each child map sits on its
                               continent (docs/plans/continent-pins.md). To also record the map window's
                               size, open the world map on a continent first, maximised or not.
@@ -103,6 +105,7 @@ local LATE_ANSWER_WAIT_MS = 10000
 local POLL_MS = 1000
 local TICK_SECONDS = 0.05
 local PROGRESS_EVERY = 500
+local RETRY_PROGRESS_EVERY = 200
 local DEFAULT_MAP_WAIT_SECONDS = 2
 local MAP_PROGRESS_EVERY = 20
 local MAX_MAP_ID = 5000
@@ -151,25 +154,45 @@ local function where()
 	return mapId, math.floor(x * 1000 + 0.5) / 10, math.floor(y * 1000 + 0.5) / 10
 end
 
-local function minutesLeft(r)
-	local elapsed = debugprofilestop() - r.startedMs
-	if r.done == 0 or elapsed <= 0 then return nil end
-	return math.ceil((r.total - r.done) / (r.done / elapsed) / 60000)
+local function timeLeft(done, total, startedMs)
+	local elapsed = debugprofilestop() - startedMs
+	if done == 0 or elapsed <= 0 then return "" end
+	return string.format(", about %d min left", math.ceil((total - done) / (done / elapsed) / 60000))
 end
 
 local function count(r, result)
 	r.counts[result] = (r.counts[result] or 0) + 1
 	r.done = r.done + 1
 	if r.done % (r.progressEvery or PROGRESS_EVERY) == 0 then
-		local left = minutesLeft(r)
 		say(string.format("%s: %d of %d (%s)%s.", r.label, r.done, r.total, countsText(r.counts),
-			left and string.format(", about %d min left", left) or ""))
+			timeLeft(r.done, r.total, r.startedMs)))
 	end
 end
 
 local function recount(r, from, to)
 	r.counts[from] = r.counts[from] - 1
 	r.counts[to] = (r.counts[to] or 0) + 1
+end
+
+local function startRetry(r, every)
+	r.extra.retried, r.extra.recovered = 0, 0
+	r.retry = {total = 0, every = every, startedMs = debugprofilestop()}
+end
+
+local function retryText(r)
+	return string.format("%d of %d asked once more (%d recovered)", r.extra.retried, r.retry.total, r.extra.recovered)
+end
+
+local function countRetry(r, recovered)
+	r.extra.retried = r.extra.retried + 1
+	if recovered then r.extra.recovered = r.extra.recovered + 1 end
+	if r.extra.retried % r.retry.every == 0 then
+		say(string.format("%s: %s%s.", r.label, retryText(r), timeLeft(r.extra.retried, r.retry.total, r.retry.startedMs)))
+	end
+end
+
+local function hasRetries(r)
+	return r.retry ~= nil and r.retry.total > 0
 end
 
 local function finish(stopped)
@@ -182,8 +205,9 @@ local function finish(stopped)
 		time = time(), character = character(), level = UnitLevel("player")}
 	for key, value in pairs(r.extra or {}) do row[key] = value end
 	table.insert(db.runs, row)
-	say(string.format("%s the %s: %d of %d in %d s (%s). Log out fully to save the results and the game's cache.",
-		stopped and "Stopped" or "Finished", r.label, r.done, r.total, seconds, countsText(r.counts)))
+	say(string.format("%s the %s: %d of %d in %d s (%s)%s. Log out fully to save the results and the game's cache.",
+		stopped and "Stopped" or "Finished", r.label, r.done, r.total, seconds, countsText(r.counts),
+		hasRetries(r) and "; " .. retryText(r) or ""))
 end
 
 local function tick()
@@ -400,6 +424,7 @@ local function startQuests(all, inFlight)
 		retrying[questId] = true
 		attempts[questId] = 0
 		r.queue[#r.queue + 1] = questId
+		r.retry.total = r.retry.total + 1
 	end
 	local function reasked(questId, facts, ms)
 		local first = db.quests[questId]
@@ -407,11 +432,8 @@ local function startQuests(all, inFlight)
 		if ms then facts.retriedMs, facts.retriedAt = math.floor(ms + 0.5), runMs() end
 		db.quests[questId] = facts
 		retrying[questId] = nil
-		r.extra.retried = r.extra.retried + 1
-		if facts.result ~= "fail" then
-			r.extra.recovered = r.extra.recovered + 1
-			recount(r, "fail", facts.result)
-		end
+		if facts.result ~= "fail" then recount(r, "fail", facts.result) end
+		countRetry(r, facts.result ~= "fail")
 	end
 	r.send = function(questId)
 		if haveQuestData(questId) then
@@ -448,7 +470,7 @@ local function startQuests(all, inFlight)
 	r.beforeFinish = function()
 		if reasking or #refused == 0 then return false end
 		reasking = true
-		r.extra.retried, r.extra.recovered = 0, 0
+		startRetry(r, RETRY_PROGRESS_EVERY)
 		for _, questId in ipairs(refused) do askAgain(questId) end
 		r.maxInFlight = 1
 		say(string.format("%s: asking the %d refused once more, one at a time...", r.label, #refused))
@@ -883,9 +905,8 @@ local function startMaps(waitSeconds)
 		facts.retriedMs = answer.ms and math.floor(answer.ms + 0.5) or nil
 		db.maps[mapID] = facts
 		retrying[mapID], retryAnswer[mapID] = nil, nil
-		r.extra.retried = r.extra.retried + 1
-		if facts.questLines or facts.forceVisible then r.extra.recovered = r.extra.recovered + 1 end
 		if facts.result ~= first.result then recount(r, first.result, facts.result) end
+		countRetry(r, facts.questLines or facts.forceVisible)
 	end
 	r.timeout = function(mapID)
 		local started = r.timedOut[mapID]
@@ -903,7 +924,7 @@ local function startMaps(waitSeconds)
 	r.beforeFinish = function()
 		if reasking then return false end
 		reasking = true
-		r.extra.retried, r.extra.recovered = 0, 0
+		startRetry(r, MAP_PROGRESS_EVERY)
 		local empty = {}
 		for _, mapID in ipairs(r.queue) do
 			local facts = db.maps[mapID]
@@ -917,6 +938,7 @@ local function startMaps(waitSeconds)
 			retrying[mapID] = true
 			r.queue[#r.queue + 1] = mapID
 		end
+		r.retry.total = #empty
 		say(string.format("%s: asking the %d zones that answered empty once more, %d s each...", r.label, #empty, waitSeconds))
 		return true
 	end
@@ -1127,7 +1149,9 @@ local function status()
 	local characters = 0
 	for _ in pairs(db.completed) do characters = characters + 1 end
 	say(string.format("Completed quests saved for %d characters.", characters))
-	if run then say(string.format("Running: the %s, %d of %d.", run.label, run.done, run.total)) end
+	if run then
+		say(string.format("Running: the %s, %d of %d%s.", run.label, run.done, run.total, hasRetries(run) and "; " .. retryText(run) or ""))
+	end
 end
 
 local function onLogin()

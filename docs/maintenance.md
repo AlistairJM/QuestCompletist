@@ -3902,8 +3902,9 @@ It began as pull request #139, which stays open as the record; its files are in
    as cached with no level: before this rule the 12.1.5 run saved 5,242 such placeholders as cached,
    3,996 of them task quests, most of which (3,340) were not in that day's quest cache. Each answer
    keeps when it came (`at`, in ms from the run's start). It says how many minutes are left every 500
-   quests; stopping it (`/qcprobe stop`) and running it again picks up where it was, across logouts. On
-   the beta, 4 at a time, 70374's 7,320 quests took 11 minutes. One at a time they take about 45 (the
+   quests, and every 200 while it asks the refused again (before 17 October 2026 that phase said
+   nothing until it finished); stopping it (`/qcprobe stop`) and running it again picks up where it
+   was, across logouts. On the beta, 4 at a time, 70374's 7,320 quests took 11 minutes. One at a time they take about 45 (the
    beta answers in about a third of a second), and asking again the 4,279 it refuses (it answers only up
    to about level 40) takes about 25 more, so a Forever pass is now a little over an hour; a rerun asks
    those refusals twice again, about 50 minutes. For every
@@ -3967,8 +3968,8 @@ It began as pull request #139, which stays open as the record; its files are in
    Woods (2395) answered with nothing in 99 ms, likely closed by an update meant for another map, while
    the game offers 33 quest lines there ([plans/open-items.md](plans/open-items.md)). That was 272 zones on
    retail and 51 on Forever, so the pass takes about that many waits longer (about 4½ minutes with
-   `maps 1` on retail). A zone asked again has `retried` (its lists are the second answer's, `ms` stays
-   the first's, `retriedMs` is when the second update came), and the run's row counts `retried` and
+   `maps 1` on retail), with a progress line every 20 zones. A zone asked again has `retried` (its
+   lists are the second answer's, `ms` stays the first's, `retriedMs` is when the second update came), and the run's row counts `retried` and
    `recovered` (those that came back with offers or shown quests): a zone recovered is one the pass
    would have missed, and a sweep should name them. `Report-MapOffers.lua` marks each such zone
    "asked again" and lists the recovered ones under its totals.
