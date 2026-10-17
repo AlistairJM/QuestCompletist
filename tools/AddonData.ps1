@@ -25,6 +25,10 @@ data\conditiontexts.jsonl, written by Sync-QuestConditionTexts.ps1 and optional,
 a condition that holds quests back, one per line: its key, the quests and the text in each of the client's
 languages, enUS's always ({"key":"c15","quests":[51571],"enUS":"...","deDE":"..."}); it becomes
 qcQuestConditionTexts and qcConditionTexts at the end of qcQuestData.lua.
+data\factions.jsonl, written by Sync-FactionReach.ps1 and optional, holds the factions a reputation reward names
+that some playable race can't earn, with the races that can ("races", ChrRaces IDs, empty for none), or whose bar
+the game never shows ("hidden"), one per line ({"faction":69,"races":[2,5,6,8,9,10]}); it becomes qcFactionRaces
+and qcFactionHidden at the end of qcQuestData.lua.
 
 data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
 quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
@@ -47,6 +51,7 @@ $TuningFields = @('id', 'level', 'redirects', 'samples')
 $StartItemFields = @('item', 'quest', 'side', 'level', 'skill', 'skillRank', 'rep', 'repRank', 'races')
 $ConditionTextLocales = @('enUS', 'deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR', 'ptBR', 'ruRU', 'zhCN', 'zhTW')
 $ConditionTextFields = @('key', 'quests') + $ConditionTextLocales
+$FactionFields = @('faction', 'races', 'hidden')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
@@ -137,6 +142,17 @@ function ConvertTo-ConditionTextJsonLines($texts) {
     foreach ($t in $texts) {
         [void]$sb.Append('{"key":"' + $t.key + '","quests":[' + (@($t.quests) -join ',') + ']')
         foreach ($locale in $ConditionTextLocales) { if ($t.$locale) { [void]$sb.Append(',"' + $locale + '":"' + $t.$locale.Replace('\', '\\').Replace('"', '\"') + '"') } }
+        [void]$sb.Append("}`n")
+    }
+    return $sb.ToString()
+}
+
+function ConvertTo-FactionJsonLines($factions) {
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($f in $factions) {
+        [void]$sb.Append('{"faction":' + $f.faction)
+        if ($null -ne $f.races) { [void]$sb.Append(',"races":[' + (@($f.races) -join ',') + ']') }
+        if ($f.hidden) { [void]$sb.Append(',"hidden":true') }
         [void]$sb.Append("}`n")
     }
     return $sb.ToString()
@@ -334,6 +350,39 @@ function Test-ConditionTextRecords($texts) {
     return $problems.ToArray()
 }
 
+# Problems with the factions: a faction is listed once, as a whole number above 0, with the races that can earn it
+# (ChrRaces IDs; an empty list for none), or hidden, or both.
+function Test-FactionRecords($factions) {
+    $problems = New-Object System.Collections.Generic.List[string]
+    $seen = @{}
+    $n = 0
+    foreach ($f in $factions) {
+        $n++
+        $what = "factions.jsonl line $n" + $(if (Test-WholeNumber $f.faction) { " (faction $($f.faction))" } else { '' })
+        if (-not (Test-WholeNumber $f.faction) -or $f.faction -le 0) { $problems.Add("${what}: 'faction' must be a whole number above 0"); continue }
+        if ($seen.ContainsKey($f.faction)) { $problems.Add("${what}: the faction is also on line $($seen[$f.faction])") } else { $seen[$f.faction] = $n }
+        if ($null -ne $f.races -and ($f.races -isnot [array] -or @($f.races | Where-Object { -not (Test-WholeNumber $_) -or $_ -le 0 }).Count)) { $problems.Add("${what}: 'races' must list race IDs") }
+        if ($null -ne $f.hidden -and $f.hidden -isnot [bool]) { $problems.Add("${what}: 'hidden' is true, or left out") }
+        if ($null -eq $f.races -and -not $f.hidden) { $problems.Add("${what}: a faction every race can earn and see isn't listed") }
+    }
+    return $problems.ToArray()
+}
+
+# qcFactionRaces: faction ID -> the set of races (ChrRaces IDs, as UnitRace's third value) that can earn its reputation,
+# for a faction some playable race can't; qcFactionHidden: faction ID -> 1 for one whose bar the game never shows. The
+# quest list's tooltip leaves a reward out for a character who can't earn it or never sees it.
+function ConvertTo-LuaFactionTables($factions) {
+    $sb = New-Object System.Text.StringBuilder
+    [void]$sb.Append("qcFactionRaces={`r`n")
+    foreach ($f in ($factions | Where-Object { $null -ne $_.races } | Sort-Object { [long]$_.faction })) {
+        [void]$sb.Append('[' + $f.faction + ']={' + ((@($f.races) | ForEach-Object { "[$_]=1" }) -join ',') + "},`r`n")
+    }
+    [void]$sb.Append("}`r`nqcFactionHidden={`r`n")
+    foreach ($f in ($factions | Where-Object { $_.hidden } | Sort-Object { [long]$_.faction })) { [void]$sb.Append('[' + $f.faction + "]=1,`r`n") }
+    [void]$sb.Append("}`r`n")
+    return $sb.ToString()
+}
+
 # qcQuestConditionTexts: quest ID -> the numbers of its texts in qcConditionTexts; qcConditionTexts: the game's own
 # words for a condition that holds a quest back, in the client's language (GetLocale), or enUS's where a language
 # has none and for a language the data doesn't hold (enGB). Every language's list is in the file, numbered alike.
@@ -394,7 +443,7 @@ function ConvertTo-LuaStartItemTable($items) {
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
-function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @()) {
+function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @(), $factions = @()) {
     $sb = New-Object System.Text.StringBuilder (4MB)
     [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
     # ZeroIsValue: a minimum level of 0 is a real value (no minimum); in the other tables 0 means none.
@@ -435,6 +484,7 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(
     [void]$sb.Append("qcTuningSample={`r`n").Append($samples.ToString()).Append("}`r`n")
     [void]$sb.Append((ConvertTo-LuaStartItemTable @($startItems)))
     [void]$sb.Append((ConvertTo-LuaConditionTextTables @($conditionTexts)))
+    [void]$sb.Append((ConvertTo-LuaFactionTables @($factions)))
     return $sb.ToString()
 }
 
@@ -477,12 +527,14 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $tuningData = Join-Path $DataDir 'tunings.jsonl'
     $startItemData = Join-Path $DataDir 'startitems.jsonl'
     $conditionTextData = Join-Path $DataDir 'conditiontexts.jsonl'
+    $factionData = Join-Path $DataDir 'factions.jsonl'
     try {
         $quests = Read-JsonLines $questData
         $pins = Read-JsonLines $pinData
         $tunings = Read-TuningData $DataDir
         $startItems = if (Test-Path $startItemData) { Read-JsonLines $startItemData } else { @() }
         $conditionTexts = if (Test-Path $conditionTextData) { Read-JsonLines $conditionTextData } else { @() }
+        $factions = if (Test-Path $factionData) { Read-JsonLines $factionData } else { @() }
     } catch {
         $lines.Add("  $($_.Exception.Message)")
         $lines.Add("The data files can't be read; nothing was written.")
@@ -493,6 +545,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     if (Test-Path $tuningData) { $problems += @(Find-UnknownFields $tuningData $TuningFields) + @(Test-TuningRecords $tunings) }
     if (Test-Path $startItemData) { $problems += @(Find-UnknownFields $startItemData $StartItemFields) + @(Test-StartItemRecords $startItems) }
     if (Test-Path $conditionTextData) { $problems += @(Find-UnknownFields $conditionTextData $ConditionTextFields) + @(Test-ConditionTextRecords $conditionTexts) }
+    if (Test-Path $factionData) { $problems += @(Find-UnknownFields $factionData $FactionFields) + @(Test-FactionRecords $factions) }
     if ($problems.Count -gt 0) {
         $problems | Select-Object -First 30 | ForEach-Object { $lines.Add("  $_") }
         if ($problems.Count -gt 30) { $lines.Add("  ... and $($problems.Count - 30) more") }
@@ -517,7 +570,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         }
     })
     $outputs = @(
-        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept) },
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept @($factions)) },
         @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
     )
     $differ = 0
@@ -539,7 +592,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         }
     }
     $lines.Add("$($quests.Count) quests, $($pins.Count) pins" + $(if (Test-Path $tuningData) { ", $(@($tunings).Count) tunings" } else { '' }) + ", $(@($startItems).Count) start items" +
-        $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }))
+        $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }) +
+        $(if (Test-Path $factionData) { ", $(@($factions).Count) factions" } else { '' }))
     return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
 }
 
@@ -598,6 +652,14 @@ function Save-ConditionTextData($texts, [string]$DataDir = $DefaultDataDir, [str
     if ($problems.Count -gt 0) { throw ("The condition texts weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
     Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'conditiontexts.jsonl'), (ConvertTo-ConditionTextJsonLines $texts), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Save-FactionData($factions, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-FactionRecords $factions)
+    if ($problems.Count -gt 0) { throw ("The factions weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'factions.jsonl'), (ConvertTo-FactionJsonLines $factions), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
 }
 

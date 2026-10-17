@@ -884,6 +884,57 @@ else
 	print("  (no condition text in this game's data)")
 end
 
+print("Reputation rewards: only what the character's race can earn and the game shows a bar for")
+local factionRaces, factionHidden = env.qcFactionRaces or {}, env.qcFactionHidden or {}
+local realReputation, realRace = env.C_Reputation, env.UnitRace
+env.C_Reputation = stubTable({GetFactionDataByID = function(factionId) return {name = "Faction" .. factionId} end})
+local function rewardRow(lines, factionId) return find(lines, "Faction" .. factionId .. " | ") end
+local hiddenQuest, raceQuest
+for questId, rewards in pairs(env.qcQuestReputation) do
+	if env.qcQuestDatabase[questId] then
+		local hidden, open, raced
+		for factionId, amount in pairs(rewards) do
+			if amount ~= 0 then
+				if factionHidden[factionId] then hidden = factionId
+				elseif not factionRaces[factionId] then open = factionId
+				elseif next(factionRaces[factionId]) then raced = factionId end
+			end
+		end
+		if hidden and open and (not hiddenQuest or questId < hiddenQuest[1]) then hiddenQuest = {questId, hidden, open} end
+		if raced and (not raceQuest or questId < raceQuest[1]) then raceQuest = {questId, raced} end
+	end
+end
+if hiddenQuest then
+	reset()
+	local lines = draw(hiddenQuest[1])
+	check(string.format("%d: the reward on %d, whose bar the game never shows, is left out", hiddenQuest[1], hiddenQuest[2]), rewardRow(lines, hiddenQuest[2]) == nil)
+	check(string.format("and the one on %d, which every race can earn, is there", hiddenQuest[3]), rewardRow(lines, hiddenQuest[3]) ~= nil)
+else
+	print("  (no quest in this game's data rewards a faction never shown beside one shown)")
+end
+if raceQuest then
+	local questId, factionId = raceQuest[1], raceQuest[2]
+	local earner, other
+	for raceId in pairs(factionRaces[factionId]) do if not earner or raceId < earner then earner = raceId end end
+	for raceId = 1, 100 do
+		if not factionRaces[factionId][raceId] then
+			for _, races in pairs(factionRaces) do if races[raceId] then other = other or raceId end end
+		end
+	end
+	env.UnitRace = function() return "Race", "RACE", earner end
+	reset()
+	check(string.format("%d: a race that can earn %d (race %d) sees its reward", questId, factionId, earner), rewardRow(draw(questId), factionId) ~= nil)
+	if other then
+		env.UnitRace = function() return "Race", "RACE", other end
+		reset()
+		check(string.format("and a race that can't (race %d) doesn't", other), rewardRow(draw(questId), factionId) == nil)
+	end
+	env.UnitRace = function() return "Race", "RACE" end
+	reset()
+	check("a character whose race the game doesn't name sees it", rewardRow(draw(questId), factionId) ~= nil)
+end
+env.C_Reputation, env.UnitRace = realReputation, realRace
+
 print("A quest the game tracks but never names")
 local function unnamed(questId) return type(questId) == "number" and env.qcQuestDatabase[questId] == nil end
 local choiceQuest, unnamedOnly

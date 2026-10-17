@@ -80,6 +80,16 @@ taken. What is left, in one place:
     quests, and 26 with no minimum level: data-sources-review decision 25, still waiting on its one check in game.
   - **Side finding:** 12 Broken Shore quests (45178 Contagion Containment and others) are typed one-time though
     Blizzard's `QuestInfo` calls them "Rare World Quest" or "Rare Elite World Quest".
+- **Opportunity 5, reputation the character can't earn (17 October 2026):** recounted on 12.1.5.70448 and
+  1.60.1.70450 (the 113.4 backfill added about 1,000 reward rows since the audit). The user took all three parts:
+  - **1, built:** the quest list's tooltip leaves out a reward the character's race can't earn or never sees, from a
+    table the new step 2n generates from the game's faction and race tables, both games
+    ([maintenance.md](../maintenance.md)). The audit's "40 contradictions" (now 139 retail rows) aren't data errors:
+    they are reward lists that name both sides' factions, as Battle for Azeroth's world quests do.
+  - **2, built:** `Compare-QuestReputation.ps1`'s "shown" reads the slot each race gets, not slot 0 alone.
+  - **3, to build:** renown requirements from the game's own conditions (data-sources-review recommendation 17): 65
+    new on 66 task quests, the rule's level where Blizzard's text differs (4 Hallowfall quests: 3 against "Rank 5"),
+    several renowns for one quest (79333), the 92 hand rows kept.
 
 - **The client tables audit (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) went through
   every table and column of retail 12.1.5, Forever 1.60.1 and Era, decoded 621 bits and listed 12 opportunities

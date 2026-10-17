@@ -60,8 +60,27 @@ function New-ApiRecord([int]$id, [string]$reps, [string]$namespace) {
     return $json + ',"rewards":{' + $rewards + '}}'
 }
 
+# A Faction table of [id, name as CSV text, ReputationIndex, slot 0's flags] rows: slot 0 open to every race and class
+# (base 0, cap 42000) and the other slots empty; a fifth item lists the slots instead, as [slot, race mask's low word,
+# base, cap, flags].
+function ConvertTo-FactionCsv($rows) {
+    $header = @('ID', 'Name_lang', 'ReputationIndex') + @(foreach ($i in 0..3) { "ReputationFlags_$i", "ReputationBase_$i", "ReputationMax_$i", "ReputationClassMask_$i", "ReputationRaceMasks${i}_0", "ReputationRaceMasks${i}_1" })
+    $lines = @($header -join ',')
+    foreach ($row in $rows) {
+        $slots = @{ 0 = @(0, 0, 42000, $row[3]) }
+        if ($row.Count -gt 4) { $slots = @{}; foreach ($s in $row[4]) { $slots[$s[0]] = @($s[1], $s[2], $s[3], $s[4]) } }
+        $cells = @("$($row[0])", "$($row[1])", "$($row[2])")
+        foreach ($i in 0..3) {
+            if ($slots.ContainsKey($i)) { $cells += "$($slots[$i][3])", "$($slots[$i][1])", "$($slots[$i][2])", '0', "$($slots[$i][0])", '0' }
+            else { $cells += '0', '0', '0', '0', '0', '0' }
+        }
+        $lines += ($cells -join ',')
+    }
+    return (($lines -join "`r`n") + "`r`n")
+}
+
 $FactionRows = @(
-    @(76, 'Orgrimmar', 10, 2), @(72, 'Stormwind', 11, 0), @(80, 'Eighty', 12, 16), @(81, 'Eighty-one', 13, 8),
+    @(76, 'Orgrimmar', 10, 2), @(72, 'Stormwind', 11, 0), @(80, 'Eighty', 12, 16), @(81, 'Eighty-one', 13, 136),
     @(82, 'Eighty-two', 14, 1), @(56, 'Fifty-six', 0, 0), @(9, 'Nine', 15, 0), @(100, 'Hundred', 16, 0),
     @(98, 'Hidden six', 21, 6), @(99, 'Hidden four', 20, 4), @(97, 'Hidden twenty', 22, 20), @(55, 'No slot', -1, 0))
 
@@ -155,8 +174,7 @@ function Write-World([string]$name, $quests, [hashtable]$options = @{}) {
     [IO.File]::WriteAllText("$dir\qcQuest.lua", ((@('qcFactions = {', '    [76] = "Orgrimmar", ', '    [72] = "Stormwind", ', '    [80] = "Eighty", ', '}', '', 'qcQuestReputation = {  -- QuestId -> {[FactionId]=RepValue}', '') + $lua + @('}', '')) -join "`r`n"), $utf8)
     if (-not $options.NoCache) { [IO.File]::WriteAllText("$dir\retail_quest_cache_$Build.jsonl", (($cache -join "`n") + "`n"), $utf8) }
     if (-not $options.NoFaction) {
-        $table = @('ID,Name_lang,ReputationIndex,ReputationFlags_0') + @($FactionRows | ForEach-Object { "$($_[0]),$($_[1]),$($_[2]),$($_[3])" })
-        [IO.File]::WriteAllText("$dir\Faction-$Build.csv", (($table -join "`r`n") + "`r`n"), $utf8)
+        [IO.File]::WriteAllText("$dir\Faction-$Build.csv", (ConvertTo-FactionCsv $FactionRows), $utf8)
     }
     return $dir
 }
@@ -364,7 +382,7 @@ try {
     Equal (Get-FactionBlock "$d\qcQuest.lua") ("    [76] = `"Orgrimmar`", `r`n    [72] = `"Stormwind`", `r`n    [80] = `"Eighty`",`r`n`t[81] = `"Eighty-one`",") 'Y11: and the last entry gets a comma before the new one'
 
     $d = Write-World 'apply-quoted' @{ 1 = New-Quest '' $null '82=5' }
-    [IO.File]::WriteAllText("$d\Faction-$Build.csv", "ID,Name_lang,ReputationIndex,ReputationFlags_0`r`n82,`"Back\slash `"`"quoted`"`"`",14,1`r`n", $utf8)
+    [IO.File]::WriteAllText("$d\Faction-$Build.csv", (ConvertTo-FactionCsv @(, @(82, "`"Back\slash `"`"quoted`"`"`"", 14, 1))), $utf8)
     $null = Invoke-Tool $d
     $a = Invoke-Apply $d
     Equal $a.Failure '' 'Y12: a faction name with a backslash and quotes is written'
@@ -543,6 +561,23 @@ try {
     [IO.File]::WriteAllText("$d\Faction-$Build.csv", "ID,Name_lang,ReputationIndex,ReputationFlags_0`r`n", $utf8)
     $r = Invoke-Tool $d
     HasLine $r.Text "FAILED: the cache pass stopped: $d\Faction-$Build.csv has no rows or no ID column." 'S5: and one with no rows'
+
+    # --- Shown by the slot a race gets ------------------------------------------------------------------------
+    # 83's slot 0 is race 1's, locked and hidden, and its slot 1 everyone else's, open: race 2 sees it. 84 is a header
+    # without its own bar. Slot 0's flags alone said the reverse of both.
+    $d = Write-World 'slots' @{ 1 = New-Quest '' $null '83=5'; 2 = New-Quest '' $null '84=5' }
+    [IO.File]::WriteAllText("$d\Faction-$Build.csv", (ConvertTo-FactionCsv @(
+        @(76, 'Orgrimmar', 10, 2),
+        @(83, 'Locked first', 30, 6, @(@(0, 1, -42000, -42000, 6), @(1, 0, 0, 42000, 16))),
+        @(84, 'Bar-less header', 31, 8))), $utf8)
+    [IO.File]::WriteAllText("$d\ChrRaces-$Build.csv", "ID,Flags,PlayableRaceBit,Alliance`r`n1,0,0,0`r`n2,0,1,1`r`n", $utf8)
+    $r = Invoke-Tool $d
+    HasLine $r.Text "Cache pass: retail_quest_cache_$Build.jsonl holds 2 quests, 2 of our 2. Faction table Faction-$Build.csv: 3 factions, 2 shown." 'L1: a faction is shown by the slot a race gets, and a header without its bar is not'
+    HasLine $r.Text '  E cache only, on a shown faction (backfill candidates): 1 quests' 'L1: so the reward on the faction whose first slot is locked is a backfill candidate'
+    HasLine $r.Text '  F cache only, on factions that are not shown: 1' 'L1: and the one on the bar-less header is not'
+    Remove-Item "$d\ChrRaces-$Build.csv"
+    $r = Invoke-Tool $d
+    Has $r.Text "Faction table Faction-$Build.csv: 3 factions, 2 shown." 'L2: without a ChrRaces table any slot will do, and the header still isn''t shown'
 
     # --- Which cache --------------------------------------------------------------------------------------
     $d = Write-World 'twocaches' (New-World)

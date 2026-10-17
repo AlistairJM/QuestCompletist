@@ -293,3 +293,6 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-17: the quest list's tooltip shows the game's own text for a condition that holds a quest back (step 2m).
   The code is shared: both games' `qcQuestData.lua` carry `qcQuestConditionTexts` and `qcConditionTexts`, empty on
   Forever for the same reason as above (its client's 97 condition texts belong to no quest).
+- 2026-10-17: the quest list's tooltip leaves out a reputation reward the character's race can't earn or never sees
+  (step 2n), in both games, from each game's own Faction and ChrRaces tables (retail 196 factions, Forever 48); Forever
+  runs the step in step 10.

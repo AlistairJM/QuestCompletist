@@ -28,8 +28,12 @@ by comparing three sets of faction=amount, ours, the API's and the cache's, neve
   G  not in the cache (informational)
   H  the cache's own extras: quests not in our data, slots with an amount of 0, a faction in
      two slots of one quest (their amounts are added)
-A faction is shown when the Faction table lists it, its ReputationIndex is not negative (the
-client keeps no standing for it) and ReputationFlags_0 has not got bit 4 (value 4, hidden).
+A faction is shown when the Faction table lists it with a standing (ReputationIndex not negative) and some
+playable race can earn it in a slot that shows its bar: not hidden (flag 0x4) and not a header without
+its own bar (0x8 without 0x80), as FactionReach.ps1 reads the four slots with the build's ChrRaces table
+(ChrRaces-<build>.csv, else the newest of the same major version; without one, any slot will do). Until
+17 October 2026 it read ReputationFlags_0 alone, which is the other side's locked slot for Warsong
+Offensive, Hellscream's Reach and Wintersaber Trainers, and showed the "Horde" and "Alliance" headers.
 Rows of classes B to F are written with the Kinds cache-more, cache-differ, cache-lost,
 cache-only and cache-hidden; their CacheShown column holds the cache's rewards on shown
 factions, and CacheBuild the build of the cache read. Apply-ReputationBackfill.ps1 acts on
@@ -67,6 +71,7 @@ foreach ($m in [regex]::Matches($fm.Groups[1].Value, '\[(\d+)\]\s*=\s*"((?:[^"\\
 . "$PSScriptRoot\QuestReputation.ps1"
 . "$PSScriptRoot\AddonData.ps1"
 . "$PSScriptRoot\QuestCacheFiles.ps1"
+. "$PSScriptRoot\FactionReach.ps1"
 
 $sideTable = Get-QuestReputation $content
 
@@ -144,14 +149,19 @@ if (-not $Cache) {
 }
 if ($Cache) {
     $cacheBuild = (Split-Path $Cache -Leaf) -replace '^retail_quest_cache_', '' -replace '\.jsonl$', ''
-    $factionFile = "$ToolsDir\Faction-$cacheBuild.csv"
-    if (-not (Test-Path $factionFile)) {
+    # The table of the cache's build, else the newest of the same major version, by version and not by text.
+    function Find-BuildTable([string]$table) {
+        $path = "$ToolsDir\$table-$cacheBuild.csv"
+        if (Test-Path $path) { return $path }
         $major = $cacheBuild.Split('.')[0]
-        $newestFaction = Get-ChildItem "$ToolsDir\Faction-*.csv" -ErrorAction SilentlyContinue |
-            Where-Object { $_.BaseName -match '^Faction-\d+\.\d+\.\d+\.\d+$' -and $_.BaseName.StartsWith("Faction-$major.") } |
-            Sort-Object { [version]($_.BaseName -replace '^Faction-') } | Select-Object -Last 1
-        $factionFile = if ($newestFaction) { $newestFaction.FullName } else { $null }
+        $newest = Get-ChildItem "$ToolsDir\$table-*.csv" -ErrorAction SilentlyContinue |
+            Where-Object { $_.BaseName -match "^$table-\d+\.\d+\.\d+\.\d+$" -and $_.BaseName.StartsWith("$table-$major.") } |
+            Sort-Object { [version]($_.BaseName -replace "^$table-") } | Select-Object -Last 1
+        if ($newest) { return $newest.FullName }
+        return $null
     }
+    $factionFile = Find-BuildTable 'Faction'
+    $raceFile = Find-BuildTable 'ChrRaces'
 }
 
 $report = New-Object System.Collections.Generic.List[string]
@@ -168,15 +178,16 @@ else {
     try {
         $factionBuild = (Split-Path $factionFile -Leaf) -replace '^Faction-', '' -replace '\.csv$', ''
         $factionRows = @(Import-Csv $factionFile)
-        foreach ($column in 'ID', 'Name_lang', 'ReputationIndex', 'ReputationFlags_0') {
+        $slotColumns = foreach ($i in 0..3) { "ReputationFlags_$i", "ReputationBase_$i", "ReputationMax_$i", "ReputationClassMask_$i", "ReputationRaceMasks${i}_0", "ReputationRaceMasks${i}_1" }
+        foreach ($column in @('ID', 'Name_lang', 'ReputationIndex') + @($slotColumns)) {
             if (-not $factionRows.Count -or $factionRows[0].PSObject.Properties.Name -notcontains $column) { throw "${factionFile} has no rows or no $column column." }
         }
+        $raceRows = if ($raceFile) { @(Import-Csv $raceFile) } else { @() }
+        $reach = Get-FactionReach $factionRows $raceRows
         $shown = New-Object 'System.Collections.Generic.HashSet[int]'
         $factionNames = @{}
-        foreach ($factionRow in $factionRows) {
-            $factionNames[[int]$factionRow.ID] = $factionRow.Name_lang
-            if ([int]$factionRow.ReputationIndex -ge 0 -and -not ([int]$factionRow.ReputationFlags_0 -band 4)) { [void]$shown.Add([int]$factionRow.ID) }
-        }
+        foreach ($factionRow in $factionRows) { $factionNames[[int]$factionRow.ID] = $factionRow.Name_lang }
+        foreach ($faction in $reach.Values) { if ($faction.Shown) { [void]$shown.Add($faction.Id) } }
 
         $cacheSets = @{}; $emptySlots = 0; $twiceSlots = 0
         foreach ($line in [IO.File]::ReadAllLines($Cache)) {
