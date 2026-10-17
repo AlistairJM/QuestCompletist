@@ -3,8 +3,8 @@ Checks the probe (tools/ForeverProbe/QCForeverProbe) offline, with stand-ins for
 out a run on a clock of their own and look at the table the game would save.
 
 What it covers: the quest pass (answered, failed, never answered, late, already cached, held only in
-part, every refusal asked once more, the number in flight, rerun and "all", stopping), the NPC pass (named at once, on a re-check, late, never; placeholders
-and hidden names), the map pass (answered, not answered, asked again, Forever's and retail's differences),
+part, every refusal asked once more and its progress lines, the number in flight, rerun and "all", stopping), the NPC pass (named at once, on a re-check, late, never; placeholders
+and hidden names), the map pass (answered, not answered, asked again and its progress lines, Forever's and retail's differences),
 the recorder (every event it reads, a giver that is hidden or not a creature, a start without a giver),
 the commands and the saved table surviving being written out and read back. What it can't: whether
 the game really answers as these stand-ins do. docs/maintenance.md, "In the game", is the run to try.
@@ -780,6 +780,41 @@ do
 	equal(run.refusedFacts.isWorld.asked, 2, "Q12: each refusal tallied once")
 	equal(w2.calls.RequestLoadQuestByID, 5, "Q12: two asks, a second try, and two second asks")
 	check(w2.maxConcurrent <= 1, "Q12: one at a time (" .. tostring(w2.maxConcurrent) .. ")")
+	check(w2.said("; 2 of 2 asked once more (2 recovered)."), "Q12: the closing line counts the late refusal among those asked again")
+end
+
+-- Asking the refused again says how far it has got every 200 (on the 70450 beta, 4,313 took 25 minutes)
+do
+	local w = newWorld({questIds = quests(450)})
+	for i = 1000, 1449 do
+		w.S.quests[i] = {title = "Q" .. i, level = 10}
+		w.S.sequence[i] = i % 4 == 0 and {"fail", "ok"} or {"fail", "fail"}
+	end
+	w.boot()
+	w.slash("quests")
+	check(w.runUntil("asking the 450 refused once more", 600), "Q13: every quest is refused at first")
+	check(w.runUntil("200 of 450 asked once more", 600), "Q13: a progress line while the refused are asked again")
+	w.slash("status")
+	check(w.said("Running: the quest pass, 450 of 450; 200 of 450 asked once more (50 recovered)."), "Q13: status says how far the second asks are")
+	w.run(600)
+	local lines = {}
+	for _, line in ipairs(w.printed) do if line:find("|r quest pass: %d+ of 450 asked once more") then lines[#lines + 1] = line end end
+	equal(#lines, 2, "Q13: one line every 200")
+	check(lines[1] ~= nil and lines[1]:find("|r quest pass: 200 of 450 asked once more %(50 recovered%), about %d+ min left%.$") ~= nil,
+		"Q13: with those recovered and the minutes left (" .. tostring(lines[1]) .. ")")
+	check(lines[2] ~= nil and lines[2]:find("400 of 450 asked once more (100 recovered)", 1, true) ~= nil, "Q13: and the second (" .. tostring(lines[2]) .. ")")
+	check(w.said("(fail 337, ok 113); 450 of 450 asked once more (113 recovered). Log out fully"), "Q13: the closing line sums them up")
+	local run = w.db().runs[#w.db().runs]
+	equal(run.retried, 450, "Q13: the run row still counts them")
+	equal(run.recovered, 113, "Q13: and those recovered")
+
+	local w2 = newWorld({questIds = quests(3)})
+	for i = 1000, 1002 do w2.S.quests[i] = {title = "Q" .. i} end
+	w2.boot()
+	w2.slash("quests")
+	w2.run(60)
+	check(w2.said("Finished the quest pass: 3 of 3"), "Q13: a pass with nothing refused finishes")
+	check(not w2.said("asked once more"), "Q13: and says nothing about asking again")
 end
 
 -- A quest the game holds only in part (no level yet) is asked, and so is an old row saved that way
@@ -1263,6 +1298,39 @@ do
 	equal(run5.stopped, true, "M5: a stop while zones are asked again ends the run")
 	equal(run5.retried, 0, "M5: before any second answer")
 	equal(w5.db().maps[1].retried, nil, "M5: the zone keeps its first answer")
+
+	-- asking the empty zones again says how far it has got every 20
+	local w6 = newWorld({})
+	for mapID = 1, 45 do w6.S.maps[mapID] = {name = "Zone " .. mapID} end
+	for mapID = 1, 2 do
+		w6.S.lines[mapID] = {{questLineID = mapID, questID = 90000 + mapID, x = 0.5, y = 0.5}}
+		w6.S.mapAnswers[mapID] = {linesAfterMs = 500}
+	end
+	w6.boot()
+	w6.slash("maps 1")
+	check(w6.runUntil("20 of 45 asked once more", 300), "M6: a progress line while the empty zones are asked again")
+	w6.slash("status")
+	check(w6.said("Running: the map pass, 45 of 45; 20 of 45 asked once more (2 recovered)."), "M6: status says how far the second asks are")
+	w6.run(300)
+	local lines6 = {}
+	for _, line in ipairs(w6.printed) do if line:find("|r map pass: %d+ of 45 asked once more") then lines6[#lines6 + 1] = line end end
+	equal(#lines6, 2, "M6: one line every 20 zones")
+	check(lines6[1] ~= nil and lines6[1]:find("|r map pass: 20 of 45 asked once more %(2 recovered%), about %d+ min left%.$") ~= nil,
+		"M6: with those recovered and the minutes left (" .. tostring(lines6[1]) .. ")")
+	check(w6.said("(event 45); 45 of 45 asked once more (2 recovered). Log out fully"), "M6: the closing line sums them up")
+	local run6 = w6.db().runs[#w6.db().runs]
+	equal(run6.retried, 45, "M6: the run row still counts them")
+	equal(run6.recovered, 2, "M6: and those recovered")
+
+	local w7 = newWorld({})
+	w7.S.maps = {[1] = {name = "Elwynn Forest"}}
+	w7.S.lines[1] = {{questLineID = 1, questID = 54, x = 0.5, y = 0.5}}
+	w7.boot()
+	w7.slash("maps 1")
+	w7.run(60)
+	check(w7.said("Finished the map pass: 1 of 1"), "M7: a pass with no empty zone finishes")
+	check(not w7.said("asked once more"), "M7: and says nothing about asking again")
+	equal(w7.db().runs[#w7.db().runs].retried, 0, "M7: its row still says none was asked again")
 end
 
 -- 4b. The geometry pass ----------------------------------------------------------------------------
