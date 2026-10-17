@@ -303,3 +303,5 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-17: step 1e compares each quest's race list with the game's record of it, in both games with one tool
   (`Compare-QuestRaces.ps1`); retail writes its decision rows, and on Forever, whose import takes the cache's lists, a
   difference is a finding (none on the first run).
+- 2026-10-17: step 2q checks retail's chains against the campaign recap (`LoreTextPublic`). Retail only by nature:
+  WoW: Forever's client has no campaign tables and no recap.

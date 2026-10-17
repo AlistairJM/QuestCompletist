@@ -421,6 +421,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2n | Who can earn each faction's reputation and whether its bar ever shows, both games, so the tooltip leaves out rewards the character can't earn or see (Forever's in step 10) | `Sync-FactionReach.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2o | Renown levels and ranks the game's own conditions ask of task quests, retail (WoW: Forever's quests have none; again after step 6b adds task quests) | `Sync-QuestRenown.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2p | Which side can take a quest open to both, both games: the side Blizzard names (the probe, the quest cache), else the side of its givers, with the quest chain and the zone's side as checks (after the probe, step 2e and step 6e; again after step 6 or 6b adds quests; Forever's in step 10) | `Sync-QuestSides.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2q | Our quest chains against the order of the game's campaign recap, retail (WoW: Forever has no campaigns; after step 2c) | `Compare-CampaignRecap.ps1 -Build <retail build>` | No |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -1036,7 +1037,11 @@ with `-WhatIf` first to see what it would change.
   October 2026, all matching). Each faction's Crafter's Knowledge I and II (`RenownRewards`) is one reward
   per profession, given to a character with any of the set's professions (its `PlayerCondition`). So
   each variant needs the renown quest before its set in Blizzard's line, and the reward after a set
-  skips the variants. The 109.97 data chained each variant to another profession's.
+  skips the variants. The 109.97 data chained each variant to another profession's. A `NONE` row
+  (`Other` 0) says a quest needs none. Since 17 October 2026 (step 2q's first run) it also holds five of
+  the Shadowlands Maw intro, whose old links ran backwards: 60545 and 61874 Shadowlands: A Chilling
+  Summons need none (they start Blizzard's line 1108 "Through the Shattered Sky"), and 59907, 59755 and
+  59776 need the step before them in that line (51 quests, 2 with none).
 - **A requirement that would make two quests each require the other** is left out, and listed.
 
 A second run changes nothing, so a sweep only shows what Blizzard or TrinityCore changed. Each run
@@ -2097,6 +2102,42 @@ Ahn'Qiraj war effort 46, Alterac Valley 16, 558, 960, 1581, 2358, 3645, 8149, 81
 Wanted: MORE ORCS! follows 7402; the rule agrees with Blizzard for 233 of 234 (79358's item is the Horde's); 117 open
 quests in one side's zone (52, 2 and 63). No finding in either game, and a second run changes nothing. Not done: the 62
 retail and 54 Forever quests open to both that already need a quest of one side in the data (open-items.md).
+
+### 2q. Quest chains against the campaign recap
+
+Retail, every sweep, after step 2c (WoW: Forever's client has no campaigns). A campaign's overview retells its story
+chapter by chapter (`LoreTextPublic`), each chapter shown once its `PlayerCondition` is met, and most conditions name
+the quest whose completion shows it. So the recap orders those quests, and where our chain makes an earlier chapter's
+quest need a later one's, our chain may run backwards. A check only: the recap changes no data, and where it and
+Blizzard's own quest lines disagree, our chains follow the lines. The client tables audit's opportunity 7 (the user's
+choices of 17 October 2026).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-CampaignRecap.ps1 -Build <retail build>
+```
+
+`CampaignRecap.ps1` takes each entry's quest from its condition's own quests (`PrevQuestID`), else from its tree
+(`QuestConditions.ps1`); 3 of the 1,471 entries name theirs only as a quest in the log, which isn't read. It compares
+each pair of a campaign's entries next to each other, among those whose quest is ours. A pair our chain runs the other
+way is a finding unless `docs\plans\campaign-recap-decisions.csv` keeps it (`KEEP`, with the quest lines that back our
+order); a `KEEP` row whose pair no longer runs the other way is a finding too, and the run exits 1. It also lists the
+recap's quests the data lacks (for step 6) and ours in no quest line, and writes `tools\campaign_recap_retail.csv`.
+`Test-CompareCampaignRecap.ps1` tests it.
+
+First run, 17 October 2026 (12.1.5.70448): 1,471 entries in 69 campaigns, 1,278 naming 715 quests, 709 of them ours;
+of 1,162 pairs, 9 ran the other way. Five came from backwards links of the Shadowlands Maw intro, taken from line 1267
+"Maw Intro", which lists the quests by ID: 60545 and 61874 Shadowlands: A Chilling Summons needed quests from the Maw's
+end, 59907 Mawsworn Menace needed 59770 Stand as One, 59755 needed 59776 and 59776 needed 59767. They follow Blizzard's
+line 1108 "Through the Shattered Sky" now, by step 2c's decisions. The other four follow Blizzard's lines and are kept:
+63727 The Primus Returns before 63612 The Chains of Command and 63678 Akarek Avenged before 63683 Winter's Sigil (line
+1247 "Patch Campaign", Wowhead's storyline too), and 79344 Urban Odyssey before 83286 in campaigns 240 and 312 (line
+5551). The recap's quests the data lacks: 51403, 57692, 67030, 72402, 79573 and 88918; ours in no quest line: 46253,
+54282, 57185, 60500, 64816 and 69888.
+
+The audit's other half of opportunity 7, a campaign chapter's gate (`CampaignXCondition`) as its first quest's
+prerequisite, was dropped: of the 47 gates that name a quest, 24 name one in the same chapter or a later one (Bastion's
+chapter 1 its own last quest), so a gate isn't what the chapter needs before it starts. Step 2m shows a gate's text on
+the chapter of the same `OrderIndex`, by the same reading; whether that is the right quest is a follow-up (open-items.md).
 
 ### 3. Quest types
 
@@ -4168,6 +4209,11 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestRenown.ps1` (made-up tables). It must say
   "0 failed" (23 checks, 17 October 2026). A change to how the addon reads them (`qcRenownNeeds` in `qcCore.lua`) is
   checked by `Test-QuestTooltip.lua` and `Test-MapTooltip.lua` on both TOCs, and `Test-QuestReachability.lua`.
+- For changes to `CampaignRecap.ps1` or `Compare-CampaignRecap.ps1` (step 2q), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-CompareCampaignRecap.ps1` (made-up tables). It must
+  say "0 failed" (14 checks, 17 October 2026). Then run the step: "Findings: 0". For a change to the decided rows of
+  `Sync-QuestPrerequisites.ps1` (step 2c), which has no test of its own, run it with `-WhatIf` before and after: only
+  the rows meant to change may change, and a second run must say "Changes: 0".
 - For changes to `QuestRaces.ps1` or `Compare-QuestRaces.ps1` (step 1e), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-CompareQuestRaces.ps1` (made-up race table, cache and
   data). It must say "0 failed" (29 checks, 17 October 2026). Then run the step with `-WhatIf` on both games: retail

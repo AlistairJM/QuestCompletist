@@ -24316,7 +24316,7 @@
 {"id":59752,"name":"A Fractured Blade","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1108,"prereq":59751,"tuning":1400}
 {"id":59753,"name":"Ruiner's End","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1108,"prereq":59752,"tuning":1400}
 {"id":59754,"name":"On Blackened Wings","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59753,"tuning":1400}
-{"id":59755,"name":"A Flight from Darkness","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59776,"tuning":1400}
+{"id":59755,"name":"A Flight from Darkness","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59754,"tuning":1400}
 {"id":59756,"name":"A Moment's Respite","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59755,"tuning":1400}
 {"id":59757,"name":"Field Seance","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1108,"prereq":59756,"tuning":1400}
 {"id":59758,"name":"Speaking to the Dead","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1108,"prereq":59757,"tuning":1400}
@@ -24333,7 +24333,7 @@
 {"id":59773,"name":"Seek the Ascended","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1001,"maxLevel":90,"tuning":1314}
 {"id":59774,"name":"Welcome to Eternity","level":10,"zone":"Bastion","category":1201,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1001,"prereq":59773,"maxLevel":90,"tuning":1314}
 {"id":59775,"name":"Help Indigo find Penthia","level":50,"zone":"Vision of Orgrimmar","category":1133,"type":2,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":709}
-{"id":59776,"name":"From the Mouths of Madness","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59767,"tuning":1400}
+{"id":59776,"name":"From the Mouths of Madness","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59761,"tuning":1400}
 {"id":59777,"name":"Help Calix find Amethia","level":50,"zone":"Vision of Orgrimmar","category":1133,"type":2,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":709}
 {"id":59778,"name":"Help Sawn find Varrik","level":50,"zone":"Vision of Orgrimmar","category":1133,"type":2,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":709}
 {"id":59779,"name":"Help Moriaz find Buttons","level":50,"zone":"Vision of Orgrimmar","category":1133,"type":2,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":709}
@@ -24398,7 +24398,7 @@
 {"id":59903,"name":"Split Blob Test","level":10,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":1337}
 {"id":59904,"name":"A Curious Cache","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":837}
 {"id":59905,"name":"A Curious Cache","level":60,"zone":"Revendreth","category":1205,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":837}
-{"id":59907,"name":"Mawsworn Menace","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1108,"prereq":59770,"tuning":1400}
+{"id":59907,"name":"Mawsworn Menace","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1108,"prereq":59751,"tuning":1400}
 {"id":59910,"name":"Fight and Flight","level":60,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":16,"storyline":1120,"prereq":61145,"maxLevel":90,"tuning":837}
 {"id":59914,"name":"Fear to Tread","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":[59753,59752,59907],"tuning":1400}
 {"id":59915,"name":"Soul in Hand","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59914,"tuning":1400}
@@ -24799,7 +24799,7 @@
 {"id":60533,"name":"Terrors in Tirna Scithe","level":60,"zone":"Ardenweald","category":1200,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":2060}
 {"id":60534,"name":"Disloyal Denizens","level":60,"zone":"Bastion","category":1201,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":2060}
 {"id":60542,"name":"Nathanos Blightcaller","level":50,"zone":"Eastern Plaguelands","category":67,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":60,"tuning":1401}
-{"id":60545,"name":"Shadowlands: A Chilling Summons","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"prereq":59915,"tuning":1400}
+{"id":60545,"name":"Shadowlands: A Chilling Summons","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":1108,"tuning":1400}
 {"id":60557,"name":"First Time? You Have to Fight!","level":10,"zone":"Maldraxxus","category":1203,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1060,"prereq":57976,"maxLevel":90,"tuning":1334}
 {"id":60559,"name":"Unused","level":60,"zone":"Oribos","category":1204,"type":1,"faction":3,"race":67108863,"class":8191,"tuning":742}
 {"id":60563,"name":"Tending to Wildseeds","level":10,"zone":"Ardenweald","category":1200,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":1008,"prereq":60567,"maxLevel":90,"tuning":1234}
@@ -25367,7 +25367,7 @@
 {"id":61870,"name":"Failed Experiment","level":60,"zone":"Maldraxxus","category":1203,"type":128,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":837}
 {"id":61871,"name":"To Current Matters","level":50,"zone":"Stormwind City","category":194,"type":1,"faction":2,"race":67108863,"class":8191,"tuning":464}
 {"id":61872,"name":"To Current Matters","level":50,"zone":"Stormwind City","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"tuning":464}
-{"id":61874,"name":"Shadowlands: A Chilling Summons","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1108,"prereq":60644,"tuning":1400}
+{"id":61874,"name":"Shadowlands: A Chilling Summons","level":50,"zone":"Through The Shattered Sky","category":1206,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":1108,"tuning":1400}
 {"id":61875,"name":"Doing the Dew","level":60,"zone":"Covenant Sanctum","category":1247,"type":4,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":837}
 {"id":61876,"name":"Take Heart","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":61782,"maxLevel":90,"tuning":2060}
 {"id":61877,"name":"Return to the Hold","level":60,"zone":"Covenant Sanctum","category":1247,"type":1,"faction":3,"race":67108863,"class":8191,"covenant":2,"storyline":1096,"prereq":61876,"maxLevel":90,"tuning":2060}
