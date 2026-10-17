@@ -231,4 +231,4 @@ if (-not $WhatIf) {
     }
     if ($added.Count + $changed.Count + $gone.Count -gt 0) { Save-SideData $sideRows $DataDir $AddonDir }
 }
-if ($findings.Count) { exit 1 }
+exit $(if ($findings.Count) { 1 } else { 0 })

@@ -295,8 +295,11 @@ and the neutral-Pandaren-only 30039, 30043 and 30044). One crosses (9329). The s
 of the 98 only as unactioned raw rows, because its comparison reads an API faction, or a race list
 longer than eight, as silence; the other seven it never sees. Since 17 October 2026 step 2p
 (`Sync-QuestSides.ps1`) gives a quest the data opens to both sides the side the probe or the cache
-names (28 quests on its first run, 47253 among them); the race lists themselves are still open-items
-row 17's.
+names (28 quests on its first run, 47253 among them), and step 1e (`Compare-QuestRaces.ps1`, the
+check below, built for open-items row 17) compares the race lists every sweep: on the 12.1.5.70391
+cache 90 differed (4 contradictions, 32468 and 32471 among them with a quest ID for a mask; 19 stale
+masks; 46 narrowings; 20 shown; 9329 crossing), 87 took the game's list and 30039, 58877 and 58989
+are kept ([maintenance.md](../maintenance.md#1e-race-lists-against-the-games)).
 
 1,737 quests have a restriction of ours that no Blizzard source repeats, which is how a giver's own
 race or the zone's side looks: a zone-side test agrees with ours for 381 of the 391 it can test.
@@ -443,13 +446,14 @@ None of these changes data; each prints what it found and keeps a baseline. They
 except Levels (11 October 2026: `Compare-QuestLevels.ps1`, step 2g of the runbook, with
 `quest-levels-baseline.csv` in this folder, class D a quest whose `minLevel` is not what its sources say
 and class N a quest no source speaks for; `Compare-ClientTables.ps1`, step 2b of "Before a sweep", watches
-the table's columns). Baselines belong in a file keyed by quest, since counts move with what a probe run
+the table's columns) and Races (17 October 2026: `Compare-QuestRaces.ps1`, step 1e, which also writes the
+`FIX` rows of its decisions file, as open-items row 17 asked). Baselines belong in a file keyed by quest, since counts move with what a probe run
 asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in this folder.
 
 | Check | Where | Fails on |
 |---|---|---|
 | Recurrence: daily, weekly, repeatable and scheduler against our types | an input to `Retype-ProbeRecurring.ps1` | nothing; it proposes |
-| Races: the 30 race IDs of ours (26 bits) that each of ours and the cache allows | `Compare-QuestRaces.ps1`, a new step 1e | a difference without a decision row |
+| Races: the 30 race IDs of ours (26 bits) that each of ours and the cache allows (**built 17 October 2026**, both games, with `quest-race-decisions.csv`) | `Compare-QuestRaces.ps1`, step 1e | a difference without a decision row |
 | Sort: our category against the sort's expected one | `Audit-QuestSort.ps1`, step 5 | a pair without an exception row |
 | Next quest: cycles, clashes and the reader guard | `Audit-QuestTables.ps1` | a cycle, a clash |
 
@@ -462,8 +466,10 @@ asked for; the reputation pass's is `quest-reputation-cache-baseline.csv`, in th
    (option B: from the newest cache only, with no check in game): 738 quests, 1,028 rewards
    (open-items.md row 15).
 3. The type changes of Recurrence and flags.
-4. The race changes of Races: the two contradictions and the 19 stale masks recommended, the 49
-   narrowings a call.
+4. ~~The race changes of Races: the two contradictions and the 19 stale masks recommended, the 49
+   narrowings a call~~: **done**, 17 October 2026 (open-items row 17): the contradictions and stale
+   masks, and on the user's word the narrowings and the quests shown to races the game denies, take
+   the game's list (87 quests), with three kept; step 1e checks it every sweep.
 5. The Sort fixes, the 98 Uncategorized quests first. The 27 profession misfiles: **done**, 12 October
    2026 (open-items.md row 18).
 6. Whether to keep "Starts from": only from `ItemSparse.StartQuestID` or `QUEST_DETAIL`.
