@@ -81,6 +81,11 @@ taken. What is left, in one place:
   - **Side finding:** 12 Broken Shore quests (45178 Contagion Containment and others) are typed one-time though
     Blizzard's `QuestInfo` calls them "Rare World Quest" or "Rare Elite World Quest".
 
+- **The client tables audit (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) went through
+  every table and column of retail 12.1.5, Forever 1.60.1 and Era, decoded 621 bits and listed 12 opportunities
+  (completed-slot pairs, item- and spell-started quests, unread conditions, unearnable reputation rows, zone
+  faction, campaign gates, dungeon doors and more) with four decisions for the user; nothing in the data changed.
+
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest
   window; **built 16 October 2026** from the item, step 6e), 37 (one 1.5-point grouping radius for Forever's CMaNGOS spawns and start points) and 42 (the
