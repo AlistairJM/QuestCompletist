@@ -16,7 +16,9 @@ prerequisites in data\quests.jsonl, against every source that can speak to them:
     breadcrumbs (BreadcrumbForQuestId), groups of which only one can be done (a positive
     ExclusiveGroup) and previous quests (a positive PrevQuestID). It only speaks for a quest it has a
     row for, and has few rows for quests after Mists of Pandaria. Its groups we lack are counted,
-    not listed: it also groups quests one character can do all of.
+    not listed: it also groups quests one character can do all of. A pair step 2k added (an exclusive
+    ADD row of -LinkDecisionsFile) is the client's: the two share a completion switch, which outranks
+    TrinityCore as the API does.
 
 The tables it checks:
   qcBreadcrumbQuests     [quest] = {breadcrumbs}: quests that lead to it and close once it's done.
@@ -54,6 +56,7 @@ param(
     [string]$Build = "12.1.5.70391",
     [string]$TdbFile = "",
     [string]$DecisionsFile = '',
+    [string]$LinkDecisionsFile = '',
     [string]$OutFile = "",
     [string]$LuaExe = "C:\Program Files (x86)\Lua\5.1\lua.exe",
     [int]$Campaign = 270
@@ -61,6 +64,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue"
 . "$PSScriptRoot\AddonData.ps1"
+. "$PSScriptRoot\SharedSlots.ps1"
 if ($Game -notin 'retail', 'forever') { throw "-Game must be retail or forever." }
 $forever = $Game -eq 'forever'
 if ($forever) { $OwnDataOnly = [switch]$true }
@@ -68,6 +72,8 @@ if (-not $DataDir) { $DataDir = Join-Path $PSScriptRoot $(if ($forever) { '..\da
 if (-not $AddonDir) { $AddonDir = Join-Path $PSScriptRoot $(if ($forever) { '..\QuestCompletist\Forever' } else { '..\QuestCompletist' }) }
 if (-not $DecisionsFile) { $DecisionsFile = Join-Path $PSScriptRoot $(if ($forever) { '..\docs\plans\forever-quest-table-decisions.csv' } else { '..\docs\plans\quest-table-decisions.csv' }) }
 if (-not $OutFile) { $OutFile = "$ToolsDir\quest_table_audit$(if ($forever) { '_forever' }).csv" }
+if (-not $LinkDecisionsFile) { $LinkDecisionsFile = Join-Path $PSScriptRoot '..\docs\plans\quest-link-decisions.csv' }
+$switchPairs = if ($forever -or -not (Test-Path $LinkDecisionsFile)) { Read-SharedSlotDecisions @() } else { Read-SharedSlotDecisions @(Import-Csv $LinkDecisionsFile -Encoding UTF8) $LinkDecisionsFile }
 
 $quests = @{}
 foreach ($q in (Read-QuestData $DataDir)) { $quests[[int]$q.id] = $q }
@@ -218,7 +224,7 @@ foreach ($id in ($exclusive.Keys | Sort-Object)) {
             Add-Finding 'exclusive: the API requires one for the other' $id $other "$(Get-QuestName $id) / $(Get-QuestName $other)"
         }
         $a = $tc[$id]; $b = $tc[$other]
-        if ($a -and $b -and -not (Test-TcCloses $id $other) -and -not (Test-ApiCloses $id $other)) {
+        if ($a -and $b -and -not (Test-TcCloses $id $other) -and -not (Test-ApiCloses $id $other) -and (Get-PairDecision $switchPairs $id $other) -ne 'ADD') {
             Add-Finding 'exclusive: TrinityCore disagrees' $id $other ("TrinityCore groups: {0} and {1}; breadcrumb for: {2} and {3}" -f $a.Group, $b.Group, $a.BreadcrumbFor, $b.BreadcrumbFor)
         }
     }

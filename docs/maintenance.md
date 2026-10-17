@@ -782,7 +782,11 @@ as step 2d does.
   those that are the step just before in the quest's own storyline are listed, as step 2c only
   takes those; the rest are counted. Its groups of which only one can be done are counted, not
   listed: it also groups quests one character can do all of, such as Darrowshire's three in the
-  Eastern Plaguelands.
+  Eastern Plaguelands. An "only one of these" pair step 2k added (an `exclusive` `ADD` row of
+  `docs\plans\quest-link-decisions.csv`, `-LinkDecisionsFile`) isn't held against TrinityCore: the two
+  quests share a completion switch in the client, which outranks it as the API does. Until 17 October
+  2026 it was, and the 145 pairs of #377 gave 28 new findings "exclusive: TrinityCore disagrees"; since
+  then the run on 12.1.5.70448 reports 119 findings, none new.
 
 Review the new findings, and fix the data where it's wrong. For a finding that's right as it is,
 add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and `Other` copied from
