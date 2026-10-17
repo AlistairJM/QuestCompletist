@@ -294,9 +294,9 @@ isn't planned. Events VIGNETTES_UPDATED and VIGNETTE_MINIMAP_UPDATED with it.
 ### C_EncounterJournal (22 functions, 3 events, both games)
 
 `GetDungeonEntrancesForMap(uiMapID)` gives a zone map's dungeon entrances with name, position and
-journalInstanceID. Use: later, a pin at the entrance for quests whose givers stand inside, which
-have no pin on Forever (forever.md counted 110 on the first import and 79 more among the
-repeatable quests). Check that Forever's client returns any. `GetInstanceForGameMap`
+journalInstanceID. Used since 17 October 2026 (sweep step 6f, recommendation 14): the probe's map pass
+saves its answers, and an instance's pin at its entrance, for the quests whose givers stand inside, goes
+where the game draws it. Forever's client returned none on any probe run. `GetInstanceForGameMap`
 and `GetEncountersOnMap` duplicate the `JournalInstance` tables the dungeon audit reads; the other
 19 (loot, difficulties, sections, tabs) no. The old `EJ_*` globals aren't documented and aren't
 needed.
@@ -557,7 +557,7 @@ duplicates the global `GetQuestResetTime` the addon calls; `GetWeeklyResetStartT
 | 11 | **An API check every sweep:** a tool that downloads both branches' documentation for the current builds, lists the functions and events of the namespaces the addon uses, and reports what was added or removed since the saved list, as `Compare-ClientTables.ps1` does for tables (step 2b). The Lua loader written for this review is its core | tool | no silent loss of a function the addon calls at a patch; new functions noticed | small | none |
 | 12 | **Zone level ranges** from `C_Map.GetMapLevels` on zone categories | addon | "Westfall (10–15)" in menus or tooltips | small | check Forever answers |
 | 13 | **Starting items:** a data field from `ItemSparse`'s `StartQuestID`, CMaNGOS's `item_template.startquest` (Forever) and what the recorder sees, shown as "Starts from: <item>" through `C_Item.GetItemNameByID`. Not from the `StartItem` of TrinityCore, the quest cache or the task table: that is the item handed over on accept ([retail-quest-cache.md](retail-quest-cache.md)) | data, addon | where many of the 2,711 retail quests whose only pins are nameless, and Forever's item-started quests (123 on the first import), come from | medium | the item's name loads like a quest's |
-| 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | later |
+| 14 | **Dungeon entrance pins** from `C_EncounterJournal.GetDungeonEntrancesForMap` for quests whose givers stand inside | addon | pins for the instance quests that have none on Forever, and retail's | medium | **done 17 October 2026** as sweep step 6f (client tables audit, opportunity 8): retail's pins stand where the probe's map pass saw the game draw each instance (124 places for 78 instances), else at the Dungeon Journal's doors; Forever's client draws none, so its pins stand at the corpse points |
 | 15 | **Treasures and rares** from `C_VignetteInfo` | recorder, addon | names and places for hidden tracking quests | medium | a new feature, not planned |
 
 ## Map-offers probe: first run (7 October 2026, beta build 1.60.1.70245)

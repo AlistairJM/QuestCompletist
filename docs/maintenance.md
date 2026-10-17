@@ -117,6 +117,12 @@ categories, the zone table, reputation rewards, storylines and so on).
   `qcQuestDatabase`, so `quests.jsonl` keeps what the quest's own sources say and Forever's importer can't undo it; a
   row whose quest has left the data or been given a side is left out. `docs\plans\quest-side-decisions.csv` holds the
   quests kept open to both though their known givers are one side's (`KEEP` rows, with the evidence).
+- `data\entrances.jsonl` (and `data\forever\entrances.jsonl`), one pin per line at a dungeon or raid entrance, written
+  only by `Sync-EntrancePins.ps1` (step 6f):
+  `{"map":2371,"x":63.6,"y":70.2,"kind":"dungeon","name":"Tazavesh, the Veiled Market","quests":[64571,64607]}`, the
+  instance's quests that no pin of `pins.jsonl` places. The build writes them into `qcPinDB` after each map's pins, with
+  icon 12 for a dungeon and 13 for a raid, no NPC and the instance's name, and leaves off a quest that has left the data
+  or that a pin of `pins.jsonl` has gained since, and a pin left with no quest. `pins.jsonl` may not use those two icons.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -430,10 +436,11 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 6c | Quest givers from the client's data and TrinityCore, then NPC IDs for named pins from TrinityCore | `Apply-ClientQuestGivers.ps1 -Refresh -WhatIf`, then without `-WhatIf` → `Fill-PinNpcIds.ps1 -WhatIf`, then without `-WhatIf`; then the pin pipeline again, for the pins they merge | The applying runs |
 | 6d | Quest givers the addon's recorder noted, for both games: NPC IDs for pins that have none, pins for quests no source places, every disagreement listed | collect the recording files (below, "In the game"), then `Import-RecordedGivers.ps1 -WhatIf`, then without `-WhatIf`; then `Remove-DuplicatePinQuests.ps1 -WhatIf` and the pin pipeline again, for the pins it merges. Forever gets its ledger and report only | The applying run |
 | 6e | The items that start quests, both games, and the quests whose faction their items contradict (after 6 and 6b add quests; Forever's in step 10) | `Sync-QuestStartItems.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | The applying run |
+| 6f | A pin at each dungeon and raid entrance, both games, listing the instance's quests no pin places: where the game's own map draws it (the probe's map pass), else at its doors (after the retail map pass and steps 6 to 6d, which settle the pins; Forever's in step 10) | `Sync-EntrancePins.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | The applying run |
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Sync-QuestSides.ps1 -Game forever -Build <Forever build>` → `Compare-QuestRaces.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Sync-QuestSides.ps1 -Game forever -Build <Forever build>` → `Compare-QuestRaces.ps1 -Game forever -Build <Forever build>` → `Sync-EntrancePins.ps1 -Game forever -Build <Forever build> -RetailBuild <retail build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -2361,7 +2368,8 @@ quest of a kind the addon doesn't pin (193 more in October 2026, 814 on 11 Octob
 Dragonrider Racing): a task quest is
 one in the client's task table, which holds the world quests and bonus objectives the addon doesn't
 pin, and also dailies, seasonal and ordinary quests, which it does. The kinds it doesn't are listed by
-`QuestInfoID` in `$noPinKinds`, a table at the top of `Build-QuestLocationData.ps1`: every `QuestInfo`
+`QuestInfoID` in `$NoPinTaskKinds`, a table in `PinRules.ps1` that `Build-QuestLocationData.ps1` reads as `$noPinKinds`
+and step 6f follows too: every `QuestInfo`
 named "World Quest", Hidden Quest, Threat Wrapper, Bonus Objective with Completion Toast, and Calling
 Quest (271), which is held until it is known whether the game still offers callings (delete its line to
 pin them; `Test-QuestLocationKinds.ps1` checks that). Dragonrider Racing (281) is pinned, nameless, as
@@ -2950,6 +2958,68 @@ Stonefist Watch and 39718 Paradise Lost; Forever 431 items for the same 408 ques
 items beside the Duskwood missions' own. 15 items still name 33931, a quest of the data whose title says it isn't
 one (open-items).
 
+### 6f. Pins at dungeon and raid entrances
+
+Both games, every sweep: retail after the probe's map pass ([In the game](#in-the-game), step 3b) and after steps 6 to
+6d have settled the pins, Forever in step 10 after `Compare-QuestRaces.ps1`. A quest whose giver stands inside a dungeon
+or raid has no pickup data, so no pin; this step gives the instance a pin at its entrance that lists those quests, with
+the game's own dungeon or raid icon (the client tables audit, opportunity 8, the user's choices of 17 October 2026). Its
+tooltip is headed by the instance's name as the quest list names its category, with the game's word for its kind
+(`LFG_TYPE_DUNGEON`, `LFG_TYPE_RAID`) under it, and the quest list's tooltip says "Location:" (the game's
+`LOCATION_COLON`) for such a quest where it says "Quest Giver:" for a giver's. The usual filters apply to its quests, a
+click sets the waypoint, and in a stack with a giver's pin the giver names the pin and gives the icon. On retail our pin
+stands over the game's own dungeon icon at the same place, so the mouse reaches ours (seen in game on 17 October 2026,
+Ulduar; Forever's map draws no icon of its own).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-EntrancePins.ps1 -Game retail -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-EntrancePins.ps1 -Game forever -Build <Forever build> -RetailBuild <retail build>
+```
+
+`EntrancePins.ps1` holds the rules, which `Audit-DungeonCategories.ps1` (step 8) shares for the name key and the hubs:
+- **The instances.** Retail: each Dungeon Journal instance (not a world-boss page, `JournalInstance` flag 2) whose map
+  is a dungeon or a raid and that a category is named like (case, punctuation and a leading "The" ignored), leaving out
+  the six hubs and a zone named like an instance (Zul'Aman's `qcCategoryUiMapID` is a zone map). Forever: each dungeon or
+  raid map whose `AreaTableID` is a category.
+- **Its quests:** those of its categories that no pin of `pins.jsonl` holds, leaving out the task quests of a kind
+  `PinRules.ps1` gives no pin (`$NoPinTaskKinds`, the world quests) and the quests `qcUnavailableQuests` names.
+- **Where the game draws it.** The probe's map pass asks the game for every map's dungeon entrances
+  (`C_EncounterJournal.GetDungeonEntrancesForMap`), and an instance the game draws gets a pin at each of its places, the
+  user's choice of 17 October 2026 over the door table below: the game draws a door on every map it falls in (Wailing
+  Caverns on the Durotar and Mulgore edges too, Ragefire Chasm on six maps), the Blackrock Mountain and Caverns of Time
+  dungeons on their own maps and Tazavesh in K'aresh, and the door table missed its icons by up to 8.6 map points
+  (Uldaman). Retail matches the game's places by journal instance, Forever by name. Of two journal instances named alike
+  (Blackrock Depths the dungeon and the raid, Magisters' Terrace and Midnight's), the one the game draws places the
+  quests of their category and the other gets no door. The game's places carry no side, so they list every quest. With
+  no probe, or one that saw no entrance, every instance goes to its doors, and on retail that is a finding.
+- **Its doors, for an instance the game draws nowhere.** Retail: `JournalInstanceEntrance` (a door of one side,
+  `Faction` 0 the Horde and 1 the Alliance, lists only that side's quests). Forever's client has no such table, so its
+  door is the instance map's corpse point (`Map.Corpse`). A door's world position goes on the zone map (`UiMap` type 3)
+  whose `UiMapAssignment` region holds it and whose area is the door's area or one above it (`AreaTable.ParentAreaID`),
+  else on the only zone map holding it; with none on its own map, the map it is a copy of is tried (`Map.ParentMapID`,
+  else `CosmeticParentMapID`: the N'Zoth assaults' Uldum and Vale, Tanaan Jungle). Only retail's doors have an area:
+  retail's area for a Forever door is a hint in the report, as retail moved some (Blackfathom Deeps: Darkshore's Twilight
+  Vale, where the old game's entrance is Ashenvale's). So every Forever door that two zones hold is held back.
+- **The decisions.** A held door gets a pin only by a row of `docs\plans\entrance-pin-decisions.csv` (`Game`,
+  `Instance`, `Door`, `Decision` `SHOW` with the `UiMapID`, `X` and `Y` to put it at, or `HIDE`, and the `Evidence`).
+  A held door with no row is a finding, as is a row for a door the rule places or an instance the game draws.
+
+It writes `entrances.jsonl`, rebuilds the Lua and writes `tools\entrance_pins_<game>.csv`: each place and door, how it
+was placed (`game`, `area`, `box`, `SHOW`, `HIDE`, or `none` and `several` when held), the zone maps that hold a door with
+its point on each, and retail's area for it. Exit 1 on a finding. `Test-SyncEntrancePins.ps1` tests the rules, the data
+file, the build and a run on each game; `Test-MapTooltip.lua` and `Test-QuestTooltip.lua` (both TOCs) the pin's icon,
+name and lines.
+
+First run, 17 October 2026 (retail 12.1.5.70448 with the probe of 12.1.5.70391, Forever 1.60.1.70450): retail 131 pins
+listing 348 quests in 83 instances, 124 of them at the game's places for 78 instances and 7 at the doors of the five the
+probe's character saw no entrance for (Return to Karazhan, Ny'alotha's two assault doors, Dire Maul's Gordok Commons and
+Liberation of Undermine), by their areas; Manaforge Omega's 12 quests have no place at all. Forever 13 pins listing 132
+quests: 7 doors in one zone, 6 held and given `SHOW` rows on the user's review (Wailing Caverns in the Barrens, Blackfathom
+Deeps in Ashenvale, Uldaman in the Badlands, Onyxia's Lair in Dustwallow Marsh, Molten Core in the Burning Steppes beside
+Blackwing Lair, Dire Maul in Feralas); Naxxramas and the City of Dalaran have no corpse point. Forever's client drew no
+entrance on the probe of 1.60.1.70374. Before the user's choice of the game's places, the door table placed 60 of
+retail's 80 doors within 1.5 map points of the game's icon.
+
 ### 7. Quests that may no longer be obtainable
 
 `Find-UnavailableQuestCandidates.ps1` gathers evidence per quest from the API, the client's tables,
@@ -3007,7 +3077,8 @@ finds filed elsewhere in `tools\dungeon_audit_quests.csv`. For each instance it 
 - quests tied to the instance and filed elsewhere. A quest is tied by a name "<instance>: …", its API
   area, or our zone text.
 
-After a new expansion or patch it's the check that finds dungeons and raids with no category yet.
+After a new expansion or patch it's the check that finds dungeons and raids with no category yet. It takes its name
+key and its hubs from `EntrancePins.ps1`, as step 6f does, so the two match categories to instances alike.
 Some quests it reports are filed elsewhere on purpose and stay where they are: class and profession
 quests that happen to name a dungeon, quests in a hub (Ahn'Qiraj, Auchindoun, Caverns of Time,
 Coilfang Reservoir, the Burning Crusade Hellfire Citadel, Tempest Keep), Return to Karazhan quests
@@ -3310,8 +3381,11 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    both. Then the three steps that read the import: `Sync-QuestStartItems.ps1 -Game forever`
    ([6e](#6e-the-items-that-start-quests)), `Sync-FactionReach.ps1 -Game forever`
    ([2n](#2n-who-can-earn-each-factions-reputation)) and `Sync-QuestSides.ps1 -Game forever`
-   ([2p](#2p-which-side-can-take-a-quest)), each with `-Build <Forever build>`, and `Compare-QuestRaces.ps1 -Game forever`
-   ([1e](#1e-race-lists-against-the-games)), a check that the import took the cache's race lists. The importer gives a quest the side the
+   ([2p](#2p-which-side-can-take-a-quest)), each with `-Build <Forever build>`, `Compare-QuestRaces.ps1 -Game forever`
+   ([1e](#1e-race-lists-against-the-games)), a check that the import took the cache's race lists, and
+   `Sync-EntrancePins.ps1 -Game forever -Build <Forever build> -RetailBuild <retail build>`
+   ([6f](#6f-pins-at-dungeon-and-raid-entrances)), the pins at dungeon and raid entrances, which follow the import's
+   pins. The importer gives a quest the side the
    game's record restricts it to (the quest cache's races), else the side the game names in the probe
    (`GetQuestFactionGroup`), else CMaNGOS's races; step 2p adds the side of its givers in `sides.jsonl`, and exits 1
    when the game names a side the importer didn't give.
@@ -4073,7 +4147,8 @@ on different characters, with their answers compared, show whether the beta's an
 
 A map pass is read with `tools\Report-MapOffers.lua`, which prints each map's offers, with how far
 each is from the quest's pin, and the points of interest, events, hubs and entrances, and writes
-the rows as a TSV. Give `QuestCompletist` instead of `QuestCompletist\Forever` for a retail file, and
+the rows as a TSV. Step 6f reads the entrances itself (`Read-ForeverProbe.lua <file> entrances`): the game's own
+places for the pins at dungeon and raid entrances, 291 on retail 12.1.5.70391 and none on Forever. Give `QuestCompletist` instead of `QuestCompletist\Forever` for a retail file, and
 name its TSV `map_offers_retail_<build number>.tsv`, which step 2c reads:
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Report-MapOffers.lua tools\forever_probe_<build number>\QCForeverProbe.lua QuestCompletist\Forever tools\map_offers_<build number>.tsv
@@ -4223,6 +4298,13 @@ git diff --stat
   (made-up tables, dumps and probe files). It must say "0 failed" (75 checks, 17 October 2026). Then run the step with
   `-WhatIf` on both games: it must say "quests.jsonl: 0 faction changes" and "sides.jsonl: added 0, changed 0, gone 0",
   and `Test-QuestReachability.lua` on both TOCs, as the sides change who sees a quest.
+- For changes to `EntrancePins.ps1`, `Sync-EntrancePins.ps1`, `Get-ProbeEntrances` in `ProbeResults.ps1` (with the
+  `entrances` mode of `Read-ForeverProbe.lua`) or the entrance rows of `AddonData.ps1` (step 6f), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncEntrancePins.ps1` (made-up tables, probe files and
+  data). It must say "0 failed" (82 checks, 17 October 2026). Then run the step with `-WhatIf` on both games: it must say
+  "entrances.jsonl: no change" and "Findings: 0"; and for a change to how the addon draws or names an entrance pin
+  (`qcEntranceKind` and `qcEntranceName` in `qcCore.lua`), `Test-MapTooltip.lua` and `Test-QuestTooltip.lua` on both TOCs.
+  `Audit-DungeonCategories.ps1` (step 8) shares the name key and the hubs: its report must not change.
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;
@@ -4368,7 +4450,8 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ApiDocs.ps1` (fixtures made in a
   scratch folder, nothing downloaded; with the real documentation folders in `tools\api_docs\` it also
   checks the reader against them). It must say "0 failed".
-- For changes to `Build-QuestLocationData.ps1`'s kinds of task quest (`$noPinKinds`) or to what its
+- For changes to the kinds of task quest that get no pin (`$NoPinTaskKinds` in `PinRules.ps1`, read by
+  `Build-QuestLocationData.ps1` as `$noPinKinds` and by step 6f) or to what `Build-QuestLocationData.ps1`'s
   TrinityCore pass holds, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLocationKinds.ps1` (made-up client
   tables and a made-up TrinityCore dump in a scratch folder, read with Lua 5.1, nothing downloaded). It must

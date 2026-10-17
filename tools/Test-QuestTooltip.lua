@@ -209,7 +209,7 @@ env = {
 	ITEM_REQ_ALLIANCE = "Alliance", ITEM_REQ_HORDE = "Horde", ITEM_RACES_ALLOWED = "Races: %s",
 	ITEM_CLASSES_ALLOWED = "Classes: %s", ITEM_MIN_LEVEL = "Requires Level %d", ITEM_REQ_SKILL = "Requires %s",
 	ITEM_REQ_REPUTATION = "Requires %s - %s", ITEM_MIN_SKILL = "Requires %s (%d)", RENOWN_LEVEL_LABEL = "Renown %d",
-	UNKNOWN = "Unknown",
+	UNKNOWN = "Unknown", LOCATION_COLON = "Location:", LFG_TYPE_DUNGEON = "Dungeon", LFG_TYPE_RAID = "Raid",
 	QUEST_WATCH_QUEST_READY = "Ready for turn-in", AVAILABLE_QUESTS = "Available Quests", IN_PROGRESS = "In Progress",
 	UNAVAILABLE = "Unavailable", FLIGHT_MAP_CLICK_TO_ZOOM_IN = "<Click to Zoom In>",
 	C_Covenants = stubTable({GetActiveCovenantID = function() return 0 end}),
@@ -974,6 +974,35 @@ if handQuest then
 	check(string.format("%d, which the game's conditions say nothing about, keeps its hand-kept faction and level", handQuest), kept, not kept and table.concat(lines, " / ") or nil)
 end
 env.C_Reputation, env.C_MajorFactions = realReputation, realMajor
+
+print("A quest whose only pin is its instance's entrance: where it is, not who gives it")
+do
+	local mapIds, entranceQuest, giverQuest = {}, nil, nil
+	for mapId in pairs(env.qcPinDB) do mapIds[#mapIds + 1] = mapId end
+	table.sort(mapIds)
+	for _, mapId in ipairs(mapIds) do
+		for _, pin in ipairs(env.qcPinDB[mapId]) do
+			local entrance = pin[1] == 12 or pin[1] == 13
+			if entrance and not entranceQuest then entranceQuest = pin[6][1] end
+			if not entrance and pin[2] ~= 0 and not giverQuest then giverQuest = pin[6][1] end
+		end
+	end
+	if entranceQuest then
+		local giver = env.qcLocalize.QUESTGIVER
+		local name = env.qcCategoryName(env.qcQuestDatabase[entranceQuest][3])
+		reset()
+		local lines = draw(entranceQuest)
+		local _, line = find(lines, "Location: | ")
+		check(string.format("%d: a Location line names the instance (%s) and where its entrance is", entranceQuest, name),
+			line ~= nil and line:find("Location: | " .. name .. " (", 1, true) == 1, line)
+		check("and there is no Quest Giver line", find(lines, giver .. " | ") == nil)
+		reset()
+		lines = draw(giverQuest)
+		check(string.format("%d, a giver's quest, keeps its Quest Giver line", giverQuest), find(lines, giver .. " | ") ~= nil and find(lines, "Location: | ") == nil)
+	else
+		print("  (no entrance pin in this game's data)")
+	end
+end
 
 print("A quest the game tracks but never names")
 local function unnamed(questId) return type(questId) == "number" and env.qcQuestDatabase[questId] == nil end

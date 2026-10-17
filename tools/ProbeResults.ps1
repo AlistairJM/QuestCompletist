@@ -138,6 +138,20 @@ function Get-ProbeCompletions([string]$Path, [string]$LuaExe = 'C:\Program Files
     })
 }
 
+# The dungeon and raid entrances the probe's map pass saw the game's own map draw (C_EncounterJournal.GetDungeonEntrancesForMap),
+# each with its UiMap, X and Y (map points) and the journal instance and name the game gives it. For Sync-EntrancePins.ps1.
+function Get-ProbeEntrances([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
+    if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
+    $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path entrances)
+    if ($LASTEXITCODE -ne 0) { throw "Read-ForeverProbe.lua failed on $Path" }
+    $invariant = [Globalization.CultureInfo]::InvariantCulture
+    foreach ($line in $lines) {
+        $f = $line.Split("`t")
+        if ($f[0] -cne 'entrance' -or $f[3] -eq '' -or $f[4] -eq '') { continue }
+        [pscustomobject]@{ Map = [int]$f[1]; Journal = $(if ($f[2] -match '^\d+$') { [int]$f[2] } else { 0 }); X = [decimal]::Parse($f[3], $invariant); Y = [decimal]::Parse($f[4], $invariant); Name = $f[5] }
+    }
+}
+
 # The side the game names for each quest the probe loaded (GetQuestFactionGroup: 1 the Alliance, 2 the Horde; a quest
 # it answered for nobody in particular isn't listed), and the givers it saw offer each quest in game (Kind 'npc' or
 # 'object', Id). For Sync-QuestSides.ps1.

@@ -311,3 +311,11 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
   links in the Shadowlands Maw intro (fixed by step 2c's decisions) and four pairs where Blizzard's quest lines back our
   order (kept). Whether step 2m's chapter texts sit on the right quest is a follow-up (open-items.md). Opportunity 8 is
   next.
+- 2026-10-17: **opportunity 8 is done**, recounted on 12.1.5.70448 and 1.60.1.70450, as step 6f, both games: a pin of
+  our own at each dungeon and raid entrance, with the game's icon, listing the instance's quests no pin places. Retail
+  takes the places the game's own map draws (the probe's map pass), as the door table (`JournalInstanceEntrance` and
+  `UiMapAssignment`) missed them for 20 of 80 doors, and keeps the door table for the five instances the probe saw
+  none for: 131 pins, 348 quests. Forever's client draws none, so its doors are the corpse points (`Map.Corpse`), the
+  six that several zones hold placed by the user's review: 13 pins, 132 quests. The world-to-zone rule the audit asked
+  for (the area's chain, else the only zone, else a decision; a phased map's parent) is `ConvertTo-ZonePoint` in
+  `EntrancePins.ps1`. Opportunity 9 is next.

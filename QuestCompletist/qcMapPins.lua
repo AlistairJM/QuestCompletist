@@ -11,7 +11,7 @@ local qcSetIcon, qcProfessionIcon, qcNormalPinIcon = QC.qcSetIcon, QC.qcProfessi
 local qcRecurringQuestIcon, qcIsQuestCompleted, qcIsQuestCompletedOnAccount = QC.qcRecurringQuestIcon, QC.qcIsQuestCompleted, QC.qcIsQuestCompletedOnAccount
 local qcQuestName, qcMaskAllows, qcPrereq, qcPvpMark = QC.qcQuestName, QC.qcMaskAllows, QC.qcPrereq, QC.qcPvpMark
 local qcBuildViewFilter, qcHides = QC.qcBuildViewFilter, QC.qcHides
-local qcNpcName, qcNpcSubtitles = QC.qcNpcName, QC.qcNpcSubtitles
+local qcNpcName, qcNpcSubtitles, qcEntranceKind = QC.qcNpcName, QC.qcNpcSubtitles, QC.qcEntranceKind
 local qcMapTooltipWaiting, qcNpcMapTooltipWaiting = QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting
 local qcQuestStatus, qcMapTip = QC.qcQuestStatus, QC.qcMapTip
 local qcAddMapTooltipLine, qcSetMapTooltipLineIcon, qcAddMapTooltipDivider = qcMapTip.Line, qcMapTip.LineIcon, qcMapTip.Divider
@@ -366,7 +366,7 @@ function qcPinMixin:OnMouseEnter()
         end
         local npcId = giver.pins[1][2]
         qcAddMapTooltipLine(giver.name, npcId ~= 0 and qcIdText(npcId) or nil, GameTooltipHeaderText)
-        local subtitle = npcId ~= 0 and qcNpcSubtitles[npcId]
+        local subtitle = npcId ~= 0 and qcNpcSubtitles[npcId] or qcEntranceKind(giver.pins[1])
         if subtitle then
             qcAddMapTooltipLine("|cffc0c0c0" .. subtitle .. "|r", nil, GameTooltipTextSmall)
         end
@@ -414,14 +414,19 @@ end)
 -- hovered. After the filters have run, pins within that distance of a group's first pin join it,
 -- and each group gets a single pin standing in for them all. Measuring from the first pin, not any
 -- member, stops a row of pins chaining into one group. The pin stands at the first pin's point, so
--- every member is within the distance of it, and is named for the group's first named pin, else its
--- first. qcPinDB itself keeps one pin per quest giver.
+-- every member is within the distance of it, and is named for the group's first named giver, else
+-- its first entrance, else its first pin. qcPinDB itself keeps one pin per quest giver.
 local QC_PIN_MERGE_DISTANCE = 0.5
 local function qcStackAnchor(stack)
+    local entrance
     for _, member in ipairs(stack) do
-        if member[3] then return member end
+        if qcEntranceKind(member) then
+            entrance = entrance or member
+        elseif member[3] then
+            return member
+        end
     end
-    return stack[1]
+    return entrance or stack[1]
 end
 
 local function qcMergeStackedPins(pins)

@@ -1,7 +1,7 @@
 <#
 Checks which task quests Build-QuestLocationData.ps1 places at their start, on made-up client tables in a
 scratch folder: nothing in the checkout is written and nothing is downloaded. A task quest (a row of
-QuestV2CliTask) is placed unless its QuestInfoID is a kind of $noPinKinds, a quest that has a pin already
+QuestV2CliTask) is placed unless its QuestInfoID is a kind of $noPinKinds (PinRules.ps1's $NoPinTaskKinds), a quest that has a pin already
 is placed whatever its kind, the run stops at a QuestInfo named World Quest that the table lacks, Dragonrider
 Racing (281) is placed and Calling Quest (271) is held, and deleting the 271 line is all it takes to pin the callings.
 On a made-up TrinityCore dump (read with Lua 5.1, -LuaExe), the TrinityCore pass places a Landfall quest the client
@@ -14,6 +14,7 @@ Ends with "N checks passed, M failed" and exits 1 on any failure.
 param([string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe')
 $ErrorActionPreference = 'Stop'
 $Builder = Join-Path $PSScriptRoot 'Build-QuestLocationData.ps1'
+$Rules = Join-Path $PSScriptRoot 'PinRules.ps1'
 $Passed = 0; $Failed = 0
 function Check($condition, [string]$message) {
     if ($condition) { $script:Passed++ } else { $script:Failed++; Write-Output "FAIL: $message" }
@@ -68,6 +69,7 @@ function New-World([string]$name, [string]$extraInfo = '') {
     [IO.File]::WriteAllText("$root\tools\QuestInfo.csv", $info)
     Copy-Item (Join-Path $PSScriptRoot 'AddonData.ps1') "$root\scripts\AddonData.ps1"
     Copy-Item $Builder "$root\scripts\Build-QuestLocationData.ps1"
+    Copy-Item $Rules "$root\scripts\PinRules.ps1"
     return $root
 }
 
@@ -116,7 +118,7 @@ try {
     Check ($r.Text -match 'QuestInfo 999 \(Fancy World Quest\) is named World Quest and is not in \$noPinKinds') 'K2: and says which'
 
     $root = New-World 'no-calling'
-    $script = "$root\scripts\Build-QuestLocationData.ps1"
+    $script = "$root\scripts\PinRules.ps1"
     $text = [IO.File]::ReadAllText($script)
     $line = "    271 = 'Calling Quest'"
     Equal ([regex]::Matches($text, [regex]::Escape($line)).Count) 1 'K3: the table has one line for the callings'
@@ -125,7 +127,7 @@ try {
     Equal $r.Exit 0 'K3: the run succeeds without the line'
     Equal $r.Placed '1000,1001,1003,1004,1005,1009,1011,1012,1013' 'K3: deleting the line pins the callings and nothing else'
 
-    $text = [IO.File]::ReadAllText($Builder)
+    $text = [IO.File]::ReadAllText($Rules)
     Equal ([regex]::Matches($text, '(?m)^\s+281 = ').Count) 0 'K4: the table has no line for Dragonrider Racing'
     foreach ($held in "265 = 'Hidden Quest'", "268 = 'Threat Wrapper'", "271 = 'Calling Quest'", "283 = 'Bonus Objective with Completion Toast'") {
         Equal ([regex]::Matches($text, '(?m)^\s+' + [regex]::Escape($held) + '\s*$').Count) 1 "K4: the table holds $held"

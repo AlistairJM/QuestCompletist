@@ -45,6 +45,8 @@ local QC_ICON_COMPLETE = {atlas="common-icon-checkmark"}
 local QC_ICON_UNATTAINABLE = {atlas="common-icon-redx"}
 local QC_ICON_ALLIANCE = {atlas="poi-alliance"}
 local QC_ICON_HORDE = {atlas="poi-horde"}
+local QC_ICON_DUNGEON = {atlas="Dungeon"}
+local QC_ICON_RAID = {atlas="Raid"}
 -- The client has no green or skull quest marker, so these still come from our own sheet, as does
 -- the profession icon for quests that don't name exactly one profession.
 local QC_ICON_SHEET = "Interface\\Addons\\QuestCompletist\\Images\\QCIcons"
@@ -71,18 +73,22 @@ local QC_ICON_BY_PROFESSION_BIT = {
 	[32768]={atlas="worldquest-icon-engineering"},
 }
 local QC_FULL_TEXCOORDS = {0,1,0,1}
--- Map pin icon types from qcPinDB. Type 3 (profession) is resolved per pin from its quests.
+-- Map pin icon types from qcPinDB. Type 3 (profession) is resolved per pin from its quests; 12 and 13 are
+-- a dungeon's and a raid's entrance.
 local QC_PIN_ICONS = {
 	[1]=QC_ICON_NORMAL, [2]=QC_ICON_REPEATABLE, [4]=QC_ICON_DAILY, [5]=QC_ICON_SEASONAL,
 	[6]=QC_ICON_SPECIAL, [7]=QC_ICON_WEEKLY, [8]=QC_ICON_MONTHLY, [9]=QC_ICON_CLASS,
-	[10]=QC_ICON_KILL, [11]=QC_ICON_SPECIAL,
+	[10]=QC_ICON_KILL, [11]=QC_ICON_SPECIAL, [12]=QC_ICON_DUNGEON, [13]=QC_ICON_RAID,
 }
 -- Which icon a merged pin shows: a specific one-time quest, then a plain one, then a recurring one
--- (unranked). A completionist is after the one-time quests, and Blizzard's NPC markers agree.
+-- (unranked), and an instance's entrance only when no giver stands there. A completionist is after
+-- the one-time quests, and Blizzard's NPC markers agree.
 local QC_PIN_ICON_RANK = {
 	[QC_ICON_SPECIAL]=3, [QC_ICON_CLASS]=3, [QC_ICON_KILL]=3, [QC_ICON_SEASONAL]=3,
-	[QC_ICON_PROFESSION]=3, [QC_ICON_NORMAL]=2,
+	[QC_ICON_PROFESSION]=3, [QC_ICON_NORMAL]=2, [QC_ICON_DUNGEON]=0, [QC_ICON_RAID]=0,
 }
+-- An instance entrance's pin (tools\Sync-EntrancePins.ps1) stands for no NPC: the game's word for its kind.
+local QC_ENTRANCE_KINDS = {[12]=LFG_TYPE_DUNGEON or "Dungeon", [13]=LFG_TYPE_RAID or "Raid"}
 for _, icon in pairs(QC_ICON_BY_PROFESSION_BIT) do
 	QC_PIN_ICON_RANK[icon] = 3
 end
@@ -1722,9 +1728,26 @@ function qcNpcDataUpdated()
 	qcScheduleNpcRecheck()
 end
 
--- A pin's quest giver in the client's language, or the stored name until the client has it.
--- waiting, if given, collects the NPCs still loading.
+-- The kind of instance a pin is the entrance of ("Dungeon", "Raid"), or nil for a giver's pin.
+local function qcEntranceKind(pinData)
+	return QC_ENTRANCE_KINDS[pinData[1]]
+end
+
+-- An entrance pin lists its instance's quests, so it is named as the quest list names their category.
+-- A stack of pins standing in for several (qcMapPins.lua) carries the entrance's own pin among them.
+local function qcEntranceName(pinData)
+	for _, member in ipairs(pinData.stack or {pinData}) do
+		if QC_ENTRANCE_KINDS[member[1]] then
+			local quest = qcQuestDatabase[member[6][1]]
+			return quest and qcCategoryName(quest[3]) or member[3]
+		end
+	end
+end
+
+-- A pin's quest giver in the client's language, or the stored name until the client has it; an
+-- entrance's pin gives its instance's name. waiting, if given, collects the NPCs still loading.
 local function qcNpcName(pinData, waiting)
+	if qcEntranceKind(pinData) then return qcEntranceName(pinData) end
 	local npcId, stored = pinData[2], pinData[3]
 	if not stored or npcId == 0 then return stored end
 	local name = qcNpcNames[npcId]
@@ -2743,7 +2766,7 @@ QC.qcBuildViewFilter, QC.qcHides, QC.qcFactionLevel = qcBuildViewFilter, qcHides
 QC.qcSkillRank, QC.qcSkillName, QC.qcRenownNeeds = qcSkillRank, qcSkillName, qcRenownNeeds
 QC.qcZoneQuests = qcGetZoneQuests
 QC.CHAT_TITLE = QCADDON_CHAT_TITLE
-QC.qcNpcName, QC.qcNpcSubtitles = qcNpcName, qcNpcSubtitles
+QC.qcNpcName, QC.qcNpcSubtitles, QC.qcEntranceKind = qcNpcName, qcNpcSubtitles, qcEntranceKind
 QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting = qcQuestTooltipWaiting, qcNpcTooltipWaiting
 QC.qcItemName, QC.qcItemTooltipWaiting, QC.qcItemDataArrived = qcItemName, qcItemTooltipWaiting, qcItemDataArrived
 QC.qcMapTooltipWaiting, QC.qcNpcMapTooltipWaiting = qcMapTooltipWaiting, qcNpcMapTooltipWaiting

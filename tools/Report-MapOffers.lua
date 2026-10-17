@@ -17,6 +17,8 @@ end
 
 dofile(savedFile)
 local db = QCForeverProbeDB or error("no QCForeverProbeDB in " .. savedFile)
+-- qcQuestData.lua picks the condition texts of the client's language.
+GetLocale = GetLocale or function() return "enUS" end
 dofile(addonDir .. "/qcQuestData.lua")
 dofile(addonDir .. "/qcPinDB.lua")
 local quests = qcQuestDatabase or error("no qcQuestDatabase in " .. addonDir)

@@ -514,6 +514,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-17: the campaign recap (`LoreTextPublic`) as a check of retail's prerequisite chains, step 2q (the client tables audit's opportunity 7, the user's choices). Where it and Blizzard's quest lines disagree our chains follow the lines; where neither the API nor TrinityCore names a link and it runs against both, it is fixed by a decision row. Its first run found five backwards links in the Shadowlands Maw intro, legacy links in the order of line 1267 (which lists its quests by ID) rather than line 1108 (the story's order), now step 2c's `SET` and `NONE` rows. A campaign chapter's gate was not taken as a prerequisite: half the gates that name a quest name one in the same or a later chapter.
 
+- 2026-10-17: three sources newly read, for pins at dungeon and raid entrances (the client tables audit's opportunity 8, step 6f, both games). The probe's map pass, whose dungeon entrances (`C_EncounterJournal.GetDungeonEntrancesForMap`, 291 on retail 12.1.5.70391) no tool had read, now places retail's pins: on the user's word it wins over the client's door table (`JournalInstanceEntrance` with `UiMapAssignment`), which missed the game's icons for 20 of 80 doors and now places only the instances the probe saw none for. Forever's client draws none and has no journal tables, so its doors are `Map.Corpse`, with the zone chosen by a reviewed decision where several hold the point (retail's door areas are a hint only: retail moved Blackfathom Deeps' area to Darkshore). 131 retail pins list 348 quests, 13 Forever pins 132.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the
