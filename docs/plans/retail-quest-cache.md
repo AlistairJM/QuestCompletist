@@ -293,7 +293,10 @@ Alliance's, and 27675 "Forged Documents", an Alliance quest with the Horde's mas
 Horde and Alliance). 27 we show to races it denies (13 Argent Tournament quests and the like, 47253,
 and the neutral-Pandaren-only 30039, 30043 and 30044). One crosses (9329). The sweep's step 1 sees 91
 of the 98 only as unactioned raw rows, because its comparison reads an API faction, or a race list
-longer than eight, as silence; the other seven it never sees.
+longer than eight, as silence; the other seven it never sees. Since 17 October 2026 step 2p
+(`Sync-QuestSides.ps1`) gives a quest the data opens to both sides the side the probe or the cache
+names (28 quests on its first run, 47253 among them); the race lists themselves are still open-items
+row 17's.
 
 1,737 quests have a restriction of ours that no Blizzard source repeats, which is how a giver's own
 race or the zone's side looks: a zone-side test agrees with ours for 381 of the 391 it can test.

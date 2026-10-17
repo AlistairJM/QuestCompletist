@@ -32,6 +32,10 @@ and qcFactionHidden at the end of qcQuestData.lua.
 data\renown.jsonl, written by Sync-QuestRenown.ps1 and optional, holds the renown or rank level the game's own
 conditions ask of a quest, one quest and faction per line ({"quest":79333,"faction":2590,"level":4}); it becomes
 qcQuestRenown at the end of qcQuestData.lua, which the addon reads before the hand-kept qcRenownLevelRequirements.
+data\sides.jsonl, written by Sync-QuestSides.ps1 and optional, holds the side whose players alone can talk to a quest's
+givers, for a quest the data opens to both sides, one per line ({"quest":36054,"side":1}: 1 the Alliance, 2 the Horde);
+the build writes it as that quest's faction in qcQuestDatabase, and leaves out a row whose quest is no longer open to
+both.
 
 data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
 quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
@@ -56,6 +60,7 @@ $ConditionTextLocales = @('enUS', 'deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR'
 $ConditionTextFields = @('key', 'quests') + $ConditionTextLocales
 $FactionFields = @('faction', 'races', 'hidden')
 $RenownFields = @('quest', 'faction', 'level')
+$SideFields = @('quest', 'side')
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
@@ -165,6 +170,12 @@ function ConvertTo-FactionJsonLines($factions) {
 function ConvertTo-RenownJsonLines($rows) {
     $sb = New-Object System.Text.StringBuilder
     foreach ($r in $rows) { [void]$sb.Append('{"quest":' + $r.quest + ',"faction":' + $r.faction + ',"level":' + $r.level + "}`n") }
+    return $sb.ToString()
+}
+
+function ConvertTo-SideJsonLines($rows) {
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($r in $rows) { [void]$sb.Append('{"quest":' + $r.quest + ',"side":' + $r.side + "}`n") }
     return $sb.ToString()
 }
 
@@ -395,6 +406,21 @@ function Test-RenownRecords($rows) {
     return $problems.ToArray()
 }
 
+# Problems with the side rows: a quest, a whole number above 0, listed once, and a side of 1 or 2.
+function Test-SideRecords($rows) {
+    $problems = New-Object System.Collections.Generic.List[string]
+    $seen = @{}
+    $n = 0
+    foreach ($r in $rows) {
+        $n++
+        $what = "sides.jsonl line $n"
+        if (-not (Test-WholeNumber $r.quest) -or $r.quest -le 0) { $problems.Add("${what}: 'quest' must be a whole number above 0"); continue }
+        if (-not (Test-WholeNumber $r.side) -or ($r.side -ne 1 -and $r.side -ne 2)) { $problems.Add("${what}: 'side' must be 1 (the Alliance) or 2 (the Horde)") }
+        if ($seen.ContainsKey($r.quest)) { $problems.Add("${what}: quest $($r.quest) is also on line $($seen[$r.quest])") } else { $seen[$r.quest] = $n }
+    }
+    return $problems.ToArray()
+}
+
 # qcQuestRenown: quest ID -> {{faction, level}, ...}, the renown or rank levels the game's own conditions ask of it, in
 # faction order. The addon reads it before the hand-kept qcRenownLevelRequirements.
 function ConvertTo-LuaRenownTable($rows) {
@@ -483,7 +509,10 @@ function ConvertTo-LuaStartItemTable($items) {
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
-function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @(), $factions = @(), $renown = @()) {
+function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @(), $factions = @(), $renown = @(), $sides = @()) {
+    # A side row narrows a quest open to both sides (faction 0, or both of 1 and 2) to the side of its givers.
+    $sideOf = @{}
+    foreach ($s in $sides) { $sideOf[[long]$s.quest] = $s.side }
     $sb = New-Object System.Text.StringBuilder (4MB)
     [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
     # ZeroIsValue: a minimum level of 0 is a real value (no minimum); in the other tables 0 means none.
@@ -507,7 +536,9 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(
     $questTuning = New-Object System.Text.StringBuilder
     foreach ($q in $quests) {
         $name = '"' + $q.name.Replace('\', '\\').Replace('"', '\"') + '"'
-        $row = @($name, $q.level, $q.category, $q.type, $q.faction, $q.race, $q.class) -join ','
+        $faction = $q.faction
+        if ($sideOf.ContainsKey([long]$q.id) -and ($faction -eq 0 -or ($faction -band 3) -eq 3)) { $faction = $sideOf[[long]$q.id] }
+        $row = @($name, $q.level, $q.category, $q.type, $faction, $q.race, $q.class) -join ','
         if ($q.storyline) { $row += ',' + $q.storyline }
         [void]$sb.Append('[' + $q.id + ']={' + $row + "},`r`n")
         foreach ($table in $sparse.Keys) {
@@ -570,6 +601,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $conditionTextData = Join-Path $DataDir 'conditiontexts.jsonl'
     $factionData = Join-Path $DataDir 'factions.jsonl'
     $renownData = Join-Path $DataDir 'renown.jsonl'
+    $sideData = Join-Path $DataDir 'sides.jsonl'
     try {
         $quests = Read-JsonLines $questData
         $pins = Read-JsonLines $pinData
@@ -578,6 +610,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         $conditionTexts = if (Test-Path $conditionTextData) { Read-JsonLines $conditionTextData } else { @() }
         $factions = if (Test-Path $factionData) { Read-JsonLines $factionData } else { @() }
         $renown = if (Test-Path $renownData) { Read-JsonLines $renownData } else { @() }
+        $sides = if (Test-Path $sideData) { Read-JsonLines $sideData } else { @() }
     } catch {
         $lines.Add("  $($_.Exception.Message)")
         $lines.Add("The data files can't be read; nothing was written.")
@@ -590,6 +623,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     if (Test-Path $conditionTextData) { $problems += @(Find-UnknownFields $conditionTextData $ConditionTextFields) + @(Test-ConditionTextRecords $conditionTexts) }
     if (Test-Path $factionData) { $problems += @(Find-UnknownFields $factionData $FactionFields) + @(Test-FactionRecords $factions) }
     if (Test-Path $renownData) { $problems += @(Find-UnknownFields $renownData $RenownFields) + @(Test-RenownRecords $renown) }
+    if (Test-Path $sideData) { $problems += @(Find-UnknownFields $sideData $SideFields) + @(Test-SideRecords $sides) }
     if ($problems.Count -gt 0) {
         $problems | Select-Object -First 30 | ForEach-Object { $lines.Add("  $_") }
         if ($problems.Count -gt 30) { $lines.Add("  ... and $($problems.Count - 30) more") }
@@ -600,7 +634,10 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $questPath = Join-Path $AddonDir 'qcQuestData.lua'
     $pinPath = Join-Path $AddonDir 'qcPinDB.lua'
     $questIds = New-Object 'System.Collections.Generic.HashSet[long]'
-    foreach ($q in $quests) { [void]$questIds.Add([long]$q.id) }
+    $openQuests = New-Object 'System.Collections.Generic.HashSet[long]'
+    foreach ($q in $quests) { [void]$questIds.Add([long]$q.id); if ($q.faction -eq 0 -or ($q.faction -band 3) -eq 3) { [void]$openQuests.Add([long]$q.id) } }
+    # A side row narrows a quest still open to both sides; one whose quest has left the data or been given a side is left out.
+    $sidesKept = @($sides | Where-Object { $openQuests.Contains([long]$_.quest) })
     $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
     $source = if ($DataDir.StartsWith($repoRoot + '\')) { $DataDir.Substring($repoRoot.Length + 1) } else { 'data' }
     $current = { param($path) if (Test-Path $path) { [IO.File]::ReadAllText($path) } else { '' } }
@@ -614,7 +651,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         }
     })
     $outputs = @(
-        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept @($factions) @($renown | Where-Object { $questIds.Contains([long]$_.quest) })) },
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept @($factions) @($renown | Where-Object { $questIds.Contains([long]$_.quest) }) $sidesKept) },
         @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
     )
     $differ = 0
@@ -638,7 +675,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $lines.Add("$($quests.Count) quests, $($pins.Count) pins" + $(if (Test-Path $tuningData) { ", $(@($tunings).Count) tunings" } else { '' }) + ", $(@($startItems).Count) start items" +
         $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }) +
         $(if (Test-Path $factionData) { ", $(@($factions).Count) factions" } else { '' }) +
-        $(if (Test-Path $renownData) { ", $(@($renown).Count) renown rows" } else { '' }))
+        $(if (Test-Path $renownData) { ", $(@($renown).Count) renown rows" } else { '' }) +
+        $(if (Test-Path $sideData) { ", $(@($sides).Count) sides" + $(if ($sidesKept.Count -ne @($sides).Count) { " ($($sidesKept.Count) applied)" } else { '' }) } else { '' }))
     return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
 }
 
@@ -705,6 +743,14 @@ function Save-FactionData($factions, [string]$DataDir = $DefaultDataDir, [string
     if ($problems.Count -gt 0) { throw ("The factions weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
     Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'factions.jsonl'), (ConvertTo-FactionJsonLines $factions), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Save-SideData($rows, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-SideRecords $rows)
+    if ($problems.Count -gt 0) { throw ("The side rows weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'sides.jsonl'), (ConvertTo-SideJsonLines $rows), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
 }
 

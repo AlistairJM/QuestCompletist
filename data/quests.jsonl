@@ -19,7 +19,7 @@
 {"id":29157,"name":"The Zandalari Menace","level":35,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":67108863,"class":8191,"tuning":818}
 {"id":26865,"name":"Enemies Below","level":7,"zone":"Ragefire Chasm","category":157,"type":1,"faction":2,"race":67108863,"class":8191,"maxLevel":30,"tuning":207}
 {"id":26867,"name":"Enemies Below","level":7,"zone":"Ragefire Chasm","category":157,"type":1,"faction":3,"race":67108863,"class":8191,"maxLevel":30,"tuning":207}
-{"id":9177,"name":"Journey to Undercity","level":1,"zone":"Undercity","category":256,"type":1,"faction":3,"race":67108863,"class":8191,"maxLevel":30,"tuning":8}
+{"id":9177,"name":"Journey to Undercity","level":1,"zone":"Undercity","category":256,"type":1,"faction":2,"race":67108863,"class":8191,"maxLevel":30,"tuning":8}
 {"id":10252,"name":"Vision of the Dead","level":15,"zone":"Auchenai Crypts","category":13,"type":1,"faction":3,"race":67108863,"class":8191,"maxLevel":30,"tuning":219}
 {"id":11369,"name":"WANTED: A Black Stalker Egg","level":30,"zone":"The Underbog","category":235,"type":4,"faction":3,"race":67108863,"class":8191,"tuning":820}
 {"id":10231,"name":"What Book? I Don't See Any Book.","level":15,"zone":"Auchenai Crypts","category":13,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":10228,"maxLevel":30,"tuning":219}
@@ -239,8 +239,8 @@
 {"id":91928,"name":"What's For Lunch?","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":54781,"tuning":4311}
 {"id":91929,"name":"What's For Lunch?","level":90,"zone":"Voidstorm","category":1508,"type":1,"faction":3,"race":67108863,"class":8191,"prereq":91928,"tuning":4311}
 {"id":9751,"name":"The Bloodcurse Legacy","level":1,"zone":"Bloodmyst Isle","category":28,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":504,"maxLevel":30,"tuning":4}
-{"id":10871,"name":"Ally of the Netherwing","level":25,"zone":"Shadowmoon Valley","category":179,"type":1,"faction":3,"race":1,"class":8191,"storyline":493,"maxLevel":30,"tuning":43}
-{"id":10872,"name":"Zuluhed the Whacked","level":25,"zone":"Shadowmoon Valley","category":179,"type":1,"faction":3,"race":1,"class":8191,"storyline":493,"maxLevel":30,"tuning":43}
+{"id":10871,"name":"Ally of the Netherwing","level":25,"zone":"Shadowmoon Valley","category":179,"type":1,"faction":1,"race":1,"class":8191,"storyline":493,"maxLevel":30,"tuning":43}
+{"id":10872,"name":"Zuluhed the Whacked","level":25,"zone":"Shadowmoon Valley","category":179,"type":1,"faction":1,"race":1,"class":8191,"storyline":493,"maxLevel":30,"tuning":43}
 {"id":11052,"name":"Akama's Promise","level":25,"zone":"Shadowmoon Valley","category":179,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":493,"maxLevel":30,"tuning":43}
 {"id":11452,"name":"The Slumbering King","level":10,"zone":"Howling Fjord","category":102,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":528,"maxLevel":30,"tuning":45}
 {"id":12954,"name":"The Amphitheater of Anguish: Yggdras!","level":20,"zone":"Zul'Drak","category":277,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":536,"maxLevel":30,"tuning":48}
@@ -249,7 +249,7 @@
 {"id":25562,"name":"Circle the Wagons... er, Boats","level":15,"zone":"Thousand Needles","category":240,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":521,"maxLevel":30,"tuning":21}
 {"id":24902,"name":"The Hunt For Sylvanas","level":1,"zone":"Gilneas","category":83,"type":1,"faction":3,"race":2048,"class":8191,"storyline":572,"prereq":24904}
 {"id":24903,"name":"Vengeance or Survival","level":1,"zone":"Gilneas","category":83,"type":1,"faction":3,"race":2048,"class":8191,"storyline":572,"prereq":24902}
-{"id":24920,"name":"Slowing the Inevitable","level":1,"zone":"Gilneas","category":83,"type":1,"faction":3,"race":2048,"class":8191,"storyline":572,"prereq":24903,"maxLevel":20,"tuning":78}
+{"id":24920,"name":"Slowing the Inevitable","level":1,"zone":"Gilneas","category":83,"type":1,"faction":1,"race":2048,"class":8191,"storyline":572,"prereq":24903,"maxLevel":20,"tuning":78}
 {"id":26602,"name":"A Dish Best Served Huge","level":10,"zone":"The Cape of Stranglethorn","category":214,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":403,"prereq":26600,"maxLevel":30,"tuning":24}
 {"id":26618,"name":"Wolves at Our Heels","level":10,"zone":"Duskwood","category":65,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":425,"maxLevel":30,"tuning":13}
 {"id":27500,"name":"Four Heads are Better than None","level":30,"zone":"Twilight Highlands","category":252,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":546,"maxLevel":35,"tuning":6872}
@@ -345,15 +345,15 @@
 {"id":49698,"name":"The Lightforged","level":40,"zone":"","category":1041,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":533,"maxLevel":90,"tuning":700}
 {"id":50054,"name":"The Seething Shore","level":45,"zone":"Seething Shore","category":186,"type":1,"faction":2,"race":67108863,"class":8191,"storyline":576,"maxLevel":90,"tuning":347}
 {"id":50239,"name":"A Choice of Allies","level":40,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":6058,"maxLevel":90,"tuning":700}
-{"id":50305,"name":"Stranger in a Strange Land","level":10,"zone":"","category":194,"type":1,"faction":3,"race":8192,"class":8191,"storyline":579,"prereq":49788,"maxLevel":90,"tuning":863}
-{"id":50313,"name":"Stranger in a Strange Land","level":10,"zone":"","category":194,"type":1,"faction":3,"race":65536,"class":8191,"storyline":578,"prereq":49772,"maxLevel":90,"tuning":863}
+{"id":50305,"name":"Stranger in a Strange Land","level":10,"zone":"","category":194,"type":1,"faction":1,"race":8192,"class":8191,"storyline":579,"prereq":49788,"maxLevel":90,"tuning":863}
+{"id":50313,"name":"Stranger in a Strange Land","level":10,"zone":"","category":194,"type":1,"faction":1,"race":65536,"class":8191,"storyline":578,"prereq":49772,"maxLevel":90,"tuning":863}
 {"id":26398,"name":"Walk With The Earth Mother","level":1,"zone":"Orgrimmar","category":148,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":564}
 {"id":51480,"name":"Enormous Anchor Pod","level":10,"zone":"Herbalism","category":98,"type":1,"faction":2,"race":67108863,"class":8191,"profession":256,"maxLevel":60,"tuning":292}
 {"id":53098,"name":"Champion: Shandris Feathermoon","level":50,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":737,"tuning":492}
 {"id":53342,"name":"Molten Core","level":40,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":781,"maxLevel":90,"tuning":517}
 {"id":53352,"name":"Firelands","level":40,"zone":"","category":194,"type":1,"faction":1,"race":67108863,"class":8191,"storyline":781,"maxLevel":90,"tuning":517}
-{"id":53502,"name":"Stranger in a Strange Land","level":10,"zone":"","category":148,"type":1,"faction":3,"race":262144,"class":8191,"storyline":784,"maxLevel":90,"tuning":863}
-{"id":53500,"name":"Stranger in a Strange Land","level":10,"zone":"","category":194,"type":1,"faction":3,"race":131072,"class":8191,"storyline":783,"prereq":51486,"maxLevel":90,"tuning":863}
+{"id":53502,"name":"Stranger in a Strange Land","level":10,"zone":"","category":148,"type":1,"faction":2,"race":262144,"class":8191,"storyline":784,"maxLevel":90,"tuning":863}
+{"id":53500,"name":"Stranger in a Strange Land","level":10,"zone":"","category":194,"type":1,"faction":1,"race":131072,"class":8191,"storyline":783,"prereq":51486,"maxLevel":90,"tuning":863}
 {"id":54058,"name":"Unintended Consequences","level":50,"zone":"","category":1060,"type":1,"faction":3,"race":67108863,"class":16,"storyline":5673,"maxLevel":90,"tuning":691}
 {"id":54265,"name":"Orders from Azshara","level":50,"zone":"","category":1061,"type":1,"faction":1,"race":67108863,"class":16,"storyline":851,"maxLevel":90,"tuning":691}
 {"id":40537,"name":"Drawing Blood","level":50,"zone":"Inscription","category":108,"type":1,"faction":1,"race":67108863,"class":8191,"profession":16,"maxLevel":90,"tuning":708}
@@ -3742,7 +3742,7 @@
 {"id":12510,"name":"Precious Elemental Fluids","level":20,"zone":"Zul'Drak","category":277,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":536,"prereq":12507,"maxLevel":30,"tuning":48}
 {"id":12511,"name":"The Hills Have Us","level":15,"zone":"Grizzly Hills","category":88,"type":1,"faction":1,"race":64175181,"class":8191,"maxLevel":30,"tuning":47}
 {"id":12512,"name":"Leave No One Behind","level":20,"zone":"Zul'Drak","category":277,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":536,"maxLevel":30,"tuning":48}
-{"id":12513,"name":"Nice Hat...","level":15,"zone":"Old Hillsbrad Foothills","category":408,"type":1,"faction":3,"race":5374021,"class":8191,"maxLevel":30,"tuning":223}
+{"id":12513,"name":"Nice Hat...","level":15,"zone":"Old Hillsbrad Foothills","category":408,"type":1,"faction":1,"race":5374021,"class":8191,"maxLevel":30,"tuning":223}
 {"id":12514,"name":"Mushroom Mixer","level":20,"zone":"Zul'Drak","category":277,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":536,"prereq":12510,"maxLevel":30,"tuning":48}
 {"id":12516,"name":"Too Much of a Good Thing","level":20,"zone":"Zul'Drak","category":277,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":536,"maxLevel":30,"tuning":48}
 {"id":12517,"name":"Rogues Deck","level":1,"zone":"Inscription","category":108,"type":32,"faction":3,"race":67108863,"class":8191,"profession":16,"maxLevel":90,"tuning":391}
@@ -8533,7 +8533,7 @@
 {"id":28201,"name":"Ploughshares to Swords","level":30,"zone":"Uldum","category":255,"type":1,"faction":3,"race":67108863,"class":8191,"maxLevel":35,"tuning":55}
 {"id":28202,"name":"A Perfect Costume","level":15,"zone":"Burning Steppes","category":33,"type":1,"faction":1,"race":17965061,"class":8191,"storyline":402,"maxLevel":30,"tuning":7151}
 {"id":28203,"name":"A Perfect Costume","level":15,"zone":"Burning Steppes","category":33,"type":1,"faction":1,"race":8461312,"class":8191,"storyline":402,"maxLevel":30,"tuning":7151}
-{"id":28204,"name":"A Perfect Costume","level":15,"zone":"Burning Steppes","category":33,"type":1,"faction":3,"race":4194368,"class":8191,"storyline":402,"maxLevel":30,"tuning":7151}
+{"id":28204,"name":"A Perfect Costume","level":15,"zone":"Burning Steppes","category":33,"type":1,"faction":1,"race":4194368,"class":8191,"storyline":402,"maxLevel":30,"tuning":7151}
 {"id":28205,"name":"A Perfect Costume","level":15,"zone":"Burning Steppes","category":33,"type":1,"faction":1,"race":33554440,"class":8191,"storyline":402,"maxLevel":30,"tuning":7151}
 {"id":28206,"name":"A Lost Lad","level":7,"zone":"Hillsbrad Foothills","category":100,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":409,"prereq":[28197,28199,28196],"maxLevel":30,"tuning":11}
 {"id":28207,"name":"A Slimy Situation","level":15,"zone":"Felwood","category":76,"type":1,"faction":3,"race":67108863,"class":8191,"storyline":507,"maxLevel":30,"tuning":26}
@@ -13505,10 +13505,10 @@
 {"id":37422,"name":"Zangarra","level":20,"zone":"Talador","category":305,"type":1,"faction":0,"race":0,"class":8191,"maxLevel":90,"tuning":66}
 {"id":37433,"name":"Proving Grounds","level":50,"zone":"Proving Grounds","category":156,"type":1,"faction":1,"race":64175181,"class":8191,"minLevel":60,"maxLevel":90,"tuning":632}
 {"id":37434,"name":"Proving Grounds","level":50,"zone":"Proving Grounds","category":156,"type":1,"faction":2,"race":61658034,"class":8191,"minLevel":60,"maxLevel":90,"tuning":632}
-{"id":37439,"name":"Thirst Unending","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":3,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
-{"id":37440,"name":"A Fistful of Slivers","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":3,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
-{"id":37442,"name":"The Shrine of Dath'Remar","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":3,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
-{"id":37443,"name":"Solanian's Belongings","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":3,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
+{"id":37439,"name":"Thirst Unending","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":2,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
+{"id":37440,"name":"A Fistful of Slivers","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":2,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
+{"id":37442,"name":"The Shrine of Dath'Remar","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":2,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
+{"id":37443,"name":"Solanian's Belongings","level":1,"zone":"Sunstrider Isle","category":199,"type":1,"faction":2,"race":512,"class":8191,"maxLevel":20,"tuning":1485}
 {"id":37444,"name":"Inoculation","level":1,"zone":"Azuremyst Isle","category":17,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5404,"maxLevel":20,"tuning":1480}
 {"id":37445,"name":"Spare Parts","level":1,"zone":"Azuremyst Isle","category":17,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":5404,"maxLevel":20,"tuning":1480}
 {"id":37446,"name":"Lazy Peons","level":1,"zone":"Durotar","category":64,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":1227,"maxLevel":10,"tuning":1481}
@@ -18089,7 +18089,7 @@
 {"id":47250,"name":"We'll Meet Again","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":335,"maxLevel":60,"tuning":190}
 {"id":47251,"name":"Interesting Times","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":2,"race":67108863,"class":8191,"holiday":524288,"maxLevel":90,"tuning":419}
 {"id":47252,"name":"Interesting Times","level":1,"zone":"Legion Uncategorized Quests","category":1050,"type":1,"faction":1,"race":67108863,"class":8191,"holiday":524288,"maxLevel":90,"tuning":419}
-{"id":47253,"name":"The Originals","level":30,"zone":"Legion Uncategorized Quests","category":1050,"type":4,"faction":3,"race":67108863,"class":8191,"maxLevel":90,"tuning":424}
+{"id":47253,"name":"The Originals","level":30,"zone":"Legion Uncategorized Quests","category":1050,"type":4,"faction":1,"race":67108863,"class":8191,"maxLevel":90,"tuning":424}
 {"id":47254,"name":"The Originals","level":30,"zone":"Legion Uncategorized Quests","category":1050,"type":4,"faction":3,"race":67108863,"class":8191,"holiday":524288,"maxLevel":90,"tuning":424}
 {"id":47257,"name":"The Bones of Xibala","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
 {"id":47258,"name":"Prepare for a Siege","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
@@ -19137,7 +19137,7 @@
 {"id":49767,"name":"Your Next Move","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":793}
 {"id":49768,"name":"Nesingwary's Trek","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
 {"id":49769,"name":"Wreckage of the Cataclysm","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":0,"race":67108863,"class":8191,"maxLevel":90,"tuning":189}
-{"id":49772,"name":"For the Alliance","level":10,"zone":"Lightforged Draenei","category":194,"type":1,"faction":3,"race":65536,"class":8191,"storyline":578,"maxLevel":90,"tuning":863}
+{"id":49772,"name":"For the Alliance","level":10,"zone":"Lightforged Draenei","category":194,"type":1,"faction":1,"race":65536,"class":8191,"storyline":578,"maxLevel":90,"tuning":863}
 {"id":49773,"name":"For the Horde","level":10,"zone":"Thunder Totem","category":1005,"type":1,"faction":2,"race":32768,"class":8191,"storyline":580,"maxLevel":90,"tuning":863}
 {"id":49774,"name":"Won't Leaf Him to Die","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5419,"maxLevel":60,"tuning":190}
 {"id":49775,"name":"Key to the Brig","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
@@ -19147,8 +19147,8 @@
 {"id":49779,"name":"Bad To The Bone","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5419,"maxLevel":60,"tuning":190}
 {"id":49780,"name":"Recovering Ancient Fire","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5419,"maxLevel":60,"tuning":190}
 {"id":49781,"name":"Catch Me if You Can","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5419,"maxLevel":60,"tuning":190}
-{"id":49782,"name":"Heritage of the Lightforged","level":50,"zone":"Lightforged Draenei","category":1050,"type":1,"faction":3,"race":65536,"class":8191,"maxLevel":90,"tuning":1281}
-{"id":49783,"name":"Heritage of Highmountain","level":50,"zone":"Highmountain Tauren","category":1050,"type":1,"faction":3,"race":32768,"class":8191,"maxLevel":90,"tuning":1281}
+{"id":49782,"name":"Heritage of the Lightforged","level":50,"zone":"Lightforged Draenei","category":1050,"type":1,"faction":1,"race":65536,"class":8191,"maxLevel":90,"tuning":1281}
+{"id":49783,"name":"Heritage of Highmountain","level":50,"zone":"Highmountain Tauren","category":1050,"type":1,"faction":2,"race":32768,"class":8191,"maxLevel":90,"tuning":1281}
 {"id":49784,"name":"Heritage of the Nightborne","level":50,"zone":"Nightborne","category":1050,"type":1,"faction":2,"race":16384,"class":8191,"maxLevel":90,"tuning":1281}
 {"id":49785,"name":"Destroy the Weapon","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
 {"id":49788,"name":"For the Alliance","level":10,"zone":"Telogrus Rift","category":194,"type":1,"faction":1,"race":8192,"class":8191,"storyline":579,"maxLevel":90,"tuning":863}
@@ -19201,7 +19201,7 @@
 {"id":49920,"name":"Gorilla Warfare","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5400,"maxLevel":90,"tuning":189}
 {"id":49922,"name":"King Da'ka","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":5400,"maxLevel":90,"tuning":189}
 {"id":49926,"name":"The Road to Corlain","level":20,"zone":"Drustvar","category":1060,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":598,"maxLevel":90,"tuning":187}
-{"id":49928,"name":"Heritage of the Void","level":50,"zone":"Void Elf","category":1050,"type":1,"faction":3,"race":8192,"class":8191,"maxLevel":90,"tuning":1281}
+{"id":49928,"name":"Heritage of the Void","level":50,"zone":"Void Elf","category":1050,"type":1,"faction":1,"race":8192,"class":8191,"maxLevel":90,"tuning":1281}
 {"id":49930,"name":"The Call for Allies","level":45,"zone":"Orgrimmar","category":148,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":574,"minLevel":40,"maxLevel":90,"tuning":700}
 {"id":49932,"name":"Slumber No More","level":20,"zone":"Nazmir","category":1080,"type":1,"faction":2,"race":61658034,"class":8191,"storyline":523,"maxLevel":60,"tuning":190}
 {"id":49933,"name":"For the Horde","level":10,"zone":"Suramar","category":1007,"type":1,"faction":2,"race":16384,"class":8191,"storyline":581,"maxLevel":90,"tuning":863}
@@ -21809,7 +21809,7 @@
 {"id":54394,"name":"Darkshore Donations: Stringy Loins","level":50,"zone":"Warfronts","category":1092,"type":4,"faction":1,"race":64175181,"class":8191,"maxLevel":90,"tuning":290}
 {"id":54395,"name":"Darkshore Donations: Seasoned Steak and Potatoes","level":50,"zone":"Warfronts","category":1092,"type":4,"faction":1,"race":64175181,"class":8191}
 {"id":54396,"name":"Darkshore Donations: Wild Berry Bread","level":50,"zone":"Warfronts","category":1092,"type":4,"faction":1,"race":64175181,"class":8191}
-{"id":54402,"name":"Shifting Gears","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":64,"class":8191,"storyline":858,"maxLevel":90,"tuning":1281}
+{"id":54402,"name":"Shifting Gears","level":50,"zone":"Heritage","category":1093,"type":1,"faction":1,"race":64,"class":8191,"storyline":858,"maxLevel":90,"tuning":1281}
 {"id":54403,"name":"Tidesage Clarissa","level":10,"zone":"Stormsong Valley","category":1061,"type":128,"faction":2,"race":61658034,"class":8191,"prereq":[[47189,46957]],"maxLevel":60,"tuning":706}
 {"id":54404,"name":"Dark Iron Machinations","level":50,"zone":"Alliance War Campaign","category":1090,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":845,"tuning":492}
 {"id":54407,"name":"Lurking in the Swamp","level":50,"zone":"Alliance War Campaign","category":1090,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":845,"tuning":492}
@@ -22095,14 +22095,14 @@
 {"id":54754,"name":"For the Queen","level":50,"zone":"The Fate of Saurfang","category":148,"type":0,"faction":2,"race":61658034,"class":8191,"storyline":802}
 {"id":54756,"name":"Garbage for the Garbage God","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
 {"id":54757,"name":"The Loa of Scavengers","level":10,"zone":"Zuldazar","category":1082,"type":1,"faction":2,"race":61658034,"class":8191,"maxLevel":90,"tuning":189}
-{"id":54759,"name":"When Spirits Whisper","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54760,"name":"The Spiritwalkers","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54761,"name":"Spirit Guide","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54762,"name":"A Small Retreat","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54763,"name":"Crossing Over","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54764,"name":"Storm in Bloodhoof","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54765,"name":"Thank Your Guide","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
-{"id":54766,"name":"Answer the Call","level":50,"zone":"Heritage","category":1093,"type":1,"faction":3,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54759,"name":"When Spirits Whisper","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54760,"name":"The Spiritwalkers","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54761,"name":"Spirit Guide","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54762,"name":"A Small Retreat","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54763,"name":"Crossing Over","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54764,"name":"Storm in Bloodhoof","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54765,"name":"Thank Your Guide","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
+{"id":54766,"name":"Answer the Call","level":50,"zone":"Heritage","category":1093,"type":1,"faction":2,"race":32,"class":8191,"storyline":860,"maxLevel":90,"tuning":1281}
 {"id":54784,"name":"Blackwood Liberation","level":50,"zone":"Darkshore","category":47,"type":128,"faction":1,"race":64175181,"class":8191,"maxLevel":90,"tuning":691}
 {"id":54786,"name":"Stop the Shipments","level":10,"zone":"Vol'dun","category":1081,"type":128,"faction":1,"race":64175181,"class":8191,"prereq":[[47189,46957]],"maxLevel":60,"tuning":706}
 {"id":54787,"name":"Masking For a Friend","level":50,"zone":"Alliance War Campaign","category":1090,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":843,"prereq":[53916,54519,54518],"tuning":492}

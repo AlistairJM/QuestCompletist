@@ -79,7 +79,9 @@ The files follow data\quests.jsonl and pins.jsonl (see AddonData.ps1), with Fore
             handed in to, else CMaNGOS's zone, else 0. The Commendation
             Signets' turn-ins, under the Reputation heading, go under Ahn'Qiraj War: the war
             effort's supply quests give the signets, and its officers take them. zone is its name.
-  faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, or CMaNGOS's.
+  faction   1 Alliance, 2 Horde, 3 both: from the cache's race restriction, else the side the game names
+            in the probe (GetQuestFactionGroup), else CMaNGOS's race restriction. Step 10's
+            Sync-QuestSides.ps1 narrows a quest open to both whose givers are one side's, in sides.jsonl.
   race      0 for any race, since faction already gates; otherwise the addon's race bits, with
             Skyborne (races 95 and 96) as 67108864.
   class     the game's class mask (1 shifted left by the class ID less one): -ClassFile's, else
@@ -477,7 +479,7 @@ try {
         $dump[$read[0]] = @(& $LuaExe "$PSScriptRoot\Read-SqlDump.lua" $sql $read[0] $read[1])
         if ($LASTEXITCODE -ne 0) { throw "Read-SqlDump.lua failed on $($read[0])" }
     }
-    $probeLines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $ProbeFile)
+    $probeLines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $ProbeFile facts)
     if ($LASTEXITCODE -ne 0) { throw "Read-ForeverProbe.lua failed on $ProbeFile" }
 } finally {
     Remove-Item $sql -ErrorAction SilentlyContinue
@@ -681,11 +683,12 @@ $objectName = @{}; foreach ($line in $dump.gameobject_template) { $f = $line.Spl
 $cache = @{}
 $cacheLines = [IO.File]::ReadAllLines($CacheFile)
 foreach ($q in (('[' + ($cacheLines -join ',') + ']') | ConvertFrom-Json)) { $cache[[int]$q.id] = $q }
-$probeResult = @{}; $gameNpcName = @{}
+$probeResult = @{}; $gameNpcName = @{}; $probeSide = @{}
 foreach ($line in $probeLines) {
     $f = $line.Split("`t")
     switch ($f[0]) {
         'quest' { if ($f[2] -eq $Build) { $probeResult[[int]$f[1]] = $f[3] } }
+        'fact' { if ($f[2] -ceq 'factionGroup' -and ($f[3] -ceq '1' -or $f[3] -ceq '2')) { $probeSide[[int]$f[1]] = [int]$f[3] } }
         'npc' { if ($f[2] -eq $Build -and $f[4]) { $gameNpcName[[int]$f[1]] = $f[4] } }
     }
 }
@@ -760,6 +763,8 @@ foreach ($id in $ids) {
     if ($c -and $c.races) {
         foreach ($r in $c.races) { $race = $race -bor $raceBit[[int]$r] }
         $faction = if ($c.faction -eq 'Alliance') { 1 } elseif ($c.faction -eq 'Horde') { 2 } else { 3 }
+    } elseif ($probeSide.ContainsKey($id)) {
+        $faction = $probeSide[$id]
     } elseif ($m -and $m.Races -and ($m.Races -band 255) -ne 255) {
         $races = $m.Races -band 255
         $faction = if (-not ($races -band $hordeRaces)) { 1 } elseif (-not ($races -band $allianceRaces)) { 2 } else { 3 }

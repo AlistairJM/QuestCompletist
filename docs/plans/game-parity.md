@@ -96,7 +96,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 
 | Step or tool | Retail | Forever | Why | Share? |
 |---|---|---|---|---|
-| 1 faction, race and class against Blizzard's API | `Audit-QuestAccuracy.ps1` | the importer takes the cache's race masks over CMaNGOS's | the API has no Forever | not equivalent: Forever takes CMaNGOS's faction for 1,336 quests whose record lists no races, with no review row, retail reads no emulator race data, and neither has its race check (step 1e) yet (data-sources-review.md, recommendation 7) |
+| 1 faction, race and class against Blizzard's API | `Audit-QuestAccuracy.ps1` | the importer takes the cache's race masks over CMaNGOS's | the API has no Forever | not equivalent: Forever takes CMaNGOS's faction for 1,336 quests whose record lists no races, with no review row, retail reads no emulator race data, and neither has its race check (step 1e) yet (data-sources-review.md, recommendation 7). Step 2p is shared: the probe's and the cache's side, and the givers' side, in both games |
 | 1b second source for race and class | `Get-WagoQuestRequirements.ps1`: `QuestV2CliTask`, start-point conditions, and `ItemSparse`'s items that start a quest | the importer reads the same `ItemSparse` columns (11 October 2026) | `QuestV2CliTask` is retail's alone; the starting items' classes are in both clients | the item part: done for both |
 | 1c quest names | from the API, else the newest quest cache, else the task table (`Sync-QuestNamesFromApi.ps1`), never a title starting `[DEPRECATED]` | from the cache | – | equivalent since 16 October 2026, when retail's quests with no API record took the cache's or the task table's titles (data-sources-review.md, D16) |
 | 1d professions | `Sync-QuestProfessions.ps1`: task quests, profession headings, knowledge rewards, hand decisions, and the quests filed under another profession's heading | the last check alone, `-Game forever` (step 10, item 10; 12 October 2026: 114 quests under its nine profession headings, none under another's) | `QuestV2CliTask` is retail's alone and Forever's quests reward no profession knowledge, so Forever's professions come from CMaNGOS in the importer | the heading check: done for both; the passes: nature, except TrinityCore's RequiredSkillID, which retail doesn't read though Forever reads its CMaNGOS twin, and the items that need a skill to start a quest, which neither game reads yet (data-sources-review.md, recommendations 16 and 23) |
@@ -296,3 +296,7 @@ So the code's one gate is fixed, and no other divergence is anything but the gam
 - 2026-10-17: the quest list's tooltip leaves out a reputation reward the character's race can't earn or never sees
   (step 2n), in both games, from each game's own Faction and ChrRaces tables (retail 196 factions, Forever 48); Forever
   runs the step in step 10.
+- 2026-10-17: step 2p gives a quest open to both the side Blizzard names (the probe, else the quest cache), else the
+  side of its givers (`sides.jsonl`), in both games with one tool (`Sync-QuestSides.ps1`) and one set of rules
+  (`QuestSides.ps1`); only the emulator differs (TrinityCore on retail, CMaNGOS on Forever). On Forever the importer
+  gives Blizzard's side, now with the probe's after the cache's, and the step checks it; on retail the step writes it.
