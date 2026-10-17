@@ -1,8 +1,9 @@
 <#
 The client's own conditions on the current expansion's quest lines and campaigns, and on task quests,
 as prerequisites, dot-sourced by Sync-QuestPrerequisites.ps1 (step 2c), which sets them,
-Audit-QuestTables.ps1 (step 2b), which knows them as the client's, and Sync-QuestCovenants.ps1 (step
-2l), which reads their covenants:
+Audit-QuestTables.ps1 (step 2b), which knows them as the client's, Sync-QuestCovenants.ps1 (step 2l),
+which reads their covenants, and Sync-QuestConditionTexts.ps1 (step 2m), which takes the text the game
+shows when one isn't met:
 	. "$PSScriptRoot\QuestConditions.ps1"
 
 A quest line (QuestLine.PlayerConditionID), a campaign (Campaign.Prerequisite) or a task quest
@@ -19,7 +20,8 @@ task quest's requirement depends on that reading: read as on, the same 415 quest
 12.1.5.70448.)
 
 A condition's covenant (its CovenantID, or ModifierTree type 288) is read apart:
-Get-ConditionCovenants gives the ones every way through the condition needs.
+Get-ConditionCovenants gives the ones every way through the condition needs. So is its text
+(Get-ConditionTextKeys): which quests the game holds back with it.
 
 Only the current expansion's conditions are taken: those that name a quest of its campaign
 (-Campaign), or a quest we hold no data for that a line accepts in place of one (90806, which the
@@ -105,7 +107,7 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
     # A chapter's own gate, with the game's text for when it isn't met: the chapter is the campaign's line
     # of the same OrderIndex (campaign 271 skips one, so it isn't the place in the list).
     $c.ChapterConditions = @(Import-Csv (Join-Path $ToolsDir "CampaignXCondition-$Build.csv") | ForEach-Object {
-        [pscustomobject]@{ Campaign = [int]$_.CampaignID; Order = [int]$_.OrderIndex; Condition = [int]$_.PlayerConditionID; Text = $_.FailureReason_lang }
+        [pscustomobject]@{ Id = [int]$_.ID; Campaign = [int]$_.CampaignID; Order = [int]$_.OrderIndex; Condition = [int]$_.PlayerConditionID; Text = $_.FailureReason_lang }
     })
     foreach ($row in Import-Csv (Join-Path $ToolsDir "ModifierTree-$Build.csv")) {
         $id = [int]$row.ID; $parent = [int]$row.Parent
@@ -119,6 +121,7 @@ function Import-ClientConditions([string]$ToolsDir, [string]$Build) {
         $c.Conditions[[int]$_.ID] = [pscustomobject]@{
             Prev = @([int]$_.PrevQuestID_0, [int]$_.PrevQuestID_1, [int]$_.PrevQuestID_2, [int]$_.PrevQuestID_3)
             Logic = [int64]$_.PrevQuestLogic; Tree = [int]$_.ModifierTreeID; Flags = [int]$_.Flags; Covenant = [int]$_.CovenantID
+            HasText = [bool]$_.Failure_description_lang
         }
     }
     return $c
@@ -263,6 +266,39 @@ function Get-ClientCovenants($c, $TaskConditions, $Sorts, $Headings) {
     }
     $result = @{}
     foreach ($quest in $named.Keys) { $result[$quest] = @($named[$quest].Keys | Sort-Object) }
+    return $result
+}
+
+# The conditions whose text the game shows when they aren't met, and the quests of ours each holds back, by key:
+# 'p' and a PlayerCondition's ID (Failure_description_lang) for a task quest's condition (each quest's own) and
+# for a quest line's or campaign's (the first quest of ours of the line, or of the campaign's first chapter), and
+# 'c' and a CampaignXCondition's ID (FailureReason_lang) for a chapter's gate (the first quest of ours of the
+# chapter). $quests is our data, by ID. Gives key -> sorted quest IDs, ordered by key.
+function Get-ConditionTextKeys($c, $TaskConditions, $quests) {
+    $keys = @{}
+    function Add-Key([string]$key, $quest) {
+        if (-not $quest) { return }
+        if (-not $keys.ContainsKey($key)) { $keys[$key] = @{} }
+        $keys[$key][[int]$quest] = $true
+    }
+    function Get-FirstOurs($line) { foreach ($quest in (Get-LineQuests $c $line)) { if ($quests.ContainsKey([int]$quest)) { return [int]$quest } } }
+    function Test-Text([int]$condition) { return $condition -and $c.Conditions.ContainsKey($condition) -and $c.Conditions[$condition].HasText }
+    foreach ($quest in $TaskConditions.Keys) { if (Test-Text $TaskConditions[$quest]) { Add-Key "p$($TaskConditions[$quest])" $quest } }
+    foreach ($line in $c.Lines.Keys) {
+        $condition = [int]$c.Lines[$line].PlayerConditionID
+        if (Test-Text $condition) { Add-Key "p$condition" (Get-FirstOurs $line) }
+    }
+    foreach ($campaign in $c.Campaigns.Keys) {
+        $condition = [int]$c.Campaigns[$campaign].Prerequisite
+        $lines = Get-CampaignLines $c $campaign
+        if ((Test-Text $condition) -and $lines.Count) { Add-Key "p$condition" (Get-FirstOurs $lines[0]) }
+    }
+    foreach ($gate in $c.ChapterConditions) {
+        $line = $c.Chapters["$($gate.Campaign)|$($gate.Order)"]
+        if ($gate.Text -and $line) { Add-Key "c$($gate.Id)" (Get-FirstOurs $line) }
+    }
+    $result = [ordered]@{}
+    foreach ($key in ($keys.Keys | Sort-Object { $_.Substring(0, 1) }, { [int]$_.Substring(1) })) { $result[$key] = @($keys[$key].Keys | Sort-Object) }
     return $result
 }
 

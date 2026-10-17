@@ -568,7 +568,22 @@ function qcUpdateTooltip(index)
         if inLogOptions then
             qcQuestInformationTooltip:AddDoubleLine(prereqLines > 0 and " " or qcL.REQUIREDQUEST, qcPrereq.InLogText(questId, qcPrereqQuestText))
         end
-        if prereqLines > 0 or inLogOptions then qcAddQuestTooltipDivider() end
+        -- The game's own words for a condition that holds the quest back (step 2m), while it isn't done: the addon
+        -- can't tell whether the condition is met, so it's said, not checked.
+        local conditionLines = 0
+        local conditionTexts = qcQuestConditionTexts and qcQuestConditionTexts[questId]
+        if conditionTexts and not qcIsQuestCompleted(questId) then
+            local shown = {}
+            for _, number in ipairs(conditionTexts) do
+                local text = qcConditionTexts[number]
+                if text and not shown[text] then
+                    shown[text] = true
+                    qcQuestInformationTooltip:AddLine(text, 1, 0.125, 0.125, true)
+                    conditionLines = conditionLines + 1
+                end
+            end
+        end
+        if prereqLines > 0 or inLogOptions or conditionLines > 0 then qcAddQuestTooltipDivider() end
 		-- Renown and Faction requirements Start
         local renownInfo = qcRenownLevelRequirements[questId]
 

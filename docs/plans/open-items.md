@@ -66,8 +66,9 @@ taken. What is left, in one place:
     prerequisite, 263 of them world quests), and the new step 2l takes their covenants from the client (7 gained;
     data-sources-review recommendation 21) ([maintenance.md](../maintenance.md), steps 2c and 2l). With it, step 2b
     no longer holds step 2k's pairs against TrinityCore (28 new findings on master since #377).
-  - **D, to build:** Blizzard's own "why not yet" text (`PlayerCondition.Failure_description_lang`,
-    `CampaignXCondition.FailureReason_lang`) as a tooltip line on 376 quests, in all 11 languages, information only.
+  - **D, built:** Blizzard's own "why not yet" text (`PlayerCondition.Failure_description_lang`,
+    `CampaignXCondition.FailureReason_lang`) as a red line under "Requires" in the quest list's tooltip while the quest
+    isn't done, in all 11 languages, information only: the new step 2m ([maintenance.md](../maintenance.md)).
   - **C, recorded only:** 94 quests need an achievement on every way to them (93 world quests: 66 Legion ones need
     the hidden "7.0 WQ Unlock" achievement 11473, 20 need 6570 "All Growns Up!"). Whether `GetAchievementInfo`
     answers for a hidden tracking achievement is unknown.

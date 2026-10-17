@@ -12807,3 +12807,6 @@ qcQuestStartItems={
 [98424]={{281031,0,5}},
 [98471]={{281330,0,30}},
 }
+qcQuestConditionTexts={
+}
+qcConditionTexts={}
