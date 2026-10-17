@@ -230,7 +230,7 @@ local function plain(pin)
 		local e = QUESTS[questId]
 		if not e or bit.band(e[4], 2 + 4 + 128) ~= 0 then return false end
 		if not (QC.qcMaskAllows(e[5], env.qcFactionBits.ALLIANCE) and QC.qcMaskAllows(e[6], env.qcRaceBits.NIGHTELF) and QC.qcMaskAllows(e[7], env.qcClassBits.DRUID)) then return false end
-		if QC.qcPrereq.Parts(questId) or (env.qcRenownLevelRequirements or {})[questId] or (env.qcQuestSkillRequirements or {})[questId] then return false end
+		if QC.qcPrereq.Parts(questId) or QC.qcRenownNeeds(questId) or (env.qcQuestSkillRequirements or {})[questId] then return false end
 	end
 	return true
 end

@@ -44,7 +44,10 @@ try {
     # Campaign 13 skips chapter OrderIndex 1, as campaign 271 does; its chapter 2 has a gate of its own.
     Write-Table "CampaignXQuestLine-$build.csv" 'CampaignID,QuestLineID,OrderIndex' @('10,101,1', '10,100,0', '10,102,2', '11,500,0', '13,601,0', '13,602,2')
     Write-Table "CampaignXCondition-$build.csv" 'ID,FailureReason_lang,PlayerConditionID,OrderIndex,Flags,CampaignID' @('1,"Reach level 30 to continue.",25,2,0,13')
-    Write-Table "ModifierTree-$build.csv" 'ID,Parent,Operator,Amount,Type,Asset' @(
+    Write-Table "ModifierTree-$build.csv" 'ID,Parent,Operator,Amount,Type,Asset,SecondaryAsset' @(
+        '130,0,4,0,0,0,0', '131,130,2,0,119,500,5', '132,130,2,0,119,501,3',
+        '140,0,8,1,0,0,0', '141,140,2,0,119,500,4', '142,140,2,0,119,500,6',
+        '150,0,8,1,0,0,0', '151,150,2,0,119,500,4', '152,150,2,0,119,501,2', '160,0,3,0,119,500,9',
         '10,0,8,1,0,0', '11,10,0,0,110,5', '12,10,0,0,110,999',
         '20,0,4,0,0,0', '21,20,0,0,110,5', '22,20,3,0,110,6',
         '30,0,8,1,0,0', '31,30,4,0,0,0', '32,31,3,0,2,6', '33,31,0,0,2,7', '34,30,4,0,0,0', '35,34,0,0,2,6', '36,34,0,0,2,8',
@@ -52,7 +55,11 @@ try {
         '70,0,2,0,110,7', '80,0,2,0,73,20', '90,0,4,0,0,0', '91,90,2,0,288,3', '92,90,2,0,110,44',
         '100,0,8,1,0,0', '101,100,2,0,288,1', '102,100,4,0,0,0', '103,102,2,0,288,1', '104,102,2,0,110,7',
         '110,0,8,1,0,0', '111,110,2,0,288,1', '112,110,2,0,288,2', '120,0,3,0,288,4')
-    Write-Table 'PlayerCondition.csv' 'ID,PrevQuestLogic,PrevQuestID_0,PrevQuestID_1,PrevQuestID_2,PrevQuestID_3,ModifierTreeID,Flags,CovenantID,Failure_description_lang' @(
+    Write-Table 'PlayerCondition.csv' 'ID,PrevQuestLogic,PrevQuestID_0,PrevQuestID_1,PrevQuestID_2,PrevQuestID_3,ModifierTreeID,Flags,CovenantID,Failure_description_lang,CurrencyLogic,CurrencyID_0,CurrencyID_1,CurrencyID_2,CurrencyID_3,CurrencyCount_0,CurrencyCount_1,CurrencyCount_2,CurrencyCount_3' @(
+        '30,0,0,0,0,0,0,0,0,,0,500,0,0,0,7,0,0,0', '31,0,0,0,0,0,130,0,0,,0,0,0,0,0,0,0,0,0', '32,0,0,0,0,0,140,0,0,,0,0,0,0,0,0,0,0,0',
+        '33,0,0,0,0,0,150,0,0,,0,0,0,0,0,0,0,0,0', '34,0,0,0,0,0,0,0,0,,0,999,0,0,0,10,0,0,0', '35,0,0,0,0,0,0,0,0,,65536,500,0,0,0,7,0,0,0',
+        '36,0,0,0,0,0,0,0,0,,2,500,501,0,0,7,3,0,0', '37,0,0,0,0,0,160,0,0,,0,0,0,0,0,0,0,0,0', '38,0,0,0,0,0,0,0,0,,1,500,501,0,0,2,8,0,0',
+        '39,0,0,0,0,0,0,256,0,,0,500,0,0,0,7,0,0,0', '40,0,0,0,0,0,130,512,0,,0,0,0,0,0,0,0,0,0',
         '1,0,0,0,0,0,10,0,0,"Finish the first part."', '2,0,999,0,0,0,0,0,0', '3,0,0,0,0,0,20,0,0', '4,0,888,0,0,0,0,0,0', '5,0,0,0,0,0,30,0,0', '6,0,0,0,0,0,40,0,0',
         '7,0,0,0,0,0,50,0,0', '8,0,0,0,0,0,0,0,0', '9,2,5,7,0,0,0,0,0', '10,0,0,0,0,0,60,0,0', '11,0,5,0,0,0,0,0,0', '12,65536,5,0,0,0,0,0,0',
         '20,0,5,0,0,0,70,256,0', '21,0,5,0,0,0,50,512,0', '22,0,0,0,0,0,80,0,0', '23,0,0,0,0,0,0,0,2,"You must be a member of the Venthyr Covenant."', '24,0,0,0,0,0,90,0,0,"Requires further advancement."',
@@ -96,6 +103,21 @@ try {
     foreach ($id in 31, 32, 60, 61, 62, 63) { $ours[$id] = [pscustomobject]@{ id = $id } }
     $keys = Get-ConditionTextKeys $c @{ 63 = 23; 32 = 8 } $ours
     Equal (($keys.Keys | ForEach-Object { "$_=$($keys[$_] -join ',')" }) -join ' ') 'c1=62 p1=31 p23=60,63 p24=61' 'X1: texts by key: a chapter gate on its chapter''s first quest, a line''s and a campaign''s on their first of ours, a task quest''s on itself; none for a condition with no text'
+
+    # Renown currencies 500 (faction 9000) and 501 (faction 9001); 999 is another currency.
+    $renown = @{ 500 = 9000; 501 = 9001 }
+    function Needs([int]$id) { $n = Get-ConditionRenowns $c $id $renown; return (($n.Keys | Sort-Object | ForEach-Object { "$_=$($n[$_])" }) -join ' ') }
+    Equal (Needs 30) '9000=7' 'N1: a renown currency the condition''s own columns ask for'
+    Equal (Needs 31) '9000=5 9001=3' 'N1: two its tree asks for (type 119, the amount in SecondaryAsset)'
+    Equal (Needs 32) '9000=4' 'N2: a choice of two levels of one faction needs the lower'
+    Equal (Needs 33) '' 'N2: a choice of two factions needs neither'
+    Equal (Needs 34) '' 'N3: a currency that is no renown is no requirement'
+    Equal (Needs 35) '' 'N3: nor is one the condition says mustn''t be held'
+    Equal (Needs 36) '' 'N3: nor two its columns join by OR'
+    Equal (Needs 37) '' 'N3: nor one the tree says mustn''t be held'
+    Equal (Needs 38) '9000=2 9001=8' 'N4: two its columns join by AND'
+    Equal (Needs 39) '' 'N5: a disabled condition asks for nothing'
+    Equal (Needs 40) '' 'N5: nor does a tree the condition inverts'
 
     $gates = @(Get-ConditionGates $c 10 $quests)
     Equal (($gates | ForEach-Object { "$($_.Kind) $($_.Id)" }) -join ', ') 'line 300, line 301, line 302, line 303, campaign 11' 'G1: the conditions that name the campaign''s quests or the hidden one it accepts'

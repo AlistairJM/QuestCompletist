@@ -106,6 +106,11 @@ categories, the zone table, reputation rewards, storylines and so on).
   faction some playable race can't; `hidden` marks one whose bar the game never shows. Factions every race can earn
   and see aren't listed. It becomes `qcFactionRaces` (faction -> set of race IDs) and `qcFactionHidden` at the end of
   `qcQuestData.lua`.
+- `data\renown.jsonl` (retail), one quest and faction per line, written only by `Sync-QuestRenown.ps1` (step 2o):
+  `{"quest":79333,"faction":2570,"level":4}`, the renown level or rank the game's own condition asks of the quest. It
+  becomes `qcQuestRenown` (quest -> `{{faction, level}, ...}`) at the end of `qcQuestData.lua`, which the addon reads
+  before the hand-kept `qcRenownLevelRequirements` in `qcQuest.lua`; a quest that has left `quests.jsonl` is left out.
+  Forever has no such file, and its table is empty.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -407,6 +412,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2l | Covenants, retail (WoW: Forever has none): the covenant the client's conditions and headings name for a quest, where ours has none; findings where ours differs, or ours tags a quest several covenants share (after step 2e) | `Sync-QuestCovenants.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2m | The game's own text for a condition that holds a quest back, in every client language, retail (WoW: Forever's quest tables name no condition; again after step 6 or 6b adds quests) | `Sync-QuestConditionTexts.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2n | Who can earn each faction's reputation and whether its bar ever shows, both games, so the tooltip leaves out rewards the character can't earn or see (Forever's in step 10) | `Sync-FactionReach.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2o | Renown levels and ranks the game's own conditions ask of task quests, retail (WoW: Forever's quests have none; again after step 6b adds task quests) | `Sync-QuestRenown.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -1953,6 +1959,40 @@ Forever 1.60.1.70450: 75 factions, 32 and 1, 21 never shown, 48 records; of 2,33
 60, the Emerald Wardens 18, the Steamwheedle Cartel 6, and Engineering - Gnome and Engineering - Goblin). Only three
 factions of the rewards split a side: Shang Xi's Academy (the Pandaren's), The Nightfallen (not the Nightborne) and
 Forever's Wildhammer Clan (not the Skyborne). A second run changes nothing.
+
+### 2o. Renown the game's own conditions ask for
+
+Retail, every sweep, and again after step 6b adds task quests (WoW: Forever's client has no task table, and its
+factions no renown). A task quest's condition can ask for a renown level or rank: Dragonflight's Valdrakken Accord
+world quests, The War Within's Hallowfall ones. The tooltip's "Required Faction" and "Required Renown Level" (or "Rank")
+lines and the requirements filter read these before the hand-kept `qcRenownLevelRequirements`, so a quest that asks
+for several factions shows each (data-sources-review recommendation 17, the client tables audit's opportunity 5, part
+3, the user's choice on 17 October 2026).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestRenown.ps1 -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestRenown.ps1 -Build <retail build>
+```
+
+The renown level is the amount held of the faction's renown currency (`Faction.RenownCurrencyID`, from
+`tools\Faction-<build>.csv`, downloaded when missing). `QuestConditions.ps1` (`Get-ConditionRenowns`) reads the task
+quest's condition (`QuestV2CliTask.ConditionID`) for it: the condition's own currency columns (`CurrencyID_n`,
+`CurrencyCount_n`, unless `CurrencyLogic` joins them by OR or says one mustn't be held) and its tree's type 119 (the
+currency in `Asset`, the amount in `SecondaryAsset`). It keeps what every way through needs: both of an AND, and of an
+OR only a faction each side asks for, at the lower level. A disabled condition (0x100) or a tree that says the currency
+mustn't be held asks for nothing. Where Blizzard's text says otherwise, the condition's level is taken: it is what the
+server checks. The hand rows stay; the run says which of them the client agrees with, differs from and says nothing
+about. It writes `data\renown.jsonl` ([The quest and pin data files](#the-quest-and-pin-data-files)), rebuilds
+`qcQuestData.lua`, and reports the rows added, changed and gone. `Test-SyncQuestRenown.ps1` tests the data file, the
+Lua and a run on made-up tables, `Test-QuestConditions.ps1` the reading, and `Test-QuestTooltip.lua` the tooltip.
+
+First run, 17 October 2026 (12.1.5.70448): 69 rows on 66 task quests (the Valdrakken Accord 45, the Hallowfall
+Arathi 8, the Manaforge Vandals 5, the Gallagio Loyalty Rewards Club 3, The Singularity 3, and one each of six
+others). 79333 The Fleet Arrives asks for renown 4 with four factions (the Hallowfall Arathi, the Council of
+Dornogal, The Assembly of the Deeps and The Severed Threads). Of the 96 hand rows the client agrees with 4 (79232,
+81692, 81906, 90663), differs from none and says nothing about 92. Four Hallowfall quests ask for renown 3 where
+their text says "Rank 5" (76247 Keep the Home Fires Burning, 76586 Spreading the Light, 76588 Defender of the Flame,
+81990 The Light's Call); the others' texts agree. A second run changes nothing.
 
 ### 3. Quest types
 
@@ -3928,7 +3968,7 @@ git diff --stat
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed, then for a game with a `tunings.jsonl` (retail: 537 on 16
   October 2026) its tunings, its start items (step 6e), and with a file for them its condition texts (retail: 188, step
-  2m) and its factions (retail 196, Forever 48, step 2n). As of 17 October 2026 they're 35,687 quests (with the
+  2m), its factions (retail 196, Forever 48, step 2n) and its renown rows (retail: 69, step 2o). As of 17 October 2026 they're 35,687 quests (with the
   Darkspear Dash's 94954 and the Gnomeregan Run's 95012, 35,630, then the noTitle API scan's 24 of
   step 6, 35,654, and the item-started gap run's 33) and 13,557 pins for retail (16,084 before
   the nameless pins went one per spot, 13,547 before the second gap run's quests got theirs), and
@@ -3994,23 +4034,27 @@ git diff --stat
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
-- For changes to `QuestConditions.ps1` (the client's quest line, campaign and task conditions, their covenants and
-  their texts, steps 2b, 2c, 2l and 2m), run
+- For changes to `QuestConditions.ps1` (the client's quest line, campaign and task conditions, their covenants,
+  texts and renown, steps 2b, 2c, 2l, 2m and 2o), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestConditions.ps1` (made-up client tables). It
-  must say "0 failed" (32 checks, 17 October 2026). Then run step 2c, `Sync-QuestCovenants.ps1` and
-  `Sync-QuestConditionTexts.ps1` with `-WhatIf` on the real tables: they must say "Changes: 0", "Gain one: 0" and
-  "Added 0, changed 0, gone 0". `Sync-QuestCovenants.ps1` has no test of its own; what it decides is
+  must say "0 failed" (43 checks, 17 October 2026). Then run step 2c, `Sync-QuestCovenants.ps1`,
+  `Sync-QuestConditionTexts.ps1` and `Sync-QuestRenown.ps1` with `-WhatIf` on the real tables: they must say
+  "Changes: 0", "Gain one: 0" and "Added 0, changed 0, gone 0" twice. `Sync-QuestCovenants.ps1` has no test of its own; what it decides is
   `Get-ClientCovenants`, which this one tests.
 - For changes to `ConditionTexts.ps1`, `Sync-QuestConditionTexts.ps1` or the condition texts of `AddonData.ps1` (step
   2m), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestConditionTexts.ps1` (made-up
   tables, and Lua 5.1 for the language the client picks). It must say "0 failed" (32 checks, 17 October 2026). A
   change to how the tooltip shows them is checked by `Test-QuestTooltip.lua` on both TOCs. `Test-AddTaskQuests.ps1`
-  and `Test-SyncQuestProfessions.ps1` copy `startitems.jsonl`, `conditiontexts.jsonl`, `factions.jsonl` and
-  `tunings.jsonl` with the data, as the Lua is built from them.
+  and `Test-SyncQuestProfessions.ps1` copy `startitems.jsonl`, `conditiontexts.jsonl`, `factions.jsonl`,
+  `renown.jsonl` and `tunings.jsonl` with the data, as the Lua is built from them.
 - For changes to `FactionReach.ps1`, `Sync-FactionReach.ps1` or the factions of `AddonData.ps1` (step 2n), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncFactionReach.ps1` (made-up tables). It must say
   "0 failed" (37 checks, 17 October 2026). `Compare-QuestReputation.ps1` reads "shown" through it too, so run
   `Test-CompareQuestReputation.ps1` (380 checks), and `Test-QuestTooltip.lua` on both TOCs for the tooltip.
+- For changes to `Sync-QuestRenown.ps1` or the renown rows of `AddonData.ps1` (step 2o), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestRenown.ps1` (made-up tables). It must say
+  "0 failed" (23 checks, 17 October 2026). A change to how the addon reads them (`qcRenownNeeds` in `qcCore.lua`) is
+  checked by `Test-QuestTooltip.lua` and `Test-MapTooltip.lua` on both TOCs, and `Test-QuestReachability.lua`.
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;

@@ -12,7 +12,7 @@ local qcMaskAllows, qcQuestName, qcRequestQuestData, qcPrereq = QC.qcMaskAllows,
 local qcNpcName, qcFindPinForQuest = QC.qcNpcName, QC.qcFindPinForQuest
 local qcQuestTooltipWaiting, qcNpcTooltipWaiting = QC.qcQuestTooltipWaiting, QC.qcNpcTooltipWaiting
 local qcHides, qcFactionLevel = QC.qcHides, QC.qcFactionLevel
-local qcSkillRank, qcSkillName = QC.qcSkillRank, QC.qcSkillName
+local qcSkillRank, qcSkillName, qcRenownNeeds = QC.qcSkillRank, QC.qcSkillName, QC.qcRenownNeeds
 local qcItemName, qcItemTooltipWaiting = QC.qcItemName, QC.qcItemTooltipWaiting
 
 local qcQuestInformationTooltip
@@ -585,28 +585,25 @@ function qcUpdateTooltip(index)
         end
         if prereqLines > 0 or inLogOptions or conditionLines > 0 then qcAddQuestTooltipDivider() end
 		-- Renown and Faction requirements Start
-        local renownInfo = qcRenownLevelRequirements[questId]
+        local renownNeeds = qcRenownNeeds(questId)
 
-        if renownInfo then
-            if type(renownInfo) == "table" then
-                local factionId = renownInfo[1]
-                local requiredRenownLevel = renownInfo[2]
+        if renownNeeds then
+            for _, need in ipairs(renownNeeds) do
+                local factionId, requiredRenownLevel = need[1], need[2]
                 local factionName = qcFactionName(factionId) or UNKNOWN
-                local currentRenownLevel, isRank = qcFactionLevel(factionId)
-                local levelLabel = isRank and qcL.REQUIREDRANK or qcL.REQUIREDRENOWN
-
                 qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s%s", qcFactionIconText(factionId), COLOUR_DRUID, factionName))
 
-                if currentRenownLevel then
-                    local met = currentRenownLevel >= requiredRenownLevel
-                    qcQuestInformationTooltip:AddDoubleLine(levelLabel, string.format("|A:%s:14:14|a |cff%s%d|r",
-                        met and "common-icon-checkmark" or "common-icon-redx", met and "00ff00" or "ff2020", requiredRenownLevel))
-                else
-                    qcQuestInformationTooltip:AddDoubleLine(levelLabel, tostring(requiredRenownLevel))
+                if requiredRenownLevel then
+                    local currentRenownLevel, isRank = qcFactionLevel(factionId)
+                    local levelLabel = isRank and qcL.REQUIREDRANK or qcL.REQUIREDRENOWN
+                    if currentRenownLevel then
+                        local met = currentRenownLevel >= requiredRenownLevel
+                        qcQuestInformationTooltip:AddDoubleLine(levelLabel, string.format("|A:%s:14:14|a |cff%s%d|r",
+                            met and "common-icon-checkmark" or "common-icon-redx", met and "00ff00" or "ff2020", requiredRenownLevel))
+                    else
+                        qcQuestInformationTooltip:AddDoubleLine(levelLabel, tostring(requiredRenownLevel))
+                    end
                 end
-            elseif type(renownInfo) == "number" then
-                local factionName = qcFactionName(renownInfo) or UNKNOWN
-                qcQuestInformationTooltip:AddDoubleLine(qcL.REQUIREDFACTION, string.format("%s%s%s", qcFactionIconText(renownInfo), COLOUR_DRUID, factionName))
             end
 
             qcAddQuestTooltipDivider()

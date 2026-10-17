@@ -87,9 +87,10 @@ taken. What is left, in one place:
     ([maintenance.md](../maintenance.md)). The audit's "40 contradictions" (now 139 retail rows) aren't data errors:
     they are reward lists that name both sides' factions, as Battle for Azeroth's world quests do.
   - **2, built:** `Compare-QuestReputation.ps1`'s "shown" reads the slot each race gets, not slot 0 alone.
-  - **3, to build:** renown requirements from the game's own conditions (data-sources-review recommendation 17): 65
-    new on 66 task quests, the rule's level where Blizzard's text differs (4 Hallowfall quests: 3 against "Rank 5"),
-    several renowns for one quest (79333), the 92 hand rows kept.
+  - **3, built:** renown requirements from the game's own conditions (data-sources-review recommendation 17), by the
+    new step 2o, retail: 69 rows on 66 task quests, 65 of them new, the rule's level where Blizzard's text differs
+    (4 Hallowfall quests: 3 against "Rank 5"), a tooltip line for each of several renowns (79333 asks for four), the
+    96 hand rows kept and read after the client's (it agrees with 4, differs from none).
 
 - **The client tables audit (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) went through
   every table and column of retail 12.1.5, Forever 1.60.1 and Era, decoded 621 bits and listed 12 opportunities

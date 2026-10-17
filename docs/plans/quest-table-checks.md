@@ -19,9 +19,11 @@ also corrects reputation amounts that differ from the API's, not just missing re
 
 ## Sources, and how far to trust them
 
-Blizzard publishes no breadcrumbs or renown requirements: the API and the client's tables have
-neither. Quest 82781 needs renown 3 with the Council of Dornogal, yet the API gives only its level
-range. So the check takes what each source offers:
+Blizzard's API publishes no breadcrumbs or renown requirements. Quest 82781 needs renown 3 with the
+Council of Dornogal, yet the API gives only its level range. The client's tables do have renown
+requirements for task quests, in their conditions: since 17 October 2026 step 2o reads them
+([maintenance.md](../maintenance.md#2o-renown-the-games-own-conditions-ask-for)), and the hand rows
+are kept for the rest (82781 among them). So the check takes what each source offers:
 - **Our own data.** Every quest a table names should exist, be available, and in a breadcrumb or
   "only one of these" pair, not recur.
 - **Blizzard's API** names required quests for 903 of our quests, and for 78 the quests that close

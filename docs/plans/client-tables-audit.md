@@ -289,3 +289,10 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
   for a condition that holds a quest back (188 texts, 375 quests). Of item 4, the achievement gates, older quest
   lines and condition levels are left as they are, and Forever's battleground brackets wait for decision 25
   (open-items.md). Opportunity 5 is next.
+- 2026-10-17: **opportunity 5 is done**, recounted on 12.1.5.70448 and 1.60.1.70450, in #388 and the pull request
+  after it. The "40 contradictions" (139 retail rows now) are reward lists that name both sides' factions, not data
+  errors: step 2n, both games, generates who can earn each faction and whether its bar shows, and the quest list's
+  tooltip leaves out a reward the character's race can't earn or never sees (part 1). `Compare-QuestReputation.ps1`
+  reads "shown" from the slot each race gets (part 2, no class changed). Step 2o, retail, takes renown requirements
+  from task quests' conditions: 69 rows on 66 quests, the hand rows kept after them (part 3, data-sources-review
+  recommendation 17). Opportunity 6 is next.

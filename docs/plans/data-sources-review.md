@@ -276,7 +276,7 @@ disagreement. Each exception gives its reason as in game-parity.md: nature, API,
 | Only while another is in the log | none | CMaNGOS's negative links | emulator in both (rec 7); never PlayerCondition's CurrQuestID |
 | Breadcrumbs, "only one of these" | hand, audited against the API and TrinityCore | CMaNGOS, the chain rule, hand ADD/REMOVE | as today, with the same consistency checks in both (rec 38) and the game's offers as the check |
 | Reputation rewards | API; the cache a check, and since 16 October 2026 the source for the quests the API has no record of (the newest cache's class E) | cache, unchecked | retail as today (Forever has no API, so this is nature); Forever checked against CMaNGOS (rec 15); observed gains from the recorder in both (rec 2) |
-| Renown | hand (96) | – (nature) | client conditions generated; hand rows checked (rec 17) |
+| Renown | the client's task conditions (step 2o, since 17 October 2026), then hand (96) | – (nature) | client conditions generated; hand rows checked (rec 17, done) |
 | Standing | none | none | API (retail), CMaNGOS (Forever), TrinityCore as a check; by rank (rec 24) |
 | Holiday | hand, audited | hand, CMaNGOS events, the game's heading, CMaNGOS's heading, the spawn rule | hand, Blizzard's heading (API, cache), emulator events; achievements and spawns as support only (rec 20) |
 | Profession | task table, headings, knowledge rewards, hand | CMaNGOS's RequiredSkill, then the game's heading | add the emulator's RequiredSkill and start items to retail; reward skill a check only; heading disagreements reviewed on Forever (rec 23) |
@@ -420,7 +420,7 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
   - lines 135-137 should cite TrinityCore's AllowedMinOffset;
   - nothing yet says that PortraitGiverName is the kill target, not the giver.
 - **quest-table-checks.md:**
-  - lines 22-24 say the client has no renown requirements (it has, rec 17);
+  - lines 22-24 say the client has no renown requirements (it has, rec 17; corrected 17 October 2026);
   - lines 164-168 (Paladin Rescue, D4).
 - **client-tables-review.md:**
   - lines 98-99 (PlayerCondition carries renown and friendship conditions);
@@ -505,6 +505,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 - 2026-10-17: recommendation 21 done, on the user's word (the client tables audit's opportunity 4, part A). Sweep step 2l, `Sync-QuestCovenants.ps1`, reads the covenant from task conditions, quest-line and campaign conditions, chapter gates and the "<covenant> Callings" headings, with the intersection rule. On 12.1.5.70448 the client names one covenant for 565 of our quests: 558 agree, 7 gained one (the four world quests and three Necrolord quests the recommendation foresaw), none differs. The evidence's "reproduces all 777" doesn't hold with the client's own tables: 219 of ours (sanctum and covenant feature quests such as the Ember Court's) are named by no client source, and are kept and counted. In the same pull request step 2c reads task quests' whole condition (maintenance.md, step 2c): 412 quests gain or change a prerequisite.
 
 - 2026-10-17: the shown-faction rule fixed, on the user's word (the client tables audit's opportunity 5, part 2): `Compare-QuestReputation.ps1` reads the slot each playable race gets and treats a header without its own bar as not shown, through `FactionReach.ps1`, which the new step 2n also uses so the quest list's tooltip leaves out rewards the character's race can't earn or never sees (part 1, both games). On 12.1.5.70391's cache no class changed (shown factions 361 to 338). Recommendation 17 (renown from the client's conditions) is next, as the same opportunity's part 3.
+
+- 2026-10-17: recommendation 17 done, on the user's word (the client tables audit's opportunity 5, part 3). Sweep step 2o, `Sync-QuestRenown.ps1`, reads the renown currency each task quest's condition asks for (its own currency columns and the tree's type 119) into `data\renown.jsonl`, which the addon reads before the hand-kept `qcRenownLevelRequirements`, one tooltip line for each faction. On 12.1.5.70448: 69 rows on 66 task quests, 65 of them new; the client agrees with 4 of the 96 hand rows, differs from none and says nothing about 92, which stay. Where the text differs from the rule (four Hallowfall quests: renown 3 against "Rank 5") the rule's level is taken; 79333 The Fleet Arrives asks for four factions' renown.
 
 ## Appendix: every finding and its verdict
 

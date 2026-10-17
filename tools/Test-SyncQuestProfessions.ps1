@@ -277,7 +277,7 @@ try {
     } else {
         $real = "$Scratch\real"; New-Folder "$real\data"
         Copy-Item "$DataSource\quests.jsonl", "$DataSource\pins.jsonl" "$real\data"
-        foreach ($file in 'startitems.jsonl', 'conditiontexts.jsonl', 'factions.jsonl', 'tunings.jsonl') { if (Test-Path "$DataSource\$file") { Copy-Item "$DataSource\$file" "$real\data" } }
+        foreach ($file in 'startitems.jsonl', 'conditiontexts.jsonl', 'factions.jsonl', 'renown.jsonl', 'tunings.jsonl') { if (Test-Path "$DataSource\$file") { Copy-Item "$DataSource\$file" "$real\data" } }
         Copy-Addon "$real\addon" 'qcCore.lua', 'qcQuest.lua', 'qcPinDB.lua', 'qcQuestData.lua'
         $checkout = @{ Quests = Get-Hash "$real\data\quests.jsonl"; Lua = Get-Hash "$real\addon\qcQuestData.lua" }
         $common = @('-ToolsDir', $ToolsDir, '-DataDir', "$real\data", '-AddonDir', "$real\addon", '-DecisionsFile', $DecisionsSource)
