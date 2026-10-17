@@ -1713,8 +1713,10 @@ the character's level (`PLAYER_LEVEL_UP`) or its CtrOptions (`UNIT_CTR_OPTIONS`,
 bits, registered for the player where the client has it, and which also rebuilds the list) change, or a
 sample's data arrives. The performance rule of
 [quest-scaling-redirects.md](plans/quest-scaling-redirects.md) holds:
-- The maps, the continent icons, their tooltips and search never ask the server for a sample. They read
-  the samples the client holds, also those its quest cache keeps from earlier sessions.
+- The maps, the continent icons, their tooltips and search never ask the server for a sample to get a
+  level. They read the samples the client holds, also those its quest cache keeps from earlier sessions.
+  A tooltip or a search row still asks for the names of the quests it shows, as before, and one of those
+  can be a sample.
 - Only the list's category build asks, through the queue that loads quest names, four requests at a time
   (`qcRequestQuestData`): for each tuning of the category with no level from a sample yet and a quest
   stored below the character's level, one sample at a time, the first neither answered nor given up. A
@@ -1725,11 +1727,12 @@ sample's data arrives. The performance rule of
   read, and not at all when the answers agree with the stored levels. No answer redraws a map: it reads
   the new level when it is next drawn.
 
-Forever's tables are empty, so it reads no level and asks for nothing. With the probe's redirect bits and
+Forever's tables are empty, so it reads no level and asks for no sample. With the probe's redirect bits and
 every sample held, every retail quest reads its stored level at levels 1, 10, 30, 60 and 90 but 46 (16
 October 2026's data). Those are quests at their tuning's minimum whose own level isn't it (open-items.md row 8), such as
 50417 "Ruin Has Come" (level 10, minimum 50, tuning 464 at 50): they read their tuning's level, the game's,
-once a sample of the tuning is held, and their own until then.
+once a sample of the tuning is held, and their own until then. Whether they should, or be held to their
+stored level, is the user's call (open-items.md, row 9).
 `Test-QuestScaling.ps1` tests the tool, `Test-QuestReachability.lua` the stored levels and
 `Test-QuestScaling.lua` the levels read from samples (step 9).
 
@@ -2662,13 +2665,13 @@ downloaded one may add it.
 Its stand-in client holds no quest, so it reads every level from the data. `Test-QuestScaling.lua` checks the
 levels a held sample gives, and what is asked of the server for them ([step 2j](#2j-scaling-quests-levels),
 "How the addon reads the samples"), against the client's redirect and ContentTuning tables that step 2j
-keeps in `tools\` (a few seconds):
+keeps in `tools\` (about 15 seconds):
 
 ```powershell
 & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua
 ```
 
-It must say "All checks passed." (67 checks on 16 October 2026's data, 12.1.5.70391).
+It must say "All checks passed." (68 checks on 16 October 2026's data, 12.1.5.70391).
 
 This checks retail's files. Step 10 runs both on Forever's.
 
@@ -3736,11 +3739,14 @@ git diff --stat
   the newest build there unless a fourth argument names one; a third names another folder), it checks the
   ten quests the user read on 16 October 2026, the probe's state with every sample held (every quest at
   its stored level but the 46 at their tuning's minimum), Nazmir with bit 34 and Chromie Time at 40 before
-  and after the list's samples are answered, and the requests: none from drawing and hovering every map, a
-  continent of every zone or a search, one sample per tuning that needs it from a list build, one rebuild
-  a batch, a failing sample giving way to the next, and the events that make the levels be read again.
-  Pointed at an addon folder without `qcTuningSample`, such as the main checkout before option E, it checks
-  the requests alone, to compare. Forever's run:
+  and after the list's samples are answered, and the requests. With no quest name held, drawing every map
+  and a continent of every zone, and hovering the continent's icons, ask for nothing. With every name held,
+  hovering every map's pins and a search ask for nothing either; with none held, they ask for the names
+  they show, the same quests as with the samples taken out of the data. A list build asks for one sample
+  per tuning that needs it, with one rebuild a batch, a failing sample giving way to the next, and the
+  events that make the levels be read again. Pointed at an addon folder without `qcTuningSample`, such as
+  master before option E, it checks the requests alone, to compare; pointed at one with the tables and no
+  code that reads them (#378 alone), it fails. Forever's run:
   `& "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua QuestCompletist QuestCompletist_Camelot.toc`.
 - For changes to `QuestCacheFiles.ps1` (which quest cache a tool reads, and the warning for one that looks
   partial, step 2e), run `Test-QuestLevels.ps1`, which tests it on made-up caches, and the tests of the tools

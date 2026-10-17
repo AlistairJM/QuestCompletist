@@ -172,32 +172,37 @@ The addon code (#382, `qcTuning` in `qcCore.lua`; [maintenance.md](../maintenanc
   the category with no level from a sample and a quest stored below the character's level, one sample, the
   first neither answered nor given up. A failed sample gets the queue's own second try after 30 seconds,
   and only after that fails is the next one asked, so one tuning never has two samples loading. The maps,
-  the continent icons, their tooltips and search ask for nothing.
+  the continent icons, their tooltips and search never ask for a sample to get a level. A tooltip or a
+  search row still asks for the names of the quests it shows, as before, and one of those can be a sample.
 - **What is redrawn.** Once nothing the list waits on is loading, the list is rebuilt once if an answer
   changed a level it read; answers that agree with the stored levels rebuild nothing, and no answer redraws
   a map.
-- **Forever** has empty tables, so the code reads no level and asks for nothing there.
+- **Forever** has empty tables, so the code reads no level and asks for no sample there.
 
 One limit of the rule: a tuning whose quests are all stored at the character's level is not asked about, so
 a redirect that would put them lower (a character without one of the probe's bits) shows only once a sample
 of that tuning is held anyway, from an earlier answer or the client's quest cache.
 
-`Test-QuestScaling.lua` (both TOCs, 67 checks on retail and 11 on Forever, 17 October 2026) plays this
+`Test-QuestScaling.lua` (both TOCs, 68 checks on retail and 11 on Forever, 17 October 2026) plays this
 against a game whose levels follow the client's 12.1.5.70391 redirect and ContentTuning tables:
 - The ten readings of 16 October, in Nazmir and in Silvermoon City, come out as read.
 - With the probe's bits and every sample held, every quest reads its stored level at levels 1, 10, 30, 60
   and 90, but 46 quests at their tuning's minimum whose own level isn't it (24428, 28165, 31497, the 31 of
   tuning 464 such as 50417, 82586, 85085, 91843 and others; open-items.md row 8). They read their tuning's
-  level, the game's.
+  level, the game's. Whether they should, or be held to their stored level, is the user's call
+  (open-items.md, row 9).
 - In Nazmir at 90 with bit 34, its 160 quests on the three tunings bit 34 moves (190, 467 and 1403) read
   their stored levels and are hidden by the low-level filter until the list's samples are answered, then
   read 90, are kept, show as [90] and are drawn on Nazmir's map. The list asked for the first sample of each
   of the 6 tunings with a quest stored below 90, once, and was rebuilt once.
 - In Chromie Time at 40, 11 "Riverpaw Gnoll Bounty" reads 30 and is hidden until its sample is answered,
   then 40.
-- Drawing all 544 maps' pins (with the low-level filter on and off), a continent of every zone, hovering
-  them, and a search ask the game for nothing, as on master. Building every one of the 482 categories in
-  turn asks for one sample of each of the 427 tunings that needed one.
+- With no quest name held, drawing all 544 maps' pins (with the low-level filter on and off) and a
+  continent of every zone, and hovering the continent's 178 icons, ask the game for nothing, as on master.
+  With every name held, hovering all 9,667 pins and a search ask for nothing either. With none held, those
+  two ask for the names they show: 25,805 quests, 1,163 of them samples, the same quests as with the samples
+  taken out of the data. Building every one of the 482 categories in turn asks for one sample of each of the
+  427 tunings that needed one.
 
-The in-game check is the `/run` line above, in Nazmir and in Silvermoon City or Elwynn Forest, against the
-list's brackets (open-items.md, "To try in game").
+The in-game check is open-items.md's "Scaling quests in an Endeavor's zones", under "To try in game": 47919
+"Just Say No to Cannibalism" at "[90]" in Nazmir with the Endeavor active, and at "[60]" in Silvermoon City.
