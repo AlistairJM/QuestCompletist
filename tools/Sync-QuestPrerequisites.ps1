@@ -15,14 +15,18 @@ against, as decided with the user on 6 October 2026:
     quests the character must have turned in (PrevQuestID); both are required at once. Each is up
     to four quests with a logic field, read as the game reads a PlayerCondition's: bit 16+n turns
     the nth answer round (a quest that must NOT be done), and two bits each say how the next quest
-    joins the answer so far, from left to right: 1 and, 2 or, 0 not at all. Where the client's
+    joins the answer so far, from left to right: 1 and, 2 or, 0 not at all. Since 17 October 2026
+    (the client tables audit, opportunity 4) the condition's ModifierTree is read as well, as
+    QuestConditions.ps1 reads a quest line's, the quests it names joining the others; a tree that
+    can't be met as read is left out. Where the client's
     list leaves us something to show, it replaces ours, except that one of ours stays when it's the
     step just before the quest in its storyline, as with the API's list. A quest that must not be
     done is no prerequisite. A quest we hold no data for (a hidden tracking quest, with no name to
     show) can't be told to the player: as a quest to do first it's left out, and as one of several
     that will do it takes the whole choice with it, as another way needs nothing we could show.
     The tables are those step 1b refreshes (QuestV2CliTask.csv and PlayerCondition.csv in
-    -ToolsDir); they're fetched for -Build when missing.
+    -ToolsDir); they're fetched for -Build when missing, as are the ModifierTree and the others
+    QuestConditions.ps1 reads.
 A quest the API and the client are silent on keeps its prerequisite.
 
 Then, as decided with the user on 12 October 2026 (QuestConditions.ps1 reads the client's tables):
@@ -151,25 +155,43 @@ function Convert-ClientList($row, [string]$prefix, [int]$count, [string]$logicFi
     return $answer
 }
 
-foreach ($table in 'QuestV2CliTask', 'PlayerCondition') {
-    $path = Join-Path $ToolsDir "$table.csv"
-    if (-not (Test-Path $path)) {
-        Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/$table/csv?build=$Build" -OutFile $path
-        Start-Sleep -Seconds 1
+# A condition's tree (QuestConditions.ps1) with the quests a task quest can't show dropped as
+# Convert-ClientList drops them.
+function Select-TaskQuests($node) {
+    if ($null -eq $node) { return $null }
+    if (-not (Test-ConditionGroup $node)) {
+        $id = [int]$node
+        if (-not $quests.ContainsKey($id)) { $script:notInData[$id] = $true; return $null }
+        if (-not (Test-Checkable $script:converting $id)) { return $null }
+        return $id
     }
+    $joined = $null; $first = $true
+    foreach ($item in $node.Items) {
+        $part = Select-TaskQuests $item
+        if ($first) { $joined = $part; $first = $false } else { $joined = Join-Nodes $node.And $joined $part }
+    }
+    return $joined
 }
-$tasks = @(Import-Csv (Join-Path $ToolsDir 'QuestV2CliTask.csv') | Where-Object { $quests.ContainsKey([int]$_.ID) })
-$wanted = @{}
-foreach ($t in $tasks) { if ($t.ConditionID -ne '0') { $wanted[$t.ConditionID] = $true } }
-$conditions = @{}
-Import-Csv (Join-Path $ToolsDir 'PlayerCondition.csv') | ForEach-Object { if ($wanted.ContainsKey($_.ID)) { $conditions[$_.ID] = $_ } }
+
+$path = Join-Path $ToolsDir 'QuestV2CliTask.csv'
+if (-not (Test-Path $path)) { Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/QuestV2CliTask/csv?build=$Build" -OutFile $path }
+$conditionTables = Import-ClientConditions $ToolsDir $Build
+$tasks = @(Import-Csv $path | Where-Object { $quests.ContainsKey([int]$_.ID) })
 $script:notInData = @{}
 $client = @{}
 foreach ($t in $tasks) {
     $script:converting = [int]$t.ID
     $own = Convert-ClientList $t 'FiltCompletedQuest' 3 'FiltCompletedQuestLogic'
     $condition = $null
-    if ($conditions.ContainsKey($t.ConditionID)) { $condition = Convert-ClientList $conditions[$t.ConditionID] 'PrevQuestID' 4 'PrevQuestLogic' }
+    $row = $conditionTables.Conditions[[int]$t.ConditionID]
+    if ($row -and -not ($row.Flags -band 0x100)) {
+        $condition = ConvertFrom-PrevQuests $row
+        if ($row.Tree -and -not ($row.Flags -band 0x200)) {
+            $tree = ConvertFrom-ModifierTree $conditionTables $row.Tree 1
+            if ($tree -isnot [string]) { $condition = Join-Condition $true $condition $tree }
+        }
+        $condition = Select-TaskQuests $condition
+    }
     $value = ConvertTo-PrereqValue (Join-Nodes $true $own $condition)
     if ($null -ne $value) { $client[[int]$t.ID] = $value }
 }
@@ -218,10 +240,15 @@ function Join-PrereqParts($parts) {
     return , $list.ToArray()
 }
 function Get-PartText($part) { return ConvertTo-PrereqText $part '[' ']' }
+# A choice that names a quest the same prereq requires anyway is met with it, so it's dropped.
+function Remove-MetChoices($value) {
+    $parts = Get-PrereqParts $value
+    $required = @($parts | Where-Object { $_ -isnot [array] } | ForEach-Object { [int]$_ })
+    return Join-PrereqParts @($parts | Where-Object { -not ($_ -is [array] -and @($_ | Where-Object { $_ -isnot [array] -and $required -contains [int]$_ }).Count) })
+}
 
 # The client's conditions, as the parts each quest they cover gets: left out where they name a quest
 # that recurs and the quest doesn't, as the API's are.
-$conditionTables = Import-ClientConditions $ToolsDir $Build
 $gates = @(Get-ConditionGates $conditionTables $Campaign $quests)
 $chapterLinks = Get-ChapterLinks $conditionTables $Campaign $ScoutingMapLine $ScoutingMapQuest $quests
 function Select-Checkable($node, [int]$id) {
@@ -277,6 +304,7 @@ foreach ($id in ($quests.Keys | Sort-Object)) {
         $ourQuests = if ($own[$id]) { Get-PrereqQuests $own[$id] } else { @() }
         $kept = @($ourQuests | Where-Object { $listed -notcontains $_ -and (Test-StepJustBefore $id $_) })
         if ($kept.Count) { $value = @($kept) + @($value); $counts["kept$source"]++ }
+        if ($source -eq 'Client') { $value = Remove-MetChoices $value }
         $text = ConvertTo-PrereqText $value '[' ']'
         if ($text -eq $ours) { $counts["from${source}Same"]++; continue }
         $new[$id] = $value

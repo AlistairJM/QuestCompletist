@@ -60,6 +60,25 @@ taken. What is left, in one place:
   mechanism, not the trigger: the Hero's Call boards cast one), the pins (every pinned spell-started quest sits on
   the client's own start point), and Forever's 64 spell-started quests we lack (63 are on the probe's list,
   untitled until the beta serves them: the Ashenvale, Hinterlands and Feralas Deputize missions).
+- **Opportunity 4, the client's conditions (17 October 2026):** recounted with the tools' own rules on 12.1.5.70448,
+  where the audit's figures were upper bounds. The user's choices:
+  - **A, built:** step 2c reads task quests' whole condition, its `ModifierTree` too (412 quests gain or change a
+    prerequisite, 263 of them world quests), and the new step 2l takes their covenants from the client (7 gained;
+    data-sources-review recommendation 21) ([maintenance.md](../maintenance.md), steps 2c and 2l). With it, step 2b
+    no longer holds step 2k's pairs against TrinityCore (28 new findings on master since #377).
+  - **D, to build:** Blizzard's own "why not yet" text (`PlayerCondition.Failure_description_lang`,
+    `CampaignXCondition.FailureReason_lang`) as a tooltip line on 376 quests, in all 11 languages, information only.
+  - **C, recorded only:** 94 quests need an achievement on every way to them (93 world quests: 66 Legion ones need
+    the hidden "7.0 WQ Unlock" achievement 11473, 20 need 6570 "All Growns Up!"). Whether `GetAchievementInfo`
+    answers for a hidden tracking achievement is unknown.
+  - **B and E, left as they are:** older expansions' quest-line conditions (only Shadowlands' 86994 and 87734 name
+    quests: 59770 Stand as One, which our data gives one faction, the hidden 62713 and 57559, and level 50; 184
+    quests), and the conditions' levels (1,044 quests above our gate, mostly campaign chapter gates such as "Reach
+    level 15 to continue", which steer the campaign tracker; 1,105 more hold a level-255 placeholder).
+  - **F, for later:** WoW: Forever's battleground brackets (`PVPDifficulty`) for 72 Warsong Gulch and Arathi Basin
+    quests, and 26 with no minimum level: data-sources-review decision 25, still waiting on its one check in game.
+  - **Side finding:** 12 Broken Shore quests (45178 Contagion Containment and others) are typed one-time though
+    Blizzard's `QuestInfo` calls them "Rare World Quest" or "Rare Elite World Quest".
 
 - **To build (decided):** rows 17 (the two race contradictions and the 19 stale masks), 18 (the 98
   Uncategorized quests whose sort names one category), 19 ("Starts from" only from the item or the quest

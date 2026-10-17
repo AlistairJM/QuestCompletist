@@ -62,6 +62,8 @@ categories, the zone table, reputation rewards, storylines and so on).
 - `data\quests.jsonl`, one quest per line:
   `{"id":176,"name":"WANTED:  \"Hogger\"","level":1,"zone":"Elwynn Forest","category":70,"type":1,"faction":1,"race":64175181,"class":8191,"storyline":566}`.
   `profession`, `holiday`, `covenant`, `storyline` and `prereq` are left out when they're 0.
+  `covenant` is the covenant's bit (Kyrian 2, Venthyr 4, Night Fae 8, Necrolord 16), checked and filled
+  from the client's own data by step 2l.
   `minLevel` is left out when it's the same as `level`, and kept when it's 0 (no minimum).
   `maxLevel`, the level a scaling quest stops scaling at, is left out for a quest that doesn't scale.
   `tuning`, the quest's `ContentTuningID` (step 2j), is left out when no source gives one or it is 0.
@@ -380,6 +382,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2j | Scaling quests' levels: the level each content tuning scales to at the level cap, from the retail probe's quest pass at the cap, in `qcQuestMaxLevel`; each quest's tuning, and the samples of each tuning a redirect can move (`data\tunings.jsonl`, `qcQuestTuning`, `qcTuningSample`); the redirect table against its baseline (after the probe, step 2e and step 2g; again after step 6 or 6b adds quests) | `Apply-QuestScaling.ps1 -WhatIf`, then without `-WhatIf`; `-UpdateBaseline` once a new `RedirectEnum` has been looked at | Only the applying run (`-UpdateBaseline` writes the baseline) |
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 2k | "Only one of these" links, both games: quests on one completion switch that we don't link, links Blizzard moved off one switch, and linked pairs the game says one character did both of (after the probe's logins) | `Sync-SharedSlotLinks.ps1 -Game retail -Build <retail build>`, decide in `docs\plans\quest-link-decisions.csv`, then `-Apply`; `-Game forever -Build <Forever build>`, decide in `forever-quest-link-decisions.csv`, which step 10 applies | Yes (retail `-Apply`) |
+| 2l | Covenants, retail (WoW: Forever has none): the covenant the client's conditions and headings name for a quest, where ours has none; findings where ours differs, or ours tags a quest several covenants share (after step 2e) | `Sync-QuestCovenants.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -796,7 +799,11 @@ as step 2d does.
   those that are the step just before in the quest's own storyline are listed, as step 2c only
   takes those; the rest are counted. Its groups of which only one can be done are counted, not
   listed: it also groups quests one character can do all of, such as Darrowshire's three in the
-  Eastern Plaguelands.
+  Eastern Plaguelands. An "only one of these" pair step 2k added (an `exclusive` `ADD` row of
+  `docs\plans\quest-link-decisions.csv`, `-LinkDecisionsFile`) isn't held against TrinityCore: the two
+  quests share a completion switch in the client, which outranks it as the API does. Until 17 October
+  2026 it was, and the 145 pairs of #377 gave 28 new findings "exclusive: TrinityCore disagrees"; since
+  then the run on 12.1.5.70448 reports 119 findings, none new.
 
 Review the new findings, and fix the data where it's wrong. For a finding that's right as it is,
 add a `KEEP` row to `docs\plans\quest-table-decisions.csv`: `Kind`, `Quest` and `Other` copied from
@@ -856,6 +863,22 @@ with `-WhatIf` first to see what it would change.
   quest's storyline, as with the API's list. Most of what the client gates a task quest on is a
   hidden tracking quest we hold no data for, with no name to show: it's left out of the list,
   or the whole choice it's in. The tables are those step 1b refreshes.
+  - **The condition's `ModifierTree`** is read too since 17 October 2026 (the client tables audit,
+    opportunity 4), as `QuestConditions.ps1` reads a quest line's: the quests it says must be done
+    (type 110), its AND and OR, its nested conditions (type 2) and trees (type 73). A condition the
+    client switches off (flag 0x100) gives nothing, and the tree of one the game reads the other way
+    round (flag 0x200) is left out (95 task conditions have one of the two; their own quests stay). A
+    tree that can't be met as read (a game feature, type 289, read as off, under an AND) is left out,
+    keeping the condition's own quests; no task quest's result depends on that reading. A choice that
+    names a quest the same list requires anyway is dropped, as it's met with it. On 12.1.5.70448 the
+    tree gave 412 task quests a requirement (353 had none, 59 changed; 415 before 3 choices met by a
+    quest the list requires were dropped): 263 world quests, 116 dailies, and the rest shown by default,
+    such as the Siren Isle delve quests' 84725 The Circlet Calls, 89476 Infinite Research's 89418 A
+    Fixed Point in Time and 95815 Downhill Jam's 96051 Through the Cold Rift. 244 are a choice only:
+    the Broken Shore quests' any of 15 "Champion: ..." quests, Battle for Azeroth's world quests'
+    46957 Welcome to Zuldazar or 47189 A Nation Divided. The tree names 122 quests we hold no data
+    for, against 60 before. 9,740 quests have a prerequisite (from 9,387), step 2b's findings stay
+    the same, and a second run changes nothing.
 - **Where the API is silent and we have none,** TrinityCore's previous quest is taken when it's the
   step just before in the quest's storyline (the client's `QuestLineXQuest` for `-Build`).
 - **The current expansion's campaign** (`-Campaign`, 270 for Midnight): each chapter's first quest
@@ -870,6 +893,10 @@ with `-WhatIf` first to see what it would change.
   Voidstorm and Zul'Aman lines and campaigns 284 and 324, given to 213 quests, all through 86509, 86521,
   86522, 86565 or the hidden 90806. The addon counts 90806 but doesn't name it (`qcPrereq.Text`). A game
   feature switched on for everyone (type 289) is read as off; anything else it can't check is read as met.
+  Older expansions' quest-line conditions stay unread (the user, 17 October 2026, client tables audit
+  opportunity 4): of 29 on 12.1.5.70448, only Midnight's and two of Shadowlands' name a quest, and those
+  two (86994 and 87734, 184 quests such as The Ember Court's) need 59770 Stand as One, which our data
+  gives one faction, both hidden quests 62713 and 57559, and level 50.
   On 12.1.5.70391 (16 October 2026) it is 16 lines and campaigns 284, 324 and 349, given to 238 quests
   (213 before step 6 added the 12.1.5 story quests, whose 25 in campaign 349 make the difference), and
   240 since step 6's second gap run the same day: 88930 Drained Mana (campaign 284, line 5795) and 93420
@@ -1799,6 +1826,37 @@ our limits make look like choices; paragon caches and weekly meta quests typed o
 The Gilneas trio (14402, 14405, 14463), unlinked in data-sources-review D2, is on one switch and stays a finding
 until decided (open-items). Retail's links went from 194 to 339, 235 on one switch. Forever had 6 pairs, all
 breadcrumb links already: no finding. No probe results held completed lists yet.
+
+### 2l. Covenants
+
+Retail, every sweep, after step 2e (WoW: Forever has no covenants). The `covenant` field (`qcQuestCovenant`, the
+covenant's bit: Kyrian 2, Venthyr 4, Night Fae 8, Necrolord 16, as `qcCovenantsBits`) was legacy data no tool wrote or
+checked until 17 October 2026 (data-sources-review recommendation 21, taken with the client tables audit's
+opportunity 4).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestCovenants.ps1 -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestCovenants.ps1 -Build <retail build>
+```
+
+The client names a quest's covenant in its task condition (`QuestV2CliTask.ConditionID`), in the conditions of the
+quest lines and campaigns it's on and of its campaign chapter (`CampaignXCondition`, the chapter being the
+campaign's line of the same `OrderIndex`), and in its heading: the quest cache's `sort` naming a "<covenant>
+Callings" heading (`QuestSort` 589 to 592). `QuestConditions.ps1` reads each condition for the covenants every way
+through it needs (`PlayerCondition.CovenantID`, `ModifierTree` type 288; a choice needs only those all its branches
+do). A quest one covenant names gets that covenant where ours has none. A quest several name, as the chapters of a
+quest line all four covenants' campaigns share (60287, 60289, 61355, 62837, 62882), is open to each of them and stays
+untagged. Findings, left for a decision (exit 1): ours differs from the client's, and ours tags a quest several
+covenants name. Ours that the client doesn't name are counted and kept: the sanctum and covenant feature quests
+("Covenant Sanctum", Ember Court, Path of Ascension, Abominable Stitching) have no client table that ties them to a
+covenant, so recommendation 21's "reproduces all 777" doesn't hold with the client's own tables. It reads the build's
+`QuestSort` and `Covenant` (`tools\<table>-<build>.csv`, downloaded when missing) and the quest cache of `-Build`, or
+of the newest build before it, or `-QuestCacheFile`.
+
+First run, 17 October 2026 (12.1.5.70448, the 12.1.5.70391 cache): the client names one covenant for 565 of our
+quests, 558 already ours, and several for 18 that stay untagged; 7 gained one (59855, 62203 and 62204 Major Mirror
+Disruptions, Venthyr; 62280 Limbo, Kyrian; 60110 Never Had a Friend Like Me, 60111 Forging A Friendship and 65152 A
+Hardened Bond, Necrolord); 219 of ours are named by no client source; no finding. A second run changes nothing.
 
 ### 3. Quest types
 
@@ -3839,9 +3897,12 @@ git diff --stat
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
-- For changes to `QuestConditions.ps1` (the client's quest line and campaign conditions, steps 2b and 2c), run
+- For changes to `QuestConditions.ps1` (the client's quest line, campaign and task conditions and their covenants,
+  steps 2b, 2c and 2l), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestConditions.ps1` (made-up client tables). It
-  must say "0 failed". Then run step 2c with `-WhatIf` on the real tables: it must say "Changes: 0".
+  must say "0 failed" (31 checks, 17 October 2026). Then run step 2c and `Sync-QuestCovenants.ps1` with `-WhatIf`
+  on the real tables: they must say "Changes: 0" and "Gain one: 0". `Sync-QuestCovenants.ps1` has no test of its
+  own; what it decides is `Get-ClientCovenants`, which this one tests.
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;
