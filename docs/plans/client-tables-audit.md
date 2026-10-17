@@ -281,3 +281,11 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
   650 unlinked pairs, not the 4,556 estimated above: 145 were added and 502 skipped, and the Gilneas trio waits for the
   user; Forever had none. The probe now saves each character's completed list, which a sweep needs to prove one of
   our links wrong. Four findings it turned up are in open-items.md. Opportunities 2 on are next.
+- 2026-10-17: **opportunities 2, 3 and 4 are done.** 2 and 3 in #379 to #381: sweep step 6e, the items that start
+  quests (by `StartQuestID` or by a spell the item casts), shown as "Starts From" in the tooltip with what the item
+  requires, and the 33 item-started quests the user chose. 4, recounted with the tools' own rules on 12.1.5.70448 (the
+  figures above are upper bounds), in #383 and #384: step 2c reads task quests' whole condition (412 quests gain or
+  change a prerequisite), step 2l takes covenants from the client (7 gained), and step 2m shows the game's own text
+  for a condition that holds a quest back (188 texts, 375 quests). Of item 4, the achievement gates, older quest
+  lines and condition levels are left as they are, and Forever's battleground brackets wait for decision 25
+  (open-items.md). Opportunity 5 is next.
