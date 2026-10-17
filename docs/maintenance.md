@@ -111,6 +111,12 @@ categories, the zone table, reputation rewards, storylines and so on).
   becomes `qcQuestRenown` (quest -> `{{faction, level}, ...}`) at the end of `qcQuestData.lua`, which the addon reads
   before the hand-kept `qcRenownLevelRequirements` in `qcQuest.lua`; a quest that has left `quests.jsonl` is left out.
   Forever has no such file, and its table is empty.
+- `data\sides.jsonl` (and `data\forever\sides.jsonl`), one quest per line, written only by `Sync-QuestSides.ps1` (step
+  2p): `{"quest":36054,"side":1}` (1 the Alliance, 2 the Horde), the side whose players alone can talk to the givers
+  of a quest `quests.jsonl` opens to both sides (faction 0, 3 or 7). The build writes it as that quest's faction in
+  `qcQuestDatabase`, so `quests.jsonl` keeps what the quest's own sources say and Forever's importer can't undo it; a
+  row whose quest has left the data or been given a side is left out. `docs\plans\quest-side-decisions.csv` holds the
+  quests kept open to both though their known givers are one side's (`KEEP` rows, with the evidence).
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -413,6 +419,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2m | The game's own text for a condition that holds a quest back, in every client language, retail (WoW: Forever's quest tables name no condition; again after step 6 or 6b adds quests) | `Sync-QuestConditionTexts.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2n | Who can earn each faction's reputation and whether its bar ever shows, both games, so the tooltip leaves out rewards the character can't earn or see (Forever's in step 10) | `Sync-FactionReach.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2o | Renown levels and ranks the game's own conditions ask of task quests, retail (WoW: Forever's quests have none; again after step 6b adds task quests) | `Sync-QuestRenown.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2p | Which side can take a quest open to both, both games: the side Blizzard names (the probe, the quest cache), else the side of its givers, with the quest chain and the zone's side as checks (after the probe, step 2e and step 6e; again after step 6 or 6b adds quests; Forever's in step 10) | `Sync-QuestSides.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -424,7 +431,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Sync-QuestSides.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -1994,6 +2001,65 @@ Dornogal, The Assembly of the Deeps and The Severed Threads). Of the 96 hand row
 their text says "Rank 5" (76247 Keep the Home Fires Burning, 76586 Spreading the Light, 76588 Defender of the Flame,
 81990 The Light's Call); the others' texts agree. A second run changes nothing.
 
+### 2p. Which side can take a quest
+
+Both games, every sweep, after the probe, step 2e and step 6e, and again after step 6 or 6b adds quests (Forever's in
+step 10, after the importer). A quest the data opens to both sides shows on both sides' maps and lists, though some
+belong to one: Blizzard's own records name a side the data lacks, or every giver of the quest is one the other side
+can't talk to (the Ahn'Qiraj war effort's "The Alliance Needs Copper Bars!", Alterac Valley's Stormpike and Frostwolf
+quests, Ashran's trophy quests). The client tables audit's opportunity 6 (the user's choices on 17 October 2026).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestSides.ps1 -Game retail -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestSides.ps1 -Game retail -Build <retail build>
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestSides.ps1 -Game forever -Build <Forever build>
+```
+
+- **Blizzard's side** (part A): the probe's `GetQuestFactionGroup`, else the newest quest cache's faction. On retail
+  it goes into `quests.jsonl` as the quest's faction; on Forever the importer gives it (step 10), so one left over is a
+  finding.
+- **The givers' side** (part B), when Blizzard names none: every known starter of the quest (our pins' NPCs, the givers
+  the probe saw offer it, the emulator's starters, TrinityCore's on retail and CMaNGOS's on Forever, and the items that
+  start it) is one side's alone, by the emulator's faction for it and the build's `FactionTemplate`, `Faction` and
+  `ChrRaces` (`QuestSides.ps1` says how, after TrinityCore's reaction rules). It goes into `sides.jsonl`
+  ([The quest and pin data files](#the-quest-and-pin-data-files)), which the build writes as the faction. A `KEEP` row
+  in `docs\plans\quest-side-decisions.csv` leaves a quest open. The quest chain has the last word: a quest that needs,
+  or is needed by, a quest of the other side stays open, and one open to both that needs a quest given a side this way
+  follows it, so the other side isn't shown a follow-up whose first step it can't take.
+- **The zone's side** (part C) is a report column only: `AreaTable.FactionGroupMask` of the API's area, else the quest
+  cache's or the emulator's zone. It can't tell a side's home zone from a quest only that side may take: of retail's
+  first 77 open quests in one side's zone, most are Dragon Races, dungeon quests and invasions open to both.
+
+It downloads the build's tables into `tools\` (`<table>-<build>.csv`) when they aren't there, and writes
+`tools\quest_sides_<game>.csv`: each change, finding and quest kept, each quest its chain holds open, each where the
+givers' side isn't Blizzard's, and each quest open to both in one side's zone. A quest of one side that Blizzard names
+the other for, or that the probe and the cache disagree on, is a finding, and the run exits 1. The summary's second line
+checks the giver rule against Blizzard's own sides; a fall there is a sign that a source's givers have gone wrong.
+`Test-SyncQuestSides.ps1` tests the rules, the data file, the build and a run on each game.
+
+The emulators list one giver per quest where both sides' NPCs give it, so the rule is wrong where Blizzard names no side
+and the other side's giver is missing: Wowhead (17 October 2026) names Marshal Gabriel, the Alliance's PvP vendor, for
+57762 "Conquest's Reward", which TrinityCore gives to High Warlord Volrath; 32317 "Seeking the Soulstones" starts in
+Stormwind City and Orgrimmar, though TrinityCore has only the Orgrimmar giver; 64237 "Gurgl and the Bandit" starts at
+Zantini, a neutral vendor, not TrinityCore's Lio the Lioness. Those, and the whole "Conquest's Reward" and
+"Quartermaster's Bounty" family, have `KEEP` rows. A new quest the rule narrows is worth a look on Wowhead before its pull
+request.
+
+First run, 17 October 2026, retail 12.1.5.70448: 22,337 quests open to both sides. Blizzard names a side for 28, all
+with the probe and the cache agreeing (9177 Journey to Undercity, four Sunstrider Isle quests, the allied races' heritage
+and introduction quests, 10871 and 10872 of the Netherwing, 47253 The Originals); their givers' side for 33 (Ashran 18,
+the Crushing the Crown pair 44546 and 44558, 301 Report to Ironforge, 764, 765, 976, 10555, 24902, 24903, 26398, 26867,
+28790, 36057, 50852 and 50853) and 10556 Scratches follows 10555 Malaise; 90762 The Twilight Highlands stays open, as it
+sits between two Horde quests though TrinityCore's giver for it is the Alliance's; 91 kept. The giver rule agrees with
+Blizzard's side for 5,964 of the 5,974 quests both name a side for; the 10 others are Horde quests whose TrinityCore giver
+is an Alliance template (27181, the Gorgrond chapters 35508, 35524 and 35527, 53353, 53892 to 53895, 53913). 78 open
+quests were in one side's zone (73 after part A): their givers open to both 27, one side 11, unknown 40. Forever
+1.60.1.70450 (probe and quest cache of 70374): 1,895 open, Blizzard names a side for none; their givers' side for 72 (the
+Ahn'Qiraj war effort 46, Alterac Valley 16, 558, 960, 1581, 2358, 3645, 8149, 8150, 8980, 9026 and 95041) and 7428
+Wanted: MORE ORCS! follows 7402; the rule agrees with Blizzard for 233 of 234 (79358's item is the Horde's); 117 open
+quests in one side's zone (52, 2 and 63). No finding in either game, and a second run changes nothing. Not done: the 62
+retail and 54 Forever quests open to both that already need a quest of one side in the data (open-items.md).
+
 ### 3. Quest types
 
 Types are a bitmask. The ones that matter here:
@@ -3162,7 +3228,13 @@ files in `QuestCompletist\Forever\`. Its plan, with what each run so far found, 
    that script's list. The script names any that lack a key. If it names a category our text
    covered, run `Remove-ConvertedLocaleKeys.ps1` (step 5).
 6. `Build-AddonData.ps1` builds both games' `qcQuestData.lua` and `qcPinDB.lua`; `-Check` checks
-   both.
+   both. Then the three steps that read the import: `Sync-QuestStartItems.ps1 -Game forever`
+   ([6e](#6e-the-items-that-start-quests)), `Sync-FactionReach.ps1 -Game forever`
+   ([2n](#2n-who-can-earn-each-factions-reputation)) and `Sync-QuestSides.ps1 -Game forever`
+   ([2p](#2p-which-side-can-take-a-quest)), each with `-Build <Forever build>`. The importer gives a quest the side the
+   game's record restricts it to (the quest cache's races), else the side the game names in the probe
+   (`GetQuestFactionGroup`), else CMaNGOS's races; step 2p adds the side of its givers in `sides.jsonl`, and exits 1
+   when the game names a side the importer didn't give.
 7. The reachability check (step 9), with Forever's TOC and its client's map table:
    ```powershell
    & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestReachability.lua QuestCompletist tools QuestCompletist_Camelot.toc tools\UiMap-<build>.csv
@@ -3968,7 +4040,8 @@ git diff --stat
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed, then for a game with a `tunings.jsonl` (retail: 537 on 16
   October 2026) its tunings, its start items (step 6e), and with a file for them its condition texts (retail: 188, step
-  2m), its factions (retail 196, Forever 48, step 2n) and its renown rows (retail: 69, step 2o). As of 17 October 2026 they're 35,687 quests (with the
+  2m), its factions (retail 196, Forever 48, step 2n), its renown rows (retail: 69, step 2o) and its sides (retail 34,
+  Forever 73, step 2p; "(N applied)" when some row's quest is no longer open to both). As of 17 October 2026 they're 35,687 quests (with the
   Darkspear Dash's 94954 and the Gnomeregan Run's 95012, 35,630, then the noTitle API scan's 24 of
   step 6, 35,654, and the item-started gap run's 33) and 13,557 pins for retail (16,084 before
   the nameless pins went one per spot, 13,547 before the second gap run's quests got theirs), and
@@ -4046,7 +4119,7 @@ git diff --stat
   tables, and Lua 5.1 for the language the client picks). It must say "0 failed" (32 checks, 17 October 2026). A
   change to how the tooltip shows them is checked by `Test-QuestTooltip.lua` on both TOCs. `Test-AddTaskQuests.ps1`
   and `Test-SyncQuestProfessions.ps1` copy `startitems.jsonl`, `conditiontexts.jsonl`, `factions.jsonl`,
-  `renown.jsonl` and `tunings.jsonl` with the data, as the Lua is built from them.
+  `renown.jsonl`, `sides.jsonl` and `tunings.jsonl` with the data, as the Lua is built from them.
 - For changes to `FactionReach.ps1`, `Sync-FactionReach.ps1` or the factions of `AddonData.ps1` (step 2n), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncFactionReach.ps1` (made-up tables). It must say
   "0 failed" (37 checks, 17 October 2026). `Compare-QuestReputation.ps1` reads "shown" through it too, so run
@@ -4055,6 +4128,11 @@ git diff --stat
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestRenown.ps1` (made-up tables). It must say
   "0 failed" (23 checks, 17 October 2026). A change to how the addon reads them (`qcRenownNeeds` in `qcCore.lua`) is
   checked by `Test-QuestTooltip.lua` and `Test-MapTooltip.lua` on both TOCs, and `Test-QuestReachability.lua`.
+- For changes to `QuestSides.ps1`, `Sync-QuestSides.ps1`, `Get-ProbeSides` in `ProbeResults.ps1` or the side rows of
+  `AddonData.ps1` (step 2p), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestSides.ps1`
+  (made-up tables, dumps and probe files). It must say "0 failed" (75 checks, 17 October 2026). Then run the step with
+  `-WhatIf` on both games: it must say "quests.jsonl: 0 faction changes" and "sides.jsonl: added 0, changed 0, gone 0",
+  and `Test-QuestReachability.lua` on both TOCs, as the sides change who sees a quest.
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;
@@ -4183,7 +4261,9 @@ git diff --stat
   master's importer wrote on that world (kept in the test as written once by it, 448bd64). It must say
   "0 failed". A change that is meant to alter those files means writing the expected text again, from a run
   that has been checked by hand. Its section L checks the pins of start points with no giver: one per
-  1.5-point spot, the icon from the quests, and a giver found later taking its quest off the spot.
+  1.5-point spot, the icon from the quests, and a giver found later taking its quest off the spot. Its section M
+  checks that a quest the game's record restricts to no race takes the side the game names in the probe (127 checks,
+  17 October 2026).
 - For changes to `PinRules.ps1`, `Assemble-PinDB.ps1` or `Apply-ClientQuestGivers.ps1`, or to how
   `RecordedGivers.ps1` fills a pin, run `powershell -NoProfile -ExecutionPolicy Bypass -File
   tools\Test-PinRules.ps1` (the rules, then the pipeline and both fill tools on a world made in a scratch

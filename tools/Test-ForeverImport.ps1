@@ -10,7 +10,8 @@ that pins of one name holding a quest at one spot are written as one, as Remove-
 item 9) would leave them. Section L checks the pins of quests with no giver, at their start points, by the rules both
 games share (PinRules.ps1, which Test-PinRules.ps1 checks on retail): one nameless pin per spot of 1.5 map points, its
 icon from its quests, and a quest whose giver turns up later leaving the spot for its giver's pin while the spot's other
-quests stay on it, nameless.
+quests stay on it, nameless. Section M checks that a quest the game's record restricts to no race takes the side the
+game names in the probe (GetQuestFactionGroup).
 
   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-ForeverImport.ps1
 
@@ -132,11 +133,12 @@ function Write-Dump([string]$path, $quests, $starters, $spawns, $names, $objectS
 }
 
 # The probe's saved variables. Each giver is @{ Kind; Id; Name; Spots = @(@(map, x, y, visits)); Offers; Turn }.
-function Write-Probe([string]$path, $givers, $builds = $Build) {
+function Write-Probe([string]$path, $givers, $builds = $Build, $sides = @{}) {
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.AppendLine('QCForeverProbeDB = {')
     [void]$sb.AppendLine('["quests"] = {')
     [void]$sb.AppendLine("[9001] = { [""build""] = ""$Build"", [""result""] = ""ok"", [""classification""] = ""normal"" },")
+    foreach ($q in $sides.Keys) { [void]$sb.AppendLine("[$q] = { [""build""] = ""$Build"", [""result""] = ""ok"", [""classification""] = ""normal"", [""factionGroup""] = $($sides[$q]) },") }
     [void]$sb.AppendLine('},')
     [void]$sb.AppendLine('["npcs"] = {')
     [void]$sb.AppendLine("[910001] = { [""build""] = ""$Build"", [""result""] = ""ok"", [""name""] = ""Alpha Giver"" },")
@@ -183,7 +185,7 @@ function Get-ProbeGivers() {
 # one spot (30,40; 30.6,40.4; 29.5,40.9), 9023 at 30,80 with 9024 1.5 points from it and 9025 1.51, two Feast of Winter
 # Veil quests at one spot (9026 at 70,20, 9027 at 70.5,20.3), and one of them with a quest of no holiday at another
 # (9028 at 80,20, 9029 at 80.4,20.2).
-function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles, [switch]$Spawn, [switch]$Starts) {
+function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers), [switch]$Bottles, [switch]$Spawn, [switch]$Starts, $Sides = @{}) {
     $root = Join-Path $Scratch $name
     foreach ($dir in 'tools', 'tools\forever_probe_70900', 'data\forever', 'addon') { New-Item -ItemType Directory -Path (Join-Path $root $dir) -Force | Out-Null }
     $t = "$root\tools"
@@ -237,7 +239,7 @@ function New-World([string]$name, [switch]$ZetaKnown, $Givers = (Get-ProbeGivers
     }
     Write-Dump "$t\ClassicDB_test.sql.gz" $cmQuests $starters `
         @(@(1, 910001, 0, 0), @(2, 910007, 400, -400)) @(@(910001, 'Alpha Giver'), @(910007, 'Eta Giver'), @(910020, 'Xi Giver')) $objectStarters $objectSpawns $objectNames $extraSql
-    Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" $Givers
+    Write-Probe "$t\forever_probe_70900\QCForeverProbe.lua" $Givers $Build $Sides
     Write-Lines "$root\decisions.csv" @('Game,Quest,Decision,Reason')
     Write-Lines "$root\givers.csv" @('Quest,Npc,Name,Note')
     Write-Lines "$root\zones.csv" @('Quest,Zone,Name,Note')
@@ -633,6 +635,14 @@ try {
     $before = Hash-Data $w7
     $r = Invoke-Importer $w7
     Equal (Hash-Data $w7) $before 'L6: a rerun writes every data file byte for byte as it was'
+
+    # ---------- M: the side the game names in the probe ----------
+    $w8 = New-World 'sides' -ZetaKnown -Sides @{ 9002 = 2 }
+    $r = Invoke-MergeTool $w8
+    $r = Invoke-Importer $w8
+    Equal $r.Exit 0 "M1: the importer runs with the probe's faction answers ($($r.Text))"
+    $sideOf = @{}; foreach ($x in (Read-QuestData "$w8\data\forever")) { $sideOf[[int]$x.id] = $x.faction }
+    Equal "$($sideOf[9002]) $($sideOf[9003])" '2 3' 'M1: a quest the game''s record restricts to no race takes the side the game names in the probe; one it names none for stays open'
 }
 finally {
     if ($Keep) { Write-Output "Scratch kept: $Scratch" } else { Remove-Item $Scratch -Recurse -Force -ErrorAction SilentlyContinue }

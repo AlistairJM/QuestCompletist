@@ -295,4 +295,12 @@ other than the shared slot, `WorldStateExpression`'s world states (no table), an
   tooltip leaves out a reward the character's race can't earn or never sees (part 1). `Compare-QuestReputation.ps1`
   reads "shown" from the slot each race gets (part 2, no class changed). Step 2o, retail, takes renown requirements
   from task quests' conditions: 69 rows on 66 quests, the hand rows kept after them (part 3, data-sources-review
-  recommendation 17). Opportunity 6 is next.
+  recommendation 17), in #389. Opportunity 6 is next.
+- 2026-10-17: **opportunity 6 is done**, recounted on 12.1.5.70448 and 1.60.1.70450. The zone's side alone is weak: the
+  game itself calls 62 of the 77 retail and 114 of the 117 Forever quests open to both in one side's zone neutral, and
+  most are Dragon Races, dungeon quests and invasions. Step 2p, both games, takes the side Blizzard names (the probe's
+  `GetQuestFactionGroup`, else the quest cache: 28 retail quests), else the side of the quest's givers, read with the
+  client's `FactionTemplate`, `Faction` and `ChrRaces` after TrinityCore's reaction rules (retail 33, Forever 72), with
+  the quest chain's say; the zone is a report column. The giver rule agrees with Blizzard's side for 5,964 of 5,974
+  retail quests and 233 of 234 on Forever, but where Blizzard names no side the emulators can miss the other side's
+  giver: 91 retail quests are kept open by `KEEP` rows (open-items.md). Opportunity 7 is next, after open-items row 17.

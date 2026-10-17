@@ -137,3 +137,26 @@ function Get-ProbeCompletions([string]$Path, [string]$LuaExe = 'C:\Program Files
         [pscustomobject]@{ Key = $f[1]; Build = $f[2]; Character = $f[4]; Level = $f[5]; Ids = $ids }
     })
 }
+
+# The side the game names for each quest the probe loaded (GetQuestFactionGroup: 1 the Alliance, 2 the Horde; a quest
+# it answered for nobody in particular isn't listed), and the givers it saw offer each quest in game (Kind 'npc' or
+# 'object', Id). For Sync-QuestSides.ps1.
+function Get-ProbeSides([string]$Path, [string]$LuaExe = 'C:\Program Files (x86)\Lua\5.1\lua.exe') {
+    if (-not (Test-Path $Path)) { throw "Probe results not found at $Path" }
+    $lines = @(& $LuaExe "$PSScriptRoot\Read-ForeverProbe.lua" $Path facts)
+    if ($LASTEXITCODE -ne 0) { throw "Read-ForeverProbe.lua failed on $Path" }
+    $loaded = @{}; $sides = @{}; $offers = @{}
+    foreach ($line in $lines) {
+        $f = $line.Split("`t")
+        switch ($f[0]) {
+            'quest' { $loaded[$f[1]] = @('ok', 'cached', 'late') -ccontains $f[3] }
+            'fact' { if ($f[2] -ceq 'factionGroup' -and $loaded[$f[1]] -and ($f[3] -ceq '1' -or $f[3] -ceq '2')) { $sides[[int]$f[1]] = [int]$f[3] } }
+            'offer' {
+                $quest = [int]$f[3]
+                if (-not $offers.ContainsKey($quest)) { $offers[$quest] = New-Object System.Collections.Generic.List[object] }
+                $offers[$quest].Add([pscustomobject]@{ Kind = $(if ($f[1] -ceq 'GameObject') { 'object' } else { 'npc' }); Id = [int]$f[2] })
+            }
+        }
+    }
+    return [pscustomobject]@{ Sides = $sides; Offers = $offers }
+}

@@ -91,6 +91,23 @@ taken. What is left, in one place:
     new step 2o, retail: 69 rows on 66 task quests, 65 of them new, the rule's level where Blizzard's text differs
     (4 Hallowfall quests: 3 against "Rank 5"), a tooltip line for each of several renowns (79333 asks for four), the
     96 hand rows kept and read after the client's (it agrees with 4, differs from none).
+- **Opportunity 6, which side can take a quest (17 October 2026):** recounted on 12.1.5.70448 and 1.60.1.70450. The
+  zone's side (the audit's idea) can't tell a side's home zone from a quest only that side may take: most of the 77
+  retail and 117 Forever quests open to both in one side's zone are Dragon Races, dungeon quests and invasions. The
+  user took the recommended parts, built as step 2p ([maintenance.md](../maintenance.md#2p-which-side-can-take-a-quest)):
+  - **A, built:** the side Blizzard names (the probe, else the quest cache) for a quest the data opens to both, 28
+    retail quests (9177, the Sunstrider Isle and allied races' quests); Forever's importer now also takes the probe's.
+  - **B, built:** the side of a quest's givers when Blizzard names none, in `sides.jsonl`, both games: retail 33 and
+    Forever 72 (the Ahn'Qiraj war effort, Alterac Valley), with the quest chain's say (10556 and 7428 follow their
+    prerequisite; 90762 stays open, its chain being the Horde's). Building it showed that the emulators list one giver
+    where both sides' NPCs give a quest, so on the user's word ("Narrow both, KEEP the bad ones") 91 retail quests have
+    `KEEP` rows (the 89 of the "Conquest's Reward" family, 32317, 64237). The other 16 retail quests the rule narrows
+    beside Ashran's 18 were not checked on Wowhead.
+  - **C, built:** the zone's side is a report column only.
+  - **To look at:** 62 retail and 54 Forever quests open to both already need a quest of one side in the data (the addon
+    counts such a prerequisite as met, so the other side sees them); the rule's follow-up only covers quests that need
+    one the step gave a side. Then open-items row 17 (taken 12 October, not built), as its own pull request, before
+    opportunity 7.
 
 - **The client tables audit (14 October 2026):** [client-tables-audit.md](client-tables-audit.md) went through
   every table and column of retail 12.1.5, Forever 1.60.1 and Era, decoded 621 bits and listed 12 opportunities
