@@ -192,7 +192,7 @@ against a game whose levels follow the client's 12.1.5.70391 redirect and Conten
 - With the probe's bits and every sample held, every quest reads its stored level at levels 1, 10, 30, 60
   and 90, but 46 quests at their tuning's minimum whose own level isn't it (24428, 28165, 31497, the 31 of
   tuning 464 such as 50417, 82586, 85085, 91843 and others; open-items.md row 8). They read their tuning's
-  level, the game's. Whether they should, or be held to their stored level, is the user's call
+  level, the game's, which the user chose on 17 October 2026 over holding them to their stored level
   (open-items.md, row 9).
 - In Nazmir at 90 with bit 34, its 160 quests on the three tunings bit 34 moves (190, 467 and 1403) read
   their stored levels and are hidden by the low-level filter until the list's samples are answered, then
