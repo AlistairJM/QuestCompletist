@@ -3,9 +3,10 @@ Checks how the addon reads the level of a quest whose content tuning a redirect 
 (docs/plans/quest-scaling-redirects.md, option E). A quest on a tuning of qcTuningSample reads the game's level for a
 sample of that tuning the client holds, else its stored level: its own, or for a quest that scales the character's,
 raised to its minimum and held down at its maxLevel. Only the quest list's category build asks the server for a
-sample: one per tuning at a time, and only for a tuning with a quest stored below the character's level. An answer
-that changes a level the list read rebuilds the list once a batch, and never the map. The maps, the continent icons,
-their tooltips and search ask for nothing.
+sample to get a level: one per tuning at a time, and only for a tuning with a quest stored below the character's
+level. An answer that changes a level the list read rebuilds the list once a batch, and never the map. Drawing the
+maps and the continent icons asks for nothing. A tooltip or a search still asks for the names of the quests it
+shows, as before option E, and one of those can be a sample.
 
 Loads the addon's own files with stand-ins for the WoW API, a clock that only moves when told, and a game that holds
 only the quests it is told to hold or has been asked for: GetQuestDifficultyLevel is 0 for any other, and a request
@@ -28,19 +29,23 @@ The checks, each printed:
   low-level filter hides them; the list asks for one sample of each tuning that needs one, and once answered the
   quests on tunings bit 34 moves read 90, are kept, show [90] and are drawn on the map, and the others keep theirs;
 - Chromie Time at 40: Elwynn Forest's quests read 40 once a sample is held, and their stored level until then;
-- requests: every map's pins drawn and hovered, a continent of every zone drawn and hovered, and search ask the game
-  nothing; answers that agree with the stored levels rebuild nothing; a sample that fails twice gives way to the next,
-  never two of one tuning at once, one list rebuild a batch; the zone, the level and the redirect bits changing make
-  the levels be read again;
-- WoW: Forever (its TOC): the tables are empty, every quest reads its stored level, and nothing is read or asked.
+- requests: with no quest name held, drawing every map's pins and a continent of every zone, and hovering the
+  continent's icons, ask the game nothing; with every quest name held, hovering every map's pins and a search ask
+  nothing either; with none held, those two ask for the names they show, the same quests as with the samples taken
+  out of the data; answers that agree with the stored levels rebuild nothing; a sample that fails twice gives way to
+  the next, never two of one tuning at once, one list rebuild a batch; the zone, the level and the redirect bits
+  changing make the levels be read again;
+- WoW: Forever (its TOC): the tables are empty, every quest reads its stored level, no level is read from the game,
+  and building every category's list asks nothing.
 
 Usage, from the repository root (Lua 5.1, the version WoW runs):
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua QuestCompletist QuestCompletist_Camelot.toc
   & "C:\Program Files (x86)\Lua\5.1\lua.exe" tools\Test-QuestScaling.lua QuestCompletist QuestCompletist.toc <tables> <build>
 The tables' folder is tools when left out, and the build the newest of its ConditionalContentTuning-<build>.csv.
-Pointed at an addon without qcTuningSample (before option E), it checks only that the maps, the continent icons and
-search ask for nothing. Exits with 1 if a check fails. Run it for both games' TOCs.
+Pointed at an addon without qcTuningSample (master before option E), it checks only what drawing and hovering the
+maps and the continent icons and a search ask for. Pointed at one with the tables but no code that reads them (#378
+alone), it fails. Exits with 1 if a check fails. Run it for both games' TOCs.
 ]]
 
 local ADDON_DIR = arg and arg[1] or "QuestCompletist"
@@ -535,7 +540,7 @@ local function questsOf(categoryId) return categories[categoryId] or {} end
 
 --[[ The first load, and what the data says ]]--
 boot()
-local HAS_TUNINGS = rawget(env, "qcTuningSample") ~= nil and type(core.Stored) == "function"
+local HAS_TUNINGS = rawget(env, "qcTuningSample") ~= nil
 QUESTS, MIN_LEVEL, MAX_LEVEL = env.qcQuestDatabase, env.qcQuestMinLevel, env.qcQuestMaxLevel
 QUEST_TUNING, TUNING_SAMPLE = rawget(env, "qcQuestTuning") or {}, rawget(env, "qcTuningSample") or {}
 for questId, e in pairs(QUESTS) do
@@ -590,20 +595,22 @@ local function checkViewsAskNothing(bits, label)
 		icons > 0 and askedTotal() == 0, askedTotal() .. " asked")
 	game.titles = true
 	settings()
-	fakeMap.mapId = SAMPLED and NAZMIR_MAP or maps[1]
-	env.qcMapDataProvider:RefreshAllData()
-	for _, pin in ipairs(fakeMap.pins) do
-		pin:OnMouseEnter()
-		pin:OnMouseLeave()
-		hovered = hovered + 1
+	for _, mapId in ipairs(maps) do
+		fakeMap.mapId = mapId
+		env.qcMapDataProvider:RefreshAllData()
+		for _, pin in ipairs(fakeMap.pins) do
+			pin:OnMouseEnter()
+			pin:OnMouseLeave()
+			hovered = hovered + 1
+		end
 	end
 	advance(60)
-	check(string.format("hovering the %d pins of map %d asks the game nothing", hovered, fakeMap.mapId), hovered > 0 and askedTotal() == 0,
-		askedTotal() .. " asked")
+	check(string.format("with every quest name held, hovering the %d pins of all %d maps asks the game nothing", hovered, #maps),
+		hovered > 0 and askedTotal() == 0, askedTotal() .. " asked")
 	game.listShown = true
 	env.qcUpdateQuestList(nil, 1, "THE")
 	advance(60)
-	check("a search asks the game nothing", askedTotal() == 0, askedTotal() .. " asked")
+	check("and so does a search", askedTotal() == 0, askedTotal() .. " asked")
 	check("and none of it rebuilt the list or redrew a map by itself", counts.listBuilds == 0, counts.listBuilds .. " list builds")
 end
 
@@ -648,6 +655,47 @@ if not SAMPLED then
 	end
 	print("All checks passed.")
 	return
+end
+
+--[[ With no quest name held, a tooltip and a search ask for the names they show, as before option E ]]--
+local function namesAsked(withSamples)
+	boot()
+	if not withSamples then env.qcTuningSample, env.qcQuestTuning = {}, {} end
+	game.bits, game.level, game.titles = PROBE_BITS, LEVEL_CAP, false
+	settings()
+	local pins = 0
+	for _, mapId in ipairs(sortedKeys(env.qcPinDB)) do
+		fakeMap.mapId = mapId
+		env.qcMapDataProvider:RefreshAllData()
+		for _, pin in ipairs(fakeMap.pins) do
+			pin:OnMouseEnter()
+			pin:OnMouseLeave()
+			pins = pins + 1
+		end
+		advance(600)
+	end
+	game.listShown = true
+	env.qcUpdateQuestList(nil, 1, "THE")
+	advance(600)
+	local asked = {}
+	for questId, times in pairs(game.asked) do asked[questId] = times end
+	return asked, pins
+end
+
+print("With no quest name held, hovering every map's pins and a search, with the samples and without them")
+do
+	local without, pins = namesAsked(false)
+	local with = namesAsked(true)
+	local differ, samples = {}, {}
+	for questId, times in pairs(with) do
+		if without[questId] ~= times then differ[questId] = true end
+		if SAMPLE_TUNING[questId] then samples[questId] = true end
+	end
+	for questId in pairs(without) do
+		if not with[questId] then differ[questId] = true end
+	end
+	check(string.format("hovering the %d pins and a search ask for the same %d quests, %d of them samples, as with no samples in the data",
+		pins, count(with), count(samples)), next(differ) == nil, count(differ) .. " differ: " .. idList(differ))
 end
 
 --[[ Retail: the client's tables and the tunings' levels ]]--
