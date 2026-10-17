@@ -41,6 +41,8 @@ The **Files** tab also has versions for other editions of the game, such as Clas
 **Detailed quest tooltips**
 
 - Where the quest giver is, the quest's type, if it has one (like Dungeon, Raid or PvP), its campaign and chapter, its storyline with your progress through it and your place in it, and the quests you need to do first.
+- The item a quest starts from, like *Magtheridon's Head* for "The Fall of Magtheridon", with anything the item itself needs, such as a level or a profession.
+- On Retail, the game's own reason when it holds a quest back, like *Requires further advancement in the Argus Campaign.*, until you've done the quest.
 - Renown and friendship rank requirements, with a ✓ or ✗, and the reputation it rewards.
 - On WoW: Forever, the profession and skill level a quest needs, like *Fishing (30)*, with a ✓ or ✗.
 - Warnings for breadcrumb quests, and for quests that lock out others ("you can only complete one of these").
