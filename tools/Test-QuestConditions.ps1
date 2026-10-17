@@ -52,10 +52,10 @@ try {
         '70,0,2,0,110,7', '80,0,2,0,73,20', '90,0,4,0,0,0', '91,90,2,0,288,3', '92,90,2,0,110,44',
         '100,0,8,1,0,0', '101,100,2,0,288,1', '102,100,4,0,0,0', '103,102,2,0,288,1', '104,102,2,0,110,7',
         '110,0,8,1,0,0', '111,110,2,0,288,1', '112,110,2,0,288,2', '120,0,3,0,288,4')
-    Write-Table 'PlayerCondition.csv' 'ID,PrevQuestLogic,PrevQuestID_0,PrevQuestID_1,PrevQuestID_2,PrevQuestID_3,ModifierTreeID,Flags,CovenantID' @(
-        '1,0,0,0,0,0,10,0,0', '2,0,999,0,0,0,0,0,0', '3,0,0,0,0,0,20,0,0', '4,0,888,0,0,0,0,0,0', '5,0,0,0,0,0,30,0,0', '6,0,0,0,0,0,40,0,0',
+    Write-Table 'PlayerCondition.csv' 'ID,PrevQuestLogic,PrevQuestID_0,PrevQuestID_1,PrevQuestID_2,PrevQuestID_3,ModifierTreeID,Flags,CovenantID,Failure_description_lang' @(
+        '1,0,0,0,0,0,10,0,0,"Finish the first part."', '2,0,999,0,0,0,0,0,0', '3,0,0,0,0,0,20,0,0', '4,0,888,0,0,0,0,0,0', '5,0,0,0,0,0,30,0,0', '6,0,0,0,0,0,40,0,0',
         '7,0,0,0,0,0,50,0,0', '8,0,0,0,0,0,0,0,0', '9,2,5,7,0,0,0,0,0', '10,0,0,0,0,0,60,0,0', '11,0,5,0,0,0,0,0,0', '12,65536,5,0,0,0,0,0,0',
-        '20,0,5,0,0,0,70,256,0', '21,0,5,0,0,0,50,512,0', '22,0,0,0,0,0,80,0,0', '23,0,0,0,0,0,0,0,2', '24,0,0,0,0,0,90,0,0',
+        '20,0,5,0,0,0,70,256,0', '21,0,5,0,0,0,50,512,0', '22,0,0,0,0,0,80,0,0', '23,0,0,0,0,0,0,0,2,"You must be a member of the Venthyr Covenant."', '24,0,0,0,0,0,90,0,0,"Requires further advancement."',
         '25,0,0,0,0,0,100,0,0', '26,0,0,0,0,0,110,0,0', '27,0,0,0,0,0,120,0,0', '28,0,0,0,0,0,90,512,0')
     $c = Import-ClientConditions $dir $build
     $quests = @{}
@@ -91,6 +91,11 @@ try {
     $named = Get-ClientCovenants $c @{ 63 = 23 } @{ 64 = -589; 65 = -999 } $headings
     Equal (($named.Keys | Sort-Object | ForEach-Object { "$_=$($named[$_] -join '/')" }) -join ' ') '60=2 61=3 62=1/3 63=2 64=1' 'V4: by quest line, campaign, chapter (by OrderIndex), task condition and heading; one several name lists each'
     Equal $c.ChapterConditions[0].Text 'Reach level 30 to continue.' 'V5: a chapter gate keeps the game''s text'
+
+    $ours = @{}
+    foreach ($id in 31, 32, 60, 61, 62, 63) { $ours[$id] = [pscustomobject]@{ id = $id } }
+    $keys = Get-ConditionTextKeys $c @{ 63 = 23; 32 = 8 } $ours
+    Equal (($keys.Keys | ForEach-Object { "$_=$($keys[$_] -join ',')" }) -join ' ') 'c1=62 p1=31 p23=60,63 p24=61' 'X1: texts by key: a chapter gate on its chapter''s first quest, a line''s and a campaign''s on their first of ours, a task quest''s on itself; none for a condition with no text'
 
     $gates = @(Get-ConditionGates $c 10 $quests)
     Equal (($gates | ForEach-Object { "$($_.Kind) $($_.Id)" }) -join ', ') 'line 300, line 301, line 302, line 303, campaign 11' 'G1: the conditions that name the campaign''s quests or the hidden one it accepts'

@@ -92,6 +92,14 @@ categories, the zone table, reputation rewards, storylines and so on).
   `skillRank`, `rep` and `repRank` (0 Hated to 7 Exalted) and `races` (ChrRaces IDs) are what the item itself
   requires, each left out when the item has none. It becomes `qcQuestStartItems` at the end of
   `qcQuestData.lua`; an item whose quest has left `quests.jsonl` is left out of it until step 6e drops it.
+- `data\conditiontexts.jsonl` (retail), one text per line, written only by `Sync-QuestConditionTexts.ps1` (step 2m):
+  `{"key":"p76424","quests":[60903,60920],"enUS":"Requires the effects of a Cypher of Obfuscation.","deDE":"..."}`.
+  `key` is `p` and a `PlayerCondition` ID, or `c` and a `CampaignXCondition` ID; `quests` are the quests that condition
+  holds back; `enUS` is always there, and each other language (`deDE`, `esES`, `esMX`, `frFR`, `itIT`, `koKR`, `ptBR`,
+  `ruRU`, `zhCN`, `zhTW`) only where its text differs from enUS's. It becomes `qcQuestConditionTexts` (quest -> text
+  numbers) and `qcConditionTexts` (the texts in the client's language, enUS's where it has none) at the end of
+  `qcQuestData.lua`; a quest that has left `quests.jsonl` is left out, and a text left with none goes. Forever has no
+  such file, and its tables are empty.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -383,6 +391,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2h | The calendar, both games: each holiday entry's dates to come, the dated events no entry covers, the decisions that rest on the calendar, and what `/qc holidays` should show, beside one `/qc holidays` per game in game | `Review-Calendar.ps1 -Build <retail build> -PtrBuild <PTR build> -ForeverBuild <Forever build>`, then `-UpdateBaseline` once the findings and changes are read; `/qc holidays` once on each game ([In the game](#in-the-game)) | No |
 | 2k | "Only one of these" links, both games: quests on one completion switch that we don't link, links Blizzard moved off one switch, and linked pairs the game says one character did both of (after the probe's logins) | `Sync-SharedSlotLinks.ps1 -Game retail -Build <retail build>`, decide in `docs\plans\quest-link-decisions.csv`, then `-Apply`; `-Game forever -Build <Forever build>`, decide in `forever-quest-link-decisions.csv`, which step 10 applies | Yes (retail `-Apply`) |
 | 2l | Covenants, retail (WoW: Forever has none): the covenant the client's conditions and headings name for a quest, where ours has none; findings where ours differs, or ours tags a quest several covenants share (after step 2e) | `Sync-QuestCovenants.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2m | The game's own text for a condition that holds a quest back, in every client language, retail (WoW: Forever's quest tables name no condition; again after step 6 or 6b adds quests) | `Sync-QuestConditionTexts.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -1857,6 +1866,39 @@ First run, 17 October 2026 (12.1.5.70448, the 12.1.5.70391 cache): the client na
 quests, 558 already ours, and several for 18 that stay untagged; 7 gained one (59855, 62203 and 62204 Major Mirror
 Disruptions, Venthyr; 62280 Limbo, Kyrian; 60110 Never Had a Friend Like Me, 60111 Forging A Friendship and 65152 A
 Hardened Bond, Necrolord); 219 of ours are named by no client source; no finding. A second run changes nothing.
+
+### 2m. The game's own text for a condition that holds a quest back
+
+Retail, every sweep, and again after step 6 or 6b adds quests (WoW: Forever's quest tables name no condition, so it
+has none). When a condition holds a quest back, the game has its own sentence for it: "Requires further advancement in
+the Argus Campaign.", "Reach level 30 to continue your Order Hall campaign.", "Return to the Oasis next week.". The
+quest list's tooltip shows it in red under the "Requires" lines while the quest isn't done (the client tables audit,
+opportunity 4, part D, the user's choice on 17 October 2026). It is information only: the addon can't ask the game
+whether the condition is met, so it filters nothing and the line stays until the quest is done.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestConditionTexts.ps1 -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-QuestConditionTexts.ps1 -Build <retail build>
+```
+
+`QuestConditions.ps1` (`Get-ConditionTextKeys`) says which conditions hold which quests back: a task quest's own
+condition (`QuestV2CliTask.ConditionID`), and a quest line's, a campaign's and a campaign chapter's gate, each on the
+first quest of ours it gates (the line's, the campaign's first chapter's, the chapter's: the chapter is the campaign's
+line of the same `OrderIndex`). The texts are the condition's `PlayerCondition.Failure_description_lang` and the
+chapter gate's `CampaignXCondition.FailureReason_lang`, read in all 11 client languages from
+`tools\<table>-<build>.<locale>.csv` (downloaded when missing; `PlayerCondition` is about 17 MB a language, so a new
+build's first run takes several minutes). A language whose tables are enUS's byte for byte is English under its name
+and is left out, as is a text that is enUS's word for word: the addon shows enUS's. A text that names a game variable
+(`$pcMinLevel`, which only the game fills) is left out and listed. The run writes `data\conditiontexts.jsonl` and
+rebuilds `qcQuestData.lua` ([The quest and pin data files](#the-quest-and-pin-data-files)), and reports the texts
+added, changed and gone. `Test-SyncQuestConditionTexts.ps1` tests the reading, the data file and the Lua,
+`Test-QuestConditions.ps1` the keys and `Test-QuestTooltip.lua` the tooltip.
+
+First run, 17 October 2026 (12.1.5.70448): 188 texts for 375 quests, 39 from task conditions (the Argus, Nazjatar and
+Broken Shore world quests, covenant and renown limits) and 149 from chapter gates; no quest line or campaign condition
+of ours has a text. Every language translates all 188 but French (184) and Italian (187), whose others are the English
+words. Left out: the two chapter gates "Reach level $pcMinLevel to continue." (58976 Chasing a Memory, 57816
+Dreamweaver). 84956 has two texts. A second run changes nothing.
 
 ### 3. Quest types
 
@@ -3897,12 +3939,18 @@ git diff --stat
 - For changes to `QuestLines.ps1` (the prerequisites Forever's importer takes from a quest line's order), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestLines.ps1` (made-up quest lines). It must
   say "0 failed".
-- For changes to `QuestConditions.ps1` (the client's quest line, campaign and task conditions and their covenants,
-  steps 2b, 2c and 2l), run
+- For changes to `QuestConditions.ps1` (the client's quest line, campaign and task conditions, their covenants and
+  their texts, steps 2b, 2c, 2l and 2m), run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-QuestConditions.ps1` (made-up client tables). It
-  must say "0 failed" (31 checks, 17 October 2026). Then run step 2c and `Sync-QuestCovenants.ps1` with `-WhatIf`
-  on the real tables: they must say "Changes: 0" and "Gain one: 0". `Sync-QuestCovenants.ps1` has no test of its
-  own; what it decides is `Get-ClientCovenants`, which this one tests.
+  must say "0 failed" (32 checks, 17 October 2026). Then run step 2c, `Sync-QuestCovenants.ps1` and
+  `Sync-QuestConditionTexts.ps1` with `-WhatIf` on the real tables: they must say "Changes: 0", "Gain one: 0" and
+  "Added 0, changed 0, gone 0". `Sync-QuestCovenants.ps1` has no test of its own; what it decides is
+  `Get-ClientCovenants`, which this one tests.
+- For changes to `ConditionTexts.ps1`, `Sync-QuestConditionTexts.ps1` or the condition texts of `AddonData.ps1` (step
+  2m), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestConditionTexts.ps1` (made-up
+  tables, and Lua 5.1 for the language the client picks). It must say "0 failed" (32 checks, 17 October 2026). A
+  change to how the tooltip shows them is checked by `Test-QuestTooltip.lua` on both TOCs. `Test-AddTaskQuests.ps1`
+  and `Test-SyncQuestProfessions.ps1` copy `conditiontexts.jsonl` with the data, as the Lua is built from it.
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;

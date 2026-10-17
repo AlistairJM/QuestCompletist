@@ -21,6 +21,10 @@ whole of qcPinDB.lua, map by map in ascending order. Both start with a line sayi
 data\startitems.jsonl, written by Sync-QuestStartItems.ps1 and optional, holds the items that start quests,
 one per line, with what the item itself requires (ConvertTo-LuaStartItemTable has the fields); it becomes
 qcQuestStartItems at the end of qcQuestData.lua.
+data\conditiontexts.jsonl, written by Sync-QuestConditionTexts.ps1 and optional, holds the game's own text for
+a condition that holds quests back, one per line: its key, the quests and the text in each of the client's
+languages, enUS's always ({"key":"c15","quests":[51571],"enUS":"...","deDE":"..."}); it becomes
+qcQuestConditionTexts and qcConditionTexts at the end of qcQuestData.lua.
 
 data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
 quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
@@ -41,6 +45,8 @@ $QuestOptionalFields = @('profession', 'holiday', 'covenant', 'pvp', 'storyline'
 $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
 $TuningFields = @('id', 'level', 'redirects', 'samples')
 $StartItemFields = @('item', 'quest', 'side', 'level', 'skill', 'skillRank', 'rep', 'repRank', 'races')
+$ConditionTextLocales = @('enUS', 'deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR', 'ptBR', 'ruRU', 'zhCN', 'zhTW')
+$ConditionTextFields = @('key', 'quests') + $ConditionTextLocales
 
 function Test-WholeNumber($value) { return ($value -is [int]) -or ($value -is [long]) }
 function Test-DataNumber($value) { return (Test-WholeNumber $value) -or ($value -is [decimal]) }
@@ -121,6 +127,16 @@ function ConvertTo-StartItemJsonLines($items) {
         [void]$sb.Append('{"item":' + $s.item + ',"quest":' + $s.quest)
         foreach ($field in 'side', 'level', 'skill', 'skillRank', 'rep', 'repRank') { if ($s.$field) { [void]$sb.Append(',"' + $field + '":' + $s.$field) } }
         if ($s.races) { [void]$sb.Append(',"races":[' + (@($s.races) -join ',') + ']') }
+        [void]$sb.Append("}`n")
+    }
+    return $sb.ToString()
+}
+
+function ConvertTo-ConditionTextJsonLines($texts) {
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($t in $texts) {
+        [void]$sb.Append('{"key":"' + $t.key + '","quests":[' + (@($t.quests) -join ',') + ']')
+        foreach ($locale in $ConditionTextLocales) { if ($t.$locale) { [void]$sb.Append(',"' + $locale + '":"' + $t.$locale.Replace('\', '\\').Replace('"', '\"') + '"') } }
         [void]$sb.Append("}`n")
     }
     return $sb.ToString()
@@ -292,6 +308,59 @@ function Test-StartItemRecords($items) {
     return $problems.ToArray()
 }
 
+# Problems with the condition texts: a key ('p' and a PlayerCondition ID, or 'c' and a CampaignXCondition ID) is listed
+# once, names quests, and has enUS's text; each text is one line, with no game variable ($pcMinLevel) left in it, which
+# only the game can fill. A quest that has left the data isn't one: it is left out of the Lua.
+function Test-ConditionTextRecords($texts) {
+    $problems = New-Object System.Collections.Generic.List[string]
+    $seen = @{}
+    $n = 0
+    foreach ($t in $texts) {
+        $n++
+        $what = "conditiontexts.jsonl line $n" + $(if ($t.key -is [string]) { " ($($t.key))" } else { '' })
+        if ($t.key -isnot [string] -or $t.key -notmatch '^[pc][1-9]\d*$') { $problems.Add("${what}: 'key' is p or c and a condition's ID"); continue }
+        if ($seen.ContainsKey($t.key)) { $problems.Add("${what}: the key is also on line $($seen[$t.key])") } else { $seen[$t.key] = $n }
+        $list = @($t.quests)
+        if ($t.quests -isnot [array] -or $list.Count -eq 0 -or @($list | Where-Object { -not (Test-WholeNumber $_) -or $_ -le 0 }).Count) { $problems.Add("${what}: 'quests' must list quest IDs") }
+        if (-not $t.enUS) { $problems.Add("${what}: 'enUS' must hold the English text") }
+        foreach ($locale in $ConditionTextLocales) {
+            $text = $t.$locale
+            if ($null -eq $text) { continue }
+            if ($text -isnot [string] -or $text -eq '') { $problems.Add("${what}: '$locale' must be text, or left out"); continue }
+            if ($text -match '[\x00-\x1f]') { $problems.Add("${what}: '$locale' has a control character") }
+            if ($text -match '\$[A-Za-z]') { $problems.Add("${what}: '$locale' has a game variable the addon can't fill") }
+        }
+    }
+    return $problems.ToArray()
+}
+
+# qcQuestConditionTexts: quest ID -> the numbers of its texts in qcConditionTexts; qcConditionTexts: the game's own
+# words for a condition that holds a quest back, in the client's language (GetLocale), or enUS's where a language
+# has none and for a language the data doesn't hold (enGB). Every language's list is in the file, numbered alike.
+function ConvertTo-LuaConditionTextTables($texts) {
+    $sb = New-Object System.Text.StringBuilder
+    $byQuest = New-Object 'System.Collections.Generic.SortedDictionary[long, System.Collections.Generic.List[int]]'
+    $n = 0
+    foreach ($t in $texts) {
+        $n++
+        foreach ($quest in @($t.quests)) {
+            if (-not $byQuest.ContainsKey([long]$quest)) { $byQuest[[long]$quest] = New-Object System.Collections.Generic.List[int] }
+            $byQuest[[long]$quest].Add($n)
+        }
+    }
+    [void]$sb.Append("qcQuestConditionTexts={`r`n")
+    foreach ($entry in $byQuest.GetEnumerator()) { [void]$sb.Append('[' + $entry.Key + ']={' + ($entry.Value -join ',') + "},`r`n") }
+    [void]$sb.Append("}`r`n")
+    if ($n -eq 0) { [void]$sb.Append("qcConditionTexts={}`r`n"); return $sb.ToString() }
+    [void]$sb.Append("do local texts={`r`n")
+    foreach ($locale in $ConditionTextLocales) {
+        $list = foreach ($t in $texts) { $text = if ($t.$locale) { $t.$locale } else { $t.enUS }; '"' + $text.Replace('\', '\\').Replace('"', '\"') + '"' }
+        [void]$sb.Append($locale + '={' + ($list -join ',') + "},`r`n")
+    }
+    [void]$sb.Append("} qcConditionTexts=texts[GetLocale()] or texts.enUS end`r`n")
+    return $sb.ToString()
+}
+
 # qcQuestStartItems: quest ID -> the items that start it, each {item, side, level, skill, skillRank, faction,
 # standing, {races}}: side 1 Alliance or 2 Horde (the item's own faction flag, 0 for either), level the level to
 # use it, skill and skillRank the profession and skill it needs, faction and standing the reputation it needs
@@ -325,7 +394,7 @@ function ConvertTo-LuaStartItemTable($items) {
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
-function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @()) {
+function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @()) {
     $sb = New-Object System.Text.StringBuilder (4MB)
     [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
     # ZeroIsValue: a minimum level of 0 is a real value (no minimum); in the other tables 0 means none.
@@ -365,6 +434,7 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(
     [void]$sb.Append("qcQuestTuning={`r`n").Append($questTuning.ToString()).Append("}`r`n")
     [void]$sb.Append("qcTuningSample={`r`n").Append($samples.ToString()).Append("}`r`n")
     [void]$sb.Append((ConvertTo-LuaStartItemTable @($startItems)))
+    [void]$sb.Append((ConvertTo-LuaConditionTextTables @($conditionTexts)))
     return $sb.ToString()
 }
 
@@ -406,11 +476,13 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $pinData = Join-Path $DataDir 'pins.jsonl'
     $tuningData = Join-Path $DataDir 'tunings.jsonl'
     $startItemData = Join-Path $DataDir 'startitems.jsonl'
+    $conditionTextData = Join-Path $DataDir 'conditiontexts.jsonl'
     try {
         $quests = Read-JsonLines $questData
         $pins = Read-JsonLines $pinData
         $tunings = Read-TuningData $DataDir
         $startItems = if (Test-Path $startItemData) { Read-JsonLines $startItemData } else { @() }
+        $conditionTexts = if (Test-Path $conditionTextData) { Read-JsonLines $conditionTextData } else { @() }
     } catch {
         $lines.Add("  $($_.Exception.Message)")
         $lines.Add("The data files can't be read; nothing was written.")
@@ -420,6 +492,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         @(Find-UnknownFields $pinData $PinFields) + @(Test-PinRecords $pins)
     if (Test-Path $tuningData) { $problems += @(Find-UnknownFields $tuningData $TuningFields) + @(Test-TuningRecords $tunings) }
     if (Test-Path $startItemData) { $problems += @(Find-UnknownFields $startItemData $StartItemFields) + @(Test-StartItemRecords $startItems) }
+    if (Test-Path $conditionTextData) { $problems += @(Find-UnknownFields $conditionTextData $ConditionTextFields) + @(Test-ConditionTextRecords $conditionTexts) }
     if ($problems.Count -gt 0) {
         $problems | Select-Object -First 30 | ForEach-Object { $lines.Add("  $_") }
         if ($problems.Count -gt 30) { $lines.Add("  ... and $($problems.Count - 30) more") }
@@ -434,8 +507,17 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
     $source = if ($DataDir.StartsWith($repoRoot + '\')) { $DataDir.Substring($repoRoot.Length + 1) } else { 'data' }
     $current = { param($path) if (Test-Path $path) { [IO.File]::ReadAllText($path) } else { '' } }
+    # A condition text keeps the quests still in the data, and goes when none is.
+    $textsKept = @(foreach ($t in $conditionTexts) {
+        $kept = @(@($t.quests) | Where-Object { $questIds.Contains([long]$_) })
+        if ($kept.Count) {
+            $copy = [ordered]@{ key = $t.key; quests = $kept }
+            foreach ($locale in $ConditionTextLocales) { if ($t.$locale) { $copy[$locale] = $t.$locale } }
+            [pscustomobject]$copy
+        }
+    })
     $outputs = @(
-        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) })) },
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept) },
         @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
     )
     $differ = 0
@@ -456,7 +538,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
             $lines.Add("${name}: written")
         }
     }
-    $lines.Add("$($quests.Count) quests, $($pins.Count) pins" + $(if (Test-Path $tuningData) { ", $(@($tunings).Count) tunings" } else { '' }) + ", $(@($startItems).Count) start items")
+    $lines.Add("$($quests.Count) quests, $($pins.Count) pins" + $(if (Test-Path $tuningData) { ", $(@($tunings).Count) tunings" } else { '' }) + ", $(@($startItems).Count) start items" +
+        $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }))
     return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
 }
 
@@ -507,6 +590,14 @@ function Save-StartItemData($items, [string]$DataDir = $DefaultDataDir, [string]
     if ($problems.Count -gt 0) { throw ("The start items weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
     Assert-LuaMatchesData $DataDir $AddonDir
     [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'startitems.jsonl'), (ConvertTo-StartItemJsonLines $items), $script:Utf8)
+    Complete-AddonDataSave $DataDir $AddonDir
+}
+
+function Save-ConditionTextData($texts, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+    $problems = @(Test-ConditionTextRecords $texts)
+    if ($problems.Count -gt 0) { throw ("The condition texts weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
+    Assert-LuaMatchesData $DataDir $AddonDir
+    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'conditiontexts.jsonl'), (ConvertTo-ConditionTextJsonLines $texts), $script:Utf8)
     Complete-AddonDataSave $DataDir $AddonDir
 }
 

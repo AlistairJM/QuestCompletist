@@ -10,7 +10,8 @@ every line it is given, and the checks read those.
 
 Then every quest of a profession that has a quest to do first, for a character with that profession and no
 other: with every quest it could do done, the list's filter (requirements and profession on) keeps it, and
-with nothing done, its "Required Quest" lines name no quest of another profession.
+with nothing done, its "Required Quest" lines name no quest of another profession. Then the item a quest
+starts from, and the game's own text for a condition that holds a quest back (shown while it isn't done).
 
 With a third argument, the lines of each case are written to that file, so one run on the code before a
 change and one after can be compared line by line.
@@ -840,6 +841,48 @@ for label, found in pairs({["an item for each side"] = bothStart, ["a level abov
 	if not found then print("  (no start item in this game's data has " .. label .. ")") end
 end
 env.C_Item, env.C_Timer, env.UnitFactionGroup = realItem, realTimer, realFaction
+
+print("The game's own words for a condition that holds a quest back, while it isn't done")
+local conditionTexts = env.qcQuestConditionTexts or {}
+local textQuest, twoTexts
+for questId, numbers in pairs(conditionTexts) do
+	if env.qcQuestDatabase[questId] then
+		if not textQuest or questId < textQuest then textQuest = questId end
+		if #numbers >= 2 and env.qcConditionTexts[numbers[1]] ~= env.qcConditionTexts[numbers[2]] and (not twoTexts or questId < twoTexts) then twoTexts = questId end
+	end
+end
+check("every number a quest names is a text", (function()
+	for _, numbers in pairs(conditionTexts) do
+		for _, number in ipairs(numbers) do if type(env.qcConditionTexts[number]) ~= "string" then return false end end
+	end
+	return true
+end)())
+if textQuest then
+	local want = env.qcConditionTexts[conditionTexts[textQuest][1]]
+	reset()
+	check(string.format("%d isn't done: '%s' is there", textQuest, want), find((draw(textQuest)), want) ~= nil)
+	env.qcCharacterCompletions[textQuest] = 1
+	reset()
+	check("and gone once it's done", find((draw(textQuest)), want) == nil)
+	env.qcCharacterCompletions[textQuest] = nil
+	if twoTexts then
+		reset()
+		local lines = draw(twoTexts)
+		local first, second = env.qcConditionTexts[conditionTexts[twoTexts][1]], env.qcConditionTexts[conditionTexts[twoTexts][2]]
+		check(string.format("%d is held back by two conditions: both texts are there", twoTexts), find(lines, first) ~= nil and find(lines, second) ~= nil)
+	end
+	local noText = plainQuest
+	if conditionTexts[noText] then noText = storyQuest end
+	if not conditionTexts[noText] then
+		reset()
+		local lines = draw(noText)
+		local any = false
+		for _, text in ipairs(env.qcConditionTexts) do if find(lines, text) then any = true end end
+		check(string.format("%d has no condition text: none is shown", noText), not any)
+	end
+else
+	print("  (no condition text in this game's data)")
+end
 
 print("A quest the game tracks but never names")
 local function unnamed(questId) return type(questId) == "number" and env.qcQuestDatabase[questId] == nil end
