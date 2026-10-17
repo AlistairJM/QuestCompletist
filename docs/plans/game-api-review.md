@@ -1077,3 +1077,11 @@ bullet).
   all) and `Test-QuestScaling.ps1` (182 checks). Forever keeps a check of its own, `Apply-QuestScaling.ps1 -Game forever`
   (step 10), which fails if a quest the probe loads stops having its stored level. Not tried in game below the cap
   (open-items.md, "To try in game").
+- 2026-10-16, later: the redirect is more than Chromie Time. The server sends each character redirect bits that pick
+  `ConditionalContentTuning` rows, and no addon call reads them: the probe's level 90 mage read 90 for 11 "Riverpaw
+  Gnoll Bounty" in Nazmir, where its housing Endeavor turned bit 34 on, and 30, its ceiling, in Elwynn Forest. The
+  user took option E ([quest-scaling-redirects.md](quest-scaling-redirects.md)), which brings back part of this
+  recommendation: `GetQuestDifficultyLevel` asked live, of a sample quest per tuning whose data the client holds,
+  with the stored ceiling as the fallback, and the map never asking the server. Its data and tools came first
+  (each quest's `tuning`, `data\tunings.jsonl`, step 2j); the addon code followed on 17 October 2026 (`qcTuning`
+  in `qcCore.lua`, checked offline by `Test-QuestScaling.lua`, untried in game).

@@ -14,7 +14,8 @@ list is a choice, any one of which will do, and a list inside a choice is all of
 [57115,57116] needs both, and [[10983,10989,11057]] needs any one of the three. A quest's level is
 its row's second value; minLevel, the level a character needs to accept the quest, is left out when
 it is the same, and kept when it is 0 (no minimum). maxLevel, the level a scaling quest stops scaling
-at (Apply-QuestScaling.ps1), is left out for a quest that doesn't scale. The records become the whole of
+at (Apply-QuestScaling.ps1), is left out for a quest that doesn't scale, and tuning, the quest's
+ContentTuningID, for a quest no source gives one or that is on tuning 0. The records become the whole of
 QuestCompletist\qcQuestData.lua, in file order (see ConvertTo-LuaQuestFile for its layout), and the
 whole of qcPinDB.lua, map by map in ascending order. Both start with a line saying they're generated.
 data\startitems.jsonl, written by Sync-QuestStartItems.ps1 and optional, holds the items that start quests,
@@ -24,6 +25,13 @@ data\conditiontexts.jsonl, written by Sync-QuestConditionTexts.ps1 and optional,
 a condition that holds quests back, one per line: its key, the quests and the text in each of the client's
 languages, enUS's always ({"key":"c15","quests":[51571],"enUS":"...","deDE":"..."}); it becomes
 qcQuestConditionTexts and qcConditionTexts at the end of qcQuestData.lua.
+
+data\tunings.jsonl, which a game's data folder may lack, holds one record per content tuning that has
+quests to read its level from (Apply-QuestScaling.ps1), in ascending order of id:
+	{"id":73,"level":30,"redirects":[0,13,34],"samples":[11,35,37]}
+level is what each sample answered at the level cap in the probe, redirects the RedirectEnum values of
+the tuning's ConditionalContentTuning rows, and samples its representative quests, the first preferred.
+They go into qcQuestData.lua too, as qcTuningSample and as the qcQuestTuning of the quests on them.
 #>
 
 $script:Invariant = [Globalization.CultureInfo]::InvariantCulture
@@ -32,9 +40,10 @@ $DefaultDataDir = Join-Path $PSScriptRoot '..\data'
 $DefaultAddonDir = Join-Path $PSScriptRoot '..\QuestCompletist'
 
 $QuestFields = @('id', 'name', 'level', 'zone', 'category', 'type', 'faction', 'race', 'class',
-    'profession', 'holiday', 'covenant', 'pvp', 'storyline', 'prereq', 'minLevel', 'maxLevel')
-$QuestOptionalFields = @('profession', 'holiday', 'covenant', 'pvp', 'storyline', 'prereq', 'minLevel', 'maxLevel')
+    'profession', 'holiday', 'covenant', 'pvp', 'storyline', 'prereq', 'minLevel', 'maxLevel', 'tuning')
+$QuestOptionalFields = @('profession', 'holiday', 'covenant', 'pvp', 'storyline', 'prereq', 'minLevel', 'maxLevel', 'tuning')
 $PinFields = @('map', 'icon', 'npc', 'name', 'x', 'y', 'quests', 'note')
+$TuningFields = @('id', 'level', 'redirects', 'samples')
 $StartItemFields = @('item', 'quest', 'side', 'level', 'skill', 'skillRank', 'rep', 'repRank', 'races')
 $ConditionTextLocales = @('enUS', 'deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR', 'ptBR', 'ruRU', 'zhCN', 'zhTW')
 $ConditionTextFields = @('key', 'quests') + $ConditionTextLocales
@@ -66,8 +75,8 @@ function Get-PrereqQuests($value) {
 # same in Lua and JSON; control characters are refused by the checks), and numbers are written the
 # shortest way: 47.3 rather than 47.30. Like the Lua writers further down, these do it inline: a
 # function call per field made writing them take a minute. A profession, holiday, covenant,
-# storyline or prereq of 0 is left out, as is a pin's npc of 0; a minLevel is left out only when it
-# is missing, since 0 is a minimum, and so is a maxLevel.
+# storyline, prereq or tuning of 0 is left out, as is a pin's npc of 0; a minLevel is left out only when
+# it is missing, since 0 is a minimum, and so is a maxLevel.
 function ConvertTo-QuestJsonLines($quests) {
     $sb = New-Object System.Text.StringBuilder (6MB)
     foreach ($q in $quests) {
@@ -83,7 +92,16 @@ function ConvertTo-QuestJsonLines($quests) {
         if ($prereq) { [void]$sb.Append(',"prereq":' + $(if ($prereq -is [array]) { ConvertTo-PrereqText $prereq '[' ']' } else { $prereq })) }
         if ($null -ne $q.minLevel) { [void]$sb.Append(',"minLevel":' + $q.minLevel) }
         if ($null -ne $q.maxLevel) { [void]$sb.Append(',"maxLevel":' + $q.maxLevel) }
+        if ($q.tuning) { [void]$sb.Append(',"tuning":' + $q.tuning) }
         [void]$sb.Append("}`n")
+    }
+    return $sb.ToString()
+}
+
+function ConvertTo-TuningJsonLines($tunings) {
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($t in $tunings) {
+        [void]$sb.Append('{"id":' + $t.id + ',"level":' + $t.level + ',"redirects":[' + (@($t.redirects) -join ',') + '],"samples":[' + (@($t.samples) -join ',') + "]}`n")
     }
     return $sb.ToString()
 }
@@ -171,6 +189,7 @@ function Test-QuestRecords($quests) {
             ($null -eq $q.covenant -or $q.covenant -is [int]) -and ($null -eq $q.pvp -or $q.pvp -is [int]) -and ($null -eq $q.storyline -or $q.storyline -is [int]) -and
             ($null -eq $q.minLevel -or ($q.minLevel -is [int] -and $q.minLevel -ge 0 -and $q.minLevel -ne $q.level)) -and
             ($null -eq $q.maxLevel -or ($q.maxLevel -is [int] -and $q.maxLevel -gt 0)) -and
+            ($null -eq $q.tuning -or ($q.tuning -is [int] -and $q.tuning -gt 0)) -and
             ($null -eq $q.prereq -or ($q.prereq -is [int] -and $q.prereq -ge 0) -or (Test-PrereqValue $q.prereq)) -and -not ($name -match '[\x00-\x1f]') -and -not ($zone -match '[\x00-\x1f]')
         if (-not $sound) {
             $what = "quests.jsonl line $n" + $(if (Test-WholeNumber $id) { " (id $id)" } else { '' })
@@ -187,8 +206,8 @@ function Test-QuestRecords($quests) {
                 } elseif ($field -eq 'minLevel') {
                     if (-not (Test-WholeNumber $value) -or $value -lt 0) { $problems.Add("${what}: 'minLevel' must be a whole number, 0 or more") }
                     elseif ($value -eq $q.level) { $problems.Add("${what}: 'minLevel' is the same as 'level'; leave it out") }
-                } elseif ($field -eq 'maxLevel') {
-                    if (-not (Test-WholeNumber $value) -or $value -le 0) { $problems.Add("${what}: 'maxLevel' must be a whole number above 0") }
+                } elseif ($field -eq 'maxLevel' -or $field -eq 'tuning') {
+                    if (-not (Test-WholeNumber $value) -or $value -le 0) { $problems.Add("${what}: '$field' must be a whole number above 0") }
                 } elseif (-not (Test-WholeNumber $value)) {
                     $problems.Add("${what}: '$field' must be a whole number")
                 }
@@ -236,6 +255,29 @@ function Test-PinRecords($pins) {
         $list = @($quests)
         if ($null -eq $quests -or $list.Count -eq 0) { $problems.Add("${what}: 'quests' must list at least one quest") }
         elseif (@($list | Where-Object { -not (Test-WholeNumber $_) }).Count -gt 0) { $problems.Add("${what}: 'quests' must hold whole numbers") }
+    }
+    return $problems.ToArray()
+}
+
+function Test-TuningRecords($tunings) {
+    $problems = New-Object System.Collections.Generic.List[string]
+    $n = 0
+    $last = 0
+    foreach ($t in $tunings) {
+        $n++
+        $what = "tunings.jsonl line $n" + $(if (Test-WholeNumber $t.id) { " (id $($t.id))" } else { '' })
+        if (-not (Test-WholeNumber $t.id) -or $t.id -le 0) { $problems.Add("${what}: 'id' must be a whole number above 0") }
+        elseif ($t.id -le $last) { $problems.Add("${what}: the ids must go up, and this one follows $last") }
+        else { $last = $t.id }
+        if (-not (Test-WholeNumber $t.level) -or $t.level -le 0) { $problems.Add("${what}: 'level' must be a whole number above 0") }
+        foreach ($field in 'redirects', 'samples') {
+            $value = $t.$field
+            $floor = if ($field -eq 'redirects') { 0 } else { 1 }
+            if ($value -isnot [array] -or $value.Count -eq 0) { $problems.Add("${what}: '$field' must list at least one number"); continue }
+            if (@($value | Where-Object { -not (Test-WholeNumber $_) -or $_ -lt $floor }).Count -gt 0) { $problems.Add("${what}: '$field' must hold whole numbers of $floor or more"); continue }
+            if (@($value | Select-Object -Unique).Count -ne $value.Count) { $problems.Add("${what}: '$field' names a number twice") }
+        }
+        if ($t.redirects -is [array] -and (@($t.redirects) -join ',') -ne (@($t.redirects | Sort-Object) -join ',')) { $problems.Add("${what}: 'redirects' must go up") }
     }
     return $problems.ToArray()
 }
@@ -345,12 +387,14 @@ function ConvertTo-LuaStartItemTable($items) {
 # own keyed by quest ID, a prereq list as a Lua table. qcQuestMinLevel holds the level a character
 # needs to take a quest whose own level (the row's) is not that; a quest it lacks needs the row's
 # level. qcQuestMaxLevel holds the level a scaling quest stops scaling at; the list shows such a quest
-# at the character's level, kept between its minimum and that. The zone text isn't written: the game
-# never reads it.
+# at the character's level, kept between its minimum and that. qcTuningSample holds each record of
+# tunings.jsonl, its samples by tuning ID, and qcQuestTuning the tuning of every quest on one of them;
+# a quest on any other tuning is left out, as no sample can say more about its level than the stored
+# one does. The zone text isn't written: the game never reads it.
 # This and ConvertTo-LuaPinFile quote and format inline, as the JSON writers do; a function call per
 # field made the build take half a minute. Whole numbers turn into text the same way in any
 # culture, so they're joined as they are.
-function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $startItems = @(), $conditionTexts = @()) {
+function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $tunings = @(), $startItems = @(), $conditionTexts = @()) {
     $sb = New-Object System.Text.StringBuilder (4MB)
     [void]$sb.Append("-- Generated from $source\quests.jsonl by tools\Build-AddonData.ps1. Edit the data file, not this one.`r`nqcQuestDatabase={`r`n")
     # ZeroIsValue: a minimum level of 0 is a real value (no minimum); in the other tables 0 means none.
@@ -365,6 +409,13 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $startItems =
     }
     $tables = @{}
     foreach ($table in $sparse.Keys) { $tables[$table] = New-Object System.Text.StringBuilder }
+    $sampled = New-Object 'System.Collections.Generic.HashSet[long]'
+    $samples = New-Object System.Text.StringBuilder
+    foreach ($t in $tunings) {
+        [void]$sampled.Add([long]$t.id)
+        [void]$samples.Append('[' + $t.id + ']={' + (@($t.samples) -join ',') + "},`r`n")
+    }
+    $questTuning = New-Object System.Text.StringBuilder
     foreach ($q in $quests) {
         $name = '"' + $q.name.Replace('\', '\\').Replace('"', '\"') + '"'
         $row = @($name, $q.level, $q.category, $q.type, $q.faction, $q.race, $q.class) -join ','
@@ -376,9 +427,12 @@ function ConvertTo-LuaQuestFile($quests, [string]$source = 'data', $startItems =
             if ($value -is [array]) { $value = ConvertTo-PrereqText $value '{' '}' }
             if ($value -or ($column.ZeroIsValue -and $null -ne $value)) { [void]$tables[$table].Append('[' + $q.id + ']=' + $value + ",`r`n") }
         }
+        if ($q.tuning -and $sampled.Contains([long]$q.tuning)) { [void]$questTuning.Append('[' + $q.id + ']=' + $q.tuning + ",`r`n") }
     }
     [void]$sb.Append("}`r`n")
     foreach ($table in $sparse.Keys) { [void]$sb.Append($table + "={`r`n").Append($tables[$table].ToString()).Append("}`r`n") }
+    [void]$sb.Append("qcQuestTuning={`r`n").Append($questTuning.ToString()).Append("}`r`n")
+    [void]$sb.Append("qcTuningSample={`r`n").Append($samples.ToString()).Append("}`r`n")
     [void]$sb.Append((ConvertTo-LuaStartItemTable @($startItems)))
     [void]$sb.Append((ConvertTo-LuaConditionTextTables @($conditionTexts)))
     return $sb.ToString()
@@ -411,7 +465,7 @@ function ConvertTo-LuaPinFile($pins, [string]$source = 'data') {
     return $sb.ToString()
 }
 
-# Checks both data files and builds the Lua from them; with -Check, only compares. Returns Ok and the
+# Checks the data files and builds the Lua from them; with -Check, only compares. Returns Ok and the
 # Lines to show. Ok is false if a file can't be read, a record has a problem, or -Check finds the
 # Lua out of date.
 function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir, [switch]$Check) {
@@ -420,11 +474,13 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     $AddonDir = (Resolve-Path $AddonDir).Path
     $questData = Join-Path $DataDir 'quests.jsonl'
     $pinData = Join-Path $DataDir 'pins.jsonl'
+    $tuningData = Join-Path $DataDir 'tunings.jsonl'
     $startItemData = Join-Path $DataDir 'startitems.jsonl'
     $conditionTextData = Join-Path $DataDir 'conditiontexts.jsonl'
     try {
         $quests = Read-JsonLines $questData
         $pins = Read-JsonLines $pinData
+        $tunings = Read-TuningData $DataDir
         $startItems = if (Test-Path $startItemData) { Read-JsonLines $startItemData } else { @() }
         $conditionTexts = if (Test-Path $conditionTextData) { Read-JsonLines $conditionTextData } else { @() }
     } catch {
@@ -434,6 +490,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
     }
     $problems = @(Find-UnknownFields $questData $QuestFields) + @(Test-QuestRecords $quests) +
         @(Find-UnknownFields $pinData $PinFields) + @(Test-PinRecords $pins)
+    if (Test-Path $tuningData) { $problems += @(Find-UnknownFields $tuningData $TuningFields) + @(Test-TuningRecords $tunings) }
     if (Test-Path $startItemData) { $problems += @(Find-UnknownFields $startItemData $StartItemFields) + @(Test-StartItemRecords $startItems) }
     if (Test-Path $conditionTextData) { $problems += @(Find-UnknownFields $conditionTextData $ConditionTextFields) + @(Test-ConditionTextRecords $conditionTexts) }
     if ($problems.Count -gt 0) {
@@ -460,7 +517,7 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
         }
     })
     $outputs = @(
-        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept) },
+        @{ Path = $questPath; Old = (& $current $questPath); New = (ConvertTo-LuaQuestFile $quests $source $tunings @($startItems | Where-Object { $questIds.Contains([long]$_.quest) }) $textsKept) },
         @{ Path = $pinPath; Old = (& $current $pinPath); New = (ConvertTo-LuaPinFile $pins $source) }
     )
     $differ = 0
@@ -481,7 +538,8 @@ function Invoke-AddonDataBuild([string]$DataDir = $DefaultDataDir, [string]$Addo
             $lines.Add("${name}: written")
         }
     }
-    $lines.Add("$($quests.Count) quests, $($pins.Count) pins, $(@($startItems).Count) start items, $(@($conditionTexts).Count) condition texts")
+    $lines.Add("$($quests.Count) quests, $($pins.Count) pins" + $(if (Test-Path $tuningData) { ", $(@($tunings).Count) tunings" } else { '' }) + ", $(@($startItems).Count) start items" +
+        $(if (Test-Path $conditionTextData) { ", $(@($conditionTexts).Count) condition texts" } else { '' }))
     return [pscustomobject]@{ Ok = -not ($Check -and $differ -gt 0); Lines = $lines.ToArray() }
 }
 
@@ -497,6 +555,14 @@ function Read-PinData([string]$DataDir = $DefaultDataDir) {
     return $records
 }
 
+# The tunings of a data folder; none when it has no tunings.jsonl or the file is empty.
+function Read-TuningData([string]$DataDir = $DefaultDataDir) {
+    $path = Join-Path (Resolve-Path $DataDir).Path 'tunings.jsonl'
+    if (-not (Test-Path $path) -or (Get-Item $path).Length -eq 0) { return @() }
+    $records = Read-JsonLines $path
+    return @($records | Where-Object { $null -ne $_ })
+}
+
 function Set-RecordField($record, [string]$field, $value) {
     if ($QuestFields -notcontains $field -and $PinFields -notcontains $field) { throw "No data file has a field '$field'" }
     if ($record -is [System.Collections.IDictionary]) { $record[$field] = $value; return }
@@ -504,14 +570,18 @@ function Set-RecordField($record, [string]$field, $value) {
     if ($property) { $property.Value = $value } else { $record | Add-Member -NotePropertyName $field -NotePropertyValue $value }
 }
 
-# For tools: checks the records, writes them to the data file and rebuilds the Lua from both data
+# For tools: checks the records, writes them to the data file and rebuilds the Lua from the data
 # files. Throws, writing nothing, if a record has a problem, or if the Lua no longer matches the data
-# files: rebuilding it would then lose whatever changed it.
-function Save-QuestData($quests, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir) {
+# files: rebuilding it would then lose whatever changed it. Given $tunings, it writes tunings.jsonl
+# with them too.
+function Save-QuestData($quests, [string]$DataDir = $DefaultDataDir, [string]$AddonDir = $DefaultAddonDir, $tunings = $null) {
     $problems = @(Test-QuestRecords $quests)
+    if ($null -ne $tunings) { $problems += @(Test-TuningRecords $tunings) }
     if ($problems.Count -gt 0) { throw ("The quests weren't saved:`n  " + (($problems | Select-Object -First 20) -join "`n  ")) }
     Assert-LuaMatchesData $DataDir $AddonDir
-    [IO.File]::WriteAllText((Join-Path (Resolve-Path $DataDir).Path 'quests.jsonl'), (ConvertTo-QuestJsonLines $quests), $script:Utf8)
+    $dir = (Resolve-Path $DataDir).Path
+    [IO.File]::WriteAllText((Join-Path $dir 'quests.jsonl'), (ConvertTo-QuestJsonLines $quests), $script:Utf8)
+    if ($null -ne $tunings) { [IO.File]::WriteAllText((Join-Path $dir 'tunings.jsonl'), (ConvertTo-TuningJsonLines $tunings), $script:Utf8) }
     Complete-AddonDataSave $DataDir $AddonDir
 }
 

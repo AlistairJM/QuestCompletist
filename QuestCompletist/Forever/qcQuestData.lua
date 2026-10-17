@@ -12397,6 +12397,10 @@ qcQuestMinLevel={
 }
 qcQuestMaxLevel={
 }
+qcQuestTuning={
+}
+qcTuningSample={
+}
 qcQuestStartItems={
 [2]={{16305,0,20}},
 [23]={{16303,0,20}},
