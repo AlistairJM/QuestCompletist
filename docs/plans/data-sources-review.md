@@ -504,6 +504,8 @@ rule. Line numbers are master's (f3e3a4f); this pull request moves open-items.md
 
 - 2026-10-17: recommendation 21 done, on the user's word (the client tables audit's opportunity 4, part A). Sweep step 2l, `Sync-QuestCovenants.ps1`, reads the covenant from task conditions, quest-line and campaign conditions, chapter gates and the "<covenant> Callings" headings, with the intersection rule. On 12.1.5.70448 the client names one covenant for 565 of our quests: 558 agree, 7 gained one (the four world quests and three Necrolord quests the recommendation foresaw), none differs. The evidence's "reproduces all 777" doesn't hold with the client's own tables: 219 of ours (sanctum and covenant feature quests such as the Ember Court's) are named by no client source, and are kept and counted. In the same pull request step 2c reads task quests' whole condition (maintenance.md, step 2c): 412 quests gain or change a prerequisite.
 
+- 2026-10-17: the shown-faction rule fixed, on the user's word (the client tables audit's opportunity 5, part 2): `Compare-QuestReputation.ps1` reads the slot each playable race gets and treats a header without its own bar as not shown, through `FactionReach.ps1`, which the new step 2n also uses so the quest list's tooltip leaves out rewards the character's race can't earn or never sees (part 1, both games). On 12.1.5.70391's cache no class changed (shown factions 361 to 338). Recommendation 17 (renown from the client's conditions) is next, as the same opportunity's part 3.
+
 ## Appendix: every finding and its verdict
 
 Area, the finding as first raised, the games, the checked verdict and the value. Findings raised by the

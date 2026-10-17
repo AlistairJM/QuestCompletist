@@ -647,22 +647,23 @@ function qcUpdateTooltip(index)
             end
         end
 
-        -- Faction and reputation information
+        -- Faction and reputation information: only what this character's race can earn and the game shows (step 2n), as a
+        -- reward list can name both sides' factions.
         local reputationEntries = qcQuestReputation[questId]
-        local hasReputation = false
         local factionIds = {}
 
         if reputationEntries then
+            local _, _, raceId = UnitRace("player")
             for factionId, repValue in pairs(reputationEntries) do
-                if repValue ~= 0 then
-                    hasReputation = true
+                local races = qcFactionRaces and qcFactionRaces[factionId]
+                if repValue ~= 0 and not (qcFactionHidden and qcFactionHidden[factionId]) and not (races and raceId and not races[raceId]) then
+                    factionIds[#factionIds + 1] = factionId
                 end
-                factionIds[#factionIds + 1] = factionId
             end
             table.sort(factionIds)
         end
 
-        if hasReputation then
+        if #factionIds > 0 then
             qcAddQuestTooltipDivider()
             qcQuestInformationTooltip:AddLine(GetText("COMBAT_TEXT_SHOW_REPUTATION_TEXT"))
 

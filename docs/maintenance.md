@@ -100,6 +100,12 @@ categories, the zone table, reputation rewards, storylines and so on).
   numbers) and `qcConditionTexts` (the texts in the client's language, enUS's where it has none) at the end of
   `qcQuestData.lua`; a quest that has left `quests.jsonl` is left out, and a text left with none goes. Forever has no
   such file, and its tables are empty.
+- `data\factions.jsonl` (and `data\forever\factions.jsonl`), one faction per line, written only by
+  `Sync-FactionReach.ps1` (step 2n): `{"faction":69,"races":[2,5,6,8,9,10,...]}`, `{"faction":67,"hidden":true}`.
+  `races` lists the playable races that can earn the faction's reputation (ChrRaces IDs, empty for none), for a
+  faction some playable race can't; `hidden` marks one whose bar the game never shows. Factions every race can earn
+  and see aren't listed. It becomes `qcFactionRaces` (faction -> set of race IDs) and `qcFactionHidden` at the end of
+  `qcQuestData.lua`.
 
 WoW: Forever's quests and pins are in `data\forever\`, in the same form, and build into
 `QuestCompletist\Forever\`. Its importer writes them (step 10), so they're never edited by hand: a
@@ -400,6 +406,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 2k | "Only one of these" links, both games: quests on one completion switch that we don't link, links Blizzard moved off one switch, and linked pairs the game says one character did both of (after the probe's logins) | `Sync-SharedSlotLinks.ps1 -Game retail -Build <retail build>`, decide in `docs\plans\quest-link-decisions.csv`, then `-Apply`; `-Game forever -Build <Forever build>`, decide in `forever-quest-link-decisions.csv`, which step 10 applies | Yes (retail `-Apply`) |
 | 2l | Covenants, retail (WoW: Forever has none): the covenant the client's conditions and headings name for a quest, where ours has none; findings where ours differs, or ours tags a quest several covenants share (after step 2e) | `Sync-QuestCovenants.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 2m | The game's own text for a condition that holds a quest back, in every client language, retail (WoW: Forever's quest tables name no condition; again after step 6 or 6b adds quests) | `Sync-QuestConditionTexts.ps1 -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
+| 2n | Who can earn each faction's reputation and whether its bar ever shows, both games, so the tooltip leaves out rewards the character can't earn or see (Forever's in step 10) | `Sync-FactionReach.ps1 -Game retail -Build <retail build> -WhatIf`, then without `-WhatIf` | Only the last one |
 | 3 | Quest types | `Retype-FlaggedWorldQuests.ps1`, `Retype-ProbeRecurring.ps1` | Yes |
 | 4 | Storylines | `Build-QuestLines.ps1 -Build <retail build> -Refresh` | Yes |
 | 5 | Zone table and category names from the client | `Build-CategoryUiMapIDs.ps1 -Build <retail build> -Refresh` → `Add-ZoneTableMaps.ps1 -Build <retail build> -Refresh` → `Build-CategoryUiMapIDs.ps1` → `Build-CategoryClientNames.ps1 -Build <retail build> -Refresh` → `Sync-QuestSortNames.ps1 -Build <retail build> -ForeverBuild <Forever build> -Refresh` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` | Yes |
@@ -411,7 +418,7 @@ Run the report-only steps first, then make one branch and pull request per kind 
 | 7 | Quests that may no longer be obtainable | `Find-UnavailableQuestCandidates.ps1 -Refresh` | No |
 | 8 | Dungeons and raids against the Dungeon Journal | `Audit-DungeonCategories.ps1 -Refresh` | No |
 | 9 | Quests and pins nothing can display | `Test-QuestReachability.lua`, after every step that edits the addon | No |
-| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
+| 10 | WoW: Forever's quests and pins | the recorder's notes and [the Forever probe](#in-the-game) → `Read-QuestCache.ps1` → `Import-ForeverData.ps1` → `Build-ForeverMenu.ps1` → `Remove-ConvertedLocaleKeys.ps1 -WhatIf` → `Build-AddonData.ps1` → `Sync-QuestStartItems.ps1 -Game forever -Build <Forever build>` → `Sync-FactionReach.ps1 -Game forever -Build <Forever build>` → `Test-QuestReachability.lua` with Forever's TOC → `Apply-QuestScaling.ps1 -Game forever` (a check) | Yes |
 
 Steps 1 to 9 are retail's, except 6d, which reads both games' recorder notes and writes only retail's pins,
 and 2h, which reviews both games' calendars.
@@ -637,13 +644,18 @@ before:
 
 ```powershell
 Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/Faction/csv?build=<retail build>" -OutFile tools\Faction-<retail build>.csv
+Invoke-WebRequest -UseBasicParsing -Uri "https://wago.tools/db2/ChrRaces/csv?build=<retail build>" -OutFile tools\ChrRaces-<retail build>.csv
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Compare-QuestReputation.ps1
 ```
 
 Each quest of ours falls in one class, found by comparing ours, the API's and the cache's rewards as
-sets of faction=amount, never by position. A faction counts as shown when the Faction table lists it,
-its `ReputationIndex` is 0 or more (the client keeps no standing for it otherwise) and
-`ReputationFlags_0` lacks bit 4 (value 4, hidden). The classes, with the `Kind` of the row each
+sets of faction=amount, never by position. A faction counts as shown when the Faction table lists it
+with a standing (`ReputationIndex` 0 or more) and some playable race can earn it in a slot that shows
+its bar: not hidden (flag 0x4) and not a header without its own bar (0x8 without 0x80), as
+`FactionReach.ps1` reads the four slots with the build's `ChrRaces` (step 2n). Until 17 October 2026 it
+read `ReputationFlags_0` alone, the other side's locked slot for Warsong Offensive, Hellscream's Reach
+and Wintersaber Trainers, and counted the "Horde" and "Alliance" headers as shown: 498 reward rows read
+the wrong way, though no class changed on 12.1.5.70391 (361 factions counted as shown, 338 now). The classes, with the `Kind` of the row each
 writes to `quest_reputation_compare.csv` (the old kinds, `api-only`, `ours-only` and `differ`, are
 still written by the API comparison, and `Apply-ReputationBackfill.ps1` acts on `api-only` and
 `differ`, and with `-CacheOnly` on `cache-only` too, below):
@@ -1907,6 +1919,40 @@ Broken Shore world quests, covenant and renown limits) and 149 from chapter gate
 of ours has a text. Every language translates all 188 but French (184) and Italian (187), whose others are the English
 words. Left out: the two chapter gates "Reach level $pcMinLevel to continue." (58976 Chasing a Memory, 57816
 Dreamweaver). 84956 has two texts. A second run changes nothing.
+
+### 2n. Who can earn each faction's reputation
+
+Both games, every sweep (Forever's in step 10, after the importer). A quest's reward list can name both sides'
+factions: Battle for Azeroth's world quests list The Honorbound and the 7th Legion, and each player gets only their
+side's. Others reward the "Horde" and "Alliance" headers, whose bar the game never shows. The quest list's tooltip
+leaves out a reward the character's race can't earn, or never sees, and the data keeps every reward as Blizzard lists
+it (the client tables audit, opportunity 5, part 1, the user's choice on 17 October 2026).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-FactionReach.ps1 -Game retail -Build <retail build> -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-FactionReach.ps1 -Game retail -Build <retail build>
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-FactionReach.ps1 -Game forever -Build <Forever build>
+```
+
+`FactionReach.ps1` reads the build's `Faction` and `ChrRaces` (`tools\<table>-<build>.csv`, downloaded when missing).
+A faction keeps a standing when its `ReputationIndex` is 0 or more, and has four slots: a race mask (two 32-bit words,
+by `ChrRaces.PlayableRaceBit`), a class mask, a base, a cap and flags. A character gets the first slot whose race and
+class masks hold it (TrinityCore's `GetFactionDataIndexForRaceAndClass`) and can earn the faction when that slot's cap
+is above its base: the other side's factions are -42000 of -42000, hated and at war. The bar shows unless the slot is
+hidden (0x4) or a header without its own bar (0x8 without 0x80). The run writes `data\factions.jsonl`
+([The quest and pin data files](#the-quest-and-pin-data-files)) with the factions some playable race can't earn and
+those never shown, and reports how many reward rows that leaves out for some character of the quest's side (by side,
+not by the quest's races, so a quest only one race takes can count) and what changed. `Compare-QuestReputation.ps1`
+(step 2e) reads "shown" the same way. `Test-SyncFactionReach.ps1` tests the reading, the data file and the Lua, and
+`Test-QuestTooltip.lua` the tooltip.
+
+First run, 17 October 2026: retail 12.1.5.70448 has 437 factions with a standing, 142 that some playable race can't
+earn (28 nobody can) and 99 never shown, so 196 records; of the 13,003 reward rows, 945 on 941 quests are left out for
+some character of the quest's side and 305 are on a faction never shown (the "Horde" and "Alliance" headers, 153 and 152).
+Forever 1.60.1.70450: 75 factions, 32 and 1, 21 never shown, 48 records; of 2,339 rows, 499 and 152 (the headers 64 and
+60, the Emerald Wardens 18, the Steamwheedle Cartel 6, and Engineering - Gnome and Engineering - Goblin). Only three
+factions of the rewards split a side: Shang Xi's Academy (the Pandaren's), The Nightfallen (not the Nightborne) and
+Forever's Wildhammer Clan (not the Skyborne). A second run changes nothing.
 
 ### 3. Quest types
 
@@ -3881,7 +3927,8 @@ git diff --stat
 - `Build-AddonData.ps1 -Check` must say all four generated files are up to date, two for each game.
   The last line for each game gives its quest and pin counts, which should only change when quests
   or pins were meant to be added or removed, then for a game with a `tunings.jsonl` (retail: 537 on 16
-  October 2026) its tunings, and its start items (step 6e). As of 17 October 2026 they're 35,687 quests (with the
+  October 2026) its tunings, its start items (step 6e), and with a file for them its condition texts (retail: 188, step
+  2m) and its factions (retail 196, Forever 48, step 2n). As of 17 October 2026 they're 35,687 quests (with the
   Darkspear Dash's 94954 and the Gnomeregan Run's 95012, 35,630, then the noTitle API scan's 24 of
   step 6, 35,654, and the item-started gap run's 33) and 13,557 pins for retail (16,084 before
   the nameless pins went one per spot, 13,547 before the second gap run's quests got theirs), and
@@ -3958,7 +4005,12 @@ git diff --stat
   2m), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncQuestConditionTexts.ps1` (made-up
   tables, and Lua 5.1 for the language the client picks). It must say "0 failed" (32 checks, 17 October 2026). A
   change to how the tooltip shows them is checked by `Test-QuestTooltip.lua` on both TOCs. `Test-AddTaskQuests.ps1`
-  and `Test-SyncQuestProfessions.ps1` copy `conditiontexts.jsonl` with the data, as the Lua is built from it.
+  and `Test-SyncQuestProfessions.ps1` copy `startitems.jsonl`, `conditiontexts.jsonl`, `factions.jsonl` and
+  `tunings.jsonl` with the data, as the Lua is built from them.
+- For changes to `FactionReach.ps1`, `Sync-FactionReach.ps1` or the factions of `AddonData.ps1` (step 2n), run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-SyncFactionReach.ps1` (made-up tables). It must say
+  "0 failed" (37 checks, 17 October 2026). `Compare-QuestReputation.ps1` reads "shown" through it too, so run
+  `Test-CompareQuestReputation.ps1` (380 checks), and `Test-QuestTooltip.lua` on both TOCs for the tooltip.
 - For changes to `Add-TaskQuests.ps1` (step 6b), run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\Test-AddTaskQuests.ps1 -ToolsDir <the main checkout's tools folder>`.
   It adds made-up task quests to a scratch copy and checks each skip and each field, then (with the real
   table) takes every 25th task quest of the data out and checks that the tool brings back exactly those;
